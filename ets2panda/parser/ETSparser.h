@@ -503,7 +503,6 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
-    ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
     void ValidateInstanceOfExpression(ir::Expression *expr);
     void ValidateRestParameter(ir::Expression *param) override;
     bool ValidateBreakLabel(util::StringView label) override;

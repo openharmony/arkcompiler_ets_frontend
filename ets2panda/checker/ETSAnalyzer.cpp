@@ -358,26 +358,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     return node->SetTsType(checker->CreateETSArrowType(signature));
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
-{
-    ETSChecker *checker = GetETSChecker();
-    expr->expr_->Check(checker);
-
-    // Launch expression returns a Promise<T> type, so we need to insert the expression's type
-    // as type parameter for the Promise class.
-
-    auto exprType = [&checker](auto *tsType) {
-        if (tsType->IsETSPrimitiveType()) {
-            return checker->MaybeBoxInRelation(tsType);
-        }
-
-        return tsType;
-    }(expr->expr_->TsType());
-
-    expr->SetTsType(checker->CreatePromiseOf(exprType));
-    return expr->TsType();
-}
-
 template <typename T, typename = typename std::enable_if_t<std::is_base_of_v<ir::Expression, T>>>
 static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
 {

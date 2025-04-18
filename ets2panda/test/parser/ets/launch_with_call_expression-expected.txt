@@ -466,10 +466,26 @@
                           }
                         },
                         "right": {
-                          "type": "ETSLaunchExpression",
-                          "expr": {
-                            "type": "CallExpression",
-                            "callee": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "Identifier",
+                            "name": "launch",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 11,
+                                "program": "launch_with_call_expression.ets"
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 17,
+                                "program": "launch_with_call_expression.ets"
+                              }
+                            }
+                          },
+                          "arguments": [
+                            {
                               "type": "MemberExpression",
                               "object": {
                                 "type": "Identifier",
@@ -478,12 +494,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 18,
+                                    "column": 36,
                                     "program": "launch_with_call_expression.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 19,
+                                    "column": 37,
                                     "program": "launch_with_call_expression.ets"
                                   }
                                 }
@@ -495,12 +511,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 20,
+                                    "column": 38,
                                     "program": "launch_with_call_expression.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 23,
+                                    "column": 41,
                                     "program": "launch_with_call_expression.ets"
                                   }
                                 }
@@ -510,27 +526,77 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 18,
+                                  "column": 36,
                                   "program": "launch_with_call_expression.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 23,
+                                  "column": 41,
                                   "program": "launch_with_call_expression.ets"
                                 }
                               }
-                            },
-                            "arguments": [],
-                            "optional": false,
+                            }
+                          ],
+                          "optional": false,
+                          "typeParameters": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSPrimitiveType",
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 18,
+                                    "program": "launch_with_call_expression.ets"
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 22,
+                                    "program": "launch_with_call_expression.ets"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "ETSFunctionType",
+                                "params": [],
+                                "returnType": {
+                                  "type": "ETSPrimitiveType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 30,
+                                      "program": "launch_with_call_expression.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 34,
+                                      "program": "launch_with_call_expression.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 24,
+                                    "program": "launch_with_call_expression.ets"
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 34,
+                                    "program": "launch_with_call_expression.ets"
+                                  }
+                                }
+                              }
+                            ],
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 18,
+                                "column": 17,
                                 "program": "launch_with_call_expression.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 25,
+                                "column": 35,
                                 "program": "launch_with_call_expression.ets"
                               }
                             }
@@ -543,7 +609,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 25,
+                              "column": 42,
                               "program": "launch_with_call_expression.ets"
                             }
                           }
@@ -556,7 +622,7 @@
                           },
                           "end": {
                             "line": 21,
-                            "column": 25,
+                            "column": 42,
                             "program": "launch_with_call_expression.ets"
                           }
                         }
@@ -569,7 +635,7 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 25,
+                          "column": 42,
                           "program": "launch_with_call_expression.ets"
                         }
                       }
@@ -649,10 +715,26 @@
               }
             },
             "value": {
-              "type": "ETSLaunchExpression",
-              "expr": {
-                "type": "CallExpression",
-                "callee": {
+              "type": "CallExpression",
+              "callee": {
+                "type": "Identifier",
+                "name": "launch",
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 21,
+                    "column": 11,
+                    "program": "launch_with_call_expression.ets"
+                  },
+                  "end": {
+                    "line": 21,
+                    "column": 17,
+                    "program": "launch_with_call_expression.ets"
+                  }
+                }
+              },
+              "arguments": [
+                {
                   "type": "MemberExpression",
                   "object": {
                     "type": "Identifier",
@@ -661,12 +743,12 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 18,
+                        "column": 36,
                         "program": "launch_with_call_expression.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 19,
+                        "column": 37,
                         "program": "launch_with_call_expression.ets"
                       }
                     }
@@ -678,12 +760,12 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 20,
+                        "column": 38,
                         "program": "launch_with_call_expression.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 23,
+                        "column": 41,
                         "program": "launch_with_call_expression.ets"
                       }
                     }
@@ -693,27 +775,77 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 18,
+                      "column": 36,
                       "program": "launch_with_call_expression.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 23,
+                      "column": 41,
                       "program": "launch_with_call_expression.ets"
                     }
                   }
-                },
-                "arguments": [],
-                "optional": false,
+                }
+              ],
+              "optional": false,
+              "typeParameters": {
+                "type": "TSTypeParameterInstantiation",
+                "params": [
+                  {
+                    "type": "ETSPrimitiveType",
+                    "loc": {
+                      "start": {
+                        "line": 21,
+                        "column": 18,
+                        "program": "launch_with_call_expression.ets"
+                      },
+                      "end": {
+                        "line": 21,
+                        "column": 22,
+                        "program": "launch_with_call_expression.ets"
+                      }
+                    }
+                  },
+                  {
+                    "type": "ETSFunctionType",
+                    "params": [],
+                    "returnType": {
+                      "type": "ETSPrimitiveType",
+                      "loc": {
+                        "start": {
+                          "line": 21,
+                          "column": 30,
+                          "program": "launch_with_call_expression.ets"
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 34,
+                          "program": "launch_with_call_expression.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 1,
+                        "program": null
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 1,
+                        "program": null
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 18,
+                    "column": 17,
                     "program": "launch_with_call_expression.ets"
                   },
                   "end": {
                     "line": 21,
-                    "column": 25,
+                    "column": 35,
                     "program": "launch_with_call_expression.ets"
                   }
                 }
@@ -726,7 +858,7 @@
                 },
                 "end": {
                   "line": 21,
-                  "column": 25,
+                  "column": 42,
                   "program": "launch_with_call_expression.ets"
                 }
               }
@@ -747,7 +879,7 @@
               },
               "end": {
                 "line": 21,
-                "column": 25,
+                "column": 42,
                 "program": "launch_with_call_expression.ets"
               }
             }

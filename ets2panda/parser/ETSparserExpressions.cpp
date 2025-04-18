@@ -26,24 +26,6 @@ class FunctionContext;
 
 using namespace std::literals::string_literals;
 
-ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
-{
-    lexer::SourcePosition start = Lexer()->GetToken().Start();
-    Lexer()->NextToken();  // eat launch
-
-    lexer::SourcePosition exprStart = Lexer()->GetToken().Start();
-    ir::Expression *expr = ParseLeftHandSideExpression(flags);
-    if (!expr->IsCallExpression()) {
-        LogError(diagnostic::ONLY_CALL_AFTER_LAUNCH, {}, exprStart);
-        return AllocBrokenExpression(exprStart);
-    }
-    auto call = expr->AsCallExpression();
-    auto *launchExpression = AllocNode<ir::ETSLaunchExpression>(call);
-    launchExpression->SetRange({start, call->End()});
-
-    return launchExpression;
-}
-
 static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::StringView::Iterator &lexerPos)
 {
     std::string value = lexer->SourceView(lexerPos.Index(), lexer->Save().Iterator().Index()).Mutf8();
@@ -141,9 +123,6 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
         case lexer::TokenType::KEYW_TYPEOF: {
             break;
-        }
-        case lexer::TokenType::KEYW_LAUNCH: {
-            return ParseLaunchExpression(flags);
         }
         default: {
             return ParseLeftHandSideExpression(flags);

@@ -55,7 +55,6 @@
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/debuggerStatement.h"
-#include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsPackageDeclaration.h"

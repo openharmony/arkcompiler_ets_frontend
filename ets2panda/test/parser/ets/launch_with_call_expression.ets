@@ -18,4 +18,4 @@ class C {
     }
 }
 
-let res = launch C.foo()
+let res = launch<void, () => void>(C.foo)

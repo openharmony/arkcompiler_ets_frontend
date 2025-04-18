@@ -2,6 +2,170 @@
   "type": "Program",
   "statements": [
     {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "std/concurrency",
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 22,
+            "program": "launch_this_callee.ets"
+          },
+          "end": {
+            "line": 16,
+            "column": 39,
+            "program": "launch_this_callee.ets"
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "launch",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "launch_this_callee.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 15,
+                "program": "launch_this_callee.ets"
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "launch",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "launch_this_callee.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 15,
+                "program": "launch_this_callee.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 9,
+              "program": "launch_this_callee.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 15,
+              "program": "launch_this_callee.ets"
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1,
+          "program": "launch_this_callee.ets"
+        },
+        "end": {
+          "line": 16,
+          "column": 39,
+          "program": "launch_this_callee.ets"
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "std/core",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 19,
+            "program": "launch_this_callee.ets"
+          },
+          "end": {
+            "line": 17,
+            "column": 29,
+            "program": "launch_this_callee.ets"
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "Job",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9,
+                "program": "launch_this_callee.ets"
+              },
+              "end": {
+                "line": 17,
+                "column": 12,
+                "program": "launch_this_callee.ets"
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "Job",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9,
+                "program": "launch_this_callee.ets"
+              },
+              "end": {
+                "line": 17,
+                "column": 12,
+                "program": "launch_this_callee.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 9,
+              "program": "launch_this_callee.ets"
+            },
+            "end": {
+              "line": 17,
+              "column": 12,
+              "program": "launch_this_callee.ets"
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1,
+          "program": "launch_this_callee.ets"
+        },
+        "end": {
+          "line": 17,
+          "column": 29,
+          "program": "launch_this_callee.ets"
+        }
+      }
+    },
+    {
       "type": "ClassDeclaration",
       "definition": {
         "id": {
@@ -10,12 +174,12 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 16,
+              "line": 19,
               "column": 7,
               "program": "launch_this_callee.ets"
             },
             "end": {
-              "line": 16,
+              "line": 19,
               "column": 10,
               "program": "launch_this_callee.ets"
             }
@@ -32,12 +196,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 17,
+                  "line": 20,
                   "column": 11,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 17,
+                  "line": 20,
                   "column": 14,
                   "program": "launch_this_callee.ets"
                 }
@@ -58,12 +222,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 17,
+                      "line": 20,
                       "column": 11,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 17,
+                      "line": 20,
                       "column": 14,
                       "program": "launch_this_callee.ets"
                     }
@@ -79,17 +243,17 @@
                     "type": "ETSTypeReferencePart",
                     "name": {
                       "type": "Identifier",
-                      "name": "Promise",
+                      "name": "Job",
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 17,
+                          "line": 20,
                           "column": 18,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 17,
-                          "column": 25,
+                          "line": 20,
+                          "column": 21,
                           "program": "launch_this_callee.ets"
                         }
                       }
@@ -107,39 +271,39 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 17,
-                                  "column": 26,
+                                  "line": 20,
+                                  "column": 22,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 17,
-                                  "column": 29,
+                                  "line": 20,
+                                  "column": 25,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
-                                "line": 17,
-                                "column": 26,
+                                "line": 20,
+                                "column": 22,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 17,
-                                "column": 30,
+                                "line": 20,
+                                "column": 26,
                                 "program": "launch_this_callee.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 17,
-                              "column": 26,
+                              "line": 20,
+                              "column": 22,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 17,
-                              "column": 30,
+                              "line": 20,
+                              "column": 26,
                               "program": "launch_this_callee.ets"
                             }
                           }
@@ -147,39 +311,39 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 17,
-                          "column": 25,
+                          "line": 20,
+                          "column": 21,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 17,
-                          "column": 30,
+                          "line": 20,
+                          "column": 26,
                           "program": "launch_this_callee.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 17,
+                        "line": 20,
                         "column": 18,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 17,
-                        "column": 32,
+                        "line": 20,
+                        "column": 28,
                         "program": "launch_this_callee.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 17,
+                      "line": 20,
                       "column": 18,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 17,
-                      "column": 32,
+                      "line": 20,
+                      "column": 28,
                       "program": "launch_this_callee.ets"
                     }
                   }
@@ -190,22 +354,38 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "ETSLaunchExpression",
-                        "expr": {
-                          "type": "CallExpression",
-                          "callee": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "launch",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 12,
+                              "program": "launch_this_callee.ets"
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 18,
+                              "program": "launch_this_callee.ets"
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
                             "type": "MemberExpression",
                             "object": {
                               "type": "ThisExpression",
                               "loc": {
                                 "start": {
-                                  "line": 18,
-                                  "column": 19,
+                                  "line": 21,
+                                  "column": 41,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 18,
-                                  "column": 23,
+                                  "line": 21,
+                                  "column": 45,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
@@ -216,13 +396,13 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 18,
-                                  "column": 24,
+                                  "line": 21,
+                                  "column": 46,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 18,
-                                  "column": 27,
+                                  "line": 21,
+                                  "column": 49,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
@@ -231,70 +411,263 @@
                             "optional": false,
                             "loc": {
                               "start": {
-                                "line": 18,
-                                "column": 19,
+                                "line": 21,
+                                "column": 41,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 18,
-                                "column": 27,
+                                "line": 21,
+                                "column": 49,
                                 "program": "launch_this_callee.ets"
                               }
                             }
                           },
-                          "arguments": [
+                          {
+                            "type": "ThisExpression",
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 51,
+                                "program": "launch_this_callee.ets"
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 55,
+                                "program": "launch_this_callee.ets"
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "typeParameters": {
+                          "type": "TSTypeParameterInstantiation",
+                          "params": [
                             {
-                              "type": "ThisExpression",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Foo",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 19,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 22,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 19,
+                                    "program": "launch_this_callee.ets"
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 23,
+                                    "program": "launch_this_callee.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
-                                  "line": 18,
-                                  "column": 28,
+                                  "line": 21,
+                                  "column": 19,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 18,
-                                  "column": 32,
+                                  "line": 21,
+                                  "column": 23,
+                                  "program": "launch_this_callee.ets"
+                                }
+                              }
+                            },
+                            {
+                              "type": "ETSFunctionType",
+                              "params": [
+                                {
+                                  "type": "ETSParameterExpression",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "f",
+                                    "typeAnnotation": {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Foo",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 21,
+                                              "column": 28,
+                                              "program": "launch_this_callee.ets"
+                                            },
+                                            "end": {
+                                              "line": 21,
+                                              "column": 31,
+                                              "program": "launch_this_callee.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 21,
+                                            "column": 28,
+                                            "program": "launch_this_callee.ets"
+                                          },
+                                          "end": {
+                                            "line": 21,
+                                            "column": 32,
+                                            "program": "launch_this_callee.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 21,
+                                          "column": 28,
+                                          "program": "launch_this_callee.ets"
+                                        },
+                                        "end": {
+                                          "line": 21,
+                                          "column": 32,
+                                          "program": "launch_this_callee.ets"
+                                        }
+                                      }
+                                    },
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 21,
+                                        "column": 25,
+                                        "program": "launch_this_callee.ets"
+                                      },
+                                      "end": {
+                                        "line": 21,
+                                        "column": 32,
+                                        "program": "launch_this_callee.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 25,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 32,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                }
+                              ],
+                              "returnType": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Foo",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 21,
+                                        "column": 36,
+                                        "program": "launch_this_callee.ets"
+                                      },
+                                      "end": {
+                                        "line": 21,
+                                        "column": 39,
+                                        "program": "launch_this_callee.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 36,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 40,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 36,
+                                    "program": "launch_this_callee.ets"
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 40,
+                                    "program": "launch_this_callee.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 21,
+                                  "column": 24,
+                                  "program": "launch_this_callee.ets"
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "column": 40,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
                             }
                           ],
-                          "optional": false,
                           "loc": {
                             "start": {
-                              "line": 18,
-                              "column": 19,
+                              "line": 21,
+                              "column": 18,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 18,
-                              "column": 33,
+                              "line": 21,
+                              "column": 40,
                               "program": "launch_this_callee.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 18,
+                            "line": 21,
                             "column": 12,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 18,
-                            "column": 33,
+                            "line": 21,
+                            "column": 56,
                             "program": "launch_this_callee.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 18,
+                          "line": 21,
                           "column": 5,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 18,
-                          "column": 34,
+                          "line": 21,
+                          "column": 57,
                           "program": "launch_this_callee.ets"
                         }
                       }
@@ -302,12 +675,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 17,
-                      "column": 31,
+                      "line": 20,
+                      "column": 27,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 19,
+                      "line": 22,
                       "column": 4,
                       "program": "launch_this_callee.ets"
                     }
@@ -315,12 +688,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 17,
+                    "line": 20,
                     "column": 14,
                     "program": "launch_this_callee.ets"
                   },
                   "end": {
-                    "line": 19,
+                    "line": 22,
                     "column": 4,
                     "program": "launch_this_callee.ets"
                   }
@@ -328,12 +701,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 17,
+                  "line": 20,
                   "column": 14,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 19,
+                  "line": 22,
                   "column": 4,
                   "program": "launch_this_callee.ets"
                 }
@@ -343,12 +716,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 17,
+                "line": 20,
                 "column": 3,
                 "program": "launch_this_callee.ets"
               },
               "end": {
-                "line": 19,
+                "line": 22,
                 "column": 4,
                 "program": "launch_this_callee.ets"
               }
@@ -362,12 +735,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 21,
+                  "line": 24,
                   "column": 11,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 21,
+                  "line": 24,
                   "column": 14,
                   "program": "launch_this_callee.ets"
                 }
@@ -388,12 +761,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 21,
+                      "line": 24,
                       "column": 11,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 21,
+                      "line": 24,
                       "column": 14,
                       "program": "launch_this_callee.ets"
                     }
@@ -418,12 +791,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 21,
+                                "line": 24,
                                 "column": 18,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 21,
+                                "line": 24,
                                 "column": 21,
                                 "program": "launch_this_callee.ets"
                               }
@@ -431,12 +804,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 21,
+                              "line": 24,
                               "column": 18,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 21,
+                              "line": 24,
                               "column": 22,
                               "program": "launch_this_callee.ets"
                             }
@@ -444,12 +817,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 21,
+                            "line": 24,
                             "column": 18,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 21,
+                            "line": 24,
                             "column": 22,
                             "program": "launch_this_callee.ets"
                           }
@@ -458,12 +831,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 21,
+                          "line": 24,
                           "column": 15,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 21,
+                          "line": 24,
                           "column": 22,
                           "program": "launch_this_callee.ets"
                         }
@@ -471,12 +844,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 21,
+                        "line": 24,
                         "column": 15,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 21,
+                        "line": 24,
                         "column": 22,
                         "program": "launch_this_callee.ets"
                       }
@@ -493,12 +866,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 21,
+                          "line": 24,
                           "column": 24,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 21,
+                          "line": 24,
                           "column": 27,
                           "program": "launch_this_callee.ets"
                         }
@@ -506,12 +879,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 21,
+                        "line": 24,
                         "column": 24,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 21,
+                        "line": 24,
                         "column": 29,
                         "program": "launch_this_callee.ets"
                       }
@@ -519,12 +892,12 @@
                   },
                   "loc": {
                     "start": {
-                      "line": 21,
+                      "line": 24,
                       "column": 24,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 21,
+                      "line": 24,
                       "column": 29,
                       "program": "launch_this_callee.ets"
                     }
@@ -541,12 +914,12 @@
                         "decorators": [],
                         "loc": {
                           "start": {
-                            "line": 22,
+                            "line": 25,
                             "column": 12,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 22,
+                            "line": 25,
                             "column": 13,
                             "program": "launch_this_callee.ets"
                           }
@@ -554,12 +927,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 22,
+                          "line": 25,
                           "column": 5,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 22,
+                          "line": 25,
                           "column": 14,
                           "program": "launch_this_callee.ets"
                         }
@@ -568,12 +941,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 21,
+                      "line": 24,
                       "column": 28,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 23,
+                      "line": 26,
                       "column": 4,
                       "program": "launch_this_callee.ets"
                     }
@@ -581,12 +954,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 21,
+                    "line": 24,
                     "column": 14,
                     "program": "launch_this_callee.ets"
                   },
                   "end": {
-                    "line": 23,
+                    "line": 26,
                     "column": 4,
                     "program": "launch_this_callee.ets"
                   }
@@ -594,12 +967,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 21,
+                  "line": 24,
                   "column": 14,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 23,
+                  "line": 26,
                   "column": 4,
                   "program": "launch_this_callee.ets"
                 }
@@ -609,12 +982,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 21,
+                "line": 24,
                 "column": 3,
                 "program": "launch_this_callee.ets"
               },
               "end": {
-                "line": 23,
+                "line": 26,
                 "column": 4,
                 "program": "launch_this_callee.ets"
               }
@@ -628,12 +1001,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 25,
+                  "line": 28,
                   "column": 11,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 25,
+                  "line": 28,
                   "column": 15,
                   "program": "launch_this_callee.ets"
                 }
@@ -654,12 +1027,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 25,
+                      "line": 28,
                       "column": 11,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 25,
+                      "line": 28,
                       "column": 15,
                       "program": "launch_this_callee.ets"
                     }
@@ -675,17 +1048,17 @@
                     "type": "ETSTypeReferencePart",
                     "name": {
                       "type": "Identifier",
-                      "name": "Promise",
+                      "name": "Job",
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 25,
+                          "line": 28,
                           "column": 19,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 25,
-                          "column": 26,
+                          "line": 28,
+                          "column": 22,
                           "program": "launch_this_callee.ets"
                         }
                       }
@@ -703,39 +1076,39 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 25,
-                                  "column": 27,
+                                  "line": 28,
+                                  "column": 23,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 25,
-                                  "column": 30,
+                                  "line": 28,
+                                  "column": 26,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
-                                "line": 25,
-                                "column": 27,
+                                "line": 28,
+                                "column": 23,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 25,
-                                "column": 31,
+                                "line": 28,
+                                "column": 27,
                                 "program": "launch_this_callee.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 25,
-                              "column": 27,
+                              "line": 28,
+                              "column": 23,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 25,
-                              "column": 31,
+                              "line": 28,
+                              "column": 27,
                               "program": "launch_this_callee.ets"
                             }
                           }
@@ -743,39 +1116,39 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 25,
-                          "column": 26,
+                          "line": 28,
+                          "column": 22,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 25,
-                          "column": 31,
+                          "line": 28,
+                          "column": 27,
                           "program": "launch_this_callee.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 25,
+                        "line": 28,
                         "column": 19,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 25,
-                        "column": 33,
+                        "line": 28,
+                        "column": 29,
                         "program": "launch_this_callee.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 25,
+                      "line": 28,
                       "column": 19,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 25,
-                      "column": 33,
+                      "line": 28,
+                      "column": 29,
                       "program": "launch_this_callee.ets"
                     }
                   }
@@ -786,22 +1159,38 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "ETSLaunchExpression",
-                        "expr": {
-                          "type": "CallExpression",
-                          "callee": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "launch",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 29,
+                              "column": 12,
+                              "program": "launch_this_callee.ets"
+                            },
+                            "end": {
+                              "line": 29,
+                              "column": 18,
+                              "program": "launch_this_callee.ets"
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
                             "type": "MemberExpression",
                             "object": {
                               "type": "ThisExpression",
                               "loc": {
                                 "start": {
-                                  "line": 26,
-                                  "column": 19,
+                                  "line": 29,
+                                  "column": 49,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 26,
-                                  "column": 23,
+                                  "line": 29,
+                                  "column": 53,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
@@ -812,13 +1201,13 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 26,
-                                  "column": 24,
+                                  "line": 29,
+                                  "column": 54,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 26,
-                                  "column": 28,
+                                  "line": 29,
+                                  "column": 58,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
@@ -827,86 +1216,326 @@
                             "optional": false,
                             "loc": {
                               "start": {
-                                "line": 26,
-                                "column": 19,
+                                "line": 29,
+                                "column": 49,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 26,
-                                "column": 28,
+                                "line": 29,
+                                "column": 58,
                                 "program": "launch_this_callee.ets"
                               }
                             }
                           },
-                          "arguments": [
+                          {
+                            "type": "ThisExpression",
+                            "loc": {
+                              "start": {
+                                "line": 29,
+                                "column": 60,
+                                "program": "launch_this_callee.ets"
+                              },
+                              "end": {
+                                "line": 29,
+                                "column": 64,
+                                "program": "launch_this_callee.ets"
+                              }
+                            }
+                          },
+                          {
+                            "type": "NumberLiteral",
+                            "value": 1,
+                            "loc": {
+                              "start": {
+                                "line": 29,
+                                "column": 66,
+                                "program": "launch_this_callee.ets"
+                              },
+                              "end": {
+                                "line": 29,
+                                "column": 67,
+                                "program": "launch_this_callee.ets"
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "typeParameters": {
+                          "type": "TSTypeParameterInstantiation",
+                          "params": [
                             {
-                              "type": "ThisExpression",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Foo",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 29,
+                                      "column": 19,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 29,
+                                      "column": 22,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 29,
+                                    "column": 19,
+                                    "program": "launch_this_callee.ets"
+                                  },
+                                  "end": {
+                                    "line": 29,
+                                    "column": 23,
+                                    "program": "launch_this_callee.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
-                                  "line": 26,
-                                  "column": 29,
+                                  "line": 29,
+                                  "column": 19,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 26,
-                                  "column": 33,
+                                  "line": 29,
+                                  "column": 23,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
                             },
                             {
-                              "type": "NumberLiteral",
-                              "value": 1,
+                              "type": "ETSFunctionType",
+                              "params": [
+                                {
+                                  "type": "ETSParameterExpression",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "f",
+                                    "typeAnnotation": {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Foo",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 29,
+                                              "column": 28,
+                                              "program": "launch_this_callee.ets"
+                                            },
+                                            "end": {
+                                              "line": 29,
+                                              "column": 31,
+                                              "program": "launch_this_callee.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 29,
+                                            "column": 28,
+                                            "program": "launch_this_callee.ets"
+                                          },
+                                          "end": {
+                                            "line": 29,
+                                            "column": 32,
+                                            "program": "launch_this_callee.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 29,
+                                          "column": 28,
+                                          "program": "launch_this_callee.ets"
+                                        },
+                                        "end": {
+                                          "line": 29,
+                                          "column": 32,
+                                          "program": "launch_this_callee.ets"
+                                        }
+                                      }
+                                    },
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 29,
+                                        "column": 25,
+                                        "program": "launch_this_callee.ets"
+                                      },
+                                      "end": {
+                                        "line": 29,
+                                        "column": 32,
+                                        "program": "launch_this_callee.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 29,
+                                      "column": 25,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 29,
+                                      "column": 32,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "ETSParameterExpression",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "i",
+                                    "typeAnnotation": {
+                                      "type": "ETSPrimitiveType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 29,
+                                          "column": 36,
+                                          "program": "launch_this_callee.ets"
+                                        },
+                                        "end": {
+                                          "line": 29,
+                                          "column": 39,
+                                          "program": "launch_this_callee.ets"
+                                        }
+                                      }
+                                    },
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 29,
+                                        "column": 33,
+                                        "program": "launch_this_callee.ets"
+                                      },
+                                      "end": {
+                                        "line": 29,
+                                        "column": 39,
+                                        "program": "launch_this_callee.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 29,
+                                      "column": 33,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 29,
+                                      "column": 39,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                }
+                              ],
+                              "returnType": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Foo",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 29,
+                                        "column": 44,
+                                        "program": "launch_this_callee.ets"
+                                      },
+                                      "end": {
+                                        "line": 29,
+                                        "column": 47,
+                                        "program": "launch_this_callee.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 29,
+                                      "column": 44,
+                                      "program": "launch_this_callee.ets"
+                                    },
+                                    "end": {
+                                      "line": 29,
+                                      "column": 48,
+                                      "program": "launch_this_callee.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 29,
+                                    "column": 44,
+                                    "program": "launch_this_callee.ets"
+                                  },
+                                  "end": {
+                                    "line": 29,
+                                    "column": 48,
+                                    "program": "launch_this_callee.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
-                                  "line": 26,
-                                  "column": 35,
+                                  "line": 29,
+                                  "column": 24,
                                   "program": "launch_this_callee.ets"
                                 },
                                 "end": {
-                                  "line": 26,
-                                  "column": 36,
+                                  "line": 29,
+                                  "column": 48,
                                   "program": "launch_this_callee.ets"
                                 }
                               }
                             }
                           ],
-                          "optional": false,
                           "loc": {
                             "start": {
-                              "line": 26,
-                              "column": 19,
+                              "line": 29,
+                              "column": 18,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 26,
-                              "column": 37,
+                              "line": 29,
+                              "column": 48,
                               "program": "launch_this_callee.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 26,
+                            "line": 29,
                             "column": 12,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 26,
-                            "column": 37,
+                            "line": 29,
+                            "column": 68,
                             "program": "launch_this_callee.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 26,
+                          "line": 29,
                           "column": 5,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 26,
-                          "column": 38,
+                          "line": 29,
+                          "column": 69,
                           "program": "launch_this_callee.ets"
                         }
                       }
@@ -914,12 +1543,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 25,
-                      "column": 32,
+                      "line": 28,
+                      "column": 28,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 27,
+                      "line": 30,
                       "column": 4,
                       "program": "launch_this_callee.ets"
                     }
@@ -927,12 +1556,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 25,
+                    "line": 28,
                     "column": 15,
                     "program": "launch_this_callee.ets"
                   },
                   "end": {
-                    "line": 27,
+                    "line": 30,
                     "column": 4,
                     "program": "launch_this_callee.ets"
                   }
@@ -940,12 +1569,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 25,
+                  "line": 28,
                   "column": 15,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 27,
+                  "line": 30,
                   "column": 4,
                   "program": "launch_this_callee.ets"
                 }
@@ -955,12 +1584,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 25,
+                "line": 28,
                 "column": 3,
                 "program": "launch_this_callee.ets"
               },
               "end": {
-                "line": 27,
+                "line": 30,
                 "column": 4,
                 "program": "launch_this_callee.ets"
               }
@@ -974,12 +1603,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 29,
+                  "line": 32,
                   "column": 11,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 29,
+                  "line": 32,
                   "column": 15,
                   "program": "launch_this_callee.ets"
                 }
@@ -1000,12 +1629,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 29,
+                      "line": 32,
                       "column": 11,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 29,
+                      "line": 32,
                       "column": 15,
                       "program": "launch_this_callee.ets"
                     }
@@ -1030,12 +1659,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 29,
+                                "line": 32,
                                 "column": 19,
                                 "program": "launch_this_callee.ets"
                               },
                               "end": {
-                                "line": 29,
+                                "line": 32,
                                 "column": 22,
                                 "program": "launch_this_callee.ets"
                               }
@@ -1043,12 +1672,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 29,
+                              "line": 32,
                               "column": 19,
                               "program": "launch_this_callee.ets"
                             },
                             "end": {
-                              "line": 29,
+                              "line": 32,
                               "column": 23,
                               "program": "launch_this_callee.ets"
                             }
@@ -1056,12 +1685,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 29,
+                            "line": 32,
                             "column": 19,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 29,
+                            "line": 32,
                             "column": 23,
                             "program": "launch_this_callee.ets"
                           }
@@ -1070,12 +1699,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 29,
+                          "line": 32,
                           "column": 16,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 29,
+                          "line": 32,
                           "column": 23,
                           "program": "launch_this_callee.ets"
                         }
@@ -1083,12 +1712,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 29,
+                        "line": 32,
                         "column": 16,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 29,
+                        "line": 32,
                         "column": 23,
                         "program": "launch_this_callee.ets"
                       }
@@ -1103,12 +1732,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 29,
+                            "line": 32,
                             "column": 27,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 29,
+                            "line": 32,
                             "column": 30,
                             "program": "launch_this_callee.ets"
                           }
@@ -1117,12 +1746,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 29,
+                          "line": 32,
                           "column": 24,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 29,
+                          "line": 32,
                           "column": 30,
                           "program": "launch_this_callee.ets"
                         }
@@ -1130,12 +1759,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 29,
+                        "line": 32,
                         "column": 24,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 29,
+                        "line": 32,
                         "column": 30,
                         "program": "launch_this_callee.ets"
                       }
@@ -1152,12 +1781,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 29,
+                          "line": 32,
                           "column": 33,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 29,
+                          "line": 32,
                           "column": 36,
                           "program": "launch_this_callee.ets"
                         }
@@ -1165,12 +1794,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 29,
+                        "line": 32,
                         "column": 33,
                         "program": "launch_this_callee.ets"
                       },
                       "end": {
-                        "line": 29,
+                        "line": 32,
                         "column": 38,
                         "program": "launch_this_callee.ets"
                       }
@@ -1178,12 +1807,12 @@
                   },
                   "loc": {
                     "start": {
-                      "line": 29,
+                      "line": 32,
                       "column": 33,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 29,
+                      "line": 32,
                       "column": 38,
                       "program": "launch_this_callee.ets"
                     }
@@ -1200,12 +1829,12 @@
                         "decorators": [],
                         "loc": {
                           "start": {
-                            "line": 30,
+                            "line": 33,
                             "column": 12,
                             "program": "launch_this_callee.ets"
                           },
                           "end": {
-                            "line": 30,
+                            "line": 33,
                             "column": 13,
                             "program": "launch_this_callee.ets"
                           }
@@ -1213,12 +1842,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 30,
+                          "line": 33,
                           "column": 5,
                           "program": "launch_this_callee.ets"
                         },
                         "end": {
-                          "line": 30,
+                          "line": 33,
                           "column": 14,
                           "program": "launch_this_callee.ets"
                         }
@@ -1227,12 +1856,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 29,
+                      "line": 32,
                       "column": 37,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 31,
+                      "line": 34,
                       "column": 4,
                       "program": "launch_this_callee.ets"
                     }
@@ -1240,12 +1869,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 29,
+                    "line": 32,
                     "column": 15,
                     "program": "launch_this_callee.ets"
                   },
                   "end": {
-                    "line": 31,
+                    "line": 34,
                     "column": 4,
                     "program": "launch_this_callee.ets"
                   }
@@ -1253,12 +1882,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 29,
+                  "line": 32,
                   "column": 15,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 31,
+                  "line": 34,
                   "column": 4,
                   "program": "launch_this_callee.ets"
                 }
@@ -1268,12 +1897,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 29,
+                "line": 32,
                 "column": 3,
                 "program": "launch_this_callee.ets"
               },
               "end": {
-                "line": 31,
+                "line": 34,
                 "column": 4,
                 "program": "launch_this_callee.ets"
               }
@@ -1287,12 +1916,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 16,
+                  "line": 19,
                   "column": 12,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 16,
+                  "line": 19,
                   "column": 12,
                   "program": "launch_this_callee.ets"
                 }
@@ -1312,12 +1941,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 16,
+                      "line": 19,
                       "column": 12,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 16,
+                      "line": 19,
                       "column": 12,
                       "program": "launch_this_callee.ets"
                     }
@@ -1332,12 +1961,12 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 16,
+                      "line": 19,
                       "column": 12,
                       "program": "launch_this_callee.ets"
                     },
                     "end": {
-                      "line": 16,
+                      "line": 19,
                       "column": 12,
                       "program": "launch_this_callee.ets"
                     }
@@ -1345,12 +1974,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 16,
+                    "line": 19,
                     "column": 12,
                     "program": "launch_this_callee.ets"
                   },
                   "end": {
-                    "line": 16,
+                    "line": 19,
                     "column": 12,
                     "program": "launch_this_callee.ets"
                   }
@@ -1358,12 +1987,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 16,
+                  "line": 19,
                   "column": 12,
                   "program": "launch_this_callee.ets"
                 },
                 "end": {
-                  "line": 16,
+                  "line": 19,
                   "column": 12,
                   "program": "launch_this_callee.ets"
                 }
@@ -1387,12 +2016,12 @@
         ],
         "loc": {
           "start": {
-            "line": 16,
+            "line": 19,
             "column": 11,
             "program": "launch_this_callee.ets"
           },
           "end": {
-            "line": 33,
+            "line": 36,
             "column": 1,
             "program": "launch_this_callee.ets"
           }
@@ -1400,12 +2029,12 @@
       },
       "loc": {
         "start": {
-          "line": 16,
+          "line": 19,
           "column": 1,
           "program": "launch_this_callee.ets"
         },
         "end": {
-          "line": 33,
+          "line": 36,
           "column": 1,
           "program": "launch_this_callee.ets"
         }
@@ -1681,7 +2310,7 @@
       "program": "launch_this_callee.ets"
     },
     "end": {
-      "line": 33,
+      "line": 36,
       "column": 1,
       "program": "launch_this_callee.ets"
     }
