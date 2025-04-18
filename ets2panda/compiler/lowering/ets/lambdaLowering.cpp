@@ -996,6 +996,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
         var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
             mexpr->Property()->AsIdentifier()->Name(),
             checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD | checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
+                checker::PropertySearchFlags::SEARCH_IN_BASE |
                 checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
         ES2PANDA_ASSERT(var != nullptr);
     }
@@ -1165,7 +1166,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
             auto *var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
                 mexpr->Property()->AsIdentifier()->Name(),
                 checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                    checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
+                    checker::PropertySearchFlags::SEARCH_STATIC_METHOD | checker::PropertySearchFlags::SEARCH_IN_BASE |
                     checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
             if (IsValidFunctionDeclVar(var) && !IsInCalleePosition(mexpr)) {
                 return ConvertFunctionReference(ctx, mexpr);
