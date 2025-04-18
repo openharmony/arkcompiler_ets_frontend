@@ -426,6 +426,70 @@ ir::AstNode *GetIndentifierFromCallExpression(ir::AstNode *node)
     return callee;
 }
 
+util::StringView GetNameFromDefinition(ir::AstNode *preNode)
+{
+    if (preNode == nullptr || !preNode->IsClassDefinition()) {
+        return "";
+    }
+    auto ident = preNode->AsClassDefinition()->Ident();
+    if (ident == nullptr) {
+        return "";
+    }
+    return ident->Name();
+}
+
+bool IsDeclarationNameDefined(util::StringView name)
+{
+    static const std::unordered_set<util::StringView> IGNORED_NAMES = {"ETSGLOBAL"};
+    return IGNORED_NAMES.find(name) == IGNORED_NAMES.end();
+}
+
+bool IsDefinedClassOrStruct(ir::AstNode *preNode)
+{
+    if (preNode == nullptr) {
+        return false;
+    }
+    if (!preNode->IsClassDeclaration() && !preNode->IsETSStructDeclaration()) {
+        return false;
+    }
+    if (preNode->IsClassDeclaration()) {
+        return IsDeclarationNameDefined(GetNameFromDefinition(preNode->AsClassDeclaration()->Definition()));
+    }
+    if (preNode->IsETSStructDeclaration()) {
+        return IsDeclarationNameDefined(GetNameFromDefinition(preNode->AsETSStructDeclaration()->Definition()));
+    }
+    return false;
+}
+
+ir::AstNode *GetDefinitionOfThisExpression(ir::AstNode *preNode)
+{
+    if (preNode == nullptr || !preNode->IsThisExpression()) {
+        return nullptr;
+    }
+    while (preNode->Parent() != nullptr) {
+        preNode = preNode->Parent();
+        if (preNode->IsClassDeclaration() && IsDefinedClassOrStruct(preNode)) {
+            return preNode->AsClassDeclaration()->Definition();
+        }
+        if (preNode->IsETSStructDeclaration() && IsDefinedClassOrStruct(preNode)) {
+            return preNode->AsETSStructDeclaration()->Definition();
+        }
+    }
+    return nullptr;
+}
+
+std::vector<CompletionEntry> GetCompletionFromThisExpression(ir::AstNode *preNode, const std::string &triggerWord)
+{
+    if (preNode == nullptr || !preNode->IsThisExpression()) {
+        return {};
+    }
+    auto def = GetDefinitionOfThisExpression(preNode);
+    if (def == nullptr || !def->IsClassDefinition()) {
+        return {};
+    }
+    return GetCompletionFromClassDefinition(def->AsClassDefinition(), triggerWord);
+}
+
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord)
 {
     std::vector<CompletionEntry> completions;
@@ -434,6 +498,9 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
     }
     if (preNode->IsCallExpression()) {
         preNode = GetIndentifierFromCallExpression(preNode);
+    }
+    if (preNode->IsThisExpression()) {
+        return GetCompletionFromThisExpression(preNode, triggerWord);
     }
     if (!preNode->IsIdentifier()) {
         return completions;
