@@ -42,6 +42,19 @@ import {
   PROVIDE_ALIAS_PROPERTY_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
+import { ES_OBJECT } from '../utils/consts/ESObject';
+import { 
+  LOAD, 
+  GET_PROPERTY_BY_NAME,
+  SET_PROPERTY_BY_NAME,
+  GET_PROPERTY_BY_INDEX,
+  SET_PROPERTY_BY_INDEX,
+  ARE_EQUAL, 
+  ARE_STRICTLY_EQUAL,
+  WRAP,
+  INSTANTIATE,
+  TO_NUMBER
+} from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -56,6 +69,10 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
+
+const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
+const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
+
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
 export interface Autofix {
@@ -96,6 +113,14 @@ export class Autofixer {
     GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
     GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
   );
+
+  private readonly importVarNameGenerator = new NameGenerator(
+    GENERATED_IMPORT_VARIABLE_NAME,
+    GENERATED_IMPORT_VARIABLE_TRESHOLD
+  );
+
+  private modVarName: string = '';
+  private readonly lastImportEndMap = new Map<string, number>();
 
   private readonly symbolCache: SymbolCache;
 
@@ -2674,6 +2699,39 @@ export class Autofixer {
     ];
   }
 
+  fixInteropInstantiateExpression(
+    express: ts.NewExpression,
+    args: ts.NodeArray<ts.Expression> | undefined
+  ): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(express.expression.getText()),
+        ts.factory.createIdentifier(INSTANTIATE)
+      ),
+      undefined,
+      this.createArgs(args)
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  createArgs(args: ts.NodeArray<ts.Expression> | undefined): ts.Expression[] | undefined {
+    void this;
+    if (args && args.length > 0) {
+      return args.map((arg) => {
+        return ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(arg.getText())]
+        );
+      });
+    }
+    return undefined;
+  }
+
   fixParameter(param: ts.ParameterDeclaration): Autofix[] {
     const newParam = ts.factory.createParameterDeclaration(
       param.modifiers,
@@ -3134,5 +3192,324 @@ export class Autofixer {
       node = node.parent;
     }
     return undefined;
+  }
+
+  private static createVariableForInteropImport(
+    newVarName: string,
+    interopObject: string,
+    interopMethod: string,
+    interopPropertyOrModule: string
+  ): ts.VariableStatement {
+    const newVarDecl = ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            ts.factory.createIdentifier(newVarName),
+            undefined,
+            undefined,
+            ts.factory.createCallExpression(
+              ts.factory.createPropertyAccessExpression(
+                ts.factory.createIdentifier(interopObject),
+                ts.factory.createIdentifier(interopMethod)
+              ),
+              undefined,
+              [ts.factory.createStringLiteral(interopPropertyOrModule)]
+            )
+          )
+        ],
+        ts.NodeFlags.Let
+      )
+    );
+    return newVarDecl;
+  }
+
+  private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
+    if (symbol) {
+      const originalDeclaration = symbol.declarations?.[0];
+      let originalName = '';
+      if (originalDeclaration) {
+        const isReturnNameOnSomeCase =
+          ts.isFunctionDeclaration(originalDeclaration) ||
+          ts.isClassDeclaration(originalDeclaration) ||
+          ts.isInterfaceDeclaration(originalDeclaration) ||
+          ts.isEnumDeclaration(originalDeclaration);
+        if (isReturnNameOnSomeCase) {
+          originalName = originalDeclaration.name?.text || symbolName;
+        } else if (ts.isVariableDeclaration(originalDeclaration)) {
+          originalName = originalDeclaration.name.getText();
+        }
+      }
+      return originalName;
+    }
+    return '';
+  }
+  
+  private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
+    return args.
+      map((arg) => {
+        return `ESObject.wrap(${arg.getText()})`;
+      }).
+      join(', ');
+  }
+
+  private fixInterOpImportJsProcessNode(node: ts.Node): string {
+    if (ts.isIdentifier(node)) {
+      return node.text;
+    } else if (ts.isCallExpression(node)) {
+      const callee = this.fixInterOpImportJsProcessNode(node.expression);
+      const args = Autofixer.fixInterOpImportJsWrapArgs(node.arguments);
+      return `${callee}.invoke(${args})`;
+    } else if (ts.isPropertyAccessExpression(node)) {
+      const base = this.fixInterOpImportJsProcessNode(node.expression);
+      const propName = node.name.text;
+      return `${base}.getPropertyByName('${propName}')`;
+    } else if (ts.isNewExpression(node)) {
+      const constructor = this.fixInterOpImportJsProcessNode(node.expression);
+      return `${constructor}.instantiate()`;
+    }
+    return '';
+  }
+
+  fixInterOpImportJs(
+    importDecl: ts.ImportDeclaration,
+    importClause: ts.ImportClause,
+    moduleSpecifier: string,
+    defaultSymbol?: ts.Symbol
+  ): Autofix[] | undefined {
+    let statements: string[] = [];
+    statements = this.constructAndSaveimportDecl2Arrays(importDecl, moduleSpecifier, undefined, statements, true);
+    if (importClause.name) {
+      const symbolName = importClause.name.text;
+      const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
+      statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+    }
+    const namedBindings = importClause.namedBindings;
+    if (namedBindings && ts.isNamedImports(namedBindings)) {
+      namedBindings.elements.map((element) => {
+        const symbolName = element.name.text;
+        const originalName = element.propertyName ? element.propertyName.text : symbolName;
+        statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+        return statements;
+      });
+    }
+    if (statements.length <= 0) {
+      return undefined;
+    }
+    let lastImportEnd = this.lastImportEndMap.get(this.sourceFile.fileName);
+    if (!lastImportEnd) {
+      lastImportEnd = this.getLastImportEnd();
+      this.lastImportEndMap.set(this.sourceFile.fileName, lastImportEnd);
+    }
+    return [
+      { start: importDecl.getStart(), end: importDecl.getEnd(), replacementText: '' },
+      { start: lastImportEnd, end: lastImportEnd, replacementText: statements.join('\n') }
+    ];
+  }
+
+  private constructAndSaveimportDecl2Arrays(
+    importDecl: ts.ImportDeclaration,
+    symbolName: string,
+    originalName: string | undefined,
+    statements: string[],
+    isLoad: boolean
+  ): string[] {
+    if (isLoad) {
+      const newVarName = TsUtils.generateUniqueName(this.importVarNameGenerator, this.sourceFile);
+      if (!newVarName) {
+        return [];
+      }
+      this.modVarName = newVarName;
+    }
+    const propertyName = originalName || symbolName;
+    const constructDeclInfo: string[] = isLoad ?
+      [this.modVarName, ES_OBJECT, LOAD] :
+      [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
+    const newVarDecl = Autofixer.createVariableForInteropImport(
+      constructDeclInfo[0],
+      constructDeclInfo[1],
+      constructDeclInfo[2],
+      propertyName
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
+    statements.push(TsUtils.removeOrReplaceQuotes(text, true));
+    return statements;
+  }
+
+  private getLastImportEnd(): number {
+    let lastImportEnd = 0;
+    this.sourceFile.statements.forEach((statement) => {
+      if (ts.isImportDeclaration(statement)) {
+        lastImportEnd = statement.getEnd();
+      }
+    });
+    return lastImportEnd;
+  }
+  
+  fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {
+    let text: string = '';
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)),
+      undefined,
+      [ts.factory.createStringLiteral(express.name.getText())]
+    );
+    text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left;
+    const right = express.right;
+    let objectName = '';
+    let propertyName = '';
+    if (ts.isPropertyAccessExpression(left)) {
+      objectName = left.expression.getText();
+      propertyName = left.name.text;
+    } else {
+      return undefined;
+    }
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(objectName),
+        ts.factory.createIdentifier(SET_PROPERTY_BY_NAME)
+      ),
+      undefined,
+      [
+        ts.factory.createStringLiteral(propertyName),
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),
+      undefined,
+      [express.argumentExpression]
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropArrayBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left as ts.ElementAccessExpression;
+    const right = express.right;
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(left.expression.getText()),
+        ts.factory.createIdentifier(SET_PROPERTY_BY_INDEX)
+      ),
+      undefined,
+      [
+        left.argumentExpression,
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  fixInterOpImportJsOnTypeOf(typeofExpress: ts.TypeOfExpression): Autofix[] | undefined {
+    const node = typeofExpress.expression;
+    const start = typeofExpress.getStart();
+    const end = typeofExpress.getEnd();
+    const processed = this.fixInterOpImportJsProcessNode(node);
+    const replacementText = `${processed}.typeOf()`;
+    return replacementText ? [{ start, end, replacementText }] : undefined;
+  }
+  
+  fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
+    let text = '';
+    if (ts.isPropertyAccessExpression(express.operand)) {
+      const states = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createCallExpression(
+            ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(express.operand.expression.getText()),
+              ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
+            ),
+            undefined,
+            [ts.factory.createStringLiteral(express.operand.name.getText())]
+          ),
+          ts.factory.createIdentifier(TO_NUMBER)
+        ),
+        undefined,
+        []
+      );
+      text = this.printer.printNode(ts.EmitHint.Unspecified, states, express.getSourceFile());
+    }
+    return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
+  }
+  
+  fixInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): Autofix[] | undefined {
+    const text = this.replaceInteropEqualityOperator(tsBinaryExpr, binaryOperator);
+    if (text) {
+      return [{ start: tsBinaryExpr.getStart(), end: tsBinaryExpr.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  replaceInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): string | undefined {
+    const info = this.getInteropEqualityReplacementInfo(binaryOperator);
+    if (!info) {
+      return undefined;
+    }
+
+    const tsLhsExpr = tsBinaryExpr.left;
+    const tsRhsExpr = tsBinaryExpr.right;
+    const callExpression = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(tsLhsExpr.getText()),
+        ts.factory.createIdentifier(info.functionName)
+      ),
+      undefined,
+      [ts.factory.createIdentifier(tsRhsExpr.getText())]
+    );
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, callExpression, tsBinaryExpr.getSourceFile());
+    if (info.isNegative) {
+      text = '!' + text;
+    }
+    return text;
+  }
+
+  getInteropEqualityReplacementInfo(
+    binaryOperator: ts.BinaryOperator
+  ): { functionName: string; isNegative: boolean } | undefined {
+    void this;
+    switch (binaryOperator) {
+      case ts.SyntaxKind.EqualsEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: true };
+      case ts.SyntaxKind.EqualsEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: true };
+      default:
+        return undefined;
+    }
   }
 }

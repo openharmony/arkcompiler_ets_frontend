@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 316; i++) {
+for (let i = 0; i <= 344; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -290,3 +290,20 @@ cookBookTag[315] =
 cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
+cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
+cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
+cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
+cookBookTag[333] = 'Casting interop JS objects to "number" type is not allowed (arkts-no-js-number-import)'
+cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-import-typeof-js)';
+cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
+cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
+cookBookTag[337] =
+  'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';
+cookBookTag[338] =
+  '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
+cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index-import)';
+cookBookTag[340] = '"Await" operator can\'t be used with interop objects (arkts-no-import-await)';
+cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
+cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
+cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)'; 
+cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';

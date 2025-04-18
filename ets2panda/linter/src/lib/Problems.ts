@@ -188,6 +188,21 @@ export enum FaultID {
   SdkTypeQuery,
   InteropJsObjectUsage,
   LimitedStdLibNoImportConcurrency,
+  InterOpImportJs,
+  CallJSFunction,
+  InteropObjectProperty,
+  InterOpConvertImport,
+  InterOpImportJsForTypeOf,
+  InteropNoHaveNum,
+  BinaryOperations,
+  InterOpImportJsDataCompare,
+  InteropEqualityJudgment,
+  InterOpImportJsIndex,
+  NoJsImportAwait,
+  InstantiatedJsOjbect,
+  InteropCallObjectMethods,
+  InteropJsInstanceof,
+  InteropIncrementDecrement,
   // this should always be last enum
   LAST_ID
 }

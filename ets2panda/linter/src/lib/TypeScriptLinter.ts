@@ -93,7 +93,7 @@ import {
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
-import { EXTNAME_TS, EXTNAME_D_TS } from './utils/consts/ExtensionName';
+import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
@@ -131,6 +131,8 @@ export class TypeScriptLinter {
   private fileExportDeclCaches: Set<ts.Node> | undefined;
 
   private sourceFile?: ts.SourceFile;
+  private useStatic?: boolean;
+
   private readonly compatibleSdkVersion: number;
   private readonly compatibleSdkVersionStage: string;
   private static sharedModulesCache: Map<string, boolean>;
@@ -289,7 +291,10 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
     [ts.SyntaxKind.HeritageClause, this.handleHeritageClause],
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
-    [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration]
+    [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
+    [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
+    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
+    [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -854,6 +859,7 @@ export class TypeScriptLinter {
     this.handleInvalidIdentifier(importDeclNode);
     this.checkWorkerImport(importDeclNode);
     this.checkStdLibConcurrencyImport(importDeclNode);
+    this.handleInterOpImportJs(importDeclNode);
   }
 
   private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
@@ -939,7 +945,7 @@ export class TypeScriptLinter {
     this.handleTsInterop(propertyAccessNode, () => {
       this.checkInteropForPropertyAccess(propertyAccessNode);
     });
-
+    this.propertyAccessExpressionForInterop(exprSym, propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -967,6 +973,28 @@ export class TypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+    this.handleArkTSPropertyAccess(propertyAccessNode);
+  }
+
+  propertyAccessExpressionForInterop(
+    exprSym: ts.Symbol | undefined,
+    propertyAccessNode: ts.PropertyAccessExpression
+  ): void {
+    if (this.useStatic && this.options.arkts2) {
+      const declaration = exprSym?.declarations?.[0];
+      if (declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        if (
+          ts.isBinaryExpression(propertyAccessNode.parent) &&
+          propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken
+        ) {
+          const autofix = this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent);
+          this.incrementCounters(propertyAccessNode.parent, FaultID.InteropObjectProperty, autofix);
+        } else {
+          const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
+          this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
+        }
+      }
+    }
   }
 
   checkFunctionProperty(
@@ -1515,8 +1543,46 @@ export class TypeScriptLinter {
     return isNumberLike || isAllowedNumericType;
   }
 
+  private handleInteropOperand(tsUnaryArithm: ts.PrefixUnaryExpression): void {
+    if (ts.isPropertyAccessExpression(tsUnaryArithm.operand)) {
+      const exprSym = this.tsUtils.trueSymbolAtLocation(tsUnaryArithm.operand);
+      const declaration = exprSym?.declarations?.[0];
+      this.checkAndProcessDeclaration(declaration, tsUnaryArithm);
+    }
+  }
+
+  private checkAndProcessDeclaration(
+    declaration: ts.Declaration | undefined,
+    tsUnaryArithm: ts.PrefixUnaryExpression
+  ): void {
+    if (declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+      if (
+        [
+          ts.SyntaxKind.PlusToken,
+          ts.SyntaxKind.ExclamationToken,
+          ts.SyntaxKind.TildeToken,
+          ts.SyntaxKind.MinusToken
+        ].includes(tsUnaryArithm.operator)
+      ) {
+        const autofix = this.autofixer?.fixInteropInterfaceConvertNum(tsUnaryArithm);
+        this.incrementCounters(tsUnaryArithm, FaultID.InteropNoHaveNum, autofix);
+      }
+    }
+  }
+  
+  private handlePostfixUnaryExpression(node: ts.Node): void {
+    const unaryExpr = node as ts.PostfixUnaryExpression;
+    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken || unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
+      this.checkAutoIncrementDecrement(unaryExpr);
+    }
+  }
+
   private handlePrefixUnaryExpression(node: ts.Node): void {
     const tsUnaryArithm = node as ts.PrefixUnaryExpression;
+    if (this.useStatic && this.options.arkts2) {
+      const tsUnaryArithm = node as ts.PrefixUnaryExpression;
+      this.handleInteropOperand(tsUnaryArithm);
+    }
     const tsUnaryOp = tsUnaryArithm.operator;
     const tsUnaryOperand = tsUnaryArithm.operand;
     if (
@@ -1531,6 +1597,12 @@ export class TypeScriptLinter {
       if (!this.isValidTypeForUnaryArithmeticOperator(tsOperatndType) || isInvalidTilde) {
         this.incrementCounters(node, FaultID.UnaryArithmNotNumber);
       }
+    }
+    if (
+      tsUnaryArithm.operator === ts.SyntaxKind.PlusPlusToken ||
+      tsUnaryArithm.operator === ts.SyntaxKind.MinusMinusToken
+    ) {
+      this.checkAutoIncrementDecrement(tsUnaryArithm);
     }
   }
 
@@ -1550,6 +1622,7 @@ export class TypeScriptLinter {
         break;
       case ts.SyntaxKind.InstanceOfKeyword:
         this.processBinaryInstanceOf(node, tsLhsExpr, leftOperandType);
+        this.handleInstanceOfExpression(tsBinaryExpr);
         break;
       case ts.SyntaxKind.InKeyword:
         this.incrementCounters(tsBinaryExpr.operatorToken, FaultID.InOperator);
@@ -1565,6 +1638,77 @@ export class TypeScriptLinter {
       default:
     }
     this.checkNumericSemantics(tsBinaryExpr);
+    this.checkInterOpImportJsDataCompare(tsBinaryExpr);
+    this.checkInteropEqualityJudgment(tsBinaryExpr);
+  }
+
+  private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
+    if (!this.useStatic || !this.options.arkts2 || !TypeScriptLinter.isComparisonOperator(expr.operatorToken.kind)) {
+      return;
+    }
+
+    const isJsFileSymbol = (symbol: ts.Symbol | undefined): boolean => {
+      if (!symbol) {
+        return false;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isVariableDeclaration(declaration)) {
+        return false;
+      }
+
+      const initializer = declaration.initializer;
+      if (!initializer) {
+        return false;
+      }
+
+      return isJsFileExpression(initializer);
+    };
+
+    const isJsFileExpression = (expr: ts.Expression): boolean => {
+      if (ts.isPropertyAccessExpression(expr)) {
+        const initializerSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
+        return initializerSym?.declarations?.[0]?.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
+      }
+      return expr.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
+    };
+
+    const processExpression = (expr: ts.Expression): void => {
+      const symbol = this.tsUtils.trueSymbolAtLocation(expr);
+      if (isJsFileSymbol(symbol)) {
+        this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare);
+      }
+    };
+
+    processExpression(expr.left);
+    processExpression(expr.right);
+  }
+
+  private static isComparisonOperator(kind: ts.SyntaxKind): boolean {
+    return [
+      ts.SyntaxKind.GreaterThanToken,
+      ts.SyntaxKind.LessThanToken,
+      ts.SyntaxKind.GreaterThanEqualsToken,
+      ts.SyntaxKind.LessThanEqualsToken,
+      ts.SyntaxKind.EqualsToken
+    ].includes(kind);
+  }
+
+  private checkInteropEqualityJudgment(tsBinaryExpr: ts.BinaryExpression): void {
+    if (this.useStatic && this.options.arkts2) {
+      switch (tsBinaryExpr.operatorToken.kind) {
+        case ts.SyntaxKind.EqualsEqualsToken:
+        case ts.SyntaxKind.ExclamationEqualsToken:
+        case ts.SyntaxKind.EqualsEqualsEqualsToken:
+        case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+          if (this.tsUtils.isJsImport(tsBinaryExpr.left) || this.tsUtils.isJsImport(tsBinaryExpr.right)) {
+            const autofix = this.autofixer?.fixInteropEqualityOperator(tsBinaryExpr, tsBinaryExpr.operatorToken.kind);
+            this.incrementCounters(tsBinaryExpr, FaultID.InteropEqualityJudgment, autofix);
+          }
+          break;
+        default:
+      }
+    }
   }
 
   private handleTsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
@@ -2995,8 +3139,47 @@ export class TypeScriptLinter {
       this.handleIndexNegative(node);
     }
     this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
-
     this.fixJsImportElementAccessExpression(tsElementAccessExpr);
+    this.checkInterOpImportJsIndex(tsElementAccessExpr);
+  }
+
+  private checkInterOpImportJsIndex(expr: ts.ElementAccessExpression): void {
+    if (!this.useStatic || !this.options.arkts2) {
+      return;
+    }
+
+    const exprSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
+    if (!exprSym) {
+      return;
+    }
+
+    const exprDecl = TsUtils.getDeclaration(exprSym);
+    if (!exprDecl || !ts.isVariableDeclaration(exprDecl)) {
+      return;
+    }
+
+    const initializer = exprDecl.initializer;
+    if (!initializer || !ts.isPropertyAccessExpression(initializer)) {
+      return;
+    }
+
+    const initSym = this.tsUtils.trueSymbolAtLocation(initializer.expression);
+    if (!initSym) {
+      return;
+    }
+
+    const initDecl = TsUtils.getDeclaration(initSym);
+    if (!initDecl || !initDecl.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+      return;
+    }
+
+    if (ts.isBinaryExpression(expr.parent) && expr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      const autofix = this.autofixer?.fixInteropArrayBinaryExpression(expr.parent);
+      this.incrementCounters(expr.parent, FaultID.InterOpImportJsIndex, autofix);
+    } else {
+      const autofix = this.autofixer?.fixInteropArrayElementAccessExpression(expr);
+      this.incrementCounters(expr, FaultID.InterOpImportJsIndex, autofix);
+    }
   }
 
   private checkArrayIndexType(exprType: ts.Type, argType: ts.Type, expr: ts.ElementAccessExpression): void {
@@ -3258,6 +3441,8 @@ export class TypeScriptLinter {
     this.checkArkTSObjectInterop(tsCallExpr);
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
+    this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
+    this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -3305,6 +3490,17 @@ export class TypeScriptLinter {
     }
   }
 
+  handleCallJSFunction(tsCallExpr: ts.CallExpression, sym: ts.Symbol | undefined, callSignature: ts.Signature | undefined): void {
+    if (!callSignature) {
+      return;
+    }
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        this.incrementCounters(tsCallExpr, FaultID.CallJSFunction);
+      }
+    }
+  }
+
   private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
     if (!callSignature) {
@@ -3317,6 +3513,17 @@ export class TypeScriptLinter {
 
     this.checkInteropFunctionParameters(callSignature, tsCallExpr);
     this.checkForReflectAPIUse(callSignature, tsCallExpr);
+  }
+
+  private handleInteropForCallObjectMethods(tsCallExpr: ts.CallExpression, sym: ts.Symbol | undefined, callSignature: ts.Signature | undefined): void {
+    if (!callSignature) {
+      return;
+    }
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectMethods);
+      }
+    }
   }
 
   private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
@@ -3700,6 +3907,17 @@ export class TypeScriptLinter {
       this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
     }
     this.handleSendableGenericTypes(tsNewExpr);
+    this.handleInstantiatedJsObject(tsNewExpr, sym);
+  }
+
+  handleInstantiatedJsObject(tsNewExpr: ts.NewExpression, sym: ts.Symbol | undefined): void {
+    if (this.useStatic && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        const args = tsNewExpr.arguments;
+        const autofix = this.autofixer?.fixInteropInstantiateExpression(tsNewExpr, args);
+        this.incrementCounters(tsNewExpr, FaultID.InstantiatedJsOjbect, autofix);
+      }
+    }
   }
 
   private handleSendableGenericTypes(node: ts.NewExpression): void {
@@ -3751,6 +3969,30 @@ export class TypeScriptLinter {
     ) {
       if (!this.tsUtils.isObject(exprType)) {
         this.incrementCounters(node, FaultID.StructuralIdentity);
+      }
+    }
+    this.handleAsExpressionNumber(tsAsExpr);
+  }
+
+  private handleAsExpressionNumber(tsAsExpr): void {
+    const type = tsAsExpr.type;
+
+    if (
+      this.useStatic &&
+      this.options.arkts2 &&
+      ts.isAsExpression(tsAsExpr) &&
+      type.kind === ts.SyntaxKind.NumberKeyword
+    ) {
+      const expr = ts.isPropertyAccessExpression(tsAsExpr.expression)
+        ? tsAsExpr.expression.expression
+        : tsAsExpr.expression;
+
+      if (ts.isIdentifier(expr)) {
+        const sym = this.tsUtils.trueSymbolAtLocation(expr);
+        const decl = TsUtils.getDeclaration(sym);
+        if (decl?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+          this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
+        }
       }
     }
   }
@@ -4327,6 +4569,7 @@ export class TypeScriptLinter {
     }
 
     this.sourceFile = sourceFile;
+    this.useStatic = TsUtils.isArkts12File(sourceFile);
     this.fileExportDeclCaches = undefined;
     this.extractImportedNames(this.sourceFile);
     this.visitSourceFile(this.sourceFile);
@@ -5686,6 +5929,13 @@ export class TypeScriptLinter {
       }
     }
   }
+  private handleArkTSPropertyAccess(node: ts.PropertyAccessExpression): void {
+    if (this.useStatic && this.options.arkts2) {
+      if (this.isFromJSModule(node.expression)) {
+        this.incrementCounters(node, FaultID.BinaryOperations);
+      }
+    }
+  }
 
   private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {
     if (!this.options.arkts2 || !ts.isQualifiedName(typeRef.typeName)) {
@@ -5787,6 +6037,75 @@ export class TypeScriptLinter {
       if (ts.isIdentifier(expression)) {
         processApiNode(expression.text, expression);
       }
+    }
+  }
+
+  private getOriginalSymbol(node: ts.Node): ts.Symbol | undefined {
+    if (ts.isIdentifier(node)) {
+      const variableDeclaration = this.findVariableDeclaration(node);
+      if (variableDeclaration?.initializer) {
+        return this.getOriginalSymbol(variableDeclaration.initializer);
+      }
+    } else if (ts.isNewExpression(node)) {
+      const constructor = node.expression;
+      if (ts.isIdentifier(constructor)) {
+        return this.tsUtils.trueSymbolAtLocation(constructor);
+      }
+    } else if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (ts.isIdentifier(callee)) {
+        return this.tsUtils.trueSymbolAtLocation(callee);
+      } else if (ts.isPropertyAccessExpression(callee)) {
+        return this.getOriginalSymbol(callee.expression);
+      }
+    } else if (ts.isPropertyAccessExpression(node)) {
+      return this.getOriginalSymbol(node.expression);
+    }
+    return this.tsUtils.trueSymbolAtLocation(node);
+  }
+
+  private static isFromJsImport(symbol: ts.Symbol): boolean {
+    const declaration = symbol.declarations?.[0];
+    if (declaration) {
+      const sourceFile = declaration.getSourceFile();
+      return sourceFile.fileName.endsWith(EXTNAME_JS);
+    }
+    return false;
+  }
+
+  private hasLocalAssignment(node: ts.Node): boolean {
+    if (ts.isIdentifier(node)) {
+      const variableDeclaration = this.findVariableDeclaration(node);
+      return !!variableDeclaration?.initializer;
+    }
+    return false;
+  }
+
+  private isLocalCall(node: ts.Node): boolean {
+    if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (ts.isIdentifier(callee)) {
+        return this.hasLocalAssignment(callee);
+      } else if (ts.isPropertyAccessExpression(callee)) {
+        const objectNode = callee.expression;
+        return this.hasLocalAssignment(objectNode);
+      }
+    }
+    return false;
+  }
+
+  private handleInterOpImportJsOnTypeOfNode(typeofExpress: ts.TypeOfExpression): void {
+    if (!this.options.arkts2 || !typeofExpress || !this.useStatic) {
+      return;
+    }
+    const targetNode = typeofExpress.expression;
+    if (this.hasLocalAssignment(targetNode) || this.isLocalCall(targetNode)) {
+      return;
+    }
+    const targetSymbol = this.getOriginalSymbol(targetNode);
+    if (targetSymbol && TypeScriptLinter.isFromJsImport(targetSymbol)) {
+      const autofix = this.autofixer?.fixInterOpImportJsOnTypeOf(typeofExpress);
+      this.incrementCounters(typeofExpress, FaultID.InterOpImportJsForTypeOf, autofix);
     }
   }
 
@@ -5934,6 +6253,122 @@ export class TypeScriptLinter {
         const name = element.name.getText();
         if (expectedImports.includes(name)) {
           this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
+        }
+      }
+    }
+  }
+
+  private handleInterOpImportJs(importDecl: ts.ImportDeclaration): void {
+    if (!this.options.arkts2 || !importDecl || !this.useStatic) {
+      return;
+    }
+    const importClause = importDecl.importClause;
+    if (!importClause) {
+      return;
+    }
+    const namedBindings = importClause.namedBindings;
+    let symbol: ts.Symbol | undefined;
+    let defaultSymbol: ts.Symbol | undefined;
+    if (importClause.name) {
+      defaultSymbol = this.tsUtils.trueSymbolAtLocation(importClause.name);
+    }
+    if (namedBindings) {
+      if (ts.isNamedImports(namedBindings)) {
+        symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.elements[0].name);
+      } else if (ts.isNamespaceImport(namedBindings)) {
+        symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.name);
+      }
+    }
+    const symbolToUse = defaultSymbol || symbol;
+    if (symbolToUse) {
+      this.tryAutoFixInterOpImportJs(importDecl, importClause, symbolToUse, defaultSymbol);
+    }
+  }
+
+  private tryAutoFixInterOpImportJs(
+    importDecl: ts.ImportDeclaration,
+    importClause: ts.ImportClause,
+    symbolToUse: ts.Symbol,
+    defaultSymbol?: ts.Symbol
+  ): void {
+    const declaration = symbolToUse.declarations?.[0];
+    if (declaration) {
+      const sourceFile = declaration.getSourceFile();
+      if (sourceFile.fileName.endsWith(EXTNAME_JS)) {
+        const autofix = this.autofixer?.fixInterOpImportJs(
+          importDecl,
+          importClause,
+          TsUtils.removeOrReplaceQuotes(importDecl.moduleSpecifier.getText(this.sourceFile), false),
+          defaultSymbol
+        );
+        this.incrementCounters(importDecl, FaultID.InterOpImportJs, autofix);
+      }
+    }
+  }
+  
+  private findVariableDeclaration(identifier: ts.Identifier): ts.VariableDeclaration | undefined {
+    const sym = this.tsUtils.trueSymbolAtLocation(identifier);
+    const decl = TsUtils.getDeclaration(sym);
+    if (
+      decl &&
+      ts.isVariableDeclaration(decl) &&
+      decl.getSourceFile().fileName === identifier.getSourceFile().fileName
+    ) {
+      return decl;
+    }
+    return undefined;
+  }
+
+  private isFromJSModule(node: ts.Node): boolean {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    if (symbol?.declarations?.[0]) {
+      const sourceFile = symbol.declarations[0].getSourceFile();
+      return sourceFile.fileName.endsWith(EXTNAME_JS);
+    }
+    return false;
+  }
+  
+  private handleAwaitExpression(node: ts.Node): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return
+    };
+    const awaitExpr = node as ts.AwaitExpression;
+    const checkAndReportJsImportAwait = (targetNode: ts.Node): boolean => {
+      if (ts.isIdentifier(targetNode) && this.tsUtils.isJsImport(targetNode)) {
+        this.incrementCounters(node, FaultID.NoJsImportAwait);
+        return true;
+      }
+      return false;
+    };
+    const expr = awaitExpr.expression;
+    checkAndReportJsImportAwait(expr);
+    if (ts.isCallExpression(expr)) {
+      checkAndReportJsImportAwait(expr.expression);
+    }
+  }
+  
+  handleInstanceOfExpression(node: ts.BinaryExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return
+    };
+    const left = node.left;
+    const right = node.right;
+    const getNode = (expr: ts.Expression): ts.Node => {
+      return ts.isPropertyAccessExpression(expr) || ts.isCallExpression(expr) ? expr.expression : expr
+    };
+    const leftExpr = getNode(left);
+    const rightExpr = getNode(right);
+    if(this.tsUtils.isJsImport(leftExpr) || this.tsUtils.isJsImport(rightExpr)) {
+      this.incrementCounters(node, FaultID.InteropJsInstanceof); 
+    }     
+  } 
+
+  private checkAutoIncrementDecrement(unaryExpr: ts.PostfixUnaryExpression | ts.PrefixUnaryExpression): void {
+    if (ts.isPropertyAccessExpression(unaryExpr.operand)) {
+      const propertyAccess = unaryExpr.operand;
+      if (this.useStatic && this.options.arkts2) {
+        if (this.isFromJSModule(propertyAccess.expression)) {
+          this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement);
         }
       }
     }

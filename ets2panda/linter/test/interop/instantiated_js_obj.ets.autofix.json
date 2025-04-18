@@ -1,0 +1,169 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 51,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 51,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 618,
+                    "end": 668,
+                    "replacementText": ""
+                },
+                {
+                    "start": 668,
+                    "end": 668,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 13,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 728,
+                    "end": 740,
+                    "replacementText": "Foo.instantiate(ESObject.wrap(123))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 17,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 741,
+                    "end": 757,
+                    "replacementText": "Foo.instantiate(ESObject.wrap('hello'))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 17,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 758,
+                    "end": 774,
+                    "replacementText": "Foo.instantiate(ESObject.wrap(new A()))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 1,
+            "endLine": 27,
+            "endColumn": 15,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 795,
+                    "end": 809,
+                    "replacementText": "Foo.instantiate(ESObject.wrap(a.num))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 1,
+            "endLine": 28,
+            "endColumn": 11,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 810,
+                    "end": 820,
+                    "replacementText": "Foo.instantiate(ESObject.wrap(a))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 1,
+            "endLine": 32,
+            "endColumn": 16,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 861,
+                    "end": 876,
+                    "replacementText": "Foo.instantiate(ESObject.wrap(test()))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 1,
+            "endLine": 33,
+            "endColumn": 23,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 877,
+                    "end": 899,
+                    "replacementText": "Foo1.instantiate(ESObject.wrap(123), ESObject.wrap('hello'))"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        }
+    ]
+}
