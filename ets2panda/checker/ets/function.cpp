@@ -1820,7 +1820,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // If the overridden method (s2) has a 'this' return type, then the overriding method (s1) must also have it.
     bool s1HasThisType = hasThisReturnType(s1);
     bool s2HasThisType = hasThisReturnType(s2);
-    if (s1HasThisType != s2HasThisType) {
+    if (!s1HasThisType && s2HasThisType) {
         return false;
     }
 
