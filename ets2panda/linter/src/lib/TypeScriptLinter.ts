@@ -960,7 +960,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     this.handleSymbolIterator(node as ts.PropertyAccessExpression);
-
+    this.handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(node as ts.PropertyAccessExpression);
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
 
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
@@ -2499,21 +2499,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return currentNode;
   }
 
-  private processSdkMethodClauseTypes(tsClassDecl: ts.ClassDeclaration, heritageClause: ts.HeritageClause): void {
-    for (const type of heritageClause.types) {
+  private processSdkMethodClauseTypes(
+    tsClassDecl: ts.ClassDeclaration,
+    heritageClause: ts.HeritageClause,
+    methodName?: string
+  ): boolean {
+    return heritageClause.types.some((type) => {
       const fullTypeName = TypeScriptLinter.findFinalExpression(type).getText();
       const sdkInfos = this.interfaceMap.get(fullTypeName);
       if (!sdkInfos || sdkInfos.size === 0) {
-        continue;
+        return false;
       }
 
-      for (const sdkInfo of sdkInfos) {
+      return Array.from(sdkInfos).some((sdkInfo) => {
         if (sdkInfo.api_type !== 'MethodSignature') {
-          continue;
+          return false;
         }
-        this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members);
-      }
-    }
+
+        if (!methodName) {
+          this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members);
+          return false;
+        }
+
+        const symbol = this.tsTypeChecker.getSymbolAtLocation(type.expression);
+        return TypeScriptLinter.isHeritageClauseisThirdPartyBySymbol(symbol) && sdkInfo.api_name === methodName;
+      });
+    });
   }
 
   private handleSdkMethod(tsClassDecl: ts.ClassDeclaration): void {
@@ -2570,6 +2581,60 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return true;
+  }
+
+  private processLimitedVoidTypeFromSdkOnClassDeclaration(
+    tsClassDecl: ts.ClassDeclaration,
+    methodName?: string
+  ): boolean {
+    if (
+      !this.options.arkts2 ||
+      !tsClassDecl.heritageClauses ||
+      tsClassDecl.heritageClauses.length === 0 ||
+      !tsClassDecl.members ||
+      tsClassDecl.members.length === 0
+    ) {
+      return false;
+    }
+    let res: boolean = false;
+    for (const heritageClause of tsClassDecl.heritageClauses) {
+      if (heritageClause.types?.length) {
+        res = this.processSdkMethodClauseTypes(tsClassDecl, heritageClause, methodName);
+        break;
+      }
+    }
+    return res;
+  }
+
+  private static isHeritageClauseisThirdPartyBySymbol(symbol: ts.Symbol | undefined): boolean {
+    if (!symbol) {
+      return false;
+    }
+    const declarations = symbol.getDeclarations();
+    if (declarations && declarations.length > 0) {
+      const firstDeclaration = declarations[0];
+      if (ts.isImportSpecifier(firstDeclaration)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const sym = this.getOriginalSymbol(node.name);
+    if (!sym) {
+      return;
+    }
+    const methodName = node.name.getText();
+    const declaration = sym.declarations?.[0];
+    if (declaration && ts.isClassDeclaration(declaration.parent)) {
+      if (this.processLimitedVoidTypeFromSdkOnClassDeclaration(declaration.parent, methodName)) {
+        this.incrementCounters(node, FaultID.LimitedVoidTypeFromSdk);
+      }
+    }
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {

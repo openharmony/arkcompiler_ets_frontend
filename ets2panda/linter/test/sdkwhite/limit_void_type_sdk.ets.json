@@ -14,6 +14,15 @@
         "limitations under the License."
     ],
     "result": [
-        
+        {
+            "line": 78,
+            "column": 7,
+            "endLine": 78,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        }
     ]
 }
