@@ -634,7 +634,8 @@ export class TypeScriptLinter {
     for (const prop of objectLiteralExpr.properties) {
       if (
         isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
-        !isRecordObject && !(ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name))
+        !isRecordObject &&
+          !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
       ) {
         const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
         this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);

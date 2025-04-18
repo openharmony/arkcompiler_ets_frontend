@@ -22,7 +22,7 @@ let c: MyClass = {a: "a", b: 3}
 
 let b: MyClass = {
   a: "Alice",
-  "c",         // Error
+  "c",
   c,           // Error
   b: "num",
   method() {   //  Error
@@ -35,7 +35,7 @@ let o: MyClass = {
   b: 42,
   c: {},
   1: "number literal property",  // Error
-  "foo:bar": "string literal property",  // Error
+  "foo:bar": "string literal property",
 
   get property() {}, // Error
   set property(value) {}, // Error
