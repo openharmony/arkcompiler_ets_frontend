@@ -759,6 +759,7 @@ extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *parserProgram = reinterpret_cast<parser::Program *>(program);
     auto *importDeclE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
+    importDeclE2p->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
 
     parserProgram->Ast()->Statements().insert(parserProgram->Ast()->Statements().begin(), importDeclE2p);
     importDeclE2p->SetParent(parserProgram->Ast());
