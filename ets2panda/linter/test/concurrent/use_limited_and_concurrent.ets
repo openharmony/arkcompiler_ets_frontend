@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-export const STRINGLITERAL_NUMBER = 'number';
-export const STRINGLITERAL_NUMBER_ARRAY = 'number[]';
-export const STRINGLITERAL_STRING = 'string';
-export const STRINGLITERAL_INT = 'int';
-export const STRINGLITERAL_BYTE = 'byte';
-export const STRINGLITERAL_SHORT = 'short';
-export const STRINGLITERAL_LONG = 'long';
-export const STRINGLITERAL_ANY = 'ANY';
+"use shared"
+export function sharedFunction() {}
+
+function concurrentFunc() {
+    "use concurrent"
+}
+
+function normal() {}
