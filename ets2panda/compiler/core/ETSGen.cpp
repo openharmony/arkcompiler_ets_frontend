@@ -390,11 +390,32 @@ void ETSGen::StoreStaticProperty(const ir::AstNode *const node, const checker::T
     }
 }
 
+static bool StaticAccessRequiresReferenceSafetyCheck(const ir::AstNode *const node, const checker::Type *propType)
+{
+    if (propType->PossiblyETSUndefined()) {
+        return false;
+    }
+    auto parent = node->Parent();
+    if (parent->IsMemberExpression()) {
+        return false;
+    }
+    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == node) {
+        return false;
+    }
+    if (node->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
+        return false;
+    }
+    return true;
+}
+
 void ETSGen::LoadStaticProperty(const ir::AstNode *const node, const checker::Type *propType,
                                 const util::StringView &fullName)
 {
     if (propType->IsETSReferenceType()) {
         Sa().Emit<LdstaticObj>(node, fullName);
+        if (StaticAccessRequiresReferenceSafetyCheck(node, propType)) {
+            EmitNullcheck(node);
+        }
     } else if (IsWidePrimitiveType(propType)) {
         Sa().Emit<LdstaticWide>(node, fullName);
     } else {
