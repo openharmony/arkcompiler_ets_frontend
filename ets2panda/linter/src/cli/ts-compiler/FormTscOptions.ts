@@ -17,6 +17,17 @@ import * as ts from 'typescript';
 import type { CommandLineOptions } from '../../lib/CommandLineOptions';
 import { createCompilerHost, readDeclareFiles } from './ResolveSdks';
 
+function getTargetESVersionLib(optionsTarget: ts.ScriptTarget): string[] {
+  switch (optionsTarget) {
+    case ts.ScriptTarget.ES2017:
+      return ['lib.es2017.d.ts'];
+    case ts.ScriptTarget.ES2021:
+      return ['lib.es2021.d.ts'];
+    default:
+      return ['lib.es2021.d.ts'];
+  }
+}
+
 export function formTscOptions(
   cmdOptions: CommandLineOptions,
   overrideCompilerOptions: ts.CompilerOptions
@@ -32,13 +43,17 @@ export function formTscOptions(
     return options;
   }
   const rootNames = cmdOptions.inputFiles.concat(readDeclareFiles(cmdOptions.sdkDefaultApiPath ?? ''));
+  const ESVersion = cmdOptions.isFollowSdkSettings ? ts.ScriptTarget.ES2021 : ts.ScriptTarget.Latest;
+  const ESVersionLib = cmdOptions.isFollowSdkSettings ? getTargetESVersionLib(ESVersion) : undefined;
+  const isCheckJs = !cmdOptions.isFollowSdkSettings;
   const options: ts.CreateProgramOptions = {
     rootNames: rootNames,
     options: {
-      target: ts.ScriptTarget.Latest,
+      target: ESVersion,
       module: ts.ModuleKind.CommonJS,
       allowJs: true,
-      checkJs: true
+      checkJs: isCheckJs,
+      lib: ESVersionLib
     }
   };
   if (cmdOptions.sdkDefaultApiPath && cmdOptions.arktsWholeProjectPath && cmdOptions.sdkExternalApiPath) {

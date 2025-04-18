@@ -53,6 +53,7 @@ export function run(): void {
 }
 
 async function runMigrationCliMode(cmdOptions: CommandLineOptions): Promise<void> {
+  cmdOptions.isFollowSdkSettings = true;
   const compileOptions = compileLintOptions(cmdOptions);
   const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
   const mergedProblems = new Map<string, HomeCheckProblemInfo[]>();

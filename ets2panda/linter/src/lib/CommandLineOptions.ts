@@ -26,4 +26,5 @@ export interface CommandLineOptions {
   sdkExternalApiPath?: string[];
   arktsWholeProjectPath?: string;
   homecheck?: boolean;
+  isFollowSdkSettings?: boolean;
 }
