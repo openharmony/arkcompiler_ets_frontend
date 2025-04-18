@@ -3366,6 +3366,32 @@ export class TsUtils {
     return isNumberLike;
   }
 
+  static getModuleName(node: ts.Node): string | undefined {
+    const currentFilePath = node.getSourceFile().fileName;
+    if (!currentFilePath.includes('src')) {
+      return undefined;
+    }
+
+    /*
+     * Assuming we are working with a path like "entry/src/main/ets/pages/test1.ets"
+     * we are splitting at "/src" and get the first item in the list
+     * in order to capture the "entry" group
+     * we could have worked with an absolute path like
+     * "home/user/projects/oh_project/entry/src/main/ets/pages/test1.sts"
+     * in that case, after the fist split we would have
+     * "home/user/projects/entry"
+     * so we split once again with "/" to separate out the directories
+     *
+     * and get the last item which is entry or our module
+     */
+    const getPossibleModule = currentFilePath.split('/src')[0];
+    if (getPossibleModule.length === 0) {
+      return undefined;
+    }
+    const sanitizedDirectories = getPossibleModule.split('/');
+    return sanitizedDirectories[sanitizedDirectories.length - 1];
+  }
+
   isImportedFromJS(identifier: ts.Identifier): boolean {
     const sym = this.trueSymbolAtLocation(identifier);
     const declaration = sym?.declarations?.[0];
@@ -3491,7 +3517,7 @@ export class TsUtils {
 
     return undefined;
   }
-  
+
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
     if (!sourceFile) {
       return false;

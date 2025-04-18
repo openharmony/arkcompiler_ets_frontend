@@ -43,13 +43,13 @@ import {
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
 import { ES_OBJECT } from '../utils/consts/ESObject';
-import { 
-  LOAD, 
+import {
+  LOAD,
   GET_PROPERTY_BY_NAME,
   SET_PROPERTY_BY_NAME,
   GET_PROPERTY_BY_INDEX,
   SET_PROPERTY_BY_INDEX,
-  ARE_EQUAL, 
+  ARE_EQUAL,
   ARE_STRICTLY_EQUAL,
   WRAP,
   INSTANTIATE,
@@ -966,7 +966,13 @@ export class Autofixer {
   static addDefaultModuleToPath(parts: string[], importDeclNode: ts.ImportDeclaration): Autofix[] | undefined {
     const moduleSpecifier = importDeclNode.moduleSpecifier;
 
-    const newPathParts = [DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
+    /*
+     * check the current file's path
+     * get the parent directory name of the "src" directory
+     */
+
+    const moduleName = TsUtils.getModuleName(importDeclNode);
+    const newPathParts = [moduleName ?? DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
     const newPath = newPathParts.join(PATH_SEPARATOR);
     const newPathString = '\'' + newPath + '\'';
 
@@ -3153,9 +3159,9 @@ export class Autofixer {
     const replacementText =
       isParentBinaryExp && elementAccessExpr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken ?
         `${identifier.text}.setPropertyByIndex(${exprText},` +
-        ` ESObject.wrap(${elementAccessExpr.parent.right.getText()}))` :
+          ` ESObject.wrap(${elementAccessExpr.parent.right.getText()}))` :
         `${identifier.text}.getPropertyByIndex(${exprText})` +
-        this.utils.findTypeOfNodeForConversion(elementAccessExpr);
+          this.utils.findTypeOfNodeForConversion(elementAccessExpr);
     return [{ replacementText, start, end }];
   }
 
@@ -3244,7 +3250,7 @@ export class Autofixer {
     }
     return '';
   }
-  
+
   private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
     return args.
       map((arg) => {
@@ -3345,7 +3351,7 @@ export class Autofixer {
     });
     return lastImportEnd;
   }
-  
+
   fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {
     let text: string = '';
     const statements = ts.factory.createCallExpression(
@@ -3433,7 +3439,7 @@ export class Autofixer {
     const replacementText = `${processed}.typeOf()`;
     return replacementText ? [{ start, end, replacementText }] : undefined;
   }
-  
+
   fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
     let text = '';
     if (ts.isPropertyAccessExpression(express.operand)) {
@@ -3456,7 +3462,7 @@ export class Autofixer {
     }
     return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
   }
-  
+
   fixInteropEqualityOperator(
     tsBinaryExpr: ts.BinaryExpression,
     binaryOperator: ts.BinaryOperator
