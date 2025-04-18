@@ -601,6 +601,10 @@ class CompilerRunner(Runner):
             test_path = path.join(self.test_root, directory)
             for project in os.listdir(test_path):
                 self.tests.append(CompilerProtobinTest(path.join(test_path, project), flags))
+        elif directory.endswith("abc2program"):
+            test_path = path.join(self.test_root, directory)
+            for project in os.listdir(test_path):
+                self.tests.append(CompilerAbcFileTest(path.join(test_path, project), flags))
         else:
             glob_expression = path.join(
                 self.test_root, directory, "**/*.%s" % (extension))
@@ -713,6 +717,64 @@ class CompilerTest(Test):
 
         os.remove(test_abc_path)
 
+        return self
+
+
+class CompilerAbcFileTest(Test):
+    def __init__(self, test_dir, flags):
+        Test.__init__(self, test_dir, flags)
+        self.test_dir = test_dir
+        self.generated_path = os.path.join(self.test_dir, "gen")
+        if not path.exists(self.generated_path):
+            os.makedirs(self.generated_path)
+        self.original_abc_path = os.path.join(self.generated_path, "original.abc")
+        self.output_path = os.path.join(self.generated_path, "result.abc")
+        self.original_test = os.path.join(self.test_dir, "base.ts")
+        self.expected_path = os.path.join(self.test_dir, "expected.txt")
+
+    def remove_test_build(self, runner):
+        if path.exists(self.generated_path):
+            shutil.rmtree(self.generated_path)
+
+    def gen_abc(self, runner, test_path, output_path, flags):
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.extend(['%s%s' % ("--output=", output_path)])
+        es2abc_cmd.extend(flags)
+        es2abc_cmd.append(test_path)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+            self.remove_test_build(runner)
+            return self
+
+    def run(self, runner):
+        new_flags = self.flags
+        # Generate 'abc' from the source file
+        self.gen_abc(runner, self.original_test, self.original_abc_path, new_flags)
+        # Generate 'abc' from the abc file
+        new_flags = self.flags
+        compile_context_info_path = path.join(self.test_dir, "compileContextInfo.json")
+        if path.exists(compile_context_info_path):
+            new_flags.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.append('%s%s' % ("--output=", self.output_path))
+        es2abc_cmd.append(self.original_abc_path)
+        es2abc_cmd.extend(new_flags)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        try:
+            with open(self.expected_path, 'r') as fp:
+                expected = fp.read()
+            self.passed = expected == self.output and process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+        if not self.passed:
+            self.remove_test_build(runner)
+            return self
+        self.remove_test_build(runner)
         return self
 
 
@@ -2730,6 +2792,10 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/merge_hap/projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/abc2program", "ts",
+                                                ["--merge-abc", "--module", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-literal-buffer", "--dump-string", "--source-file=source.ts",
+                                                 "--module-record-field-name=source"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
