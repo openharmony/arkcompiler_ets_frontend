@@ -673,6 +673,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
     funcReturnType =
         stArgument == nullptr ? checker->GlobalVoidType() : checker->GetNonConstantType(stArgument->Check(checker));
     if (funcReturnType->IsTypeError()) {
+        containingFunc->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
         return;
     }
 
