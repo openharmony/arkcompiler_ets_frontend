@@ -281,7 +281,7 @@ void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
     const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[name, function] : prog->function_table) {
-        util::VisitDyanmicImports<false>(function, [this, pkgContextInfo](std::string &ohmurl) {
+        util::VisitDyanmicImports<false>(function, [this, &prog, pkgContextInfo](std::string &ohmurl) {
             if (this->options_.compileContextInfo.needModifyRecord) {
                 this->UpdateBundleNameOfOhmurl(ohmurl);
             }
@@ -289,6 +289,7 @@ void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
             if (newOhmurl == ohmurl) {
                 return;
             }
+            prog->strings.insert(newOhmurl);
             this->SetOhmurlBeenChanged(true);
             ohmurl = newOhmurl;
         });
