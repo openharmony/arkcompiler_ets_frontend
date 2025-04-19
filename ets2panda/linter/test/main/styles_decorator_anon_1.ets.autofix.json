@@ -37,7 +37,13 @@
             "endLine": 16,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -48,7 +54,13 @@
             "endLine": 17,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -59,7 +71,13 @@
             "endLine": 19,
             "endColumn": 16,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -70,7 +88,13 @@
             "endLine": 20,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -81,7 +105,13 @@
             "endLine": 24,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"

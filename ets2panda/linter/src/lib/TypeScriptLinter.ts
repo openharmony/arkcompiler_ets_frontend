@@ -4574,7 +4574,7 @@ export class TypeScriptLinter {
     this.extractImportedNames(this.sourceFile);
     this.visitSourceFile(this.sourceFile);
     this.handleCommentDirectives(this.sourceFile);
-    this.processInterfacesToImport();
+    this.processInterfacesToImport(this.sourceFile);
   }
 
   private handleExportKeyword(node: ts.Node): void {
@@ -5541,22 +5541,19 @@ export class TypeScriptLinter {
     return this.interfacesAlreadyImported.has(name);
   }
 
-  private processInterfacesToImport(): void {
+  private processInterfacesToImport(sourceFile: ts.SourceFile): void {
     if (!this.options.arkts2) {
       return;
     }
 
-    this.interfacesNeedToAlarm.forEach((identifier, index) => {
-      if (index === this.interfacesNeedToAlarm.length - 1) {
-        const autofix = this.autofixer?.fixInterfaceImport(
-          this.interfacesNeedToImport,
-          this.interfacesAlreadyImported,
-          identifier.getSourceFile()
-        );
-        this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix);
-      } else {
-        this.incrementCounters(identifier, FaultID.UIInterfaceImport, []);
-      }
+    const autofix = this.autofixer?.fixInterfaceImport(
+      this.interfacesNeedToImport,
+      this.interfacesAlreadyImported,
+      sourceFile
+    );
+
+    this.interfacesNeedToAlarm.forEach((identifier) => {
+      this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix);
     });
 
     this.interfacesNeedToAlarm = [];
