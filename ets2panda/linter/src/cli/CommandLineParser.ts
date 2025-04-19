@@ -16,6 +16,7 @@
 import { Logger } from '../lib/Logger';
 import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
 import type { OptionValues } from 'commander';
 import { Command, Option } from 'commander';
 import * as ts from 'typescript';
@@ -43,6 +44,9 @@ interface ParsedCommand {
 
 const getFiles = (dir: string): string[] => {
   const resultFiles: string[] = [];
+  if (dir.includes(ARKTS_IGNORE_DIRS_OH_MODULES)) {
+    return [];
+  }
 
   const files = fs.readdirSync(dir);
   for (let i = 0; i < files.length; ++i) {
