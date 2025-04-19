@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,10 @@
  * limitations under the License.
  */
 
-function foo(): int {
-    try {
-        return 0;
-    } catch (e) {
-        return 0;
-        /* @@ label */let a = 2; // unreachable statement
-    } finally /* @@ label1 */{
-        return 0;
+function main(): void {
+    while (false) {
+        assertTrue( false );
     }
 }
 
-/* @@@ label Warning Warning: Unreachable statement.  */
-/* @@@ label1 Warning Warning: Finally clause cannot complete normally  */
+/* @@? 17:19 Warning Warning: Unreachable statement. */

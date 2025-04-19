@@ -189,7 +189,7 @@ void AliveAnalyzer::AnalyzeStat(const ir::AstNode *node)
     }
 
     if (status_ == LivenessStatus::DEAD) {
-        checker_->LogError(diagnostic::UNREACHABLE_STMT, {}, node->Start());
+        checker_->LogDiagnostic(diagnostic::UNREACHABLE_STMT, node->Start());
         return;
     }
 
