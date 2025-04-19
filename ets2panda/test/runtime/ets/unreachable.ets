@@ -13,13 +13,24 @@
  * limitations under the License.
  */
 
-type U1 = number[][] | string[]
-type U2 = (readonly number[][]) | (readonly string[])
-
-function main() {
-    let v: U1 | U2 = [[1.0,2.0]]
-    v[0] = [1.0,3.0]  // CTE, readonly array
+function SwitchTest(value:int){
+     let result = 0;
+     switch(value) {
+         case 0:
+             switch(value) {
+                 case 0:
+                     result += 3;
+                     break;
+                 default:
+                     result += 32;
+                     break;
+             }
+             result *= 2;
+             break;
+             result=3;
+         default:
+             result += 32;
+             break;
+     }
+     return result;
 }
-
-/* @@? 21:5 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter  */
-

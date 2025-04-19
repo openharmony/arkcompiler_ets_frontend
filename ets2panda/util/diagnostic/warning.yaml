@@ -47,3 +47,71 @@ warning:
 - name : ANNOTATION_UNUSED_GENERIC_ALIAS_WARN
   id: 9
   message: "Type alias generic parameter '{}' is not used in type annotation"
+
+- name: DYNAMIC_PATHS_ABSOLUTE
+  id: 10
+  message: "Don't use absolute path '{}' as key in 'dynamicPaths'"
+
+- name: NO_OHMURL
+  id: 11
+  message: "'ohmUrl' for module '{}' wasn't specified"
+
+- name: DUPLICATE_SIGS
+  id: 12
+  message: "Detect duplicate signatures, use '{}{}' to replace"
+
+- name: EXTENSION_NONPUBLIC_COLLISION
+  id: 13
+  message: "The extension function '{}' has the same name with non-public method in class {}"
+
+- name: NULLISH_OPERAND
+  id: 14
+  message: "Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'."
+
+- name: INSTANCEOF_ERASED
+  id: 15
+  message: "Type parameter is erased from type '{}' when used in instanceof expression."
+
+- name: ASSIGN_TO_READONLY
+  id: 16
+  message: "Cannot assign to '{}' because it is a read-only property."
+
+- name: MAYBE_REASSIGNED
+  id: 17
+  message: "{} '{}' might already have been assigned."
+
+- name: PROP_MAYBE_UNINITIALIZED
+  id: 18
+  message: "Property '{}' might not have been initialized."
+
+- name: USE_BEFORE_INIT
+  id: 19
+  message: "{} '{}' is used before being assigned."
+
+- name: MAYBE_FALLTHROUGH
+  id: 20
+  message: "Possible fall-through into case"
+
+- name: FINALLY_CANT_COMPLETE
+  id: 21
+  message: "Finally clause cannot complete normally"
+
+- name: FUNCTION_ASM_SIG_COLLISION
+  id: 22
+  message: "Function {} with this assembly signature already declared."
+
+- name: GETTER_LOOP
+  id: 23
+  message: "Reading the value of the property inside its getter may lead to an endless loop."
+
+- name: SETTER_LOOP
+  id: 24
+  message: "Assigning new value to the property inside its setter may lead to an endless loop."
+
+- name: EXTENSION_MISMATCH
+  id: 25
+  message: "Not matching extensions! Sourcefile: {}, Manual(used): {}"
+
+- name: UNREACHABLE_STMT
+  id: 26
+  message: "Unreachable statement."

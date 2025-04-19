@@ -415,9 +415,9 @@ semantic:
   id: 101
   message: "Initializer must be able to complete normally."
 
-- name: UNREACHABLE_STMT
+- name: EXTEND_DYNAMIC
   id: 102
-  message: "Unreachable statement."
+  message: "Class {} shouldn't extend dynamic class."
 
 - name: MISSING_RETURN_STMT
   id: 103
@@ -1346,3 +1346,7 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
+
+- name: PROPERTY_MAYBE_MISSING_INIT
+  id: 339
+  message: "Property '{}' might not have been initialized."

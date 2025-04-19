@@ -12,14 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function foo<T>(arr:T[], f:(a:T|Object)=>string){
-    return f(arr[1])
+
+function main(): void {
+    while (false) {
+        assertTrue( false );
+    }
 }
 
-function bar(arr:number[]){
-    return foo(arr, a=>a.toString())
-}
-
-function main(){
-    assertTrue(bar([1,2,3,4]) == "2")
-}
+/* @@? 17:19 Warning Warning: Unreachable statement. */
