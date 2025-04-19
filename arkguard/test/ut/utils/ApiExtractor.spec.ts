@@ -1200,5 +1200,15 @@ describe('test for ApiExtractor', function () {
       expect(fileWhiteList.fileKeepInfo.stringProperties.size).to.be.equal(0);
       expect(fileWhiteList.fileKeepInfo.structProperties.size).to.be.equal(0);
     })
+    it('should collect decoratorMap if need scanDecorator', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList02.ets';
+      scanProjectConfig.scanDecorator = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      if (fileWhiteList?.bytecodeObfuscateKeepInfo?.decoratorMap) {
+        const decoratorKeys = Object.keys(fileWhiteList.bytecodeObfuscateKeepInfo.decoratorMap);
+        expect(decoratorKeys.length).to.be.greaterThan(0);
+      }
+    })
   })
 });

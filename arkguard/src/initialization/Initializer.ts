@@ -62,6 +62,13 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
     return;
   }
   getObfuscationCacheDir(projectConfig);
+  /**
+   * Only one of bytecode obfuscation and source code obfuscation will take effect.
+   * Enabling bytecode obfuscation is to obfuscate declaration files when compile bytecode har.
+   */
+  const isBytecodeObfEnabled = mergedObConfig.options.bytecodeObf.enable;
+  arkProjectConfig.isBytecodeObfEnabled = isBytecodeObfEnabled;
+  arkProjectConfig.isArkguardEnabled = !isBytecodeObfEnabled;
 
   if (mergedObConfig.options.enableFileNameObfuscation) {
     const ohPackagePath = path.join(projectConfig.modulePath, 'oh-package.json5');

@@ -956,6 +956,24 @@ describe('test for ConfigResolve', function() {
 
         expect(configs.options.enableLibObfuscationOptions).to.be.true;
       });
+      
+      it('should handle config correctly when enable bytecode obfuscation options', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/enable_lib_obfuscation_options/obfuscation-rule.txt';
+        const data = `
+        -enable-bytecode-obfuscation
+        -enable-bytecode-obfuscation-debugging
+        -enable-bytecode-obfuscation-enhanced
+        -enable-bytecode-obfuscation-arkui
+      `;
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+        expect(configs.options.bytecodeObf.enable).to.be.true;
+        expect(configs.options.bytecodeObf.debugging).to.be.true;
+        expect(configs.options.bytecodeObf.enhanced).to.be.true;
+        expect(configs.options.bytecodeObf.obfArkUI).to.be.true;
+      });
     });
 
     describe('1: test Api collectSystemApiWhitelist', function() {
@@ -1186,6 +1204,52 @@ describe('test for ConfigResolve', function() {
         expect(systemApiContent.ReservedGlobalNames === undefined).to.be.true;
         expect(systemApiContent.ReservedLocalNames === undefined).to.be.true;
 
+        fs.unlinkSync(systemApiPath);
+      });
+
+      it('1-5: test collectSystemApiWhitelist: -enable-bytecode-obfuscation', function () {
+        let obfuscationCacheDir = path.join(OBFUSCATE_TESTDATA_DIR, 'bytecode_obfuscation');
+        let obfuscationOptions = {
+          'selfConfig': {
+            'ruleOptions': {
+              'enable': true,
+              'rules': [
+                path.join(OBFUSCATE_TESTDATA_DIR, 'bytecode_obfuscation/bytecode_obfuscation.txt')
+              ]
+            },
+            'consumerRules': [],
+          },
+          'dependencies': {
+            'libraries': [],
+            'hars': []
+          },
+          'obfuscationCacheDir': obfuscationCacheDir,
+          'sdkApis': [
+            path.join(OBFUSCATE_TESTDATA_DIR, 'system_api.d.ts')
+          ]
+        };
+        let projectConfig = {
+          obfuscationOptions,
+          compileHar: false
+        };
+        const obConfig: ObConfigResolver =  new ObConfigResolver(projectConfig, undefined);
+        obConfig.resolveObfuscationConfigs();
+        const reservedSdkApiForProp = UnobfuscationCollections.reservedSdkApiForProp;
+        const reservedSdkApiForGlobal = UnobfuscationCollections.reservedSdkApiForGlobal;
+        const reservedSdkApiForLocal = UnobfuscationCollections.reservedSdkApiForLocal;
+
+        expect(reservedSdkApiForProp.size == 12).to.be.true;
+        expect(reservedSdkApiForGlobal.size == 3).to.be.true;
+        expect(reservedSdkApiForLocal.size == 8).to.be.true;
+        UnobfuscationCollections.clear();
+
+        let systemApiPath = obfuscationCacheDir + '/systemApiCache.json';
+        const data = fs.readFileSync(systemApiPath, 'utf8');
+        const systemApiContent = JSON.parse(data);
+
+        expect(systemApiContent.ReservedLocalNames.length == 8).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.length == 12).to.be.true;
+        expect(systemApiContent.ReservedGlobalNames.length == 3).to.be.true;
         fs.unlinkSync(systemApiPath);
       });
     });
@@ -2013,6 +2077,24 @@ describe('test for ConfigResolve', function() {
         buildMode: "not Debug"
       };
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
+      expect(result).to.be.false;
+    });
+
+    it('should return false if obfuscation is enabled and bytecodeObf is enable', () => {
+      const isPackageModules = false;
+      const projectConfig = {
+        obfuscationMergedObConfig: {
+          options: {
+            disableObfuscation: false,
+            enableFileNameObfuscation: true,
+            bytecodeObf: {
+              enable: true
+            },
+          },
+        },
+        buildMode: "not Debug"
+      };
+      const result = enableObfuscatedFilePathConfig(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
   });

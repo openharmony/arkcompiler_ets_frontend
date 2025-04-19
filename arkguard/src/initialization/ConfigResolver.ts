@@ -72,6 +72,10 @@ enum OptionType {
   STRIP_LANGUAGE_DEFAULT,
   STRIP_SYSTEM_API_ARGS,
   KEEP_PARAMETER_NAMES,
+  ENABLE_BYTECODE_OBFUSCATION,
+  ENABLE_BYTECODE_OBFUSCATION_DEBUGGING,
+  ENABLE_BYTECODE_OBFUSCATION_ENHANCED,
+  ENABLE_BYTECODE_OBFUSCATION_ARKUI
 }
 export { OptionType as OptionTypeForTest };
 
@@ -81,7 +85,20 @@ type SystemApiContent = {
   ReservedLocalNames?: string[];
 };
 
+interface BytecodeObf {
+  enable: boolean;
+  enhanced: boolean;
+  debugging: boolean;
+  obfArkUI: boolean;
+}
+
 class ObOptions {
+  bytecodeObf: BytecodeObf = {
+    enable: false,
+    enhanced: false,
+    debugging: false,
+    obfArkUI: false
+  };
   disableObfuscation: boolean = false;
   enablePropertyObfuscation: boolean = false;
   enableStringPropertyObfuscation: boolean = false;
@@ -107,6 +124,7 @@ class ObOptions {
     this.enableToplevelObfuscation = this.enableToplevelObfuscation || other.enableToplevelObfuscation;
     this.enableStringPropertyObfuscation =
       this.enableStringPropertyObfuscation || other.enableStringPropertyObfuscation;
+    this.bytecodeObf.obfArkUI = this.bytecodeObf?.obfArkUI || other.bytecodeObf?.obfArkUI;
     this.removeComments = this.removeComments || other.removeComments;
     this.compact = this.compact || other.compact;
     this.removeLog = this.removeLog || other.removeLog;
@@ -180,6 +198,9 @@ export class MergedConfig {
       }
     }
 
+    if (this.options.bytecodeObf?.obfArkUI) {
+      resultStr += ObConfigResolver.ENABLE_BYTECODE_OBFUSCATION_ARKUI + '\n';
+    }
     if (this.reservedGlobalNames.length > 0) {
       resultStr += ObConfigResolver.KEEP_GLOBAL_NAME + '\n';
       this.reservedGlobalNames.forEach((item) => {
@@ -250,10 +271,19 @@ export class ObConfigResolver {
     this.handleReservedArray(mergedConfigs);
     endFilesEvent(EventList.RESOLVE_OBFUSCATION_CONFIGS);
    
+    /**
+     * Bytecode obfuscate mode:
+     * temporary variable or in non-top-level scope is obfuscated to be added to the obfuscate name set,
+     * All names that appear in the confused name collection will be obfuscated later
+     * So when a developer-defined name has the same name as systemApi
+     * Without a whitelist, all the same names would be obfuscated, leading to devastating errors
+     * so in order to work properly, Bytecode obfuscate enables the obfuscate function and requires whitelist
+     */
     let needKeepSystemApi =
       enableObfuscation &&
       (mergedConfigs.options.enablePropertyObfuscation ||
-        (mergedConfigs.options.enableExportObfuscation && mergedConfigs.options.enableToplevelObfuscation));
+        (mergedConfigs.options.enableExportObfuscation && mergedConfigs.options.enableToplevelObfuscation) ||
+        mergedConfigs.options.bytecodeObf.enable); 
 
     if (needKeepSystemApi && sourceObConfig.obfuscationCacheDir) {
       const systemApiCachePath: string = path.join(sourceObConfig.obfuscationCacheDir, 'systemApiCache.json');
@@ -364,6 +394,11 @@ export class ObConfigResolver {
   static readonly PRINT_NAMECACHE = '-print-namecache';
   static readonly PRINT_KEPT_NAMES = '-print-kept-names';
   static readonly APPLY_NAMECACHE = '-apply-namecache';
+  // obfuscation options for bytecode obfuscation
+  static readonly ENABLE_BYTECODE_OBFUSCATION = '-enable-bytecode-obfuscation';
+  static readonly ENABLE_BYTECODE_OBFUSCATION_DEBUGGING = '-enable-bytecode-obfuscation-debugging';
+  static readonly ENABLE_BYTECODE_OBFUSCATION_ENHANCED = '-enable-bytecode-obfuscation-enhanced';
+  static readonly ENABLE_BYTECODE_OBFUSCATION_ARKUI = '-enable-bytecode-obfuscation-arkui';
   static readonly EXTRA_OPTIONS = '-extra-options';
   static readonly STRIP_LANGUAGE_DEFAULT = 'strip-language-default';
   static readonly STRIP_SYSTEM_API_ARGS = 'strip-system-api-args';
@@ -380,6 +415,14 @@ export class ObConfigResolver {
 
   private getTokenType(token: string): OptionType {
     switch (token) {
+      case ObConfigResolver.ENABLE_BYTECODE_OBFUSCATION:
+        return OptionType.ENABLE_BYTECODE_OBFUSCATION;
+      case ObConfigResolver.ENABLE_BYTECODE_OBFUSCATION_DEBUGGING:
+        return OptionType.ENABLE_BYTECODE_OBFUSCATION_DEBUGGING;
+      case ObConfigResolver.ENABLE_BYTECODE_OBFUSCATION_ENHANCED:
+        return OptionType.ENABLE_BYTECODE_OBFUSCATION_ENHANCED;
+      case ObConfigResolver.ENABLE_BYTECODE_OBFUSCATION_ARKUI:
+        return OptionType.ENABLE_BYTECODE_OBFUSCATION_ARKUI;
       case ObConfigResolver.KEEP_DTS:
         return OptionType.KEEP_DTS;
       case ObConfigResolver.KEEP_GLOBAL_NAME:
@@ -450,6 +493,26 @@ export class ObConfigResolver {
       tokenType = this.getTokenType(token);
       // handle switches cases
       switch (tokenType) {
+        case OptionType.ENABLE_BYTECODE_OBFUSCATION: {
+          configs.options.bytecodeObf.enable = true;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
+        case OptionType.ENABLE_BYTECODE_OBFUSCATION_DEBUGGING: {
+          configs.options.bytecodeObf.debugging = true;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
+        case OptionType.ENABLE_BYTECODE_OBFUSCATION_ENHANCED: {
+          configs.options.bytecodeObf.enhanced = true;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
+        case OptionType.ENABLE_BYTECODE_OBFUSCATION_ARKUI: {
+          configs.options.bytecodeObf.obfArkUI = true;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
         case OptionType.DISABLE_OBFUSCATION: {
           configs.options.disableObfuscation = true;
           extraOptionType = OptionType.NONE;
@@ -719,7 +782,7 @@ export class ObConfigResolver {
     }
     const arkUIReservedPropertyNames: string[] = this.collectUIApiWhitelist(existPreDefineFilePath, existArkUIWhitelistPath, config);
     let systemApiContent: SystemApiContent = {};
-    if (config.options.enablePropertyObfuscation) {
+    if (config.options.enablePropertyObfuscation || config.options.bytecodeObf?.enable) {
       if (!config.options.stripSystemApiArgs) {
         UnobfuscationCollections.reservedSdkApiForLocal = new Set(ApiExtractor.mPropertySet);
         systemApiContent.ReservedLocalNames = Array.from(ApiExtractor.mPropertySet);
@@ -728,7 +791,8 @@ export class ObConfigResolver {
       UnobfuscationCollections.reservedSdkApiForProp = savedNameAndPropertySet;
       systemApiContent.ReservedPropertyNames = Array.from(savedNameAndPropertySet);
     }
-    if (config.options.enableToplevelObfuscation && config.options.enableExportObfuscation) {
+    if ((config.options.enableToplevelObfuscation && config.options.enableExportObfuscation) ||
+      config.options.bytecodeObf?.enable) {
       const savedExportNamesSet = new Set(ApiExtractor.mSystemExportSet);
       UnobfuscationCollections.reservedSdkApiForGlobal = savedExportNamesSet;
       systemApiContent.ReservedGlobalNames = Array.from(savedExportNamesSet);
@@ -1321,7 +1385,8 @@ export function enableObfuscatedFilePathConfig(isPackageModules: boolean, projec
   }
   const disableObfuscation = hasObfuscationConfig.options.disableObfuscation;
   const enableFileNameObfuscation = hasObfuscationConfig.options.enableFileNameObfuscation;
-  if (disableObfuscation || !enableFileNameObfuscation) {
+  const enableBytecodeObfuscation = hasObfuscationConfig.options.bytecodeObf?.enable;
+  if (disableObfuscation || !enableFileNameObfuscation || enableBytecodeObfuscation) {
     return false;
   }
   return true;
