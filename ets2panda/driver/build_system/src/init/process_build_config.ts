@@ -23,6 +23,7 @@ import {
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
 import {
+  BUILD_MODE,
   KOALA_WRAPPER_PATH_FROM_SDK,
   PANDA_SDK_PATH_FROM_SDK
 } from '../pre_define';
@@ -38,7 +39,11 @@ export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   let buildConfig: BuildConfig = { ...projectConfig };
   let buildSdkPath: string = buildConfig.buildSdkPath as string;
   buildConfig.pandaSdkPath = buildConfig.pandaSdkPath ?? path.resolve(buildSdkPath, PANDA_SDK_PATH_FROM_SDK);
-
+  /**
+   * ets2panda guys require remove debug param
+   * it contain some bugs.
+   */
+  buildConfig.buildMode = BUILD_MODE.RELEASE;
   initPlatformSpecificConfig(buildConfig);
   initBuildEnv(buildConfig);
   initKoalaWrapper(buildConfig);
