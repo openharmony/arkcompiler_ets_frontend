@@ -66,9 +66,9 @@
         },
         {
             "line": 21,
-            "column": 57,
+            "column": 58,
             "endLine": 21,
-            "endColumn": 62,
+            "endColumn": 63,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
