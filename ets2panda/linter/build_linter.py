@@ -42,6 +42,22 @@ def run_cmd(cmd, execution_path=None):
     stdout, stderr = proc.communicate(timeout=600)
     if proc.returncode != 0:
         raise Exception(stderr.decode())
+    return stdout
+
+
+def is_npm_newer_than_6(options):
+    cmd = [options.npm, '-v']
+    stdout = run_cmd(cmd, options.source_path)
+    version_str = stdout.decode('utf-8').strip()
+    # get npm major version（i.e. "6.14.15" -> 6）
+    major_version = int(version_str.split('.')[0])
+    if major_version is not None:
+        if major_version <= 6:
+            return False
+        else:
+            return True
+    # default set to lower than v7 which can compatible with v7+
+    return False
 
 
 def build(options):
@@ -70,7 +86,12 @@ def copy_output(options):
 
 
 def install_typescript(options):
-    cmd = [options.npm, 'install', '--no-save', options.typescript]
+    new_npm = is_npm_newer_than_6(options)
+    tsc_file = 'file:' + options.typescript
+    if new_npm:
+        cmd = [options.npm, 'install', '--no-save', tsc_file, '--legacy-peer-deps', '--offline']
+    else:
+        cmd = [options.npm, 'install', '--no-save', tsc_file]
     run_cmd(cmd, options.source_path)
 
 
@@ -94,13 +115,17 @@ def clean_old_packages(directory, prefix, suffix):
     return res
 
 
-def pack_arkanalyzer(options):
+def pack_arkanalyzer(options, new_npm):
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
+    tsc_file = 'file:' + options.typescript
     pack_prefix = 'arkanalyzer-'
     pack_suffix = '.tgz'
     clean_old_packages(aa_path, pack_prefix, pack_suffix)
 
-    ts_install_cmd = [options.npm, 'install', options.typescript]
+    if new_npm:
+        ts_install_cmd = [options.npm, 'install', tsc_file, '--legacy-peer-deps', '--offline']
+    else:
+        ts_install_cmd = [options.npm, 'install', tsc_file]
     compile_cmd = [options.npm, 'run', 'compile']
     pack_cmd = [options.npm, 'pack']
     run_cmd(ts_install_cmd, aa_path)
@@ -109,7 +134,8 @@ def pack_arkanalyzer(options):
 
 
 def install_homecheck(options):
-    pack_arkanalyzer(options)
+    new_npm = is_npm_newer_than_6(options)
+    pack_arkanalyzer(options, new_npm)
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
     hc_path = os.path.join(options.source_path, 'homecheck')
     aa_pack_prefix = 'arkanalyzer-'
@@ -117,13 +143,21 @@ def install_homecheck(options):
     pack_suffix = '.tgz'
     exist_aa_packs = find_files_by_prefix_suffix(aa_path, aa_pack_prefix, pack_suffix)
     if (exist_aa_packs):
-        aa_install_cmd = [options.npm, 'install', exist_aa_packs[0]]
+        aa_file = 'file:' + exist_aa_packs[0]
+        if new_npm:
+            aa_install_cmd = [options.npm, 'install', aa_file, '--legacy-peer-deps', '--offline']
+        else:
+            aa_install_cmd = [options.npm, 'install', aa_file]
         run_cmd(aa_install_cmd, hc_path)
     else:
         raise Exception('Failed to find arkanalyzer npm package')
 
     clean_old_packages(hc_path, hc_pack_prefix, pack_suffix)
-    ts_install_cmd = [options.npm, 'install', '--no-save', options.typescript]
+    tsc_file = 'file:' + options.typescript
+    if new_npm:
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file, '--legacy-peer-deps', '--offline']
+    else:
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file]
     pack_cmd = [options.npm, 'pack']
     compile_cmd = [options.npm, 'run', 'compile']
     run_cmd(ts_install_cmd, hc_path)
@@ -131,7 +165,11 @@ def install_homecheck(options):
     run_cmd(pack_cmd, hc_path)
     exist_hc_packs = find_files_by_prefix_suffix(hc_path, hc_pack_prefix, pack_suffix)
     if (exist_hc_packs):
-        hc_install_cmd = [options.npm, 'install', exist_hc_packs[0]]
+        hc_file = 'file:' + exist_hc_packs[0]
+        if new_npm:
+            hc_install_cmd = [options.npm, 'install', hc_file, '--legacy-peer-deps', '--offline']
+        else:
+            hc_install_cmd = [options.npm, 'install', hc_file]
         run_cmd(hc_install_cmd, options.source_path)
     else:
         raise Exception('Failed to find homecheck npm package')
