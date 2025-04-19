@@ -844,23 +844,71 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSPrimitiveType",
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": "launch_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSPrimitiveType",
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "launch_expression.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "launch_expression.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    }
+                  }
+                },
                 "loc": {
                   "start": {
-                    "line": 20,
-                    "column": 8,
+                    "line": 1,
+                    "column": 1,
                     "program": "launch_expression.ets"
                   },
                   "end": {
-                    "line": 20,
-                    "column": 11,
+                    "line": 1,
+                    "column": 3,
                     "program": "launch_expression.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 20,
@@ -915,23 +963,71 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSPrimitiveType",
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": "launch_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSPrimitiveType",
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "launch_expression.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "launch_expression.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "launch_expression.ets"
+                    }
+                  }
+                },
                 "loc": {
                   "start": {
-                    "line": 21,
-                    "column": 8,
+                    "line": 1,
+                    "column": 1,
                     "program": "launch_expression.ets"
                   },
                   "end": {
-                    "line": 21,
-                    "column": 11,
+                    "line": 1,
+                    "column": 3,
                     "program": "launch_expression.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 21,
@@ -1922,55 +2018,103 @@
                             "type": "Identifier",
                             "name": "p",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "P",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 34,
-                                        "column": 12,
-                                        "program": "launch_expression.ets"
-                                      },
-                                      "end": {
-                                        "line": 34,
-                                        "column": 13,
-                                        "program": "launch_expression.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 34,
-                                      "column": 12,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "launch_expression.ets"
                                     },
                                     "end": {
-                                      "line": 34,
-                                      "column": 14,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "launch_expression.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "P",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "launch_expression.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "launch_expression.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "launch_expression.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "launch_expression.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "launch_expression.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "launch_expression.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "launch_expression.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "launch_expression.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 34,
-                                    "column": 12,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "launch_expression.ets"
                                   },
                                   "end": {
-                                    "line": 34,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "launch_expression.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 34,

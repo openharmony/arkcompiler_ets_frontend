@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,23 @@
  * limitations under the License.
  */
 
-function main(): void {
-    const tuple: [number, number, boolean] = [1, 3.14, true]
-    const array: (number|boolean) [] = tuple
-}
+#ifndef ES2PANDA_COMPILER_LOWERING_RESIZABLE_ARRAY_H
+#define ES2PANDA_COMPILER_LOWERING_RESIZABLE_ARRAY_H
 
-/* @@? 18:40 Error TypeError: Type '[double, double, boolean]' cannot be assigned to type '(Double|Boolean)[]' */
+#include "compiler/lowering/phase.h"
+
+namespace ark::es2panda::compiler {
+
+class ResizableArrayConvert : public PhaseForDeclarations {
+public:
+    std::string_view Name() const override
+    {
+        return "ResizableArrayConvert";
+    }
+
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+};
+
+}  // namespace ark::es2panda::compiler
+
+#endif

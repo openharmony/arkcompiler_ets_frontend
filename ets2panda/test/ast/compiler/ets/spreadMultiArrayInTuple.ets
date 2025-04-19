@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +21,9 @@ function main() {
     let y2: [boolean, int, string, string] = /* @@ label3 */[true, /* @@ label4 */...x2, /* @@ label5 */...x3]
 }
 
-/* @@@ label1 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@@ label2 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@@ label Error TypeError: Initializer has 2 elements, but tuple requires 4 */
-/* @@@ label4 Error TypeError: 'double[]' cannot be spread in tuple. */
-/* @@@ label5 Error TypeError: 'String[]' cannot be spread in tuple. */
-/* @@@ label3 Error TypeError: Initializer has 3 elements, but tuple requires 4 */
+/* @@? 18:56 Error TypeError: Initializer has 2 elements, but tuple requires 4 */
+/* @@? 18:72 Error TypeError: 'Array<Int|String>' cannot be spread in tuple. */
+/* @@? 18:94 Error TypeError: 'Array<Int|String>' cannot be spread in tuple. */
+/* @@? 21:61 Error TypeError: Initializer has 3 elements, but tuple requires 4 */
+/* @@? 21:83 Error TypeError: 'Array<Double>' cannot be spread in tuple. */
+/* @@? 21:105 Error TypeError: 'Array<String>' cannot be spread in tuple. */

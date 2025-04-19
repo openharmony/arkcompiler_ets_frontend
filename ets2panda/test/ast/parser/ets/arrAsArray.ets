@@ -19,5 +19,3 @@ function main() {
         2, 3, 5, 7, 11
     ] as Array<Int>
 }
-
-/* @@@ label Error TypeError: Expected type for array literal should be an array type, got Array<Int>  */

@@ -287,16 +287,6 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
     ApplyAnnotationsToSpecificNodeType(node, std::move(annotations), pos);
 }
 
-void ETSParser::ApplyAnnotationsToArrayType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                            lexer::SourcePosition pos)
-{
-    const auto *elementType = node->AsTSArrayType()->ElementType();
-    while (elementType->IsTSArrayType()) {
-        elementType = elementType->AsTSArrayType()->ElementType();
-    }
-    ApplyAnnotationsToNode(const_cast<ir::TypeNode *>(elementType), std::move(annotations), pos);
-}
-
 // CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                                    lexer::SourcePosition pos)
@@ -339,7 +329,7 @@ void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVecto
             node->AsETSTypeReference()->SetAnnotations(std::move(annotations));
             break;
         case ir::AstNodeType::TS_ARRAY_TYPE:
-            ApplyAnnotationsToArrayType(node, std::move(annotations), pos);
+            node->AsTSArrayType()->SetAnnotations(std::move(annotations));
             break;
         case ir::AstNodeType::ETS_TUPLE:
             node->AsETSTuple()->SetAnnotations(std::move(annotations));

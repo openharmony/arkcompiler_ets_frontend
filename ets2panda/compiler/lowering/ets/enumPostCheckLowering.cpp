@@ -386,8 +386,8 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
                     checker_->Context().SetContainingClass(
                         parentClass->AsClassDefinition()->TsType()->AsETSObjectType());
                 }
-                node->Check(checker_);
                 node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
+                node->Check(checker_);
                 if (node->IsExpression() && node->AsExpression()->TsType() != nullptr &&
                     !node->AsExpression()->TsType()->IsETSIntEnumType()) {
                     node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);

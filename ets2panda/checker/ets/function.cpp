@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
+#include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/ets/etsTupleType.h"
+#include "generated/signatures.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/function_helpers.h"
@@ -52,6 +54,8 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
+
+#include <compiler/lowering/util.h>
 
 namespace ark::es2panda::checker {
 
@@ -112,6 +116,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     }
     if (paramType->IsETSUnionType()) {
         return EnhanceSubstitutionForUnion(typeParams, paramType->AsETSUnionType(), argumentType, substitution);
+    }
+    if (paramType->IsETSResizableArrayType()) {
+        return EnhanceSubstitutionForResizableArray(typeParams, paramType->AsETSResizableArrayType(), argumentType,
+                                                    substitution);
     }
     if (paramType->IsETSObjectType()) {
         return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
@@ -257,6 +265,16 @@ bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typePara
     return EnhanceSubstitutionForType(typeParams, paramType->ElementType(), elementType, substitution);
 }
 
+bool ETSChecker::EnhanceSubstitutionForResizableArray(const ArenaVector<Type *> &typeParams,
+                                                      ETSResizableArrayType *const paramType, Type *const argumentType,
+                                                      Substitution *const substitution)
+{
+    auto *const elementType =
+        argumentType->IsETSResizableArrayType() ? argumentType->AsETSResizableArrayType()->ElementType() : argumentType;
+
+    return EnhanceSubstitutionForType(typeParams, paramType->ElementType(), elementType, substitution);
+}
+
 Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                         bool throwError)
 {
@@ -288,6 +306,28 @@ bool ETSChecker::ValidateArgumentAsIdentifier(const ir::Identifier *identifier)
 {
     auto result = Scope()->Find(identifier->Name());
     return result.variable != nullptr && (result.variable->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE));
+}
+
+static void ClearPreferredTypeForArray(checker::ETSChecker *checker, ir::Expression *argument, Type *paramType,
+                                       TypeRelationFlag flags, bool needRecheck)
+{
+    if (argument->IsArrayExpression()) {
+        // fixed array and resizeable array will cause problem here, so clear it.
+        argument->AsArrayExpression()->ClearPreferredType();
+        argument->AsArrayExpression()->SetPreferredTypeBasedOnFuncParam(checker, paramType, flags);
+    } else if (argument->IsETSNewArrayInstanceExpression()) {
+        argument->AsETSNewArrayInstanceExpression()->ClearPreferredType();
+        argument->AsETSNewArrayInstanceExpression()->SetPreferredTypeBasedOnFuncParam(checker, paramType, flags);
+    } else if (argument->IsETSNewMultiDimArrayInstanceExpression()) {
+        argument->AsETSNewMultiDimArrayInstanceExpression()->ClearPreferredType();
+        argument->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredTypeBasedOnFuncParam(checker, paramType,
+                                                                                              flags);
+    } else {
+        return;
+    }
+    if (needRecheck) {
+        argument->Check(checker);
+    }
 }
 
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
@@ -329,9 +369,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             return false;
         }
 
-        if (argument->IsArrayExpression()) {
-            argument->AsArrayExpression()->SetPreferredTypeBasedOnFuncParam(this, paramType, flags);
-        }
+        ClearPreferredTypeForArray(this, argument, paramType, flags, false);
 
         if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
             LogError(diagnostic::ARG_IS_CLASS_ID, {}, argument->Start());
@@ -371,12 +409,15 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
         return true;
     }
     const auto argumentType = argument->Check(this);
-    auto *targetType = substitutedSig->RestVar()->TsType();
-    if (targetType->IsETSTupleType()) {
+    auto *restParam = substitutedSig->RestVar()->TsType();
+    if (restParam->IsETSTupleType()) {
         return false;
     }
+    if (argument->HasAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST)) {
+        return true;
+    }
 
-    targetType = substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+    auto targetType = GetElementTypeOfArray(restParam);
     if (substitutedSig->OwnerVar() == nullptr) {
         targetType = MaybeBoxType(targetType);
     }
@@ -530,10 +571,10 @@ std::array<TypeRelationFlag, 9U> GetFlagVariants()
     // NOTE(boglarkahaag): Not in sync with specification, but solves the issues with rest params for now (#17483)
     return {
         TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING |
-            TypeRelationFlag::IGNORE_REST_PARAM,
+            TypeRelationFlag::IGNORE_REST_PARAM | TypeRelationFlag::NO_WIDENING,
         TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING,
-        TypeRelationFlag::NO_THROW | TypeRelationFlag::IGNORE_REST_PARAM,
-        TypeRelationFlag::NO_THROW,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::IGNORE_REST_PARAM | TypeRelationFlag::NO_WIDENING,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_WIDENING,
         TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING | TypeRelationFlag::NO_UNBOXING |
             TypeRelationFlag::NO_BOXING | TypeRelationFlag::IGNORE_REST_PARAM,
         TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING | TypeRelationFlag::NO_UNBOXING |
@@ -606,6 +647,18 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
     return compatibleSignatures;
 }
 
+static void UpdateArrayArgs(ETSChecker *checker, Signature *sig, const ArenaVector<ir::Expression *> &arguments)
+{
+    auto const commonArity = std::min(arguments.size(), sig->ArgCount());
+    for (size_t index = 0; index < commonArity; ++index) {
+        auto argument = arguments[index];
+        auto const paramType = checker->GetNonNullishType(sig->Params()[index]->TsType());
+        auto flags = TypeRelationFlag::NO_THROW | TypeRelationFlag::BOXING | TypeRelationFlag::UNBOXING |
+                     TypeRelationFlag::WIDENING;
+        ClearPreferredTypeForArray(checker, argument, paramType, flags, true);
+    }
+}
+
 Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compatibleSignatures,
                                                 const ArenaVector<ir::Expression *> &arguments,
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
@@ -622,6 +675,9 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     if (!TypeInference(mostSpecificSignature, arguments, resolveFlags)) {
         return nullptr;
     }
+
+    // revalidate signature for arrays
+    UpdateArrayArgs(this, mostSpecificSignature, arguments);
 
     return mostSpecificSignature;
 }
@@ -735,17 +791,18 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
     return result;
 }
 
-static Type *GetParatmeterTypeOrRestAtIdx(Signature *sig, const size_t idx)
+static Type *GetParatmeterTypeOrRestAtIdx(checker::ETSChecker *checker, Signature *sig, const size_t idx)
 {
     return idx < sig->ArgCount() ? sig->Params().at(idx)->TsType()
-                                 : sig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+                                 : checker->GetElementTypeOfArray(sig->RestVar()->TsType());
 }
 
-static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[maybe_unused]] Type *&mostSpecificType,
-                                 [[maybe_unused]] Signature *&prevSig, const size_t idx)
+static void InitMostSpecificType(checker::ETSChecker *checker, const ArenaVector<Signature *> &signatures,
+                                 [[maybe_unused]] Type *&mostSpecificType, [[maybe_unused]] Signature *&prevSig,
+                                 const size_t idx)
 {
     for (auto *sig : signatures) {
-        if (Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
+        if (Type *sigType = GetParatmeterTypeOrRestAtIdx(checker, sig, idx);
             sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
             mostSpecificType = sigType;
             prevSig = sig;
@@ -759,7 +816,7 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
                                               bool lookForClassType)
 {
     auto [pos, idx, sig] = info;
-    Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
+    Type *sigType = GetParatmeterTypeOrRestAtIdx(this, sig, idx);
     const bool isClassType =
         sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
     if (isClassType == lookForClassType) {
@@ -807,7 +864,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
         Type *mostSpecificType = signatures.front()->Params().at(i)->TsType();
         Signature *prevSig = signatures.front();
 
-        InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
+        InitMostSpecificType(this, signatures, mostSpecificType, prevSig, i);
         for (auto *sig : signatures) {
             SearchAmongMostSpecificTypes(mostSpecificType, prevSig, std::make_tuple(pos, i, sig), true);
         }
@@ -816,7 +873,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
         }
 
         for (auto *sig : signatures) {
-            Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, i);
+            Type *sigType = GetParatmeterTypeOrRestAtIdx(this, sig, i);
             if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
                 bestSignaturesForParameter.insert({i, sig});
             }
@@ -852,8 +909,12 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
             return *zeroParamSignature;
         }
         // If there are multiple rest parameter signatures with different argument types, throw error
-        if (signatures.size() > 1 && std::any_of(signatures.begin(), signatures.end(), [signatures](const auto *param) {
-                return param->RestVar()->TsType() != signatures.front()->RestVar()->TsType();
+        if (signatures.size() > 1 &&
+            std::any_of(signatures.begin(), signatures.end(), [signatures, this](const auto *param) {
+                auto left = MaybeBoxType(GetElementTypeOfArray(param->RestVar()->TsType()));
+                auto right = MaybeBoxType(GetElementTypeOfArray(signatures.front()->RestVar()->TsType()));
+                Relation()->IsIdenticalTo(left, right);
+                return !Relation()->IsTrue();
             })) {
             LogError(diagnostic::AMBIGUOUS_CALL_2, {signatures.front()->Function()->Id()->Name()}, pos);
             return nullptr;
@@ -1009,7 +1070,7 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
         if (index >= signature->Params().size()) {
             ES2PANDA_ASSERT(signature->RestVar());
             // Use element type as rest object literal type
-            tp = signature->RestVar()->TsType()->AsETSArrayType()->ElementType();
+            tp = GetElementTypeOfArray(signature->RestVar()->TsType());
         } else {
             // #22952: infer optional parameter heuristics
             tp = GetNonNullishType(signature->Params()[index]->TsType());
@@ -1089,6 +1150,14 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     if (ldInfo.needHelperOverload) {
         Warning("Function " + std::string(funcType->Name()) + " with this assembly signature already declared.",
                 method->Start());
+    }
+
+    if (method->Function()->Signature()->HasRestParameter()) {
+        auto *restVar = method->Function()->Signature()->RestVar();
+        if (!restVar->TsType()->IsETSArrayType() && !(restVar->TsType()->IsETSResizableArrayType()) &&
+            !restVar->TsType()->IsETSTupleType()) {
+            LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, restVar->Declaration()->Node()->Start());
+        }
     }
 
     return method->Id()->Variable()->SetTsType(funcType);

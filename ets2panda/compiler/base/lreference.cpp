@@ -295,8 +295,11 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    ES2PANDA_ASSERT(objectType->IsETSArrayType());
-    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
+    ES2PANDA_ASSERT(objectType->IsETSArrayType() || objectType->IsETSResizableArrayType());
+    auto vRegtype = etsg_->GetVRegType(baseReg_);
+    auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
+                                                   : vRegtype->AsETSResizableArrayType()->ElementType();
+    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const

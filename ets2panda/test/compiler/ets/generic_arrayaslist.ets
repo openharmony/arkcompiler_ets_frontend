@@ -79,7 +79,7 @@ class ArrayAsListt<T> implements Listt<T> {
     public override pushFront(e: T): void {
         let dst = this.data;
         if (this.curSize == this.data.length) {
-            dst = new (T | undefined)[this.getNewCapacity(this.data.length)];
+            dst = new (T | undefined)[this.getNewCapacity(this.data.length as int)];
         }
         for (let i = this.curSize; i != 0; --i) {
             dst[i] = this.data[i-1];
@@ -101,7 +101,7 @@ class ArrayAsListt<T> implements Listt<T> {
 
     public override pushBack(e: T): void {
         if (this.curSize == this.data.length) {
-            let newData = new (T | undefined)[this.getNewCapacity(this.data.length)];
+            let newData = new (T | undefined)[this.getNewCapacity(this.data.length as int)];
             for (let i = 0; i < this.curSize; ++i) {
                 newData[i] = this.data[i];
             }

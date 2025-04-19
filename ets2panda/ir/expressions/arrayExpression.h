@@ -140,6 +140,8 @@ public:
         preferredType_ = nullptr;
     }
 
+    void ClearPreferredType();
+
     [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     [[nodiscard]] bool ConvertibleToArrayPattern();
@@ -160,6 +162,7 @@ public:
     {
         v->Accept(this);
     }
+    static std::optional<checker::Type *> ExtractPossiblePreferredType(checker::Type *type);
 
     void SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
                                           checker::TypeRelationFlag flags);

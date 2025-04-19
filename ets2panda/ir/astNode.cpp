@@ -243,7 +243,6 @@ AstNode *AstNode::OriginalNode() const noexcept
 
 void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)
 {
-    ES2PANDA_ASSERT(!transformedNode_.has_value());
     transformedNode->SetOriginalNode(this);
     transformedNode_ = std::make_optional(std::make_pair(transformationName, transformedNode));
 }

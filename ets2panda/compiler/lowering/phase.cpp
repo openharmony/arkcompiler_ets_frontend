@@ -17,6 +17,8 @@
 #include "checker/checker.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/asyncMethodLowering.h"
+#include "compiler/lowering/ets/ambientLowering.h"
+#include "compiler/lowering/ets/arrayLiteralLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
@@ -49,6 +51,8 @@
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/recordLowering.h"
+#include "compiler/lowering/ets/resizableArrayLowering.h"
+#include "compiler/lowering/ets/restArgsLowering.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/stringComparison.h"
@@ -60,7 +64,6 @@
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "ets/ambientLowering.h"
 #include "generated/diagnostic.h"
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
@@ -73,6 +76,7 @@ static SetJumpTargetPhase g_setJumpTargetPhase;
 static CFGBuilderPhase g_cfgBuilderPhase;
 static ResolveIdentifiers g_resolveIdentifiers {};
 static AmbientLowering g_ambientLowering;
+static ArrayLiteralLowering g_arrayLiteralLowering {};
 static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
 static ConstantExpressionLowering g_constantExpressionLowering;
@@ -111,6 +115,8 @@ static GenericBridgesPhase g_genericBridgesLowering;
 static BoxedTypeLowering g_boxedTypeLowering;
 static AsyncMethodLowering g_asyncMethodLowering;
 static TypeFromLowering g_typeFromLowering;
+static ResizableArrayConvert g_resizableArrayConvert;
+static RestArgsLowering g_restArgsLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -134,6 +140,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_stringConstantsLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
+        &g_resizableArrayConvert,
         &g_expressionLambdaConstructionPhase,
         &g_defaultParametersInConstructorLowering,
         &g_defaultParametersLowering,
@@ -157,6 +164,8 @@ std::vector<Phase *> GetETSPhaseList()
         &g_declareOverloadLowering,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
+        &g_restArgsLowering,
+        &g_arrayLiteralLowering,
         &g_bigintLowering,
         &g_opAssignmentLowering,
         &g_extensionAccessorPhase,

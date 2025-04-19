@@ -328,55 +328,103 @@
                                     }
                                   },
                                   "typeAnnotation": {
-                                    "type": "TSArrayType",
-                                    "elementType": {
-                                      "type": "ETSTypeReference",
-                                      "part": {
-                                        "type": "ETSTypeReferencePart",
-                                        "name": {
-                                          "type": "Identifier",
-                                          "name": "Int",
-                                          "decorators": [],
-                                          "loc": {
-                                            "start": {
-                                              "line": 17,
-                                              "column": 42,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            },
-                                            "end": {
-                                              "line": 17,
-                                              "column": 45,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            }
-                                          }
-                                        },
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Array",
+                                        "decorators": [],
                                         "loc": {
                                           "start": {
-                                            "line": 17,
-                                            "column": 42,
+                                            "line": 1,
+                                            "column": 1,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
-                                            "line": 17,
-                                            "column": 46,
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          }
+                                        }
+                                      },
+                                      "typeParams": {
+                                        "type": "TSTypeParameterInstantiation",
+                                        "params": [
+                                          {
+                                            "type": "ETSTypeReference",
+                                            "part": {
+                                              "type": "ETSTypeReferencePart",
+                                              "name": {
+                                                "type": "Identifier",
+                                                "name": "Int",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  }
+                                                }
+                                              },
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
-                                          "line": 17,
-                                          "column": 42,
+                                          "line": 1,
+                                          "column": 1,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
-                                          "line": 17,
-                                          "column": 46,
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
-                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 17,
@@ -605,55 +653,103 @@
                                     }
                                   },
                                   "typeAnnotation": {
-                                    "type": "TSArrayType",
-                                    "elementType": {
-                                      "type": "ETSTypeReference",
-                                      "part": {
-                                        "type": "ETSTypeReferencePart",
-                                        "name": {
-                                          "type": "Identifier",
-                                          "name": "Double",
-                                          "decorators": [],
-                                          "loc": {
-                                            "start": {
-                                              "line": 18,
-                                              "column": 42,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            },
-                                            "end": {
-                                              "line": 18,
-                                              "column": 48,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            }
-                                          }
-                                        },
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Array",
+                                        "decorators": [],
                                         "loc": {
                                           "start": {
-                                            "line": 18,
-                                            "column": 42,
+                                            "line": 1,
+                                            "column": 1,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
-                                            "line": 18,
-                                            "column": 49,
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          }
+                                        }
+                                      },
+                                      "typeParams": {
+                                        "type": "TSTypeParameterInstantiation",
+                                        "params": [
+                                          {
+                                            "type": "ETSTypeReference",
+                                            "part": {
+                                              "type": "ETSTypeReferencePart",
+                                              "name": {
+                                                "type": "Identifier",
+                                                "name": "Double",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  }
+                                                }
+                                              },
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
-                                          "line": 18,
-                                          "column": 42,
+                                          "line": 1,
+                                          "column": 1,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
-                                          "line": 18,
-                                          "column": 49,
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
-                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 18,
@@ -882,55 +978,103 @@
                                     }
                                   },
                                   "typeAnnotation": {
-                                    "type": "TSArrayType",
-                                    "elementType": {
-                                      "type": "ETSTypeReference",
-                                      "part": {
-                                        "type": "ETSTypeReferencePart",
-                                        "name": {
-                                          "type": "Identifier",
-                                          "name": "Object",
-                                          "decorators": [],
-                                          "loc": {
-                                            "start": {
-                                              "line": 19,
-                                              "column": 42,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            },
-                                            "end": {
-                                              "line": 19,
-                                              "column": 48,
-                                              "program": "generic_func_rest_param_spread_infer.ets"
-                                            }
-                                          }
-                                        },
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Array",
+                                        "decorators": [],
                                         "loc": {
                                           "start": {
-                                            "line": 19,
-                                            "column": 42,
+                                            "line": 1,
+                                            "column": 1,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
-                                            "line": 19,
-                                            "column": 49,
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          }
+                                        }
+                                      },
+                                      "typeParams": {
+                                        "type": "TSTypeParameterInstantiation",
+                                        "params": [
+                                          {
+                                            "type": "ETSTypeReference",
+                                            "part": {
+                                              "type": "ETSTypeReferencePart",
+                                              "name": {
+                                                "type": "Identifier",
+                                                "name": "Object",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "generic_func_rest_param_spread_infer.ets"
+                                                  }
+                                                }
+                                              },
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "generic_func_rest_param_spread_infer.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "generic_func_rest_param_spread_infer.ets"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
                                             "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
-                                          "line": 19,
-                                          "column": 42,
+                                          "line": 1,
+                                          "column": 1,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
-                                          "line": 19,
-                                          "column": 49,
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
-                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 19,

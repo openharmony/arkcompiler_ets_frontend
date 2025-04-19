@@ -206,23 +206,71 @@
                             "type": "Identifier",
                             "name": "foo",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSNullType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "array_with_null_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_null_type.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSNullType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_null_type.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_null_type.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_null_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_null_type.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "array_with_null_type.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 18,
+                                    "line": 1,
+                                    "column": 4,
                                     "program": "array_with_null_type.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

@@ -272,55 +272,103 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "Long",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 18,
-                                        "column": 14,
-                                        "program": "forofUnboxing.ets"
-                                      },
-                                      "end": {
-                                        "line": 18,
-                                        "column": 18,
-                                        "program": "forofUnboxing.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 18,
-                                      "column": 14,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "forofUnboxing.ets"
                                     },
                                     "end": {
-                                      "line": 18,
-                                      "column": 19,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "forofUnboxing.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Long",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "forofUnboxing.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "forofUnboxing.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "forofUnboxing.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "forofUnboxing.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "forofUnboxing.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "forofUnboxing.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "forofUnboxing.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "forofUnboxing.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 18,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "forofUnboxing.ets"
                                   },
                                   "end": {
-                                    "line": 18,
-                                    "column": 19,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "forofUnboxing.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 18,

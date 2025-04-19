@@ -23,7 +23,7 @@
 @interface Anno{}
 
 // annotations for elementType of array
-let array: @Anno FixedArray<FixedArray<Int>>
-let deepArray: @Anno FixedArray<FixedArray<FixedArray<FixedArray<FixedArray<Number>>>>>
+let array: @Anno Int[][]
+let deepArray: @Anno Number[][][][][]
 
 function main(){}

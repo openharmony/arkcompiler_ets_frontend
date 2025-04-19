@@ -146,11 +146,11 @@ TEST_F(MutipleAnnotationsforFunction, mutiple_annotations_for_function)
         }
 
         @interface Anno2 {
-            param: FixedArray<int> = [1, 2, 3, 4]
+            param: int[] = [1, 2, 3, 4]
         }
 
         @interface Anno3 {
-            param: FixedArray<FixedArray<FixedArray<int>>> = [[[1], [2]], [[2], [3]], [[3], [4]]]
+            param: int[][][] = [[[1], [2]], [[2], [3]], [[3], [4]]]
         }
 
         @Anno1(2)

@@ -557,7 +557,7 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
             : CreateETSUnionType(std::move(elementTypes));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return Allocator()->New<ETSArrayType>(arrayElementType);
+    return CreateETSResizableArrayType(arrayElementType);
 }
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
@@ -624,25 +624,11 @@ checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
     return resolvedType;
 }
 
-bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
-                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
+bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *ident, ir::TypeNode *typeAnnotation,
+                                   ir::Expression *init, checker::Type *annotationType)
 {
-    if (typeAnnotation == nullptr) {
-        if (init->IsArrayExpression()) {
-            annotationType = CheckArrayElements(init->AsArrayExpression());
-            if (bindingVar != nullptr) {
-                bindingVar->SetTsType(annotationType);
-            }
-        }
-
-        if (init->IsObjectExpression()) {
-            LogError(diagnostic::CANNOT_INFER_OBJ_LIT, {ident->Name()}, ident->Start());
-            return false;
-        }
-    }
-
     if (init->IsMemberExpression() && init->AsMemberExpression()->Object()->IsObjectExpression()) {
-        LogError(diagnostic::MEMBER_OF_OBJECT_LIT, {}, ident->Start());
+        checker->LogError(diagnostic::MEMBER_OF_OBJECT_LIT, {}, ident->Start());
     }
 
     if (annotationType != nullptr && annotationType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
@@ -650,12 +636,12 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
     }
 
     if ((init->IsMemberExpression()) && (annotationType != nullptr)) {
-        SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
+        checker->SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
 
     if (init->IsArrayExpression() && (annotationType != nullptr) && !annotationType->IsETSDynamicType()) {
         if (annotationType->IsETSTupleType() &&
-            !IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
+            !checker->IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
             return false;
         }
 
@@ -666,12 +652,43 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         init->AsObjectExpression()->SetPreferredType(PreferredObjectTypeFromAnnotation(annotationType));
     }
 
+    if (init->IsETSNewArrayInstanceExpression() && annotationType != nullptr) {
+        init->AsETSNewArrayInstanceExpression()->SetPreferredType(annotationType);
+    }
+    if (init->IsETSNewMultiDimArrayInstanceExpression() && annotationType != nullptr) {
+        init->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(annotationType);
+    }
+
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
+        checker->InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
 
     return true;
+}
+
+bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
+                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
+{
+    if (typeAnnotation == nullptr) {
+        if (init->IsArrayExpression()) {
+            annotationType = CheckArrayElements(init->AsArrayExpression());
+        } else if (init->IsETSNewArrayInstanceExpression()) {
+            annotationType = init->AsETSNewArrayInstanceExpression()->TypeReference()->GetType(this);
+            annotationType = CreateETSResizableArrayType(annotationType);
+        } else if (init->IsETSNewMultiDimArrayInstanceExpression()) {
+            auto multiArray = init->AsETSNewMultiDimArrayInstanceExpression();
+            annotationType = multiArray->TypeReference()->GetType(this);
+            annotationType = CreateETSMultiDimResizableArrayType(annotationType, multiArray->Dimensions().size());
+        } else if (init->IsObjectExpression()) {
+            LogError(diagnostic::CANNOT_INFER_OBJ_LIT, {ident->Name()}, ident->Start());
+            return false;
+        }
+        if (bindingVar != nullptr) {
+            bindingVar->SetTsType(annotationType);
+        }
+    }
+    return SetPreferredTypeForExpression(this, ident, typeAnnotation, init, annotationType);
 }
 
 void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)
@@ -1763,6 +1780,29 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
         default:
             ES2PANDA_UNREACHABLE();
     }
+}
+
+checker::Type *ETSChecker::GetElementTypeOfArray(checker::Type *type)
+{
+    if (type->IsTypeError()) {
+        return GlobalTypeError();
+    }
+    if (type->IsETSArrayType()) {
+        return type->AsETSArrayType()->ElementType();
+    }
+
+    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
+    return type->AsETSResizableArrayType()->ElementType();
+}
+
+const checker::Type *ETSChecker::GetElementTypeOfArray(const checker::Type *type) const
+{
+    if (type->IsETSArrayType()) {
+        return type->AsETSArrayType()->ElementType();
+    }
+
+    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
+    return type->AsETSResizableArrayType()->ElementType();
 }
 
 void ETSChecker::ConcatConstantString(util::UString &target, Type *type)

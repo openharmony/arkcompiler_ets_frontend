@@ -14,19 +14,19 @@
  */
 
 class A {
-    foo(...n: number[]){
+    foo(...n: FixedArray<number>){
         return "A";
     }
 }
 
 class B extends A {
-    foo(...n: number[]){
+    foo(...n: FixedArray<number>){
         return "B";
     }
 }
 
 class C extends B {
-    foo(...n: number[]){
+    foo(...n: FixedArray<number>){
         return "C";
     }
 }

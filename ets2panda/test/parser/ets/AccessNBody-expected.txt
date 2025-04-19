@@ -2683,55 +2683,103 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Body",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 47,
-                        "column": 15,
-                        "program": "AccessNBody.ets"
-                      },
-                      "end": {
-                        "line": 47,
-                        "column": 19,
-                        "program": "AccessNBody.ets"
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 47,
-                      "column": 15,
+                      "line": 1,
+                      "column": 1,
                       "program": "AccessNBody.ets"
                     },
                     "end": {
-                      "line": 47,
-                      "column": 20,
+                      "line": 1,
+                      "column": 3,
+                      "program": "AccessNBody.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "Body",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "AccessNBody.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "AccessNBody.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "AccessNBody.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "AccessNBody.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "AccessNBody.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "AccessNBody.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "AccessNBody.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
                       "program": "AccessNBody.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 47,
-                    "column": 15,
+                    "line": 1,
+                    "column": 1,
                     "program": "AccessNBody.ets"
                   },
                   "end": {
-                    "line": 47,
-                    "column": 20,
+                    "line": 1,
+                    "column": 3,
                     "program": "AccessNBody.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 47,
@@ -2815,55 +2863,103 @@
                       "type": "Identifier",
                       "name": "bodies",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "Body",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 48,
-                                  "column": 34,
-                                  "program": "AccessNBody.ets"
-                                },
-                                "end": {
-                                  "line": 48,
-                                  "column": 38,
-                                  "program": "AccessNBody.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 48,
-                                "column": 34,
+                                "line": 1,
+                                "column": 1,
                                 "program": "AccessNBody.ets"
                               },
                               "end": {
-                                "line": 48,
-                                "column": 39,
+                                "line": 1,
+                                "column": 3,
+                                "program": "AccessNBody.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Body",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "AccessNBody.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "AccessNBody.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "AccessNBody.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "AccessNBody.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "AccessNBody.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "AccessNBody.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 48,
-                              "column": 34,
+                              "line": 1,
+                              "column": 1,
                               "program": "AccessNBody.ets"
                             },
                             "end": {
-                              "line": 48,
-                              "column": 39,
+                              "line": 1,
+                              "column": 3,
                               "program": "AccessNBody.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 48,
@@ -3286,11 +3382,45 @@
                             }
                           },
                           "init": {
-                            "type": "MemberExpression",
-                            "object": {
+                            "type": "TSAsExpression",
+                            "expression": {
                               "type": "MemberExpression",
                               "object": {
-                                "type": "ThisExpression",
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "ThisExpression",
+                                  "loc": {
+                                    "start": {
+                                      "line": 53,
+                                      "column": 27,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 53,
+                                      "column": 31,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "bodies",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 53,
+                                      "column": 32,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 53,
+                                      "column": 38,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "computed": false,
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 53,
@@ -3299,24 +3429,24 @@
                                   },
                                   "end": {
                                     "line": 53,
-                                    "column": 31,
+                                    "column": 38,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
                               },
                               "property": {
                                 "type": "Identifier",
-                                "name": "bodies",
+                                "name": "length",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
                                     "line": 53,
-                                    "column": 32,
+                                    "column": 39,
                                     "program": "AccessNBody.ets"
                                   },
                                   "end": {
                                     "line": 53,
-                                    "column": 38,
+                                    "column": 45,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
@@ -3331,30 +3461,26 @@
                                 },
                                 "end": {
                                   "line": 53,
-                                  "column": 38,
-                                  "program": "AccessNBody.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "length",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 39,
-                                  "program": "AccessNBody.ets"
-                                },
-                                "end": {
-                                  "line": 53,
                                   "column": 45,
                                   "program": "AccessNBody.ets"
                                 }
                               }
                             },
-                            "computed": false,
-                            "optional": false,
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType",
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 49,
+                                  "program": "AccessNBody.ets"
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 52,
+                                  "program": "AccessNBody.ets"
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 53,
@@ -3391,7 +3517,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 46,
+                          "column": 53,
                           "program": "AccessNBody.ets"
                         }
                       }
@@ -5023,11 +5149,45 @@
                             }
                           },
                           "init": {
-                            "type": "MemberExpression",
-                            "object": {
+                            "type": "TSAsExpression",
+                            "expression": {
                               "type": "MemberExpression",
                               "object": {
-                                "type": "ThisExpression",
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "ThisExpression",
+                                  "loc": {
+                                    "start": {
+                                      "line": 70,
+                                      "column": 27,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 70,
+                                      "column": 31,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "bodies",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 70,
+                                      "column": 32,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 70,
+                                      "column": 38,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "computed": false,
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 70,
@@ -5036,24 +5196,24 @@
                                   },
                                   "end": {
                                     "line": 70,
-                                    "column": 31,
+                                    "column": 38,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
                               },
                               "property": {
                                 "type": "Identifier",
-                                "name": "bodies",
+                                "name": "length",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
                                     "line": 70,
-                                    "column": 32,
+                                    "column": 39,
                                     "program": "AccessNBody.ets"
                                   },
                                   "end": {
                                     "line": 70,
-                                    "column": 38,
+                                    "column": 45,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
@@ -5068,30 +5228,26 @@
                                 },
                                 "end": {
                                   "line": 70,
-                                  "column": 38,
-                                  "program": "AccessNBody.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "length",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 70,
-                                  "column": 39,
-                                  "program": "AccessNBody.ets"
-                                },
-                                "end": {
-                                  "line": 70,
                                   "column": 45,
                                   "program": "AccessNBody.ets"
                                 }
                               }
                             },
-                            "computed": false,
-                            "optional": false,
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType",
+                              "loc": {
+                                "start": {
+                                  "line": 70,
+                                  "column": 49,
+                                  "program": "AccessNBody.ets"
+                                },
+                                "end": {
+                                  "line": 70,
+                                  "column": 52,
+                                  "program": "AccessNBody.ets"
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 70,
@@ -5128,7 +5284,7 @@
                         },
                         "end": {
                           "line": 70,
-                          "column": 46,
+                          "column": 53,
                           "program": "AccessNBody.ets"
                         }
                       }
@@ -9421,11 +9577,45 @@
                             }
                           },
                           "init": {
-                            "type": "MemberExpression",
-                            "object": {
+                            "type": "TSAsExpression",
+                            "expression": {
                               "type": "MemberExpression",
                               "object": {
-                                "type": "ThisExpression",
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "ThisExpression",
+                                  "loc": {
+                                    "start": {
+                                      "line": 101,
+                                      "column": 27,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 101,
+                                      "column": 31,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "bodies",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 101,
+                                      "column": 32,
+                                      "program": "AccessNBody.ets"
+                                    },
+                                    "end": {
+                                      "line": 101,
+                                      "column": 38,
+                                      "program": "AccessNBody.ets"
+                                    }
+                                  }
+                                },
+                                "computed": false,
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 101,
@@ -9434,24 +9624,24 @@
                                   },
                                   "end": {
                                     "line": 101,
-                                    "column": 31,
+                                    "column": 38,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
                               },
                               "property": {
                                 "type": "Identifier",
-                                "name": "bodies",
+                                "name": "length",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
                                     "line": 101,
-                                    "column": 32,
+                                    "column": 39,
                                     "program": "AccessNBody.ets"
                                   },
                                   "end": {
                                     "line": 101,
-                                    "column": 38,
+                                    "column": 45,
                                     "program": "AccessNBody.ets"
                                   }
                                 }
@@ -9466,30 +9656,26 @@
                                 },
                                 "end": {
                                   "line": 101,
-                                  "column": 38,
-                                  "program": "AccessNBody.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "length",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 101,
-                                  "column": 39,
-                                  "program": "AccessNBody.ets"
-                                },
-                                "end": {
-                                  "line": 101,
                                   "column": 45,
                                   "program": "AccessNBody.ets"
                                 }
                               }
                             },
-                            "computed": false,
-                            "optional": false,
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType",
+                              "loc": {
+                                "start": {
+                                  "line": 101,
+                                  "column": 49,
+                                  "program": "AccessNBody.ets"
+                                },
+                                "end": {
+                                  "line": 101,
+                                  "column": 52,
+                                  "program": "AccessNBody.ets"
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 101,
@@ -9526,7 +9712,7 @@
                         },
                         "end": {
                           "line": 101,
-                          "column": 46,
+                          "column": 53,
                           "program": "AccessNBody.ets"
                         }
                       }

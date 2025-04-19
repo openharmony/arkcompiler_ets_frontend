@@ -735,11 +735,12 @@ LiteralArrayVector ETSEmitter::CreateLiteralArray(std::string &baseName, const i
 
 void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Field &field)
 {
+    auto *checker = Context()->checker->AsETSChecker();
     uint8_t rank = 1;
-    auto *elemType = prop->TsType()->AsETSArrayType()->ElementType();
-    while (elemType->IsETSArrayType()) {
+    auto *elemType = checker->GetElementTypeOfArray(prop->TsType());
+    while (elemType->IsETSArrayType() || elemType->IsETSResizableArrayType()) {
         ++rank;
-        elemType = elemType->AsETSArrayType()->ElementType();
+        elemType = checker->GetElementTypeOfArray(elemType);
     }
     if (elemType->IsETSEnumType()) {
         field.type = PandasmTypeWithRank(elemType, rank);
@@ -776,7 +777,7 @@ void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::str
         CreateEnumProp(prop, field);
     } else if (type->IsETSPrimitiveType() || type->IsETSStringType()) {
         EmitDefaultFieldValue(field, prop->Value());
-    } else if (type->IsETSArrayType()) {
+    } else if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
         CreateLiteralArrayProp(prop, baseName, field);
     } else {
         ES2PANDA_UNREACHABLE();
@@ -844,7 +845,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
     const auto *type = init->TsType();
     auto typeKind = checker::ETSChecker::TypeKind(type);
     auto propName = prop->Id()->Name().Mutf8();
-    if (type->IsETSArrayType()) {
+    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
         return ProcessArrayType(prop, baseName, init);
     }
 

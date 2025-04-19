@@ -253,6 +253,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
+  compiler/lowering/ets/arrayLiteralLowering.cpp
   compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
@@ -275,6 +276,8 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/bigintLowering.cpp
   compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
+  compiler/lowering/ets/resizableArrayLowering.cpp
+  compiler/lowering/ets/restArgsLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
   compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp
@@ -558,6 +561,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsNonNullishType.cpp
   checker/types/ets/etsNeverType.cpp
   checker/types/ets/etsReadonlyType.cpp
+  checker/types/ets/etsResizableArrayType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp

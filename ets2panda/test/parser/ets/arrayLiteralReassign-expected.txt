@@ -191,55 +191,103 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "number",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 14,
-                                        "program": "arrayLiteralReassign.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 20,
-                                        "program": "arrayLiteralReassign.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 17,
-                                      "column": 14,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "arrayLiteralReassign.ets"
                                     },
                                     "end": {
-                                      "line": 17,
-                                      "column": 21,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "arrayLiteralReassign.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "number",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayLiteralReassign.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayLiteralReassign.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "arrayLiteralReassign.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "arrayLiteralReassign.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayLiteralReassign.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayLiteralReassign.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "arrayLiteralReassign.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "arrayLiteralReassign.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "arrayLiteralReassign.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 21,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "arrayLiteralReassign.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

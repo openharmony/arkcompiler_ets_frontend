@@ -286,55 +286,103 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "Double",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 16,
-                            "column": 17,
-                            "program": "array_expression_implicit_cast_return.ets"
-                          },
-                          "end": {
-                            "line": 16,
-                            "column": 23,
-                            "program": "array_expression_implicit_cast_return.ets"
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 16,
-                          "column": 17,
+                          "line": 1,
+                          "column": 1,
                           "program": "array_expression_implicit_cast_return.ets"
                         },
                         "end": {
-                          "line": 16,
-                          "column": 24,
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_expression_implicit_cast_return.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "Double",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_expression_implicit_cast_return.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_expression_implicit_cast_return.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "array_expression_implicit_cast_return.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "array_expression_implicit_cast_return.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_expression_implicit_cast_return.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_expression_implicit_cast_return.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_expression_implicit_cast_return.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
                           "program": "array_expression_implicit_cast_return.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 16,
-                        "column": 17,
+                        "line": 1,
+                        "column": 1,
                         "program": "array_expression_implicit_cast_return.ets"
                       },
                       "end": {
-                        "line": 16,
-                        "column": 24,
+                        "line": 1,
+                        "column": 3,
                         "program": "array_expression_implicit_cast_return.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 16,

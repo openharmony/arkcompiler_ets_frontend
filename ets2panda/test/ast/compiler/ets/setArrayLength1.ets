@@ -21,5 +21,3 @@ function main(): void {
     let test_var = new TestClass();
     /* @@ label */test_var.test_array.length = 0;
 }
-
-/* @@@ label Error TypeError: Setting the length of an array is not permitted  */

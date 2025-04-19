@@ -24,4 +24,4 @@ function main()
     array = /* @@ label */new Bad();
 }
 
-/* @@? 24:27 Error TypeError: Type 'Bad' cannot be assigned to type '(Int|Double|String)[]' */
+/* @@? 24:27 Error TypeError: Type 'Bad' cannot be assigned to type 'Array<Int|Double|String>' */

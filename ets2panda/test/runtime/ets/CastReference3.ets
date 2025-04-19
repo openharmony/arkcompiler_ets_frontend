@@ -23,28 +23,28 @@ class C extends B {
   name = c'C';
 }
 
-function clear_accumlator_type(As: A[]): A[] {
+function clear_accumlator_type(As: FixedArray<A>): FixedArray<A> {
   return As;
 }
 
 function main() {
   {
-    let As: A[] = new C[1];
+    let As: FixedArray<A> = new C[1];
     As[0] = new C();
 
     As = clear_accumlator_type(As); // workaround for:
     // Verifier warning 22: Redundant check cast
-    // Accumulator type 'C[]' is always a subtype of 'B[]'. Checkcast is redundant here.
+    // Accumulator type 'C[]' is always a subtype of 'FixedArray<B>'. Checkcast is redundant here.
     // It may be a sign of possible error here.
-    let Bs: B[] = As as B[];
+    let Bs: FixedArray<B> = As as FixedArray<B>;
     assertEQ(Bs[0].name, c'B')
   }
 
   {
     let caught = false;
     try {
-      let As: A[] = new A[1];
-      let Bs = As as B[];
+      let As: FixedArray<A> = new A[1];
+      let Bs = As as FixedArray<B>;
     } catch (e: ClassCastError) {
       caught = true;
     } catch (e) {

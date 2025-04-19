@@ -131,6 +131,17 @@ public:
     ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes);
 
     template <typename... Args>
+    ir::TypeNode *CreateFormattedTypeAnnotation(std::string_view const sourceCode, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedTypeAnnotation(sourceCode, insertingNodes);
+    }
+    ir::TypeNode *CreateFormattedTypeAnnotation(std::string_view const sourceCode);
+    ir::TypeNode *CreateFormattedTypeAnnotation(std::string_view sourceCode, std::vector<ir::AstNode *> &args);
+
+    template <typename... Args>
     ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, Args &&...args)
     {
         std::vector<ir::AstNode *> insertingNodes {};

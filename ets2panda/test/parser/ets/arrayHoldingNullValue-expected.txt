@@ -352,23 +352,71 @@
               "type": "ETSUnionType",
               "types": [
                 {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "arrayHoldingNullValue.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
-                        "line": 16,
-                        "column": 8,
+                        "line": 1,
+                        "column": 1,
                         "program": "arrayHoldingNullValue.ets"
                       },
                       "end": {
-                        "line": 16,
-                        "column": 11,
+                        "line": 1,
+                        "column": 3,
                         "program": "arrayHoldingNullValue.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 16,
@@ -455,23 +503,71 @@
               "type": "ETSUnionType",
               "types": [
                 {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "arrayHoldingNullValue.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
-                        "line": 17,
-                        "column": 8,
+                        "line": 1,
+                        "column": 1,
                         "program": "arrayHoldingNullValue.ets"
                       },
                       "end": {
-                        "line": 17,
-                        "column": 14,
+                        "line": 1,
+                        "column": 3,
                         "program": "arrayHoldingNullValue.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -558,55 +654,103 @@
               "type": "ETSUnionType",
               "types": [
                 {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "Double",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 18,
-                            "column": 8,
-                            "program": "arrayHoldingNullValue.ets"
-                          },
-                          "end": {
-                            "line": 18,
-                            "column": 14,
-                            "program": "arrayHoldingNullValue.ets"
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 18,
-                          "column": 8,
+                          "line": 1,
+                          "column": 1,
                           "program": "arrayHoldingNullValue.ets"
                         },
                         "end": {
-                          "line": 18,
-                          "column": 15,
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "Double",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "arrayHoldingNullValue.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "arrayHoldingNullValue.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "arrayHoldingNullValue.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "arrayHoldingNullValue.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "arrayHoldingNullValue.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "arrayHoldingNullValue.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
                           "program": "arrayHoldingNullValue.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 18,
-                        "column": 8,
+                        "line": 1,
+                        "column": 1,
                         "program": "arrayHoldingNullValue.ets"
                       },
                       "end": {
-                        "line": 18,
-                        "column": 15,
+                        "line": 1,
+                        "column": 3,
                         "program": "arrayHoldingNullValue.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -743,23 +887,71 @@
                               "type": "ETSUnionType",
                               "types": [
                                 {
-                                  "type": "TSArrayType",
-                                  "elementType": {
-                                    "type": "ETSPrimitiveType",
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "Array",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 1,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        }
+                                      }
+                                    },
+                                    "typeParams": {
+                                      "type": "TSTypeParameterInstantiation",
+                                      "params": [
+                                        {
+                                          "type": "ETSPrimitiveType",
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayHoldingNullValue.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayHoldingNullValue.ets"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        }
+                                      }
+                                    },
                                     "loc": {
                                       "start": {
-                                        "line": 21,
-                                        "column": 14,
+                                        "line": 1,
+                                        "column": 1,
                                         "program": "arrayHoldingNullValue.ets"
                                       },
                                       "end": {
-                                        "line": 21,
-                                        "column": 19,
+                                        "line": 1,
+                                        "column": 3,
                                         "program": "arrayHoldingNullValue.ets"
                                       }
                                     }
                                   },
-                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 21,
@@ -872,23 +1064,71 @@
                               "type": "ETSUnionType",
                               "types": [
                                 {
-                                  "type": "TSArrayType",
-                                  "elementType": {
-                                    "type": "ETSPrimitiveType",
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "Array",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 1,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        }
+                                      }
+                                    },
+                                    "typeParams": {
+                                      "type": "TSTypeParameterInstantiation",
+                                      "params": [
+                                        {
+                                          "type": "ETSPrimitiveType",
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayHoldingNullValue.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "arrayHoldingNullValue.ets"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "arrayHoldingNullValue.ets"
+                                        }
+                                      }
+                                    },
                                     "loc": {
                                       "start": {
-                                        "line": 22,
-                                        "column": 12,
+                                        "line": 1,
+                                        "column": 1,
                                         "program": "arrayHoldingNullValue.ets"
                                       },
                                       "end": {
-                                        "line": 22,
-                                        "column": 16,
+                                        "line": 1,
+                                        "column": 3,
                                         "program": "arrayHoldingNullValue.ets"
                                       }
                                     }
                                   },
-                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 22,

@@ -44,7 +44,12 @@ public:
         return size_;
     }
 
-    [[nodiscard]] ArenaVector<ir::TypeNode *> GetTupleTypeAnnotationsList() const
+    [[nodiscard]] ArenaVector<ir::TypeNode *> &GetTupleTypeAnnotationsList()
+    {
+        return typeAnnotationList_;
+    }
+
+    [[nodiscard]] const ArenaVector<ir::TypeNode *> &GetTupleTypeAnnotationsList() const noexcept
     {
         return typeAnnotationList_;
     }

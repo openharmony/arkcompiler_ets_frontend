@@ -230,6 +230,8 @@ public:
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);
     VReg MoveAccToReg(const ir::AstNode *node);
 
+    void LoadResizableArrayLength(const ir::AstNode *node);
+    void LoadResizableArrayElement(const ir::AstNode *node, const VReg arrObj, const VReg arrIndex);
     void LoadArrayLength(const ir::AstNode *node, VReg arrayReg);
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
     void StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);

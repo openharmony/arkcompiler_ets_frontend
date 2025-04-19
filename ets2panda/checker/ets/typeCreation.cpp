@@ -18,7 +18,9 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsEnumType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/globalTypesHolder.h"
+#include "checker/types/type.h"
 #include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::checker {
@@ -96,6 +98,33 @@ ETSBigIntType *ETSChecker::CreateETSBigIntLiteralType(util::StringView value)
 ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
 {
     return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation(), value);
+}
+
+ETSResizableArrayType *ETSChecker::CreateETSMultiDimResizableArrayType(Type *element, size_t dimSize)
+{
+    ETSResizableArrayType *const arrayType = GlobalBuiltinETSResizableArrayType()->AsETSResizableArrayType();
+    ES2PANDA_ASSERT(arrayType->TypeArguments().size() == 1U);
+
+    Type *baseArrayType = element;
+
+    for (size_t dim = 0; dim < dimSize; ++dim) {
+        Substitution *tmpSubstitution = NewSubstitution();
+        EmplaceSubstituted(tmpSubstitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+                           MaybeBoxType(baseArrayType));
+        baseArrayType = arrayType->Substitute(Relation(), tmpSubstitution);
+    }
+    return baseArrayType->AsETSResizableArrayType();
+}
+
+ETSResizableArrayType *ETSChecker::CreateETSResizableArrayType(Type *element)
+{
+    ETSResizableArrayType *arrayType = GlobalBuiltinETSResizableArrayType()->AsETSResizableArrayType();
+    ES2PANDA_ASSERT(arrayType->TypeArguments().size() == 1U);
+
+    Substitution *substitution = NewSubstitution();
+    EmplaceSubstituted(substitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+                       MaybeBoxType(element));
+    return arrayType->Substitute(Relation(), substitution);
 }
 
 ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePolluting)
@@ -292,6 +321,15 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             setType(GlobalTypeId::ETS_BIG_INT, allocator->New<ETSBigIntType>(allocator, bigIntObj));
             return bigIntObj;
         }
+        case GlobalTypeId::ETS_ARRAY_BUILTIN: {
+            if (declNode->AsClassDefinition()->InternalName().Utf8() != "escompat.Array") {
+                return checker->CreateETSObjectType(declNode, flags);
+            }
+            auto *arrayObj =
+                setType(GlobalTypeId::ETS_ARRAY_BUILTIN, create(ETSObjectFlags::BUILTIN_ARRAY))->AsETSObjectType();
+            setType(GlobalTypeId::ETS_ARRAY, allocator->New<ETSResizableArrayType>(allocator, arrayObj));
+            return arrayObj;
+        }
         case GlobalTypeId::ETS_BOOLEAN_BUILTIN:
             return create(ETSObjectFlags::BUILTIN_BOOLEAN);
         case GlobalTypeId::ETS_BYTE_BUILTIN:
@@ -360,6 +398,10 @@ ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectF
         }
         ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
         return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, Relation());
+    }
+
+    if (internalName == compiler::Signatures::BUILTIN_ARRAY) {
+        return Allocator()->New<ETSResizableArrayType>(Allocator(), name, std::make_tuple(declNode, flags, Relation()));
     }
 
     if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {

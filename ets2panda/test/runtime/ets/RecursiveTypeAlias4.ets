@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-type A = string | A[]
+type A = string | FixedArray<A>
 
 function main(): int {
   let a: A = "test";
@@ -22,7 +22,7 @@ function main(): int {
   a = [a] as A;
   a = [a] as A;
   
-  assertEQ((((a as A[])[0] as A[])[0] as A[])[0], "test")
+  assertEQ((((a as FixedArray<A>)[0] as FixedArray<A>)[0] as FixedArray<A>)[0], "test")
 
   return 0;
 }

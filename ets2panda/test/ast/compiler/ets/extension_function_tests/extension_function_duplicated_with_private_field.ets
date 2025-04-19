@@ -28,4 +28,4 @@ function main() {
     console.println(/* @@label */banana.name(2));
 }
 
-/* @@@ label Error TypeError: No matching call signature for name(int)  */
+/* @@? 28:34 Error TypeError: No matching call signature for name(int) */

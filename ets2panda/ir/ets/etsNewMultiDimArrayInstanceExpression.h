@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION_H
 
 #include "ir/expression.h"
+#include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -78,6 +79,21 @@ public:
         return signature_;
     }
 
+    [[nodiscard]] checker::Type *GetPreferredType() noexcept
+    {
+        return preferredType_;
+    }
+
+    [[nodiscard]] checker::Type const *GetPreferredType() const noexcept
+    {
+        return preferredType_;
+    }
+
+    void SetPreferredType(checker::Type *preferredType) noexcept
+    {
+        preferredType_ = preferredType;
+    }
+
     void SetSignature(checker::Signature *signature) noexcept
     {
         signature_ = signature;
@@ -94,6 +110,8 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
+    void SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
+                                          checker::TypeRelationFlag flags);
 
     void Accept(ASTVisitorT *v) override
     {
@@ -106,10 +124,13 @@ public:
         signature_ = nullptr;
     }
 
+    void ClearPreferredType();
+
 private:
     ir::TypeNode *typeReference_;
     ArenaVector<ir::Expression *> dimensions_;
     checker::Signature *signature_ {};
+    checker::Type *preferredType_ {};
 };
 }  // namespace ark::es2panda::ir
 

@@ -463,6 +463,11 @@ ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const
     return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
+ETSObjectType *ETSChecker::GlobalBuiltinETSResizableArrayType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalArrayBuiltinType);
+}
+
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSStringBuiltinType);

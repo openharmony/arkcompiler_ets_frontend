@@ -1,0 +1,1207 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "A",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 7,
+              "program": "array_indexing_with_chaining_non_nullish.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 8,
+              "program": "array_indexing_with_chaining_non_nullish.ets"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "kind": "constructor",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 10,
+                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 10,
+                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 9,
+            "program": "array_indexing_with_chaining_non_nullish.ets"
+          },
+          "end": {
+            "line": 18,
+            "column": 4,
+            "program": "array_indexing_with_chaining_non_nullish.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1,
+          "program": "array_indexing_with_chaining_non_nullish.ets"
+        },
+        "end": {
+          "line": 18,
+          "column": 4,
+          "program": "array_indexing_with_chaining_non_nullish.ets"
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1,
+              "program": "array_indexing_with_chaining_non_nullish.ets"
+            },
+            "end": {
+              "line": 1,
+              "column": 1,
+              "program": "array_indexing_with_chaining_non_nullish.ets"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              }
+            }
+          }
+        ],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "arr",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 5,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 8,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "ArrayExpression",
+                          "elements": [
+                            {
+                              "type": "ETSNewClassInstanceExpression",
+                              "typeReference": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Object",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 18,
+                                        "column": 27,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 18,
+                                        "column": 33,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 18,
+                                      "column": 27,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 18,
+                                      "column": 34,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 18,
+                                    "column": 27,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  },
+                                  "end": {
+                                    "line": 18,
+                                    "column": 34,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  }
+                                }
+                              },
+                              "arguments": [],
+                              "loc": {
+                                "start": {
+                                  "line": 18,
+                                  "column": 23,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                },
+                                "end": {
+                                  "line": 18,
+                                  "column": 36,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                }
+                              }
+                            },
+                            {
+                              "type": "ETSNewClassInstanceExpression",
+                              "typeReference": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "A",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 18,
+                                        "column": 41,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 18,
+                                        "column": 42,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 18,
+                                      "column": 41,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 18,
+                                      "column": 43,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 18,
+                                    "column": 41,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  },
+                                  "end": {
+                                    "line": 18,
+                                    "column": 43,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  }
+                                }
+                              },
+                              "arguments": [],
+                              "loc": {
+                                "start": {
+                                  "line": 18,
+                                  "column": 37,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                },
+                                "end": {
+                                  "line": 18,
+                                  "column": 45,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                }
+                              }
+                            }
+                          ],
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 22,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 45,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 18,
+                            "column": 5,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 45,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 18,
+                          "column": 5,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 45,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "elem",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 5,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 9,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "BlockExpression",
+                          "statements": [
+                            {
+                              "type": "VariableDeclaration",
+                              "declarations": [
+                                {
+                                  "type": "VariableDeclarator",
+                                  "id": {
+                                    "type": "Identifier",
+                                    "name": "gensym%%_16",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "init": {
+                                    "type": "Identifier",
+                                    "name": "arr",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 19,
+                                        "column": 33,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 19,
+                                        "column": 36,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                }
+                              ],
+                              "kind": "let",
+                              "loc": {
+                                "start": {
+                                  "line": 19,
+                                  "column": 5,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "column": 41,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                }
+                              }
+                            },
+                            {
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "ConditionalExpression",
+                                "test": {
+                                  "type": "BinaryExpression",
+                                  "operator": "==",
+                                  "left": {
+                                    "type": "Identifier",
+                                    "name": "gensym%%_16",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "type": "NullLiteral",
+                                    "value": null,
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                },
+                                "consequent": {
+                                  "type": "UndefinedLiteral",
+                                  "value": "undefined",
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                },
+                                "alternate": {
+                                  "type": "MemberExpression",
+                                  "object": {
+                                    "type": "Identifier",
+                                    "name": "gensym%%_16",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 19,
+                                        "column": 33,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 19,
+                                        "column": 41,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "property": {
+                                    "type": "NumberLiteral",
+                                    "value": 0,
+                                    "loc": {
+                                      "start": {
+                                        "line": 19,
+                                        "column": 39,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      },
+                                      "end": {
+                                        "line": 19,
+                                        "column": 40,
+                                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                                      }
+                                    }
+                                  },
+                                  "computed": true,
+                                  "optional": false,
+                                  "loc": {
+                                    "start": {
+                                      "line": 19,
+                                      "column": 33,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    },
+                                    "end": {
+                                      "line": 19,
+                                      "column": 41,
+                                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                                }
+                              }
+                            }
+                          ],
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 5,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 41,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 19,
+                            "column": 5,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 41,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 19,
+                          "column": 5,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 41,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "arr",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 5,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 18,
+                  "column": 8,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "Object",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_indexing_with_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "array_indexing_with_chaining_non_nullish.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 3,
+                    "program": "array_indexing_with_chaining_non_nullish.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 17,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 18,
+                  "column": 19,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 5,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 18,
+                "column": 45,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "elem",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 5,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 9,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Object",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 19,
+                          "column": 12,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 18,
+                          "program": "array_indexing_with_chaining_non_nullish.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 19,
+                        "column": 12,
+                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 20,
+                        "program": "array_indexing_with_chaining_non_nullish.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 12,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 20,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                {
+                  "type": "ETSUndefinedType",
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 21,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 30,
+                      "program": "array_indexing_with_chaining_non_nullish.ets"
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 12,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 30,
+                  "program": "array_indexing_with_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 5,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 19,
+                "column": 41,
+                "program": "array_indexing_with_chaining_non_nullish.ets"
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1,
+            "program": "array_indexing_with_chaining_non_nullish.ets"
+          },
+          "end": {
+            "line": 1,
+            "column": 1,
+            "program": "array_indexing_with_chaining_non_nullish.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1,
+          "program": "array_indexing_with_chaining_non_nullish.ets"
+        },
+        "end": {
+          "line": 1,
+          "column": 1,
+          "program": "array_indexing_with_chaining_non_nullish.ets"
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "program": "array_indexing_with_chaining_non_nullish.ets"
+    },
+    "end": {
+      "line": 20,
+      "column": 1,
+      "program": "array_indexing_with_chaining_non_nullish.ets"
+    }
+  }
+}
