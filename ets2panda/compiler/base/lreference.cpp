@@ -311,6 +311,8 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr)
 
     if (sig->Function()->IsStatic()) {
         etsg_->CallExact(Node(), sig->InternalName(), argReg);
+    } else if (memberExpr->Object()->IsSuperExpression()) {
+        etsg_->CallExact(Node(), sig->InternalName(), baseReg_, argReg);
     } else {
         etsg_->CallVirtual(Node(), sig, baseReg_, argReg);
     }
