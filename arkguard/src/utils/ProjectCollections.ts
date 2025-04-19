@@ -15,7 +15,12 @@
 
 import { ApiExtractor } from '../common/ApiExtractor';
 import { FileUtils } from './FileUtils';
-import { AtIntentCollections, AtKeepCollections, UnobfuscationCollections } from './CommonCollections';
+import {
+  AtIntentCollections,
+  AtKeepCollections,
+  BytecodeObfuscationCollections,
+  UnobfuscationCollections
+} from './CommonCollections';
 import * as crypto from 'crypto';
 import * as ts from 'typescript';
 import fs from 'fs';
@@ -50,6 +55,14 @@ export const TRANSFORMED_PATH: string = 'transformed';
 export const FILE_NAMES_MAP: string = 'transformedFileNamesMap.json';
 export const FILE_WHITE_LISTS: string = 'fileWhiteLists.json';
 export const PROJECT_WHITE_LIST: string = 'projectWhiteList.json';
+
+// this while list is only used for bytecode obfuscation
+export const DECORATOR_WHITE_LIST = [
+  'Monitor',
+  'Track',
+  'Trace',
+  'AnimatableExtend'
+];
 
 export interface KeepInfo {
   propertyNames: Set<string>;
@@ -114,6 +127,8 @@ export interface FileContent {
  * │   └── arkUIKeepInfo: KeepInfo
  * │       ├── propertyNames: Set<string>
  * │       └── globalNames: Set<string>
+ * └── bytecodeObfuscateKeepInfo: BytecodeObfuscateKeepInfo
+ *     └── decoratorMap?: Map<string, string[]>
  * └── fileReservedInfo: FileReservedInfo
  *     ├── enumProperties: Set<string>
  *     └── propertyParams: Set<string>
@@ -133,9 +148,14 @@ export interface FileReservedInfo {
   propertyParams: Set<string>; // Properties parameters in constructor.
 }
 
+export interface BytecodeObfuscateKeepInfo {
+  decoratorMap?: Object; // collect DecoratorMap
+}
+
 export interface FileWhiteList {
   fileKeepInfo: FileKeepInfo;
   fileReservedInfo: FileReservedInfo;
+  bytecodeObfuscateKeepInfo?: BytecodeObfuscateKeepInfo
 }
 
 export interface ProjectKeepInfo {
@@ -329,8 +349,10 @@ export class ProjectWhiteListManager {
           enumProperties: arrayToSet(parsed[key].fileReservedInfo.enumProperties),
           propertyParams: arrayToSet(parsed[key].fileReservedInfo.propertyParams),
         };
-
-        map.set(key, { fileKeepInfo, fileReservedInfo });
+        const bytecodeObfuscateKeepInfo: BytecodeObfuscateKeepInfo = {
+          decoratorMap: parsed[key].bytecodeObfuscateKeepInfo?.decoratorMap,
+        };
+        map.set(key, { fileKeepInfo, fileReservedInfo, bytecodeObfuscateKeepInfo });
       }
     }
 
@@ -371,6 +393,11 @@ export class ProjectWhiteListManager {
           propertyParams: setToArray(value.fileReservedInfo.propertyParams),
         },
       };
+      if (value.bytecodeObfuscateKeepInfo?.decoratorMap) {
+        jsonData[key].bytecodeObfuscateKeepInfo = {
+          decoratorMap: value.bytecodeObfuscateKeepInfo.decoratorMap,
+        };
+      }
     }
 
     const jsonString = JSON.stringify(jsonData, null, 2);
@@ -498,6 +525,13 @@ export class ProjectWhiteListManager {
       fileWhiteList.fileReservedInfo.propertyParams.forEach((propertyParam) => {
         projectReservedInfo.propertyParams.add(propertyParam);
       });
+
+      const decoratorMap = fileWhiteList.bytecodeObfuscateKeepInfo?.decoratorMap;
+      for (const key in decoratorMap) {
+        if (Object.prototype.hasOwnProperty.call(decoratorMap, key)) {
+          decoratorMap[key]?.forEach(item => projectKeepInfo.globalNames.add(item));
+        }
+      }
     });
 
     const projectWhiteList = {
@@ -545,6 +579,12 @@ export class ProjectWhiteListManager {
       addToSet(AtIntentCollections.globalNames, fileWhiteList.fileKeepInfo.arkUIKeepInfo.globalNames);
       addToSet(ApiExtractor.mConstructorPropertySet, fileWhiteList.fileReservedInfo.propertyParams);
       addToSet(ApiExtractor.mEnumMemberSet, fileWhiteList.fileReservedInfo.enumProperties);
+      const decoratorMap = fileWhiteList.bytecodeObfuscateKeepInfo?.decoratorMap;
+      for (const key in decoratorMap) {
+        if (Object.prototype.hasOwnProperty.call(decoratorMap, key)) {
+          decoratorMap[key]?.forEach(item => BytecodeObfuscationCollections.decoratorProp.add(item));
+        }
+      }
     });
   }
 

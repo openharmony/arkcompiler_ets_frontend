@@ -28,7 +28,8 @@ export interface ScanProjectConfig {
   mkeepFilesAndDependencies?: Set<string>,
   isHarCompiled?: boolean,
   mStripSystemApiArgs?: boolean,
-  mEnableAtKeep: boolean
+  mEnableAtKeep: boolean,
+  scanDecorator?: boolean;
 }
 
 // Settings for collect white lists.
@@ -71,13 +72,18 @@ export function isEnabledPropertyObfuscation(customProfiles: IOptions): boolean 
     customProfiles.mNameObfuscation.mRenameProperties);
 }
 
-function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean): void {
+export function initScanProjectConfig(
+  customProfiles: IOptions,
+  isHarCompiled?: boolean,
+  scanDecorator: boolean = false
+): void {
   scanProjectConfig.mPropertyObfuscation = customProfiles.mNameObfuscation?.mRenameProperties;
   scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
   scanProjectConfig.mkeepFilesAndDependencies = customProfiles.mKeepFileSourceCode?.mkeepFilesAndDependencies;
   scanProjectConfig.isHarCompiled = isHarCompiled;
   scanProjectConfig.mEnableAtKeep = customProfiles.mNameObfuscation?.mEnableAtKeep;
+  scanProjectConfig.scanDecorator = scanDecorator;
 }
 
 /**
@@ -109,7 +115,7 @@ export interface ReseverdSetForArkguard {
  * @param customProfiles
  */
 export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>,
-  customProfiles: IOptions, isHarCompiled: boolean): ReseverdSetForArkguard {
+  customProfiles: IOptions, isHarCompiled: boolean, scanDecorator: boolean = false): ReseverdSetForArkguard {
   const apiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
   if (needReadApiInfo(customProfiles)) {
@@ -118,7 +124,7 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
     scanningCommonType = apiType.CONSTRUCTOR_PROPERTY;
   }
 
-  initScanProjectConfig(customProfiles, isHarCompiled);
+  initScanProjectConfig(customProfiles, isHarCompiled, scanDecorator);
 
   stringPropsSet.clear();
 

@@ -354,6 +354,24 @@ describe('test for CommonCollections', function () {
         expect(projectWhiteListManager.getShouldReObfuscate()).to.be.false;
       });
     });
+
+    describe('test for createProjectWhiteList when bytecodeObfuscate enable', function () {
+      it('should add property decorated to projectWhiteList when bytecodeObfuscate enable)', () => {
+        let projectWhiteListManager = new ProjectWhiteListManager(cachePath, false, false);
+        projectWhiteListManager.setCurrentCollector("testPath5")
+        const fileWhiteLists = projectWhiteListManager.createFileWhiteList();
+        fileWhiteLists.bytecodeObfuscateKeepInfo = {
+          "decoratorMap": {
+            "Track": ["prop1"]
+          }
+        };
+        projectWhiteListManager.getFileWhiteListMap().set("testPath5", fileWhiteLists);
+        projectWhiteListManager.createOrUpdateWhiteListCaches();
+        const cacheContent = fs.readFileSync(projectWhiteListManager.getProjectWhiteListCachePath(), 'utf-8');
+        const parsedCache = JSON.parse(cacheContent);
+        expect(parsedCache.projectKeepInfo.globalNames).to.include("prop1");
+      });
+    })
   })
 
   describe('test for FilePathManager', function () {
