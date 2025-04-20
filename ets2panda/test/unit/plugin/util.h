@@ -59,6 +59,6 @@ void AppendStatementToProgram(es2panda_Context *context, es2panda_AstNode *progr
 void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement);
 
 int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
-         std::function<bool(es2panda_Context *, es2panda_AstNode *)> handle);
+         const std::function<bool(es2panda_Context *, es2panda_AstNode *)> &handle);
 
 #endif
