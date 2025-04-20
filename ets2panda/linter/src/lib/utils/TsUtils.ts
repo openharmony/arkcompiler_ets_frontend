@@ -3541,7 +3541,7 @@ export class TsUtils {
   }
 
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
-    if (!sourceFile) {
+    if (!sourceFile || !sourceFile.statements.length) {
       return false;
     }
     const statements = sourceFile.statements;
