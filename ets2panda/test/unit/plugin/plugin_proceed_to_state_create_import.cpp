@@ -18,22 +18,25 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include "macros.h"
 #include "util.h"
 #include "public/es2panda_lib.h"
+#include "ir/ets/etsImportDeclaration.h"
 #include "utils/arena_containers.h"
 
 // NOLINTBEGIN
 
 static es2panda_Impl *g_impl = nullptr;
 
-static void CreateImportDecl(es2panda_Context *context)
+static es2panda_AstNode *CreateImportDecl(es2panda_Context *context, const char *importIdStr,
+                                          const char *importAliasStr)
 {
-    char pathToResolve[] = "./export2";
-    auto *importPath = g_impl->CreateStringLiteral1(context, pathToResolve);
+    auto *importPath = g_impl->CreateStringLiteral1(context, const_cast<char *>("./export2"));
 
     std::vector<es2panda_AstNode *> specifiersArray;
-    auto *importId = g_impl->CreateIdentifier1(context, const_cast<char *>("B"));
-    auto *importAlias = g_impl->CreateIdentifier1(context, const_cast<char *>("B"));
+    auto *importId = g_impl->CreateIdentifier1(context, const_cast<char *>(importIdStr));
+    auto *importAlias = g_impl->CreateIdentifier1(context, const_cast<char *>(importAliasStr));
+    ;
     auto *importSpecifier = g_impl->CreateImportSpecifier(context, importId, importAlias);
     g_impl->AstNodeSetParent(context, importId, importSpecifier);
     g_impl->AstNodeSetParent(context, importAlias, importSpecifier);
@@ -41,10 +44,55 @@ static void CreateImportDecl(es2panda_Context *context)
 
     auto *importDecl = g_impl->ETSParserBuildImportDeclaration(context, Es2pandaImportKinds::IMPORT_KINDS_ALL,
                                                                specifiersArray.data(), 1, importPath);
-    auto *program = g_impl->ContextProgram(context);
-    g_impl->InsertETSImportDeclarationAndParse(context, program, importDecl);
-    auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDecl);
+    return importDecl;
+}
+
+void InsertStatementInFunctionBody(es2panda_Context *context, es2panda_AstNode *func)
+{
+    auto *blockStmt = g_impl->ScriptFunctionBody(context, func);
+    size_t newStmtNum = 1;
+    auto **statement = g_impl->ETSParserCreateStatements(context, const_cast<char *>("let a0 = A0;"), &newStmtNum);
+    PrependStatementToProgram(context, blockStmt, statement[0]);
+}
+
+es2panda_AstNode *GetTargetFunc(es2panda_Context *context, es2panda_AstNode *ast)
+{
+    static constexpr size_t BLK_STMT_IDX = 3;
+    static constexpr size_t CLASS_DEF_IDX = 2;
+    size_t blockStmtNum = 0;
+    auto **blockStmt = g_impl->BlockStatementStatements(context, ast, &blockStmtNum);
+    auto *etsGlobal = blockStmt[BLK_STMT_IDX];
+    auto *classDef = g_impl->ClassDeclarationDefinition(context, etsGlobal);
+    size_t blockStmtNum2 = 0;
+    auto *classBody = g_impl->ClassDefinitionBody(context, classDef, &blockStmtNum2);
+    auto *fooMethod = classBody[CLASS_DEF_IDX];
+    auto *fooFunc = g_impl->MethodDefinitionFunction(context, fooMethod);
+
+    return fooFunc;
+}
+
+bool TestInsertImportAfterParse(es2panda_Context *context, es2panda_Config *config, es2panda_Program *program)
+{
+    size_t externalSourceCnt {0};
+    g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCnt);
+    std::cout << "ExternalProgram Count:" << externalSourceCnt << std::endl;
+    auto *importDeclAfterParse = CreateImportDecl(context, "B", "B");
+
+    g_impl->InsertETSImportDeclarationAndParse(context, program, importDeclAfterParse);
+    auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDeclAfterParse);
     std::cout << importDeclString << std::endl;
+    size_t externalSourceCntAfterInsert {0};
+    g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCntAfterInsert);
+    std::cout << "ExternalProgram Count:" << externalSourceCntAfterInsert << std::endl;
+
+    if (externalSourceCntAfterInsert != externalSourceCnt + 1) {
+        std::cout << "Insert ETSImportDeclaration Failure." << std::endl;
+        g_impl->DestroyContext(context);
+        g_impl->DestroyConfig(config);
+        return false;
+    }
+
+    return true;
 }
 
 int main(int argc, char **argv)
@@ -70,17 +118,9 @@ int main(int argc, char **argv)
     }
     g_impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
-    size_t externalSourceCnt {0};
-    g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCnt);
-    std::cout << "ExternalProgram Count:" << externalSourceCnt << std::endl;
-    CreateImportDecl(context);
-    size_t externalSourceCntAfterInsert {0};
-    g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCntAfterInsert);
-    std::cout << "ExternalProgram Count:" << externalSourceCntAfterInsert << std::endl;
-    if (externalSourceCntAfterInsert != externalSourceCnt + 1) {
-        std::cout << "Insert ETSImportDeclaration Failure." << std::endl;
-        g_impl->DestroyContext(context);
-        g_impl->DestroyConfig(config);
+
+    auto *program = g_impl->ContextProgram(context);
+    if (!TestInsertImportAfterParse(context, config, program)) {
         return 1;
     }
 
@@ -88,7 +128,18 @@ int main(int argc, char **argv)
     CheckForErrors("BOUND", context);
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
     CheckForErrors("CHECKED", context);
+
+    auto *importDeclAfterCheck = CreateImportDecl(context, "A0", "A0");
+    g_impl->InsertETSImportDeclarationAndParse(context, program, importDeclAfterCheck);
+
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
+    auto *tagetFunc = GetTargetFunc(context, g_impl->ProgramAst(context, program));
+    InsertStatementInFunctionBody(context, tagetFunc);
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
+
+    g_impl->AstNodeRecheck(context, g_impl->ProgramAst(context, program));
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);
