@@ -973,6 +973,56 @@
             "suggest": "",
             "rule": "The function type should be explicit (arkts-no-ts-like-function)",
             "severity": "ERROR"
+        },
+        {
+            "line": 197,
+            "column": 23,
+            "endLine": 197,
+            "endColumn": 28,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 197,
+            "column": 31,
+            "endLine": 197,
+            "endColumn": 36,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 200,
+            "column": 5,
+            "endLine": 200,
+            "endColumn": 7,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 201,
+            "column": 19,
+            "endLine": 201,
+            "endColumn": 24,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 201,
+            "column": 27,
+            "endLine": 201,
+            "endColumn": 32,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
         }
     ]
 }
