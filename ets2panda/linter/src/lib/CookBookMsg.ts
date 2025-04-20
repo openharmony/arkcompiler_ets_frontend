@@ -289,6 +289,8 @@ cookBookTag[314] =
 cookBookTag[315] =
   'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
 cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
+cookBookTag[317] = '"use shared" is not supported (arkts-limited-stdlib-no-use-shared)';
+cookBookTag[318] = '"use concurrent" is not supported (arkts-limited-stdlib-no-use-concurrent)';
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';

@@ -100,6 +100,7 @@ import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import { SdkProblem, ARKTS_WHITE_API_PATH_TEXTSTYLE } from './utils/consts/WhiteListProblemType';
+import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -268,6 +269,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.SpreadAssignment, this.handleSpreadOp],
     [ts.SyntaxKind.GetAccessor, this.handleGetAccessor],
     [ts.SyntaxKind.SetAccessor, this.handleSetAccessor],
+    [ts.SyntaxKind.StringLiteral, this.handleStringLiteral],
     [ts.SyntaxKind.ConstructSignature, this.handleConstructSignature],
     [ts.SyntaxKind.ExpressionWithTypeArguments, this.handleExpressionWithTypeArguments],
     [ts.SyntaxKind.ComputedPropertyName, this.handleComputedPropertyName],
@@ -5687,6 +5689,22 @@ export class TypeScriptLinter {
 
     const autofix = this.autofixer?.fixStateStyles(object, this.interfacesNeedToImport);
     this.incrementCounters(node, FaultID.StylesDecoratorNotSupported, autofix);
+  }
+
+  private handleStringLiteral(node: ts.StringLiteral): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const autofix = this.autofixer?.removeNode(node);
+    const text = node.text;
+    if (text === USE_CONCURRENT) {
+      this.incrementCounters(node, FaultID.UseConcurrentDeprecated, autofix);
+    }
+
+    if (text === USE_SHARED) {
+      this.incrementCounters(node, FaultID.UseSharedDeprecated, autofix);
+    }
   }
 
   private static findDeclarationCalls(sourceFile: ts.SourceFile, declName: string): ts.CallExpression[] {
