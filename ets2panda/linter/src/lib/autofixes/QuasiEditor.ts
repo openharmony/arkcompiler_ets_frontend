@@ -74,6 +74,30 @@ export class QuasiEditor {
     });
   }
 
+  private generateReport(acceptedPatches: Autofix[]): void {
+    const report = {
+      filePath: this.srcFileName,
+      fixCount: acceptedPatches.length,
+      fixes: acceptedPatches.map((fix) => {
+        return {
+          start: fix.start,
+          end: fix.end,
+          replacement: fix.replacementText,
+          original: this.dataBuffer.toString().slice(fix.start, fix.end)
+        };
+      }),
+    };
+
+    const reportPath = './autofix-report.html';
+
+    try {
+      fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), { encoding: 'utf-8' });
+    } catch (error) {
+      Logger.error(`failed to create autofix reoprt: ${(error as Error).message}`);
+      this.wasError = true;
+    }
+  }
+
   fix(problemInfos: ProblemInfo[]): void {
     if (!QuasiEditor.hasAnyAutofixes(problemInfos)) {
       return;
@@ -81,6 +105,7 @@ export class QuasiEditor {
     const acceptedPatches = QuasiEditor.sortAndRemoveIntersections(problemInfos);
     this.textBuffer = this.applyFixes(acceptedPatches);
     this.saveText();
+    this.generateReport(acceptedPatches);
   }
 
   private applyFixes(autofixes: Autofix[]): string {
