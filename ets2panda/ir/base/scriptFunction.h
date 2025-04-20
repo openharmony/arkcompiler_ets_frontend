@@ -18,7 +18,7 @@
 
 #include "checker/types/signature.h"
 #include "ir/annotationAllowed.h"
-#include "ir/statements/annotationUsage.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
 #include "scriptFunctionSignature.h"
@@ -36,7 +36,7 @@ class TSTypeParameterDeclaration;
 class TypeNode;
 class AnnotationUsage;
 
-class ScriptFunction : public AnnotationAllowed<AstNode> {
+class ScriptFunction : public JsDocAllowed<AnnotationAllowed<AstNode>> {
 public:
     // Need to reduce the number of constructor parameters to pass OHOS CI code check
     struct ScriptFunctionData {

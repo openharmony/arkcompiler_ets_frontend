@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),

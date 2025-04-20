@@ -240,8 +240,23 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
 ir::Statement *ETSParser::ParseTopLevelStatement()
 {
     const auto flags = StatementParsingFlags::ALLOW_LEXICAL;
+    ArenaVector<ir::JsDocInfo> jsDocInformation(Allocator()->Adapter());
+    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
+        jsDocInformation = ParseJsDocInfos();
+    }
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::EOS ||
+        ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
+         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE)) {
+        return nullptr;
+    }
+    GetContext().Status() |= ParserStatus::ALLOW_JS_DOC_START;
     auto result = ParseTopLevelDeclStatement(flags);
+    GetContext().Status() ^= ParserStatus::ALLOW_JS_DOC_START;
+    if (result != nullptr) {
+        ApplyJsDocInfoToSpecificNodeType(result, std::move(jsDocInformation));
+    }
+
     if (result == nullptr) {
         result = ParseStatement(flags);
     }

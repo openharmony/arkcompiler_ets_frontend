@@ -219,6 +219,7 @@ lexer::SourcePosition ETSParser::ParseEnumMember(ArenaVector<ir::AstNode *> &mem
 
     // Lambda to parse enum member (maybe with initializer)
     auto const parseMember = [this, &members, &currentNumberExpr]() {
+        HandleJsDocLikeComments();
         auto *const ident = ExpectIdentifier(false, true);
 
         ir::Expression *ordinal;

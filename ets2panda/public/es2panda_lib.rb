@@ -1238,7 +1238,7 @@ module Es2pandaLibApi
   end
 
   def template_extends_classes
-    %w[Annotated Typed AnnotationAllowed]
+    %w[Annotated Typed AnnotationAllowed JsDocAllowed]
   end
 
   def primitive_types

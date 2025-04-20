@@ -129,7 +129,8 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
+    : JsDocAllowed<AnnotationAllowed<Statement>>(static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other),
+                                                 allocator),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
