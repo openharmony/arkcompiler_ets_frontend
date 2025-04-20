@@ -62,47 +62,47 @@ typedef (String or f64 or boolean) es2panda_variantDoubleCharArrayBool;
 
 
 interface NodeTraverser {
-    void Do(AstNode e2p_node);
+    void Do(ir.AstNode e2p_node);
 };
 
 interface NodeTransformer {
-    AstNode Do(AstNode e2p_node);
+    ir.AstNode Do(ir.AstNode e2p_node);
 };
 
 interface NodePredicate {
-    boolean Do(AstNode e2p_node);
+    boolean Do(ir.AstNode e2p_node);
 };
 
 interface PropertyProcessor {
-    Variable Do(Variable e2p_variable, Type e2p_type);
+    varbinder.Variable Do(varbinder.Variable e2p_variable, checker.Type e2p_type);
 };
 
 interface PropertyTraverser {
-    void Do(Variable e2p_variable);
+    void Do(varbinder.Variable e2p_variable);
 };
 
 interface ClassBuilder {
-    void Do(sequence<AstNode> e2p_node, u32 size);
+    void Do(sequence<ir.AstNode> e2p_node, u32 size);
 };
 
 interface MethodBuilder {
-    void Do(sequence<AstNode> statements, u32 sizeStatements, sequence<AstNode> expression,
-        u32 sizeExpression, sequence<Type> e2p_type);
+    void Do(sequence<ir.Statement> statements, u32 sizeStatements, sequence<ir.Expression> expression,
+        u32 sizeExpression, sequence<checker.Type> e2p_type);
 };
 
 interface ClassInitializerBuilder {
-    void Do(sequence<AstNode> statements, u32 sizeStatements, sequence<AstNode> expression,
+    void Do(sequence<ir.Statement> statements, u32 sizeStatements, sequence<ir.Expression> expression,
         u32 sizeExpression);
 };
 
 interface AstNodeForEachFunction {
-    void Do(AstNode node, VoidPtr arg);
+    void Do(ir.AstNode node, VoidPtr arg);
 };
 
 interface es2panda_DynamicImportData {
-    attribute AstNode import_node;
-    attribute AstNode specifier;
-    attribute Variable variable;
+    attribute ir.ETSImportDeclaration import_node;
+    attribute ir.AstNode specifier;
+    attribute varbinder.Variable variable;
 };
 
 interface es2panda_OverloadInfo {
@@ -161,27 +161,10 @@ interface es2panda_Impl {
     String ContextErrorMessage(es2panda_Context context);
 
     es2panda_Program ContextProgram(es2panda_Context context);
-    AstNode ProgramAst(es2panda_Program program);
-    sequence<es2panda_ExternalSource> ProgramExternalSources(es2panda_Program program, sequence<u32> len_p);
     String ExternalSourceName(es2panda_ExternalSource e_source);
     sequence<es2panda_Program> ExternalSourcePrograms(es2panda_ExternalSource e_source, sequence<u32> len_p);
 
-    void AstNodeForEach(AstNode ast, AstNodeForEachFunction func, VoidPtr arg);
-
-    boolean SetNumberLiteralInt(AstNode node, i32 new_value);
-    boolean SetNumberLiteralLong(AstNode node, i64 new_value);
-    boolean SetNumberLiteralDouble(AstNode node, f64 new_value);
-    boolean SetNumberLiteralFloat(AstNode node, f32 new_value);
-
-    AstNode CreateNumberLiteral(es2panda_Context ctx, i32 value);
-    AstNode CreateNumberLiteral1(es2panda_Context ctx, i64 value);
-    AstNode CreateNumberLiteral2(es2panda_Context ctx, f64 value);
-    AstNode CreateNumberLiteral3(es2panda_Context ctx, f32 value);
-
-    AstNode UpdateNumberLiteral(es2panda_Context ctx, AstNode original, i32 value);
-    AstNode UpdateNumberLiteral1(es2panda_Context ctx, AstNode original, i64 value);
-    AstNode UpdateNumberLiteral2(es2panda_Context ctx, AstNode original, f64 value);
-    AstNode UpdateNumberLiteral3(es2panda_Context ctx, AstNode original, f32 value);
+    void AstNodeForEach(ir.AstNode ast, AstNodeForEachFunction func, VoidPtr arg);
 
     VoidPtr AllocMemory(es2panda_Context context, u32 numberOfElements, u32 sizeOfElement);
 
@@ -195,53 +178,77 @@ interface es2panda_Impl {
     void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
     void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
     void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
-    Scope AstNodeFindNearestScope(es2panda_Context ctx, AstNode node);
-    Scope AstNodeRebind(es2panda_Context ctx, AstNode node);
-    void AstNodeRecheck(es2panda_Context ctx, AstNode node);
+    varbinder.Scope AstNodeFindNearestScope(es2panda_Context ctx, ir.AstNode node);
+    varbinder.Scope AstNodeRebind(es2panda_Context ctx, ir.AstNode node);
+    void AstNodeRecheck(es2panda_Context ctx, ir.AstNode node);
     Es2pandaEnum Es2pandaEnumFromString(es2panda_Context ctx, String str);
     String Es2pandaEnumToString(es2panda_Context ctx, Es2pandaEnum id);
-    AstNode DeclarationFromIdentifier(es2panda_Context ctx, Identifier node);
-    AstNode FirstDeclarationByNameFromNode(es2panda_Context ctx, AstNode node, String name);
-    AstNode FirstDeclarationByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
-    sequence<AstNode> AllDeclarationsByNameFromNode(es2panda_Context ctx, AstNode node, String name);
-    sequence<AstNode> AllDeclarationsByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
+    ir.AstNode DeclarationFromIdentifier(es2panda_Context ctx, ir.Identifier node);
+    ir.AstNode FirstDeclarationByNameFromNode(es2panda_Context ctx, ir.AstNode node, String name);
+    ir.AstNode FirstDeclarationByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
+    sequence<ir.AstNode> AllDeclarationsByNameFromNode(es2panda_Context ctx, ir.AstNode node, String name);
+    sequence<ir.AstNode> AllDeclarationsByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
     void InsertETSImportDeclarationAndParse(es2panda_Context context, es2panda_Program program,
                                             ETSImportDeclaration node);
 
 % Es2pandaLibApi::ast_nodes&.each do |ast_node|
 %   if ast_node != 'AstNode' && ast_node != 'TypeNode'
-    boolean Is<%= ast_node %>(AstNode ast);
+    boolean Is<%= ast_node %>(ir.AstNode ast);
 %   end
 % end
 
 % Es2pandaLibApi::scopes&.each do |scope|
 %   if scope != 'Scope'
-    boolean ScopeIs<%= scope %>(Scope scope);
+    boolean ScopeIs<%= scope %>(varbinder.Scope scope);
 %   end
 % end
 
 % Es2pandaLibApi::ast_types&.each do |type|
 %   if type != 'Type'
-    boolean TypeIs<%= type %>(Type type);
+    boolean TypeIs<%= type %>(checker.Type type);
 %   end
 % end
 
 % Es2pandaLibApi::ast_variables&.each do |variable|
 %   if variable[1] != 'Variable'
-    boolean VariableIs<%= variable[1] %>(Variable variable);
+    boolean VariableIs<%= variable[1] %>(varbinder.Variable variable);
 %   end
 % end
 
-    String AstNodeName(AstNode ast);
+    String AstNodeName(ir.AstNode ast);
 };
+
+
+namespace ir {
+
+[Entity=Class, c_type=es2panda_AstNode] interface NumberLiteral: Literal {
+    ir.AstNode Create(es2panda_Context ctx, i32 value);
+    ir.AstNode Create1(es2panda_Context ctx, i64 value);
+    ir.AstNode Create2(es2panda_Context ctx, f64 value);
+    ir.AstNode Create3(es2panda_Context ctx, f32 value);
+
+    ir.AstNode Update(es2panda_Context ctx, ir.AstNode original, i32 value);
+    ir.AstNode Update1(es2panda_Context ctx, ir.AstNode original, i64 value);
+    ir.AstNode Update2(es2panda_Context ctx, ir.AstNode original, f64 value);
+    ir.AstNode Update3(es2panda_Context ctx, ir.AstNode original, f32 value);
+
+    boolean SetInt(ir.AstNode node, i32 new_value);
+    boolean SetLong(ir.AstNode node, i64 new_value);
+    boolean SetDouble(ir.AstNode node, f64 new_value);
+    boolean SetFloat(ir.AstNode node, f32 new_value);
+};
+
+};  // namespace ir
 
 
 % Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
 
+namespace <%= namespaceName %> {
+
 %   namespaceClasses&.each do |className, classData|
 [Entity=Class<%=
     classData.ast_node_type_value ? ", Es2pandaAstNodeType=#{classData.ast_node_type_value}" : ''
-%>, cpp_namespace=<%= namespaceName %>] interface <%= className %><%=
+%><%= classData.class_c_type %>] interface <%= className %><%=
     ": #{classData.extends_classname}" if classData && classData.extends_classname
 %> {
 %     classData.class_constructors&.each_with_index do |constructor, index|
@@ -277,4 +284,5 @@ interface es2panda_Impl {
 };
 
 %   end    # namespaceClasses
+};  // namespace <%= namespaceName %>
 % end    # classes
