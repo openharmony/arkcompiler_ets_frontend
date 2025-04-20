@@ -55,7 +55,8 @@ inline void *LoadLibrary(const std::string &libPath)
     return handle;
 }
 
-inline const char *LibraryError()
+// NOLINTNEXTLINE(modernize-redundant-void-arg)
+inline const char *LibraryError(void)
 {
     return dlerror();
 }

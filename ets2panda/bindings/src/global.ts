@@ -13,85 +13,91 @@
  * limitations under the License.
  */
 
-import { throwError } from "./utils"
-import { KNativePointer } from "./InteropTypes"
-import { initEs2panda, Es2pandaNativeModule, initGeneratedEs2panda, initPublicEs2panda, initPublicGeneratedEs2panda } from "./Es2pandaNativeModule"
-import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generated/Es2pandaNativeModule"
-import { initInterop, InteropNativeModule, initPublicInterop } from "./InteropNativeModule"
-import { Context } from "./types"
+import { throwError } from './utils';
+import { KNativePointer } from './InteropTypes';
+import {
+  initEs2panda,
+  Es2pandaNativeModule,
+  initGeneratedEs2panda,
+  initPublicEs2panda,
+  initPublicGeneratedEs2panda
+} from './Es2pandaNativeModule';
+import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
+import { initInterop, InteropNativeModule, initPublicInterop } from './InteropNativeModule';
+import { Context } from './types';
 
 export class global {
-  public static filePath: string = "./examples/input/main.ets"
+  public static filePath: string = './examples/input/main.ets';
 
-  private static _config?: KNativePointer
+  private static _config?: KNativePointer;
   public static set config(config: KNativePointer) {
     if (global._config !== undefined) {
-      throwError('Global.config already initialized')
+      throwError('Global.config already initialized');
     }
-    global._config = config
+    global._config = config;
   }
 
   public static get config(): KNativePointer {
-    return global._config ?? throwError('Global.config not initialized')
+    return global._config ?? throwError('Global.config not initialized');
   }
 
-  public static destroyCfg() {
-    global._config = undefined
+  public static destroyCfg(): void {
+    global._config = undefined;
   }
 
   public static configIsInitialized(): boolean {
-    return global._config !== undefined
+    return global._config !== undefined;
   }
 
-  private static _context?: KNativePointer
+  private static _context?: KNativePointer;
   public static set context(context: KNativePointer) {
-    global._context = context
+    global._context = context;
   }
   public static get context(): KNativePointer {
-    return global._context ?? throwError('Global.context not initialized')
+    return global._context ?? throwError('Global.context not initialized');
   }
 
-  private static _es2panda: Es2pandaNativeModule | undefined = undefined
-  private static _es2pandaPublic: Es2pandaNativeModule | undefined = undefined
+  private static _es2panda: Es2pandaNativeModule | undefined = undefined;
+  private static _es2pandaPublic: Es2pandaNativeModule | undefined = undefined;
   public static get es2panda(): Es2pandaNativeModule {
     if (this._es2panda === undefined) {
-      this._es2panda = initEs2panda()
+      this._es2panda = initEs2panda();
     }
-    return this._es2panda
+    return this._es2panda;
   }
 
   public static get es2pandaPublic(): Es2pandaNativeModule {
     if (this._es2pandaPublic === undefined) {
-      this._es2pandaPublic = initPublicEs2panda()
+      this._es2pandaPublic = initPublicEs2panda();
     }
-    return this._es2pandaPublic
+    return this._es2pandaPublic;
   }
 
-  private static _generatedEs2panda: GeneratedEs2pandaNativeModule | undefined = undefined
-  private static _generatedEs2pandaPublic: GeneratedEs2pandaNativeModule | undefined = undefined
+  private static _generatedEs2panda: GeneratedEs2pandaNativeModule | undefined = undefined;
+  private static _generatedEs2pandaPublic: GeneratedEs2pandaNativeModule | undefined = undefined;
   public static get generatedEs2panda(): GeneratedEs2pandaNativeModule {
     if (this._generatedEs2panda === undefined) {
-      this._generatedEs2panda = initGeneratedEs2panda()
+      this._generatedEs2panda = initGeneratedEs2panda();
     }
-    return this._generatedEs2panda
+    return this._generatedEs2panda;
   }
 
   public static get generatedEs2pandaPublic(): GeneratedEs2pandaNativeModule {
     if (this._generatedEs2pandaPublic === undefined) {
-      this._generatedEs2pandaPublic = initPublicGeneratedEs2panda()
+      this._generatedEs2pandaPublic = initPublicGeneratedEs2panda();
     }
-    return this._generatedEs2pandaPublic
+    return this._generatedEs2pandaPublic;
   }
 
-  private static _interop: InteropNativeModule | undefined = undefined
-  private static _interopPublic: InteropNativeModule | undefined = undefined
+  private static _interop: InteropNativeModule | undefined = undefined;
+  private static _interopPublic: InteropNativeModule | undefined = undefined;
   public static get interop(): InteropNativeModule {
-    if (this._interop === undefined) this._interop = initInterop()
-    return this._interop
+    if (this._interop === undefined) this._interop = initInterop();
+    return this._interop;
   }
 
   public static get interopPublic(): InteropNativeModule {
-    if (this._interopPublic === undefined) this._interopPublic = initPublicInterop()
-    return this._interopPublic
+    if (this._interopPublic === undefined) this._interopPublic = initPublicInterop();
+    return this._interopPublic;
   }
 }

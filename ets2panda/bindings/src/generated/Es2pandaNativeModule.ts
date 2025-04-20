@@ -13,23 +13,37 @@
  * limitations under the License.
  */
 
-
-import { KBoolean, KInt, KNativePointer } from "../InteropTypes"
+import { KBoolean, KInt, KNativePointer } from '../InteropTypes';
 
 export class Es2pandaNativeModule {
-  _CreateMemberExpression(context: KNativePointer, object_arg: KNativePointer, property: KNativePointer, kind: KInt, computed: KBoolean, optional_arg: KBoolean): KNativePointer {
-    throw new Error("This methods was not overloaded by native module initialization")
+  _CreateMemberExpression(
+    context: KNativePointer,
+    object_arg: KNativePointer,
+    property: KNativePointer,
+    kind: KInt,
+    computed: KBoolean,
+    optional_arg: KBoolean
+  ): KNativePointer {
+    throw new Error('This methods was not overloaded by native module initialization');
   }
-  _UpdateMemberExpression(context: KNativePointer, original: KNativePointer, object_arg: KNativePointer, property: KNativePointer, kind: KInt, computed: KBoolean, optional_arg: KBoolean): KNativePointer {
-    throw new Error("This methods was not overloaded by native module initialization")
+  _UpdateMemberExpression(
+    context: KNativePointer,
+    original: KNativePointer,
+    object_arg: KNativePointer,
+    property: KNativePointer,
+    kind: KInt,
+    computed: KBoolean,
+    optional_arg: KBoolean
+  ): KNativePointer {
+    throw new Error('This methods was not overloaded by native module initialization');
   }
   _MemberExpressionObject(context: KNativePointer, receiver: KNativePointer): KNativePointer {
-    throw new Error("This methods was not overloaded by native module initialization")
+    throw new Error('This methods was not overloaded by native module initialization');
   }
   _MemberExpressionProperty(context: KNativePointer, receiver: KNativePointer): KNativePointer {
-    throw new Error("This methods was not overloaded by native module initialization")
+    throw new Error('This methods was not overloaded by native module initialization');
   }
   _MemberExpressionKindConst(context: KNativePointer, receiver: KNativePointer): KInt {
-    throw new Error("This methods was not overloaded by native module initialization")
+    throw new Error('This methods was not overloaded by native module initialization');
   }
 }

@@ -27,9 +27,9 @@ using ark::es2panda::lsp::sort_text::GLOBALS_OR_KEYWORDS;
 using ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT;
 using ark::es2panda::lsp::sort_text::SUGGESTED_CLASS_MEMBERS;
 
-void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEntry> &entries,
-                                                  const std::vector<CompletionEntry> &expectedEntries,
-                                                  const std::vector<CompletionEntry> &unexpectedEntries)
+static void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEntry> &entries,
+                                                         const std::vector<CompletionEntry> &expectedEntries,
+                                                         const std::vector<CompletionEntry> &unexpectedEntries)
 {
     auto emptyCheck = expectedEntries.empty() && !entries.empty();
     ASSERT_FALSE(emptyCheck) << "Expected empty but the result is not. Actual account: " << entries.size();

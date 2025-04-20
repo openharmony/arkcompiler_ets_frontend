@@ -16,35 +16,26 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-import {
-  changeFileExtension,
-  ensurePathExists
-} from '../utils';
-import {
-  BuildConfig,
-  ModuleInfo
-} from '../types';
-import {
-  LANGUAGE_VERSION,
-  SYSTEM_SDK_PATH_FROM_SDK
-} from '../preDefine';
+import { changeFileExtension, ensurePathExists } from '../utils';
+import { BuildConfig, ModuleInfo } from '../types';
+import { LANGUAGE_VERSION, SYSTEM_SDK_PATH_FROM_SDK } from '../preDefine';
 
 interface DynamicPathItem {
-  language: string,
-  declPath: string,
-  runtimeName: string
+  language: string;
+  declPath: string;
+  runtimeName: string;
 }
 
 interface ArkTSConfigObject {
   compilerOptions: {
-    package: string,
-    baseUrl: string,
+    package: string;
+    baseUrl: string;
     paths: Record<string, string[]>;
     dependencies: string[] | undefined;
     entry: string;
     dynamicPaths: Record<string, DynamicPathItem>;
-  }
-};
+  };
+}
 
 export class ArkTSConfigGenerator {
   private static instance: ArkTSConfigGenerator | undefined;
@@ -56,8 +47,8 @@ export class ArkTSConfigGenerator {
   private pathSection: Record<string, string[]>;
 
   private constructor(buildConfig: BuildConfig, moduleInfos: Map<string, ModuleInfo>) {
-    let pandaStdlibPath: string = buildConfig.pandaStdlibPath ??
-      path.resolve(buildConfig.pandaSdkPath!!, 'lib', 'stdlib');
+    let pandaStdlibPath: string =
+      buildConfig.pandaStdlibPath ?? path.resolve(buildConfig.pandaSdkPath!!, 'lib', 'stdlib');
     this.stdlibStdPath = path.resolve(pandaStdlibPath, 'std');
     this.stdlibEscompatPath = path.resolve(pandaStdlibPath, 'escompat');
     this.systemSdkPath = path.resolve(buildConfig.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
@@ -69,8 +60,7 @@ export class ArkTSConfigGenerator {
   public static getInstance(buildConfig?: BuildConfig, moduleInfos?: Map<string, ModuleInfo>): ArkTSConfigGenerator {
     if (!ArkTSConfigGenerator.instance) {
       if (!buildConfig || !moduleInfos) {
-        throw new Error(
-          'buildConfig and moduleInfos is required for the first instantiation of ArkTSConfigGenerator.');
+        throw new Error('buildConfig and moduleInfos is required for the first instantiation of ArkTSConfigGenerator.');
       }
       ArkTSConfigGenerator.instance = new ArkTSConfigGenerator(buildConfig, moduleInfos);
     }
@@ -86,7 +76,7 @@ export class ArkTSConfigGenerator {
   }
 
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false) {
+    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false): void {
       const items = fs.readdirSync(currentDir);
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
@@ -94,7 +84,7 @@ export class ArkTSConfigGenerator {
 
         if (stat.isFile()) {
           const basename = path.basename(item, '.d.ets');
-          const key = isExcludedDir ? basename : (relativePath ? `${relativePath}.${basename}` : basename);
+          const key = isExcludedDir ? basename : relativePath ? `${relativePath}.${basename}` : basename;
           pathSection[key] = [changeFileExtension(itemPath, '', '.d.ets')];
         }
         if (stat.isDirectory()) {
@@ -103,7 +93,7 @@ export class ArkTSConfigGenerator {
           // For arkui files under api dir,
           // fill path section with `"fileName" = [${absolute_path_to_file}]`.
           const isCurrentDirExcluded = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
-          const newRelativePath = isCurrentDirExcluded ? '' : (relativePath ? `${relativePath}.${item}` : item);
+          const newRelativePath = isCurrentDirExcluded ? '' : relativePath ? `${relativePath}.${item}` : item;
           traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
         }
       }
@@ -124,18 +114,15 @@ export class ArkTSConfigGenerator {
       return this.pathSection;
     }
 
-    this.pathSection['std'] = [this.stdlibStdPath];
-    this.pathSection['escompat'] = [this.stdlibEscompatPath];
+    this.pathSection.std = [this.stdlibStdPath];
+    this.pathSection.escompat = [this.stdlibEscompatPath];
 
     this.generateSystemSdkPathSection(this.pathSection);
 
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, packageName: string) => {
       if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2) {
-        this.pathSection[moduleInfo.packageName] = [
-          path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
-        ]
+        this.pathSection[moduleInfo.packageName] = [path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])];
       }
-
     });
 
     return this.pathSection;
@@ -154,7 +141,7 @@ export class ArkTSConfigGenerator {
     return changeFileExtension(ohmurl, '');
   }
 
-  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>) {
+  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
     let depModules: Map<string, ModuleInfo> = moduleInfo.dynamicDepModuleInfos;
 
     depModules.forEach((depModuleInfo: ModuleInfo) => {
@@ -167,10 +154,10 @@ export class ArkTSConfigGenerator {
       Object.keys(declFilesObject.files).forEach((file: string) => {
         let ohmurl: string = this.getOhmurl(file, depModuleInfo);
         dynamicPathSection[ohmurl] = {
-          language: "js",
+          language: 'js',
           declPath: declFilesObject.files[file].declPath,
           runtimeName: declFilesObject.files[file].ohmUrl
-        }
+        };
 
         let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
         let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
@@ -182,7 +169,7 @@ export class ArkTSConfigGenerator {
   }
 
   public writeArkTSConfigFile(moduleInfo: ModuleInfo): void {
-    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length == 0) {
+    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       console.error('SourceRoots not set from hvigor.');
     }
     let pathSection = this.getPathSection();

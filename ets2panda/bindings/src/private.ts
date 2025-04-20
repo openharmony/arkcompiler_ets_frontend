@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-import { throwError } from "./utils"
-import { KNativePointer, nullptr } from "./InteropTypes"
-import { withString, withStringArray } from "./arrays"
-import { NativePtrDecoder, withStringResult } from "./Platform"
-import { LspDiagsNode, LspNode } from "./lspNode";
+import { throwError } from './utils';
+import { KNativePointer, nullptr } from './InteropTypes';
+import { withString, withStringArray } from './arrays';
+import { NativePtrDecoder, withStringResult } from './Platform';
+import { LspDiagsNode, LspNode } from './lspNode';
 
 export function lspData(peer: KNativePointer): LspNode {
-  return new LspDiagsNode(peer)
+  return new LspDiagsNode(peer);
 }
 
 export enum VariantTypes {
@@ -30,37 +30,35 @@ export enum VariantTypes {
 
 export function unpackNonNullableNode<T extends LspNode>(peer: KNativePointer): T {
   if (peer === nullptr) {
-    throwError('peer is NULLPTR (maybe you should use unpackNode)')
+    throwError('peer is NULLPTR (maybe you should use unpackNode)');
   }
-  return lspData(peer) as T
+  return lspData(peer) as T;
 }
 
 export function unpackNode<T extends LspNode>(peer: KNativePointer): T | undefined {
   if (peer === nullptr) {
-    return undefined
+    return undefined;
   }
 }
 
 export function unpackNodeArray<T extends LspNode>(nodesPtr: KNativePointer): readonly T[] {
   if (nodesPtr === nullptr) {
-    throwError('nodesPtr is NULLPTR (maybe you should use unpackNodeArray)')
+    throwError('nodesPtr is NULLPTR (maybe you should use unpackNodeArray)');
   }
-  return (new NativePtrDecoder())
-    .decode(nodesPtr)
-    .map((peer: KNativePointer) => unpackNonNullableNode(peer))
+  return new NativePtrDecoder().decode(nodesPtr).map((peer: KNativePointer) => unpackNonNullableNode(peer));
 }
 
 export function unpackString(peer: KNativePointer): string {
-  return withStringResult(peer) ?? throwError(`failed to unpack (peer shouldn't be NULLPTR)`)
+  return withStringResult(peer) ?? throwError(`failed to unpack (peer shouldn't be NULLPTR)`);
 }
 
 export function passString(str: string | undefined): string {
   if (str === undefined) {
-    return ""
+    return '';
   }
-  return withString(str, (it: string) => it)
+  return withString(str, (it: string) => it);
 }
 
 export function passStringArray(strings: string[]): Uint8Array {
-  return withStringArray(strings)
+  return withStringArray(strings);
 }

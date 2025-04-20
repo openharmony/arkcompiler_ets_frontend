@@ -20,8 +20,8 @@ export const ABC_SUFFIX: string = '.abc';
 export enum LANGUAGE_VERSION {
   ARKTS_1_2 = '1.2',
   ARKTS_1_1 = '1.1',
-  ARKTS_HYBRID = 'hybrid',
-};
+  ARKTS_HYBRID = 'hybrid'
+}
 
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
