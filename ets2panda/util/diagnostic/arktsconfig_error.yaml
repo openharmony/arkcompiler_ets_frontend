@@ -75,3 +75,7 @@ arkts_config_error:
 - name: INVALID_DESTINATION_FILE
   id: 16
   message: Invalid destination file
+
+- name: INVALID_DYNAMIC_PATH
+  id: 17
+  message: Invalid dynamic path '{}'
