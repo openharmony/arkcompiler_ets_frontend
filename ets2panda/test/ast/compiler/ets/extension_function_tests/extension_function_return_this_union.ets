@@ -20,5 +20,5 @@ function f1(this : B): /* @@ label*/this | A {
     return this;
 }
 /* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions. */
+/* @@? 19:37 Error TypeError: A 'this' cannot be used as a part of union type. */
 /* @@? 20:12 Error TypeError: Type 'B' is not compatible with the enclosing method's return type 'ETSGLOBAL|A' */
-
