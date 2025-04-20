@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 35,
             "column": 3,
-            "endLine": 41,
+            "endLine": 42,
             "endColumn": 4,
             "problem": "StylesDecoratorNotSupported",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 65,
+            "line": 67,
             "column": 3,
-            "endLine": 68,
+            "endLine": 70,
             "endColumn": 4,
             "problem": "StylesDecoratorNotSupported",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 72,
             "column": 3,
-            "endLine": 73,
+            "endLine": 75,
             "endColumn": 4,
             "problem": "StylesDecoratorNotSupported",
             "suggest": "",
@@ -55,29 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 80,
-            "column": 15,
-            "endLine": 80,
-            "endColumn": 34,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 81,
-            "column": 16,
-            "endLine": 81,
-            "endColumn": 36,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 103,
+            "line": 105,
             "column": 3,
-            "endLine": 116,
+            "endLine": 118,
             "endColumn": 4,
             "problem": "StylesDecoratorNotSupported",
             "suggest": "",
@@ -85,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 106,
+            "line": 108,
             "column": 18,
-            "endLine": 114,
+            "endLine": 116,
             "endColumn": 6,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -125,20 +105,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
-            "column": 2,
-            "endLine": 32,
-            "endColumn": 11,
+            "line": 29,
+            "column": 22,
+            "endLine": 29,
+            "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
-            "line": 43,
-            "column": 23,
-            "endLine": 43,
-            "endColumn": 28,
+            "line": 33,
+            "column": 2,
+            "endLine": 33,
+            "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -146,8 +126,18 @@
         },
         {
             "line": 44,
-            "column": 12,
+            "column": 23,
             "endLine": 44,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 12,
+            "endLine": 45,
             "endColumn": 17,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -155,18 +145,8 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
-            "column": 5,
-            "endLine": 52,
-            "endColumn": 11,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
             "line": 53,
-            "column": 7,
+            "column": 5,
             "endLine": 53,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
@@ -175,10 +155,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 59,
-            "column": 2,
-            "endLine": 59,
+            "line": 54,
+            "column": 7,
+            "endLine": 54,
             "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 22,
+            "endLine": 57,
+            "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -186,8 +176,18 @@
         },
         {
             "line": 61,
-            "column": 4,
+            "column": 2,
             "endLine": 61,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 4,
+            "endLine": 63,
             "endColumn": 16,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -195,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
+            "line": 64,
             "column": 4,
-            "endLine": 62,
+            "endLine": 64,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -205,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 67,
+            "line": 69,
             "column": 22,
-            "endLine": 67,
+            "endLine": 69,
             "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -215,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 74,
             "column": 22,
-            "endLine": 72,
+            "endLine": 74,
             "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -225,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 76,
+            "line": 78,
             "column": 5,
-            "endLine": 76,
+            "endLine": 78,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -235,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 97,
+            "line": 99,
             "column": 2,
-            "endLine": 97,
+            "endLine": 99,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -245,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 101,
+            "line": 103,
             "column": 24,
-            "endLine": 101,
+            "endLine": 103,
             "endColumn": 37,
             "problem": "UIInterfaceImport",
             "suggest": "",

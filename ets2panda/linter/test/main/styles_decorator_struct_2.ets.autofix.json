@@ -15,29 +15,9 @@
     ],
     "result": [
         {
-            "line": 77,
-            "column": 15,
-            "endLine": 77,
-            "endColumn": 34,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 78,
-            "column": 16,
-            "endLine": 78,
-            "endColumn": 36,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 102,
+            "line": 105,
             "column": 26,
-            "endLine": 110,
+            "endLine": 113,
             "endColumn": 6,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",

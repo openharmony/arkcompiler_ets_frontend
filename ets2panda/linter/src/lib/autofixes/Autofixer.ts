@@ -2905,7 +2905,7 @@ export class Autofixer {
 
   fixStylesDecoratorGlobal(
     funcDecl: ts.FunctionDeclaration,
-    calls: ts.CallExpression[],
+    calls: ts.Identifier[],
     needImport: Set<string>
   ): Autofix[] | undefined {
     const block = funcDecl.body;
@@ -2933,7 +2933,7 @@ export class Autofixer {
 
   fixStylesDecoratorStruct(
     methodDecl: ts.MethodDeclaration,
-    calls: ts.CallExpression[],
+    calls: ts.Identifier[],
     needImport: Set<string>
   ): Autofix[] | undefined {
     const block = methodDecl.body;
@@ -2994,15 +2994,28 @@ export class Autofixer {
     return [firstLine, ...middleLines, lastLine].join('\n');
   }
 
-  private addAutofixFromCalls(calls: ts.CallExpression[], autofix: Autofix[], argument: ts.Expression): void {
+  private addAutofixFromCalls(calls: ts.Identifier[], autofix: Autofix[], argument: ts.Expression): void {
     calls.forEach((call) => {
       const callExpr = ts.factory.createCallExpression(
         ts.factory.createIdentifier(APPLY_STYLES_IDENTIFIER),
         undefined,
         [argument]
       );
+
+      let start: number = call.getStart();
+      let end: number = 0;
+      const expr = call.parent;
+      if (ts.isCallExpression(expr)) {
+        end = expr.getEnd();
+      }
+      if (ts.isPropertyAccessExpression(expr) && ts.isCallExpression(expr.parent)) {
+        end = expr.parent.getEnd();
+      }
+      if (end === 0) {
+        return;
+      }
       const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, call.getSourceFile());
-      autofix.push({ start: call.getStart(), end: call.getEnd(), replacementText: text });
+      autofix.push({ start: start, end: end, replacementText: text });
     });
   }
 

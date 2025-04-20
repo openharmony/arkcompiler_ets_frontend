@@ -5707,17 +5707,29 @@ export class TypeScriptLinter {
     }
   }
 
-  private static findDeclarationCalls(sourceFile: ts.SourceFile, declName: string): ts.CallExpression[] {
-    const functionCalls: ts.CallExpression[] = [];
+  private static findDeclarationCalls(sourceFile: ts.SourceFile, declName: string): ts.Identifier[] {
+    const functionCalls: ts.Identifier[] = [];
 
     function traverse(node: ts.Node): void {
-      if (ts.isCallExpression(node)) {
-        const callName = node.expression.getText();
-        if (callName === declName) {
-          functionCalls.push(node);
-        }
+      const identifier = getIdentifierFromNode(node);
+      if (identifier && identifier.getText() === declName) {
+          functionCalls.push(identifier);
       }
+
       ts.forEachChild(node, traverse);
+    }
+
+    function getIdentifierFromNode(node: ts.Node): ts.Identifier | undefined {
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+        return node.expression;
+      }
+      if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.name)) {
+        if (node.expression.getText() === THIS_IDENTIFIER) {
+          return undefined;
+        }
+        return node.name;
+      }
+      return undefined;
     }
 
     traverse(sourceFile);
