@@ -5760,7 +5760,8 @@ export class TypeScriptLinter {
     const isStatic = TsUtils.hasModifier(propDecl.modifiers, ts.SyntaxKind.StaticKeyword);
     const hasNoInitializer = !propDecl.initializer;
     if (isStatic && hasNoInitializer) {
-      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization);
+      const autofix = this.autofixer?.fixStaticPropertyInitializer(propDecl);
+      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization, autofix);
     }
   }
 

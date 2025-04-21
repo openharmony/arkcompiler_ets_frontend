@@ -3531,7 +3531,7 @@ export class Autofixer {
         return undefined;
     }
   }
-  
+
   fixArrayIndexExprType(argExpr: ts.Expression): Autofix[] | undefined {
     void this;
     if (ts.isAsExpression(argExpr)) {
@@ -3546,8 +3546,205 @@ export class Autofixer {
     if (ts.isBinaryExpression(argExpr)) {
       return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `(${argExpr.getText()}) as int` }];
     }
-   
+
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
+  }
+
+  fixStaticPropertyInitializer(propDecl: ts.PropertyDeclaration): Autofix[] | undefined {
+    const srcFile = propDecl.getSourceFile();
+    const startPos = srcFile.getLineAndCharacterOfPosition(propDecl.getStart()).character;
+
+    const newPropDecl = Autofixer.createUltimateFixedProperty(propDecl);
+    if (!newPropDecl) {
+      return undefined;
+    }
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, srcFile);
+    text = Autofixer.adjustIndentation(text, startPos);
+
+    return [
+      {
+        start: propDecl.getStart(),
+        end: propDecl.getEnd(),
+        replacementText: text
+      }
+    ];
+  }
+
+  private static createUltimateFixedProperty(propDecl: ts.PropertyDeclaration): ts.PropertyDeclaration | undefined {
+    const type = propDecl.type;
+
+    if (!type) {
+      return undefined;
+    }
+
+    switch (type.kind) {
+      case ts.SyntaxKind.TypeLiteral:
+        return Autofixer.handleTypeLiteralProperty(propDecl, type as ts.TypeLiteralNode);
+      case ts.SyntaxKind.TypeReference:
+        return Autofixer.handleTypeReferenceProperty(propDecl, type as ts.TypeReferenceNode);
+      case ts.SyntaxKind.ArrayType:
+        return Autofixer.handleArrayTypeProperty(propDecl, type as ts.ArrayTypeNode);
+      case ts.SyntaxKind.StringKeyword:
+        return Autofixer.handleStringProperty(propDecl, type);
+      default:
+        return undefined;
+    }
+  }
+
+  private static handleTypeLiteralProperty(
+    propDecl: ts.PropertyDeclaration,
+    type: ts.TypeLiteralNode
+  ): ts.PropertyDeclaration {
+    return ts.factory.updatePropertyDeclaration(
+      propDecl,
+      propDecl.modifiers,
+      propDecl.name,
+      propDecl.questionToken,
+      type,
+      Autofixer.createExactObjectInitializer(type)
+    );
+  }
+
+  private static handleTypeReferenceProperty(
+    propDecl: ts.PropertyDeclaration,
+    type: ts.TypeReferenceNode
+  ): ts.PropertyDeclaration | undefined {
+    if (Autofixer.isUserDefinedClass(type)) {
+      return Autofixer.handleCustomClassProperty(propDecl, type);
+    }
+    const newInit = Autofixer.createBuiltInTypeInitializer(type);
+    if (!newInit) {
+      return undefined;
+    }
+    return ts.factory.updatePropertyDeclaration(
+      propDecl,
+      propDecl.modifiers,
+      propDecl.name,
+      propDecl.questionToken,
+      type,
+      newInit
+    );
+  }
+
+  private static handleCustomClassProperty(
+    propDecl: ts.PropertyDeclaration,
+    type: ts.TypeReferenceNode
+  ): ts.PropertyDeclaration | undefined {
+    const nullableType = ts.factory.createUnionTypeNode([
+      type,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword)
+    ]);
+
+    return ts.factory.updatePropertyDeclaration(
+      propDecl,
+      propDecl.modifiers,
+      propDecl.name,
+      undefined,
+      nullableType,
+      ts.factory.createIdentifier('undefined')
+    );
+  }
+
+  private static handleArrayTypeProperty(
+    propDecl: ts.PropertyDeclaration,
+    type: ts.ArrayTypeNode
+  ): ts.PropertyDeclaration {
+    return ts.factory.updatePropertyDeclaration(
+      propDecl,
+      propDecl.modifiers,
+      propDecl.name,
+      propDecl.questionToken,
+      type,
+      ts.factory.createArrayLiteralExpression([], false)
+    );
+  }
+
+  private static handleStringProperty(propDecl: ts.PropertyDeclaration, type: ts.TypeNode): ts.PropertyDeclaration {
+    return ts.factory.updatePropertyDeclaration(
+      propDecl,
+      propDecl.modifiers,
+      propDecl.name,
+      propDecl.questionToken,
+      type,
+      ts.factory.createStringLiteral('')
+    );
+  }
+
+  private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {
+    const typeName = type.typeName.getText();
+
+    switch (typeName) {
+      case 'Date':
+        return ts.factory.createNewExpression(ts.factory.createIdentifier('Date'), undefined, []);
+      case 'Map':
+      case 'Set':
+        return ts.factory.createNewExpression(ts.factory.createIdentifier(typeName), type.typeArguments, []);
+      case 'Promise':
+        return ts.factory.createIdentifier('undefined');
+      default:
+        return this.isNullableType(type) ? ts.factory.createIdentifier('undefined') : undefined;
+    }
+  }
+
+  private static isNullableType(type: ts.TypeNode): boolean {
+    if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
+      return true;
+    }
+
+    if (ts.isUnionTypeNode(type)) {
+      return type.types.some((t) => {
+        return t.kind === ts.SyntaxKind.UndefinedKeyword;
+      });
+    }
+
+    return false;
+  }
+
+  private static createExactObjectInitializer(type: ts.TypeLiteralNode): ts.ObjectLiteralExpression {
+    const properties = type.members.
+      filter((member): member is ts.PropertySignature => {
+        return ts.isPropertySignature(member);
+      }).
+      map((member) => {
+        const initializer = Autofixer.createInitializerForPropertySignature(member);
+        if (initializer) {
+          return ts.factory.createPropertyAssignment(member.name, initializer);
+        }
+        return null;
+      }).
+      filter((property): property is ts.PropertyAssignment => {
+        return property !== null;
+      });
+
+    return ts.factory.createObjectLiteralExpression(properties, true);
+  }
+
+  private static createInitializerForPropertySignature(member: ts.PropertySignature): ts.Expression | undefined {
+    return member.type ? Autofixer.createTypeBasedInitializer(member.type) : undefined;
+  }
+
+  private static createTypeBasedInitializer(type?: ts.TypeNode): ts.Expression | undefined {
+    if (!type) {
+      return undefined;
+    }
+
+    switch (type.kind) {
+      case ts.SyntaxKind.StringKeyword:
+        return ts.factory.createStringLiteral('');
+      case ts.SyntaxKind.TypeLiteral:
+        return Autofixer.createExactObjectInitializer(type as ts.TypeLiteralNode);
+      case ts.SyntaxKind.ArrayType:
+        return ts.factory.createArrayLiteralExpression([], false);
+      case ts.SyntaxKind.TypeReference:
+        return Autofixer.createBuiltInTypeInitializer(type as ts.TypeReferenceNode);
+      default:
+        return this.isNullableType(type) ? ts.factory.createIdentifier('undefined') : undefined;
+    }
+  }
+
+  private static isUserDefinedClass(type: ts.TypeReferenceNode): boolean {
+    const builtInTypes = new Set(['Date', 'Array', 'Map', 'Set', 'Promise', 'RegExp', 'Function']);
+    return !builtInTypes.has(type.typeName.getText());
   }
 
   fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {

@@ -1,18 +1,4 @@
 {
-    "copyright": [
-      "Copyright (c) 2025 Huawei Device Co., Ltd.",
-      "Licensed under the Apache License, Version 2.0 (the 'License');",
-      "you may not use this file except in compliance with the License.",
-      "You may obtain a copy of the License at",
-      "",
-      "http://www.apache.org/licenses/LICENSE-2.0",
-      "",
-      "Unless required by applicable law or agreed to in writing, software",
-      "distributed under the License is distributed on an 'AS IS' BASIS,",
-      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-      "See the License for the specific language governing permissions and",
-      "limitations under the License."
-    ],
     "result": [
         {
             "line": 21,
@@ -20,6 +6,13 @@
             "endLine": 21,
             "endColumn": 14,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 641,
+                    "end": 652,
+                    "replacementText": "static a: A | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -30,6 +23,13 @@
             "endLine": 25,
             "endColumn": 14,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 668,
+                    "end": 679,
+                    "replacementText": "static g: G | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -40,6 +40,13 @@
             "endLine": 32,
             "endColumn": 15,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 753,
+                    "end": 765,
+                    "replacementText": "static g: G | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -50,6 +57,13 @@
             "endLine": 36,
             "endColumn": 14,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 781,
+                    "end": 792,
+                    "replacementText": "static a: A | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -60,6 +74,13 @@
             "endLine": 46,
             "endColumn": 29,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 933,
+                    "end": 959,
+                    "replacementText": "public static abc: string = \"\";"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -70,6 +91,13 @@
             "endLine": 59,
             "endColumn": 16,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1088,
+                    "end": 1101,
+                    "replacementText": "static b: BB | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -90,6 +118,13 @@
             "endLine": 67,
             "endColumn": 35,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1156,
+                    "end": 1188,
+                    "replacementText": "static config: {\n    theme: string;\n} = {\n    theme: \"\"\n  };"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -100,6 +135,18 @@
             "endLine": 67,
             "endColumn": 19,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1143,
+                    "end": 1143,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    theme: string;\n}\n"
+                },
+                {
+                    "start": 1171,
+                    "end": 1187,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -110,6 +157,13 @@
             "endLine": 71,
             "endColumn": 23,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1205,
+                    "end": 1225,
+                    "replacementText": "static name: string = \"\";"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -120,6 +174,13 @@
             "endLine": 79,
             "endColumn": 38,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1314,
+                    "end": 1349,
+                    "replacementText": "static uninitializedString: string = \"\";"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -150,6 +211,13 @@
             "endLine": 86,
             "endColumn": 45,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1467,
+                    "end": 1509,
+                    "replacementText": "static uninitializedStringArray: string[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -160,6 +228,13 @@
             "endLine": 87,
             "endColumn": 45,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1512,
+                    "end": 1554,
+                    "replacementText": "static uninitializedNumberArray: number[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -170,6 +245,13 @@
             "endLine": 88,
             "endColumn": 53,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1557,
+                    "end": 1607,
+                    "replacementText": "static uninitializedObjectArray: {\n    id: number;\n  }[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -180,6 +262,18 @@
             "endLine": 88,
             "endColumn": 37,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1446,
+                    "end": 1446,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_2 {\n    id: number;\n}\n"
+                },
+                {
+                    "start": 1590,
+                    "end": 1604,
+                    "replacementText": "GeneratedTypeLiteralInterface_2"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -190,6 +284,13 @@
             "endLine": 89,
             "endColumn": 55,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1610,
+                    "end": 1662,
+                    "replacementText": "static uninitializedUnionArray: (string | number)[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -200,6 +301,13 @@
             "endLine": 94,
             "endColumn": 67,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1704,
+                    "end": 1768,
+                    "replacementText": "static uninitializedSimpleObject: {\n    name: string;\n    age: number;\n} = {\n    name: \"\"\n  };"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -210,6 +318,18 @@
             "endLine": 94,
             "endColumn": 38,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1682,
+                    "end": 1682,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_3 {\n    name: string;\n    age: number;\n}\n"
+                },
+                {
+                    "start": 1738,
+                    "end": 1767,
+                    "replacementText": "GeneratedTypeLiteralInterface_3"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -220,6 +340,13 @@
             "endLine": 101,
             "endColumn": 5,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1771,
+                    "end": 1895,
+                    "replacementText": "static uninitializedNestedObject: {\n    id: number;\n    metadata: {\n        createdAt: Date;\n        tags: string[];\n    };\n} = {\n    metadata: {\n        createdAt: new Date(),\n        tags: []\n    }\n  };"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -230,6 +357,18 @@
             "endLine": 95,
             "endColumn": 38,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1682,
+                    "end": 1682,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_4 {\n    id: number;\n    metadata: {\n        createdAt: Date;\n        tags: string[];\n    };\n}\n"
+                },
+                {
+                    "start": 1805,
+                    "end": 1894,
+                    "replacementText": "GeneratedTypeLiteralInterface_4"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -240,6 +379,18 @@
             "endLine": 97,
             "endColumn": 16,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1682,
+                    "end": 1682,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_5 {\n    createdAt: Date;\n    tags: string[];\n}\n"
+                },
+                {
+                    "start": 1837,
+                    "end": 1889,
+                    "replacementText": "GeneratedTypeLiteralInterface_5"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -250,6 +401,13 @@
             "endLine": 106,
             "endColumn": 34,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1948,
+                    "end": 1979,
+                    "replacementText": "static uninitializedDate: Date = new Date();"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -260,6 +418,13 @@
             "endLine": 107,
             "endColumn": 48,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 1982,
+                    "end": 2027,
+                    "replacementText": "static uninitializedMap: Map<string, number> = new Map<string, number>();"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -270,6 +435,13 @@
             "endLine": 108,
             "endColumn": 40,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2030,
+                    "end": 2067,
+                    "replacementText": "static uninitializedSet: Set<string> = new Set<string>();"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -280,6 +452,13 @@
             "endLine": 109,
             "endColumn": 46,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2070,
+                    "end": 2113,
+                    "replacementText": "static uninitializedPromise: Promise<void> = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -320,6 +499,18 @@
             "endLine": 115,
             "endColumn": 38,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2149,
+                    "end": 2149,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_6 {\n    name: string;\n}\n"
+                },
+                {
+                    "start": 2253,
+                    "end": 2269,
+                    "replacementText": "GeneratedTypeLiteralInterface_6"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -330,6 +521,18 @@
             "endLine": 115,
             "endColumn": 57,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2149,
+                    "end": 2149,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_7 {\n    age: number;\n}\n"
+                },
+                {
+                    "start": 2272,
+                    "end": 2287,
+                    "replacementText": "GeneratedTypeLiteralInterface_7"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -350,6 +553,13 @@
             "endLine": 121,
             "endColumn": 41,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2404,
+                    "end": 2442,
+                    "replacementText": "static uninitializedOptional?: string = \"\";"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -380,6 +590,13 @@
             "endLine": 128,
             "endColumn": 41,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2567,
+                    "end": 2605,
+                    "replacementText": "static uninitializedGenericArray: T[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -390,6 +607,13 @@
             "endLine": 129,
             "endColumn": 39,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2608,
+                    "end": 2644,
+                    "replacementText": "static uninitializedGenericValue: T | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -430,6 +654,18 @@
             "endLine": 140,
             "endColumn": 44,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2821,
+                    "end": 2821,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_8 {\n    id: number;\n    data: Map<string, Set<number>>;\n}\n"
+                },
+                {
+                    "start": 2884,
+                    "end": 2930,
+                    "replacementText": "GeneratedTypeLiteralInterface_8"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -440,6 +676,13 @@
             "endLine": 141,
             "endColumn": 65,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 2935,
+                    "end": 2997,
+                    "replacementText": "static uninitializedRecord: Record<string, {\n    value: number;\n  }> | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -450,6 +693,18 @@
             "endLine": 141,
             "endColumn": 47,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2821,
+                    "end": 2821,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_9 {\n    value: number;\n}\n"
+                },
+                {
+                    "start": 2978,
+                    "end": 2995,
+                    "replacementText": "GeneratedTypeLiteralInterface_9"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
             "severity": "ERROR"
@@ -470,6 +725,13 @@
             "endLine": 152,
             "endColumn": 34,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 3153,
+                    "end": 3184,
+                    "replacementText": "static uninitializedUser: User | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -480,6 +742,13 @@
             "endLine": 153,
             "endColumn": 37,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 3187,
+                    "end": 3221,
+                    "replacementText": "static uninitializedUsers: User[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -490,6 +759,13 @@
             "endLine": 163,
             "endColumn": 38,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 3297,
+                    "end": 3332,
+                    "replacementText": "static uninitializedStatus: Status | undefined = undefined;"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -500,6 +776,13 @@
             "endLine": 164,
             "endColumn": 45,
             "problem": "ClassstaticInitialization",
+            "autofix": [
+                {
+                    "start": 3335,
+                    "end": 3377,
+                    "replacementText": "static uninitializedStatusArray: Status[] = [];"
+                }
+            ],
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
@@ -560,6 +843,13 @@
             "endLine": 42,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, State, Text } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -570,6 +860,13 @@
             "endLine": 43,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, State, Text } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -580,6 +877,13 @@
             "endLine": 45,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, State, Text } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -590,6 +894,13 @@
             "endLine": 49,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, State, Text } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
