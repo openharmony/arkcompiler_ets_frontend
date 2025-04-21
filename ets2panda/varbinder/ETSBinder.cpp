@@ -265,7 +265,8 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
     }
 
     if (ident->IsReference(Extension()) && res.variable->Declaration()->IsLetOrConstDecl() &&
-        !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
+        !res.variable->HasFlag(VariableFlags::INITIALIZED) &&
+        !res.variable->HasFlag(VariableFlags::INIT_IN_STATIC_BLOCK)) {
         ThrowTDZ(ident->Start(), name);
     }
 }
@@ -501,7 +502,13 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
         auto fieldName = prop->Id()->Name();
         if (auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
             fieldVar != nullptr) {
-            fieldVar->AddFlag(VariableFlags::INITIALIZED);
+            if (fieldVar->Declaration()->Node()->IsClassProperty() &&
+                fieldVar->Declaration()->Node()->AsClassProperty()->NeedInitInStaticBlock()) {
+                fieldVar->AddFlag(VariableFlags::INIT_IN_STATIC_BLOCK);
+            } else {
+                fieldVar->AddFlag(VariableFlags::INITIALIZED);
+            }
+
             if ((fieldVar->Declaration()->IsConstDecl() || fieldVar->Declaration()->IsReadonlyDecl()) &&
                 prop->Value() == nullptr) {
                 fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);

@@ -124,6 +124,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
         statements.emplace_back(decl);
         // If we found a package declaration, then add all files with the same package to the package parse list
         AddPackageSourcesToParseList();
+        GetContext().Status() |= ParserStatus::IN_PACKAGE;
     }
 
     ir::ETSModule *script;
@@ -133,6 +134,9 @@ void ETSParser::ParseProgram(ScriptKind kind)
         script = ParseImportsOnly(startLoc, statements);
     }
 
+    if ((GetContext().Status() & ParserStatus::IN_PACKAGE) != 0) {
+        GetContext().Status() &= ~ParserStatus::IN_PACKAGE;
+    }
     AddExternalSource(ParseSources(true));
     GetProgram()->SetAst(script);
 }
@@ -326,10 +330,14 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
 
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
     auto decl = ParsePackageDeclaration();
+    ir::ETSModule *script = nullptr;
     if (decl != nullptr) {
         statements.emplace_back(decl);
+        SavedParserContext contextAfterParseDecl(this, GetContext().Status() |= ParserStatus::IN_PACKAGE);
+        script = ParseETSGlobalScript(startLoc, statements);
+    } else {
+        script = ParseETSGlobalScript(startLoc, statements);
     }
-    auto script = ParseETSGlobalScript(startLoc, statements);
     program->SetAst(script);
     return program;
 }

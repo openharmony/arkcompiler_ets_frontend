@@ -179,7 +179,8 @@ bool ETSParser::IsInitializerBlockStart() const
     auto savedPos = Lexer()->Save();
     Lexer()->NextToken();
     const bool validStart = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE &&
-                            (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0;
+                            ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 ||
+                             (GetContext().Status() & ParserStatus::IN_PACKAGE) != 0);
     Lexer()->Rewind(savedPos);
     return validStart;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,28 +13,13 @@
  * limitations under the License.
  */
 
-package mypackage;
+package P2
 
-function ClassTypeTest(a0: C1){
-    assertEQ(C1.stmemb, "c1_stmemb")
-    assertEQ(a0.memb, 2)
-    assertEQ(a0.bar(), 3)
-    assertEQ(a0.baz(), 4)
+export namespace NS {
+    export let a:number;
+    static {
+        a = 1;
+    }
 }
 
-function main(): void {
-    ClassTypeTest(new C1());
-    let locVar: mytype = new A();
-    assertEQ(locVar.aMemb, 5)
-    assertEQ(globVar1, 7)
-    assertEQ(globVar2, 7)
-}
-
-let globVar2: number;
-static {
-    globVar2 = globVar1;
-}
-
-function func2(a0: number): void {
-    assertEQ(a0, 6)
-}
+/* @@? P2_01.ets:21:9 Error SyntaxError: Only one static block is allowed in one namespace or class. */

@@ -63,6 +63,7 @@ void CastPossibleTupleOnRHS(ETSChecker *checker, ir::AssignmentExpression *expr)
 void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                              ir::ReturnStatement *st, ir::Expression *stArgument);
 bool CheckReturnTypeNecessity(ir::MethodDefinition *node);
+void CheckAllConstPropertyInitialized(checker::ETSChecker *checker, ir::ETSModule *pkg);
 }  // namespace ark::es2panda::checker
 
 #endif  // ES2PANDA_CHECKER_ETSANALYZERHELPERS_H

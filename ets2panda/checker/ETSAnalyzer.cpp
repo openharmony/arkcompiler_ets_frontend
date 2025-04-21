@@ -177,6 +177,12 @@ static checker::Type *CheckMethodDefinitionHelper(ETSChecker *checker, ir::Metho
     return node->TsType();
 }
 
+static bool IsInitializerBlockTransfer(std::string_view str)
+{
+    auto prefix = compiler::Signatures::INITIALIZER_BLOCK_INIT;
+    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -220,6 +226,10 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 
     if (node->TsType() == nullptr) {
         node->SetTsType(checker->BuildMethodSignature(node));
+    }
+
+    if (IsInitializerBlockTransfer(scriptFunc->Id()->Name().Utf8())) {
+        checker->AddStatus(CheckerStatus::IN_STATIC_BLOCK);
     }
 
     this->CheckMethodModifiers(node);
@@ -2263,6 +2273,11 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
         }
     }
 
+    // Note: Guarantee all the const property need to be initialized in initializer block is initialized.
+    if (st->IsETSModule() && st->AsETSModule()->Program()->IsPackage() &&
+        (checker->Context().Status() & checker::CheckerStatus::IN_EXTERNAL) == 0) {
+        CheckAllConstPropertyInitialized(checker, st->AsETSModule());
+    }
     return ReturnTypeForStatement(st);
 }
 

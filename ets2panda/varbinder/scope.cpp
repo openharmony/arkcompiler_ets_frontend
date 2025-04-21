@@ -959,11 +959,15 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         return nullptr;
     }
 
-    if (auto node = newDecl->Node();
-        node->IsStatement() &&
-        (node->AsStatement()->IsMethodDefinition() || node->IsClassProperty() || node->IsClassStaticBlock()) &&
-        node->AsStatement()->AsClassElement()->Value() != nullptr) {
-        props.SetFlagsType(VariableFlags::INITIALIZED);
+    if (auto node = newDecl->Node(); node->IsStatement() && (node->AsStatement()->IsMethodDefinition() ||
+                                                             node->IsClassProperty() || node->IsClassStaticBlock())) {
+        if (node->AsStatement()->AsClassElement()->Value() != nullptr) {
+            props.SetFlagsType(VariableFlags::INITIALIZED);
+        }
+
+        if (node->IsClassProperty() && node->AsClassProperty()->NeedInitInStaticBlock()) {
+            props.SetFlagsType(VariableFlags::INIT_IN_STATIC_BLOCK);
+        }
     }
 
     var->SetScope(this);

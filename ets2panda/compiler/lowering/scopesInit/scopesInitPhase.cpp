@@ -1255,7 +1255,8 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
     if (classProp->IsConst()) {
         ES2PANDA_ASSERT(curScope->Parent() != nullptr);
         const auto initializer = classProp->Value();
-        if (initializer == nullptr && curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {
+        if (initializer == nullptr && curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare() &&
+            !classProp->NeedInitInStaticBlock()) {
             auto pos = classProp->End();
             // NOTE: Just use property Name?
             if (classProp->TypeAnnotation() != nullptr && !classProp->TypeAnnotation()->IsETSPrimitiveType()) {

@@ -87,10 +87,21 @@ public:
         v->Accept(this);
     }
 
+    [[nodiscard]] bool NeedInitInStaticBlock() const
+    {
+        return needInitInStaticBlock_;
+    }
+
+    void SetInitInStaticBlock(bool needInitInStaticBlock)
+    {
+        needInitInStaticBlock_ = needInitInStaticBlock;
+    }
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     TypeNode *typeAnnotation_;
     bool isDefault_ = false;
+    bool needInitInStaticBlock_ = false;
 };
 }  // namespace ark::es2panda::ir
 

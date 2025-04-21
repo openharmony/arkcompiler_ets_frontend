@@ -191,6 +191,7 @@ public:
     void LogSyntaxError(const util::DiagnosticMessageParams &list);
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);
     void LogSyntaxError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogWarning(std::string_view errorMessage, const lexer::SourcePosition &pos);
 
 protected:
     void LogParameterModifierError(ir::ModifierFlags status);

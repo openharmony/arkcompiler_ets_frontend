@@ -791,4 +791,25 @@ bool CheckReturnTypeNecessity(ir::MethodDefinition *node)
     return needReturnType;
 }
 
+void CheckAllConstPropertyInitialized(checker::ETSChecker *checker, ir::ETSModule *pkg)
+{
+    auto globalDecl = std::find_if(pkg->Statements().begin(), pkg->Statements().end(), [](ir::AstNode *node) {
+        return node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsGlobal();
+    });
+    if (globalDecl == pkg->Statements().end()) {
+        return;
+    }
+
+    auto const &globalClassBody = (*globalDecl)->AsClassDeclaration()->Definition()->AsClassDefinition()->Body();
+    for (auto const *prop : globalClassBody) {
+        if (!prop->IsClassProperty()) {
+            continue;
+        }
+
+        if (prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
+            !prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
+            checker->LogError(diagnostic::MISSING_INIT_FOR_CONST_PACKAGE_PROP, {}, prop->Start());
+        }
+    }
+}
 }  // namespace ark::es2panda::checker
