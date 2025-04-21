@@ -44,7 +44,7 @@ import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_JS } from './consts/ExtensionName';
+import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS, EXTNAME_D_TS } from './consts/ExtensionName';
 import { USE_STATIC } from './consts/InteropAPI';
 
 export const SYMBOL = 'Symbol';
@@ -3541,7 +3541,7 @@ export class TsUtils {
   }
 
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
-    if (!sourceFile || !sourceFile.statements.length) {
+    if (!sourceFile?.statements.length) {
       return false;
     }
     const statements = sourceFile.statements;
@@ -3564,6 +3564,29 @@ export class TsUtils {
       return str.slice(1, -1);
     }
     return str;
+  }
+
+  isInterop(node: ts.Node): boolean {
+    const declNode = this.getDeclarationNode(node);
+    if (!declNode) {
+      return false;
+    }
+    const sourceFile = declNode.getSourceFile();
+    const fileName = sourceFile.fileName;
+
+    if (fileName.endsWith(EXTNAME_JS)) {
+      return true;
+    }
+
+    if (fileName.endsWith(EXTNAME_TS) && !fileName.endsWith(EXTNAME_D_TS)) {
+      return true;
+    }
+
+    if (fileName.endsWith(EXTNAME_ETS) && !TsUtils.isArkts12File(sourceFile)) {
+      return true;
+    }
+
+    return false;
   }
 
   isJsImport(node: ts.Node): boolean {

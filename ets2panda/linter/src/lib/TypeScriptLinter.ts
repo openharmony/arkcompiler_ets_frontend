@@ -298,7 +298,6 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
-    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
   ]);
 
@@ -2100,6 +2099,7 @@ export class TypeScriptLinter {
       this.handleDeclarationDestructuring(tsVarDecl);
     }
 
+    this.handleInteropAwaitImport(tsVarDecl);
     // Check variable declaration for duplicate name.
     this.checkVarDeclForDuplicateNames(tsVarDecl.name);
 
@@ -6411,23 +6411,44 @@ export class TypeScriptLinter {
     return false;
   }
 
-  private handleAwaitExpression(node: ts.Node): void {
+  private handleInteropAwaitImport(variableDecl: ts.VariableDeclaration): void {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-    const awaitExpr = node as ts.AwaitExpression;
-    const checkAndReportJsImportAwait = (targetNode: ts.Node): boolean => {
-      if (ts.isIdentifier(targetNode) && this.tsUtils.isJsImport(targetNode)) {
-        this.incrementCounters(node, FaultID.NoJsImportAwait);
-        return true;
-      }
-      return false;
-    };
-    const expr = awaitExpr.expression;
-    checkAndReportJsImportAwait(expr);
-    if (ts.isCallExpression(expr)) {
-      checkAndReportJsImportAwait(expr.expression);
+
+    const initializer = variableDecl.initializer;
+
+    if (initializer === undefined) {
+      return;
     }
+    if (!ts.isAwaitExpression(initializer)) {
+      // from now on we know that initializer is is await expression
+      return;
+    }
+
+    const identifier = variableDecl.name;
+
+    const checkInterop = (targetNode: ts.Node): void => {
+      if (!ts.isIdentifier(targetNode)) {
+        return;
+      }
+      // check if there is any interop with JS,TS or ArkTS 1.0
+      if (!this.tsUtils.isInterop(targetNode)) {
+        return;
+      }
+
+      if (!ts.isCallExpression(initializer.expression)) {
+        return;
+      }
+      const callExpr = initializer.expression;
+      if (callExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
+        return;
+      }
+
+      this.incrementCounters(variableDecl.parent, FaultID.InteropStaticDynamicImport);
+    };
+
+    checkInterop(identifier);
   }
 
   handleInstanceOfExpression(node: ts.BinaryExpression): void {
