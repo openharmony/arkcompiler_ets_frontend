@@ -105,7 +105,8 @@ void PandaGen::SetInSendable()
 
 size_t PandaGen::GetExpectedPropertyCount() const
 {
-    if (rootNode_->IsProgram()) {
+    if (rootNode_->IsProgram() ||
+        !util::Helpers::IsEnableExpectedPropertyCountApiVersion(context_->Binder()->Program()->TargetApiVersion())) {
         return 0;
     }
 

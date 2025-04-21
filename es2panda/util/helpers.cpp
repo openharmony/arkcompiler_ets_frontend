@@ -988,4 +988,8 @@ bool Helpers::IsSupportLazyImportDefaultVersion(int apiVersion)
     return !(apiVersion < LAZY_IMPORT_DEFAULT_MIN_SUPPORTED_API_VERSION);
 }
 
+bool Helpers::IsEnableExpectedPropertyCountApiVersion(int apiVersion)
+{
+    return !(apiVersion < ENABLE_EXPECTED_PROPERTY_COUNT_MIN_SUPPORTED_API_VERSION);
+}
 }  // namespace panda::es2panda::util
