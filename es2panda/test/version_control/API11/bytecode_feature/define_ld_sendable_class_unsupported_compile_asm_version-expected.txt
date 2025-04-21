@@ -32,7 +32,6 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x6
-expectedProperty = 0x2
 .language ECMAScript
 .function any .TestTypeA(any a0, any a1, any a2) {
 label_1: 
