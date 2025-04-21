@@ -877,6 +877,29 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
     return expr->TsType();
 }
 
+void TryInferPreferredType(ir::ArrowFunctionExpression *expr, checker::Type *preferredType, ETSChecker *checker)
+{
+    if (!preferredType->IsETSUnionType()) {
+        if (preferredType->IsETSArrowType() &&
+            !preferredType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
+            checker->TryInferTypeForLambdaTypeAlias(expr, preferredType->AsETSFunctionType());
+            checker->BuildFunctionSignature(expr->Function(), false);
+        }
+        return;
+    }
+
+    for (auto &ct : preferredType->AsETSUnionType()->ConstituentTypes()) {
+        if (!ct->IsETSArrowType() || ct->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
+            continue;
+        }
+        checker->TryInferTypeForLambdaTypeAlias(expr, ct->AsETSFunctionType());
+        checker->BuildFunctionSignature(expr->Function(), false);
+        if (expr->Function()->Signature() != nullptr) {
+            return;
+        }
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -916,7 +939,13 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
     checker->Context().SetContainingLambda(expr);
 
-    checker->BuildFunctionSignature(expr->Function(), false);
+    auto preferredType = expr->GetPreferredType();
+    if (preferredType != nullptr) {
+        TryInferPreferredType(expr, preferredType, checker);
+    } else {
+        checker->BuildFunctionSignature(expr->Function(), false);
+    }
+
     if (expr->Function()->Signature() == nullptr) {
         return checker->InvalidateType(expr);
     }
@@ -1073,9 +1102,8 @@ static checker::Type *HandleSubstitution(ETSChecker *checker, ir::AssignmentExpr
         expr->Right()->AsObjectExpression()->SetPreferredType(leftType);
     }
 
-    if (expr->Right()->IsArrowFunctionExpression() && leftType->IsETSArrowType() &&
-        !leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
-        checker->TryInferTypeForLambdaTypeAlias(expr, leftType->AsETSFunctionType());
+    if (expr->Right()->IsArrowFunctionExpression() && (leftType->IsETSArrowType() || leftType->IsETSUnionType())) {
+        expr->Right()->AsArrowFunctionExpression()->SetPreferredType(leftType);
     }
 
     return expr->Right()->Check(checker);
