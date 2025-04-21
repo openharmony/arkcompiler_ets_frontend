@@ -190,6 +190,8 @@ export enum FaultID {
   SdkTypeQuery,
   IsConcurrentDeprecated,
   InteropJsObjectUsage,
+  InteropJsObjectExport,
+  InteropArkTs1ObjectExport,
   LimitedStdLibNoImportConcurrency,
   InteropStaticDynamicImport,
   InterOpImportJs,

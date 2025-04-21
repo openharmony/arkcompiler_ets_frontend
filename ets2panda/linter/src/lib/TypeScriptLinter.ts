@@ -3707,6 +3707,45 @@ export class TypeScriptLinter {
     }
   }
 
+  private isExportedEntityDeclaredInJs(exportDecl: ts.ExportDeclaration): boolean {
+    if (!this.options.arkts2) {
+      return false;
+    }
+
+    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
+      return false;
+    }
+
+    for (const exportSpecifier of exportDecl.exportClause.elements) {
+      const identifier = exportSpecifier.name;
+      if (this.tsUtils.isImportedFromJS(identifier)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private isExportedEntityDeclaredInArkTs1(exportDecl: ts.ExportDeclaration): boolean | undefined {
+    if (!this.options.arkts2) {
+      return false;
+    }
+
+    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
+      return false;
+    }
+
+    for (const exportSpecifier of exportDecl.exportClause.elements) {
+      const identifier = exportSpecifier.name;
+
+      if (this.tsUtils.isExportImportedFromArkTs1(identifier, exportDecl)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
     const declarationSourceFile = callSignature?.declaration?.getSourceFile();
     if (!declarationSourceFile) {
@@ -4794,11 +4833,22 @@ export class TypeScriptLinter {
   }
 
   private handleExportDeclaration(node: ts.Node): void {
+    const exportDecl = node as ts.ExportDeclaration;
+
+    if (this.isExportedEntityDeclaredInJs(exportDecl)) {
+      this.incrementCounters(node, FaultID.InteropJsObjectExport);
+      return;
+    }
+
+    if (this.isExportedEntityDeclaredInArkTs1(exportDecl)) {
+      this.incrementCounters(node, FaultID.InteropArkTs1ObjectExport);
+      return;
+    }
+
     if (!TypeScriptLinter.inSharedModule(node) || ts.isModuleBlock(node.parent)) {
       return;
     }
 
-    const exportDecl = node as ts.ExportDeclaration;
     if (exportDecl.exportClause === undefined) {
       this.incrementCounters(exportDecl, FaultID.SharedModuleNoWildcardExport);
       return;
