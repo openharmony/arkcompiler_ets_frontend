@@ -1761,6 +1761,8 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
     switch (refVar->Declaration()->Node()->Type()) {
         case ir::AstNodeType::TS_INTERFACE_DECLARATION:
             return GetTypeFromInterfaceReference(refVar);
+        case ir::AstNodeType::TS_ENUM_DECLARATION:
+            return GlobalTypeError();
         case ir::AstNodeType::CLASS_DECLARATION:
         case ir::AstNodeType::STRUCT_DECLARATION:
         case ir::AstNodeType::CLASS_DEFINITION:

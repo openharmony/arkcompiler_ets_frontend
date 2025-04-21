@@ -1,3 +1,4 @@
+/* @@ label2 */
 /*
  * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,3 +24,4 @@ enum Date {
 
 /* @@@ label Error SyntaxError: Invalid enum initialization value  */
 /* @@@ label1 Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label2 Error TypeError: Class 'Date' is already defined with different type.  */
