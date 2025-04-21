@@ -207,3 +207,4 @@ faultDesc[FaultID.InstantiatedJsOjbect] = 'Instantiated js ojbect';
 faultDesc[FaultID.InteropCallObjectMethods] = 'Interop call methods in object';
 faultDesc[FaultID.InteropJsInstanceof] = 'Instanceof operator with interop';
 faultDesc[FaultID.InteropIncrementDecrement] = 'Interop increment or decrement';
+faultDesc[FaultID.InteropObjectLiteralCompatibility] = 'Interop Object Literal incompatible';

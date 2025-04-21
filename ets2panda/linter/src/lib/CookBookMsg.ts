@@ -295,6 +295,7 @@ cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-
 cookBookTag[322] = 'isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)';
 cookBookTag[323] = 'Direct export of interop JS objects is not supported (arkts-interop-js-object-export)';
 cookBookTag[324] = 'Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-arkts1-object-export)';
+cookBookTag[325] = 'Object literal not compatible with target class or union type. (interop-dynamic-object-literals)';
 cookBookTag[329] = 'No support for static dynamic import (interop-static-dynamically-import-dynamic)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';

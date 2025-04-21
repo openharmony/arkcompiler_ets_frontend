@@ -2210,6 +2210,8 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
     this.checkTypeFromSdk(tsVarDecl.type);
     this.handleNoStructuralTyping(tsVarDecl);
+    this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
+    this.handleObjectLiteralAssignmentToClass(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -6661,6 +6663,84 @@ export class TypeScriptLinter {
           this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement);
         }
       }
+    }
+  }
+
+  private handleObjectLiteralforUnionTypeInterop(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!node.type || !ts.isUnionTypeNode(node.type)) {
+      return;
+    }
+
+    if (!node.initializer || node.initializer.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
+      return;
+    }
+
+    const typeNodes = node.type.types;
+
+    const isDefected = typeNodes.some((tNode) => {
+      if (!ts.isTypeReferenceNode(tNode)) {
+        return false;
+      }
+      const type = this.tsTypeChecker.getTypeAtLocation(tNode);
+      const symbol = type.getSymbol();
+      if (!symbol) {
+        return false;
+      }
+      for (const declaration of symbol.declarations ?? []) {
+        if (!TsUtils.isArkts12File(declaration.getSourceFile())) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (isDefected) {
+      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
+    }
+  }
+
+  private handleObjectLiteralAssignmentToClass(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!node.initializer || node.initializer.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
+      return;
+    }
+    if (!node.type) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+    const symbol = type.getSymbol();
+    if (!symbol) {
+      return;
+    }
+
+    const declarations = symbol.declarations ?? [];
+
+    const isClass = declarations.some(ts.isClassDeclaration);
+    if (!isClass) {
+      return;
+    }
+
+    const isFromArkTs2 = declarations.some((decl) => {
+      return TsUtils.isArkts12File(decl.getSourceFile());
+    });
+
+    if (isFromArkTs2) {
+      return;
+    }
+
+    const hasConstructor = declarations.some((decl) => {
+      return ts.isClassDeclaration(decl) && decl.members.some(ts.isConstructorDeclaration);
+    });
+
+    if (hasConstructor) {
+      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
     }
   }
 }

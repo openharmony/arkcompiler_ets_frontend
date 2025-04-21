@@ -194,6 +194,7 @@ export enum FaultID {
   InteropArkTs1ObjectExport,
   LimitedStdLibNoImportConcurrency,
   InteropStaticDynamicImport,
+  InteropObjectLiteralCompatibility,
   InterOpImportJs,
   CallJSFunction,
   InteropObjectProperty,

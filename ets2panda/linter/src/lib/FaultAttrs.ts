@@ -204,6 +204,7 @@ faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321)
 faultsAttrs[FaultID.IsConcurrentDeprecated] = new FaultAttributes(322);
 faultsAttrs[FaultID.InteropJsObjectExport] = new FaultAttributes(323);
 faultsAttrs[FaultID.InteropArkTs1ObjectExport] = new FaultAttributes(324);
+faultsAttrs[FaultID.InteropObjectLiteralCompatibility] = new FaultAttributes(325);
 faultsAttrs[FaultID.InteropStaticDynamicImport] = new FaultAttributes(329);
 faultsAttrs[FaultID.InterOpImportJs] = new FaultAttributes(330);
 faultsAttrs[FaultID.CallJSFunction] = new FaultAttributes(331);
