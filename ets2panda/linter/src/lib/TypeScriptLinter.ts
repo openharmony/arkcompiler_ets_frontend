@@ -3967,7 +3967,8 @@ export class TypeScriptLinter {
      * for a detailed analysis.
      */
     if (this.options.arkts2 && TypeScriptLinter.isInvalidBuiltinGenericConstructorCall(callLikeExpr)) {
-      this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+      const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr as ts.NewExpression);
+      this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       return;
     }
     this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
@@ -4003,7 +4004,8 @@ export class TypeScriptLinter {
     const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
     if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
       if (startTypeArg !== resolvedTypeArgs.length) {
-        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+        const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr);
+        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       }
     } else {
       for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {

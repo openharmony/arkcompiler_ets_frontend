@@ -3549,4 +3549,45 @@ export class Autofixer {
    
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
   }
+
+  fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
+    const typeNode = this.getTypeNodeForNewExpression(node);
+    if (!typeNode || !ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
+      return undefined;
+    }
+
+    const reference: ts.TypeReferenceNode[] = [];
+    typeNode.typeArguments?.forEach((arg) => {
+      return reference.push(ts.factory.createTypeReferenceNode(arg.getText()));
+    });
+    const srcFile = node.getSourceFile();
+    const identifier = node.expression;
+    const args = node.arguments;
+    const newExpression = ts.factory.createNewExpression(identifier, reference, args);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  private getTypeNodeForNewExpression(node: ts.NewExpression): ts.TypeNode | undefined {
+    if (ts.isVariableDeclaration(node.parent) || ts.isPropertyDeclaration(node.parent)) {
+      return node.parent.type;
+    } else if (ts.isBinaryExpression(node.parent)) {
+      return this.utils.getDeclarationTypeNode(node.parent.left);
+    } else if (ts.isReturnStatement(node.parent) && ts.isBlock(node.parent.parent)) {
+      const funcNode = node.parent.parent.parent;
+      const isFunc = ts.isFunctionDeclaration(funcNode) || ts.isMethodDeclaration(funcNode);
+      if (!isFunc || !funcNode.type) {
+        return undefined;
+      }
+
+      const isAsync = TsUtils.hasModifier(funcNode.modifiers, ts.SyntaxKind.AsyncKeyword);
+      if (isAsync) {
+        if (ts.isTypeReferenceNode(funcNode.type) && funcNode.type.typeName.getText() === 'Promise') {
+          return funcNode.type?.typeArguments?.[0];
+        }
+      }
+      return funcNode.type;
+    }
+    return undefined;
+  }
 }

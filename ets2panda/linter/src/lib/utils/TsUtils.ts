@@ -1824,12 +1824,28 @@ export class TsUtils {
     if (sym === undefined) {
       return undefined;
     }
+    return TsUtils.getVariableSymbolDeclarationTypeNode(sym);
+  }
+
+  static getVariableSymbolDeclarationTypeNode(sym: ts.Symbol): ts.TypeNode | undefined {
+    const decl = TsUtils.getDeclaration(sym);
+    if (!!decl && ts.isVariableDeclaration(decl)) {
+      return decl.type;
+    }
+    return undefined;
+  }
+
+  getDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
+    const sym = this.trueSymbolAtLocation(node);
+    if (sym === undefined) {
+      return undefined;
+    }
     return TsUtils.getSymbolDeclarationTypeNode(sym);
   }
 
   static getSymbolDeclarationTypeNode(sym: ts.Symbol): ts.TypeNode | undefined {
     const decl = TsUtils.getDeclaration(sym);
-    if (!!decl && ts.isVariableDeclaration(decl)) {
+    if (!!decl && (ts.isVariableDeclaration(decl) || ts.isPropertyDeclaration(decl))) {
       return decl.type;
     }
     return undefined;
@@ -1841,7 +1857,7 @@ export class TsUtils {
   }
 
   static symbolHasEsObjectType(sym: ts.Symbol): boolean {
-    const typeNode = TsUtils.getSymbolDeclarationTypeNode(sym);
+    const typeNode = TsUtils.getVariableSymbolDeclarationTypeNode(sym);
     return typeNode !== undefined && TsUtils.isEsObjectType(typeNode);
   }
 

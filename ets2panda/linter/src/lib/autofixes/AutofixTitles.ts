@@ -21,6 +21,7 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [16, 'Combine static block statements into one static block'],
   [25, 'Replace with field declaration'],
   [29, 'Replace with dot notation'],
+  [34, 'Add type annotation'],
   [37, 'Replace with \'new Regexp()\' stdlib API call'],
   [38, 'Add interface definition'],
   [40, 'Replace with interface'],
