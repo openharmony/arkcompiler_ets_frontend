@@ -14,3 +14,6 @@
  */
 
 import lazy { m } from 'module'
+
+import lazy { a, b } from 'module1'
+import { c } from 'module2'

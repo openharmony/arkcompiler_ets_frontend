@@ -20,6 +20,13 @@
             "endLine": 16,
             "endColumn": 12,
             "problem": "ImportLazyIdentifier",
+            "autofix": [
+                {
+                    "start": 612,
+                    "end": 622,
+                    "replacementText": "{ m }"
+                }
+            ],
             "suggest": "",
             "rule": "Lazy import is not supported(arkts-no-lazy-import)",
             "severity": "ERROR"
@@ -30,6 +37,13 @@
             "endLine": 18,
             "endColumn": 12,
             "problem": "ImportLazyIdentifier",
+            "autofix": [
+                {
+                    "start": 645,
+                    "end": 658,
+                    "replacementText": "{ a, b }"
+                }
+            ],
             "suggest": "",
             "rule": "Lazy import is not supported(arkts-no-lazy-import)",
             "severity": "ERROR"

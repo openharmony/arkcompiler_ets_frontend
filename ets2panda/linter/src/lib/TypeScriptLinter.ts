@@ -2958,7 +2958,8 @@ export class TypeScriptLinter {
   private handleImportClause(node: ts.Node): void {
     const tsImportClause = node as ts.ImportClause;
     if (this.options.arkts2 && tsImportClause.isLazy) {
-      this.incrementCounters(node, FaultID.ImportLazyIdentifier);
+      const autofix = this.autofixer?.fixImportClause(tsImportClause);
+      this.incrementCounters(node, FaultID.ImportLazyIdentifier, autofix);
     }
     if (tsImportClause.name) {
       this.countDeclarationsWithDuplicateName(tsImportClause.name, tsImportClause);
