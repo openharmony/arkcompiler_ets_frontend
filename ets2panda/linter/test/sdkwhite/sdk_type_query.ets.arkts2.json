@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
-            "endColumn": 35,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
             "line": 18,
             "column": 19,
             "endLine": 18,
