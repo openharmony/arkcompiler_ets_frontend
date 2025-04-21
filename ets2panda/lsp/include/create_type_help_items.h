@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_LSP_CREATE_TYPE_HELP_ITEMS_H
 #define ES2PANDA_LSP_CREATE_TYPE_HELP_ITEMS_H
 
+#include "api.h"
 #include <string>
 #include "ir/astNode.h"
 #include "lexer/token/sourceLocation.h"
@@ -34,63 +35,8 @@ constexpr const char *SYMBOL_KIND_KEYWORD = "keyword";
 constexpr const char *SYMBOL_KIND_CLASS_NAME = "className";
 constexpr const char *SYMBOL_KIND_STRUCT_NAME = "structName";
 constexpr const char *SYMBOL_KIND_ENUM_NAME = "enumName";
+constexpr const char *SYMBOL_KIND_PARAM_NAME = "paramName";
 constexpr const char *SYMBOL_KIND_TYPE = "type";
-
-struct TextSpan {
-private:
-    size_t start_ {0};
-    size_t line_ {0};
-    TextSpan &operator=(const lexer::SourcePosition &pos)
-    {
-        start_ = pos.index;
-        line_ = pos.line;
-        return *this;
-    }
-
-public:
-    void SetStart(const size_t &newStart)
-    {
-        start_ = newStart;
-    }
-    void SetLine(const size_t &newLine)
-    {
-        line_ = newLine;
-    }
-    size_t GetStart() const
-    {
-        return start_;
-    }
-    size_t GetLine() const
-    {
-        return line_;
-    }
-};
-
-struct SymbolDisplayPart {
-private:
-    std::string text_;
-    std::string kind_;
-
-public:
-    SymbolDisplayPart(std::string text, std::string kind) : text_(std::move(text)), kind_(std::move(kind)) {}
-
-    void SetText(const std::string &newText)
-    {
-        text_ = newText;
-    }
-    void SetKind(const std::string &newKind)
-    {
-        kind_ = newKind;
-    }
-    const std::string &GetText() const
-    {
-        return text_;
-    }
-    const std::string &GetKind() const
-    {
-        return kind_;
-    }
-};
 
 struct SignatureHelpParameter {
 private:
@@ -127,6 +73,11 @@ public:
     const ArenaVector<SymbolDisplayPart> &GetDisplayParts() const
     {
         return displayParts_;
+    }
+    void Clear()
+    {
+        displayParts_.clear();
+        documentation_.clear();
     }
 };
 struct SignatureHelpItem {
@@ -199,6 +150,9 @@ public:
         prefixDisplayParts_.clear();
         suffixDisplayParts_.clear();
         separatorDisplayParts_.clear();
+        for (auto parameter : parameters_) {
+            parameter.Clear();
+        }
         parameters_.clear();
         documentation_.clear();
     }
@@ -207,7 +161,7 @@ public:
 struct SignatureHelpItems {
 private:
     ArenaVector<SignatureHelpItem> items_;
-    TextSpan applicableSpan_;
+    TextSpan applicableSpan_ {0, 0};
     size_t selectedItemIndex_ {0};
     size_t argumentIndex_ {0};
     size_t argumentCount_ {0};
@@ -221,8 +175,8 @@ public:
     }
     void SetApplicableSpan(const size_t &start, const size_t &line)
     {
-        applicableSpan_.SetStart(start);
-        applicableSpan_.SetLine(line);
+        applicableSpan_.start = start;
+        applicableSpan_.length = line;
     }
     void SetSelectedItemIndex(const size_t &index)
     {
@@ -260,6 +214,13 @@ public:
     size_t GetArgumentCount() const
     {
         return argumentCount_;
+    }
+    void Clear()
+    {
+        for (auto item : items_) {
+            item.Clear();
+        }
+        items_.clear();
     }
 };
 
@@ -319,6 +280,11 @@ inline SymbolDisplayPart CreateEnumName(const std::string &name)
 inline SymbolDisplayPart CreateTypeName(std::string &type)
 {
     return SymbolDisplayPart(type, SYMBOL_KIND_TYPE);
+}
+
+inline SymbolDisplayPart CreateParameterName(std::string &type)
+{
+    return SymbolDisplayPart(type, SYMBOL_KIND_PARAM_NAME);
 }
 
 }  // namespace ark::es2panda::lsp
