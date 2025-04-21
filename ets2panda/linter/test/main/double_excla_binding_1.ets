@@ -16,8 +16,9 @@
 import { MyCard } from './'
 
 @Component
-struct Myomponent {
-  @State value: number = 0;
+struct MyComponent1 {
+  @State value: number = 0
+
   build() {
     Row() {
       Slider({
@@ -30,6 +31,7 @@ struct Myomponent {
 @Component
 struct Test {
   @State checked: boolean = false
+
   build() {
     Row() {
       Checkbox().select(this.checked!!)
@@ -40,7 +42,7 @@ struct Test {
 }
 
 @Component
-struct Myomponent {
+struct MyComponent2 {
   @State value: number = 0;
   build() {
     Row() {
@@ -52,7 +54,7 @@ struct Myomponent {
 }
 
 @Component
-struct Myomponent {
+struct MyComponent3 {
   @State value: number = 0;
   build() {
     Row() {
@@ -64,7 +66,7 @@ struct Myomponent {
 }
 
 @Component
-struct Myomponent {
+struct MyComponent4 {
   @State value: number = 0;
   build() {
     Row() {

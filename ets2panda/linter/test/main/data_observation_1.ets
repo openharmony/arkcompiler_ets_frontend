@@ -13,40 +13,58 @@
  * limitations under the License.
  */
 
-import { MyClassB, MyClassD } from './'
+class MyClassA {}
 
-class MyClassA {
+class MyClassB {
+  name: string = ''
 }
 
-class MyClassC {
-}
+class MyClassC1 {}
+
+class MyClassC2 extends MyClassC1 {}
+
+class MyClassC3 extends MyClassC2 {}
+
+class MyClassD extends MyClassC3 {}
+
+class MyClassC4 extends MyClassD {}
+
+interface IntfA {}
+
+class MyClassE implements IntfA {}
 
 @Observed
-class MyClassE {
-}
+class MyClassF {}
 
-AppStorage.setOrCreate('PropA', 47);
-AppStorage.setOrCreate('PropB', new MyClassC());
-let storage = new LocalStorage();
-storage.setOrCreate('LinkA', 48);
-storage.setOrCreate('LinkB', new MyClassA());
+class MyClassG {}
+
+class MyClassH {}
+
+class MyClassI {}
+
+@Observed
+class MyClassJ extends MyClassI {}
+
+@Observed
+class MyClassK extends MyClassJ {}
 
 @Entry
 @Component
 struct Test {
   @State data1: number = 0
-  @State data2: MyClassA = 0
-  @State data3: MyClassB | string = 0
-  @State data4: undefined | string | MyClassC | MyClassD = 0
-  @State data5: MyClassE = 0
-  @Prop data6: MyClassA = 0
+  @State data2: MyClassA = new MyClassA()
+  @State data3: MyClassB = { name: "jack" }
+  @State data4: MyClassC2 = new MyClassD()
+  @State data5: IntfA = new MyClassE()
+  @Prop data6: MyClassE = new MyClassE()
+  @Prop data7: MyClassF = new MyClassF()
+  @Prop data8: MyClassG | MyClassH | number = 0
+  @Prop data9: MyClassJ = new MyClassK()
   @Provide selectedDate: Date = new Date('2021-08-08')
-  @StorageLink('PropA') storageLink1: number = 1
-  @StorageLink('PropB') storageLink2: MyClassC = new MyClassC()
-  @LocalStorageLink('LinkA') localStorageLink1: number = 1
-  @LocalStorageLink('LinkB') localStorageLink2: MyClassA = new MyClassA()
-  @StorageProp('test') test1: MyClassB = 0;
-  @LocalStorageProp('test') test2: MyClassB = 0;
+  @StorageLink('PropB') storageLink: MyClassA = new MyClassA()
+  @LocalStorageLink('LinkB') localStorageLink: MyClassB = new MyClassB()
+  @StorageProp('test') test1: MyClassC2 = new MyClassC3()
+  @LocalStorageProp('test') test2: MyClassD = new MyClassD()
 
   build() {
 

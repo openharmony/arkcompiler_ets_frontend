@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';
+
 @Component
 struct MyCard1 {
   cardStyle1 = (instance: CommonMethod): void => {
@@ -75,6 +77,17 @@ struct MyButton {
       normal: this.NormalStyles(),
       pressed: this.PressedStyles()
     })
+  }
+}
+
+const TAG: string = 'common_ImageTest';
+
+class MediaItem {
+  public path: string = '';
+  public uri: string = '';
+
+  public getDateModified(): string {
+    return ''
   }
 }
 

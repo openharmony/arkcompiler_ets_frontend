@@ -46,5 +46,14 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [256, '"@Styles" transform to function with receiver'],
   [257, '"@AnimatableExtend" transform to function with receiver'],
   [258, 'Add "@Observed" decorator'],
-  [259, 'Add UI Interface Import']
+  [259, 'Add UI Interface Import'],
+  [260, '"@Entry" annotaion fixed'],
+  [263, '"@Provide" annotation fixed'],
+  [330, 'Convert import named objects from JS to ESObject'],
+  [332, 'Using the ESObject interface to access properties'],
+  [334, 'Call typeOf function'],
+  [335, 'Call toNumber function to convert'],
+  [338, 'Replace with library function call'],
+  [339, 'Using \'ESObject\' interface call'],
+  [341, 'Create JS objects using instantite']
 ]);

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { AnimatableExtend, TextAttribute, Entry, Component, State, Column, Text, Curve, Button } from '@kits.ArkUI';
+import { AnimatableExtend, TextAttribute, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';
 
 @AnimatableExtend
 function animatableWidth(this: TextAttribute, width: number): this {

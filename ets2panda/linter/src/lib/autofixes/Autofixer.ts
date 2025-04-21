@@ -15,7 +15,6 @@
 
 import * as ts from 'typescript';
 import { TsUtils } from '../utils/TsUtils';
-import { FaultID } from '../Problems';
 import { scopeContainsThis } from '../utils/functions/ContainsThis';
 import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { NameGenerator } from '../utils/functions/NameGenerator';
@@ -34,8 +33,28 @@ import {
   CustomDecoratorName,
   ARKUI_PACKAGE_NAME,
   VALUE_IDENTIFIER,
-  INDENT_STEP
+  INDENT_STEP,
+  ENTRY_DECORATOR_NAME,
+  ENTRY_STORAGE_PROPERITY,
+  LOCAL_STORAGE_TYPE_NAME,
+  GET_LOCAL_STORAGE_FUNC_NAME,
+  PROVIDE_DECORATOR_NAME,
+  PROVIDE_ALIAS_PROPERTY_NAME,
+  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
+import { ES_OBJECT } from '../utils/consts/ESObject';
+import {
+  LOAD,
+  GET_PROPERTY_BY_NAME,
+  SET_PROPERTY_BY_NAME,
+  GET_PROPERTY_BY_INDEX,
+  SET_PROPERTY_BY_INDEX,
+  ARE_EQUAL,
+  ARE_STRICTLY_EQUAL,
+  WRAP,
+  INSTANTIATE,
+  TO_NUMBER
+} from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -50,6 +69,10 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
+
+const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
+const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
+
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
 export interface Autofix {
@@ -90,6 +113,14 @@ export class Autofixer {
     GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
     GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
   );
+
+  private readonly importVarNameGenerator = new NameGenerator(
+    GENERATED_IMPORT_VARIABLE_NAME,
+    GENERATED_IMPORT_VARIABLE_TRESHOLD
+  );
+
+  private modVarName: string = '';
+  private readonly lastImportEndMap = new Map<string, number>();
 
   private readonly symbolCache: SymbolCache;
 
@@ -159,13 +190,13 @@ export class Autofixer {
 
   /**
    * Creates autofix suggestions for destructuring assignment.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param newObjectName - Name of the new object to use for destructuring.
    * @param destructElementText - Generated text for destructuring elements.
    * @returns Array of autofix suggestions or undefined.
    */
   private static genAutofixForObjDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     newObjectName: string | undefined,
     destructElementText: string,
     isIdentifier: boolean
@@ -207,13 +238,9 @@ export class Autofixer {
    * @param variableDeclaration - The variable or parameter declaration to check for boundary conditions.
    * @returns A boolean indicating if the declaration passes the boundary checks.
    */
-  private static passBoundaryCheckForObjDecls(
-    faultId: number,
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration
-  ): boolean {
+  private static passBoundaryCheckForObjDecls(variableDeclaration: ts.VariableDeclaration): boolean {
     // Check if the fault ID is for a destructuring parameter or if the declaration has a spread operator
     if (
-      faultId === FaultID.DestructuringParameter ||
       TsUtils.destructuringDeclarationHasSpreadOperator(variableDeclaration.name as ts.BindingPattern) ||
       TsUtils.destructuringDeclarationHasDefaultValue(variableDeclaration.name as ts.BindingPattern)
     ) {
@@ -235,15 +262,12 @@ export class Autofixer {
 
   /**
    ** Fixes object binding pattern declarations by generating appropriate autofix suggestions.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param faultId - The fault ID indicating the type of check to perform.
    * @returns Array of autofix suggestions or undefined.
    */
-  fixObjectBindingPatternDeclarations(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
-    faultId: number
-  ): Autofix[] | undefined {
-    if (!Autofixer.passBoundaryCheckForObjDecls(faultId, variableDeclaration)) {
+  fixObjectBindingPatternDeclarations(variableDeclaration: ts.VariableDeclaration): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForObjDecls(variableDeclaration)) {
       return undefined;
     }
     // Map to hold variable names and their corresponding property names
@@ -336,13 +360,13 @@ export class Autofixer {
 
   /**
    * Creates autofix suggestions for array destructuring assignment.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param newArrayName - Name of the new array to use for destructuring.
    * @param destructElementText - Generated text for destructuring elements.
    * @returns Array of autofix suggestions.
    */
   private static genAutofixForArrayDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     newArrayName: string | undefined,
     destructElementText: string,
     isIdentifierOrElementAccess: boolean
@@ -385,7 +409,7 @@ export class Autofixer {
    * @returns A boolean indicating if the declaration passes the boundary checks.
    */
   private static passBoundaryCheckForArrayDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     isArrayOrTuple: boolean
   ): boolean {
     // If it's not an array/tuple or the declaration has a spread operator in destructuring
@@ -416,12 +440,12 @@ export class Autofixer {
   /**
    * Fixes array binding pattern declarations by generating appropriate autofix suggestions.
    *
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param isArrayOrTuple - Flag indicating if the declaration is for an array or tuple.
    * @returns Array of autofix suggestions or undefined.
    */
   fixArrayBindingPatternDeclarations(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     isArrayOrTuple: boolean
   ): Autofix[] | undefined {
     if (!Autofixer.passBoundaryCheckForArrayDecls(variableDeclaration, isArrayOrTuple)) {
@@ -872,13 +896,13 @@ export class Autofixer {
     return this.renameSymbolAsIdentifier(symbol);
   }
 
-  fixLiteralAsPropertyNamePropertyName(node: ts.PropertyName): Autofix[] | undefined {
+  fixLiteralAsPropertyNamePropertyName(node: ts.PropertyName, enumMember?: ts.EnumMember): Autofix[] | undefined {
     const symbol = this.typeChecker.getSymbolAtLocation(node);
     if (symbol === undefined) {
       return undefined;
     }
 
-    return this.renameSymbolAsIdentifier(symbol);
+    return this.renameSymbolAsIdentifier(symbol, enumMember);
   }
 
   fixPropertyAccessByIndex(node: ts.ElementAccessExpression): Autofix[] | undefined {
@@ -890,7 +914,7 @@ export class Autofixer {
     return this.renameSymbolAsIdentifier(symbol);
   }
 
-  private renameSymbolAsIdentifier(symbol: ts.Symbol): Autofix[] | undefined {
+  private renameSymbolAsIdentifier(symbol: ts.Symbol, enumMember?: ts.EnumMember): Autofix[] | undefined {
     if (this.renameSymbolAsIdentifierCache.has(symbol)) {
       return this.renameSymbolAsIdentifierCache.get(symbol);
     }
@@ -900,7 +924,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const newName = this.utils.findIdentifierNameForSymbol(symbol);
+    const newName = this.utils.findIdentifierNameForSymbol(symbol, enumMember);
     if (newName === undefined) {
       this.renameSymbolAsIdentifierCache.set(symbol, undefined);
       return undefined;
@@ -942,7 +966,13 @@ export class Autofixer {
   static addDefaultModuleToPath(parts: string[], importDeclNode: ts.ImportDeclaration): Autofix[] | undefined {
     const moduleSpecifier = importDeclNode.moduleSpecifier;
 
-    const newPathParts = [DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
+    /*
+     * check the current file's path
+     * get the parent directory name of the "src" directory
+     */
+
+    const moduleName = TsUtils.getModuleName(importDeclNode);
+    const newPathParts = [moduleName ?? DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
     const newPath = newPathParts.join(PATH_SEPARATOR);
     const newPathString = '\'' + newPath + '\'';
 
@@ -2005,9 +2035,9 @@ export class Autofixer {
     return found;
   }
 
-  removeDecorator(decorator: ts.Decorator): Autofix[] {
+  removeNode(node: ts.Node): Autofix[] {
     void this;
-    return [{ start: decorator.getStart(), end: decorator.getEnd(), replacementText: '' }];
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: '' }];
   }
 
   fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {
@@ -2367,6 +2397,143 @@ export class Autofixer {
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
 
+  fixEntryDecorator(entryDecorator: ts.Decorator): Autofix[] | undefined {
+    if (!ts.isCallExpression(entryDecorator.expression)) {
+      return undefined;
+    }
+
+    const args = entryDecorator.expression.arguments;
+    if (args.length !== 1) {
+      return undefined;
+    }
+
+    const parentNode = entryDecorator.parent;
+    const arg = args[0];
+    let getLocalStorageStatement: ts.VariableStatement | undefined;
+
+    if (ts.isIdentifier(arg) || ts.isNewExpression(arg) || ts.isCallExpression(arg)) {
+      getLocalStorageStatement = Autofixer.createGetLocalStorageLambdaStatement(arg);
+    } else if (ts.isObjectLiteralExpression(arg)) {
+      getLocalStorageStatement = Autofixer.processEntryAnnotationObjectLiteralExpression(arg);
+    }
+
+    if (getLocalStorageStatement !== undefined) {
+      let text = this.printer.printNode(ts.EmitHint.Unspecified, getLocalStorageStatement, parentNode.getSourceFile());
+      const fixedEntryDecorator = Autofixer.createFixedEntryDecorator();
+      const fixedEntryDecoratorText = this.printer.printNode(
+        ts.EmitHint.Unspecified,
+        fixedEntryDecorator,
+        parentNode.getSourceFile()
+      );
+      text = text + '\n' + fixedEntryDecoratorText;
+      return [{ start: entryDecorator.getStart(), end: entryDecorator.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  private static createFixedEntryDecorator(): ts.Decorator {
+    const storageProperty = ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(ENTRY_STORAGE_PROPERITY),
+      ts.factory.createStringLiteral(GET_LOCAL_STORAGE_FUNC_NAME)
+    );
+    const objectLiteralExpr = ts.factory.createObjectLiteralExpression([storageProperty], false);
+    const callExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(ENTRY_DECORATOR_NAME), undefined, [
+      objectLiteralExpr
+    ]);
+    return ts.factory.createDecorator(callExpr);
+  }
+
+  private static processEntryAnnotationObjectLiteralExpression(
+    expression: ts.ObjectLiteralExpression
+  ): ts.VariableStatement | undefined {
+    const objectProperties = expression.properties;
+    if (objectProperties.length !== 1) {
+      return undefined;
+    }
+    const objectProperty = objectProperties[0];
+    if (!ts.isPropertyAssignment(objectProperty)) {
+      return undefined;
+    }
+    if (ts.isIdentifier(objectProperty.name)) {
+      if (objectProperty.name.escapedText !== ENTRY_STORAGE_PROPERITY) {
+        return undefined;
+      }
+      const properityInitializer = objectProperty.initializer;
+      if (
+        ts.isIdentifier(properityInitializer) ||
+        ts.isNewExpression(properityInitializer) ||
+        ts.isCallExpression(properityInitializer) ||
+        ts.isPropertyAccessExpression(properityInitializer)
+      ) {
+        return Autofixer.createGetLocalStorageLambdaStatement(properityInitializer);
+      }
+    }
+    return undefined;
+  }
+
+  private static createGetLocalStorageLambdaStatement(expression: ts.Expression): ts.VariableStatement {
+    const variable = ts.factory.createVariableDeclaration(
+      ts.factory.createIdentifier(GET_LOCAL_STORAGE_FUNC_NAME),
+      undefined,
+      undefined,
+      ts.factory.createArrowFunction(
+        undefined,
+        undefined,
+        [],
+        ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(LOCAL_STORAGE_TYPE_NAME), undefined),
+        ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+        expression
+      )
+    );
+    const declarationList = ts.factory.createVariableDeclarationList([variable], ts.NodeFlags.Const);
+    return ts.factory.createVariableStatement(undefined, declarationList);
+  }
+
+  fixProvideDecorator(provideDecorator: ts.Decorator): Autofix[] | undefined {
+    const callExpr = provideDecorator.expression as ts.CallExpression;
+    const args = callExpr.arguments;
+    const parentNode = provideDecorator.parent;
+    const arg = args[0];
+    let provideAnnotationFixed: ts.Decorator | undefined;
+    if (ts.isStringLiteral(arg)) {
+      provideAnnotationFixed = Autofixer.createProvideDecorator(arg);
+    }
+    if (ts.isObjectLiteralExpression(arg)) {
+      const properties = arg.properties;
+      const property = properties[0] as ts.PropertyAssignment;
+      const propertyInitializer = property.initializer as ts.StringLiteral;
+      provideAnnotationFixed = Autofixer.createProvideDecorator(propertyInitializer, true);
+    }
+    if (provideAnnotationFixed !== undefined) {
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, provideAnnotationFixed, parentNode.getSourceFile());
+      return [{ start: provideDecorator.getStart(), end: provideDecorator.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  private static createProvideDecorator(
+    alias: ts.StringLiteral,
+    allowOverride: boolean | undefined = undefined
+  ): ts.Decorator {
+    const properties: ts.PropertyAssignment[] = [];
+    properties.push(
+      ts.factory.createPropertyAssignment(ts.factory.createIdentifier(PROVIDE_ALIAS_PROPERTY_NAME), alias)
+    );
+    if (allowOverride !== undefined && allowOverride) {
+      properties.push(
+        ts.factory.createPropertyAssignment(
+          ts.factory.createIdentifier(PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME),
+          ts.factory.createTrue()
+        )
+      );
+    }
+    const objectLiteralExpr = ts.factory.createObjectLiteralExpression(properties, false);
+    const callExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(PROVIDE_DECORATOR_NAME), undefined, [
+      objectLiteralExpr
+    ]);
+    return ts.factory.createDecorator(callExpr);
+  }
+
   private static createFunctionDeclaration(
     funcDecl: ts.FunctionDeclaration,
     typeParameters: ts.TypeParameterDeclaration[] | undefined,
@@ -2538,6 +2705,39 @@ export class Autofixer {
     ];
   }
 
+  fixInteropInstantiateExpression(
+    express: ts.NewExpression,
+    args: ts.NodeArray<ts.Expression> | undefined
+  ): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(express.expression.getText()),
+        ts.factory.createIdentifier(INSTANTIATE)
+      ),
+      undefined,
+      this.createArgs(args)
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  createArgs(args: ts.NodeArray<ts.Expression> | undefined): ts.Expression[] | undefined {
+    void this;
+    if (args && args.length > 0) {
+      return args.map((arg) => {
+        return ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(arg.getText())]
+        );
+      });
+    }
+    return undefined;
+  }
+
   fixParameter(param: ts.ParameterDeclaration): Autofix[] {
     const newParam = ts.factory.createParameterDeclaration(
       param.modifiers,
@@ -2663,14 +2863,14 @@ export class Autofixer {
     });
   }
 
-  fixSingleImport(
+  fixInterfaceImport(
     interfacesNeedToImport: Set<string>,
-    importedInterfaces: Set<string>,
+    interfacesAlreadyImported: Set<string>,
     sourceFile: ts.SourceFile
   ): Autofix[] {
     const importSpecifiers: ts.ImportSpecifier[] = [];
     interfacesNeedToImport.forEach((interfaceName) => {
-      if (importedInterfaces.has(interfaceName)) {
+      if (interfacesAlreadyImported.has(interfaceName)) {
         return;
       }
       const identifier = ts.factory.createIdentifier(interfaceName);
@@ -2890,15 +3090,16 @@ export class Autofixer {
     return newProperties;
   }
 
-  fixDataObservation(classDecl: ts.ClassDeclaration | undefined): Autofix[] | undefined {
-    if (!classDecl) {
-      return undefined;
-    }
-
-    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
-    const sourceFile = classDecl.getSourceFile();
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
-    return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];
+  fixDataObservation(classDecls: ts.ClassDeclaration[]): Autofix[] | undefined {
+    const autofixes: Autofix[] = [];
+    classDecls.forEach((classDecl) => {
+      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
+      const sourceFile = classDecl.getSourceFile();
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
+      const autofix = { start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text };
+      autofixes.push(autofix);
+    });
+    return autofixes.length !== 0 ? autofixes : undefined;
   }
 
   static fixInteropTsType(
@@ -2911,5 +3112,410 @@ export class Autofixer {
     const replacementText = `${base}.setPropertyByName('${prop}',ESObject.wrap(${rhs.getText()}))`;
 
     return [{ start: binaryExpr.getStart(), end: binaryExpr.getEnd(), replacementText }];
+  }
+
+  createReplacementForJsIndirectImportPropertyAccessExpression(node: ts.PropertyAccessExpression): Autofix[] {
+    // Bypass eslint-check
+    void this;
+
+    const objName = node.expression.getText();
+    const propName = node.name.getText();
+
+    let start = node.getStart();
+    let end = node.getEnd();
+    let replacementText = `${objName}.getPropertyByName('${propName}')`;
+
+    // Check if there is an "as number" type assertion in the statement
+    if (ts.isAsExpression(node.parent) && node.parent.type.kind === ts.SyntaxKind.NumberKeyword) {
+      replacementText += '.toNumber()';
+      start = node.parent.getStart();
+      end = node.parent.getEnd();
+    }
+
+    return [{ replacementText, start, end }];
+  }
+
+  createReplacementForJsImportPropertyAccessExpression(node: ts.PropertyAccessExpression): Autofix[] {
+    const objName = node.expression.getText();
+    const propName = node.name.getText();
+
+    const start = node.getStart();
+    const end = node.getEnd();
+
+    const replacement = `${objName}.getPropertyByName('${propName}')${this.utils.findTypeOfNodeForConversion(node)}`;
+
+    return [{ replacementText: replacement, start, end }];
+  }
+
+  createReplacementJsImportElementAccessExpression(
+    elementAccessExpr: ts.ElementAccessExpression,
+    identifier: ts.Identifier
+  ): Autofix[] {
+    const isParentBinaryExp = ts.isBinaryExpression(elementAccessExpr.parent);
+    const exprText = elementAccessExpr.argumentExpression.getText();
+    const start = isParentBinaryExp ? elementAccessExpr.parent.getStart() : elementAccessExpr.getStart();
+    const end = isParentBinaryExp ? elementAccessExpr.parent.getEnd() : elementAccessExpr.getEnd();
+
+    const replacementText =
+      isParentBinaryExp && elementAccessExpr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken ?
+        `${identifier.text}.setPropertyByIndex(${exprText},` +
+          ` ESObject.wrap(${elementAccessExpr.parent.right.getText()}))` :
+        `${identifier.text}.getPropertyByIndex(${exprText})` +
+          this.utils.findTypeOfNodeForConversion(elementAccessExpr);
+    return [{ replacementText, start, end }];
+  }
+
+  fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
+    const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
+    if (!varDecl || varDecl.type) {
+      return undefined;
+    }
+
+    const updatedVarDecl = ts.factory.updateVariableDeclaration(
+      varDecl,
+      varDecl.name,
+      undefined,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      varDecl.initializer
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, updatedVarDecl, varDecl.getSourceFile());
+
+    return [
+      {
+        replacementText,
+        start: varDecl.getStart(),
+        end: varDecl.getEnd()
+      }
+    ];
+  }
+
+  private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
+    while (node) {
+      if (ts.isVariableDeclaration(node)) {
+        return node;
+      }
+      node = node.parent;
+    }
+    return undefined;
+  }
+
+  private static createVariableForInteropImport(
+    newVarName: string,
+    interopObject: string,
+    interopMethod: string,
+    interopPropertyOrModule: string
+  ): ts.VariableStatement {
+    const newVarDecl = ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            ts.factory.createIdentifier(newVarName),
+            undefined,
+            undefined,
+            ts.factory.createCallExpression(
+              ts.factory.createPropertyAccessExpression(
+                ts.factory.createIdentifier(interopObject),
+                ts.factory.createIdentifier(interopMethod)
+              ),
+              undefined,
+              [ts.factory.createStringLiteral(interopPropertyOrModule)]
+            )
+          )
+        ],
+        ts.NodeFlags.Let
+      )
+    );
+    return newVarDecl;
+  }
+
+  private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
+    if (symbol) {
+      const originalDeclaration = symbol.declarations?.[0];
+      let originalName = '';
+      if (originalDeclaration) {
+        const isReturnNameOnSomeCase =
+          ts.isFunctionDeclaration(originalDeclaration) ||
+          ts.isClassDeclaration(originalDeclaration) ||
+          ts.isInterfaceDeclaration(originalDeclaration) ||
+          ts.isEnumDeclaration(originalDeclaration);
+        if (isReturnNameOnSomeCase) {
+          originalName = originalDeclaration.name?.text || symbolName;
+        } else if (ts.isVariableDeclaration(originalDeclaration)) {
+          originalName = originalDeclaration.name.getText();
+        }
+      }
+      return originalName;
+    }
+    return '';
+  }
+
+  private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
+    return args.
+      map((arg) => {
+        return `ESObject.wrap(${arg.getText()})`;
+      }).
+      join(', ');
+  }
+
+  private fixInterOpImportJsProcessNode(node: ts.Node): string {
+    if (ts.isIdentifier(node)) {
+      return node.text;
+    } else if (ts.isCallExpression(node)) {
+      const callee = this.fixInterOpImportJsProcessNode(node.expression);
+      const args = Autofixer.fixInterOpImportJsWrapArgs(node.arguments);
+      return `${callee}.invoke(${args})`;
+    } else if (ts.isPropertyAccessExpression(node)) {
+      const base = this.fixInterOpImportJsProcessNode(node.expression);
+      const propName = node.name.text;
+      return `${base}.getPropertyByName('${propName}')`;
+    } else if (ts.isNewExpression(node)) {
+      const constructor = this.fixInterOpImportJsProcessNode(node.expression);
+      return `${constructor}.instantiate()`;
+    }
+    return '';
+  }
+
+  fixInterOpImportJs(
+    importDecl: ts.ImportDeclaration,
+    importClause: ts.ImportClause,
+    moduleSpecifier: string,
+    defaultSymbol?: ts.Symbol
+  ): Autofix[] | undefined {
+    let statements: string[] = [];
+    statements = this.constructAndSaveimportDecl2Arrays(importDecl, moduleSpecifier, undefined, statements, true);
+    if (importClause.name) {
+      const symbolName = importClause.name.text;
+      const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
+      statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+    }
+    const namedBindings = importClause.namedBindings;
+    if (namedBindings && ts.isNamedImports(namedBindings)) {
+      namedBindings.elements.map((element) => {
+        const symbolName = element.name.text;
+        const originalName = element.propertyName ? element.propertyName.text : symbolName;
+        statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+        return statements;
+      });
+    }
+    if (statements.length <= 0) {
+      return undefined;
+    }
+    let lastImportEnd = this.lastImportEndMap.get(this.sourceFile.fileName);
+    if (!lastImportEnd) {
+      lastImportEnd = this.getLastImportEnd();
+      this.lastImportEndMap.set(this.sourceFile.fileName, lastImportEnd);
+    }
+    return [
+      { start: importDecl.getStart(), end: importDecl.getEnd(), replacementText: '' },
+      { start: lastImportEnd, end: lastImportEnd, replacementText: statements.join('\n') }
+    ];
+  }
+
+  private constructAndSaveimportDecl2Arrays(
+    importDecl: ts.ImportDeclaration,
+    symbolName: string,
+    originalName: string | undefined,
+    statements: string[],
+    isLoad: boolean
+  ): string[] {
+    if (isLoad) {
+      const newVarName = TsUtils.generateUniqueName(this.importVarNameGenerator, this.sourceFile);
+      if (!newVarName) {
+        return [];
+      }
+      this.modVarName = newVarName;
+    }
+    const propertyName = originalName || symbolName;
+    const constructDeclInfo: string[] = isLoad ?
+      [this.modVarName, ES_OBJECT, LOAD] :
+      [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
+    const newVarDecl = Autofixer.createVariableForInteropImport(
+      constructDeclInfo[0],
+      constructDeclInfo[1],
+      constructDeclInfo[2],
+      propertyName
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
+    statements.push(TsUtils.removeOrReplaceQuotes(text, true));
+    return statements;
+  }
+
+  private getLastImportEnd(): number {
+    let lastImportEnd = 0;
+    this.sourceFile.statements.forEach((statement) => {
+      if (ts.isImportDeclaration(statement)) {
+        lastImportEnd = statement.getEnd();
+      }
+    });
+    return lastImportEnd;
+  }
+
+  fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {
+    let text: string = '';
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)),
+      undefined,
+      [ts.factory.createStringLiteral(express.name.getText())]
+    );
+    text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left;
+    const right = express.right;
+    let objectName = '';
+    let propertyName = '';
+    if (ts.isPropertyAccessExpression(left)) {
+      objectName = left.expression.getText();
+      propertyName = left.name.text;
+    } else {
+      return undefined;
+    }
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(objectName),
+        ts.factory.createIdentifier(SET_PROPERTY_BY_NAME)
+      ),
+      undefined,
+      [
+        ts.factory.createStringLiteral(propertyName),
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),
+      undefined,
+      [express.argumentExpression]
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropArrayBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left as ts.ElementAccessExpression;
+    const right = express.right;
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(left.expression.getText()),
+        ts.factory.createIdentifier(SET_PROPERTY_BY_INDEX)
+      ),
+      undefined,
+      [
+        left.argumentExpression,
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  fixInterOpImportJsOnTypeOf(typeofExpress: ts.TypeOfExpression): Autofix[] | undefined {
+    const node = typeofExpress.expression;
+    const start = typeofExpress.getStart();
+    const end = typeofExpress.getEnd();
+    const processed = this.fixInterOpImportJsProcessNode(node);
+    const replacementText = `${processed}.typeOf()`;
+    return replacementText ? [{ start, end, replacementText }] : undefined;
+  }
+
+  fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
+    let text = '';
+    if (ts.isPropertyAccessExpression(express.operand)) {
+      const states = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createCallExpression(
+            ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(express.operand.expression.getText()),
+              ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
+            ),
+            undefined,
+            [ts.factory.createStringLiteral(express.operand.name.getText())]
+          ),
+          ts.factory.createIdentifier(TO_NUMBER)
+        ),
+        undefined,
+        []
+      );
+      text = this.printer.printNode(ts.EmitHint.Unspecified, states, express.getSourceFile());
+    }
+    return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
+  }
+
+  fixInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): Autofix[] | undefined {
+    const text = this.replaceInteropEqualityOperator(tsBinaryExpr, binaryOperator);
+    if (text) {
+      return [{ start: tsBinaryExpr.getStart(), end: tsBinaryExpr.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  replaceInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): string | undefined {
+    const info = this.getInteropEqualityReplacementInfo(binaryOperator);
+    if (!info) {
+      return undefined;
+    }
+
+    const tsLhsExpr = tsBinaryExpr.left;
+    const tsRhsExpr = tsBinaryExpr.right;
+    const callExpression = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(tsLhsExpr.getText()),
+        ts.factory.createIdentifier(info.functionName)
+      ),
+      undefined,
+      [ts.factory.createIdentifier(tsRhsExpr.getText())]
+    );
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, callExpression, tsBinaryExpr.getSourceFile());
+    if (info.isNegative) {
+      text = '!' + text;
+    }
+    return text;
+  }
+
+  getInteropEqualityReplacementInfo(
+    binaryOperator: ts.BinaryOperator
+  ): { functionName: string; isNegative: boolean } | undefined {
+    void this;
+    switch (binaryOperator) {
+      case ts.SyntaxKind.EqualsEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: true };
+      case ts.SyntaxKind.EqualsEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: true };
+      default:
+        return undefined;
+    }
   }
 }

@@ -151,3 +151,8 @@ export const LIMITED_STD_API = new Map<string | undefined, LimitedStdLibApiEntry
   ['Function', STD_FUNCTION_ENTRY],
   ['CallableFunction', STD_FUNCTION_ENTRY]
 ]);
+
+export const MODULE_IMPORTS: Record<string, string[]> = {
+  '@kit.ArkTS': ['taskpool', 'ArkTSUtils'],
+  '@ohos.process': ['process']
+};

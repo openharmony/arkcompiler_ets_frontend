@@ -63,6 +63,26 @@
             "suggest": "",
             "rule": "Use \"class\" instead of a type with constructor signature (arkts-no-ctor-signatures-type)",
             "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 12,
+            "endLine": 71,
+            "endColumn": 13,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 73,
+            "column": 12,
+            "endLine": 73,
+            "endColumn": 13,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
         }
     ]
 }

@@ -209,3 +209,13 @@ enum char {
 namespace char {
     let number : number
 }
+
+namespace quarantine {
+  interface int {
+      test: short
+  }
+
+  interface test {
+      int: int
+  }
+}

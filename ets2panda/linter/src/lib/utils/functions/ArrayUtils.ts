@@ -23,7 +23,7 @@ export default class ArrayUtils {
     list: readonly T[],
     deferChecker: (value: T, index: number, array: readonly T[]) => boolean,
     callbackfn: (value: T, index: number, array: readonly T[]) => void,
-    thisArg?: Object
+    thisArg?: object
   ): void {
     if (!list.length) {
       return;

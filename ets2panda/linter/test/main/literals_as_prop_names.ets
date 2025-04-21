@@ -97,3 +97,25 @@ const enum Direction16 {
   "\\" = 1,
   "__x5c" = 1,
 }
+
+const enum Direction17 {
+  "\\" = 1,
+  "__x5c" = 1,
+}
+let case17 = Direction17["\\"]
+let case172 = Direction17["__x5c"]
+
+const enum Direction11 {
+"!!" = 1,
+}
+const enum Direction23 {
+"aaa" = 1,
+}
+// ArkUI
+@Component
+struct Index {
+@State message: string = 'Hello World';
+private case11 = Direction11["!!"]
+build() {
+}
+}

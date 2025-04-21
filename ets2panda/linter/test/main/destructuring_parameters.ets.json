@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 18,
             "column": 19,
-            "endLine": 16,
+            "endLine": 18,
             "endColumn": 59,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 21,
             "column": 10,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 11,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 23,
             "column": 16,
-            "endLine": 27,
+            "endLine": 29,
             "endColumn": 2,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 26,
             "column": 4,
-            "endLine": 24,
+            "endLine": 26,
             "endColumn": 5,
             "problem": "ObjectTypeLiteral",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
+            "line": 30,
             "column": 19,
-            "endLine": 28,
+            "endLine": 30,
             "endColumn": 20,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 32,
             "column": 16,
-            "endLine": 30,
+            "endLine": 32,
             "endColumn": 17,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 39,
             "column": 13,
-            "endLine": 37,
+            "endLine": 39,
             "endColumn": 23,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
+            "line": 43,
             "column": 13,
-            "endLine": 41,
+            "endLine": 43,
             "endColumn": 33,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
+            "line": 43,
             "column": 22,
-            "endLine": 41,
+            "endLine": 43,
             "endColumn": 23,
             "problem": "ObjectTypeLiteral",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 45,
             "column": 4,
-            "endLine": 43,
+            "endLine": 45,
             "endColumn": 5,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 45,
+            "line": 47,
             "column": 13,
-            "endLine": 45,
+            "endLine": 47,
             "endColumn": 22,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 47,
+            "line": 49,
             "column": 46,
-            "endLine": 47,
+            "endLine": 49,
             "endColumn": 50,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -135,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 51,
             "column": 4,
-            "endLine": 49,
+            "endLine": 51,
             "endColumn": 5,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -145,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 53,
             "column": 13,
-            "endLine": 51,
+            "endLine": 53,
             "endColumn": 19,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -155,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 56,
+            "line": 58,
             "column": 13,
-            "endLine": 56,
+            "endLine": 58,
             "endColumn": 29,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -165,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 61,
+            "line": 63,
             "column": 13,
-            "endLine": 61,
+            "endLine": 63,
             "endColumn": 24,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -175,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 68,
             "column": 13,
-            "endLine": 66,
+            "endLine": 68,
             "endColumn": 25,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -185,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
+            "line": 73,
             "column": 13,
-            "endLine": 71,
+            "endLine": 73,
             "endColumn": 30,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -195,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 76,
+            "line": 78,
             "column": 13,
-            "endLine": 76,
+            "endLine": 78,
             "endColumn": 24,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -205,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 81,
             "column": 4,
-            "endLine": 79,
+            "endLine": 81,
             "endColumn": 21,
             "problem": "ArrayLiteralNoContextType",
             "suggest": "",
@@ -215,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 81,
             "column": 8,
-            "endLine": 79,
+            "endLine": 81,
             "endColumn": 9,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -225,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 81,
+            "line": 83,
             "column": 14,
-            "endLine": 81,
+            "endLine": 83,
             "endColumn": 36,
             "problem": "DestructuringParameter",
             "suggest": "",
@@ -235,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 84,
+            "line": 86,
             "column": 9,
-            "endLine": 84,
+            "endLine": 86,
             "endColumn": 27,
             "problem": "ArrayLiteralNoContextType",
             "suggest": "",
@@ -245,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 84,
+            "line": 86,
             "column": 13,
-            "endLine": 84,
+            "endLine": 86,
             "endColumn": 14,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -255,9 +255,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 86,
+            "line": 88,
             "column": 14,
-            "endLine": 86,
+            "endLine": 88,
             "endColumn": 33,
             "problem": "DestructuringParameter",
             "suggest": "",

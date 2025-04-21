@@ -703,11 +703,45 @@
             "severity": "ERROR"
         },
         {
+            "line": 143,
+            "column": 7,
+            "endLine": 143,
+            "endColumn": 123,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 30,
+            "endLine": 143,
+            "endColumn": 118,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "replacementText": "fingerprintPositionY: number = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0",
+                    "start": 2952,
+                    "end": 3068
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 117,
             "column": 2,
             "endLine": 117,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -718,6 +752,13 @@
             "endLine": 118,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -728,6 +769,13 @@
             "endLine": 120,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -738,6 +786,13 @@
             "endLine": 129,
             "endColumn": 22,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -752,7 +807,24 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text } from '@kits.ArkUI';\n"
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 30,
+            "endLine": 143,
+            "endColumn": 40,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
             "suggest": "",

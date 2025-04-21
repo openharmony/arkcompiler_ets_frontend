@@ -163,6 +163,16 @@
             "suggest": "",
             "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
             "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 1,
+            "endLine": 62,
+            "endColumn": 5,
+            "problem": "PropertyDeclOnFunction",
+            "suggest": "",
+            "rule": "Declaring properties on functions is not supported (arkts-no-func-props)",
+            "severity": "ERROR"
         }
     ]
 }

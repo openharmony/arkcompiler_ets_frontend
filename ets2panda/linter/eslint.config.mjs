@@ -34,7 +34,9 @@ export default tseslint.config(
       'third_party/**/*',
       'test/**/*',
       '**/**.json',
-      '**/**.js'
+      '**/**.js',
+      'arkanalyzer/*',
+      'homecheck/*'
     ]
   },
   {
@@ -98,7 +100,7 @@ export default tseslint.config(
 
       // imports
       'import/no-absolute-path': 'error',
-      'n/file-extension-in-import': ['error', 'never'],
+      'n/file-extension-in-import': ['error', 'never', { '.json': 'always' }],
 
       // style
       '@stylistic/array-bracket-newline': ['error', 'consistent'],

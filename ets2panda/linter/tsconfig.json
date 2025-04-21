@@ -9,7 +9,10 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "outDir": "build",
-    "strict": true
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
 
   "include": ["src/**/*"]

@@ -44,6 +44,8 @@ import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
+import { EXTNAME_JS } from './consts/ExtensionName';
+import { USE_STATIC } from './consts/InteropAPI';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -2718,17 +2720,22 @@ export class TsUtils {
     return false;
   }
 
-  findIdentifierNameForSymbol(symbol: ts.Symbol): string | undefined {
+  findIdentifierNameForSymbol(symbol: ts.Symbol, enumMember?: ts.EnumMember): string | undefined {
     let name = TsUtils.getIdentifierNameFromString(symbol.name);
     if (name === undefined || name === symbol.name) {
       return name;
     }
 
+    const enumExpress = enumMember?.parent;
     const parentType = this.getTypeByProperty(symbol);
     if (parentType === undefined) {
       return undefined;
     }
-
+    if (enumExpress) {
+      while (this.findEnumMember(enumExpress, name)) {
+        name = '_' + name;
+      }
+    }
     while (this.findProperty(parentType, name) !== undefined) {
       name = '_' + name;
     }
@@ -2841,6 +2848,9 @@ export class TsUtils {
     }
 
     const symbol = tsType.symbol;
+    if (symbol === undefined) {
+      return false;
+    }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     return name === 'String' && this.isGlobalSymbol(symbol);
   }
@@ -3356,49 +3366,192 @@ export class TsUtils {
     return isNumberLike;
   }
 
-  static isOhModule(path: string): boolean {
-    if (path.includes(ETS_MODULE)) {
+  static getModuleName(node: ts.Node): string | undefined {
+    const currentFilePath = node.getSourceFile().fileName;
+    if (!currentFilePath.includes('src')) {
+      return undefined;
+    }
+
+    /*
+     * Assuming we are working with a path like "entry/src/main/ets/pages/test1.ets"
+     * we are splitting at "/src" and get the first item in the list
+     * in order to capture the "entry" group
+     * we could have worked with an absolute path like
+     * "home/user/projects/oh_project/entry/src/main/ets/pages/test1.sts"
+     * in that case, after the fist split we would have
+     * "home/user/projects/entry"
+     * so we split once again with "/" to separate out the directories
+     *
+     * and get the last item which is entry or our module
+     */
+    const getPossibleModule = currentFilePath.split('/src')[0];
+    if (getPossibleModule.length === 0) {
+      return undefined;
+    }
+    const sanitizedDirectories = getPossibleModule.split('/');
+    return sanitizedDirectories[sanitizedDirectories.length - 1];
+  }
+
+  isImportedFromJS(identifier: ts.Identifier): boolean {
+    const sym = this.trueSymbolAtLocation(identifier);
+    const declaration = sym?.declarations?.[0];
+    return !!declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS);
+  }
+
+  isPossiblyImportedFromJS(node: ts.Node): boolean {
+    const identifier = this.findIdentifierInExpression(node);
+    if (!identifier) {
+      return false;
+    }
+
+    // Direct import check
+    if (this.isImportedFromJS(identifier)) {
       return true;
     }
 
-    return false;
+    // Indirect import check
+    const originalIdentifier = this.findOriginalIdentifier(identifier);
+    return !!originalIdentifier && this.isImportedFromJS(originalIdentifier);
+  }
+
+  /**
+   * Extracts the Identifier from the given node. returns undefined if no Identifier is found.
+   *
+   * Direct Identifier (foo) → Returns it.
+   * Binary Expressions (foo + bar) → Recursively checks left and right.
+   * Property Access (obj.foo) → Extracts obj.
+   * Function Calls (foo()) → Extracts foo.
+   * Array Access (arr[foo]) → Extracts foo.
+   * Variable Declaration (let foo = ...) → Extracts foo.
+   * Assignments (foo = ...) → Extracts foo.
+   */
+  findIdentifierInExpression(node: ts.Node): ts.Identifier | undefined {
+    if (ts.isIdentifier(node)) {
+      return node;
+    } else if (ts.isBinaryExpression(node)) {
+      return this.findIdentifierInExpression(node.left) || this.findIdentifierInExpression(node.right);
+    } else if (ts.isPropertyAccessExpression(node)) {
+      return this.findIdentifierInExpression(node.expression);
+    } else if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      return this.findIdentifierInExpression(node.expression);
+    } else if (ts.isElementAccessExpression(node)) {
+      return this.findIdentifierInExpression(node.expression);
+    } else if (ts.isAsExpression(node)) {
+      return this.findIdentifierInExpression(node.expression);
+    } else if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+      return node.name;
+    }
+    return undefined;
+  }
+
+  // Helper function: Find the variable declaration of an identifier -> let arr = foo.arr -> returns foo
+  findVariableDeclaration(identifier: ts.Identifier): ts.VariableDeclaration | undefined {
+    const sym = this.tsTypeChecker.getSymbolAtLocation(identifier);
+    const decl = TsUtils.getDeclaration(sym);
+    if (decl && ts.isVariableDeclaration(decl)) {
+      return decl;
+    }
+    return undefined;
+  }
+
+  findOriginalIdentifier(identifier: ts.Identifier): ts.Identifier | undefined {
+    const variableDeclaration = this.findVariableDeclaration(identifier);
+    if (!variableDeclaration?.initializer) {
+      return undefined;
+    }
+
+    const originalIdentifier = ts.isPropertyAccessExpression(variableDeclaration.initializer) ?
+      (variableDeclaration.initializer.expression as ts.Identifier) :
+      undefined;
+
+    if (!originalIdentifier) {
+      return undefined;
+    }
+
+    return originalIdentifier;
+  }
+
+  findTypeOfNodeForConversion(node: ts.Node): string {
+    // Get type of the property
+    const type = this.tsTypeChecker.getTypeAtLocation(node);
+    // Default
+    let conversionMethod = '';
+
+    if (this.tsTypeChecker.typeToString(type) === 'boolean') {
+      conversionMethod = '.toBoolean()';
+    } else if (this.tsTypeChecker.typeToString(type) === 'number') {
+      conversionMethod = '.toNumber()';
+    } else if (this.tsTypeChecker.typeToString(type) === 'string') {
+      conversionMethod = '.toString()';
+    }
+
+    return conversionMethod;
+  }
+
+  static isOhModule(path: string): boolean {
+    return path.includes(ETS_MODULE);
   }
 
   static isValidOhModulePath(path: string): boolean {
-    if (path.includes(VALID_OHM_COMPONENTS_MODULE_PATH)) {
-      return true;
-    }
-
-    return false;
+    return path.includes(VALID_OHM_COMPONENTS_MODULE_PATH);
   }
 
-  isMixedEnumType(enumType: ts.EnumType): boolean {
-    let hasNumber = false;
-    let hasString = false;
-    for (const member of enumType.getProperties()) {
-      if (!member.valueDeclaration) {
-        continue;
-      }
-      const memberType = this.tsTypeChecker.getTypeOfSymbolAtLocation(member, member.valueDeclaration);
+  findEnumMember(enumDecl: ts.EnumDeclaration | undefined, name: string): ts.Symbol | undefined {
+    if (!enumDecl) {
+      return undefined;
+    }
 
-      // Check the type of the enum value (number or string)
-      if (memberType.flags & ts.TypeFlags.Number) {
-        hasNumber = true;
-      } else if (memberType.flags & ts.TypeFlags.String) {
-        hasString = true;
+    const syms: ts.Symbol[] = [];
+    for (const enumMember of enumDecl.members) {
+      const sym = this.trueSymbolAtLocation(enumMember.name);
+      if (sym) {
+        syms.push(sym);
       }
     }
 
-    return hasString && hasNumber;
+    for (const sym of syms) {
+      if (sym.name === name) {
+        return sym;
+      }
+    }
+
+    return undefined;
   }
 
-  static isStringLiteralUnionType(baseType: ts.Type): boolean {
-    if (baseType.isUnion()) {
-      const unionType = baseType;
-      for (const type of unionType.types) {
-        if (type.isStringLiteral()) {
-          return true;
-        }
+  static isArkts12File(sourceFile: ts.SourceFile): boolean {
+    if (!sourceFile || !sourceFile.statements.length) {
+      return false;
+    }
+    const statements = sourceFile.statements;
+    return (
+      ts.isExpressionStatement(statements[0]) &&
+      ts.isStringLiteral(statements[0].expression) &&
+      statements[0].expression.getText() === USE_STATIC
+    );
+  }
+
+  static removeOrReplaceQuotes(str: string, isReplace: boolean): string {
+    if (isReplace) {
+      const charArray = new Array(str.length);
+      for (let i = 0; i < str.length; i++) {
+        charArray[i] = str[i] === '"' ? '\'' : str[i];
+      }
+      return charArray.join('');
+    }
+    if (str.startsWith('\'') && str.endsWith('\'') || str.startsWith('"') && str.endsWith('"')) {
+      return str.slice(1, -1);
+    }
+    return str;
+  }
+
+  isJsImport(node: ts.Node): boolean {
+    const symbol = this.trueSymbolAtLocation(node);
+    if (symbol) {
+      const declaration = symbol.declarations?.[0];
+      if (declaration) {
+        const sourceFile = declaration.getSourceFile();
+        const isFromJs = sourceFile.fileName.endsWith(EXTNAME_JS);
+        return isFromJs;
       }
     }
     return false;
