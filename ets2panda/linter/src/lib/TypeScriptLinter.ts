@@ -5316,14 +5316,17 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (ts.isPropertyAssignment(node)) {
-      const text = node.initializer.getText();
-      if (!(/^\$\w+$/).test(text)) {
-        return;
-      }
-      const autofix = this.autofixer?.fixDollarBind(node);
-      this.incrementCounters(node, FaultID.DollarBindingNotSupported, autofix);
+    if (!ts.isPropertyAssignment(node) || !ts.isIdentifier(node.initializer)) {
+      return;
     }
+
+    const text = node.initializer.getText();
+    if (!(/^\$.+$/).test(text)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixDollarBind(node);
+    this.incrementCounters(node, FaultID.DollarBindingNotSupported, autofix);
   }
 
   private handleExtendDecorator(node: ts.Node): void {
