@@ -188,6 +188,7 @@ faultDesc[FaultID.ConstructorTypesDeprecated] = 'Constructor funcs';
 faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated';
 faultDesc[FaultID.ApiPathChanged] = 'API path have changed';
 faultDesc[FaultID.SdkTypeQuery] = 'NO typeof as a type in API';
+faultDesc[FaultID.IsConcurrentDeprecated] = 'isConcurrent is not supported';
 faultDesc[FaultID.LimitedStdLibNoImportConcurrency] = 'Import Concurrency Deprecated';
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
 faultDesc[FaultID.CallJSFunction] = 'Call JS Function';

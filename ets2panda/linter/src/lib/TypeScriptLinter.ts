@@ -48,6 +48,8 @@ import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunction
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
 import {
   CONCURRENT_DECORATOR,
+  ISCONCURRENT,
+  TASKPOOL,
   SENDABLE_DECORATOR,
   SENDABLE_DECORATOR_NODES,
   SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12,
@@ -969,6 +971,9 @@ export class TypeScriptLinter {
     this.handleDoubleDollar(node);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
+
+    this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
+
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
@@ -1029,6 +1034,26 @@ export class TypeScriptLinter {
           this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
         }
       }
+    }
+  }
+
+  private checkDepricatedIsConcurrent(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!ts.isCallExpression(node.parent)) {
+      return;
+    }
+    const expression = node.parent.expression;
+
+    if (!ts.isPropertyAccessExpression(expression)) {
+      return;
+    }
+
+    const methodName = expression.name.getText();
+
+    if (node.expression.getText() === TASKPOOL && methodName === ISCONCURRENT) {
+      this.incrementCounters(node, FaultID.IsConcurrentDeprecated);
     }
   }
 
