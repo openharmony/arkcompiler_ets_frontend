@@ -292,6 +292,7 @@ public:
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
     Type *CreateUnionFromKeyofType(ETSObjectType *const type);
+    void ProcessTypeMembers(ETSObjectType *type, ArenaVector<Type *> &literals);
     ETSAsyncFuncReturnType *CreateETSAsyncFuncReturnTypeFromPromiseType(ETSObjectType *promiseType);
     ETSAsyncFuncReturnType *CreateETSAsyncFuncReturnTypeFromBaseType(Type *baseType);
     ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
