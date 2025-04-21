@@ -30,6 +30,19 @@ interface SdkContext {
   sdkDefaultApiPath: string;
 }
 
+export function readDeclareFiles(SdkPath: string): string[] {
+  if (SdkPath === '') {
+    return [];
+  }
+  const declarationsFileNames: string[] = [];
+  fs.readdirSync(path.resolve(SdkPath, './build-tools/ets-loader/declarations')).forEach((fileName: string) => {
+    if ((/\.d\.ts$/).test(fileName)) {
+      declarationsFileNames.push(path.resolve(SdkPath, './build-tools/ets-loader/declarations', fileName));
+    }
+  });
+  return declarationsFileNames;
+}
+
 export function createCompilerHost(
   sdkDefaultApiPath: string,
   sdkExternalApiPath: string[],

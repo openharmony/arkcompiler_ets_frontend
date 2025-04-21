@@ -99,9 +99,8 @@ import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
-import { ApiList } from './utils/consts/SdkWhitelist';
+import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
-import { SdkProblem, ARKTS_WHITE_API_PATH_TEXTSTYLE } from './utils/consts/WhiteListProblemType';
 import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
@@ -146,11 +145,13 @@ export class TypeScriptLinter {
   private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   static pathMap: Map<string, Set<ApiInfo>>;
   static indexedTypeSet: Set<ApiListItem>;
+  static globalApiInfo: Map<string, Set<ApiListItem>>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
     TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
+    TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
   }
 
   initSdkInfo(): void {
@@ -183,18 +184,31 @@ export class TypeScriptLinter {
     }
   }
 
+  private static addGlobalApiInfosCollocetionData(item: ApiListItem): void {
+    const problemType = item.api_info.problem;
+    const isGlobal = item.is_global;
+    if (isGlobal) {
+      if (!TypeScriptLinter.globalApiInfo.has(problemType)) {
+        TypeScriptLinter.globalApiInfo.set(problemType, new Set<ApiListItem>());
+      }
+      const setApiListItem = TypeScriptLinter.globalApiInfo.get(problemType);
+      setApiListItem?.add(item);
+    }
+  }
+
   private static initSdkWhitelist(): void {
     TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
-        item.file_path.forEach((path) => {
-          TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
-        });
+        if (item.file_path !== '') {
+          TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${item.file_path}'`, item.api_info);
+        }
         item.import_path.forEach((path) => {
           TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
         });
         TypeScriptLinter.addSdkIndexedTypeSetData(item);
+        TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
       }
     }
   }
@@ -1188,7 +1202,6 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
-    this.handleApipathChanged(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -2134,7 +2147,7 @@ export class TypeScriptLinter {
     }
 
     for (const sdkInfo of sdkInfos) {
-      if (nameArr.includes(sdkInfo.api_name)) {
+      if (sdkInfo.api_name && nameArr.includes(sdkInfo.api_name)) {
         this.incrementCounters(type, FaultID.LimitedVoidTypeFromSdk);
         return;
       }
@@ -2558,7 +2571,7 @@ export class TypeScriptLinter {
 
       const memberName = member.name?.getText();
       if (sdkInfo.api_name === memberName) {
-        if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args, member.parameters)) {
+        if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args ?? [], member.parameters)) {
           this.incrementCounters(
             member,
             sdkInfo.problem === 'OptionalMethod' ? FaultID.OptionalMethodFromSdk : FaultID.LimitedVoidTypeFromSdk
@@ -3444,8 +3457,7 @@ export class TypeScriptLinter {
           return false;
         }
         const declFileFromJson = path.normalize(interfaceDecl.getSourceFile().fileName);
-        const declFileFromSdk =
-          indexedTypeSdkInfo.file_path.length > 0 ? path.normalize(indexedTypeSdkInfo.file_path[0]) : '';
+        const declFileFromSdk = path.normalize(indexedTypeSdkInfo.file_path);
         const isSameSdkFilePath = declFileFromJson.endsWith(declFileFromSdk);
         const interfaceNameData = indexedTypeSdkInfo.api_info.parent_api[0].api_name;
         const isSameInterfaceName = interfaceDecl.name.getText() === interfaceNameData;
@@ -3955,6 +3967,8 @@ export class TypeScriptLinter {
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
 
+    this.handleSdkDuplicateDeclName(tsNewExpr);
+
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;
       const calleeType = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
@@ -4091,6 +4105,8 @@ export class TypeScriptLinter {
 
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
+
+    this.handleSdkDuplicateDeclName(typeRef);
 
     this.handleSdkConstructorIface(typeRef);
 
@@ -6032,6 +6048,9 @@ export class TypeScriptLinter {
     }
 
     for (const sdkInfo of sdkInfos) {
+      if (sdkInfo.api_name === undefined) {
+        continue;
+      }
       this.processQuotedHyphenPropsDeprecated(parent, sdkInfo.api_name);
     }
   }
@@ -6093,30 +6112,45 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleApipathChanged(node: ts.PropertyDeclaration): void {
-    if (!this.options.arkts2 || !ts.isPropertyDeclaration(node)) {
+  private handleSdkDuplicateDeclName(node: ts.TypeReferenceNode | ts.NewExpression): void {
+    if (!this.options.arkts2) {
       return;
     }
     const processApiNode = (apiName: string, errorNode: ts.Node): void => {
-      const sdkInfos = TypeScriptLinter.pathMap.get(`'${ARKTS_WHITE_API_PATH_TEXTSTYLE}'`);
-      if (!sdkInfos) {
+      const setApiListItem = TypeScriptLinter.globalApiInfo.get(SdkProblem.DeclWithDuplicateName);
+      if (!setApiListItem) {
         return;
       }
-      const matchedApi = [...sdkInfos].find((sdkInfo) => {
-        return sdkInfo.api_name === apiName;
+      const apiNamesArr = [...setApiListItem];
+      const hasSameApiName = apiNamesArr.some((apilistItem) => {
+        return apilistItem.api_info.api_name === errorNode.getText();
       });
+      if (!hasSameApiName) {
+        return;
+      }
+      if (ts.isTypeReferenceNode(errorNode)) {
+        errorNode = errorNode.typeName;
+      }
+      const matchedApi = apiNamesArr.some((sdkInfo) => {
+        const isSameName = sdkInfo.api_info.api_name === apiName;
+        const decl = this.tsUtils.getDeclarationNode(errorNode);
+        const sourceFileName = path.normalize(decl?.getSourceFile().fileName || '');
+        const isSameFile = sourceFileName.endsWith(path.normalize(sdkInfo.file_path));
+        return isSameName && isSameFile;
+      });
+
       if (matchedApi) {
-        this.incrementCounters(errorNode, FaultID.ApiPathChanged);
+        this.incrementCounters(errorNode, FaultID.DuplicateDeclNameFromSdk);
       }
     };
-    if (node.type && ts.isTypeReferenceNode(node.type)) {
-      const typeName = node.type.typeName;
+    if (ts.isTypeReferenceNode(node)) {
+      const typeName = node.typeName;
       if (ts.isIdentifier(typeName)) {
-        processApiNode(typeName.text, node.type);
+        processApiNode(typeName.text, node);
       }
     }
-    if (node.initializer && ts.isNewExpression(node.initializer)) {
-      const expression = node.initializer.expression;
+    if (ts.isNewExpression(node)) {
+      const expression = node.expression;
       if (ts.isIdentifier(expression)) {
         processApiNode(expression.text, expression);
       }

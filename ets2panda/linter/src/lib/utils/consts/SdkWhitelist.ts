@@ -13,18 +13,35 @@
  * limitations under the License.
  */
 
+export enum SdkProblem {
+  LimitedVoidType = 'LimitedVoidType',
+  ConstructorIface = 'ConstructorIface',
+  LiteralAsPropertyName = 'LiteralAsPropertyName',
+  OptionalMethod = 'OptionalMethod',
+  ConstructorFuncs = 'ConstructorFuncs',
+  IndexedAccessType = 'IndexedAccessType',
+  SendablePropType = 'SendablePropType',
+  TypeQuery = 'TypeQuery',
+  GlobalThisError = 'GlobalThisError',
+  InterfaceExtendsClass = 'InterfaceExtendsClass',
+  DeclWithDuplicateName = 'DeclWithDuplicateName',
+  ComputedPropertyName = 'ComputedPropertyName'
+}
+
+export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
+
 // Define function argument class
 export class ApiFuncArg {
   name: string;
   type: string;
   is_optional: boolean;
-  hasDefault: boolean;
+  has_default?: boolean;
 
   constructor(data: Partial<ApiFuncArg>) {
     this.name = data.name || '';
     this.type = data.type || '';
     this.is_optional = data.is_optional || false;
-    this.hasDefault = data.hasDefault || false;
+    this.has_default = data.has_default || undefined;
   }
 }
 
@@ -42,46 +59,49 @@ export class ParentApi {
 // Define the API information class
 export class ApiInfo {
   problem: string;
-  api_name: string;
+  api_name?: string;
   api_type: string;
-  api_optional: boolean;
-  api_auto_fix: boolean;
-  api_auto_fix_context: string;
-  target_type: string;
-  api_func_args: ApiFuncArg[];
+  api_optional?: boolean;
+  api_auto_fix?: boolean;
+  api_auto_fix_context?: string;
+  api_func_args?: ApiFuncArg[];
   parent_api: ParentApi[];
-  methd_return_type: string;
-  codeKind: number;
+  method_return_type?: string;
+  api_property_type?: string;
+  code_kind: number;
 
   constructor(data: Partial<ApiInfo>) {
     this.problem = data.problem || '';
-    this.api_name = data.api_name || '';
+    this.api_name = data.api_name || undefined;
     this.api_type = data.api_type || '';
-    this.api_optional = data.api_optional || false;
-    this.api_auto_fix = data.api_auto_fix || false;
-    this.api_auto_fix_context = data.api_auto_fix_context || '';
-    this.target_type = data.target_type || '';
-    this.api_func_args = (data.api_func_args || []).map((arg) => {
-      return new ApiFuncArg(arg);
-    });
+    this.api_optional = data.api_optional || undefined;
+    this.api_auto_fix = data.api_auto_fix || undefined;
+    this.api_auto_fix_context = data.api_auto_fix_context || undefined;
+    this.api_func_args =
+      (data.api_func_args || []).map((arg) => {
+        return new ApiFuncArg(arg);
+      }) || undefined;
     this.parent_api = (data.parent_api || []).map((parent) => {
       return new ParentApi(parent);
     });
-    this.methd_return_type = data.methd_return_type || '';
-    this.codeKind = data.codeKind || 0;
+    this.method_return_type = data.method_return_type || undefined;
+    this.api_property_type = data.api_property_type || undefined;
+    this.code_kind = data.code_kind || 0;
   }
 }
 
 // Define the API list item class
 export class ApiListItem {
   import_path: string[];
-  file_path: string[];
+  file_path: string;
   api_info: ApiInfo;
+  is_global: boolean;
 
   constructor(data: Partial<ApiListItem>) {
     this.import_path = data.import_path || [];
-    this.file_path = data.file_path || [];
+    this.file_path = data.file_path || '';
     this.api_info = new ApiInfo(data.api_info || {});
+    this.is_global = data.is_global || false;
   }
 }
 

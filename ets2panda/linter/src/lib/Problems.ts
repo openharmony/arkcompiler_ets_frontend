@@ -186,7 +186,7 @@ export enum FaultID {
   PropertyAccessByIndexFromSdk,
   ConstructorTypesDeprecated,
   QuotedHyphenPropsDeprecated,
-  ApiPathChanged,
+  DuplicateDeclNameFromSdk,
   SdkTypeQuery,
   IsConcurrentDeprecated,
   InteropJsObjectUsage,

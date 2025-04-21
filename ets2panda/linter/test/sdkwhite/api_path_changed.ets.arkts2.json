@@ -15,49 +15,39 @@
     ],
     "result": [
         {
-            "line": 19,
+            "line": 21,
             "column": 19,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 28,
-            "problem": "ApiPathChanged",
+            "problem": "DuplicateDeclNameFromSdk",
             "suggest": "",
-            "rule": "API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 21,
             "column": 35,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 44,
-            "problem": "ApiPathChanged",
+            "problem": "DuplicateDeclNameFromSdk",
             "suggest": "",
-            "rule": "API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 35,
-            "endLine": 19,
-            "endColumn": 44,
-            "problem": "DynamicCtorCall",
-            "suggest": "",
-            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
+            "line": 22,
             "column": 19,
-            "endLine": 20,
+            "endLine": 22,
             "endColumn": 28,
-            "problem": "ApiPathChanged",
+            "problem": "DuplicateDeclNameFromSdk",
             "suggest": "",
-            "rule": "API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
             "severity": "ERROR"
         },
         {
-            "line": 16,
+            "line": 18,
             "column": 2,
-            "endLine": 16,
+            "endLine": 18,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -65,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 19,
             "column": 2,
-            "endLine": 17,
+            "endLine": 19,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -75,29 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 19,
-            "endLine": 19,
-            "endColumn": 28,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 35,
-            "endLine": 19,
-            "endColumn": 44,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
+            "line": 21,
             "column": 57,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 62,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -105,10 +75,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 19,
-            "endLine": 20,
-            "endColumn": 28,
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -116,12 +86,12 @@
         },
         {
             "line": 22,
-            "column": 5,
+            "column": 3,
             "endLine": 22,
-            "endColumn": 9,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "endColumn": 17,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
         }
     ]

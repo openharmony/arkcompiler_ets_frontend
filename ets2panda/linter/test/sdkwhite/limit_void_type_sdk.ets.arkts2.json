@@ -21,7 +21,7 @@
             "endColumn": 4,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-sdk-limited-void-type)",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
             "severity": "ERROR"
         },
         {
