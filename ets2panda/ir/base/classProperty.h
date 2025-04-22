@@ -86,6 +86,7 @@ public:
     }
 
 private:
+    void DumpPrefix(ir::SrcDumper *dumper) const;
     TypeNode *typeAnnotation_;
     bool isDefault_ = false;
 };

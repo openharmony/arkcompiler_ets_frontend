@@ -475,6 +475,7 @@ private:
 
     // This method is needed by OHOS CI code checker
     void DumpBody(ir::SrcDumper *dumper) const;
+    void DumpGlobalClass(ir::SrcDumper *dumper) const;
 
     varbinder::LocalScope *scope_ {nullptr};
     util::StringView internalName_ {};

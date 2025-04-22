@@ -134,27 +134,18 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
             continue;
         }
 
-        if (CheckOptionsBeforePhase(options, program, name)) {
+        if (CheckOptionsBeforePhase(options, program, name) || !phase->Apply(&context, &program) ||
+            CheckOptionsAfterPhase(options, program, name)) {
             return false;
         }
 
-        if (!phase->Apply(&context, &program)) {
-            //  Seems that some critical error happened inside lowering and code refactoring required.
-            //  For normal processing this call shouldn't return false!
-            return false;
-        }
-
-        if (verifierEachPhase || options.HasVerifierPhase(name)) {
+        if (verifier.IntroduceNewInvariants(phase->Name());
+            verifierEachPhase || options.HasVerifierPhase(phase->Name())) {
             verifier.Verify(phase->Name());
-        }
-        verifier.IntroduceNewInvariants(name);
-
-        if (CheckOptionsAfterPhase(options, program, name)) {
-            return false;
         }
 
         // Stop lowerings processing after Checker phase if any error happened.
-        if (name == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
+        if (phase->Name() == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
             return false;
         }
     }

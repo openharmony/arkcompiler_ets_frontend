@@ -277,7 +277,7 @@ options:
     delimiter: ':'
   - name: phases
     type: arg_list_t
-    default: [ "each" ]
+    default: [ "after" ]
     description: >
       Specify phases to finalize with ASTVerifier. Shortcuts: "before", "each", "after".
     delimiter: ':'

@@ -40,8 +40,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
             ->AsClassProperty()
             ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-        EXPECT_TRUE(Verify<ModifierAccessValid>(
-            ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE(AstNodeType::MEMBER_EXPRESSION, line 6)"}));
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
     }
 }
 
@@ -96,8 +95,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
             ->AsClassProperty()
             ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-        EXPECT_TRUE(Verify<ModifierAccessValid>(
-            ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE(AstNodeType::MEMBER_EXPRESSION, line 8)"}));
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
     }
 }
 

@@ -19,6 +19,8 @@
 #include <functional>
 #include <iostream>
 #include <string_view>
+#include <map>
+#include <vector>
 
 #include "os/library_loader.h"
 
@@ -35,10 +37,20 @@ constexpr int NULLPTR_CONTEXT_ERROR_CODE = 6;
 
 es2panda_Impl *GetImpl();
 
+struct ProccedToStatePluginTestData {
+    int argc;
+    char **argv;
+    es2panda_Impl **impl;
+    std::map<es2panda_ContextState, std::vector<std::function<bool(es2panda_Context *)>>> testFunctions;
+    bool fromSource;
+    std::string source;
+};
+
 void CheckForErrors(const std::string &stateName, es2panda_Context *context);
 bool IsAssertCall(es2panda_AstNode *ast);
 es2panda_AstNode *CreateAssertStatement(es2panda_Context *context, es2panda_AstNode *test, es2panda_AstNode *second);
 es2panda_AstNode *AssertStatementTest(es2panda_Context *context, es2panda_AstNode *classInstance);
+int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data);
 
 es2panda_AstNode *CreateIdentifierFromString(es2panda_Context *context, const std::string_view &name);
 

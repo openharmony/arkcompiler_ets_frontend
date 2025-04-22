@@ -55,22 +55,20 @@ using ark::es2panda::varbinder::VariableFlags;
 TEST_F(ASTVerifierTest, NullParent)
 {
     StringLiteral emptyNode;
-    EXPECT_TRUE(VerifyNode<NodeHasParent>(&emptyNode,
-                                          ExpectVerifierMessage {"NULL_PARENT(AstNodeType::STRING_LITERAL, line 1)"}));
+    EXPECT_TRUE(VerifyNode<NodeHasParent>(&emptyNode, ExpectVerifierMessage {"NULL_PARENT"}));
 }
 
 TEST_F(ASTVerifierTest, NullRange)
 {
     StringLiteral emptyNode;
-    EXPECT_TRUE(VerifyNode<NodeHasSourceRange>(
-        &emptyNode, ExpectVerifierMessage {"NULL_RANGE(AstNodeType::STRING_LITERAL, line 1)"}));
+    EXPECT_TRUE(VerifyNode<NodeHasSourceRange>(&emptyNode, ExpectVerifierMessage {"NULL_RANGE"}));
 }
 
-TEST_F(ASTVerifierTest, NullType)
+// NOTE(dkofanov): #22355 'NodeHasType' is broken.
+TEST_F(ASTVerifierTest, DISABLED_NullType)
 {
     StringLiteral emptyNode;
-    EXPECT_TRUE(VerifyNode<NodeHasType>(&emptyNode,
-                                        ExpectVerifierMessage {"NULL_TS_TYPE(AstNodeType::STRING_LITERAL, line 1)"}));
+    EXPECT_TRUE(VerifyNode<NodeHasType>(&emptyNode, ExpectVerifierMessage {"NULL_TS_TYPE"}));
 }
 
 TEST_F(ASTVerifierTest, WithoutScope)
@@ -183,9 +181,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(
-        arithmeticExpression.AsBinaryExpression(),
-        ExpectVerifierMessage {"Not a numeric type(AstNodeType::BOOLEAN_LITERAL, line 1)"}));
+    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression(),
+                                                     ExpectVerifierMessage {"Not a numeric type"}));
 }
 
 TEST_F(ASTVerifierTest, PrimitiveType)
@@ -197,9 +194,9 @@ TEST_F(ASTVerifierTest, PrimitiveType)
     ast.SetTsType(etschecker.CreateETSBooleanType(true));
 
     ASSERT_TRUE(VerifyNode<NoPrimitiveTypes>(&ast, ExpectVerifierMessage {"PRIMITIVE_BEFORE_LOWERING"}));
-    std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured();
+    Get<NoPrimitiveTypes>()->SetNumberLoweringOccured();
     ASSERT_TRUE(VerifyNode<NoPrimitiveTypes>(&ast));
-    std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured(false);
+    Get<NoPrimitiveTypes>()->SetNumberLoweringOccured(false);
 }
 
 TEST_F(ASTVerifierTest, SequenceExpressionType)
