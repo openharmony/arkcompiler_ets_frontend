@@ -472,12 +472,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call5.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call5.ets"
                     }
                   }
                 },

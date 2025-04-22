@@ -349,7 +349,6 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
 
     ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
-    id->SetParent(func);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
 

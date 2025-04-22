@@ -286,6 +286,13 @@ public:
         }
     }
 
+    void SetProgram(const parser::Program *program) noexcept
+    {
+        if (program != nullptr) {
+            GetOrCreateHistoryNode()->range_.SetProgram(program);
+        }
+    }
+
     void SetStart(const lexer::SourcePosition &start) noexcept
     {
         if (GetHistoryNode()->range_.GetStart() != start) {
@@ -298,6 +305,11 @@ public:
         if (GetHistoryNode()->range_.GetEnd() != end) {
             GetOrCreateHistoryNode()->range_.SetEnd(end);
         }
+    }
+
+    [[nodiscard]] const parser::Program *Program() const noexcept
+    {
+        return range_.GetStart().Program();
     }
 
     [[nodiscard]] lexer::SourcePosition Start() const noexcept
@@ -334,6 +346,9 @@ public:
     {
         if (GetHistoryNode()->parent_ != parent) {
             GetOrCreateHistoryNode()->parent_ = parent;
+        }
+        if (parent != nullptr && Program() == nullptr) {
+            GetOrCreateHistoryNode()->SetProgram(parent->Program());
         }
     }
 
