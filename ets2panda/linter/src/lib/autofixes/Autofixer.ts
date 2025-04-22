@@ -3008,17 +3008,19 @@ export class Autofixer {
 
   fixStateStyles(object: ts.ObjectLiteralExpression, needImport: Set<string>): Autofix[] | undefined {
     const properties = object.properties;
-    const stateStyles: ts.Identifier[] = [];
-    const stateParams: ts.MemberName[][] = [];
-    const stateValues: ts.Expression[][][] = [];
+    const assignments: ts.PropertyAssignment[] = [];
     for (let i = 0; i < properties.length; i++) {
       const property = properties[i];
       const stateStyle = property.name;
-      if (stateStyle && ts.isIdentifier(stateStyle)) {
-        stateStyles.push(stateStyle);
+      if (!stateStyle || !ts.isIdentifier(stateStyle)) {
+        return undefined;
       }
-      if (!ts.isPropertyAssignment(property) || !ts.isObjectLiteralExpression(property.initializer)) {
-        return [];
+      if (!ts.isPropertyAssignment(property)) {
+        return undefined;
+      }
+      if (!ts.isObjectLiteralExpression(property.initializer)) {
+        assignments.push(property);
+        continue;
       }
       const propAssignments = property.initializer.properties;
       const parameters: ts.MemberName[] = [];
@@ -3042,12 +3044,12 @@ export class Autofixer {
           values.push(tempVals[k]);
         }
       }
-      stateParams.push(parameters);
-      stateValues.push(values);
+      const assignment = Autofixer.createPropertyAssignment(parameters, values, stateStyle);
+      assignments.push(assignment);
     }
     needImport.add(COMMON_METHOD_IDENTIFIER);
     const newExpr = ts.factory.createObjectLiteralExpression(
-      Autofixer.createPropertyAssignments(stateParams, stateValues, stateStyles),
+      assignments,
       true
     );
     let text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, object.getSourceFile());
@@ -3056,19 +3058,12 @@ export class Autofixer {
     return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
   }
 
-  private static createPropertyAssignments(
-    stateParams: ts.MemberName[][],
-    sateValues: ts.Expression[][][],
-    stateStyles: ts.Identifier[]
-  ): ts.PropertyAssignment[] {
-    const blocks: ts.Block[] = [];
-    for (let i = 0; i < stateParams.length; i++) {
-      const parameters = stateParams[i];
-      const values = sateValues[i];
-      const block = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
-      blocks.push(block);
-    }
-
+  private static createPropertyAssignment(
+    stateParam: ts.MemberName[],
+    sateValue: ts.Expression[][],
+    stateStyle: ts.Identifier
+  ): ts.PropertyAssignment {
+    const block = Autofixer.createBlock(stateParam, sateValue, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
     const parameterDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -3079,15 +3074,11 @@ export class Autofixer {
     );
     const voidToken = ts.factory.createToken(ts.SyntaxKind.VoidKeyword);
     const arrowToken = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
-    const newProperties: ts.PropertyAssignment[] = [];
-    for (let i = 0; i < blocks.length; i++) {
-      const property = ts.factory.createPropertyAssignment(
-        stateStyles[i],
-        ts.factory.createArrowFunction(undefined, undefined, [parameterDecl], voidToken, arrowToken, blocks[i])
-      );
-      newProperties.push(property);
-    }
-    return newProperties;
+    const property = ts.factory.createPropertyAssignment(
+      stateStyle,
+      ts.factory.createArrowFunction(undefined, undefined, [parameterDecl], voidToken, arrowToken, block)
+    );
+    return property;
   }
 
   fixDataObservation(classDecls: ts.ClassDeclaration[]): Autofix[] | undefined {
