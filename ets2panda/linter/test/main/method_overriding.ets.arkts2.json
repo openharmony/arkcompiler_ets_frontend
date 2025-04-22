@@ -21,7 +21,7 @@
         "endColumn": 10,
         "problem": "MethodOverridingField",
         "suggest": "",
-        "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+        "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
         "severity": "ERROR"
      },
      {
@@ -31,7 +31,7 @@
         "endColumn": 12,
         "problem": "MethodOverridingField",
         "suggest": "",
-        "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+        "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
         "severity": "ERROR"
      },
      {
@@ -41,7 +41,7 @@
         "endColumn": 31,
         "problem": "MethodOverridingField",
         "suggest": "",
-        "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+        "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
         "severity": "ERROR"
      },
      {
@@ -51,7 +51,7 @@
         "endColumn": 30,
         "problem": "MethodOverridingField",
         "suggest": "",
-        "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+        "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
         "severity": "ERROR"
      },
      {
@@ -61,7 +61,7 @@
       "endColumn": 13,
       "problem": "MethodOverridingField",
       "suggest": "",
-      "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+      "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
       "severity": "ERROR"
      },
      {
@@ -71,8 +71,18 @@
       "endColumn": 18,
       "problem": "MethodOverridingField",
       "suggest": "",
-      "rule": "Method cant't override filed in interface implemented (arkts-no-method-overriding-field)",
+      "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
       "severity": "ERROR"
-     }
+      },
+      {
+         "line": 63,
+         "column": 3,
+         "endLine": 63,
+         "endColumn": 13,
+         "problem": "MethodOverridingField",
+         "suggest": "",
+         "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
+         "severity": "ERROR"
+      }
     ]
 }

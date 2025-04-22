@@ -1306,7 +1306,7 @@ export class TypeScriptLinter {
       const implementsClause = this.getExtendsClause(interfaceDecl);
       if (
         implementsClause?.types.some((type) => {
-          return type.getText() === interfaceName;
+          return type.expression.getText() === interfaceName;
         })
       ) {
         this.checkInterfaceForProperty(interfaceDecl, propertyName);
@@ -1350,7 +1350,7 @@ export class TypeScriptLinter {
       const implementsClause = this.getImplementsClause(classDecl);
       if (
         implementsClause?.types.some((type) => {
-          return type.getText() === interfaceName;
+          return type.expression.getText() === interfaceName;
         })
       ) {
         this.checkClassForProperty(classDecl, propertyName);

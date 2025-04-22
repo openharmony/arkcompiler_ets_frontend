@@ -54,3 +54,11 @@ interface Person8 {
 interface Person8_1 extends Person8 {
   fun: () => void
 }
+
+interface Person9<T> {
+  fun: () => void
+}
+
+interface Person9_1<T> extends Person9<T> {
+  fun():void
+}
