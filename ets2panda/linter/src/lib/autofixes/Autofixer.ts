@@ -2153,12 +2153,13 @@ export class Autofixer {
 
   fixRegularExpressionLiteral(node: ts.RegularExpressionLiteral | ts.CallExpression): Autofix[] | undefined {
     const srcFile = node.getSourceFile();
-    let pattern: string;
+    let patternNode: ts.Expression | undefined;
     let flag: string | undefined;
+
     if (ts.isRegularExpressionLiteral(node)) {
       const literalText = node.getText();
       const parts = Autofixer.extractRegexParts(literalText);
-      pattern = parts.pattern;
+      patternNode = ts.factory.createStringLiteral(parts.pattern);
       flag = parts.flag;
     } else if (ts.isCallExpression(node)) {
       const args = node.arguments;
@@ -2166,10 +2167,11 @@ export class Autofixer {
         return undefined;
       }
       const patternArg = args[0];
-      if (!ts.isStringLiteral(patternArg)) {
+      if (!this.isStaticStringExpression(patternArg)) {
         return undefined;
       }
-      pattern = patternArg.text;
+      patternNode = patternArg;
+
       if (args.length > 1) {
         const flagArg = args[1];
         if (ts.isStringLiteral(flagArg)) {
@@ -2181,13 +2183,47 @@ export class Autofixer {
     } else {
       return undefined;
     }
-    const args = [ts.factory.createStringLiteral(pattern)];
-    if (flag) {
-      args.push(ts.factory.createStringLiteral(flag));
+
+    const newArgs: ts.Expression[] = [patternNode];
+    if (flag !== undefined) {
+      newArgs.push(ts.factory.createStringLiteral(flag));
     }
-    const newExpression = ts.factory.createNewExpression(ts.factory.createIdentifier('RegExp'), undefined, args);
+    const newExpression = ts.factory.createNewExpression(ts.factory.createIdentifier('RegExp'), undefined, newArgs);
+
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: text
+      }
+    ];
+  }
+
+  private isStaticStringExpression(node: ts.Node): boolean {
+    if (ts.isStringLiteral(node)) {
+      return true;
+    }
+    if (ts.isBinaryExpression(node)) {
+      return (
+        node.operatorToken.kind === ts.SyntaxKind.PlusToken &&
+        this.isStaticStringExpression(node.left) &&
+        this.isStaticStringExpression(node.right)
+      );
+    }
+    if (ts.isCallExpression(node)) {
+      const expression = node.expression;
+      if (
+        ts.isPropertyAccessExpression(expression) &&
+        expression.name.text === 'concat' &&
+        this.isStaticStringExpression(expression.expression)
+      ) {
+        return node.arguments.every((arg) => {
+          return this.isStaticStringExpression(arg);
+        });
+      }
+    }
+    return false;
   }
 
   private static extractRegexParts(literalText: string): {
