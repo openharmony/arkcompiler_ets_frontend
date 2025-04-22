@@ -24,6 +24,7 @@ enum class OverrideErrorCode {
     INCOMPATIBLE_TYPEPARAM,
     OVERRIDDEN_WEAKER,
     OVERRIDDEN_INTERNAL,
+    ABSTRACT_OVERRIDES_CONCRETE,
 };
 
 enum class ResolvedKind {
