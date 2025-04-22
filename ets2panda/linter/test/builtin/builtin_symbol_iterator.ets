@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-export enum BuiltinProblem {
-    LimitedThisArg = 'ThisArg',
-    SymbolIterator = 'SymbolIterator'
-}
+let map: Map<string, string> = new Map<string, string>();
+let iterFromReflect = Reflect.get(map, Symbol.iterator);
+let iterFromProp = map[Symbol.iterator]();
 
-export const FILE_PREFIX_PATH: string = 'typescript/lib/';
-export const SYMBOL_ITERATOR: string = 'Symbol.iterator';
+let symbolIter = Symbol.iterator;

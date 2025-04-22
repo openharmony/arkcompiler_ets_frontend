@@ -113,7 +113,7 @@ interface InterfaceSymbolTypeResult {
 interface InterfaceSymbolTypePropertyNames {
   propertyNames: string[];
   typeNames: string[];
-}import { BuiltinProblem, FILE_PREFIX_PATH } from './utils/consts/BuiltinWhiteList';
+}import { BuiltinProblem, FILE_PREFIX_PATH, SYMBOL_ITERATOR } from './utils/consts/BuiltinWhiteList';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -149,6 +149,7 @@ export class TypeScriptLinter {
   static pathMap: Map<string, Set<ApiInfo>>;
   static indexedTypeSet: Set<ApiListItem>;
   static globalApiInfo: Map<string, Set<ApiListItem>>;
+  static symbotIterSet: Set<string>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -156,6 +157,7 @@ export class TypeScriptLinter {
     TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
     TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
+    TypeScriptLinter.symbotIterSet = new Set<string>();
   }
 
   initSdkInfo(): void {
@@ -167,6 +169,9 @@ export class TypeScriptLinter {
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
         switch (item.api_info.problem) {
+          case BuiltinProblem.SymbolIterator:
+            TypeScriptLinter.symbotIterSet.add(item.file_path);
+            break;
           case BuiltinProblem.LimitedThisArg:
             this.initSdkBuiltinThisArgsWhitelist(item);
             break;
@@ -1091,6 +1096,7 @@ export class TypeScriptLinter {
     this.handleDoubleDollar(node);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
+    this.handleSymbolIterator(node as ts.PropertyAccessExpression);
 
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
 
@@ -6468,6 +6474,27 @@ export class TypeScriptLinter {
       if (matchedApi) {
         this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
       }
+    }
+  }
+
+  private handleSymbolIterator(decl: ts.PropertyAccessExpression): void {
+    if (
+      !this.options.arkts2 ||
+      TypeScriptLinter.symbotIterSet.size === 0 ||
+      decl.getText() !== SYMBOL_ITERATOR
+    ) {
+      return;
+    }
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(decl);
+    const sourceFile = symbol?.declarations?.[0]?.getSourceFile();
+    if (!sourceFile) {
+      return;
+    }
+    
+    const fileName = path.basename(sourceFile.fileName);
+    if (TypeScriptLinter.symbotIterSet.has(fileName)) {
+      this.incrementCounters(decl, FaultID.BuiltinSymbolIterator);
     }
   }
 

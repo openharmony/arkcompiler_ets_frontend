@@ -3540,7 +3540,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 51,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3561,7 +3561,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 55,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3582,7 +3582,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 60,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3603,7 +3603,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 96,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3624,7 +3624,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 116,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3645,7 +3645,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 121,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3666,7 +3666,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 141,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3687,7 +3687,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 172,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3708,7 +3708,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 190,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3729,7 +3729,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 240,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3750,7 +3750,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 244,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3771,7 +3771,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 272,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3792,7 +3792,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 300,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3813,7 +3813,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 331,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3834,7 +3834,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 361,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3855,7 +3855,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 389,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3876,7 +3876,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 417,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3897,7 +3897,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 445,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3918,7 +3918,7 @@
       "file_path": "lib.es2015.iterable.d.ts",
       "api_info": {
         "line": 473,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4194,7 +4194,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 385,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4453,7 +4453,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 657,
-        "problem": "BuiltinAll",
+        "problem": "SymbolIterator",
         "api_name": "[Symbol.iterator]",
         "api_type": "MethodSignature",
         "api_optional": false,

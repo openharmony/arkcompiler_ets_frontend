@@ -314,3 +314,4 @@ cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allo
 cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';
 cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';
 cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';
+cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';

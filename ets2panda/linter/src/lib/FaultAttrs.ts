@@ -221,3 +221,4 @@ faultsAttrs[FaultID.InteropCallObjectMethods] = new FaultAttributes(342);
 faultsAttrs[FaultID.InteropJsInstanceof] = new FaultAttributes(343);
 faultsAttrs[FaultID.InteropIncrementDecrement] = new FaultAttributes(344);
 faultsAttrs[FaultID.BuiltinThisArgs] = new FaultAttributes(345);
+faultsAttrs[FaultID.BuiltinSymbolIterator] = new FaultAttributes(346);

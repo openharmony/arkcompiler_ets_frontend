@@ -210,6 +210,7 @@ export enum FaultID {
   InteropJsInstanceof,
   InteropIncrementDecrement,
   BuiltinThisArgs,
+  BuiltinSymbolIterator,
   // this should always be last enum
   LAST_ID
 }
