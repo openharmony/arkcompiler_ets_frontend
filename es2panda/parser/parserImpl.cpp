@@ -4087,7 +4087,6 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
     funcParamScope->BindNode(funcNode);
     funcNode->SetRange({startLoc, endLoc});
     funcNode->CalculateFunctionExpectedPropertyCount();
-
     return funcNode;
 }
 

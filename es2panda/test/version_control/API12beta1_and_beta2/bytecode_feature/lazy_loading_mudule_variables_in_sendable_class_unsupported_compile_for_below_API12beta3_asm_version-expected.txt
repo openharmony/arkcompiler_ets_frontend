@@ -1,5 +1,4 @@
 slotNum = 0x4
-expectedProperty = 0x2
 .language ECMAScript
 .function any .SendableLazyLoading(any a0, any a1, any a2) {
 label_1: 

@@ -75,7 +75,9 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
-    GenExpectedPropertyCountAnnotation();
+    if (util::Helpers::IsEnableExpectedPropertyCountApiVersion(pg_->Binder()->Program()->TargetApiVersion())) {
+        GenExpectedPropertyCountAnnotation();
+    }
     GenSlotNumberAnnotation();
     if (pg_->Context()->IsMergeAbc()) {
         GenConcurrentModuleRequestsAnnotation();
@@ -668,7 +670,9 @@ Emitter::Emitter(CompilerContext *context): source_lang_(context->SourceLang())
     }
     AddSharedModuleRecord(context);
     AddScopeNamesRecord(context);
-    AddExpectedPropertyCountRecord();
+    if (util::Helpers::IsEnableExpectedPropertyCountApiVersion(context->Binder()->Program()->TargetApiVersion())) {
+        AddExpectedPropertyCountRecord();
+    }
     AddSlotNumberRecord();
     if (context->IsMergeAbc()) {
         AddConcurrentModuleRequestsRecord();
