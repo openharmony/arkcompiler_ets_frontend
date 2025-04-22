@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,15 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-class A {
-    /* @@ label */fld: Number = 2
+
+/*---
+desc: Type Readonly<T> constructs a type with all properties of T set to readonly.
+  It means that the properties of the constructed value cannot be reassigned. T must
+  be a class or an interface type
+name: readonly_type_reassignment_1
+tags:
+- compile-only
+- negative
+---*/
+
+interface I {
+  i: number;
+  j: string;
 }
 
-function foo(a0: A) {
-    let a: Readonly<A> = {fld: 3}
-    /* @@ label2 */a.fld = 5
+function main() {
+  let z: Readonly<I> = { i: 1.9, j: "some str"}
+  /* @@ label */z.j = "new str"
 }
 
-/* @@@ label Error TypeError: Cannot assign to a readonly variable fld  */
-/* @@@ label2 Error TypeError: The 'Readonly' property cannot be reassigned. */
+/* @@@ label Error TypeError: The 'Readonly' property cannot be reassigned. */

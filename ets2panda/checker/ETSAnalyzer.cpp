@@ -1032,6 +1032,10 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     if (expr->Left()->IsIdentifier()) {
         expr->target_ = expr->Left()->AsIdentifier()->Variable();
     } else if (expr->Left()->IsMemberExpression()) {
+        if (!expr->IsIgnoreConstAssign() &&
+            expr->Left()->AsMemberExpression()->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
+            checker->LogError(diagnostic::READONLY_PROPERTY_REASSIGN, {}, expr->Left()->Start());
+        }
         expr->target_ = expr->Left()->AsMemberExpression()->PropVar();
     } else {
         checker->LogError(diagnostic::ASSIGNMENT_INVALID_LHS, {}, expr->Left()->Start());
