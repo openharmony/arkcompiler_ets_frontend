@@ -2299,6 +2299,39 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
              classDef->Super()->Start());
 }
 
+void ETSChecker::CheckReadonlyClassPropertyInImplementedInterface(ETSObjectType *classType,
+                                                                  varbinder::LocalVariable *field)
+{
+    const auto searchFlag = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
+                            PropertySearchFlags::SEARCH_IN_INTERFACES |
+                            PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+    const auto &interfaceList = GetInterfaces(classType);
+    if (field == nullptr || field->Declaration() == nullptr || field->Declaration()->Node() == nullptr ||
+        !field->Declaration()->Node()->IsClassProperty() ||
+        !field->Declaration()->Node()->AsClassProperty()->IsReadonly()) {
+        return;
+    }
+
+    for (auto *interface : interfaceList) {
+        ES2PANDA_ASSERT(interface != nullptr);
+        auto *propertyFound = interface->GetProperty(field->Name(), searchFlag);
+        if (propertyFound == nullptr) {
+            continue;
+        }
+
+        ES2PANDA_ASSERT(propertyFound->TsType() != nullptr);
+        if (!propertyFound->TsType()->IsETSFunctionType()) {
+            continue;
+        }
+
+        auto setter = propertyFound->TsType()->AsETSFunctionType()->FindSetter();
+        if (setter != nullptr) {
+            LogError(diagnostic::INTERFACE_PROPERTY_REQUIRES_SETTER, {interface->Name(), field->Name()},
+                     field->Declaration()->Node()->Start());
+        }
+    }
+}
+
 void ETSChecker::TransformProperties(ETSObjectType *classType)
 {
     auto propertyList = classType->Fields();
@@ -2315,6 +2348,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
             LogError(diagnostic::INTERFACE_PROP_NOT_PUBLIC, {}, field->Declaration()->Node()->Start());
         }
+        CheckReadonlyClassPropertyInImplementedInterface(classType, field);
         classType->RemoveProperty<checker::PropertyType::INSTANCE_FIELD>(field);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);

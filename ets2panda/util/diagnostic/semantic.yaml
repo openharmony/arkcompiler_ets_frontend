@@ -1338,3 +1338,7 @@ semantic:
 - name: CAST_FAIL_UNREACHABLE
   id: 336
   message: "this cast should never fail"
+
+- name: INTERFACE_PROPERTY_REQUIRES_SETTER
+  id: 337
+  message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
