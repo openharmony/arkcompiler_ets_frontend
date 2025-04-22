@@ -14,15 +14,21 @@
  */
 
 class A {
-    foo(v: string): void {}
-    foo(v: int): void {}
+    foo() {
+        return 1
+    }
 }
 
-class B {
-    foo(v: string): void {}
-    foo(v: int): void {}
+final class B {
+    foo() {
+        return 2
+    }
 }
-
-function foo(x: A|B) {
-    x.foo("123")
+type AAA = A | B
+function foo(a : AAA) {
+    return a.foo()
+}
+function main() {
+    assertEQ(foo(new A()), 1)
+    assertEQ(foo(new B()), 2)
 }

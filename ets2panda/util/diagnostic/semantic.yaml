@@ -1111,9 +1111,9 @@ semantic:
   id: 279
   message: "Tuple types with arity >16 are not yet implemented"
 
-- name: UNION_METHOD_SIGNATURE
+- name: PROPERTY_MAYBE_MISSING_INIT
   id: 280
-  message: "Union constituent types should have only one common method signature."
+  message: "Property '{}' might not have been initialized."
 
 - name: NOT_ALLOWED_THIS_IN_UNION_TYPE
   id: 281
@@ -1346,7 +1346,3 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
-
-- name: PROPERTY_MAYBE_MISSING_INIT
-  id: 339
-  message: "Property '{}' might not have been initialized."
