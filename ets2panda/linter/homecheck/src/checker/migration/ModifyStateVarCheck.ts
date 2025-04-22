@@ -24,7 +24,7 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ModifyStateVarCheck'
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'It is not allowed to update state when the view is changing.'
+    description: 'It is not allowed to update state when the view is changing'
 };
 
 export class ModifyStateVarCheck implements BaseChecker {
@@ -124,7 +124,8 @@ export class ModifyStateVarCheck implements BaseChecker {
     private addIssueReport(stmt: Stmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
+        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, this.rule.ruleId,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }

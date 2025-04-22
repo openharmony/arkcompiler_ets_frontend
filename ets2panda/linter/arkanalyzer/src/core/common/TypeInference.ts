@@ -271,7 +271,8 @@ export class TypeInference {
         const stmtDef = stmt.getDef();
         if (stmtDef && stmtDef instanceof AbstractRef) {
             if (arkMethod.getName() === INSTANCE_INIT_METHOD_NAME && stmtDef instanceof ArkInstanceFieldRef &&
-                stmtDef.getBase().getName() === THIS_NAME && arkMethod.getDeclaringArkClass().isAnonymousClass()) {
+                stmtDef.getBase().getName() === THIS_NAME && arkMethod.getDeclaringArkClass().isAnonymousClass() &&
+                stmtDef.getFieldName().indexOf('.') === -1) {
                 return;
             }
             const fieldRef = stmtDef.inferType(arkMethod);
@@ -619,7 +620,7 @@ export class TypeInference {
                 return EMPTY_STRING;
             });
             if (i === 0) {
-                type = this.inferBaseType(name, arkClass);
+                type = singleNames.length > 1 ? this.inferBaseType(name, arkClass) : this.inferTypeByName(name, arkClass);
             } else if (type) {
                 type = this.inferFieldType(type, name, arkClass)?.[1];
             }
@@ -628,7 +629,7 @@ export class TypeInference {
             }
             if (genericName) {
                 const realTypes = genericName.split(',').map(generic => {
-                    const realType = this.inferBaseType(generic, arkClass);
+                    const realType = this.inferUnclearRefName(generic, arkClass);
                     return realType ?? new UnclearReferenceType(generic);
                 });
                 if (type instanceof ClassType) {
@@ -739,6 +740,22 @@ export class TypeInference {
             arkExport = arkClass.getDeclaringArkFile().getScene().getSdkGlobal(baseName);
         }
         return this.parseArkExport2Type(arkExport);
+    }
+
+    public static inferTypeByName(typeName: string, arkClass: ArkClass): Type | null {
+        let arkExport: ArkExport | null = ModelUtils.getClassWithName(typeName, arkClass) ??
+            ModelUtils.getDefaultClass(arkClass)?.getDefaultArkMethod()?.getBody()?.getAliasTypeByName(typeName) ??
+            ModelUtils.getArkExportInImportInfoWithName(typeName, arkClass.getDeclaringArkFile());
+        if (arkExport instanceof ArkClass || arkExport instanceof AliasType) {
+            return this.parseArkExport2Type(arkExport);
+        }
+        if (!arkClass.getDeclaringArkFile().getImportInfoBy(typeName)) {
+            arkExport = arkClass.getDeclaringArkFile().getScene().getSdkGlobal(typeName);
+        }
+        if (arkExport instanceof ArkClass || arkExport instanceof AliasType) {
+            return this.parseArkExport2Type(arkExport);
+        }
+        return null;
     }
 
     public static inferRealGenericTypes(realTypes: Type[] | undefined, arkClass: ArkClass): void {

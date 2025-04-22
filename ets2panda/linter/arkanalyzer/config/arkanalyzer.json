@@ -3,7 +3,8 @@
     ".ets",
     ".ts",
     ".d.ets",
-    ".d.ts"
+    ".d.ts",
+    ".js"
   ],
   "enableLeadingComments": false,
   "ignoreFileNames": [

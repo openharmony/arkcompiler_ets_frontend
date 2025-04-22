@@ -200,8 +200,10 @@
     "@migration/arkts-instance-method-bind-this": 1,
     "@migration/arkui-data-observation-2": 1,
     "@migration/arkui-stateful-appstorage": 1,
-    "@migration/arkui-no-update-in-rending": 1,
+    "@migration/arkui-no-update-in-build": 1,
     "@migration/arkui-custombuiler": 1,
-    "@migration/no-method-overriding-field-check": 1
+    "@migration/no-method-overriding-field-check": 1,
+    "@migration/interop-backward-dfa": 1,
+    "@migration/interop-boxed-type-check": 1
   }
 }

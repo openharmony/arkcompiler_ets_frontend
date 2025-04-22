@@ -150,7 +150,7 @@ export class IRInference {
         }
         const className = expr.getMethodSignature().getDeclaringClassSignature().getClassName();
         if (className && className !== UNKNOWN_CLASS_NAME) {
-            const baseType = TypeInference.inferUnclearRefName(className, arkClass);
+            const baseType = TypeInference.inferBaseType(className, arkClass);
             if (baseType) {
                 let result = this.inferInvokeExpr(expr, baseType, methodName, arkClass.getDeclaringArkFile().getScene());
                 if (result) {
@@ -351,10 +351,11 @@ export class IRInference {
         } else if (paramType instanceof GenericType || paramType instanceof AnyType) {
             realTypes.push(argType);
         } else if (paramType instanceof FunctionType && argType instanceof FunctionType) {
-            if (paramType.getMethodSignature().getType() instanceof GenericType) {
-                const method = scene.getMethod(argType.getMethodSignature());
-                if (method) {
-                    TypeInference.inferTypeInMethod(method);
+            if (paramType.getMethodSignature().getParamLength() > 0 && paramType.getMethodSignature().getType() instanceof GenericType) {
+                const paramMethod = scene.getMethod(expr.getMethodSignature());
+                const argMethod = scene.getMethod(argType.getMethodSignature());
+                if (paramMethod && paramMethod.getGenericTypes() && argMethod) {
+                    TypeInference.inferTypeInMethod(argMethod);
                 }
             }
             const realTypes = expr.getRealGenericTypes();
@@ -759,7 +760,7 @@ export class IRInference {
             return;
         }
         if (opValue instanceof Local) {
-            const newOpValueType = TypeInference.inferUnclearRefName(opValue.getName(), arkMethod.getDeclaringArkClass());
+            const newOpValueType = TypeInference.inferBaseType(opValue.getName(), arkMethod.getDeclaringArkClass());
             const scene = arkMethod.getDeclaringArkFile().getScene();
             if (newOpValueType instanceof ClassType) {
                 const newOpValue = ModelUtils.findArkModelBySignature(newOpValueType.getClassSignature(), scene);

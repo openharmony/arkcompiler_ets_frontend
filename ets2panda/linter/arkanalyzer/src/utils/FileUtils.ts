@@ -90,6 +90,8 @@ export class FileUtils {
                 return Language.TYPESCRIPT;
             case '.ets':
                 return Language.ARKTS1_1;
+            case '.js':
+                return Language.JAVASCRIPT;
             default:
                 return Language.UNKNOWN;
         }

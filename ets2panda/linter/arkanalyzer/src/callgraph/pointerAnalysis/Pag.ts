@@ -29,7 +29,7 @@ import { ContextID } from './Context';
 import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { GLOBAL_THIS_NAME } from '../../core/common/TSConst';
 import { ExportInfo } from '../../core/model/ArkExport';
-import { IsCollectionClass } from './PTAUtils';
+import { BuiltApiType, getBuiltInApiType, IsCollectionClass } from './PTAUtils';
 import { IPtsCollection } from './PtsDS';
 import { PointerAnalysisConfig } from './PointerAnalysisConfig';
 
@@ -346,6 +346,10 @@ export class PagNode extends BaseNode {
             label = label + `\n${(this.value as ArkThisRef).toString()}`;
         }
 
+        if (this.getKind() === PagNodeKind.Function) {
+            label = label + ` thisPt:{${((this as unknown) as PagFuncNode).getThisPt()}}`;
+        }
+
         if (this.stmt) {
             label = label + `\n${this.stmt.toString()}`;
             let method = this.stmt.getCfg()?.getDeclaringMethod().getSubSignature().toString();
@@ -527,22 +531,70 @@ export class PagParamNode extends PagNode {
 }
 
 export class PagFuncNode extends PagNode {
-    private methodSignature!: MethodSignature
+    private methodSignature!: MethodSignature;
+    private thisPt!: NodeID;
+    private methodType!: BuiltApiType;
+    // for Function.bind, store the original call message and caller cid
+    private originCallSite!: CallSite;
+    private argsOffset: number = 0;
+    private originCid!: ContextID;
     // TODO: may add obj interface
 
-    constructor(id: NodeID, cid: ContextID | undefined = undefined, r: Value, stmt?: Stmt, method?: MethodSignature) {
+    constructor(id: NodeID, cid: ContextID | undefined = undefined, r: Value, stmt?: Stmt, method?: MethodSignature, thisInstanceID?: NodeID) {
         super(id, cid, r, PagNodeKind.Function, stmt)
         if (method) {
             this.methodSignature = method;
+            this.methodType = getBuiltInApiType(method);
+        }
+
+        if (thisInstanceID) {
+            this.thisPt = thisInstanceID;
         }
     }
 
     public setMethod(method: MethodSignature) {
-        this.methodSignature = method
+        this.methodSignature = method;
+        this.methodType = getBuiltInApiType(method);
     }
 
     public getMethod(): MethodSignature {
-        return this.methodSignature
+        return this.methodSignature;
+    }
+
+    public setThisPt(thisPt: NodeID): void {
+        this.thisPt = thisPt;
+    }
+
+    public getThisPt(): NodeID {
+        return this.thisPt;
+    }
+
+    public setCS(callsite: CallSite): void {
+        this.originCallSite = callsite;
+    }
+
+    public getCS(): CallSite {
+        return this.originCallSite;
+    }
+
+    public setArgsOffset(offset: number): void {
+        this.argsOffset = offset;
+    }
+
+    public getArgsOffset(): number {
+        return this.argsOffset;
+    }
+
+    public getMethodType(): BuiltApiType {
+        return this.methodType;
+    }
+
+    public setOriginCid(cid: ContextID): void {
+        this.originCid = cid;
+    }
+
+    public getOriginCid(): ContextID {
+        return this.originCid;
     }
 }
 
@@ -673,6 +725,17 @@ export class Pag extends BaseExplicitGraph {
             throw new Error(`Error clone array field node ${baseNode.getValue()}`);
         }
         return undefined;
+    }
+
+    public getOrClonePagFuncNode(basePt: NodeID): PagFuncNode | undefined {
+        let baseNode = this.getNode(basePt) as PagNode;
+        if (baseNode instanceof PagFuncNode) {
+            let clonedFuncNode = this.getOrClonePagNode(baseNode, basePt) as PagFuncNode;
+            return clonedFuncNode;
+        } else {
+            logger.error(`Error clone func node ${baseNode.getValue()}`);
+            return undefined;
+        }
     }
 
     public addPagNode(cid: ContextID, value: PagNodeType, stmt?: Stmt, refresh: boolean = true): PagNode {

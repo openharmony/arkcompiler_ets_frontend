@@ -21,6 +21,8 @@ import { AppStorageGetCheck } from '../../checker/migration/AppStorageGetCheck';
 import { ModifyStateVarCheck } from '../../checker/migration/ModifyStateVarCheck';
 import { NoMethodOverridingFieldCheck } from '../../checker/migration/NoMethodOverridingFieldCheck';
 import { CustomBuilderCheck } from '../../checker/migration/CustomBuilderCheck';
+import { InteropBackwardDFACheck } from '../../checker/migration/InteropBackwardDFACheck';
+import { InteropBoxedTypeCheck } from "../../checker/migration/InteropBoxedTypeCheck";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
@@ -31,10 +33,12 @@ export const fileRules = {
     "@migration/arkui-no-update-in-build": ModifyStateVarCheck,
     "@migration/arkui-custombuiler": CustomBuilderCheck,
     "@migration/no-method-overriding-field-check": NoMethodOverridingFieldCheck,
+    "@migration/interop-typeof-boxed-types": InteropBoxedTypeCheck,
 };
 
 export const projectRules = {
     "@migration/arkts-obj-literal-generate-class-instance": ObjectLiteralCheck,
+    "@migration/interop-backward-dfa": InteropBackwardDFACheck,
 };
 
 // 新增文件级的checker，需要在此处注册

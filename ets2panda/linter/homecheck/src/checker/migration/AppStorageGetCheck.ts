@@ -24,7 +24,7 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'AppStorageGetCheck')
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: 'Get State of AppStorage in component build function, it will update UI interface when the state of AppStorage is changed.'
+    description: 'Get State of AppStorage in component build function, it will update UI interface when the state of AppStorage is changed'
 };
 
 const APP_STORAGE_STR = "AppStorage";
@@ -105,7 +105,8 @@ export class AppStorageGetCheck implements BaseChecker {
     private addIssueReport(stmt: Stmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
+        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, this.rule.ruleId,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
