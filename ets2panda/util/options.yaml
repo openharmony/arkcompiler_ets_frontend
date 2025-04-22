@@ -22,6 +22,11 @@ options:
   default: false
   description: Print this message and exit
 
+- name: version
+  type: bool
+  default: false
+  description: Print version and exit
+
 - name: arktsconfig
   type: std::string
   default: $ORIGIN/arktsconfig.json
