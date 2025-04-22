@@ -322,6 +322,158 @@
                   }
                 },
                 "declare": true,
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 18,
+                                "program": "ambient_declaration.ets"
+                              },
+                              "end": {
+                                "line": 16,
+                                "column": 21,
+                                "program": "ambient_declaration.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 18,
+                                "program": "ambient_declaration.ets"
+                              },
+                              "end": {
+                                "line": 16,
+                                "column": 21,
+                                "program": "ambient_declaration.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 18,
+                              "program": "ambient_declaration.ets"
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 21,
+                              "program": "ambient_declaration.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 16,
+                            "column": 18,
+                            "program": "ambient_declaration.ets"
+                          },
+                          "end": {
+                            "line": 16,
+                            "column": 21,
+                            "program": "ambient_declaration.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 16,
+                          "column": 18,
+                          "program": "ambient_declaration.ets"
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 21,
+                          "program": "ambient_declaration.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 18,
+                              "program": "ambient_declaration.ets"
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 21,
+                              "program": "ambient_declaration.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 18,
+                              "program": "ambient_declaration.ets"
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 21,
+                              "program": "ambient_declaration.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 16,
+                            "column": 18,
+                            "program": "ambient_declaration.ets"
+                          },
+                          "end": {
+                            "line": 16,
+                            "column": 21,
+                            "program": "ambient_declaration.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 18,
+                        "program": "ambient_declaration.ets"
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 21,
+                        "program": "ambient_declaration.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 16,
