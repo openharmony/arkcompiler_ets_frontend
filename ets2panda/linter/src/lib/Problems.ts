@@ -214,6 +214,9 @@ export enum FaultID {
   NoPropertyDescritor,
   BuiltinNoCtorFunc,
   SharedArrayBufferDeprecated,
+  LimitedStdLibNoSendableDecorator,
+  LimitedStdLibNoDoncurrentDecorator,
+  NoNeedStdlibWorker,
   // this should always be last enum
   LAST_ID
 }

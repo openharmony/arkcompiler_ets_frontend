@@ -979,9 +979,9 @@
             "column": 1,
             "endLine": 480,
             "endColumn": 10,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoSendableDecorator",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
             "severity": "ERROR"
         },
         {
@@ -989,9 +989,9 @@
             "column": 1,
             "endLine": 485,
             "endColumn": 10,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoSendableDecorator",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
             "severity": "ERROR"
         },
         {

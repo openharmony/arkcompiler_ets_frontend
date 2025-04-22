@@ -213,3 +213,6 @@ faultDesc[FaultID.BuiltinSymbolIterator] = 'No "Symbol.iterator" in API';
 faultDesc[FaultID.NoPropertyDescritor] = 'Not support property descriptor';
 faultDesc[FaultID.BuiltinNoCtorFunc] = 'Api is not support ctor-signature and call-signature';
 faultDesc[FaultID.SharedArrayBufferDeprecated] = 'SharedArrayBuffer is not supported';
+faultDesc[FaultID.LimitedStdLibNoSendableDecorator] = 'Limited stdlib no sendable decorator';
+faultDesc[FaultID.LimitedStdLibNoDoncurrentDecorator] = 'Limited stdlib no concurrent decorator';
+faultDesc[FaultID.NoNeedStdlibWorker] = 'No need stdlib worker';

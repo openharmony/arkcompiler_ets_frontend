@@ -19,9 +19,9 @@
             "column": 1,
             "endLine": 16,
             "endColumn": 10,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoSendableDecorator",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
             "severity": "ERROR"
         }
     ]

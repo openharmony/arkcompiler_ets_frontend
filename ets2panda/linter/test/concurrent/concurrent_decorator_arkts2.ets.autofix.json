@@ -19,7 +19,7 @@
             "column": 1,
             "endLine": 16,
             "endColumn": 12,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
             "autofix": [
                 {
                     "start": 610,
@@ -28,7 +28,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
             "severity": "ERROR"
         },
         {
@@ -36,7 +36,7 @@
             "column": 1,
             "endLine": 19,
             "endColumn": 12,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
             "autofix": [
                 {
                     "start": 651,
@@ -45,7 +45,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
             "severity": "ERROR"
         },
         {
@@ -53,7 +53,7 @@
             "column": 1,
             "endLine": 23,
             "endColumn": 12,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
             "autofix": [
                 {
                     "start": 699,
@@ -62,7 +62,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
             "severity": "ERROR"
         },
         {
@@ -70,7 +70,7 @@
             "column": 1,
             "endLine": 26,
             "endColumn": 12,
-            "problem": "LimitedStdLibApi",
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
             "autofix": [
                 {
                     "start": 740,
@@ -79,7 +79,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
             "severity": "ERROR"
         },
         {
