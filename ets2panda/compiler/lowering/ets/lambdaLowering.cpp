@@ -1161,6 +1161,13 @@ static bool IsEnumFunctionCall(const ir::Identifier *const id)
     return false;
 }
 
+static bool IsValidFunctionDeclVar(const varbinder::Variable *const var)
+{
+    // Note: If a function is accessor, then no need to build lambda class.
+    return var != nullptr && var->Declaration() != nullptr && var->Declaration()->IsFunctionDecl() &&
+           !var->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER);
+}
+
 static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::AstNode *node)
 {
     if (node->IsArrowFunctionExpression()) {
@@ -1173,8 +1180,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         // We are running this lowering only for ETS files
         // so it is correct to pass ETS extension here to isReference()
         if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
-            var != nullptr && var->Declaration() != nullptr && var->Declaration()->IsFunctionDecl() &&
-            !IsInCalleePosition(id) && !IsEnumFunctionCall(id)) {
+            !IsInCalleePosition(id) && !IsEnumFunctionCall(id) && IsValidFunctionDeclVar(var)) {
             return ConvertFunctionReference(ctx, id);
         }
     }
@@ -1188,8 +1194,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
                 checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                     checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
                     checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
-            if (var != nullptr && var->Declaration()->IsFunctionDecl() &&
-                !var->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER) && !IsInCalleePosition(mexpr)) {
+            if (IsValidFunctionDeclVar(var) && !IsInCalleePosition(mexpr)) {
                 return ConvertFunctionReference(ctx, mexpr);
             }
         }
