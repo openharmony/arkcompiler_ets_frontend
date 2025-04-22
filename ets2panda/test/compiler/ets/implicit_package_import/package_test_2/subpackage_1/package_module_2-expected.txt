@@ -1043,4 +1043,3 @@
     }
   }
 }
-Warning: Variable 'foo' is used before being assigned. [package_module_1.ets:19:21]

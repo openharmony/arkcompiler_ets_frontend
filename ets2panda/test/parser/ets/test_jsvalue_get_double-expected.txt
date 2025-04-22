@@ -485,4 +485,4 @@
     }
   }
 }
-Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_double.ets:17:21]
+TypeError: Variable 'v' is used before being assigned. [test_jsvalue_get_double.ets:17:21]
