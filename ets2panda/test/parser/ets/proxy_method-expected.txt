@@ -382,6 +382,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 8,
+                                "program": "proxy_method.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "proxy_method.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 8,
+                                "program": "proxy_method.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "proxy_method.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "proxy_method.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "proxy_method.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 8,
+                            "program": "proxy_method.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "proxy_method.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 8,
+                          "program": "proxy_method.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 6,
+                          "program": "proxy_method.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "proxy_method.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "proxy_method.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 1,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "proxy_method.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "proxy_method.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 8,
+                            "program": "proxy_method.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "proxy_method.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 8,
+                        "program": "proxy_method.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 6,
+                        "program": "proxy_method.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 17,

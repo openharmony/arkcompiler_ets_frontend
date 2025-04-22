@@ -472,6 +472,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 18,
+                                "program": "optional_union_paramter.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "optional_union_paramter.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 18,
+                                "program": "optional_union_paramter.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "optional_union_paramter.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 18,
+                            "program": "optional_union_paramter.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "optional_union_paramter.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 18,
+                          "program": "optional_union_paramter.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 6,
+                          "program": "optional_union_paramter.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 1,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 18,
+                            "program": "optional_union_paramter.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "optional_union_paramter.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 18,
+                        "program": "optional_union_paramter.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 6,
+                        "program": "optional_union_paramter.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 17,
