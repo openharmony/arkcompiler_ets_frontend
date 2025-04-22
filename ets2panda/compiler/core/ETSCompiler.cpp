@@ -749,7 +749,7 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
             // NOTE: need to refactor: type of member expression object can be obtained via
             // me->ObjType() or me->Object()->TsType() and they may differ!!!!
         } else if (me->ObjType() == etsg->Checker()->GlobalETSObjectType() &&
-                   me->Object()->TsType()->IsETSUnionType()) {
+                   (etsg->Checker()->GetApparentType(me->Object()->TsType())->IsETSUnionType())) {
             etsg->CallByName(expr, signature, calleeReg, expr->Arguments());
         } else {
             etsg->CallVirtual(expr, signature, calleeReg, expr->Arguments());
