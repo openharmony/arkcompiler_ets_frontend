@@ -13,17 +13,6 @@
  * limitations under the License.
  */
 
-export function foo() : int {
-    return 2;
+export function hello() : void {
+    console.log("hello arkts")
 }
-
-export const A0: int = 1 
-
-export class B {
-    foo() : int {
-        return 2;
-    }
-    b: int = 2
-}
-
-hello()

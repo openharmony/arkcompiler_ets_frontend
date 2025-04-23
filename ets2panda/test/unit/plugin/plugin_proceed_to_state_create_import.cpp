@@ -28,22 +28,22 @@
 
 static es2panda_Impl *g_impl = nullptr;
 
-static es2panda_AstNode *CreateImportDecl(es2panda_Context *context, const char *importIdStr,
-                                          const char *importAliasStr)
+static es2panda_AstNode *CreateImportDecl(es2panda_Context *context, es2panda_Program *program, const char *importIdStr,
+                                          const char *importAliasStr, const char *importPathStr)
 {
-    auto *importPath = g_impl->CreateStringLiteral1(context, const_cast<char *>("./export2"));
+    auto *importPath = g_impl->CreateStringLiteral1(context, const_cast<char *>(importPathStr));
 
     std::vector<es2panda_AstNode *> specifiersArray;
     auto *importId = g_impl->CreateIdentifier1(context, const_cast<char *>(importIdStr));
     auto *importAlias = g_impl->CreateIdentifier1(context, const_cast<char *>(importAliasStr));
-    ;
     auto *importSpecifier = g_impl->CreateImportSpecifier(context, importId, importAlias);
     g_impl->AstNodeSetParent(context, importId, importSpecifier);
     g_impl->AstNodeSetParent(context, importAlias, importSpecifier);
     specifiersArray.push_back(importSpecifier);
 
-    auto *importDecl = g_impl->ETSParserBuildImportDeclaration(context, Es2pandaImportKinds::IMPORT_KINDS_ALL,
-                                                               specifiersArray.data(), 1, importPath);
+    auto *importDecl =
+        g_impl->ETSParserBuildImportDeclaration(context, Es2pandaImportKinds::IMPORT_KINDS_ALL, specifiersArray.data(),
+                                                1, importPath, program, Es2pandaImportFlags::IMPORT_FLAGS_NONE);
     return importDecl;
 }
 
@@ -71,12 +71,13 @@ es2panda_AstNode *GetTargetFunc(es2panda_Context *context, es2panda_AstNode *ast
     return fooFunc;
 }
 
-bool TestInsertImportAfterParse(es2panda_Context *context, es2panda_Config *config, es2panda_Program *program)
+bool TestInsertImportAfterParse(es2panda_Context *context, [[maybe_unused]] es2panda_Config *config,
+                                es2panda_Program *program)
 {
     size_t externalSourceCnt {0};
-    g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCnt);
+    g_impl->ProgramExternalSources(context, program, &externalSourceCnt);
     std::cout << "ExternalProgram Count:" << externalSourceCnt << std::endl;
-    auto *importDeclAfterParse = CreateImportDecl(context, "B", "B");
+    auto *importDeclAfterParse = CreateImportDecl(context, program, "B", "B", "./export2");
 
     g_impl->InsertETSImportDeclarationAndParse(context, program, importDeclAfterParse);
     auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDeclAfterParse);
@@ -93,6 +94,38 @@ bool TestInsertImportAfterParse(es2panda_Context *context, es2panda_Config *conf
     }
 
     return true;
+}
+
+void InsertImportInHeaderAfterParse(es2panda_Context *context, [[maybe_unused]] es2panda_Config *config,
+                                    es2panda_Program *program)
+{
+    size_t mainProgExternalSourceCnt {0};
+    auto **externalSources = g_impl->ProgramExternalSources(context, program, &mainProgExternalSourceCnt);
+    if (mainProgExternalSourceCnt == 0) {
+        std::cout << "No ExternalSource in main program." << std::endl;
+        return;
+    }
+
+    es2panda_AstNode *importDeclInHeaderAfterParse {nullptr};
+    size_t prevHeaderExternalSourceCnt {0};
+    es2panda_Program *headerProgram {nullptr};
+    for (size_t i = 0; i < mainProgExternalSourceCnt; ++i) {
+        auto *externalSource = externalSources[i];
+        std::string sourceName = g_impl->ExternalSourceName(externalSource);
+        size_t externalSourceProgramCnt {0};
+        auto **programs = g_impl->ExternalSourcePrograms(externalSource, &externalSourceProgramCnt);
+        if (sourceName.compare("export2") == 0) {
+            headerProgram = programs[0];
+            g_impl->ProgramExternalSources(context, headerProgram, &prevHeaderExternalSourceCnt);
+            importDeclInHeaderAfterParse = CreateImportDecl(context, headerProgram, "hello", "hello", "./export3");
+            g_impl->InsertETSImportDeclarationAndParse(context, headerProgram, importDeclInHeaderAfterParse);
+            std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, headerProgram))
+                      << std::endl;
+            auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDeclInHeaderAfterParse);
+            std::cout << importDeclString << std::endl;
+            break;
+        }
+    }
 }
 
 int main(int argc, char **argv)
@@ -123,23 +156,25 @@ int main(int argc, char **argv)
     if (!TestInsertImportAfterParse(context, config, program)) {
         return 1;
     }
+    InsertImportInHeaderAfterParse(context, config, program);
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
     CheckForErrors("BOUND", context);
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
-    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
+    auto *rootAst = g_impl->ProgramAst(context, program);
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, rootAst) << std::endl;
     CheckForErrors("CHECKED", context);
 
-    auto *importDeclAfterCheck = CreateImportDecl(context, "A0", "A0");
+    auto *importDeclAfterCheck = CreateImportDecl(context, program, "A0", "A0", "./export2");
     g_impl->InsertETSImportDeclarationAndParse(context, program, importDeclAfterCheck);
 
-    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
-    auto *tagetFunc = GetTargetFunc(context, g_impl->ProgramAst(context, program));
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, rootAst) << std::endl;
+    auto *tagetFunc = GetTargetFunc(context, rootAst);
     InsertStatementInFunctionBody(context, tagetFunc);
-    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, g_impl->ProgramAst(context, program)) << std::endl;
+    std::cout << g_impl->AstNodeDumpEtsSrcConst(context, rootAst) << std::endl;
 
-    g_impl->AstNodeRecheck(context, g_impl->ProgramAst(context, program));
+    g_impl->AstNodeRecheck(context, rootAst);
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

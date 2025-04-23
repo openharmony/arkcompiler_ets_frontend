@@ -1068,7 +1068,12 @@ ir::ETSImportDeclaration *ETSParser::ParseImportPathBuildImport(ArenaVector<ir::
     auto *importPathStringLiteral = AllocNode<ir::StringLiteral>(pathToResolve);
     importPathStringLiteral->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
-    auto *const importDeclaration = BuildImportDeclaration(importKind, std::move(specifiers), importPathStringLiteral);
+    auto importFlags = (GetContext().Status() & parser::ParserStatus::IN_DEFAULT_IMPORTS) != 0U
+                           ? util::ImportFlags::DEFAULT_IMPORT
+                           : util::ImportFlags::NONE;
+    auto *const importDeclaration =
+        BuildImportDeclaration(importKind, std::move(specifiers), importPathStringLiteral,
+                               const_cast<parser::Program *>(GetContext().GetProgram()), importFlags);
     importDeclaration->SetRange({startLoc, importPathStringLiteral->End()});
     ConsumeSemicolon(importDeclaration);
     return importDeclaration;
@@ -1076,12 +1081,12 @@ ir::ETSImportDeclaration *ETSParser::ParseImportPathBuildImport(ArenaVector<ir::
 
 ir::ETSImportDeclaration *ETSParser::BuildImportDeclaration(ir::ImportKinds importKind,
                                                             ArenaVector<ir::AstNode *> &&specifiers,
-                                                            ir::StringLiteral *pathToResolve)
+                                                            ir::StringLiteral *pathToResolve, parser::Program *program,
+                                                            util::ImportFlags importFlag)
 {
-    ES2PANDA_ASSERT(GetProgram() == GetContext().GetProgram());
-    return AllocNode<ir::ETSImportDeclaration>(pathToResolve,
-                                               importPathManager_->GatherImportMetadata(GetContext(), pathToResolve),
-                                               std::move(specifiers), importKind);
+    return AllocNode<ir::ETSImportDeclaration>(
+        pathToResolve, importPathManager_->GatherImportMetadata(program, importFlag, pathToResolve),
+        std::move(specifiers), importKind);
 }
 
 lexer::LexerPosition ETSParser::HandleJsDocLikeComments()
