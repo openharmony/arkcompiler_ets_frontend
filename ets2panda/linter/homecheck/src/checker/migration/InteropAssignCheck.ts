@@ -13,65 +13,37 @@
  * limitations under the License.
  */
 
-import { Type, ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, DVFGBuilder, ArkFile, ArkNewExpr, CallGraph, CallGraphBuilder, ArkParameterRef, ArkInstanceFieldRef, ArkField, ArkInstanceInvokeExpr, ClassSignature, FunctionType, AnyType, MethodSignature, ClassType, ArkStaticInvokeExpr, AbstractInvokeExpr } from "arkanalyzer/lib";
+import { Type, ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, CallGraph, ArkParameterRef, ArkInstanceFieldRef, FunctionType, ClassType } from "arkanalyzer/lib";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherCallback } from "../../Index";
 import { IssueReport } from "../../model/Defects";
-import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
-import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper, DVFGHelper } from './Utils';
-import { InteropRuleInfo, findInteropRule } from './InteropRuleInfo';
+import { DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
+import { CALL_DEPTH_LIMIT, DVFGHelper, GlobalCallGraphHelper } from './Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 
 
-const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropBackwardDFACheck');
+const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropAssignCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: ''
+    description: 'should not pass or assign object created in 1.2 to value of static Object type'
 };
 
-const REFLECT_API: Map<string, number> = new Map([
-    ['apply', 0],
-    ['construct', 0],
-    ['defineProperty', 0],
-    ['deleteProperty', 0],
-    ['get', 0],
-    ['getOwnPropertyDescriptor', 0],
-    ['getPrototypeOf', 0],
-    ['has', 0],
-    ['isExtensible', 0],
-    ['ownKeys', 0],
-    ['preventExtensions', 0],
-    ['set', 0],
-    ['setPrototypeOf', 0],
-]);
-
-const OBJECT_API: Map<string, number> = new Map([
-    ['getOwnPropertyDescriptor', 0],
-    ['getOwnPropertyDescriptors', 0],
-    ['getOwnPropertyNames', 0],
-    ['isExtensible', 0],
-    ['isFrozen', 0],
-    ['isSealed', 0],
-    ['keys', 0],
-    ['setPrototypeOf', 0],
-    ['values', 0],
-    ['assign', 1],
-    ['entries', 0],
-]);
+const RULE_ID = 'interop-pass-or-assign-to-static-Object-type';
 
 class ObjDefInfo {
     objDef: Stmt;
     objType: Type;
 }
 
-export class InteropBackwardDFACheck implements BaseChecker {
+export class InteropAssignCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
     public rule: Rule;
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
     private cg: CallGraph;
+
 
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
@@ -100,77 +72,47 @@ export class InteropBackwardDFACheck implements BaseChecker {
         }
     }
 
-    private processArkMethod(target: ArkMethod, scene: Scene) {
-        const currentLang = target.getLanguage();
-        if (currentLang === Language.UNKNOWN) {
-            return logger.warn(`cannot find the language for method: ${target.getSignature()}`);
+    public processArkMethod(target: ArkMethod, scene: Scene) {
+        const assigns: Stmt[] = [];
+        if (target.getLanguage() === Language.ARKTS1_2) {
+            assigns.push(...this.checkObjectParams(target));
+        } else if (target.getLanguage() === Language.ARKTS1_1) {
+            assigns.push(...this.checkAssignToObjectField(target, scene));
+        } else {
+            // Is this ok?
+            return;
         }
-        const stmts = target.getBody()?.getCfg().getStmts() ?? [];
-        for (const stmt of stmts) {
-            const invoke = stmt.getInvokeExpr();
-            let isReflect = false;
-            let paramIdx = -1;
-            if (invoke && invoke instanceof ArkInstanceInvokeExpr) {
-                if (invoke.getBase().getName() === 'Reflect') {
-                    isReflect = true;
-                    paramIdx = REFLECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
+        assigns.forEach(assign => {
+            let result: ObjDefInfo[] = [];
+            let checkAll = { value: true };
+            let visited: Set<Stmt> = new Set();
+            this.checkFromStmt(assign, scene, result, checkAll, visited);
+            result.forEach(objDefInfo => {
+                const typeDefLang = this.getTypeDefinedLang(objDefInfo, scene);
+                if (typeDefLang === Language.ARKTS1_2) {
+                    return;
                 }
-            }
-            if (invoke && invoke instanceof ArkStaticInvokeExpr) {
-                const methodSig = invoke.getMethodSignature();
-                const classSig = methodSig.getDeclaringClassSignature();
-                if (classSig.getClassName() === 'ObjectConstructor' || classSig.getClassName() === 'Object') {
-                    paramIdx = OBJECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
+                let line;
+                let column;
+                if (assign instanceof ArkAssignStmt && assign.getRightOp() instanceof ArkParameterRef) {
+                    line = objDefInfo.objDef.getOriginPositionInfo().getLineNo();
+                    column = objDefInfo.objDef.getOriginPositionInfo().getColNo();
+                } else {
+                    line = assign.getOriginPositionInfo().getLineNo();
+                    column = assign.getOriginPositionInfo().getColNo();
                 }
+                const problem = 'Interop';
+                const desc = `${this.metaData.description}: ${this.generateDesc(objDefInfo.objDef)} (${RULE_ID})`;
+                const severity = this.metaData.severity;
+                const ruleId = this.rule.ruleId;
+                const filePath = target.getDeclaringArkFile()?.getFilePath() ?? '';
+                const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
+                this.issues.push(new IssueReport(defeats, undefined));
+            });
+            if (!checkAll) {
+                // report issue
             }
-            if (paramIdx === -1) {
-                continue;
-            }
-            DVFGHelper.buildSingleDVFG(target, scene);
-
-            const objDefs: Stmt[] = [];
-            const getKey = (v: Value) => {
-                return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v
-            };
-            const param: Value | FieldSignature = getKey((invoke as AbstractInvokeExpr).getArg(paramIdx));
-            Array.from(DVFGHelper.getOrNewDVFGNode(stmt, scene).getIncomingEdge())
-                .map(e => (e.getSrcNode() as DVFGNode).getStmt())
-                .filter(s => {
-                    return s instanceof ArkAssignStmt && param === getKey(s.getLeftOp());
-                }).forEach(def => {
-                    objDefs.push(def);
-                });
-
-            for (const objDef of objDefs) {
-                let result: ObjDefInfo[] = [];
-                let checkAll = { value: true };
-                let visited: Set<Stmt> = new Set();
-                this.checkFromStmt(objDef, scene, result, checkAll, visited);
-                result.forEach(objDefInfo => {
-                    const typeDefLang = this.getTypeDefinedLang(objDefInfo, scene);
-                    if (typeDefLang === Language.UNKNOWN) {
-                        return logger.warn(`cannot find the language for def: ${objDefInfo.objDef.toString()}`);
-                    }
-                    const interopRule = findInteropRule(currentLang, typeDefLang, isReflect);
-                    if (!interopRule) {
-                        return;
-                    }
-                    const line = stmt.getOriginPositionInfo().getLineNo();
-                    const column = stmt.getOriginPositionInfo().getColNo();
-                    const problem = 'Interop';
-                    const desc = `${interopRule.description}: ${this.generateDesc(objDefInfo.objDef)} (${interopRule.ruleId})`;
-                    const severity = interopRule.severity;
-                    const ruleId = this.rule.ruleId;
-                    const filePath = target.getDeclaringArkFile()?.getFilePath() ?? '';
-                    const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
-                    this.issues.push(new IssueReport(defeats, undefined));
-                });
-                if (!checkAll) {
-                    // report issue
-                }
-            }
-
-        }
+        });
     }
 
     private generateDesc(objDef: Stmt): string {
@@ -185,6 +127,50 @@ export class InteropBackwardDFACheck implements BaseChecker {
             objDesc = `using object defined at line ${line}, column ${col} in file '${fileName}'`;
         }
         return objDesc;
+    }
+
+    private checkObjectParams(method: ArkMethod): Stmt[] {
+        const res: Stmt[] = [];
+        const stmts = method.getBody()?.getCfg().getStmts() ?? [];
+        for (const stmt of stmts) {
+            if (stmt instanceof ArkAssignStmt && stmt.getRightOp() instanceof ArkParameterRef) {
+                if (this.isObjectTy((stmt.getRightOp() as ArkParameterRef).getType())) {
+                    res.push(stmt);
+                }
+            } else {
+                break;
+            }
+        }
+        return res;
+    }
+
+    private checkAssignToObjectField(method: ArkMethod, scene: Scene) {
+        const res: Stmt[] = [];
+        const stmts = method.getBody()?.getCfg().getStmts() ?? [];
+        for (const stmt of stmts) {
+            if (!(stmt instanceof ArkAssignStmt)) {
+                continue;
+            }
+            const leftOp = stmt.getLeftOp();
+            if (!(leftOp instanceof ArkInstanceFieldRef)) {
+                continue;
+            }
+            if (!this.isObjectTy(leftOp.getType())) {
+                continue;
+            }
+            const baseTy = leftOp.getBase().getType();
+            if (baseTy instanceof ClassType) {
+                const klass = scene.getClass(baseTy.getClassSignature());
+                if (!klass) {
+                    logger.warn(`check field of type 'Object' failed: cannot find arkclass by sig ${baseTy.getClassSignature().toString()}`);
+                } else if (klass.getLanguage() === Language.ARKTS1_2) {
+                    res.push(stmt);
+                }
+            } else {
+                logger.warn(`check field of type 'Object' failed: unexpected base type ${baseTy.toString()}`);
+            }
+        }
+        return res;
     }
 
     private checkFromStmt(stmt: Stmt, scene: Scene, res: ObjDefInfo[], checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0) {
@@ -203,8 +189,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
             visited.add(currentStmt);
             if (stmt instanceof ArkAssignStmt) {
                 const rightOpTy = stmt.getRightOp().getType();
-                const isObjectTy = (ty: Type) => { return ty instanceof ClassType && ty.getClassSignature().getClassName() === 'Object' }
-                if (!isObjectTy(rightOpTy) && rightOpTy.toString() !== 'ESObject' && !(rightOpTy instanceof AnyType)) {
+                if (!this.isObjectTy(rightOpTy)) {
                     res.push({ objDef: stmt, objType: rightOpTy });
                     continue;
                 }
@@ -257,6 +242,10 @@ export class InteropBackwardDFACheck implements BaseChecker {
         });
     }
 
+    private isObjectTy(ty: Type) {
+        return ty instanceof ClassType && ty.getClassSignature().getClassName() === 'Object';
+    }
+
     private getTypeDefinedLang(objDefInfo: ObjDefInfo, scene: Scene): Language {
         const def = objDefInfo.objDef;
         const type = objDefInfo.objType;
@@ -275,4 +264,4 @@ export class InteropBackwardDFACheck implements BaseChecker {
             return Language.UNKNOWN;
         }
     }
-}
+}  

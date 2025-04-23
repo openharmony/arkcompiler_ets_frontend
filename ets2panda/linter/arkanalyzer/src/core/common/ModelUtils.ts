@@ -592,10 +592,11 @@ export function findArkExport(exportInfo: ExportInfo | undefined): ArkExport | n
     }
     if (!exportInfo.getFrom()) {
         const name = exportInfo.getOriginName();
+        const defaultClass = exportInfo.getDeclaringArkNamespace()?.getDefaultClass() ?? exportInfo.getDeclaringArkFile().getDefaultClass();
         if (exportInfo.getExportClauseType() === ExportType.LOCAL) {
-            arkExport = exportInfo.getDeclaringArkFile().getDefaultClass().getDefaultArkMethod()?.getBody()?.getLocals().get(name) || null;
+            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getLocals().get(name) || null;
         } else if (exportInfo.getExportClauseType() === ExportType.TYPE) {
-            arkExport = exportInfo.getDeclaringArkFile().getDefaultClass().getDefaultArkMethod()?.getBody()?.getAliasTypeByName(name) || null;
+            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getAliasTypeByName(name) || null;
         } else {
             arkExport = findArkExportInFile(name, exportInfo.getDeclaringArkFile());
         }
@@ -605,7 +606,9 @@ export function findArkExport(exportInfo: ExportInfo | undefined): ArkExport | n
             arkExport = result.getArkExport() || null;
         }
     }
-    if (!arkExport) {
+    if (arkExport) {
+        exportInfo.setArkExport(arkExport);
+    } else {
         logger.warn(`${exportInfo.getExportClauseName()} get arkExport fail from ${exportInfo.getFrom()} at
                 ${exportInfo.getDeclaringArkFile().getFileSignature().toString()}`);
     }

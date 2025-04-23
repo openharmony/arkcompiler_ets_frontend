@@ -23,6 +23,9 @@ import { NoMethodOverridingFieldCheck } from '../../checker/migration/NoMethodOv
 import { CustomBuilderCheck } from '../../checker/migration/CustomBuilderCheck';
 import { InteropBackwardDFACheck } from '../../checker/migration/InteropBackwardDFACheck';
 import { InteropBoxedTypeCheck } from "../../checker/migration/InteropBoxedTypeCheck";
+import { InteropObjectLiteralCheck } from "../../checker/migration/InteropDynamicObjectLiteralsCheck";
+import { InteropAssignCheck } from '../../checker/migration/InteropAssignCheck';
+import { InteropJSModifyPropertyCheck } from '../../checker/migration/InteropJSModifyPropertyCheck';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
@@ -34,11 +37,14 @@ export const fileRules = {
     "@migration/arkui-custombuiler": CustomBuilderCheck,
     "@migration/no-method-overriding-field-check": NoMethodOverridingFieldCheck,
     "@migration/interop-typeof-boxed-types": InteropBoxedTypeCheck,
+    "@migration/interop-dynamic-object-literals": InteropObjectLiteralCheck,
 };
 
 export const projectRules = {
     "@migration/arkts-obj-literal-generate-class-instance": ObjectLiteralCheck,
     "@migration/interop-backward-dfa": InteropBackwardDFACheck,
+    "@migration/interop-assign": InteropAssignCheck,
+    "@migration/interop-js-modify-property": InteropJSModifyPropertyCheck,
 };
 
 // 新增文件级的checker，需要在此处注册

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import { ArkBaseModel, ModifierType } from '../ArkBaseModel';
 import { IRUtils } from '../../common/IRUtils';
 import { ArkClass } from '../ArkClass';
 import { buildNormalArkClassFromArkFile } from './ArkClassBuilder';
+import { ArkNamespace } from '../ArkNamespace';
 
 export { buildExportInfo, buildExportAssignment, buildExportDeclaration };
 
@@ -145,21 +146,23 @@ function buildExportAssignment(node: ts.ExportAssignment, sourceFile: ts.SourceF
  * @param sourceFile
  * @param arkFile
  */
-export function buildExportVariableStatement(node: ts.VariableStatement, sourceFile: ts.SourceFile, arkFile: ArkFile): ExportInfo[] {
+export function buildExportVariableStatement(node: ts.VariableStatement, sourceFile: ts.SourceFile, arkFile: ArkFile, namespace?: ArkNamespace): ExportInfo[] {
     let exportInfos: ExportInfo[] = [];
     const originTsPosition = LineColPosition.buildFromNode(node, sourceFile);
     const modifiers = node.modifiers ? buildModifiers(node) : 0;
     const tsSourceCode = node.getText(sourceFile);
     node.declarationList.declarations.forEach(dec => {
-        const exportInfo = new ExportInfo.Builder()
+        const exportInfoBuilder = new ExportInfo.Builder()
             .exportClauseName(dec.name.getText(sourceFile))
             .exportClauseType(ExportType.LOCAL)
             .modifiers(modifiers)
             .tsSourceCode(tsSourceCode)
             .originTsPosition(originTsPosition)
             .declaringArkFile(arkFile)
-            .build();
-        exportInfos.push(exportInfo);
+        if (namespace) {
+            exportInfoBuilder.declaringArkNamespace(namespace);
+        }
+        exportInfos.push(exportInfoBuilder.build());
     })
     return exportInfos;
 }

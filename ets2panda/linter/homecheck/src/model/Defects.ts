@@ -21,6 +21,7 @@ export const engine = {
 export class Defects {
     reportLine: number;
     reportColumn: number;
+    problem: string = '';
     description: string = '';
     severity: number = -1;  // 0:info, 1:warning, 2:error
     ruleId: string = '@perforce/<checker-name>';
@@ -33,10 +34,11 @@ export class Defects {
     showIgnoreIcon: boolean = true;
     engineName: string = engine.engineName;
 
-    constructor(reportLine: number, reportColumn: number, endColumn: number, description: string, severity: number, ruleId: string,
+    constructor(reportLine: number, reportColumn: number, endColumn: number, problem: string, description: string, severity: number, ruleId: string,
         filePath: string, ruleDocPath: string, disabled: boolean, checked: boolean, fixable: boolean, showIgnoreIcon: boolean = true) {
         this.reportLine = reportLine;
         this.reportColumn = reportColumn;
+        this.problem = problem;
         this.description = description;
         this.severity = severity;
         this.ruleId = ruleId;

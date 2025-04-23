@@ -13,22 +13,25 @@
  * limitations under the License.
  */
 
-import { ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, DVFGBuilder, ArkInstanceOfExpr, ArkNewExpr, CallGraph, CallGraphBuilder, ArkParameterRef, ArkInstanceFieldRef } from "arkanalyzer/lib";
+import { ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, DVFGBuilder, ArkInstanceOfExpr, ArkNewExpr, CallGraph, CallGraphBuilder, ArkParameterRef, ArkInstanceFieldRef, ClassType } from "arkanalyzer/lib";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherCallback } from "../../Index";
+import { Rule, Defects, MatcherCallback, FileMatcher, MatcherTypes } from "../../Index";
 import { IssueReport } from "../../model/Defects";
 import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
-import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper } from './Utils';
+import { CALL_DEPTH_LIMIT, getLanguageStr, getLineAndColumn, GlobalCallGraphHelper } from './Utils';
+import { ClassCategory } from "arkanalyzer/lib/core/model/ArkClass";
+import { Language } from "arkanalyzer/lib/core/model/ArkFile";
+import { WarnInfo } from "../../utils/common/Utils";
 
-const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObjectLiteralCheck');
+const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'Object literal shall generate instance of a specific class'
+    description: '(interop-dynamic-object-literals)'
 };
 
-export class ObjectLiteralCheck implements BaseChecker {
+export class InteropObjectLiteralCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
     public rule: Rule;
     public defects: Defects[] = [];
@@ -53,6 +56,9 @@ export class ObjectLiteralCheck implements BaseChecker {
         this.dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
 
         for (let arkFile of scene.getFiles()) {
+            if (arkFile.getLanguage() !== Language.ARKTS1_2) {
+                continue;
+            }
             for (let clazz of arkFile.getClasses()) {
                 for (let mtd of clazz.getMethods()) {
                     this.processArkMethod(mtd, scene);
@@ -87,9 +93,19 @@ export class ObjectLiteralCheck implements BaseChecker {
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
             this.checkFromStmt(stmt, scene, result, checkAll, visited);
-            result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
-            if (!checkAll.value) {
-                this.addIssueReport(stmt, rightOp);
+            // 对于待检查的instanceof语句，其检查对象存在用字面量赋值的情况，需要判断对象声明时的类型注解的来源，满足interop场景时需在此处告警
+            if (result.length > 0) {
+                const opType = rightOp.getOp().getType();
+                if (!(opType instanceof ClassType)) {
+                    continue;
+                }
+                const opTypeClass = scene.getClass(opType.getClassSignature());
+                if (opTypeClass === null || opTypeClass.getCategory() === ClassCategory.OBJECT) {
+                    continue;
+                }
+                if (opTypeClass.getLanguage() === Language.TYPESCRIPT || opTypeClass.getLanguage() === Language.ARKTS1_1) {
+                    this.addIssueReport(stmt, rightOp, result, opTypeClass.getLanguage());
+                }
             }
         }
 
@@ -151,10 +167,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             return false;
         }
         const classSig = rightOp.getClassType().getClassSignature();
-        if (scene.getClass(classSig)?.isAnonymousClass()) {
-            return true;
-        }
-        return false;
+        return scene.getClass(classSig)?.getCategory() === ClassCategory.OBJECT;
     }
 
     private isFromParameter(stmt: Stmt): ArkParameterRef | undefined {
@@ -182,28 +195,17 @@ export class ObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value) {
+    private addIssueReport(stmt: Stmt, operand: Value, result: Stmt[], targetLanguage: Language) {
         const severity = this.rule.alert ?? this.metaData.severity;
-        const warnInfo = this.getLineAndColumn(stmt, operand);
-        const problem = 'ObjectLiteral';
-        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        const warnInfo = getLineAndColumn(stmt, operand);
+        let targetLan = getLanguageStr(targetLanguage);
+
+        const resPos: number[] = [];
+        result.forEach(stmt => resPos.push(stmt.getOriginPositionInfo().getLineNo()));
+        const problem = 'Interop';
+        const desc = `Operator in instanceof expr is declared by class from ${targetLan} and has been assign by object literal in Lines ${resPos.join(', ')} ${this.metaData.description}`;
         let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
             severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
-    }
-
-    private getLineAndColumn(stmt: Stmt, operand: Value) {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
-        const originPosition = stmt.getOperandOriginalPosition(operand);
-        if (arkFile && originPosition) {
-            const originPath = arkFile.getFilePath();
-            const line = originPosition.getFirstLine();
-            const startCol = originPosition.getFirstCol();
-            const endCol = startCol;
-            return { line, startCol, endCol, filePath: originPath };
-        } else {
-            logger.debug('ArkFile is null.');
-        }
-        return { line: -1, startCol: -1, endCol: -1, filePath: '' };
     }
 }

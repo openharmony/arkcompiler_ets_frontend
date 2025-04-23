@@ -94,6 +94,15 @@ export class IRInference {
                 }
             }
         });
+        file.getNamespaces().forEach(namespace => {
+            namespace.getExportInfos().forEach(exportInfo => {
+                if (exportInfo.getArkExport() === undefined) {
+                    let arkExport = findArkExport(exportInfo);
+                    exportInfo.setArkExport(arkExport);
+                    arkExport!== null ? exportInfo.setExportClauseType(arkExport.getExportType()) : true;
+                }
+            });
+        });
     }
 
     private static inferImportInfos(file: ArkFile): void {
@@ -600,8 +609,8 @@ export class IRInference {
         const fieldName = ref.getFieldName().replace(/[\"|\']/g, '');
         const propertyAndType = TypeInference.inferFieldType(baseType, fieldName, arkClass);
         let propertyType = propertyAndType?.[1];
-        if (!propertyType) {
-            const newType = TypeInference.inferUnclearRefName(fieldName, arkClass);
+        if (!propertyType || propertyType instanceof UnknownType) {
+            const newType = TypeInference.inferBaseType(fieldName, arkClass);
             if (newType) {
                 propertyType = newType;
             }

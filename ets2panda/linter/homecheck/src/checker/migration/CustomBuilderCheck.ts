@@ -163,9 +163,10 @@ export class CustomBuilderCheck implements BaseChecker {
     private addIssueReport(stmt: Stmt, operand: Value): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
+        const problem = 'CustomBuilderTypeChanged';
         const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, this.rule.ruleId,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
+            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         const fixPosition: FixPosition = {
             startLine: warnInfo.line,
             startCol: warnInfo.startCol,
