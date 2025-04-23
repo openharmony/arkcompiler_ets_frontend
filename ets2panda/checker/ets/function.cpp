@@ -1469,6 +1469,16 @@ OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *oth
         return OverrideErrorCode::OVERRIDDEN_FINAL;
     }
 
+    auto *ownerNode = signature->Owner()->GetDeclNode();
+    auto *superNode = other->Owner()->GetDeclNode();
+    bool bothRealClasses = (ownerNode != nullptr) && ownerNode->IsClassDefinition() && (superNode != nullptr) &&
+                           superNode->IsClassDefinition() && signature->Owner()->HasObjectFlag(ETSObjectFlags::CLASS) &&
+                           other->Owner()->HasObjectFlag(ETSObjectFlags::CLASS);
+    if (bothRealClasses && signature->HasSignatureFlag(SignatureFlags::ABSTRACT) &&
+        !other->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+        return OverrideErrorCode::ABSTRACT_OVERRIDES_CONCRETE;
+    }
+
     if (!other->ReturnType()->IsETSTypeParameter()) {
         if (!IsReturnTypeSubstitutable(signature, other)) {
             return OverrideErrorCode::INCOMPATIBLE_RETURN;
@@ -1538,6 +1548,10 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
             reason =
                 "overriding type parameter's conatraints are not compatible with type parameter constraints of the "
                 "overridden method.";
+            break;
+        }
+        case OverrideErrorCode::ABSTRACT_OVERRIDES_CONCRETE: {
+            reason = "an abstract method cannot override a non-abstract instance method.";
             break;
         }
         default: {
