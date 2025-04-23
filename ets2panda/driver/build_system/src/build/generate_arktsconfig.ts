@@ -34,8 +34,7 @@ import {
 } from '../types';
 import {
   LANGUAGE_VERSION,
-  PANDA_SDK_PATH_FROM_SDK,
-  SYSTEM_SDK_PATH_FROM_SDK
+  SYSTEM_SDK_PATH_FROM_SDK,
 } from '../pre_define';
 
 interface DynamicPathItem {
@@ -60,6 +59,7 @@ export class ArkTSConfigGenerator {
   private stdlibStdPath: string;
   private stdlibEscompatPath: string;
   private systemSdkPath: string;
+  private externalApiPaths: string[];
 
   private moduleInfos: Map<string, ModuleInfo>;
   private pathSection: Record<string, string[]>;
@@ -72,6 +72,7 @@ export class ArkTSConfigGenerator {
     this.stdlibStdPath = path.resolve(pandaStdlibPath, 'std');
     this.stdlibEscompatPath = path.resolve(pandaStdlibPath, 'escompat');
     this.systemSdkPath = path.resolve(buildConfig.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
+    this.externalApiPaths = buildConfig.externalApiPaths;
 
     this.moduleInfos = moduleInfos;
     this.pathSection = {};
@@ -118,14 +119,21 @@ export class ArkTSConfigGenerator {
       }
     }
 
-    let apiPath: string = path.resolve(this.systemSdkPath, 'api');
-    fs.existsSync(apiPath) ? traverse(apiPath) : this.logger.printWarn(`sdk path ${apiPath} not exist.`);
+    if (this.externalApiPaths && this.externalApiPaths.length !== 0) {
+      this.externalApiPaths.forEach((sdkPath: string) => {
+        fs.existsSync(sdkPath) ? traverse(sdkPath) : this.logger.printWarn(`sdk path ${sdkPath} not exist.`);
+      });
+    } else {
+      // Search openharmony sdk only, we keep them for ci compatibility.
+      let apiPath: string = path.resolve(this.systemSdkPath, 'api');
+      fs.existsSync(apiPath) ? traverse(apiPath) : this.logger.printWarn(`sdk path ${apiPath} not exist.`);
 
-    let arktsPath: string = path.resolve(this.systemSdkPath, 'arkts');
-    fs.existsSync(arktsPath) ? traverse(arktsPath) : this.logger.printWarn(`sdk path ${arktsPath} not exist.`);
+      let arktsPath: string = path.resolve(this.systemSdkPath, 'arkts');
+      fs.existsSync(arktsPath) ? traverse(arktsPath) : this.logger.printWarn(`sdk path ${arktsPath} not exist.`);
 
-    let kitsPath: string = path.resolve(this.systemSdkPath, 'kits');
-    fs.existsSync(kitsPath) ? traverse(kitsPath) : this.logger.printWarn(`sdk path ${kitsPath} not exist.`);
+      let kitsPath: string = path.resolve(this.systemSdkPath, 'kits');
+      fs.existsSync(kitsPath) ? traverse(kitsPath) : this.logger.printWarn(`sdk path ${kitsPath} not exist.`);
+    }
   }
 
   private getPathSection(): Record<string, string[]> {
