@@ -19,13 +19,13 @@ import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherCallback } from "../../Index";
 import { IssueReport } from "../../model/Defects";
 import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
-import { CALL_DEPTH_LIMIT } from './Utils';
+import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper } from './Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'Object literal shall generate instance of a specific class.'
+    description: 'Object literal shall generate instance of a specific class'
 };
 
 export class ObjectLiteralCheck implements BaseChecker {
@@ -47,11 +47,7 @@ export class ObjectLiteralCheck implements BaseChecker {
     }
 
     public check = (scene: Scene) => {
-        this.cg = new CallGraph(scene);
-        let cgBuilder = new CallGraphBuilder(this.cg, scene);
-        cgBuilder.buildDirectCallGraphForScene();
-        let entries = this.cg.getEntries().map(funcId => this.cg.getArkMethodByFuncID(funcId)!.getSignature());
-        cgBuilder.buildClassHierarchyCallGraph(entries, true);
+        this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
         this.dvfg = new DVFG(this.cg);
         this.dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
@@ -189,7 +185,8 @@ export class ObjectLiteralCheck implements BaseChecker {
     private addIssueReport(stmt: Stmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
+        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, this.rule.ruleId,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }

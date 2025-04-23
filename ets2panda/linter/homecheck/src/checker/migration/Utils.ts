@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { CallGraph, Scene } from 'arkanalyzer/lib';
+import { CallGraph, CallGraphBuilder, Scene } from 'arkanalyzer/lib';
 
 
 export const CALL_DEPTH_LIMIT = 2;
@@ -28,6 +28,20 @@ export class CallGraphHelper {
     }
 }
 
+export class GlobalCallGraphHelper {
+    private static cgInstance: CallGraph | null = null;
+
+    public static getCGInstance(scene: Scene): CallGraph {
+        if (!this.cgInstance) {
+            this.cgInstance = new CallGraph(scene);
+            let cgBuilder = new CallGraphBuilder(this.cgInstance, scene);
+            cgBuilder.buildDirectCallGraphForScene();
+            let entries = this.cgInstance.getEntries().map(funcId => this.cgInstance!.getArkMethodByFuncID(funcId)!.getSignature());
+            cgBuilder.buildClassHierarchyCallGraph(entries);
+        }
+        return this.cgInstance;
+    }
+}
 
 export const CALLBACK_METHOD_NAME: string[] = [
     "onClick", // 点击事件，当用户点击组件时触发

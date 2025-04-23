@@ -25,14 +25,14 @@ const ARKTS_RULE_ID = '@migration/arkts-instance-method-bind-this'
 const arktsMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'Instance method shall bind the \'this\' by default.'
+    description: 'Instance method shall bind the \'this\' by default'
 };
 
 const ARKUI_RULE_ID = '@migration/arkui-buildparam-passing';
 const arkuiMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'Instance method shall bind the \'this\' by default.'
+    description: 'Instance method shall bind the \'this\' by default'
 };
 
 export class ThisBindCheck implements BaseChecker {
@@ -187,7 +187,8 @@ export class ThisBindCheck implements BaseChecker {
     private reportArkTSIssue(stmt: ArkAssignStmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, ARKTS_RULE_ID,
+        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, ARKTS_RULE_ID,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
@@ -195,7 +196,8 @@ export class ThisBindCheck implements BaseChecker {
     private reportArkUIIssue(stmt: ArkAssignStmt, operand: Value) {
         const severity = this.rule.alert ?? arkuiMetaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, arkuiMetaData.description, severity, ARKUI_RULE_ID,
+        const desc = `${arkuiMetaData.description} (${ARKUI_RULE_ID.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, ARKUI_RULE_ID,
             warnInfo.filePath, arkuiMetaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }

@@ -54,3 +54,90 @@ interface ObjectConstructor {
 }
 
 declare var Object: ObjectConstructor;
+
+interface String {
+    toString(): string;
+    charAt(pos: number): string;
+    charCodeAt(index: number): number;
+    concat(...strings: string[]): string;
+    indexOf(searchString: string, position?: number): number;
+    lastIndexOf(searchString: string, position?: number): number;
+    localeCompare(that: string): number;
+    match(regexp: string | RegExp): RegExpMatchArray | null;
+    replace(searchValue: string | RegExp, replaceValue: string): string;
+    replace(searchValue: string | RegExp, replacer: (substring: string, ...args: any[]) => string): string;
+    search(regexp: string | RegExp): number;
+    slice(start?: number, end?: number): string;
+    split(separator: string | RegExp, limit?: number): string[];
+    substring(start: number, end?: number): string;
+    toLowerCase(): string;
+    toLocaleLowerCase(locales?: string | string[]): string;
+    toUpperCase(): string;
+    toLocaleUpperCase(locales?: string | string[]): string;
+    trim(): string;
+    readonly length: number;
+    substr(from: number, length?: number): string;
+    valueOf(): string;
+    readonly [index: number]: string;
+}
+
+interface StringConstructor {
+    new (value?: any): String;
+    (value?: any): string;
+    readonly prototype: String;
+    fromCharCode(...codes: number[]): string;
+}
+
+declare var String: StringConstructor;
+
+interface Boolean {
+    valueOf(): boolean;
+}
+
+interface BooleanConstructor {
+    new (value?: any): Boolean;
+    <T>(value?: T): boolean;
+    readonly prototype: Boolean;
+}
+
+declare var Boolean: BooleanConstructor;
+
+interface Number {
+    toString(radix?: number): string;
+    toFixed(fractionDigits?: number): string;
+    toExponential(fractionDigits?: number): string;
+    toPrecision(precision?: number): string;
+    valueOf(): number;
+}
+
+interface NumberConstructor {
+    new (value?: any): Number;
+    (value?: any): number;
+    readonly prototype: Number;
+
+    /** The largest number that can be represented in JavaScript. Equal to approximately 1.79E+308. */
+    readonly MAX_VALUE: number;
+
+    /** The closest number to zero that can be represented in JavaScript. Equal to approximately 5.00E-324. */
+    readonly MIN_VALUE: number;
+
+    /**
+     * A value that is not a number.
+     * In equality comparisons, NaN does not equal any value, including itself. To test whether a value is equivalent to NaN, use the isNaN function.
+     */
+    readonly NaN: number;
+
+    /**
+     * A value that is less than the largest negative number that can be represented in JavaScript.
+     * JavaScript displays NEGATIVE_INFINITY values as -infinity.
+     */
+    readonly NEGATIVE_INFINITY: number;
+
+    /**
+     * A value greater than the largest number that can be represented in JavaScript.
+     * JavaScript displays POSITIVE_INFINITY values as infinity.
+     */
+    readonly POSITIVE_INFINITY: number;
+}
+
+declare var Number: NumberConstructor;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,7 @@ export class Local implements Value, ArkExport {
 
     public inferType(arkMethod: ArkMethod): Local {
         if (TypeInference.isUnclearType(this.type)) {
-            const type = TypeInference.inferUnclearRefName(this.name, arkMethod.getDeclaringArkClass()) ??
+            const type = TypeInference.inferBaseType(this.name, arkMethod.getDeclaringArkClass()) ??
                 ModelUtils.findDeclaredLocal(this, arkMethod)?.getType();
             if (type) {
                 this.type = type;

@@ -13,12 +13,49 @@
  * limitations under the License.
  */
 
-import { ts } from '..';
+import { ArkFile, ts } from '..';
 import { ETS_COMPILER_OPTIONS } from '../core/common/EtsConst';
+import * as crypto from 'crypto';
+
+const sourceFileCache: Map<string, ts.SourceFile> = new Map();
 
 export class AstTreeUtils {
+    /**
+     * get source file from code segment
+     * @param fileName source file name
+     * @param code source code
+     * @returns ts.SourceFile
+     */
     public static getASTNode(fileName: string, code: string): ts.SourceFile {
-        const sourceFile = ts.createSourceFile(
+        const key = this.getKeyFromCode(code);
+        let sourceFile = sourceFileCache.get(key);
+        if (sourceFile) {
+            return sourceFile;
+        }
+        sourceFile = this.createSourceFile(fileName, code);
+        sourceFileCache.set(key, sourceFile);
+        return sourceFile;
+    }
+
+    /**
+     * get source file from ArkFile
+     * @param arkFile ArkFile
+     * @returns ts.SourceFile
+     */
+    public static getSourceFileFromArkFile(arkFile: ArkFile): ts.SourceFile {
+        const signature = arkFile.getFileSignature().toString();
+        const key = this.getKeyFromCode(signature);
+        let sourceFile = sourceFileCache.get(key);
+        if (sourceFile) {
+            return sourceFile;
+        }
+        sourceFile = this.createSourceFile(arkFile.getName(), arkFile.getCode());
+        sourceFileCache.set(key, sourceFile);
+        return sourceFile;
+    }
+
+    public static createSourceFile(fileName: string, code: string): ts.SourceFile {
+        return ts.createSourceFile(
             fileName,
             code,
             ts.ScriptTarget.Latest,
@@ -26,6 +63,14 @@ export class AstTreeUtils {
             undefined,
             ETS_COMPILER_OPTIONS
         );
-        return sourceFile;
+    }
+
+    /**
+     * convert source code to hash string
+     * @param code source code
+     * @returns string
+     */
+    private static getKeyFromCode(code: string): string {
+        return crypto.createHash('sha256').update(code).digest('hex');
     }
 }

@@ -59,9 +59,10 @@ function buildImportDeclarationNode(node: ts.ImportDeclaration, sourceFile: ts.S
     //just like: import fs from 'fs'
     if (node.importClause && node.importClause.name && ts.isIdentifier(node.importClause.name)) {
         let importClauseName = node.importClause.name.text;
+        const pos = LineColPosition.buildFromNode(node.importClause.name, sourceFile);
         let importType = 'Identifier';
         let importInfo = new ImportInfo();
-        importInfo.build(importClauseName, importType, importFrom, originTsPosition, modifiers);
+        importInfo.build(importClauseName, importType, importFrom, pos, modifiers);
         importInfo.setTsSourceCode(tsSourceCode);
         IRUtils.setComments(importInfo, node, sourceFile, arkFile.getScene().getOptions());
         importInfos.push(importInfo);
@@ -74,15 +75,16 @@ function buildImportDeclarationNode(node: ts.ImportDeclaration, sourceFile: ts.S
             node.importClause.namedBindings.elements.forEach((element) => {
                 if (element.name && ts.isIdentifier(element.name)) {
                     let importClauseName = element.name.text;
+                    const pos = LineColPosition.buildFromNode(element, sourceFile);
                     if (element.propertyName && ts.isIdentifier(element.propertyName)) {
                         let importInfo = new ImportInfo();
-                        importInfo.build(importClauseName, importType, importFrom, originTsPosition, modifiers, element.propertyName.text);
+                        importInfo.build(importClauseName, importType, importFrom, pos, modifiers, element.propertyName.text);
                         importInfo.setTsSourceCode(tsSourceCode);
                         IRUtils.setComments(importInfo, node, sourceFile, arkFile.getScene().getOptions());
                         importInfos.push(importInfo);
                     } else {
                         let importInfo = new ImportInfo();
-                        importInfo.build(importClauseName, importType, importFrom, originTsPosition, modifiers);
+                        importInfo.build(importClauseName, importType, importFrom, pos, modifiers);
                         importInfo.setTsSourceCode(tsSourceCode);
                         IRUtils.setComments(importInfo, node, sourceFile, arkFile.getScene().getOptions());
                         importInfos.push(importInfo);
@@ -99,7 +101,8 @@ function buildImportDeclarationNode(node: ts.ImportDeclaration, sourceFile: ts.S
             let importClauseName = node.importClause.namedBindings.name.text;
             let importInfo = new ImportInfo();
             let nameBeforeAs = '*';
-            importInfo.build(importClauseName, importType, importFrom, originTsPosition, modifiers, nameBeforeAs);
+            const pos = LineColPosition.buildFromNode(node.importClause.namedBindings.name, sourceFile);
+            importInfo.build(importClauseName, importType, importFrom, pos, modifiers, nameBeforeAs);
             importInfo.setTsSourceCode(tsSourceCode);
             IRUtils.setComments(importInfo, node, sourceFile, arkFile.getScene().getOptions());
             importInfos.push(importInfo);

@@ -13,20 +13,22 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, Scene, Local, Stmt, Type, ArkMethod, AliasType, AbstractInvokeExpr,
-    Value, ArkFile, AstTreeUtils, ts, FunctionType, ArkClass, ANONYMOUS_METHOD_PREFIX, ArkInvokeStmt } from "arkanalyzer";
+import {
+    ArkAssignStmt, Scene, Local, Stmt, Type, ArkMethod, AliasType, AbstractInvokeExpr,
+    Value, ArkFile, AstTreeUtils, ts, FunctionType, ArkClass, ANONYMOUS_METHOD_PREFIX, ArkInvokeStmt
+} from "arkanalyzer";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherTypes, MatcherCallback, MethodMatcher } from "../../Index";
 import { IssueReport } from "../../model/Defects";
-import {FixInfo, RuleFix} from "../../model/Fix";
+import { FixInfo, RuleFix } from "../../model/Fix";
 import { FixPosition, FixUtils } from "../../utils/common/FixUtils";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CustomBuilderCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'The CustomBuilder type parameter only accepts functions annotated with @Builder.'
+    description: 'The CustomBuilder type parameter only accepts functions annotated with @Builder'
 };
 
 export class CustomBuilderCheck implements BaseChecker {
@@ -161,7 +163,8 @@ export class CustomBuilderCheck implements BaseChecker {
     private addIssueReport(stmt: Stmt, operand: Value): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
+        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, this.rule.ruleId,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         const fixPosition: FixPosition = {
             startLine: warnInfo.line,
@@ -201,7 +204,7 @@ export class CustomBuilderCheck implements BaseChecker {
         ruleFix.range = range;
         const originalText = FixUtils.getSourceWithRange(sourceFile, range);
         if (originalText !== null) {
-            ruleFix.text =  this.generateReplaceText(sourceFile, originalText, fixPosition);
+            ruleFix.text = this.generateReplaceText(sourceFile, originalText, fixPosition);
         }
         return ruleFix;
     }
@@ -211,14 +214,14 @@ export class CustomBuilderCheck implements BaseChecker {
         if (allPositions === undefined) {
             return null;
         }
-        let res = { line: -1, col: -1};
+        let res = { line: -1, col: -1 };
         allPositions.forEach(position => {
             if (position.getLastLine() > res.line) {
-                res = { line: position.getLastLine(), col: position.getLastCol()};
+                res = { line: position.getLastLine(), col: position.getLastCol() };
                 return;
             }
             if (position.getLastLine() === res.line && position.getLastCol() > res.col) {
-                res = { line: position.getLastLine(), col: position.getLastCol()};
+                res = { line: position.getLastLine(), col: position.getLastCol() };
                 return;
             }
         });
