@@ -2546,12 +2546,12 @@ void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const arrayExpr, Type 
     }
 }
 
-void ETSChecker::TryInferTypeForLambdaTypeAlias(ir::AssignmentExpression *expr, ETSFunctionType *calleeType)
+void ETSChecker::TryInferTypeForLambdaTypeAlias(ir::ArrowFunctionExpression *expr, ETSFunctionType *calleeType)
 {
-    ES2PANDA_ASSERT(expr->Right()->IsArrowFunctionExpression());
+    ES2PANDA_ASSERT(expr->IsArrowFunctionExpression());
     ES2PANDA_ASSERT(calleeType->IsETSArrowType());
 
-    ir::ScriptFunction *const lambda = expr->Right()->AsArrowFunctionExpression()->Function();
+    ir::ScriptFunction *const lambda = expr->AsArrowFunctionExpression()->Function();
 
     auto *signature = calleeType->CallSignaturesOfMethodOrArrow()[0];
     if (signature->Params().size() >= lambda->Params().size() && NeedTypeInference(lambda)) {
