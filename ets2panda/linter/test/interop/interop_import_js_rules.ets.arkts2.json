@@ -116,12 +116,32 @@
         },
         {
             "line": 49,
+            "column": 15,
+            "endLine": 49,
+            "endColumn": 16,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
             "column": 11,
             "endLine": 49,
             "endColumn": 17,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 7,
+            "endLine": 50,
+            "endColumn": 8,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {

@@ -35,6 +35,36 @@
             "severity": "ERROR"
         },
         {
+            "line": 33,
+            "column": 5,
+            "endLine": 33,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 7,
+            "endLine": 41,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 5,
+            "endLine": 42,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 46,
             "column": 3,
             "endLine": 46,
@@ -55,6 +85,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 53,
+            "column": 5,
+            "endLine": 53,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 5,
+            "endLine": 54,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 5,
             "endLine": 57,
@@ -62,6 +112,26 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 14,
+            "endLine": 57,
+            "endColumn": 27,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 107,
+            "column": 24,
+            "endLine": 107,
+            "endColumn": 39,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {
@@ -75,6 +145,36 @@
             "severity": "ERROR"
         },
         {
+            "line": 108,
+            "column": 17,
+            "endLine": 108,
+            "endColumn": 40,
+            "problem": "AvoidUnionTypes",
+            "suggest": "",
+            "rule": "Avoid using union types (arkts-common-union-member-access)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 15,
+            "endLine": 112,
+            "endColumn": 38,
+            "problem": "AvoidUnionTypes",
+            "suggest": "",
+            "rule": "Avoid using union types (arkts-common-union-member-access)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 20,
+            "endLine": 117,
+            "endColumn": 35,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 118,
             "column": 5,
             "endLine": 118,
@@ -82,6 +182,26 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 15,
+            "endLine": 118,
+            "endColumn": 36,
+            "problem": "AvoidUnionTypes",
+            "suggest": "",
+            "rule": "Avoid using union types (arkts-common-union-member-access)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 121,
+            "column": 13,
+            "endLine": 121,
+            "endColumn": 34,
+            "problem": "AvoidUnionTypes",
+            "suggest": "",
+            "rule": "Avoid using union types (arkts-common-union-member-access)",
             "severity": "ERROR"
         },
         {
@@ -122,6 +242,36 @@
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 176,
+            "column": 1,
+            "endLine": 176,
+            "endColumn": 10,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 180,
+            "column": 14,
+            "endLine": 180,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 181,
+            "column": 12,
+            "endLine": 181,
+            "endColumn": 13,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         }
     ]

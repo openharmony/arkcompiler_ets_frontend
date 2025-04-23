@@ -37,6 +37,7 @@ import {
   STRINGLITERAL_ANY,
   STRINGLITERAL_BYTE,
   STRINGLITERAL_SHORT,
+  STRINGLITERAL_CHAR,
   STRINGLITERAL_LONG
 } from './utils/consts/StringLiteral';
 import {
@@ -3246,7 +3247,7 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -3342,12 +3343,12 @@ export class TypeScriptLinter {
     }
 
     const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
-
-    const validStringLiteralTypes = [STRINGLITERAL_INT, STRINGLITERAL_BYTE, STRINGLITERAL_SHORT, STRINGLITERAL_LONG];
+    const validStringLiteralTypes = [
+      STRINGLITERAL_INT, STRINGLITERAL_BYTE, STRINGLITERAL_SHORT, STRINGLITERAL_LONG, STRINGLITERAL_CHAR];
     const argTypeString = this.tsTypeChecker.typeToString(argType);
 
     if (this.tsUtils.isNumberLikeType(argType)) {
-      this.handleNumericArgument(argExpr);
+      this.handleNumericArgument(argExpr, expr.argumentExpression, argType);
     } else if (!validStringLiteralTypes.includes(argTypeString)) {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
@@ -3357,15 +3358,27 @@ export class TypeScriptLinter {
     return argExpr.kind === ts.SyntaxKind.AsExpression ? (argExpr as ts.AsExpression).expression : argExpr;
   }
 
-  private handleNumericArgument(argExpr: ts.Expression): void {
-    if (
-      ts.isNumericLiteral(argExpr) && !Number.isInteger(Number(argExpr.text)) ||
-      argExpr.kind === ts.SyntaxKind.CallExpression
-    ) {
-      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
-    }
+  private handleNumericArgument(argExpr: ts.Expression, asExpr: ts.Expression, argType: ts.Type): void {
+    const isNumericLiteral = ts.isNumericLiteral(argExpr);
+    const isAsExpression = asExpr.kind === ts.SyntaxKind.AsExpression;
+    const argText = argExpr.getText();
+    const argValue = Number(argText);
 
-    this.checkNumericArgumentDeclaration(argExpr);
+    if (isNumericLiteral) {
+      const isInteger = Number.isInteger(argValue);
+      const containsDot = argText.includes('.');
+
+      if (!isInteger || containsDot) {
+        const autofix = this.autofixer?.fixArrayIndexExprType(isAsExpression ? asExpr : argExpr);
+        this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
+      }
+
+    } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
+      const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
+    } else {
+      this.checkNumericArgumentDeclaration(argExpr);
+    }
   }
 
   private checkNumericArgumentDeclaration(argExpr: ts.Expression): void {
@@ -3386,15 +3399,22 @@ export class TypeScriptLinter {
     const isNumericInitializer = initializer && ts.isNumericLiteral(initializer);
     const initializerNumber = isNumericInitializer ? Number(initializerText) : NaN;
     const isUnsafeNumber = isNumericInitializer && !Number.isInteger(initializerNumber);
-    const isConstDeclaration = firstDeclaration.parent.flags === ts.NodeFlags.Let;
-    const isUndefinedButNotMaxSafeInteger = initializerText === 'undefined';
 
-    if (
-      isUnsafeNumber ||
-      firstDeclaration.parent.flags === ts.NodeFlags.Const && isUnsafeNumber ||
-      isConstDeclaration ||
-      isUndefinedButNotMaxSafeInteger
-    ) {
+    if (isUnsafeNumber) {
+      const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
+    }
+
+    if (initializerText === 'undefined') {
+      this.handleUndefinedInitializer(argExpr, firstDeclaration);
+    }
+  }
+
+  private handleUndefinedInitializer(argExpr: ts.Expression, declaration: ts.VariableDeclaration): void {
+    if (ts.isParameter(declaration)) {
+      const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
+    } else {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
   }
