@@ -244,6 +244,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.Parameter, this.handleParameter],
     [ts.SyntaxKind.EnumDeclaration, this.handleEnumDeclaration],
     [ts.SyntaxKind.InterfaceDeclaration, this.handleInterfaceDeclaration],
+    [ts.SyntaxKind.TryStatement, this.handleTryStatement],
     [ts.SyntaxKind.ThrowStatement, this.handleThrowStatement],
     [ts.SyntaxKind.ImportClause, this.handleImportClause],
     [ts.SyntaxKind.ForStatement, this.handleForStatement],
@@ -779,6 +780,82 @@ export class TypeScriptLinter {
       this.interfaceInheritanceLint(node, interfaceNode.heritageClauses);
     }
     this.countDeclarationsWithDuplicateName(interfaceNode.name, interfaceNode);
+  }
+
+  private handleTryStatement(node: ts.TryStatement): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    for (const stmt of node.tryBlock.statements) {
+      if (!ts.isExpressionStatement(stmt)) {
+        continue;
+      }
+      const callExpr = stmt.expression;
+      if (!ts.isCallExpression(callExpr)) {
+        continue;
+      }
+      const ident = callExpr.expression;
+      if (!ts.isIdentifier(ident)) {
+        continue;
+      }
+
+      this.handleTsInterop(ident, () => {
+        this.tsFunctionInteropHandler(callExpr);
+      });
+    }
+  }
+
+  private tsFunctionInteropHandler(callExpr: ts.CallExpression): void {
+    const signature = this.tsTypeChecker.getResolvedSignature(callExpr);
+    if (!signature) {
+      return;
+    }
+
+    if (!signature.declaration) {
+      return;
+    }
+
+    const functionSymbol = this.getFunctionSymbol(signature.declaration);
+    const functionDeclaration = functionSymbol?.valueDeclaration;
+    if (!functionDeclaration) {
+      return;
+    }
+
+    if (!TypeScriptLinter.isFunctionLike(functionDeclaration)) {
+      return;
+    }
+    if (TypeScriptLinter.containsThrowNonError(functionDeclaration)) {
+      this.incrementCounters(callExpr, FaultID.InteropTSFunctionInvoke);
+    }
+  }
+
+  private static containsThrowNonError(
+    node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression
+  ): boolean {
+    if (!node.body) {
+      return false;
+    }
+
+    const statements = node.body.statements;
+    for (const stmt of statements) {
+      if (!ts.isThrowStatement(stmt)) {
+        continue;
+      }
+      const newExpr = stmt.expression;
+      if (!ts.isNewExpression(newExpr)) {
+        return true;
+      }
+      const ident = newExpr.expression;
+      if (!ts.isIdentifier(ident)) {
+        return true;
+      }
+      if (ident.text === 'Error') {
+        continue;
+      }
+      return true;
+    }
+    return false;
   }
 
   private handleThrowStatement(node: ts.Node): void {
@@ -3481,10 +3558,6 @@ export class TypeScriptLinter {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
     }
 
-    this.handleTsInterop(tsCallExpr.expression, () => {
-      this.checkInteropFunctionCall(tsCallExpr);
-    });
-
     const calleeSym = this.tsUtils.trueSymbolAtLocation(tsCallExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
     this.handleImportCall(tsCallExpr);
@@ -3515,7 +3588,6 @@ export class TypeScriptLinter {
       this.handleLimitedVoidWithCall(tsCallExpr);
     }
 
-    this.checkArkTSObjectInterop(tsCallExpr);
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
@@ -3575,7 +3647,7 @@ export class TypeScriptLinter {
     if (!callSignature) {
       return;
     }
-    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
       if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
         this.incrementCounters(tsCallExpr, FaultID.CallJSFunction);
       }
@@ -3583,12 +3655,16 @@ export class TypeScriptLinter {
   }
 
   private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
     if (!callSignature) {
       return;
     }
 
-    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
+    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
       return;
     }
 
@@ -3604,7 +3680,7 @@ export class TypeScriptLinter {
     if (!callSignature) {
       return;
     }
-    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
       if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
         this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectMethods);
       }
@@ -3620,7 +3696,7 @@ export class TypeScriptLinter {
       return undefined;
     }
     // check for 'use static' at the start of the file this function declared at
-    if (declarationSourceFile.statements[0].getText() !== USE_STATIC) {
+    if (declarationSourceFile.statements[0].getText() === USE_STATIC) {
       return true;
     }
     return false;
@@ -3640,7 +3716,6 @@ export class TypeScriptLinter {
       }
 
       if (this.tsTypeChecker.getTypeAtLocation(argument).isClass()) {
-        // return error
         this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectParam);
         return;
       }
@@ -5936,7 +6011,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
+    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
       return;
     }
 
@@ -5956,14 +6031,6 @@ export class TypeScriptLinter {
     ) {
       this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
     }
-  }
-
-  private checkInteropFunctionCall(node: ts.CallExpression): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-
-    this.incrementCounters(node, FaultID.InteropTSFunctionInvoke);
   }
 
   private hasObjectParameter(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): boolean {

@@ -24,11 +24,11 @@
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
             "severity": "ERROR"
         },
-        {
+         {
             "line": 20,
-            "column": 5,
+            "column": 12,
             "endLine": 20,
-            "endColumn": 27,
+            "endColumn": 18,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
@@ -46,13 +46,24 @@
         },
         {
             "line": 24,
-            "column": 5,
+            "column": 9,
             "endLine": 24,
-            "endColumn": 28,
+            "endColumn": 23,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 1,
+            "endLine": 27,
+            "endColumn": 13,
+            "problem": "InteropCallObjectParam",
+            "suggest": "",
+            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-call-object-param)",
+            "severity": "ERROR"
         }
     ]
 }
+
