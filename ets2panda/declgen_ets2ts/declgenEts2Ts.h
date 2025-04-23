@@ -97,21 +97,34 @@ private:
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
     void ProcessFunctionReturnType(const checker::Signature *sig);
-    void ProcessFunctionReturnTypeRef(const checker::Signature *sig, const ir::ETSTypeReference *expr);
+    void ProcessETSTypeReferenceType(const ir::ETSTypeReference *typeReference,
+                                     const checker::Type *checkerType = nullptr);
+    bool ProcessTypeAnnotationSpecificTypes(const checker::Type *checkerType);
+    void ProcessTypeAnnotationType(const ir::TypeNode *typeAnnotation, const checker::Type *checkerType = nullptr);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenUnionType(const checker::ETSUnionType *unionType);
     void GenTupleType(const checker::ETSTupleType *tupleType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
+    void GenNamespaceImport(const ir::AstNode *specifier, const std::string &source);
+    void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, const std::string &typeStr);
+    void GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
+                         const ArenaVector<ir::AstNode *> &specifiers, const std::string &source,
+                         const std::string &typeStr);
+    void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
+    bool GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef, const ir::Identifier *methodIdent,
+                                    const std::string &methodName);
+    void GenMethodSignature(const ir::MethodDefinition *methodDef, const ir::Identifier *methodIdent,
+                            const std::string &methodName);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
+    void ProcessClassPropDeclaration(const ir::ClassProperty *classProp);
     void GenPropAccessor(const ir::ClassProperty *classProp, const std::string &accessorKind);
-    void GenGenericParameter(const ir::ClassProperty *globalVar);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 
@@ -141,7 +154,7 @@ private:
     void ProcessParamDefaultToMap(const ir::Statement *stmt);
     void ProcessFuncParameter(varbinder::LocalVariable *param);
     void ProcessFuncParameters(const checker::Signature *sig);
-    void ProcessParameterTypeAnnotation(const ir::ETSParameterExpression *expr, const checker::Type *paramType);
+    void ProcessClassPropertyType(const ir::ClassProperty *classProp);
     std::vector<ir::AstNode *> FilterValidImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
@@ -226,6 +239,7 @@ private:
         bool inNamespace {false};
         bool inEnum {false};
         bool isClassInNamespace {false};
+        bool isInterfaceInNamespace {false};
         std::string currentClassDescriptor {};
         std::stack<bool> inUnionBodyStack {};
         std::string currentTypeAliasName;
