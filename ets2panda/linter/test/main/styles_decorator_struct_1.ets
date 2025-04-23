@@ -23,9 +23,10 @@ struct MyCard1 {
 
   build() {
     Column() {
-      Text('Card')
+      Text('Card').cardStyle1()
     }
     .cardStyle1()
+    .backgroundColor(Color.Red)
   }
 }
 
@@ -50,9 +51,10 @@ struct MyCard2 {
 
   build() {
     Column() {
-      Text('Card')
+      Text('Card').cardStyle2()
     }
     .cardStyle2()
+    .backgroundColor(Color.Red)
   }
 }
 
@@ -77,8 +79,8 @@ struct MyButton {
       this.content
     }
     .stateStyles({
-      normal: this.NormalStyles(),
-      pressed: this.PressedStyles()
+      normal: this.NormalStyles,
+      pressed: this.PressedStyles
     })
   }
 }

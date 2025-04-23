@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { CommonMethod, Color, Component, Column, BuilderParam, Require, Button } from '@kit.ArkUI';
+import { CommonMethod, Color, Component, Column, Text, BuilderParam, Require, Button } from '@kit.ArkUI';
 
 const mycolor: string = "#ffff00"
 
@@ -32,9 +32,10 @@ function cardStyle1(instance: CommonMethod): void {
 struct MyCard1 {
     build() {
         Column() {
-
+            Text("TestStyles").applyStyles(cardStyle1)
         }
-        applyStyles.cardStyle1()
+        .applyStyles(cardStyle1)
+        .backgroundColor(Color.Red)
     }
 }
 

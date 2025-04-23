@@ -24,9 +24,10 @@ struct MyCard1 {
 
   build() {
     Column() {
-      Text('Card')
+      Text('Card').applyStyles(this.cardStyle1)
     }
-    applyStyles.cardStyle1()
+    .applyStyles(this.cardStyle1)
+    .backgroundColor(Color.Red)
   }
 }
 
@@ -34,9 +35,10 @@ struct MyCard1 {
 struct MyCard2 {
   cardStyle2 = (instance: CommonMethod): void => {
     instance.border({
-      color: this.getColor(),
-      width: this.getWidth()
+        color: this.getColor(),
+        width: this.getWidth()
     });
+    instance.backgroundColor('#ffffff');
   };
   
   private getColor(): Color {
@@ -49,9 +51,10 @@ struct MyCard2 {
 
   build() {
     Column() {
-      Text('Card')
+      Text('Card').applyStyles(this.cardStyle2)
     }
-    .cardStyle2()
+    .applyStyles(this.cardStyle2)
+    .backgroundColor(Color.Red)
   }
 }
 
@@ -63,19 +66,19 @@ struct MyButton {
 
   NormalStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Red);
-  }
+  };
 
   PressedStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Green);
-  }
+  };
 
   build() {
     Button() {
       this.content
     }
     .stateStyles({
-      normal: this.NormalStyles(),
-      pressed: this.PressedStyles()
+      normal: this.NormalStyles,
+      pressed: this.PressedStyles
     })
   }
 }
@@ -100,13 +103,13 @@ struct imageTest {
   imageStyle = (instance: CommonMethod): void => {
     instance.draggable(this.isShowLongPressMenu() && this.isPC());
     instance.onDragStart(() => {
-      console.info(TAG, 'onDragStart');
-      this.touchVibrate(VibrateType.DRAG);
-      if (this.mediaItem?.path) {
-        this.previewUri =
-          this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);
-      }
-      return this.DragBuilder;
+        console.info(TAG, 'onDragStart');
+        this.touchVibrate(VibrateType.DRAG);
+        if (this.mediaItem?.path) {
+            this.previewUri =
+                this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);
+        }
+        return this.DragBuilder;
     });
     instance.accessibilityText(this.isOpenTouchGuide ? this.getImageItemGridAccessibilityText() : '');
   };
