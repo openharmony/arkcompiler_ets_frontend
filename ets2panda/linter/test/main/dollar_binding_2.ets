@@ -18,11 +18,15 @@ import { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';
 @Component
 struct MyComponent {
   @State count: number = 0
+  @State $$: number = 0
 
   build() {
     Column() {
       MyCounter({
         count: this.count
+      })
+      MyCounter({
+        count: this.$$
       })
     }
   }
