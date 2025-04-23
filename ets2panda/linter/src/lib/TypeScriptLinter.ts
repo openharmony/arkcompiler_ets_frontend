@@ -3131,6 +3131,19 @@ export class TypeScriptLinter {
     if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ExplicitFunctionType);
     }
+    this.handlePropertyDescriptor(tsIdentifier, tsIdentSym);
+  }
+
+  private handlePropertyDescriptor(tsIdentifier: ts.Identifier, symbol: ts.Symbol): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, tsIdentifier);
+    const typeString = this.tsTypeChecker.typeToString(type);
+    if (typeString.includes('PropertyDescriptor')) {
+      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
+    }
   }
 
   private handleGlobalThisCase(node: ts.Identifier, isArkTs2: boolean | undefined): void {
@@ -4352,6 +4365,17 @@ export class TypeScriptLinter {
       this.checkSendableTypeArguments(typeRef);
     }
     this.handleQuotedHyphenPropsDeprecated(typeRef);
+    this.handlePropertyDescriptorType(typeRef);
+  }
+
+  private handlePropertyDescriptorType(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const typeName = this.tsUtils.entityNameToString(typeRef.typeName);
+    if (typeName.includes('PropertyDescriptor')) {
+      this.incrementCounters(typeRef, FaultID.NoPropertyDescritor);
+    }
   }
 
   private checkPartialType(node: ts.Node): void {

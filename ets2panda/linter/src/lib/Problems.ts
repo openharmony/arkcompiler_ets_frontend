@@ -211,6 +211,7 @@ export enum FaultID {
   InteropIncrementDecrement,
   BuiltinThisArgs,
   BuiltinSymbolIterator,
+  NoPropertyDescritor,
   // this should always be last enum
   LAST_ID
 }

@@ -210,3 +210,4 @@ faultDesc[FaultID.InteropIncrementDecrement] = 'Interop increment or decrement';
 faultDesc[FaultID.InteropObjectLiteralCompatibility] = 'Interop Object Literal incompatible';
 faultDesc[FaultID.BuiltinThisArgs] = 'NO thisArgs as a type in API';
 faultDesc[FaultID.BuiltinSymbolIterator] = 'NO "Symbol.iterator" in API';
+faultDesc[FaultID.NoPropertyDescritor] = 'Not support property descriptor';
