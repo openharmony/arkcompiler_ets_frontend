@@ -24,3 +24,7 @@ export function bar(obj: Object) {
     return Reflect.has(obj, 'prop');
 }
 
+export class X {
+    a: string = 'hello'
+    getName() { return this.a }
+}

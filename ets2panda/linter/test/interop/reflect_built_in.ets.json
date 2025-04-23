@@ -15,63 +15,13 @@
     ],
     "result": [
         {
-            "line": 24,
+            "line": 17,
             "column": 1,
-            "endLine": 24,
-            "endColumn": 13,
-            "problem": "InteropCallObjectParam",
+            "endLine": 17,
+            "endColumn": 48,
+            "problem": "ImportAfterStatement",
             "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-call-object-param)",
-            "severity": "ERROR"
-        },
-         {
-            "line": 24,
-            "column": 1,
-            "endLine": 24,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-call-reflect)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 1,
-            "endLine": 24,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-call-reflect)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 1,
-            "endLine": 30,
-            "endColumn": 13,
-            "problem": "InteropCallObjectParam",
-            "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-call-object-param)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 1,
-            "endLine": 30,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-call-reflect)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 1,
-            "endLine": 30,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-call-reflect)",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
             "severity": "ERROR"
         }
     ]

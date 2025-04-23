@@ -25,7 +25,10 @@ objectLiteralType.name = "test"
 
 intersectionType.name = "test";
 
-tsFunction();
+try {
+    tsFunction();
+} catch (e) {
+}
 
 stringType = "test" //should pass
 

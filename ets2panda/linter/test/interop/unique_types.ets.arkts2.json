@@ -35,24 +35,24 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
-            "endColumn": 13,
+            "line": 29,
+            "column": 5,
+            "endLine": 29,
+            "endColumn": 17,
             "problem": "InteropTSFunctionInvoke",
             "suggest": "",
-            "rule": "Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)",
+            "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts-function)",
             "severity": "ERROR"
-       },
-       {
-            "line": 30,
+        },
+        {
+            "line": 33,
             "column": 1,
-            "endLine": 30,
+            "endLine": 33,
             "endColumn": 20,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
             "rule": "Cannot access typescript types directly (arkts-interop-access-ts-types)",
             "severity": "ERROR"
-       }
+        }
     ]
 }
