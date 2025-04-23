@@ -303,7 +303,7 @@ def need_to_gen(function: dict) -> bool:
         for ban in no_gen_keywords["postfix"]: # CC-OFF(G.TYP.07) dict key exist
             if function["postfix"].find(ban) != -1:
                 return False
-    for name_start in no_gen_keywords["name_starts_with"]: # CC-OFF(G.TYP.07) dict key exist
+    for name_start in no_gen_keywords["name_starts_with"]:  # CC-OFF(G.TYP.07) dict key exist
         if function["name"].startswith(name_start):
             return False
     if "return_type" in function:
