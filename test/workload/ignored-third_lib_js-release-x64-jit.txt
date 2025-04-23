@@ -1,7 +1,1 @@
 # Known failures list for third_lib_js - release-x64-jit
-# 21116
-pdfview_test
-
-#20325
-htmlParser2_test
-
