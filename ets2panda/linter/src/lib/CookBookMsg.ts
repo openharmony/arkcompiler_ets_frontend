@@ -293,6 +293,7 @@ cookBookTag[318] = '"use concurrent" is not supported (arkts-limited-stdlib-no-u
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
 cookBookTag[322] = 'isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)';
+cookBookTag[329] = 'No support for static dynamic import (interop-static-dynamically-import-dynamic)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
@@ -305,7 +306,6 @@ cookBookTag[337] =
 cookBookTag[338] =
   '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
 cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index-import)';
-cookBookTag[340] = '"Await" operator can\'t be used with interop objects (arkts-no-import-await)';
 cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
 cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
 cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';

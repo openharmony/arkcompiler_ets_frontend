@@ -85,7 +85,7 @@ export class QuasiEditor {
           replacement: fix.replacementText,
           original: this.dataBuffer.toString().slice(fix.start, fix.end)
         };
-      }),
+      })
     };
 
     const reportPath = './autofix-report.html';
