@@ -53,6 +53,13 @@ export class Utils {
     }
 
     /**
+     * 设置日志信息，包含路径、arkanalyzer日志级别、homecheck日志级别
+     */
+    static setLogConfig(logPath: string, aaLevel: LOG_LEVEL, hcLevel: LOG_LEVEL): void {
+        Logger.configure(logPath, aaLevel, hcLevel);
+    }
+
+    /**
      * 获取枚举类型的值
      * @param value - 枚举值，可以是字符串或数字
      * @param enumType - 枚举类型
@@ -77,4 +84,11 @@ export class Utils {
         }
         return colA - colB;
     }
+}
+
+export type WarnInfo = {
+    line: number,
+    startCol: number,
+    endCol: number,
+    filePath: string
 }

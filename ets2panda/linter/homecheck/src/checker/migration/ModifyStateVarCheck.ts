@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, ArkInstanceFieldRef, Local, Stmt, Value, FieldSignature, ArkMethod } from "arkanalyzer";
+import { ArkAssignStmt, ArkInstanceFieldRef, ArkInstanceInvokeExpr, CallGraph, CallGraphBuilder, Local, Stmt, Value, FieldSignature, ArkMethod } from "arkanalyzer";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher, MethodMatcher } from "../../Index";
 import { IssueReport } from "../../model/Defects";
+import { CALL_DEPTH_LIMIT, CALLBACK_METHOD_NAME, CallGraphHelper } from './Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ModifyStateVarCheck');
 const gMetaData: BaseMetaData = {
@@ -52,11 +53,35 @@ export class ModifyStateVarCheck implements BaseChecker {
     }
 
     public check = (target: ArkMethod): void => {
+        const scene = target.getDeclaringArkFile().getScene();
+        let callGraph = CallGraphHelper.getCGInstance(scene);
+        let callGraphBuilder = new CallGraphBuilder(callGraph, scene);
+        callGraphBuilder.buildClassHierarchyCallGraph([target.getSignature()]);
+
+        this.checkMethod(target, callGraph);
+    };
+
+    private checkMethod(target: ArkMethod, cg: CallGraph, depth: number = 0) {
+        if (depth > CALL_DEPTH_LIMIT) {
+            return;
+        }
         const arkClass = target.getDeclaringArkClass();
         const stateVars = new Set(arkClass.getFields().filter(f => f.hasDecorator('State')).map(f => f.getSignature()));
         let aliases = new Set<Local>();
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
+            const invokeExpr = stmt.getInvokeExpr();
+            if (invokeExpr && invokeExpr instanceof ArkInstanceInvokeExpr) {
+                if (CALLBACK_METHOD_NAME.includes(invokeExpr.getMethodSignature().getMethodSubSignature().getMethodName())) {
+                    continue;
+                }
+            }
+            cg.getCallSiteByStmt(stmt).forEach(cs => {
+                const callee = cg.getArkMethodByFuncID(cs.calleeFuncID);
+                if (callee) {
+                    this.checkMethod(callee, cg, depth + 1);
+                }
+            });
             if (!(stmt instanceof ArkAssignStmt)) {
                 continue;
             }
@@ -69,7 +94,7 @@ export class ModifyStateVarCheck implements BaseChecker {
                 }
             }
         }
-    };
+    }
 
     private isAssignToStateVar(stmt: ArkAssignStmt, stateVars: Set<FieldSignature>, aliases: Set<Local>): boolean {
         const leftOp = stmt.getLeftOp();

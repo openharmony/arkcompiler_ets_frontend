@@ -28,7 +28,7 @@ export const fileRules = {
     "@migration/arkts-instance-method-bind-this": ThisBindCheck,
     "@migration/arkui-data-observation-2": ObservedDecoratorCheck,
     "@migration/arkui-stateful-appstorage": AppStorageGetCheck,
-    "@migration/arkui-no-update-in-rending": ModifyStateVarCheck,
+    "@migration/arkui-no-update-in-build": ModifyStateVarCheck,
     "@migration/arkui-custombuiler": CustomBuilderCheck,
     "@migration/no-method-overriding-field-check": NoMethodOverridingFieldCheck,
 };

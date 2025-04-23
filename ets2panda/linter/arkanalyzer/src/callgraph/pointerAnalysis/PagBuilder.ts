@@ -107,6 +107,7 @@ export class PagBuilder {
     private globalThisPagNode?: PagGlobalThisNode;
     private storagePropertyMap: Map<StorageType, Map<string, Local>> = new Map();
     private externalScopeVariableMap: Map<Local, Local[]> = new Map();
+    private retriggerNodesList: Set<NodeID> = new Set();
 
     constructor(p: Pag, cg: CallGraph, s: Scene, kLimit: number, scale: PtaAnalysisScale) {
         this.pag = p;
@@ -199,9 +200,7 @@ export class PagBuilder {
         let fpag = new FuncPag();
         for (let stmt of cfg.getStmts()) {
             if (stmt instanceof ArkAssignStmt) {
-                stmt.getRightOp().getUses().forEach((v) => {
-                    this.handleValueFromExternalScope(v, funcID);
-                });
+                this.processExternalScopeValue(stmt.getRightOp(), funcID);
                 // Add non-call edges
                 let kind = this.getEdgeKindForAssignStmt(stmt);
                 if (kind !== PagEdgeKind.Unknown) {
@@ -212,6 +211,7 @@ export class PagBuilder {
                 // handle call
                 this.buildInvokeExprInAssignStmt(stmt, fpag);
             } else if (stmt instanceof ArkInvokeStmt && this.scale === PtaAnalysisScale.WholeProgram) {
+                this.processExternalScopeValue(stmt.getInvokeExpr(), funcID);
                 this.buildInvokeExprInInvokeStmt(stmt, fpag);
             } else {
                 // TODO: need handle other type of stmt?
@@ -279,6 +279,16 @@ export class PagBuilder {
             this.addToDynamicCallSite(fpag, dycs);
         } else {
             throw new Error('Can not find callsite by stmt');
+        }
+    }
+
+    private processExternalScopeValue(value: Value, funcID: FuncID): void {
+        if (value instanceof Local) {
+            this.handleValueFromExternalScope(value, funcID);
+        } else if (value instanceof ArkInstanceInvokeExpr) {
+            value.getUses().forEach((v) => {
+                this.handleValueFromExternalScope(v, funcID);
+            });
         }
     }
 
@@ -1632,7 +1642,7 @@ export class PagBuilder {
      */
     private handleValueFromExternalScope(value: Value, funcID: FuncID, originValue?: Value): void {
         if (value instanceof Local) {
-            if (value.getDeclaringStmt()) {
+            if (value.getDeclaringStmt() || (value.getName() === 'this')) {
                 // not from external scope
                 return;
             }
@@ -1772,9 +1782,16 @@ export class PagBuilder {
             let existingNodes = this.pag.getNodesByValue(exportLocal);
             existingNodes?.forEach(n => {
                 this.pag.addPagEdge(this.pag.getNode(n)! as PagNode, dstPagNode, e.kind);
+                this.retriggerNodesList.add(n);
             });
         }
 
         return true;
+    }
+
+    public getRetriggerNodes(): NodeID[] {
+        let retriggerNodes = Array.from(this.retriggerNodesList);
+        this.retriggerNodesList.clear();
+        return retriggerNodes;
     }
 }

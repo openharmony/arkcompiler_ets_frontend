@@ -14,6 +14,7 @@
  */
 
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { LOG_LEVEL } from 'arkanalyzer';
 
 export class ProjectConfig {
     projectName: string;
@@ -31,6 +32,8 @@ export class ProjectConfig {
     sdksThirdParty: string[];
     arkCheckPath: string;
     product: string;
+    logLevel: LOG_LEVEL;
+    arkAnalyzerLogLevel: LOG_LEVEL;
 
     // [filePath, languageTag] or [folderPath, languageTag]
     languageTags: Map<string, Language>;
@@ -55,6 +58,8 @@ export class ProjectConfig {
         this.product = config.product ?? '';
         this.languageTags = config.languageTags ?? new Map();
         this.fileOrFolderToCheck = config.fileOrFolderToCheck ?? [];
+        this.logLevel = config.logLevel ?? LOG_LEVEL.INFO;
+        this.arkAnalyzerLogLevel = config.arkAnalyzerLogLevel ?? LOG_LEVEL.ERROR;
     }
 }
 

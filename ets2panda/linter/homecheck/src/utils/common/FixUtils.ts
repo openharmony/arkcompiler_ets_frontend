@@ -13,8 +13,15 @@
  * limitations under the License.
  */
 
-import { ArkClass, ArkFile, ArkMethod, ExportInfo, ImportInfo, Stmt } from "arkanalyzer";
-import { AIFix, FunctionFix, RuleFix } from "../../model/Fix";
+import { ArkClass, ArkFile, ArkMethod, AstTreeUtils, ExportInfo, ImportInfo, Stmt, ts } from "arkanalyzer";
+import {AIFix, FunctionFix, Range, RuleFix} from "../../model/Fix";
+
+export type FixPosition = {
+    startLine: number,
+    startCol: number,
+    endLine: number,
+    endCol: number
+}
 
 export class FixUtils {
 
@@ -52,6 +59,125 @@ export class FixUtils {
         }
         let start = (cnt === 0 && startColumn === 1) ? 0 : (cnt + startColumn + 1);//对第一行第一列特殊处理，后续代码都是以0，所以需要+1
         return start;
+    }
+
+    // 根据输入的代码片段的起始、结束行列号信息，计算此代码片段在该文件中的起始偏移量、结束偏移量数据
+    public static getRangeWithAst(sourceFile: ts.SourceFile, fixPosition: FixPosition): Range {
+        const startNumber = ts.getPositionOfLineAndCharacter(sourceFile, fixPosition.startLine - 1, fixPosition.startCol - 1);
+        const endNumber = ts.getPositionOfLineAndCharacter(sourceFile, fixPosition.endLine - 1, fixPosition.endCol - 1);
+        return [startNumber, endNumber];
+    }
+
+    // 根据输入的起始行号信息，计算该行的起始偏移量、结束偏移量数据
+    public static getLineRange(sourceFile: ts.SourceFile, lineNumber: number): Range | null {
+        const lineStarts = sourceFile.getLineStarts();
+
+        // 验证行号范围
+        if (lineNumber < 1 || lineNumber > lineStarts.length) {
+            return null;
+        }
+
+        const startPos = lineStarts[lineNumber - 1];
+        let endPos: number;
+
+        // 处理文件最后一行
+        if (lineNumber === lineStarts.length) {
+            endPos = sourceFile.text.length;
+        } else {
+            endPos = lineStarts[lineNumber];
+        }
+        return [startPos, endPos];
+    }
+
+    // 根据给定的起始、结束偏移量数据，获取此段代码片段的源码字符串，位置信息不合法则返回null
+    public static getSourceWithRange(sourceFile: ts.SourceFile, range: Range): string | null {
+        const start = range[0];
+        const end = range[1];
+        if (start < 0 || end > sourceFile.text.length || start > end) {
+            return null;
+        }
+        return sourceFile.text.substring(start, end);
+    }
+
+    // 根据给定的行号，获取该行的源码字符串，行号不合法则返回null
+    public static getLineText(sourceFile: ts.SourceFile, lineNumber: number): string | null {
+        const range = this.getLineRange(sourceFile, lineNumber);
+        if (range === null) {
+            return null;
+        }
+
+        return sourceFile.text.substring(range[0], range[1]);
+    }
+
+    // 根据给定的行号，获取该行的换行符，获取失败则使用默认的'\n'换行符
+    public static getEolSymbol(sourceFile: ts.SourceFile, lineNumber: number): string {
+        let res = '\n';
+        const lineStr = this.getLineText(sourceFile, lineNumber);
+        if (lineStr === null) {
+            return res;
+        }
+
+        const lfIndex = lineStr.indexOf('\n');
+        if (lfIndex > 0 && lineStr[lfIndex - 1] === '\r') {
+            res = '\r\n';
+        }
+        return res;
+    }
+
+    // 根据给定的行号，获取该行的缩进数量，采用空格缩进时为空格数量，采用tab缩进时为tab数量，行号不合法则返回null
+    public static getIndentOfLine(sourceFile: ts.SourceFile, lineNumber: number): number | null {
+        const lineStr = this.getLineText(sourceFile, lineNumber);
+        if (lineStr === null) {
+            return null;
+        }
+
+        const space = ' ';
+        let res = 0;
+        for (const char of lineStr) {
+            if (char === space) {
+                res++;
+            } else {
+                break;
+            }
+        }
+        return res;
+    }
+
+    // 根据给定的行号，获取该行附近的缩进宽度，采用空格缩进时为空格数量，采用tab缩进时为tab数量，无法找到则返回2
+    public static getIndentWidth(sourceFile: ts.SourceFile, lineNumber: number): number {
+        const lineIndent = FixUtils.getIndentOfLine(sourceFile, lineNumber);
+        let indentWidth = 0;
+
+        // 从当前行向上寻找最近的缩进量
+        let currLineIndent = lineIndent;
+        let previousLine = lineNumber - 1;
+        while (indentWidth <= 0 && previousLine > 0 && currLineIndent !== null) {
+            const previousLineIndent = FixUtils.getIndentOfLine(sourceFile, previousLine);
+            if (previousLineIndent !== null) {
+                indentWidth = Math.abs(currLineIndent - previousLineIndent);
+            }
+            currLineIndent = previousLineIndent;
+            previousLine--;
+        }
+        if (indentWidth > 0) {
+            return indentWidth;
+        }
+
+        // 从当前行向下寻找最近的缩进量
+        currLineIndent = lineIndent;
+        let nextLine = lineNumber + 1;
+        while (indentWidth <= 0 && nextLine < sourceFile.getLineStarts().length && currLineIndent !== null) {
+            const nextLineIndent = FixUtils.getIndentOfLine(sourceFile, nextLine);
+            if (nextLineIndent !== null) {
+                indentWidth = Math.abs(nextLineIndent - currLineIndent);
+            }
+            currLineIndent = nextLineIndent;
+            nextLine++;
+        }
+        if (indentWidth > 0) {
+            return indentWidth;
+        }
+        return 2;
     }
 
     public static getTextEof(text: string): string {

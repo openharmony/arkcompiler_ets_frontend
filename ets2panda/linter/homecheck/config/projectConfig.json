@@ -19,5 +19,7 @@
       "moduleName": ""
     }
   ],
-  "fileOrFolderToCheck": [ "D:\\arkProject" ]
+  "fileOrFolderToCheck": [ "D:\\arkProject" ],
+  "logLevel": "INFO",
+  "arkAnalyzerLogLevel": "ERROR"
 }
