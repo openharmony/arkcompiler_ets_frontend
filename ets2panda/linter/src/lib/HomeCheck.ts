@@ -36,11 +36,13 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
 } {
   const languageTags = new Map<string, number>();
   const inputFiles = cmdOptions.inputFiles;
-  inputFiles.forEach((file) => {
-    languageTags.set(file, 2);
-  });
   const ruleConfigInfo = {
-    ruleSet: ['plugin:@migration/all']
+    ruleSet: ['plugin:@migration/all'],
+    files: [
+      '**/*.ets',
+      '**/*.ts',
+      '**/*.js'
+    ]
   };
   const projectConfigInfo = {
     projectName: cmdOptions.arktsWholeProjectPath,
