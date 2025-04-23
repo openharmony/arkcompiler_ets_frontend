@@ -135,6 +135,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 107,
+            "column": 24,
+            "endLine": 107,
+            "endColumn": 39,
+            "problem": "BuiltinSymbolIterator",
+            "suggest": "",
+            "rule": "Using \"Symbol.iterator\" is not allowed in this API (arkts-builtin-symbol-iterator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 108,
             "column": 5,
             "endLine": 108,
@@ -172,6 +182,16 @@
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 20,
+            "endLine": 117,
+            "endColumn": 35,
+            "problem": "BuiltinSymbolIterator",
+            "suggest": "",
+            "rule": "Using \"Symbol.iterator\" is not allowed in this API (arkts-builtin-symbol-iterator)",
             "severity": "ERROR"
         },
         {

@@ -103,6 +103,7 @@ import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import * as builtinWhiteList from './data/BuiltinList.json';
+import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
 import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
@@ -113,7 +114,7 @@ interface InterfaceSymbolTypeResult {
 interface InterfaceSymbolTypePropertyNames {
   propertyNames: string[];
   typeNames: string[];
-}import { BuiltinProblem, FILE_PREFIX_PATH, SYMBOL_ITERATOR } from './utils/consts/BuiltinWhiteList';
+}
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -164,7 +165,7 @@ export class TypeScriptLinter {
     this.interfaceMap = new Map<string, Set<ApiInfo>>();
   }
 
-  initSdkBuiltinInfo(): void {
+  static initSdkBuiltinInfo(): void {
     const list: ApiList = new ApiList(builtinWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
@@ -173,7 +174,7 @@ export class TypeScriptLinter {
             TypeScriptLinter.symbotIterSet.add(item.file_path);
             break;
           case BuiltinProblem.LimitedThisArg:
-            this.initSdkBuiltinThisArgsWhitelist(item);
+            TypeScriptLinter.initSdkBuiltinThisArgsWhitelist(item);
             break;
           default:
         }
@@ -181,7 +182,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private initSdkBuiltinThisArgsWhitelist(item: ApiListItem): void {
+  static initSdkBuiltinThisArgsWhitelist(item: ApiListItem): void {
     if (item.file_path === '' || !item.api_info.api_name) {
       return;
     }
@@ -248,6 +249,15 @@ export class TypeScriptLinter {
     }
   }
 
+  private static initBuiltinlist(): void {
+    const list: ApiList = new ApiList(builtinWhiteList);
+    if (list?.api_list?.length > 0) {
+      for (const item of list.api_list) {
+        TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
+      }
+    }
+  }
+
   private static addOrUpdateData(map: Map<string, Set<ApiInfo>>, path: string, data: ApiInfo): void {
     let apiInfos = map.get(path);
     if (!apiInfos) {
@@ -271,6 +281,7 @@ export class TypeScriptLinter {
     this.initEtsHandlers();
     this.initCounters();
     TypeScriptLinter.initSdkWhitelist();
+    TypeScriptLinter.initBuiltinlist();
   }
 
   readonly handlersMap = new Map([
@@ -3138,10 +3149,13 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+    if (tsIdentifier.getFullText().includes('PropertyDescriptor')) {
+      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
+    }
 
     const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, tsIdentifier);
     const typeString = this.tsTypeChecker.typeToString(type);
-    if (typeString.includes('PropertyDescriptor')) {
+    if (typeString.startsWith('PropertyDescriptor') || typeString.startsWith('TypedPropertyDescriptor')) {
       this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
     }
   }
@@ -3624,9 +3638,45 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleBuiltinCtorSignatureCall(tsCallExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const node = tsCallExpr.expression as ts.Identifier;
+    const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
+    const callSignatures = constructorType.getCallSignatures();
+    if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
+      return;
+    }
+    const isSameApi = callSignatures.some((callSignature) => {
+      const callSignatureDecl = callSignature.getDeclaration();
+      if (!ts.isCallSignatureDeclaration(callSignatureDecl)) {
+        return false;
+      }
+      const parentDecl = callSignatureDecl.parent;
+      const parentName = ts.isInterfaceDeclaration(parentDecl) ? parentDecl.name.getText() : '';
+      const BultinNoCtorFuncApiInfoSet = TypeScriptLinter.globalApiInfo.get(BuiltinProblem.BuiltinNoCtorFunc);
+      if (!BultinNoCtorFuncApiInfoSet) {
+        return false;
+      }
+      const isSameApi = [...BultinNoCtorFuncApiInfoSet].some((apiInfoItem) => {
+        if (apiInfoItem.api_info.parent_api?.length <= 0) {
+          return false;
+        }
+        const apiInfoParentName = apiInfoItem.api_info.parent_api[0].api_name;
+        return apiInfoParentName === parentName;
+      });
+      return isSameApi;
+    });
+    if (isSameApi) {
+      this.incrementCounters(node, FaultID.BuiltinNoCtorFunc);
+    }
+  }
+
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
+    this.handleBuiltinCtorSignatureCall(tsCallExpr);
 
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
@@ -4105,7 +4155,7 @@ export class TypeScriptLinter {
     parName: string | undefined
   ): void {
     if (parName === undefined) {
-      return; 
+      return;
     }
 
     const builtinThisArgsInfos = TypeScriptLinter.funcMap.get(name);
@@ -4120,15 +4170,17 @@ export class TypeScriptLinter {
 
     const fileName = path.basename(sourceFile.fileName);
     const builtinInfos = builtinThisArgsInfos.get(fileName);
-    if (builtinInfos && builtinInfos.size > 0) {
-      for (const info of builtinInfos) {
-        if (info.parent_api.length > 0 &&
-            info.parent_api[0].api_name === parName &&
-            info?.api_func_args?.length === callExpr.arguments.length
-          ) {
-            this.incrementCounters(callExpr, FaultID.BuiltinThisArgs);
-            return;
-        }
+    if (!(builtinInfos && builtinInfos.size > 0)) {
+      return;
+    }
+    for (const info of builtinInfos) {
+      const needReport =
+        info.parent_api.length > 0 &&
+        info.parent_api[0].api_name === parName &&
+        info?.api_func_args?.length === callExpr.arguments.length;
+      if (needReport) {
+        this.incrementCounters(callExpr, FaultID.BuiltinThisArgs);
+        return;
       }
     }
   }
@@ -6502,11 +6554,7 @@ export class TypeScriptLinter {
   }
 
   private handleSymbolIterator(decl: ts.PropertyAccessExpression): void {
-    if (
-      !this.options.arkts2 ||
-      TypeScriptLinter.symbotIterSet.size === 0 ||
-      decl.getText() !== SYMBOL_ITERATOR
-    ) {
+    if (!this.options.arkts2 || TypeScriptLinter.symbotIterSet.size === 0 || decl.getText() !== SYMBOL_ITERATOR) {
       return;
     }
 
@@ -6515,7 +6563,7 @@ export class TypeScriptLinter {
     if (!sourceFile) {
       return;
     }
-    
+
     const fileName = path.basename(sourceFile.fileName);
     if (TypeScriptLinter.symbotIterSet.has(fileName)) {
       this.incrementCounters(decl, FaultID.BuiltinSymbolIterator);

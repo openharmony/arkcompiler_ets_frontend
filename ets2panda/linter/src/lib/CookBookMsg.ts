@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 344; i++) {
+for (let i = 0; i <= 348; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -316,3 +316,4 @@ cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-
 cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';
 cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
 cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';
+cookBookTag[348] = 'API is not support ctor signature and func (arkts-builtin-cotr)';

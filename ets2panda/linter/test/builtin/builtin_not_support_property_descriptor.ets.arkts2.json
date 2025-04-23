@@ -16,9 +16,9 @@
     "result": [
         {
             "line": 16,
-            "column": 10,
+            "column": 12,
             "endLine": 16,
-            "endColumn": 11,
+            "endColumn": 13,
             "problem": "NoPropertyDescritor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
@@ -26,9 +26,9 @@
         },
         {
             "line": 16,
-            "column": 12,
+            "column": 15,
             "endLine": 16,
-            "endColumn": 13,
+            "endColumn": 33,
             "problem": "NoPropertyDescritor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
@@ -119,6 +119,16 @@
             "column": 11,
             "endLine": 25,
             "endColumn": 42,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 11,
+            "endLine": 25,
+            "endColumn": 34,
             "problem": "NoPropertyDescritor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",

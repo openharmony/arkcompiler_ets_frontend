@@ -174,7 +174,7 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
   const isEtsLinter = linter instanceof TypeScriptLinter;
   if (isEtsLinter) {
-    linter.initSdkBuiltinInfo();
+    TypeScriptLinter.initSdkBuiltinInfo();
   }
 
   for (const srcFile of srcFiles) {

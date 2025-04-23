@@ -243,7 +243,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 522,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -260,7 +260,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 539,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -277,7 +277,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 576,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -314,7 +314,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 916,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -331,7 +331,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1005,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -348,7 +348,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1006,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -365,7 +365,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1060,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -382,7 +382,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1071,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -399,7 +399,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1082,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -416,7 +416,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1093,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -433,7 +433,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1104,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -450,7 +450,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1115,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -467,7 +467,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1126,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -1036,7 +1036,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1490,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {
@@ -3939,7 +3939,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 126,
-        "problem": "BuiltinAll",
+        "problem": "BuiltinNoCtorFunc",
         "api_type": "CallSignature",
         "parent_api": [
           {

@@ -212,6 +212,7 @@ export enum FaultID {
   BuiltinThisArgs,
   BuiltinSymbolIterator,
   NoPropertyDescritor,
+  BuiltinNoCtorFunc,
   // this should always be last enum
   LAST_ID
 }
