@@ -489,6 +489,9 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
 
     auto *field = AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, modifiers, Allocator(), false);
     field->SetDefaultAccessModifier(isDefault);
+    if (optionalField) {
+        field->AddModifier(ir::ModifierFlags::OPTIONAL);
+    }
     field->SetRange({fieldName->Start(), initializer != nullptr ? initializer->End() : endLoc});
 
     declarations->push_back(field);
