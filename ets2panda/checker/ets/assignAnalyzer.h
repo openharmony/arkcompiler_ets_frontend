@@ -144,7 +144,7 @@ private:
     void NewVar(const ir::AstNode *node);
     void LetInit(const ir::AstNode *node);
     void CheckInit(const ir::AstNode *node);
-    void Split(bool setToNull);
+    void Split(const bool setToNull);
     void Merge();
     void CheckPendingExits();
     NodeId GetNodeId(const ir::AstNode *node) const;
