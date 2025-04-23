@@ -256,9 +256,10 @@ public:
         namespaceNestedRank_--;
     }
 
-    ir::ETSImportDeclaration *BuildImportDeclaration(ir::ImportKinds importKinds,
+    ir::ETSImportDeclaration *BuildImportDeclaration(ir::ImportKinds importKind,
                                                      ArenaVector<ir::AstNode *> &&specifiers,
-                                                     ir::StringLiteral *pathToResolve);
+                                                     ir::StringLiteral *pathToResolve, parser::Program *program,
+                                                     util::ImportFlags importFlag);
 
     void AddExternalSource(const std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);

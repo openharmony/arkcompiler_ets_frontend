@@ -58,24 +58,21 @@ static bool IsAbsolute(const std::string &path)
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
-ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(const parser::ParserContext &context,
+ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser::Program *program,
+                                                                          ImportFlags importFlags,
                                                                           ir::StringLiteral *importPath)
 {
     srcPos_ = &importPath->Start();
     // NOTE(dkofanov): The code below expresses the idea of 'dynamicPaths' defining separated, virtual file system.
     // Probably, paths of common imports should be isolated from the host fs as well, being resolved by 'ModuleInfo'
     // instead of 'AbsoluteName'.
-    auto curModulePath = context.GetProgram()->ModuleInfo().isDeclForDynamicStaticInterop
-                             ? context.GetProgram()->ModuleInfo().moduleName
-                             : context.GetProgram()->AbsoluteName();
+    auto curModulePath = program->ModuleInfo().isDeclForDynamicStaticInterop ? program->ModuleInfo().moduleName
+                                                                             : program->AbsoluteName();
     auto [resolvedImportPath, resolvedIsDynamic] = ResolvePath(curModulePath.Utf8(), importPath);
     if (resolvedImportPath.empty()) {
         ES2PANDA_ASSERT(diagnosticEngine_.IsAnyError());
         return ImportMetadata {util::ImportFlags::NONE, Language::Id::COUNT, ERROR_LITERAL};
     }
-    auto importFlags = (context.Status() & parser::ParserStatus::IN_DEFAULT_IMPORTS) != 0U
-                           ? util::ImportFlags::DEFAULT_IMPORT
-                           : util::ImportFlags::NONE;
 
     ImportMetadata importData {importFlags};
     importData.resolvedSource = resolvedImportPath;
@@ -89,7 +86,7 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(const 
         importData.ohmUrl = dynImportData.OhmUrl();
     } else {
         ES2PANDA_ASSERT(IsAbsolute(std::string(importData.resolvedSource)));
-        importData.lang = ToLanguage(context.GetProgram()->Extension()).GetId();
+        importData.lang = ToLanguage(program->Extension()).GetId();
         importData.declPath = util::ImportPathManager::DUMMY_PATH;
         importData.ohmUrl = util::ImportPathManager::DUMMY_PATH;
     }
