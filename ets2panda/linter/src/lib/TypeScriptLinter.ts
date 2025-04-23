@@ -83,6 +83,8 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
+import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
+import { ARKTSUTILS_TEXT, ARKTSUTILS_MODULES } from './utils/consts/ArkTSUtilsAPI';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -3138,6 +3140,8 @@ export class TypeScriptLinter {
 
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
+      this.checkCollectionsSymbol(tsIdentSym, node);
+      this.checkArkTSUtilsSymbol(tsIdentSym, node);
     }
     if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ExplicitFunctionType);
@@ -5876,21 +5880,35 @@ export class TypeScriptLinter {
     }
   }
 
+  private checkArkTSUtilsSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    this.checkSymbol(symbol, node, ARKTSUTILS_TEXT, ARKTSUTILS_MODULES, FaultID.LimitedStdLibApi);
+  }
+
+  private checkCollectionsSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    this.checkSymbol(symbol, node, COLLECTIONS_TEXT, COLLECTIONS_MODULES, FaultID.LimitedStdLibApi);
+  }
+
   private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    if (symbol.name === WORKER_TEXT) {
+    this.checkSymbol(symbol, node, WORKER_TEXT, WORKER_MODULES, FaultID.LimitedStdLibApi);
+  }
+
+  private checkSymbol(symbol: ts.Symbol, node: ts.Node, symbolName: string, modules: string[], faultId: FaultID): void {
+    if (symbol.name === symbolName) {
       const decl = TsUtils.getDeclaration(symbol);
 
       if (!decl) {
         return;
       }
+
       const sourceFile = decl.getSourceFile();
       const fileName = path.basename(sourceFile.fileName);
+
       if (
-        WORKER_MODULES.some((moduleName) => {
+        modules.some((moduleName) => {
           return fileName.startsWith(moduleName);
         })
       ) {
-        this.incrementCounters(node, FaultID.LimitedStdLibApi);
+        this.incrementCounters(node, faultId);
       }
     }
   }

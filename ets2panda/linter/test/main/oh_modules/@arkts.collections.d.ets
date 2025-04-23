@@ -13,6 +13,16 @@
  * limitations under the License.
  */
 
-export { worker } from '../oh_modules/@ohos.worker';
-export { collections } from '../oh_modules/@arkts.collections';
-export { utils } from '../oh_modules/@arkts.utils';
+export namespace collections {
+  export class Array<T> implements ConcatArray<T> {
+    constructor();
+  }
+
+  export class Map<K, V> {
+    constructor(entries?: readonly (readonly [K, V])[] | null);
+  }
+
+  export interface ConcatArray<T> {
+    
+  }
+}
