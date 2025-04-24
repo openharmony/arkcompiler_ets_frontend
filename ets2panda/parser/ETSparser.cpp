@@ -541,14 +541,6 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers, isDefault);
     }
 
-    if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
-        auto type = Lexer()->GetToken().Type();
-        if (type == lexer::TokenType::KEYW_FUNCTION || type == lexer::TokenType::KEYW_LET ||
-            type == lexer::TokenType::KEYW_CONST) {
-            Lexer()->NextToken();
-        }
-    }
-
     auto parseClassMethod = [&memberModifiers, &startLoc, isDefault, this](ir::Identifier *methodName) {
         auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers, isDefault);
         classMethod->SetStart(startLoc);
