@@ -164,6 +164,7 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
             if (((GetContext().Status() & ParserStatus::IN_AMBIENT_CONTEXT) != 0U) || IsNamespaceDecl()) {
                 return ParseModuleDeclaration();
             }
+            [[fallthrough]];
         }
         default: {
             break;
