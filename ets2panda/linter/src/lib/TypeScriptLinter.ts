@@ -1170,7 +1170,6 @@ export class TypeScriptLinter {
   }
 
   private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
-    this.handleDataObservation(node);
     const propName = node.name;
     this.handleLiteralAsPropertyName(node);
     const decorators = ts.getDecorators(node);
