@@ -159,6 +159,27 @@ let arrowFunc:() => void = ():void => {}
 */
 function testFunc():void {}
 
+/**
+* JsDocTest on typeAlias.
+*
+* @JsDocRecord1 comments
+* @JsDocRecord2 { JsDocRecord1 'param' } comments
+* @JsDocRecord3 {} comments
+*/
+type xx =
+/**
+* @xx {xx} xx
+*/
+'somexx'
+/**
+* @xx {xx} xx
+*/
+| 'somexx2'
+/**
+* @xx {xx} xx
+*/
+| 'somexx3'
+
 function main() {
   /**
   * JsDocTest on arrow variable decl.

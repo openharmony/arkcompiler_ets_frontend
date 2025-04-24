@@ -653,6 +653,9 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 
+    auto newStatus = GetContext().Status();
+    newStatus &= ~ParserStatus::ALLOW_JS_DOC_START;
+    SavedParserContext savedContext(this, newStatus);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 
