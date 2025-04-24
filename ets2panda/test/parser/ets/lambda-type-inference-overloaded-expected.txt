@@ -1643,4 +1643,3 @@
     }
   }
 }
-TypeError: Reference to foo is ambiguous [lambda-type-inference-overloaded.ets:28:5]
