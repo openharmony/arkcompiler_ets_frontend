@@ -29,11 +29,11 @@ using namespace std::literals::string_literals;
 static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::StringView::Iterator &lexerPos)
 {
     std::string value = lexer->SourceView(lexerPos.Index(), lexer->Save().Iterator().Index()).Mutf8();
-    while (value.back() == ' ') {
+    while (!value.empty() && value.back() == ' ') {
         value.pop_back();
     }
 
-    if (value.back() == ')' || value.back() == ',') {
+    if (!value.empty() && (value.back() == ')' || value.back() == ',')) {
         value.pop_back();
     }
 
