@@ -38,11 +38,7 @@ static void MaybeAllowConstAssign(checker::Type *targetType, ArenaVector<ir::Sta
         }
 
         auto *const assignmentExpr = stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
-        auto *const variable = assignmentExpr->Left()->AsMemberExpression()->Property()->AsIdentifier()->Variable();
-
-        if (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::READONLY)) {
-            assignmentExpr->SetIgnoreConstAssign();
-        }
+        assignmentExpr->SetIgnoreConstAssign();
     }
 }
 

@@ -1342,3 +1342,7 @@ semantic:
 - name: INTERFACE_PROPERTY_REQUIRES_SETTER
   id: 337
   message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
+
+- name: READONLY_PROPERTY_REASSIGN
+  id: 338
+  message: "The 'Readonly' property cannot be reassigned."
