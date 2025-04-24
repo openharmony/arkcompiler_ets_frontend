@@ -1187,3 +1187,6 @@ syntax:
 - name: MISSING_INIT_FOR_CONST_PACKAGE_PROP
   id: 294
   message: "Missing initialization for const package property"
+- name: PREDEFINED_TYPE_AS_IDENTIFIER
+  id: 295
+  message: "{} is a predefined type, cannot be used as an identifier"

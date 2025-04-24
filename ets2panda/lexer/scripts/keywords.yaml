@@ -65,10 +65,20 @@ keywords:
     keyword_like: [ets, ts]
     flags: [definable_type_name]
 
+  - name: 'Bigint'
+    token: KEYW_BUILTIN_BIGINT
+    keyword_like: [ets]
+    flags:  [predefined_type]
+
   - name: 'boolean'
     token: KEYW_BOOLEAN
     keyword_like: [ets, js, ts]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Boolean'
+    token: KEYW_BUILTIN_BOOLEAN
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'break'
     token: KEYW_BREAK
@@ -79,6 +89,11 @@ keywords:
     token: KEYW_BYTE
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Byte'
+    token: KEYW_BUILTIN_BYTE
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'case'
     token: KEYW_CASE
@@ -94,6 +109,11 @@ keywords:
     token: KEYW_CHAR
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Char'
+    token: KEYW_BUILTIN_CHAR
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'class'
     token: KEYW_CLASS
@@ -143,6 +163,11 @@ keywords:
     token: KEYW_DOUBLE
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Double'
+    token: KEYW_BUILTIN_DOUBLE
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'else'
     token: KEYW_ELSE
@@ -199,6 +224,11 @@ keywords:
     token: KEYW_FLOAT
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Float'
+    token: KEYW_BUILTIN_FLOAT
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'for'
     token: KEYW_FOR
@@ -280,6 +310,11 @@ keywords:
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
 
+  - name: 'Int'
+    token: KEYW_BUILTIN_INT
+    keyword_like: [ets]
+    flags:  [predefined_type]
+
   - name: 'interface'
     token: KEYW_INTERFACE
     keyword: [js, as, ets, ts]
@@ -305,6 +340,11 @@ keywords:
     token: KEYW_LONG
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
+
+  - name: 'Long'
+    token: KEYW_BUILTIN_LONG
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'meta'
     token: KEYW_META
@@ -340,12 +380,23 @@ keywords:
   - name: 'number'
     token: KEYW_NUMBER
     keyword_like: [ets, ts]
-    flags: [definable_type_name]
+    flags: [definable_type_name, predefined_type]
+
+  # issue 25066
+  # - name: 'Number'
+  #   token: KEYW_BUILTIN_NUMBER
+  #   keyword_like: [ets]
+  #   flags:  [predefined_type]
 
   - name: 'object'
     token: KEYW_OBJECT
-    keyword_like: [ts]
-    flags: [reserved_type_name]
+    keyword_like: [ets, ts]
+    flags: [reserved_type_name, predefined_type]
+
+  - name: 'Object'
+    token: KEYW_BUILTIN_OBJECT
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'of'
     token: KEYW_OF
@@ -409,6 +460,11 @@ keywords:
     keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
 
+  - name: 'Short'
+    token: KEYW_BUILTIN_SHORT
+    keyword_like: [ets]
+    flags:  [predefined_type]
+
   - name: 'static'
     token: KEYW_STATIC
     keyword: [js, as, ets, ts]
@@ -417,6 +473,11 @@ keywords:
     token: KEYW_STRING
     keyword_like: [ets, ts]
     flags: [definable_type_name]
+
+  - name: 'String'
+    token: KEYW_BUILTIN_STRING
+    keyword_like: [ets]
+    flags:  [predefined_type]
 
   - name: 'struct'
     token: KEYW_STRUCT
