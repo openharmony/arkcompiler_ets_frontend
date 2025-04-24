@@ -3540,6 +3540,37 @@ export class TsUtils {
     return undefined;
   }
 
+  /**
+   * Checks whether an exported identifier is imported from an ArkTS1 file.
+   * @param exportIdentifier The exported identifier to check.
+   * @param node The node where the export occurs (used to get the current source file).
+   * @returns true if imported from ArkTS1, false if not, undefined if undetermined.
+   */
+  isExportImportedFromArkTs1(exportIdentifier: ts.Identifier, node: ts.Node): boolean | undefined {
+    // Get the symbol associated with the identifier.
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(exportIdentifier);
+    if (!symbol) {
+      return undefined;
+    }
+
+    // If the symbol is an alias (imported), resolve the real symbol.
+    const realSymbol =
+      (symbol.flags & ts.SymbolFlags.Alias) !== 0 ? this.tsTypeChecker.getAliasedSymbol(symbol) : undefined;
+
+    const declarations = realSymbol?.getDeclarations();
+    if (!declarations || declarations.length === 0) {
+      return undefined;
+    }
+
+    // Get the source file where the declaration is located.
+    const importSourceFile = declarations[0].getSourceFile();
+
+    // Ensure import is from ArkTS1 file and usage is in ArkTS1.2 file
+    const currentSourceFile = node.getSourceFile();
+    return importSourceFile.fileName.endsWith(EXTNAME_ETS) && currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
+      !TsUtils.isArkts12File(importSourceFile) && TsUtils.isArkts12File(currentSourceFile);
+  }
+
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
     if (!sourceFile?.statements.length) {
       return false;

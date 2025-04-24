@@ -2210,6 +2210,8 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
     this.checkTypeFromSdk(tsVarDecl.type);
     this.handleNoStructuralTyping(tsVarDecl);
+    this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
+    this.handleObjectLiteralAssignmentToClass(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -3707,6 +3709,45 @@ export class TypeScriptLinter {
     }
   }
 
+  private isExportedEntityDeclaredInJs(exportDecl: ts.ExportDeclaration): boolean {
+    if (!this.options.arkts2) {
+      return false;
+    }
+
+    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
+      return false;
+    }
+
+    for (const exportSpecifier of exportDecl.exportClause.elements) {
+      const identifier = exportSpecifier.name;
+      if (this.tsUtils.isImportedFromJS(identifier)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private isExportedEntityDeclaredInArkTs1(exportDecl: ts.ExportDeclaration): boolean | undefined {
+    if (!this.options.arkts2) {
+      return false;
+    }
+
+    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
+      return false;
+    }
+
+    for (const exportSpecifier of exportDecl.exportClause.elements) {
+      const identifier = exportSpecifier.name;
+
+      if (this.tsUtils.isExportImportedFromArkTs1(identifier, exportDecl)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
     const declarationSourceFile = callSignature?.declaration?.getSourceFile();
     if (!declarationSourceFile) {
@@ -4794,11 +4835,22 @@ export class TypeScriptLinter {
   }
 
   private handleExportDeclaration(node: ts.Node): void {
+    const exportDecl = node as ts.ExportDeclaration;
+
+    if (this.isExportedEntityDeclaredInJs(exportDecl)) {
+      this.incrementCounters(node, FaultID.InteropJsObjectExport);
+      return;
+    }
+
+    if (this.isExportedEntityDeclaredInArkTs1(exportDecl)) {
+      this.incrementCounters(node, FaultID.InteropArkTs1ObjectExport);
+      return;
+    }
+
     if (!TypeScriptLinter.inSharedModule(node) || ts.isModuleBlock(node.parent)) {
       return;
     }
 
-    const exportDecl = node as ts.ExportDeclaration;
     if (exportDecl.exportClause === undefined) {
       this.incrementCounters(exportDecl, FaultID.SharedModuleNoWildcardExport);
       return;
@@ -6611,6 +6663,84 @@ export class TypeScriptLinter {
           this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement);
         }
       }
+    }
+  }
+
+  private handleObjectLiteralforUnionTypeInterop(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!node.type || !ts.isUnionTypeNode(node.type)) {
+      return;
+    }
+
+    if (!node.initializer || node.initializer.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
+      return;
+    }
+
+    const typeNodes = node.type.types;
+
+    const isDefected = typeNodes.some((tNode) => {
+      if (!ts.isTypeReferenceNode(tNode)) {
+        return false;
+      }
+      const type = this.tsTypeChecker.getTypeAtLocation(tNode);
+      const symbol = type.getSymbol();
+      if (!symbol) {
+        return false;
+      }
+      for (const declaration of symbol.declarations ?? []) {
+        if (!TsUtils.isArkts12File(declaration.getSourceFile())) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (isDefected) {
+      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
+    }
+  }
+
+  private handleObjectLiteralAssignmentToClass(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!node.initializer || node.initializer.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
+      return;
+    }
+    if (!node.type) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+    const symbol = type.getSymbol();
+    if (!symbol) {
+      return;
+    }
+
+    const declarations = symbol.declarations ?? [];
+
+    const isClass = declarations.some(ts.isClassDeclaration);
+    if (!isClass) {
+      return;
+    }
+
+    const isFromArkTs2 = declarations.some((decl) => {
+      return TsUtils.isArkts12File(decl.getSourceFile());
+    });
+
+    if (isFromArkTs2) {
+      return;
+    }
+
+    const hasConstructor = declarations.some((decl) => {
+      return ts.isClassDeclaration(decl) && decl.members.some(ts.isConstructorDeclaration);
+    });
+
+    if (hasConstructor) {
+      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
     }
   }
 }
