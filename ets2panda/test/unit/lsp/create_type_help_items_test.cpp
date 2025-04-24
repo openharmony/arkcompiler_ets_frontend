@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <cstddef>
 #include <iostream>
+#include <vector>
 #include "ir/astNode.h"
 #include "lsp/include/internal_api.h"
 #include "public/es2panda_lib.h"
@@ -44,8 +45,7 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemClassTest)
         initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(index0).c_str());
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    ark::ArenaVector<ark::es2panda::lsp::Type *> list =
-        ark::ArenaVector<ark::es2panda::lsp::Type *>(context->allocator->Adapter());
+    std::vector<ark::es2panda::checker::Type *> list;
     astNode->FindChild([&list](const ark::es2panda::ir::AstNode *child) {
         ark::es2panda::lsp::GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(child, list);
         return false;
@@ -72,8 +72,7 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemInterfaceTest)
         initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(index0).c_str());
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    ark::ArenaVector<ark::es2panda::lsp::Type *> list =
-        ark::ArenaVector<ark::es2panda::lsp::Type *>(context->allocator->Adapter());
+    std::vector<ark::es2panda::checker::Type *> list;
     astNode->FindChild([&list](const ark::es2panda::ir::AstNode *child) {
         ark::es2panda::lsp::GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(child, list);
         return false;
@@ -98,8 +97,7 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemGenericTypeTest)
         initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(index0).c_str());
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    ark::ArenaVector<ark::es2panda::lsp::Type *> list =
-        ark::ArenaVector<ark::es2panda::lsp::Type *>(context->allocator->Adapter());
+    std::vector<ark::es2panda::checker::Type *> list;
     astNode->FindChild([&list](const ark::es2panda::ir::AstNode *child) {
         ark::es2panda::lsp::GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(child, list);
         return false;
@@ -138,12 +136,11 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemTest)
         ctxTypeHelp = initializer.CreateContext(files.at(0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(0).c_str());
         auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctxTypeHelp);
         auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-        ark::es2panda::lsp::SignatureHelpItem result(context->allocator);
-        ark::ArenaVector<ark::es2panda::lsp::Type *> typeParameters =
-            ark::ArenaVector<ark::es2panda::lsp::Type *>(context->allocator->Adapter());
-        astNode->FindChild([&typeParameters, context, &result](const ark::es2panda::ir::AstNode *child) {
+        ark::es2panda::lsp::SignatureHelpItem result;
+        std::vector<ark::es2panda::checker::Type *> typeParameters;
+        astNode->FindChild([&typeParameters, &result](const ark::es2panda::ir::AstNode *child) {
             if (child->IsClassDeclaration()) {
-                ark::es2panda::lsp::GetTypeHelpItem(&typeParameters, child, context->allocator, result);
+                ark::es2panda::lsp::GetTypeHelpItem(&typeParameters, child, result);
             }
             return false;
         });

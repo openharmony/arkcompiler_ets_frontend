@@ -17,6 +17,8 @@
 #define ES2PANDA_LSP_INCLUDE_SIGNATURE_HELP_ITEMS_H
 
 #include <cstddef>
+#include <optional>
+#include <vector>
 #include "create_type_help_items.h"
 
 namespace ark::es2panda::lsp {
@@ -29,9 +31,10 @@ private:
     TextSpan applicableSpan_ {0, 0};
     uint32_t argumentCount_ {0};
     size_t argumentIndex_ {0};
+    Invocation invocation_;
 
 public:
-    void SetApplicableSpan(TextSpan &applicableSpan)
+    void SetApplicableSpan(TextSpan applicableSpan)
     {
         applicableSpan_ = applicableSpan;
     }
@@ -60,18 +63,25 @@ public:
     {
         return argumentIndex_;
     }
+    void SetInvocation(Invocation invocation)
+    {
+        invocation_ = invocation;
+    }
+    const Invocation &GetInvocation() const
+    {
+        return invocation_;
+    }
 };
 
-SignatureHelpItems CreateSignatureHelpItems(ArenaAllocator *allocator, ArenaVector<checker::Signature *> &signatures,
-                                            checker::Signature &signature, ArgumentListInfo &argumentListInfo);
+SignatureHelpItems CreateSignatureHelpItems(std::vector<checker::Signature *> &signatures,
+                                            checker::Signature *signature,
+                                            std::optional<ArgumentListInfo> argumentListInfo);
 
-ArenaVector<SignatureHelpItem> GetSignatureHelpItem(ArenaAllocator *allocator,
-                                                    ArenaVector<checker::Signature *> &signatures);
+std::vector<SignatureHelpItem> GetSignatureHelpItem(const std::vector<checker::Signature *> &signatures);
 
-SignatureHelpItem CreateSignatureHelpItem(ArenaAllocator *allocator, checker::Signature &signature);
+SignatureHelpItem CreateSignatureHelpItem(checker::Signature &signature);
 
-void SetSignatureHelpParameter(ArenaAllocator *allocator, const checker::SignatureInfo *signatureInfo,
-                               SignatureHelpItem &signatureHelpItem);
+void SetSignatureHelpParameter(const checker::SignatureInfo *signatureInfo, SignatureHelpItem &signatureHelpItem);
 
 }  // namespace ark::es2panda::lsp
 

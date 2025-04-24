@@ -26,6 +26,11 @@
 #include "ir/astNode.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/statements/functionDeclaration.h"
+#include <iostream>
+#include <optional>
+#include <ostream>
+#include <vector>
+#include "lsp/include/signature_help.h"
 
 namespace {
 
@@ -39,6 +44,114 @@ ark::es2panda::ir::AstNode *FindTokenOnLeftOfPosition(es2panda_Context *context,
     }
     const auto ctx = reinterpret_cast<ark::es2panda::public_lib::Context *>(context);
     return ark::es2panda::lsp::FindPrecedingToken(position, ctx->parserProgram->Ast(), ctx->allocator);
+}
+
+TEST_F(LSPSignatureHelpItemsTests, GetSignatureHelpItemsTest)
+{
+    const auto fileName = "getSignatureHelpItemsTest.ets";
+    const auto fileText = R"(
+    function test(a: number, b: string): void {
+        console.log(a);
+    }
+    test(1, "test");
+)";
+    const size_t index0 = 0;
+    const size_t index1 = 1;
+    const size_t index2 = 2;
+    const size_t position = 10;
+    const size_t argumentIndex1 = 19;
+    const size_t argumentIndex2 = 30;
+    std::vector<std::string> files = {fileName};
+    std::vector<std::string> texts = {fileText};
+    auto filePaths = CreateTempFile(files, texts);
+    ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(index0).c_str());
+    auto startingToken = FindTokenOnLeftOfPosition(ctx, position);
+    if (startingToken == nullptr) {
+        return;
+    }
+    std::vector<ark::es2panda::lsp::ArgumentListInfo> argumentInfo;
+    GetArgumentOrParameterListAndIndex(startingToken, argumentInfo);
+
+    EXPECT_EQ(argumentInfo.size(), index2);
+    EXPECT_EQ(argumentInfo[index0].GetArgumentIndex(), argumentIndex1);
+    EXPECT_EQ(argumentInfo[index1].GetArgumentIndex(), argumentIndex2);
+    initializer.DestroyContext(ctx);
+}
+TEST_F(LSPSignatureHelpItemsTests, GetResolvedSignatureForSignatureHelp)
+{
+    const auto fileName = "testSignature.ets";
+    const auto fileText = R"(
+function add(x: number, y: number): number {
+return x + y;
+}
+let result = add(1, 2);
+    )";
+    const size_t index0 = 0;
+    const size_t index2 = 3;
+    const size_t position = 77;
+    std::vector<std::string> files = {fileName};
+    std::vector<std::string> texts = {fileText};
+    auto filePaths = CreateTempFile(files, texts);
+
+    ark::es2panda::lsp::Initializer initializer;
+    es2panda_Context *ctx = initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, fileText);
+
+    auto callToken = FindTokenOnLeftOfPosition(ctx, position);
+    const auto callExpr = callToken->Parent();
+    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
+    auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
+    ASSERT_NE(callExpr, nullptr);
+    ASSERT_NE(callExpr, nullptr);
+    ASSERT_TRUE(callExpr->IsCallExpression());
+    std::vector<ark::es2panda::checker::Signature *> candidates;
+    auto *sig = ark::es2panda::lsp::GetResolvedSignatureForSignatureHelp(callExpr, astNode, candidates);
+
+    ASSERT_NE(sig, nullptr);
+
+    ASSERT_EQ(candidates.size(), index2);
+
+    initializer.DestroyContext(ctx);
+}
+TEST_F(LSPSignatureHelpItemsTests, GetCandidateOrTypeInfo)
+{
+    const auto fileName = "candidateOrTypeInfo.ets";
+    const auto fileText = R"(
+function multiply(a: number, b: number): number {
+return a * b;
+}
+let result = multiply(10, 20);
+    )";
+    const size_t index0 = 0;
+    const size_t position = 82;
+
+    std::vector<std::string> files = {fileName};
+    std::vector<std::string> texts = {fileText};
+    auto filePaths = CreateTempFile(files, texts);
+
+    ark::es2panda::lsp::Initializer initializer;
+    es2panda_Context *ctx = initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, fileText);
+
+    auto callToken = ark::es2panda::lsp::FindTokenOnLeftOfPosition(ctx, position);
+    ASSERT_NE(callToken, nullptr);
+    const auto callee = callToken->Parent();
+    std::vector<ark::es2panda::lsp::ArgumentListInfo> argumentInfoVec;
+    ark::es2panda::lsp::GetArgumentOrParameterListAndIndex(callee, argumentInfoVec);
+    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
+    auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
+
+    ASSERT_FALSE(argumentInfoVec.empty());
+    ark::es2panda::lsp::ArgumentListInfo info = argumentInfoVec[index0];
+    auto result = ark::es2panda::lsp::GetCandidateOrTypeInfo(info, astNode, false);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(std::holds_alternative<ark::es2panda::lsp::CandidateInfo>(*result));
+    auto candidateInfo = std::get<ark::es2panda::lsp::CandidateInfo>(*result);
+    EXPECT_EQ(candidateInfo.GetKind(), ark::es2panda::lsp::CandidateOrTypeKind::CANDIDATE);
+    EXPECT_FALSE(candidateInfo.GetSignatures().empty());
+    EXPECT_NE(candidateInfo.GetResolvedSignature(), nullptr);
+
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemTest)
@@ -58,7 +171,6 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemTest)
     auto filePaths = CreateTempFile(files, texts);
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
     es2panda_Context *ctx = initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, fileText);
-    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto callToken = FindTokenOnLeftOfPosition(ctx, position);
     const auto callNode = callToken->Parent();
     ASSERT_NE(callNode, nullptr);
@@ -69,8 +181,7 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemTest)
         callExpr = callNode->AsCallExpression();
     }
     ark::es2panda::checker::Signature *signature = callExpr->Signature();
-    ark::es2panda::lsp::SignatureHelpItem item =
-        ark::es2panda::lsp::CreateSignatureHelpItem(context->allocator, *signature);
+    ark::es2panda::lsp::SignatureHelpItem item = ark::es2panda::lsp::CreateSignatureHelpItem(*signature);
     bool found1 = false;
     bool found2 = false;
     EXPECT_FALSE(item.GetPrefixDisplayParts().empty());
@@ -109,7 +220,6 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemParamsTest)
     auto filePaths = CreateTempFile(files, texts);
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
     es2panda_Context *ctx = initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, fileText);
-    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto callToken = FindTokenOnLeftOfPosition(ctx, position);
     const auto callNode = callToken->Parent();
     ASSERT_NE(callNode, nullptr);
@@ -126,7 +236,7 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemParamsTest)
     if (funcNode->IsMethodDefinition()) {
         funcDecl = funcNode->AsMethodDefinition();
     }
-    ark::ArenaVector<ark::es2panda::checker::Signature *> signatures(context->allocator->Adapter());
+    std::vector<ark::es2panda::checker::Signature *> signatures;
     signatures.push_back(callExpr->Signature());
     signatures.push_back(funcDecl->Function()->Signature());
     ark::es2panda::lsp::ArgumentListInfo argumentListInfo;
@@ -134,8 +244,8 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemParamsTest)
     const size_t argumentIndex = 1;
     argumentListInfo.SetArgumentCount(argumentCount);
     argumentListInfo.SetArgumentIndex(argumentIndex);
-    auto signatureHelpItems = ark::es2panda::lsp::CreateSignatureHelpItems(context->allocator, signatures,
-                                                                           *callExpr->Signature(), argumentListInfo);
+    auto signatureHelpItems =
+        ark::es2panda::lsp::CreateSignatureHelpItems(signatures, callExpr->Signature(), argumentListInfo);
     EXPECT_EQ(signatureHelpItems.GetSelectedItemIndex(), index0);
     signatureHelpItems.Clear();
     initializer.DestroyContext(ctx);

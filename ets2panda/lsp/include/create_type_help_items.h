@@ -22,12 +22,12 @@
 #include "lexer/token/sourceLocation.h"
 #include "utils/arena_containers.h"
 #include <checker/checker.h>
+#include <checker/typeChecker/TypeChecker.h>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace ark::es2panda::lsp {
-
-using Type = checker::Type;
 
 // Define constants for symbol kinds
 constexpr const char *SYMBOL_KIND_PUNCTUATION = "punctuation";
@@ -38,17 +38,39 @@ constexpr const char *SYMBOL_KIND_ENUM_NAME = "enumName";
 constexpr const char *SYMBOL_KIND_PARAM_NAME = "paramName";
 constexpr const char *SYMBOL_KIND_TYPE = "type";
 
+struct SymbolDisplayPart {
+private:
+    std::string text_;
+    std::string kind_;
+
+public:
+    SymbolDisplayPart(std::string text, std::string kind) : text_(std::move(text)), kind_(std::move(kind)) {}
+
+    void SetText(const std::string &newText)
+    {
+        text_ = newText;
+    }
+    void SetKind(const std::string &newKind)
+    {
+        kind_ = newKind;
+    }
+    const std::string &GetText() const
+    {
+        return text_;
+    }
+    const std::string &GetKind() const
+    {
+        return kind_;
+    }
+};
+
 struct SignatureHelpParameter {
 private:
     std::string name_;
-    ArenaVector<SymbolDisplayPart> documentation_;
-    ArenaVector<SymbolDisplayPart> displayParts_;
+    std::vector<SymbolDisplayPart> documentation_;
+    std::vector<SymbolDisplayPart> displayParts_;
 
 public:
-    explicit SignatureHelpParameter(ArenaAllocator *allocator)
-        : documentation_(allocator->Adapter()), displayParts_(allocator->Adapter())
-    {
-    }
     void SetName(const std::string &newName)
     {
         this->name_ = newName;
@@ -66,11 +88,11 @@ public:
     {
         return name_;
     }
-    const ArenaVector<SymbolDisplayPart> &GetDocumentation() const
+    const std::vector<SymbolDisplayPart> &GetDocumentation() const
     {
         return documentation_;
     }
-    const ArenaVector<SymbolDisplayPart> &GetDisplayParts() const
+    const std::vector<SymbolDisplayPart> &GetDisplayParts() const
     {
         return displayParts_;
     }
@@ -82,22 +104,13 @@ public:
 };
 struct SignatureHelpItem {
 private:
-    ArenaVector<SymbolDisplayPart> prefixDisplayParts_;
-    ArenaVector<SymbolDisplayPart> suffixDisplayParts_;
-    ArenaVector<SymbolDisplayPart> separatorDisplayParts_;
-    ArenaVector<SignatureHelpParameter> parameters_;
-    ArenaVector<SymbolDisplayPart> documentation_;
+    std::vector<SymbolDisplayPart> prefixDisplayParts_;
+    std::vector<SymbolDisplayPart> suffixDisplayParts_;
+    std::vector<SymbolDisplayPart> separatorDisplayParts_;
+    std::vector<SignatureHelpParameter> parameters_;
+    std::vector<SymbolDisplayPart> documentation_;
 
 public:
-    explicit SignatureHelpItem(ArenaAllocator *allocator)
-        : prefixDisplayParts_(allocator->Adapter()),
-          suffixDisplayParts_(allocator->Adapter()),
-          separatorDisplayParts_(allocator->Adapter()),
-          parameters_(allocator->Adapter()),
-          documentation_(allocator->Adapter())
-    {
-    }
-
     void SetPrefixDisplayParts(const SymbolDisplayPart &part)
     {
         prefixDisplayParts_.push_back(part);
@@ -113,7 +126,7 @@ public:
     }
     void SetPrefixDisplayParts(const std::string &text, const std::string &kind)
     {
-        prefixDisplayParts_.push_back(SymbolDisplayPart(text, kind));
+        prefixDisplayParts_.emplace_back(SymbolDisplayPart(text, kind));
     }
 
     void SetParameters(SignatureHelpParameter &parameter)
@@ -122,26 +135,26 @@ public:
     }
     void SetDocumentation(const std::string &text, const std::string &kind)
     {
-        documentation_.push_back(SymbolDisplayPart(text, kind));
+        documentation_.emplace_back(SymbolDisplayPart(text, kind));
     }
 
-    const ArenaVector<SymbolDisplayPart> &GetPrefixDisplayParts() const
+    const std::vector<SymbolDisplayPart> &GetPrefixDisplayParts() const
     {
         return prefixDisplayParts_;
     }
-    const ArenaVector<SymbolDisplayPart> &GetSuffixDisplayParts() const
+    const std::vector<SymbolDisplayPart> &GetSuffixDisplayParts() const
     {
         return suffixDisplayParts_;
     }
-    const ArenaVector<SymbolDisplayPart> &GetSeparatorDisplayParts() const
+    const std::vector<SymbolDisplayPart> &GetSeparatorDisplayParts() const
     {
         return separatorDisplayParts_;
     }
-    const ArenaVector<SignatureHelpParameter> &GetParameters() const
+    const std::vector<SignatureHelpParameter> &GetParameters() const
     {
         return parameters_;
     }
-    const ArenaVector<SymbolDisplayPart> &GetDocumentation() const
+    const std::vector<SymbolDisplayPart> &GetDocumentation() const
     {
         return documentation_;
     }
@@ -160,21 +173,21 @@ public:
 
 struct SignatureHelpItems {
 private:
-    ArenaVector<SignatureHelpItem> items_;
+    std::vector<SignatureHelpItem> items_;
     TextSpan applicableSpan_ {0, 0};
     size_t selectedItemIndex_ {0};
     size_t argumentIndex_ {0};
     size_t argumentCount_ {0};
 
 public:
-    explicit SignatureHelpItems(ArenaAllocator *allocator) : items_(allocator->Adapter()) {}
-
     void SetItems(const SignatureHelpItem &item)
     {
         items_.push_back(item);
     }
     void SetApplicableSpan(const size_t &start, const size_t &line)
     {
+        applicableSpan_.start = start;
+        applicableSpan_.length = line;
         applicableSpan_.start = start;
         applicableSpan_.length = line;
     }
@@ -195,7 +208,7 @@ public:
     {
         return items_[index];
     }
-    const ArenaVector<SignatureHelpItem> &GetItems() const
+    const std::vector<SignatureHelpItem> &GetItems() const
     {
         return items_;
     }
@@ -228,12 +241,12 @@ enum class InvocationKind { CALL, TYPE_ARGS, CONTEXTUAL };
 
 struct CallInvocation {
     InvocationKind kind = InvocationKind::CALL;
-    ir::CallExpression *callExpressionNode = nullptr;
+    ir::AstNode *callExpressionNode = nullptr;
 };
 
 struct TypeArgsInvocation {
     InvocationKind kind = InvocationKind::TYPE_ARGS;
-    ir::Identifier *identifierNode = nullptr;
+    ir::AstNode *identifierNode = nullptr;
 };
 
 struct ContextualInvocation {
@@ -244,14 +257,13 @@ struct ContextualInvocation {
 
 using Invocation = std::variant<CallInvocation, TypeArgsInvocation, ContextualInvocation>;
 
-void GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(const ir::AstNode *node, ArenaVector<Type *> &result);
-ArenaVector<Type *> GetEffectiveTypeParameterDeclarations(const ir::AstNode *node, ArenaVector<Type *> &result);
+void GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(const ir::AstNode *node, std::vector<checker::Type *> &result);
+std::vector<checker::Type *> GetEffectiveTypeParameterDeclarations(const ir::AstNode *node,
+                                                                   std::vector<checker::Type *> &result);
 
-void GetTypeHelpItem(ArenaVector<Type *> *typeParameters, const ir::AstNode *node, ArenaAllocator *allocator,
-                     SignatureHelpItem &result);
+void GetTypeHelpItem(std::vector<checker::Type *> *typeParameters, const ir::AstNode *node, SignatureHelpItem &result);
 
-SignatureHelpItems CreateTypeHelpItems(ArenaAllocator *allocator, ir::AstNode *node, lexer::SourceRange location,
-                                       lexer::SourcePosition applicableSpan);
+SignatureHelpItems CreateTypeHelpItems(const ir::AstNode *node, lexer::SourceRange location, TextSpan applicableSpan);
 inline SymbolDisplayPart CreatePunctuation(const std::string &punc)
 {
     return SymbolDisplayPart(punc, SYMBOL_KIND_PUNCTUATION);

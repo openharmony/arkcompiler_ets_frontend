@@ -135,3 +135,4 @@ ets2panda_add_gtest(lsp_api_test_create_type_help_items CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_signature_help_items CPP_SOURCES
     signature_help_items_test.cpp
 )
+
