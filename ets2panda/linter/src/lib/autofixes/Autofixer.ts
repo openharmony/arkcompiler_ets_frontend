@@ -3002,7 +3002,7 @@ export class Autofixer {
         [argument]
       );
 
-      let start: number = call.getStart();
+      const start: number = call.getStart();
       let end: number = 0;
       const expr = call.parent;
       if (ts.isCallExpression(expr)) {
@@ -3531,22 +3531,24 @@ export class Autofixer {
         return undefined;
     }
   }
-  
+
   fixArrayIndexExprType(argExpr: ts.Expression): Autofix[] | undefined {
     void this;
     if (ts.isAsExpression(argExpr)) {
       const innerExpr = argExpr.expression;
-      return [{ 
-        start: argExpr.getStart(), 
-        end: argExpr.getEnd(), 
-        replacementText: `${innerExpr ? innerExpr.getText() : ''} as int` 
-      }];
+      return [
+        {
+          start: argExpr.getStart(),
+          end: argExpr.getEnd(),
+          replacementText: `${innerExpr ? innerExpr.getText() : ''} as int`
+        }
+      ];
     }
 
     if (ts.isBinaryExpression(argExpr)) {
       return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `(${argExpr.getText()}) as int` }];
     }
-   
+
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
   }
 }

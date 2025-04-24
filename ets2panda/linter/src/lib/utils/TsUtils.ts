@@ -3567,8 +3567,12 @@ export class TsUtils {
 
     // Ensure import is from ArkTS1 file and usage is in ArkTS1.2 file
     const currentSourceFile = node.getSourceFile();
-    return importSourceFile.fileName.endsWith(EXTNAME_ETS) && currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      !TsUtils.isArkts12File(importSourceFile) && TsUtils.isArkts12File(currentSourceFile);
+    return (
+      importSourceFile.fileName.endsWith(EXTNAME_ETS) &&
+      currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
+      !TsUtils.isArkts12File(importSourceFile) &&
+      TsUtils.isArkts12File(currentSourceFile)
+    );
   }
 
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
