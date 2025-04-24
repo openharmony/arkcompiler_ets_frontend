@@ -463,11 +463,15 @@ public:
     void SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
                                       std::tuple<const lexer::SourcePosition &, size_t, Signature *> info,
                                       bool lookForClassType);
+    void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
+                                                   ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
+                                                   const ArenaVector<ir::Expression *> &arguments);
     ArenaMultiMap<size_t, Signature *> GetSuitableSignaturesForParameter(
         const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
-        const lexer::SourcePosition &pos);
+        const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
+                                           const ArenaVector<ir::Expression *> &arguments,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
     Signature *ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpression *callExpr,
                                                           ArenaVector<Signature *> const &signatures,

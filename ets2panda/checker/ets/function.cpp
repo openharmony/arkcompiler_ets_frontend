@@ -683,7 +683,8 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
 {
     std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
-    Signature *mostSpecificSignature = ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, pos);
+    Signature *mostSpecificSignature =
+        ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, arguments, pos);
 
     if (mostSpecificSignature == nullptr) {
         LogError(diagnostic::AMBIGUOUS_FUNC_REF, {compatibleSignatures.front()->Function()->Id()->Name()}, pos);
@@ -849,9 +850,43 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
     }
 }
 
-static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
-                                                      ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter)
+void ETSChecker::CollectSuitableSignaturesForTypeInference(
+    size_t paramIdx, ArenaVector<Signature *> &signatures,
+    ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter, const ArenaVector<ir::Expression *> &arguments)
 {
+    // For lambda parameters, attempt to obtain the most matching signature through the number of lambda parameters
+    ES2PANDA_ASSERT(arguments.at(paramIdx)->IsArrowFunctionExpression());
+    [[maybe_unused]] size_t paramCount =
+        arguments.at(paramIdx)->AsArrowFunctionExpression()->Function()->Params().size();
+    size_t minMatchArgCount = SIZE_MAX;
+
+    for (auto *sig : signatures) {
+        auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        if (!sigParamType->IsETSFunctionType()) {
+            continue;
+        }
+
+        auto sigParamArgCount = sigParamType->AsETSFunctionType()->ArrowSignature()->ArgCount();
+        ES2PANDA_ASSERT(sigParamArgCount >= paramCount);
+
+        minMatchArgCount = std::min(minMatchArgCount, sigParamArgCount);
+    }
+
+    for (auto *sig : signatures) {
+        auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        if (!sigParamType->IsETSFunctionType()) {
+            continue;
+        }
+
+        if (sigParamType->AsETSFunctionType()->ArrowSignature()->ArgCount() == minMatchArgCount) {
+            bestSignaturesForParameter.insert({paramIdx, sig});
+        }
+    }
+
+    if (bestSignaturesForParameter.find(paramIdx) != bestSignaturesForParameter.end()) {
+        return;
+    }
+
     for (auto *sig : signatures) {
         if (paramIdx >= sig->Params().size() || !sig->Params().at(paramIdx)->TsType()->IsETSObjectType() ||
             !sig->Params().at(paramIdx)->TsType()->AsETSObjectType()->IsGlobalETSObjectType()) {
@@ -862,7 +897,7 @@ static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVect
 
 ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter(
     const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
-    const lexer::SourcePosition &pos)
+    const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos)
 {
     // Collect which signatures are most specific for each parameter.
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
@@ -871,8 +906,14 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
                                                                           TypeRelationFlag::ONLY_CHECK_WIDENING);
 
     for (size_t i = 0; i < paramCount; ++i) {
-        if (i >= argTypeInferenceRequired.size() || argTypeInferenceRequired[i]) {
-            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter);
+        if (i >= argTypeInferenceRequired.size()) {
+            for (auto *sig : signatures) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+            continue;
+        }
+        if (argTypeInferenceRequired[i]) {
+            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter, arguments);
             continue;
         }
         // 1st step: check which is the most specific parameter type for i. parameter.
@@ -899,6 +940,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
 
 Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                                    const std::vector<bool> &argTypeInferenceRequired,
+                                                   const ArenaVector<ir::Expression *> &arguments,
                                                    const lexer::SourcePosition &pos, size_t argumentsSize)
 {
     ES2PANDA_ASSERT(signatures.empty() == false);
@@ -937,7 +979,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     }
 
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter =
-        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, pos);
+        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, arguments, pos);
     // Find the signature that are most specific for all parameters.
     Signature *mostSpecificSignature = FindMostSpecificSignature(signatures, bestSignaturesForParameter, paramCount);
 
