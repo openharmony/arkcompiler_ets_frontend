@@ -88,8 +88,8 @@ export class ArkFile {
     }
 
     /**
-     * Returns the scene (i.e., {@link Scene}) built for the project. The {@link Scene} is the core class of ArkAnalyzer,
-     * through which users can access all the information of the analyzed code (project),
+     * Returns the scene (i.e., {@link Scene}) built for the project. The {@link Scene} is the core class of ArkAnalyzer, 
+     * through which users can access all the information of the analyzed code (project), 
      * including file list, class list, method list, property list, etc.
      * @returns The scene of the file.
      */
@@ -190,9 +190,9 @@ export class ArkFile {
     public addNamespace(namespace: ArkNamespace) {
         this.namespaces.set(namespace.getName(), namespace);
     }
-
+    
     /**
-     * Returns an **array** of import information.
+     * Returns an **array** of import information. 
      * The import information includes: clause's name, type, modifiers, location where it is imported from, etc.
      * @returns An **array** of import information.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import { DEFAULT } from '../common/TSConst';
 import { ArkBaseModel, ModifierType } from './ArkBaseModel';
 import { ArkError } from '../common/ArkError';
 import { ArkMetadataKind, CommentsMetadata } from './ArkMetadata';
+import { ArkNamespace } from './ArkNamespace';
 
 export type ExportSignature = NamespaceSignature | ClassSignature | MethodSignature | LocalSignature;
 
@@ -67,7 +68,7 @@ export class ExportInfo extends ArkBaseModel implements FromInfo {
     private originTsPosition?: LineColPosition;
     private tsSourceCode?: string;
     private declaringArkFile!: ArkFile;
-
+    private declaringArkNamespace?: ArkNamespace;
     private constructor() {
         super();
     }
@@ -133,6 +134,10 @@ export class ExportInfo extends ArkBaseModel implements FromInfo {
         return this.declaringArkFile;
     }
 
+    public getDeclaringArkNamespace(): ArkNamespace | undefined {
+        return this.declaringArkNamespace;
+    }
+
     public static Builder = class ArkExportBuilder {
         exportInfo: ExportInfo = new ExportInfo();
 
@@ -168,6 +173,11 @@ export class ExportInfo extends ArkBaseModel implements FromInfo {
 
         public declaringArkFile(value: ArkFile): ArkExportBuilder {
             this.exportInfo.declaringArkFile = value;
+            return this;
+        }
+
+        public declaringArkNamespace(value: ArkNamespace): ArkExportBuilder {
+            this.exportInfo.declaringArkNamespace = value;
             return this;
         }
 

@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
-import {AbstractInvokeExpr, ArkAssignStmt, ArkClass, ArkField, ArkNewExpr,
-    ArkReturnStmt, AstTreeUtils, ClassType, Local, Scene, Type } from "arkanalyzer";
+import {
+    AbstractInvokeExpr, ArkAssignStmt, ArkClass, ArkField, ArkNewExpr,
+    ArkReturnStmt, AstTreeUtils, ClassType, Local, Scene, Type
+} from "arkanalyzer";
 import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, ClassMatcher, MatcherTypes, MatcherCallback } from "../../Index";
 import { IssueReport } from "../../model/Defects";
-import {RuleFix} from "../../model/Fix";
-import {FixPosition, FixUtils} from "../../utils/common/FixUtils";
-import {WarnInfo} from "../../utils/common/Utils";
+import { RuleFix } from "../../model/Fix";
+import { FixPosition, FixUtils } from "../../utils/common/FixUtils";
+import { WarnInfo } from "../../utils/common/Utils";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
 const gMetaData: BaseMetaData = {
@@ -275,10 +277,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
     }
 
     private addIssueReport(warnInfo: WarnInfo, description: string, ruleFix?: RuleFix): void {
+        const problem = 'DataObservationNeedObserved';
         const severity = this.rule.alert ?? this.metaData.severity;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, description, severity, this.rule.ruleId,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
-
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, description,
+            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, ruleFix));
     }
 

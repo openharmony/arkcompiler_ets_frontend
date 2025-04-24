@@ -210,7 +210,7 @@ export async function checkEntryBuilder(checkEntry: CheckEntry): Promise<boolean
     // 1、 无指定文件则检查项目下所有文件
     let checkFileList = checkEntry.selectFileList.map(file => file.filePath);
     if (checkFileList.length === 0) {
-        checkFileList = FileUtils.getAllFiles(checkEntry.projectConfig.projectPath, ['.ts', '.ets', '.json5']);
+        checkFileList = FileUtils.getAllFiles(checkEntry.projectConfig.projectPath, ['.ts', '.ets', '.js', '.json5']);
     }
     
     // 2、文件过滤和文件级屏蔽处理

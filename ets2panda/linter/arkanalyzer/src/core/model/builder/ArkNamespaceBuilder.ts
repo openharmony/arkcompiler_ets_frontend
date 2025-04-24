@@ -21,7 +21,13 @@ import ts from 'ohos-typescript';
 import { ArkNamespace } from '../ArkNamespace';
 import { buildDecorators, buildModifiers } from './builderUtils';
 import Logger, { LOG_MODULE_TYPE } from '../../../utils/logger';
-import { buildExportAssignment, buildExportDeclaration, buildExportInfo, buildExportVariableStatement } from './ArkExportBuilder';
+import {
+    buildExportAssignment,
+    buildExportDeclaration,
+    buildExportInfo,
+    buildExportVariableStatement,
+    isExported
+} from './ArkExportBuilder';
 import { ArkClass } from '../ArkClass';
 import { ArkMethod } from '../ArkMethod';
 import { NamespaceSignature } from '../ArkSignature';
@@ -140,8 +146,8 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
         } else if (ts.isExportAssignment(child)) {
             buildExportAssignment(child, sourceFile, namespace.getDeclaringArkFile())
                 .forEach(item => namespace.addExportInfo(item));
-        } else if (ts.isVariableStatement(child)) {
-            buildExportVariableStatement(child, sourceFile, namespace.getDeclaringArkFile()).forEach(item => namespace.addExportInfo(item));
+        } else if (ts.isVariableStatement(child) && isExported(child.modifiers)) {
+            buildExportVariableStatement(child, sourceFile, namespace.getDeclaringArkFile(), namespace).forEach(item => namespace.addExportInfo(item));
         } else {
             logger.info('Child joined default method of arkFile: ', ts.SyntaxKind[child.kind]);
             // join default method

@@ -187,18 +187,20 @@ export class ThisBindCheck implements BaseChecker {
     private reportArkTSIssue(stmt: ArkAssignStmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
+        const problem = 'DefaultBindThis'
         const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, ARKTS_RULE_ID,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
+            severity, ARKTS_RULE_ID, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
 
     private reportArkUIIssue(stmt: ArkAssignStmt, operand: Value) {
         const severity = this.rule.alert ?? arkuiMetaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
+        const problem = 'BuilderParamContextChanged';
         const desc = `${arkuiMetaData.description} (${ARKUI_RULE_ID.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, desc, severity, ARKUI_RULE_ID,
-            warnInfo.filePath, arkuiMetaData.ruleDocPath, true, false, false);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
+            severity, ARKUI_RULE_ID, warnInfo.filePath, arkuiMetaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
 

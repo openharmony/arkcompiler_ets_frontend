@@ -115,6 +115,22 @@ def clean_old_packages(directory, prefix, suffix):
     return res
 
 
+def aa_copy_lib_files(options):
+    aa_path = os.path.join(options.source_path, 'arkanalyzer')
+    source_file_1 = os.path.join(aa_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es5.d.ts')
+    dest_path = os.path.join(aa_path, 'builtIn', 'typescript', 'api', '@internal')
+    copy_files(source_file_1, dest_path, True)
+    source_file_2 = os.path.join(aa_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es2015.collection.d.ts')
+    copy_files(source_file_2, dest_path, True)
+
+
+def hc_copy_lib_files(options):
+    hc_path = os.path.join(options.source_path, 'homecheck')
+    source_file = os.path.join(hc_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es5.d.ts')
+    dest_path = os.path.join(hc_path, 'resources', 'internalSdk', '@internal')
+    copy_files(source_file, dest_path, True)
+
+
 def pack_arkanalyzer(options, new_npm):
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
     tsc_file = 'file:' + options.typescript
@@ -129,6 +145,7 @@ def pack_arkanalyzer(options, new_npm):
     compile_cmd = [options.npm, 'run', 'compile']
     pack_cmd = [options.npm, 'pack']
     run_cmd(ts_install_cmd, aa_path)
+    aa_copy_lib_files(options)
     run_cmd(compile_cmd, aa_path)
     run_cmd(pack_cmd, aa_path)
 
@@ -161,6 +178,7 @@ def install_homecheck(options):
     pack_cmd = [options.npm, 'pack']
     compile_cmd = [options.npm, 'run', 'compile']
     run_cmd(ts_install_cmd, hc_path)
+    hc_copy_lib_files(options)
     run_cmd(compile_cmd, hc_path)
     run_cmd(pack_cmd, hc_path)
     exist_hc_packs = find_files_by_prefix_suffix(hc_path, hc_pack_prefix, pack_suffix)

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { LOG_LEVEL } from 'arkanalyzer';
+import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 
 export class ProjectConfig {
     projectName: string;
@@ -34,6 +34,7 @@ export class ProjectConfig {
     product: string;
     logLevel: LOG_LEVEL;
     arkAnalyzerLogLevel: LOG_LEVEL;
+
 
     // [filePath, languageTag] or [folderPath, languageTag]
     languageTags: Map<string, Language>;

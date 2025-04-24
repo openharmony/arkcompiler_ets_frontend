@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ArkClass, ArkMethod} from "arkanalyzer";
+import { ArkClass, ArkMethod } from "arkanalyzer";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher } from "../../Index";
@@ -52,9 +52,10 @@ export class NoOptionalMethodCheck implements BaseChecker {
     }
 
     private addIssueReport(warnInfo: { line: number; startCol: number; endCol: number; filePath: string; }) {
+        const problem = '';
         const severity = this.rule.alert ?? this.metaData.severity;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, this.metaData.description,
+            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
 

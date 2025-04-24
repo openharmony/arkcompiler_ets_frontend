@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
-import { CallGraph, CallGraphBuilder, Scene } from 'arkanalyzer/lib';
+import { ArkMethod, CallGraph, CallGraphBuilder, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
+import { WarnInfo} from "../../utils/common/Utils";
+import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
+import { DVFGBuilder } from "arkanalyzer/lib/VFG/builder/DVFGBuilder";
 
+const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Utils');
 
 export const CALL_DEPTH_LIMIT = 2;
 export class CallGraphHelper {
@@ -43,6 +48,35 @@ export class GlobalCallGraphHelper {
     }
 }
 
+export class DVFGHelper {
+    private static dvfgInstance: DVFG;
+    private static dvfgBuilder: DVFGBuilder;
+    private static built: Set<ArkMethod> = new Set();
+
+    private static createDVFGInstance(scene: Scene) {
+        if (!this.dvfgInstance) {
+            this.dvfgInstance = new DVFG(GlobalCallGraphHelper.getCGInstance(scene));
+            this.dvfgBuilder = new DVFGBuilder(this.dvfgInstance, scene);
+        }
+    }
+
+    public static buildSingleDVFG(method: ArkMethod, scene: Scene) {
+        if (!this.dvfgInstance) {
+            this.createDVFGInstance(scene);
+        }
+        if (!this.built.has(method)) {
+            this.dvfgBuilder.buildForSingleMethod(method);
+            this.built.add(method);
+        }
+    }
+    public static getOrNewDVFGNode(stmt: Stmt, scene: Scene): DVFGNode {
+        if (!this.dvfgInstance) {
+            this.createDVFGInstance(scene);
+        }
+        return this.dvfgInstance!.getOrNewDVFGNode(stmt);
+    }
+}
+
 export const CALLBACK_METHOD_NAME: string[] = [
     "onClick", // 点击事件，当用户点击组件时触发
     "onTouch", // 触摸事件，当手指在组件上按下、滑动、抬起时触发
@@ -61,3 +95,39 @@ export const CALLBACK_METHOD_NAME: string[] = [
     "onAreaChange", // 组件区域变化事件，组件尺寸、位置变化时触发
     "onVisibleAreaChange", // 组件可见区域变化事件，组件在屏幕中的显示区域面积变化时触发
 ];
+
+export function getLanguageStr(language: Language): string {
+    let targetLan: string = '';
+    switch (language) {
+        case Language.JAVASCRIPT:
+            targetLan = 'javascript';
+            break;
+        case Language.TYPESCRIPT:
+            targetLan = 'typescript';
+            break;
+        case Language.ARKTS1_1:
+            targetLan = 'arkts1.1';
+            break;
+        case Language.ARKTS1_2:
+            targetLan = 'arkts1.2';
+            break;
+        default:
+            break;
+    }
+    return targetLan;
+}
+
+export function getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
+    const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+    const originPosition = stmt.getOperandOriginalPosition(operand);
+    if (arkFile && originPosition) {
+        const originPath = arkFile.getFilePath();
+        const line = originPosition.getFirstLine();
+        const startCol = originPosition.getFirstCol();
+        const endCol = startCol;
+        return { line, startCol, endCol, filePath: originPath };
+    } else {
+        logger.debug('ArkFile is null.');
+    }
+    return { line: -1, startCol: -1, endCol: -1, filePath: '' };
+}

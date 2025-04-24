@@ -13,18 +13,21 @@
  * limitations under the License.
  */
 
-import {BaseChecker, BaseMetaData} from "../BaseChecker";
-import {ALERT_LEVEL, Rule} from "../../model/Rule";
-import {Defects, IssueReport} from "../../model/Defects";
-import {ClassMatcher, FileMatcher, MatcherCallback, MatcherTypes} from "../../matcher/Matchers";
-import {AbstractInvokeExpr, AliasType, ArkAssignStmt, ArkClass, ArkFile, ArkMethod, ArkNamespace, ArkNewExpr,
+import { BaseChecker, BaseMetaData } from "../BaseChecker";
+import { ALERT_LEVEL, Rule } from "../../model/Rule";
+import { Defects, IssueReport } from "../../model/Defects";
+import { ClassMatcher, FileMatcher, MatcherCallback, MatcherTypes } from "../../matcher/Matchers";
+import {
+    AbstractInvokeExpr, AliasType, ArkAssignStmt, ArkClass, ArkFile, ArkMethod, ArkNamespace, ArkNewExpr,
     ArkReturnStmt, ClassType,
     ImportInfo, Local, LOG_MODULE_TYPE, Logger, Scene, Stmt, Type,
-    Value} from "arkanalyzer";
+    Value
+} from "arkanalyzer";
 import { ExportType } from "arkanalyzer/lib/core/model/ArkExport";
-import {WarnInfo} from "../../utils/common/Utils";
-import {RuleFix} from "../../model/Fix";
+import { WarnInfo } from "../../utils/common/Utils";
+import { RuleFix } from "../../model/Fix";
 import { Language } from "arkanalyzer/lib/core/model/ArkFile";
+import { getLanguageStr } from "./Utils";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
 const gMetaData: BaseMetaData = {
@@ -224,28 +227,11 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             return;
         }
         const severity = interopRule.alert ?? this.metaData.severity;
-        let targetLan: string = '';
-        switch (targetLanguage) {
-            case Language.JAVASCRIPT:
-                targetLan = 'javascript';
-                break;
-            case Language.TYPESCRIPT:
-                targetLan = 'typescript';
-                break;
-            case Language.ARKTS1_1:
-                targetLan = 'arkts1.1';
-                break;
-            case Language.ARKTS1_2:
-                targetLan = 'arkts1.2';
-                break;
-            default:
-                break;
-        }
-
+        let targetLan = getLanguageStr(targetLanguage);
+        const problem = 'Interop';
         const describe = `Could not import object with boxed type from ${targetLan}${this.metaData.description}`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol,
-            describe, severity, interopRule.ruleId,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, describe,
+            severity, interopRule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
 

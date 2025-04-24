@@ -49,9 +49,9 @@ export async function exportIssues(checkEntry: CheckEntry): Promise<Map<string, 
             const endLine = line;
             const endColumn = column;
             const severity = defect.severity;
-            const problem = defect.description;
+            const problem = defect.problem;
             const suggest = '';
-            const rule = defect.ruleId;
+            const rule = defect.description;
             const ruleTag = -1;
             const autofixable = false;
             return { line, column, endLine, endColumn, severity, problem, suggest, rule, ruleTag, autofixable };
