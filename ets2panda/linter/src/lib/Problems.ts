@@ -213,6 +213,7 @@ export enum FaultID {
   BuiltinSymbolIterator,
   NoPropertyDescritor,
   BuiltinNoCtorFunc,
+  SharedArrayBufferDeprecated,
   // this should always be last enum
   LAST_ID
 }

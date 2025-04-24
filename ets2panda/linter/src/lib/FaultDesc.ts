@@ -212,3 +212,4 @@ faultDesc[FaultID.BuiltinThisArgs] = 'No thisArgs as a type in API';
 faultDesc[FaultID.BuiltinSymbolIterator] = 'No "Symbol.iterator" in API';
 faultDesc[FaultID.NoPropertyDescritor] = 'Not support property descriptor';
 faultDesc[FaultID.BuiltinNoCtorFunc] = 'Api is not support ctor-signature and call-signature';
+faultDesc[FaultID.SharedArrayBufferDeprecated] = 'SharedArrayBuffer is not supported';

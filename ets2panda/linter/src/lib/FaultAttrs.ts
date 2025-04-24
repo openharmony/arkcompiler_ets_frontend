@@ -224,3 +224,4 @@ faultsAttrs[FaultID.BuiltinThisArgs] = new FaultAttributes(345);
 faultsAttrs[FaultID.BuiltinSymbolIterator] = new FaultAttributes(346);
 faultsAttrs[FaultID.NoPropertyDescritor] = new FaultAttributes(347);
 faultsAttrs[FaultID.BuiltinNoCtorFunc] = new FaultAttributes(348);
+faultsAttrs[FaultID.SharedArrayBufferDeprecated] = new FaultAttributes(349);

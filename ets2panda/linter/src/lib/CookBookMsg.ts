@@ -317,3 +317,4 @@ cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-b
 cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
 cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';
 cookBookTag[348] = 'API is not support ctor signature and func (arkts-builtin-cotr)';
+cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-support-sharedarraybuffer)';

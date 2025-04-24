@@ -104,7 +104,7 @@ import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import * as builtinWhiteList from './data/BuiltinList.json';
 import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
-import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
+import { USE_SHARED, USE_CONCURRENT, ESLIB_SHAREDMEMORY_FILENAME } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -4249,6 +4249,7 @@ export class TypeScriptLinter {
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
 
+    this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkDuplicateDeclName(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
@@ -4385,9 +4386,25 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSharedArrayBuffer(node: ts.TypeReferenceNode | ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const typeNameIdentifer = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifer)?.getDeclarations();
+    const isSharedMemoryEsLib = decls?.some((decl) => {
+      const srcFileName = decl.getSourceFile().fileName;
+      return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
+    });
+    if (isSharedMemoryEsLib) {
+      this.incrementCounters(typeNameIdentifer, FaultID.SharedArrayBufferDeprecated);
+    }
+  }
+
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
 
+    this.handleSharedArrayBuffer(typeRef);
     this.handleSdkDuplicateDeclName(typeRef);
 
     this.handleSdkConstructorIface(typeRef);
