@@ -388,7 +388,7 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
             // A workaround check for new Interface[...] in test cases
             newArrayInstanceExpr->SetSignature(checker->CollectParameterlessConstructor(
                 calleeObj->ConstructSignatures(), newArrayInstanceExpr->Start()));
-            checker->ValidateSignatureAccessibility(calleeObj, nullptr, newArrayInstanceExpr->Signature(),
+            checker->ValidateSignatureAccessibility(calleeObj, newArrayInstanceExpr->Signature(),
                                                     newArrayInstanceExpr->Start());
         } else {
             checker->LogError(diagnostic::ABSTRACT_CLASS_AS_ARRAY_ELEMENT_TYPE, {}, newArrayInstanceExpr->Start());
@@ -501,7 +501,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
 
-        checker->ValidateSignatureAccessibility(calleeObj, nullptr, signature, expr->Start());
+        checker->ValidateSignatureAccessibility(calleeObj, signature, expr->Start());
 
         if (calleeType->IsETSDynamicType()) {
             ES2PANDA_ASSERT(signature->Function()->IsDynamic());
@@ -1317,7 +1317,7 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
 
     if (calleeType->IsETSMethodType()) {
         ETSObjectType *calleeObj = GetCallExpressionCalleeObject(checker, expr, calleeType);
-        checker->ValidateSignatureAccessibility(calleeObj, expr, signature, expr->Start());
+        checker->ValidateSignatureAccessibility(calleeObj, signature, expr->Start());
     }
 
     if (calleeType->IsETSMethodType() && signature->Function()->IsDynamic()) {
@@ -1802,7 +1802,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     for (checker::Signature *sig : objType->ConstructSignatures()) {
         if (sig->Params().empty()) {
             haveEmptyConstructor = true;
-            checker->ValidateSignatureAccessibility(objType, nullptr, sig, expr->Start());
+            checker->ValidateSignatureAccessibility(objType, sig, expr->Start());
             break;
         }
     }

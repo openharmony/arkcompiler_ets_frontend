@@ -169,8 +169,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         checker->LogError(diagnostic::MISSING_ITERATOR_METHOD_WITH_SIG, {}, position);
         return nullptr;
     }
-    checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
-                                            {{diagnostic::INVISIBLE_ITERATOR, {}}});
+    checker->ValidateSignatureAccessibility(sourceType, signature, position, {{diagnostic::INVISIBLE_ITERATOR, {}}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 

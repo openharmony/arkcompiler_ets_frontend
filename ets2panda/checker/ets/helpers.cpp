@@ -891,7 +891,7 @@ static checker::Type *ResolveGetter(checker::ETSChecker *checker, ir::MemberExpr
         return nullptr;
     }
 
-    checker->ValidateSignatureAccessibility(objType, nullptr, originalGetter, expr->Start());
+    checker->ValidateSignatureAccessibility(objType, originalGetter, expr->Start());
     return originalGetter->ReturnType();
 }
 

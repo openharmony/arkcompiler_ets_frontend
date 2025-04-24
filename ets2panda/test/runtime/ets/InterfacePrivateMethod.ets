@@ -18,7 +18,7 @@ interface Vehicle {
         return (rpm * trq) / 5252;
     }
 
-    getPwrIndex/* @@ label */(trq: int): int{
+    getPwrIndex(trq: int): int{
         return this.getHorsePower3(5252, trq);
     }
 }
@@ -28,5 +28,3 @@ class Car implements Vehicle{}
 function main(): void {
     assertEQ(new Car().getPwrIndex(1), 1);
 }
-
-/* @@@ label Error TypeError: Cannot reference 'this' in this context.  */
