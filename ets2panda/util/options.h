@@ -59,17 +59,17 @@ public:
 
     // NOTE(dkofanov): Replace this getter with something that does 'std::move(parserInputContents_)' as currently it
     // encourages copying of 'parserInputContents_' data.
-    auto CStrParserInputContents() const
+    std::pair<const char *, size_t> CStrParserInputContents() const
     {
         return std::pair<const char *, size_t> {parserInputContents_.c_str(), parserInputContents_.size()};
     }
 
-    const auto &ArkTSConfig() const
+    const std::shared_ptr<ArkTsConfig> &ArkTSConfig() const
     {
         return arktsConfig_;
     }
 
-    auto LogLevel() const
+    Logger::Level LogLevel() const
     {
         return logLevel_;
     }
@@ -81,7 +81,7 @@ public:
                                                  : CompilationMode::PROJECT;
     }
 
-    auto GetCompilationMode() const
+    CompilationMode GetCompilationMode() const
     {
         return compilationMode_;
     }
@@ -105,7 +105,7 @@ public:
         return evalMode_ == eval_mode::FUNCTION;
     }
 
-    auto SourceFileName() const
+    std::string SourceFileName() const
     {
         return inputFile_.GetValue();
     }
@@ -115,36 +115,36 @@ public:
         return extension_ != ScriptExtension::ETS;
     }
 
-    const auto &GetAstVerifierWarnings() const
+    const std::array<bool, gen::ast_verifier::COUNT> &GetAstVerifierWarnings() const
     {
         return verifierWarnings_;
     }
-    const auto &GetAstVerifierErrors() const
+    const std::array<bool, gen::ast_verifier::COUNT> &GetAstVerifierErrors() const
     {
         return verifierErrors_;
     }
-    const auto &GetSkipPhases() const
+    const std::set<std::string> &GetSkipPhases() const
     {
         return skipPhases_;
     }
-    const auto &GetDumpBeforePhases() const
+    const std::set<std::string> &GetDumpBeforePhases() const
     {
         return dumpBeforePhases_;
     }
-    const auto &GetDumpEtsSrcBeforePhases() const
+    const std::set<std::string> &GetDumpEtsSrcBeforePhases() const
     {
         return dumpEtsSrcBeforePhases_;
     }
-    const auto &GetDumpAfterPhases() const
+    const std::set<std::string> &GetDumpAfterPhases() const
     {
         return dumpAfterPhases_;
     }
-    const auto &GetDumpEtsSrcAfterPhases() const
+    const std::set<std::string> &GetDumpEtsSrcAfterPhases() const
     {
         return dumpEtsSrcAfterPhases_;
     }
 
-    const auto &GetEtsWarningCollection() const
+    const std::vector<ETSWarnings> &GetEtsWarningCollection() const
     {
         return etsWarningCollection_;
     }

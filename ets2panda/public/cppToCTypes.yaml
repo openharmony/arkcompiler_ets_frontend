@@ -416,11 +416,11 @@ change_types:
             \tauto resultSet = "
           end: ";\n
             \t*|return_args.0.name| = resultSet|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -462,11 +462,11 @@ change_types:
             \tauto resultSet = "
           end: ";\n
             \t*|return_args.0.name| = resultSet|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tres[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -634,11 +634,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : resultMap) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -694,11 +694,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : (*resultMap)) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -1175,7 +1175,7 @@ change_types:
       namespace: 'checker::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<checker::|es2panda_arg.type.name| |es2panda_arg.type.ptr_depth|>(|arg_name|));
         var_name: '|arg_name|E2p'
 
@@ -2289,7 +2289,7 @@ change_types:
       namespace: 'lexer::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<lexer::SourcePosition *>(|arg_name|);
+          auto &|arg_name|E2p = *reinterpret_cast<lexer::SourcePosition *>(|arg_name|);
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_SourcePosition *>(
@@ -2344,7 +2344,7 @@ change_types:
       namespace: 'lexer::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<lexer::SourceRange *>(|arg_name|);
+          auto &|arg_name|E2p = *reinterpret_cast<lexer::SourceRange *>(|arg_name|);
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_SourceRange *>(
@@ -2378,7 +2378,7 @@ change_types:
               name: es2panda_ErrorLogger
               ptr_depth: 1
           start: >-
-            (reinterpret_cast<?const? util::DiagnosticEngine &>(ast))->
+            (reinterpret_cast<?const? util::DiagnosticEngine *>(ast))->
         constructor_cast:
           start: >-
             ctxAllocator->New<util::DiagnosticEngine>(
@@ -2399,7 +2399,7 @@ change_types:
       namespace: 'util::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<util::DiagnosticEngine &>(|arg_name|);
+          auto &|arg_name|E2p = *(reinterpret_cast<util::DiagnosticEngine *>(|arg_name|));
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -2449,7 +2449,7 @@ change_types:
       namespace: 'compiler::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<compiler::VReg *>(|arg_name|);
+          auto &|arg_name|E2p = *reinterpret_cast<compiler::VReg *>(|arg_name|);
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_VReg *>(
@@ -2504,7 +2504,7 @@ change_types:
       namespace: 'compiler::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<compiler::IRNode *>(|arg_name|);
+          auto &|arg_name|E2p = *reinterpret_cast<compiler::IRNode *>(|arg_name|);
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_IRNode *>(
@@ -3005,41 +3005,13 @@ change_types:
       namespace: 'checker::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<checker::CheckerContext *>(|arg_name|));
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_CheckerContext *>(reinterpret_cast<Context *>(context)->allocator->
             New<checker::CheckerContext>
           end: )
-        var_name: '|arg_name|E2p'
-
-  - es2panda_arg:
-      name: '|arg_name|'
-      type:
-        name: 'CompilerOptions'
-      max_ptr_depth: 1
-      min_ptr_depth: 1
-    new_args:
-    cast:
-        expression: >-
-          auto |arg_name|E2p =
-          &(reinterpret_cast<Context *>(context)->config->options->CompilerOptions());
-        call_cast:
-          start: >-
-            (reinterpret_cast<Context *>(context)->config->options->CompilerOptions().
-        var_name: '|arg_name|E2p'
-
-  - es2panda_arg:
-      name: '|arg_name|'
-      type:
-        name: 'CompilerOptions'
-      max_ptr_depth: 0
-    new_args:
-    cast:
-        expression: >-
-          auto |arg_name|E2p =
-          reinterpret_cast<Context *>(context)->config->options->CompilerOptions();
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -3089,7 +3061,7 @@ change_types:
       namespace: 'checker::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<checker::ResolveResult *>(|arg_name|));
         var_name: '|arg_name|E2p'
 
@@ -3259,7 +3231,7 @@ change_types:
       namespace: 'compiler::ast_verifier::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<compiler::ast_verifier::VerificationContext *>(|arg_name|));
         var_name: '|arg_name|E2p'
 
@@ -3310,7 +3282,7 @@ change_types:
       namespace: 'compiler::ast_verifier::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<compiler::ast_verifier::ASTVerifier *>(|arg_name|));
         var_name: '|arg_name|E2p'
 
@@ -3361,7 +3333,7 @@ change_types:
       namespace: 'compiler::ast_verifier::'
     cast:
         expression: >-
-          auto |arg_name|E2p =
+          auto &|arg_name|E2p =
           *(reinterpret_cast<compiler::ast_verifier::CheckMessage *>(|arg_name|));
         reverse_cast:
           start: >-
@@ -3793,7 +3765,7 @@ change_types:
         |arg_name|E2p->specifier = |arg_name|specifier;\n
         |arg_name|E2p->variable = |arg_name|variable;\n"
       reverse_cast:
-        start: DynamicImportDataToE2p(reinterpret_cast<Context *>(context)->allocator,
+        start: DynamicImportDataToE2pPtr(reinterpret_cast<Context *>(context)->allocator,
         end: )
       var_name: "|arg_name|E2p"
 
@@ -3820,6 +3792,59 @@ change_types:
         |arg_name|E2p.variable = |arg_name|variable;\n"
       reverse_cast:
         start: DynamicImportDataToE2p(
+        end: )
+      var_name: "|arg_name|E2p"
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: OverloadInfo
+        namespace: ir
+      max_ptr_depth: 1
+      min_ptr_depth: 1
+    new_args:
+      - name: '|arg_name|'
+        type:
+          name: es2panda_OverloadInfo
+          ptr_depth: 1
+        namespace: 'ir::'
+    cast:
+      expression: "\
+        auto |arg_name|E2p = reinterpret_cast<Context *>(context)->allocator->New<ir::OverloadInfo>();
+        |arg_name|E2p->minArg = |arg_name|->minArg;\n
+        |arg_name|E2p->maxArg = |arg_name|->maxArg;\n
+        |arg_name|E2p->needHelperOverload = |arg_name|->needHelperOverload;\n
+        |arg_name|E2p->isDeclare = |arg_name|->isDeclare;\n
+        |arg_name|E2p->hasRestVar = |arg_name|->hasRestVar;\n
+        |arg_name|E2p->returnVoid = |arg_name|->returnVoid;\n"
+      reverse_cast:
+        start: OverloadInfoToE2pPtr(reinterpret_cast<Context *>(context)->allocator,
+        end: )
+      var_name: "|arg_name|E2p"
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: OverloadInfo
+        namespace: ir
+      max_ptr_depth: 0
+    new_args:
+      - name: '|arg_name|'
+        type:
+          name: es2panda_OverloadInfo
+          ptr_depth: 0
+        namespace: 'ir::'
+    cast:
+      expression: "\
+        ir::OverloadInfo |arg_name|E2p;
+        |arg_name|E2p.minArg = |arg_name|.minArg;\n
+        |arg_name|E2p.maxArg = |arg_name|.maxArg;\n
+        |arg_name|E2p.needHelperOverload = |arg_name|.needHelperOverload;\n
+        |arg_name|E2p.isDeclare = |arg_name|.isDeclare;\n
+        |arg_name|E2p.hasRestVar = |arg_name|.hasRestVar;\n
+        |arg_name|E2p.returnVoid = |arg_name|.returnVoid;\n"
+      reverse_cast:
+        start: OverloadInfoToE2p(
         end: )
       var_name: "|arg_name|E2p"
 
@@ -3883,3 +3908,140 @@ change_types:
             ctxAllocator->New<util::ImportPathManager>(
           end: )
         var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: Path
+        namespace: util
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: es2panda_Path
+        ptr_depth: 1
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto &|arg_name|E2p =
+          *(reinterpret_cast<util::Path *>(|arg_name|));
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_Path *>(reinterpret_cast<Context *>(context)->allocator->
+            New<util::Path>
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: Path
+        namespace: util
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: 'es2panda_Path'
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<util::Path |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_Path |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_Path
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? util::Path *>(classInstance))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<util::Path>(
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'Options'
+        namespace: 'gen'
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: 'es2panda_Options'
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<util::gen::Options |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_Options |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_Options
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? util::gen::Options *>(classInstance))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<util::gen::Options>(
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'Options'
+        namespace: 'util'
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: 'es2panda_Options'
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<util::Options |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_Options |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_Options
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? util::Options *>(classInstance))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<util::Options>(
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: arg_list_t
+        namespace: gen
+      max_ptr_depth: 0
+    new_args:
+    - name: '|arg_name|'
+      type:
+        name: vector
+        namespace: std
+        ref_depth: 2
+        template_args:
+        - type:
+            name: string
+            namespace: std
+    cast:
+        reverse_cast: {}
