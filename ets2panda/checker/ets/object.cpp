@@ -1704,7 +1704,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
             ->Callee()
             ->IsThisExpression()) {
         auto *constructorCall = funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->AsCallExpression();
-        if (constructorCall->TsType()->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+        if (constructorCall->TsType() == nullptr || constructorCall->TsType()->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
             LogError(diagnostic::NO_SUCH_CTOR_SIG, {}, constructorCall->Start());
             return;
         }
