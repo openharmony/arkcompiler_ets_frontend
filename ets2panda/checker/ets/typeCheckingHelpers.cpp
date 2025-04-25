@@ -291,7 +291,8 @@ bool Type::PossiblyETSString() const
 
 static bool IsValueTypedObjectType(ETSObjectType const *t)
 {
-    return t->IsGlobalETSObjectType() || t->HasObjectFlag(ETSObjectFlags::VALUE_TYPED);
+    return t->IsGlobalETSObjectType() || t->HasObjectFlag(ETSObjectFlags::VALUE_TYPED) ||
+           t->HasObjectFlag(ETSObjectFlags::ENUM_OBJECT);
 }
 
 bool Type::PossiblyETSValueTyped() const

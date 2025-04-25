@@ -162,10 +162,10 @@ template <typename ElementMaker>
 }
 
 void EnumLoweringPhase::CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl,
-                                             ir::ClassDefinition *const enumClass)
+                                             ir::ClassDefinition *const enumClass, EnumType enumType)
 {
     int32_t ordinal = 0;
-    auto createEnumItemField = [this, enumClass, &ordinal](ir::TSEnumMember *const member) {
+    auto createEnumItemField = [this, enumClass, enumType, &ordinal](ir::TSEnumMember *const member) {
         auto *const enumMemberIdent =
             checker_->AllocNode<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
         auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
@@ -174,6 +174,29 @@ void EnumLoweringPhase::CreateEnumItemFields(const ir::TSEnumDeclaration *const 
         ordinal++;
         ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
         newExprArgs.push_back(ordinalLiteral);
+
+        ir::Expression *valueArgument = nullptr;
+        switch (enumType) {
+            case EnumType::INT: {
+                auto enumFieldValue =
+                    member->AsTSEnumMember()->Init()->AsNumberLiteral()->Number().GetValue<std::int32_t>();
+                valueArgument = checker_->AllocNode<ir::NumberLiteral>(lexer::Number(enumFieldValue));
+                break;
+            }
+            case EnumType::LONG: {
+                auto enumFieldValue =
+                    member->AsTSEnumMember()->Init()->AsNumberLiteral()->Number().GetValue<std::int64_t>();
+                valueArgument = checker_->AllocNode<ir::NumberLiteral>(lexer::Number(enumFieldValue));
+                break;
+            }
+            case EnumType::STRING: {
+                auto enumFieldValue = member->AsTSEnumMember()->Init()->AsStringLiteral()->Str();
+                valueArgument = checker_->AllocNode<ir::StringLiteral>(enumFieldValue);
+                break;
+            }
+        }
+        newExprArgs.push_back(valueArgument);
+
         auto enumTypeAnnotation1 = enumTypeAnnotation->Clone(Allocator(), nullptr);
         auto *const newExpression =
             checker_->AllocNode<ir::ETSNewClassInstanceExpression>(enumTypeAnnotation1, std::move(newExprArgs));
@@ -209,20 +232,52 @@ ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclarat
     // clang-format on
 }
 
+static ir::TypeNode *CreateType(checker::ETSChecker *checker, EnumLoweringPhase::EnumType enumType)
+{
+    switch (enumType) {
+        case EnumLoweringPhase::EnumType::INT: {
+            return checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, checker->Allocator());
+        }
+        case EnumLoweringPhase::EnumType::LONG: {
+            return checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::LONG, checker->Allocator());
+        }
+        case EnumLoweringPhase::EnumType::STRING: {
+            return MakeTypeReference(checker, EnumLoweringPhase::STRING_REFERENCE_TYPE);
+        }
+        default: {
+            ES2PANDA_UNREACHABLE();
+        }
+    }
+
+    return nullptr;
+}
+
 ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *const enumDecl,
-                                                     const DeclarationFlags flags, bool isIntEnum)
+                                                     const DeclarationFlags flags, EnumType enumType)
 {
     auto *ident = Allocator()->New<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
     ident->SetRange(enumDecl->Key()->Range());
-    auto enumFlag = isIntEnum ? ir::ClassDefinitionModifiers::INT_ENUM_TRANSFORMED
-                              : ir::ClassDefinitionModifiers::STRING_ENUM_TRANSFORMED;
+    auto enumFlag = enumType == EnumType::INT || enumType == EnumType::LONG
+                        ? ir::ClassDefinitionModifiers::INT_ENUM_TRANSFORMED
+                        : ir::ClassDefinitionModifiers::STRING_ENUM_TRANSFORMED;
     auto baseClassDefinitionFlag = ir::ClassDefinitionModifiers::CLASS_DECL | enumFlag;
+
+    auto typeParamsVector = ArenaVector<ir::TypeNode *>(checker_->Allocator()->Adapter());
+    typeParamsVector.push_back(CreateType(checker_, enumType));
+    auto *typeParam = checker_->AllocNode<ir::TSTypeParameterInstantiation>(std::move(typeParamsVector));
+
+    auto *identRef = checker_->AllocNode<ir::Identifier>(util::StringView(BASE_CLASS_NAME), checker_->Allocator());
+    auto *typeRefPart =
+        checker_->AllocNode<ir::ETSTypeReferencePart>(identRef, typeParam, nullptr, checker_->Allocator());
+    auto *superClass = checker_->AllocNode<ir::ETSTypeReference>(typeRefPart, checker_->Allocator());
+
     auto *classDef = checker_->AllocNode<ir::ClassDefinition>(
         Allocator(), ident,
         flags.isLocal ? baseClassDefinitionFlag | ir::ClassDefinitionModifiers::LOCAL : baseClassDefinitionFlag,
         enumDecl->IsDeclare() ? ir::ModifierFlags::FINAL | ir::ModifierFlags::DECLARE : ir::ModifierFlags::FINAL,
         Language(Language::Id::ETS));
 
+    classDef->SetSuper(superClass);
     auto *classDecl = checker_->AllocNode<ir::ClassDeclaration>(classDef, Allocator());
 
     if (enumDecl->IsExported()) {
@@ -237,7 +292,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
     if (!enumDecl->IsDeclare()) {
         CreateCCtorForEnumClass(classDef);
     }
-    CreateCtorForEnumClass(classDef);
+    CreateCtorForEnumClass(classDef, enumType);
 
     return classDecl;
 }
@@ -282,13 +337,18 @@ ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *co
     return field;
 }
 
-ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass)
+ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass,
+                                                                        EnumType enumType)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
     auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *const inputOrdinalParam = MakeFunctionParam(checker_, PARAM_ORDINAL, intTypeAnnotation);
     params.push_back(inputOrdinalParam);
+
+    ir::TypeNode *typeAnnotation = CreateType(checker_, enumType);
+    auto *const inputValueParam = MakeFunctionParam(checker_, PARAM_VALUE, typeAnnotation);
+    params.push_back(inputValueParam);
 
     auto *id = checker_->AllocNode<ir::Identifier>("constructor", Allocator());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
@@ -308,6 +368,23 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
 
     func->SetIdent(id);
 
+    if (enumClass->IsDeclare()) {
+        // NOTE: In aliveAnalyzer call to super is processed and leads to error. Need to invetigate it
+        return func;
+    }
+
+    auto *valueIdentifier = checker_->AllocNode<ir::Identifier>(PARAM_VALUE, Allocator());
+    valueIdentifier->SetVariable(inputValueParam->Ident()->Variable());
+
+    ArenaVector<ir::Expression *> callArguments(checker_->Allocator()->Adapter());
+    auto *callee = checker_->AllocNode<ir::SuperExpression>();
+    callArguments.push_back(valueIdentifier);
+    auto *superConstructorCall =
+        checker_->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
+    auto *superCallStatement = checker_->AllocNode<ir::ExpressionStatement>(superConstructorCall);
+    superCallStatement->SetParent(body);
+    body->Statements().push_back(superCallStatement);
+
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
     auto *fieldIdentifier = Allocator()->New<ir::Identifier>(ORDINAL_NAME, Allocator());
     auto *leftHandSide = checker_->AllocNode<ir::MemberExpression>(
@@ -323,9 +400,9 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
     return func;
 }
 
-void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumClass)
+void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumClass, EnumType enumType)
 {
-    auto *func = CreateFunctionForCtorOfEnumClass(enumClass);
+    auto *func = CreateFunctionForCtorOfEnumClass(enumClass, enumType);
     auto *funcExpr = checker_->AllocNode<ir::FunctionExpression>(func);
 
     auto *const identClone = func->Id()->Clone(Allocator(), nullptr);
@@ -375,10 +452,15 @@ template <ir::PrimitiveType TYPE>
 ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                                const DeclarationFlags flags)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl, flags, true);
+    EnumType enumType = EnumType::INT;
+    if constexpr (TYPE == ir::PrimitiveType::LONG) {
+        enumType = EnumType::LONG;
+    }
+
+    auto *const enumClassDecl = CreateClass(enumDecl, flags, enumType);
     auto *const enumClass = enumClassDecl->Definition();
 
-    CreateEnumItemFields(enumDecl, enumClass);
+    CreateEnumItemFields(enumDecl, enumClass, enumType);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
     auto *const valuesArrayIdent = CreateEnumValuesArray<TYPE>(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
@@ -411,10 +493,10 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(i
 ir::ClassDeclaration *EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                                   const DeclarationFlags flags)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl, flags, false);
+    auto *const enumClassDecl = CreateClass(enumDecl, flags, EnumType::STRING);
     auto *const enumClass = enumClassDecl->Definition();
 
-    CreateEnumItemFields(enumDecl, enumClass);
+    CreateEnumItemFields(enumDecl, enumClass, EnumType::STRING);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
