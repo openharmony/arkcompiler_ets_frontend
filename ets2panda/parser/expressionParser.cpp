@@ -712,6 +712,7 @@ ir::Expression *ParserImpl::ParseAssignmentEqualExpression(const lexer::TokenTyp
             LogUnexpectedToken(tokenType);
             lexer_->NextToken();  // eat token
             ParseExpression();    // Try to parse expression, but skip the result.
+            [[fallthrough]];
         }
         default:
             break;
