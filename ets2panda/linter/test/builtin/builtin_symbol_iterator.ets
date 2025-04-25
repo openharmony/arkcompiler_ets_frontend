@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+let map: Map<string, string> = new Map<string, string>();
+let iterFromReflect = Reflect.get(map, Symbol.iterator);
+let iterFromProp = map[Symbol.iterator]();
+
+let symbolIter = Symbol.iterator;

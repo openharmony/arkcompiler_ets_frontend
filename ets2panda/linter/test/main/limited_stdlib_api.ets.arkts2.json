@@ -85,14 +85,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 34,
-          "column": 19,
-          "endLine": 34,
-          "endColumn": 27,
-          "problem": "ExplicitFunctionType",
-          "suggest": "",
-          "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-          "severity": "ERROR"
+            "line": 34,
+            "column": 19,
+            "endLine": 34,
+            "endColumn": 27,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "severity": "ERROR"
         },
         {
             "line": 56,
@@ -175,6 +175,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 63,
+            "column": 8,
+            "endLine": 63,
+            "endColumn": 32,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
             "line": 64,
             "column": 8,
             "endLine": 64,
@@ -182,6 +192,16 @@
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 8,
+            "endLine": 64,
+            "endColumn": 33,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {
@@ -375,6 +395,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 90,
+            "column": 9,
+            "endLine": 90,
+            "endColumn": 33,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
             "line": 91,
             "column": 9,
             "endLine": 91,
@@ -556,12 +586,32 @@
         },
         {
             "line": 110,
+            "column": 13,
+            "endLine": 110,
+            "endColumn": 37,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
             "column": 47,
             "endLine": 110,
             "endColumn": 71,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
+            "column": 47,
+            "endLine": 110,
+            "endColumn": 71,
+            "problem": "NoPropertyDescritor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {

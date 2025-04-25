@@ -83,6 +83,8 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
+import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
+import { ARKTSUTILS_TEXT, ARKTSUTILS_MODULES } from './utils/consts/ArkTSUtilsAPI';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -102,7 +104,9 @@ import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
-import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
+import * as builtinWhiteList from './data/BuiltinList.json';
+import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
+import { USE_SHARED, USE_CONCURRENT, ESLIB_SHAREDMEMORY_FILENAME } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -113,6 +117,7 @@ interface InterfaceSymbolTypePropertyNames {
   propertyNames: string[];
   typeNames: string[];
 }
+
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
   nodeCounters: number[] = [];
@@ -142,22 +147,54 @@ export class TypeScriptLinter {
   private static sharedModulesCache: Map<string, boolean>;
   static nameSpaceFunctionCache: Map<string, Set<string>>;
   private readonly constVariableInitCache: Map<ts.Symbol, number | null> = new Map();
-  private funcMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
+  static funcMap: Map<string, Map<string, Set<ApiInfo>>> = new Map<string, Map<string, Set<ApiInfo>>>();
   private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   static pathMap: Map<string, Set<ApiInfo>>;
   static indexedTypeSet: Set<ApiListItem>;
   static globalApiInfo: Map<string, Set<ApiListItem>>;
+  static symbotIterSet: Set<string>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
     TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
+    TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
+    TypeScriptLinter.symbotIterSet = new Set<string>();
   }
 
   initSdkInfo(): void {
-    this.funcMap = new Map<string, Set<ApiInfo>>();
     this.interfaceMap = new Map<string, Set<ApiInfo>>();
+  }
+
+  static initSdkBuiltinInfo(): void {
+    const list: ApiList = new ApiList(builtinWhiteList);
+    if (list?.api_list?.length > 0) {
+      for (const item of list.api_list) {
+        switch (item.api_info.problem) {
+          case BuiltinProblem.SymbolIterator:
+            TypeScriptLinter.symbotIterSet.add(item.file_path);
+            break;
+          case BuiltinProblem.LimitedThisArg:
+            TypeScriptLinter.initSdkBuiltinThisArgsWhitelist(item);
+            break;
+          default:
+        }
+      }
+    }
+  }
+
+  static initSdkBuiltinThisArgsWhitelist(item: ApiListItem): void {
+    if (item.file_path === '' || !item.api_info.api_name) {
+      return;
+    }
+
+    let funcApiInfos: Map<string, Set<ApiInfo>> | undefined = TypeScriptLinter.funcMap.get(item.api_info.api_name);
+    if (!funcApiInfos) {
+      funcApiInfos = new Map<string, Set<ApiInfo>>();
+      TypeScriptLinter.funcMap.set(item.api_info.api_name, funcApiInfos);
+    }
+    TypeScriptLinter.addOrUpdateData(funcApiInfos, item.file_path, item.api_info);
   }
 
   private initEtsHandlers(): void {
@@ -214,6 +251,15 @@ export class TypeScriptLinter {
     }
   }
 
+  private static initBuiltinlist(): void {
+    const list: ApiList = new ApiList(builtinWhiteList);
+    if (list?.api_list?.length > 0) {
+      for (const item of list.api_list) {
+        TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
+      }
+    }
+  }
+
   private static addOrUpdateData(map: Map<string, Set<ApiInfo>>, path: string, data: ApiInfo): void {
     let apiInfos = map.get(path);
     if (!apiInfos) {
@@ -237,6 +283,7 @@ export class TypeScriptLinter {
     this.initEtsHandlers();
     this.initCounters();
     TypeScriptLinter.initSdkWhitelist();
+    TypeScriptLinter.initBuiltinlist();
   }
 
   readonly handlersMap = new Map([
@@ -1062,6 +1109,7 @@ export class TypeScriptLinter {
     this.handleDoubleDollar(node);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
+    this.handleSymbolIterator(node as ts.PropertyAccessExpression);
 
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
 
@@ -3096,9 +3144,27 @@ export class TypeScriptLinter {
 
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
+      this.checkCollectionsSymbol(tsIdentSym, node);
+      this.checkArkTSUtilsSymbol(tsIdentSym, node);
     }
     if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ExplicitFunctionType);
+    }
+    this.handlePropertyDescriptor(tsIdentifier, tsIdentSym);
+  }
+
+  private handlePropertyDescriptor(tsIdentifier: ts.Identifier, symbol: ts.Symbol): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (tsIdentifier.getFullText().includes('PropertyDescriptor')) {
+      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
+    }
+
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, tsIdentifier);
+    const typeString = this.tsTypeChecker.typeToString(type);
+    if (typeString.startsWith('PropertyDescriptor') || typeString.startsWith('TypedPropertyDescriptor')) {
+      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
     }
   }
 
@@ -3520,9 +3586,13 @@ export class TypeScriptLinter {
   }
 
   private processCalleeSym(calleeSym: ts.Symbol, tsCallExpr: ts.CallExpression): void {
+    const name = calleeSym.getName();
+    const parName = this.tsUtils.getParentSymbolName(calleeSym);
     if (!this.options.arkts2) {
-      this.handleStdlibAPICall(tsCallExpr, calleeSym);
+      this.handleStdlibAPICall(tsCallExpr, calleeSym, name, parName);
       this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
+    } else {
+      this.handleBuiltinThisArgs(tsCallExpr, calleeSym, name, parName);
     }
     if (TsUtils.symbolHasEsObjectType(calleeSym)) {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
@@ -3576,9 +3646,45 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleBuiltinCtorSignatureCall(tsCallExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const node = tsCallExpr.expression as ts.Identifier;
+    const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
+    const callSignatures = constructorType.getCallSignatures();
+    if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
+      return;
+    }
+    const isSameApi = callSignatures.some((callSignature) => {
+      const callSignatureDecl = callSignature.getDeclaration();
+      if (!ts.isCallSignatureDeclaration(callSignatureDecl)) {
+        return false;
+      }
+      const parentDecl = callSignatureDecl.parent;
+      const parentName = ts.isInterfaceDeclaration(parentDecl) ? parentDecl.name.getText() : '';
+      const BultinNoCtorFuncApiInfoSet = TypeScriptLinter.globalApiInfo.get(BuiltinProblem.BuiltinNoCtorFunc);
+      if (!BultinNoCtorFuncApiInfoSet) {
+        return false;
+      }
+      const isSameApi = [...BultinNoCtorFuncApiInfoSet].some((apiInfoItem) => {
+        if (apiInfoItem.api_info.parent_api?.length <= 0) {
+          return false;
+        }
+        const apiInfoParentName = apiInfoItem.api_info.parent_api[0].api_name;
+        return apiInfoParentName === parentName;
+      });
+      return isSameApi;
+    });
+    if (isSameApi) {
+      this.incrementCounters(node, FaultID.BuiltinNoCtorFunc);
+    }
+  }
+
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
+    this.handleBuiltinCtorSignatureCall(tsCallExpr);
 
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
@@ -4023,9 +4129,12 @@ export class TypeScriptLinter {
     [SYMBOL_CONSTRUCTOR, { arr: null, fault: FaultID.SymbolType }]
   ]);
 
-  private handleStdlibAPICall(callExpr: ts.CallExpression, calleeSym: ts.Symbol): void {
-    const name = calleeSym.getName();
-    const parName = this.tsUtils.getParentSymbolName(calleeSym);
+  private handleStdlibAPICall(
+    callExpr: ts.CallExpression,
+    calleeSym: ts.Symbol,
+    name: string,
+    parName: string | undefined
+  ): void {
     if (parName === undefined) {
       if (LIMITED_STD_GLOBAL_API.includes(name)) {
         this.incrementCounters(callExpr, FaultID.LimitedStdLibApi);
@@ -4044,6 +4153,43 @@ export class TypeScriptLinter {
       (!this.options.useRelaxedRules || !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
     ) {
       this.incrementCounters(callExpr, lookup.fault);
+    }
+  }
+
+  private handleBuiltinThisArgs(
+    callExpr: ts.CallExpression,
+    calleeSym: ts.Symbol,
+    name: string,
+    parName: string | undefined
+  ): void {
+    if (parName === undefined) {
+      return;
+    }
+
+    const builtinThisArgsInfos = TypeScriptLinter.funcMap.get(name);
+    if (!builtinThisArgsInfos) {
+      return;
+    }
+
+    const sourceFile = calleeSym?.declarations?.[0]?.getSourceFile();
+    if (!sourceFile) {
+      return;
+    }
+
+    const fileName = path.basename(sourceFile.fileName);
+    const builtinInfos = builtinThisArgsInfos.get(fileName);
+    if (!(builtinInfos && builtinInfos.size > 0)) {
+      return;
+    }
+    for (const info of builtinInfos) {
+      const needReport =
+        info.parent_api.length > 0 &&
+        info.parent_api[0].api_name === parName &&
+        info?.api_func_args?.length === callExpr.arguments.length;
+      if (needReport) {
+        this.incrementCounters(callExpr, FaultID.BuiltinThisArgs);
+        return;
+      }
     }
   }
 
@@ -4111,6 +4257,7 @@ export class TypeScriptLinter {
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
 
+    this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkDuplicateDeclName(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
@@ -4247,9 +4394,25 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSharedArrayBuffer(node: ts.TypeReferenceNode | ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const typeNameIdentifer = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifer)?.getDeclarations();
+    const isSharedMemoryEsLib = decls?.some((decl) => {
+      const srcFileName = decl.getSourceFile().fileName;
+      return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
+    });
+    if (isSharedMemoryEsLib) {
+      this.incrementCounters(typeNameIdentifer, FaultID.SharedArrayBufferDeprecated);
+    }
+  }
+
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
 
+    this.handleSharedArrayBuffer(typeRef);
     this.handleSdkDuplicateDeclName(typeRef);
 
     this.handleSdkConstructorIface(typeRef);
@@ -4279,6 +4442,17 @@ export class TypeScriptLinter {
       this.checkSendableTypeArguments(typeRef);
     }
     this.handleQuotedHyphenPropsDeprecated(typeRef);
+    this.handlePropertyDescriptorType(typeRef);
+  }
+
+  private handlePropertyDescriptorType(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const typeName = this.tsUtils.entityNameToString(typeRef.typeName);
+    if (typeName.includes('PropertyDescriptor')) {
+      this.incrementCounters(typeRef, FaultID.NoPropertyDescritor);
+    }
   }
 
   private checkPartialType(node: ts.Node): void {
@@ -5710,21 +5884,35 @@ export class TypeScriptLinter {
     }
   }
 
+  private checkArkTSUtilsSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    this.checkSymbol(symbol, node, ARKTSUTILS_TEXT, ARKTSUTILS_MODULES, FaultID.LimitedStdLibApi);
+  }
+
+  private checkCollectionsSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    this.checkSymbol(symbol, node, COLLECTIONS_TEXT, COLLECTIONS_MODULES, FaultID.LimitedStdLibApi);
+  }
+
   private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    if (symbol.name === WORKER_TEXT) {
+    this.checkSymbol(symbol, node, WORKER_TEXT, WORKER_MODULES, FaultID.LimitedStdLibApi);
+  }
+
+  private checkSymbol(symbol: ts.Symbol, node: ts.Node, symbolName: string, modules: string[], faultId: FaultID): void {
+    if (symbol.name === symbolName) {
       const decl = TsUtils.getDeclaration(symbol);
 
       if (!decl) {
         return;
       }
+
       const sourceFile = decl.getSourceFile();
       const fileName = path.basename(sourceFile.fileName);
+
       if (
-        WORKER_MODULES.some((moduleName) => {
+        modules.some((moduleName) => {
           return fileName.startsWith(moduleName);
         })
       ) {
-        this.incrementCounters(node, FaultID.LimitedStdLibApi);
+        this.incrementCounters(node, faultId);
       }
     }
   }
@@ -6401,6 +6589,23 @@ export class TypeScriptLinter {
       if (matchedApi) {
         this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
       }
+    }
+  }
+
+  private handleSymbolIterator(decl: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || TypeScriptLinter.symbotIterSet.size === 0 || decl.getText() !== SYMBOL_ITERATOR) {
+      return;
+    }
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(decl);
+    const sourceFile = symbol?.declarations?.[0]?.getSourceFile();
+    if (!sourceFile) {
+      return;
+    }
+
+    const fileName = path.basename(sourceFile.fileName);
+    if (TypeScriptLinter.symbotIterSet.has(fileName)) {
+      this.incrementCounters(decl, FaultID.BuiltinSymbolIterator);
     }
   }
 

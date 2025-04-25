@@ -172,9 +172,13 @@ function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTy
 function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | InteropTypescriptLinter): LintRunResult {
   let problemFiles = 0;
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
+  const isEtsLinter = linter instanceof TypeScriptLinter;
+  if (isEtsLinter) {
+    TypeScriptLinter.initSdkBuiltinInfo();
+  }
 
   for (const srcFile of srcFiles) {
-    if (linter instanceof TypeScriptLinter) {
+    if (isEtsLinter) {
       linter.initSdkInfo();
     }
     const prevVisitedNodes = linter.totalVisitedNodes;

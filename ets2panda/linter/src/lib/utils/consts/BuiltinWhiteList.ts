@@ -13,6 +13,31 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+export enum BuiltinProblem {
+  LimitedThisArg = 'ThisArg',
+  SymbolIterator = 'SymbolIterator',
+  BuiltinNoCtorFunc = 'BuiltinNoCtorFunc'
+}
+
+export const SYMBOL_ITERATOR: string = 'Symbol.iterator';
+
+export const BUILTIN_DISABLE_CALLSIGNATURE = [
+  'AggregateError',
+  'Array',
+  'Array',
+  'BigInt',
+  'Boolean',
+  'Date',
+  'Error',
+  'EvalError',
+  'Number',
+  'RangeError',
+  'ReferenceError',
+  'RegExp',
+  'RegExp',
+  'RegExp',
+  'String',
+  'SyntaxError',
+  'TypeError',
+  'URIError'
+];

@@ -13,6 +13,19 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+Class MyClass {
+  base: number;
+  constructor(base: number) {
+    this.base = base;
+  }
+  compare((value: number, index:number, arr: Array<number>)) {
+    return value < this.base
+  }
+}
+
+let arr: Array<number> = new Array<number>(1, 2, 3);
+let a = new MyClass(2);
+let b = new MyClass(3);
+arr.filter(a.compare, a);
+arr.filter(a.compare);
+arr.filter(a.compare, b);

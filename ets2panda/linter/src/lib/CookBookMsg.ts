@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 344; i++) {
+for (let i = 0; i <= 348; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -313,3 +313,8 @@ cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (ark
 cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
 cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';
 cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';
+cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';
+cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
+cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';
+cookBookTag[348] = 'API is not support ctor signature and func (arkts-builtin-cotr)';
+cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-support-sharedarraybuffer)';

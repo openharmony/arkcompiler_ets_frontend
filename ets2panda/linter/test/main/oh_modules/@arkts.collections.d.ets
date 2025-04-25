@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,16 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+export namespace collections {
+  export class Array<T> implements ConcatArray<T> {
+    constructor();
+  }
+
+  export class Map<K, V> {
+    constructor(entries?: readonly (readonly [K, V])[] | null);
+  }
+
+  export interface ConcatArray<T> {
+    
+  }
+}

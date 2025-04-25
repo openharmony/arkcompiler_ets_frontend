@@ -13,6 +13,5 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+export const COLLECTIONS_TEXT = 'collections';
+export const COLLECTIONS_MODULES = ['@arkts.collections', '@kit.ArkTS'];

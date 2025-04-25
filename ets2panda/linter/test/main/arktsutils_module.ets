@@ -13,6 +13,23 @@
  * limitations under the License.
  */
 
-export const USE_CONCURRENT = 'use concurrent';
-export const USE_SHARED = 'use shared';
-export const ESLIB_SHAREDMEMORY_FILENAME = 'lib.es2017.sharedmemory.d.ts';
+import { utils } from './oh_modules/@arkts.utils';
+
+import { utils as ArkTSUtilsAlias } from './oh_modules/@arkts.utils';
+
+import { utils as kitArkTSUtils } from './oh_modules/@kit.ArkTS';
+
+import { utils as definedArkTSUtils } from 'user_defined_worker'; //legal
+
+export { utils } from './oh_modules/@arkts.utils';
+
+function tesCollectionsUsage() {
+
+  const utils1: string = utils.ASON.stringify(1);
+
+  const utils2 = ArkTSUtilsAlias.ASON.stringify(1);
+
+  const utils3 = kitArkTSUtils.ASON.stringify(1);
+
+  const utils4: string = ArkTSUtilsAlias.ASON.stringify(1);
+}
