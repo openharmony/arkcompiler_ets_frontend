@@ -28,6 +28,8 @@
             "intl402/NumberFormat/prototype/formatToParts/main.js",
             "intl402/NumberFormat/currency-digits.js",
             "intl402/NumberFormat/prototype/format/numbering-systems.js",
+            "intl402/NumberFormat/prototype/formatToParts/unit.js",
+            "intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-timezone.js",
             "intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-yes-to-true.js",
             "intl402/Intl/getCanonicalLocales/canonicalized-tags.js"
         ]
