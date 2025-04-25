@@ -55,7 +55,7 @@ void DebugInfoDumper::WrapArray(const char *name, const std::vector<T> &array, b
         for (elem = array.begin(); elem != array.end(); ++elem) {
             Indent();
             // NOLINTNEXTLINE
-            if constexpr (std::is_same_v<T, pandasm::Ins>) {
+            if constexpr (std::is_same_v<T, pandasm::InsPtr>) {
                 WriteIns(*elem);
                 // NOLINTNEXTLINE
             } else if constexpr (std::is_same_v<T, pandasm::Function::Parameter>) {
@@ -86,25 +86,19 @@ void DebugInfoDumper::WrapArray(const char *name, const std::vector<T> &array, b
     ss_ << "]" << PutComma(comma);
 }
 
-void DebugInfoDumper::WriteIns(const pandasm::Ins &ins)
+void DebugInfoDumper::WriteIns(const pandasm::InsPtr &ins)
 {
     ss_ << "{";
-    {
-        pandasm::Ins insCopy;
-        insCopy.opcode = ins.opcode;
-        insCopy.set_label = ins.set_label;
-        insCopy.label = ins.label;
-        WriteProperty("opcode", insCopy.ToString());
-    }
+    WriteProperty("opcode", ins->OpcodeToString());
     indent_++;
-    WrapArray("regs", ins.regs);
-    WrapArray("ids", ins.ids);
-    WrapArray("imms", ins.imms);
+    WrapArray("regs", ins->Regs());
+    WrapArray("ids", ins->Ids());
+    WrapArray("imms", ins->Imms());
     ss_ << std::endl;
     Indent();
     ss_ << "\"label\": "
-        << "\"" << ins.label << "\",";
-    WritePosInfo(ins.ins_debug);
+        << "\"" << (ins->IsLabel() ? ins->Label() : "") << "\",";
+    WritePosInfo(ins->ins_debug);
     indent_--;
     Indent();
     ss_ << "}";
@@ -129,8 +123,6 @@ void DebugInfoDumper::WritePosInfo(const pandasm::debuginfo::Ins &posInfo)
     ss_ << std::endl;
     Indent();
     ss_ << "\"debug_pos_info\": {";
-    WriteProperty("boundLeft", posInfo.bound_left);
-    WriteProperty("boundRight", posInfo.bound_right);
     WriteProperty("sourceLineNum", static_cast<int32_t>(posInfo.line_number), false);
     Indent();
     ss_ << "}" << std::endl;

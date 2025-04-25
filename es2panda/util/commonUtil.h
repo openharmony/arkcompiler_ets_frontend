@@ -104,15 +104,15 @@ void VisitDyanmicImports(ConstReferenceIf<isConst, pandasm::Function> function, 
         // The dynamicimport bytecode should not have label, otherwise the dyanmicimport might be a jump
         // target and its parameter is a variable instead of a constant string expression (Check
         // AbcCodeProcessor::AddJumpLabels for more details).
-        if (iter->opcode != pandasm::Opcode::DYNAMICIMPORT || iter->set_label) {
+        if ((*iter)->opcode != pandasm::Opcode::DYNAMICIMPORT || (*iter)->IsLabel()) {
             continue;
         }
         auto prevIns = iter - 1;
-        if (prevIns->opcode != pandasm::Opcode::LDA_STR) {
+        if ((*prevIns)->opcode != pandasm::Opcode::LDA_STR) {
             continue;
         }
-        ASSERT(prevIns->ids.size() == 1);
-        cb(prevIns->ids[0]);  // 0: index of the string in lda.str bytecode
+        ASSERT((*prevIns)->Ids().size() == 1);
+        cb((*prevIns)->GetId(0));  // 0: index of the string in lda.str bytecode
     }
 }
 }  // namespace panda::es2panda::util

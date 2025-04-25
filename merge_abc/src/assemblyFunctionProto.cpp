@@ -122,9 +122,9 @@ void Function::DeserializeProtoIns(const protoPanda::Function &protoFunction, pa
 {
     function.ins.reserve(protoFunction.ins_size());
     for (const auto &protoIns : protoFunction.ins()) {
-        panda::pandasm::Ins ins;
+        panda::pandasm::Ins *ins {nullptr};
         Ins::Deserialize(protoIns, ins);
-        function.ins.emplace_back(std::move(ins));
+        function.ins.emplace_back(ins);
     }
 }
 

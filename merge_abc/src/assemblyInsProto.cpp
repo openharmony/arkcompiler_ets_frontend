@@ -16,16 +16,16 @@
 #include "assemblyInsProto.h"
 
 namespace panda::proto {
-void Ins::Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn)
+void Ins::Serialize(const panda::pandasm::InsPtr &insn, protoPanda::Ins &protoInsn)
 {
-    protoInsn.set_opcode(static_cast<uint32_t>(insn.opcode));
-    for (const auto &reg : insn.regs) {
+    protoInsn.set_opcode(static_cast<uint32_t>(insn->opcode));
+    for (const auto &reg : insn->Regs()) {
         protoInsn.add_regs(static_cast<uint32_t>(reg));
     }
-    for (const auto &str : insn.ids) {
+    for (const auto &str : insn->Ids()) {
         protoInsn.add_ids(str);
     }
-    for (const auto &imm : insn.imms) {
+    for (const auto &imm : insn->Imms()) {
         auto *protoImm = protoInsn.add_imms();
         switch (static_cast<protoPanda::Ins_IType::TypeCase>(imm.index() + 1)) {  // 1: enum TypeCase start from 1
             case protoPanda::Ins_IType::kValueInt:
@@ -38,41 +38,51 @@ void Ins::Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn)
                 UNREACHABLE();
         }
     }
-    protoInsn.set_label(insn.label);
-    protoInsn.set_setlabelval(insn.set_label);
+    protoInsn.set_label(insn->IsLabel() ? insn->Label() : "");
+    protoInsn.set_setlabelval(insn->IsLabel());
     auto *protoDebug = protoInsn.mutable_insdebug();
-    DebuginfoIns::Serialize(insn.ins_debug, *protoDebug);
+    DebuginfoIns::Serialize(insn->ins_debug, *protoDebug);
 }
 
-void Ins::Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &insn)
+void Ins::Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins *&insn)
 {
-    insn.opcode = static_cast<panda::pandasm::Opcode>(protoInsn.opcode());
-    insn.regs.reserve(protoInsn.regs_size());
+    auto opcode = static_cast<panda::pandasm::Opcode>(protoInsn.opcode());
+    std::vector<uint16_t> regs;
+    regs.reserve(protoInsn.regs_size());
     for (const auto &protoReg : protoInsn.regs()) {
-        insn.regs.push_back(static_cast<uint16_t>(protoReg));
+        regs.push_back(static_cast<uint16_t>(protoReg));
     }
-    insn.ids.reserve(protoInsn.ids_size());
+    std::vector<std::string> ids;
+    ids.reserve(protoInsn.ids_size());
     for (const auto &protoId : protoInsn.ids()) {
-        insn.ids.push_back(protoId);
+        ids.push_back(protoId);
     }
-    insn.imms.reserve(protoInsn.imms_size());
+    std::vector<panda::pandasm::IType> imms;
+    imms.reserve(protoInsn.imms_size());
     for (const auto &protoImm : protoInsn.imms()) {
         switch (protoImm.type_case()) {
             case protoPanda::Ins_IType::kValueInt: {
-                insn.imms.push_back(protoImm.valueint());
+                imms.push_back(protoImm.valueint());
                 break;
             }
             case protoPanda::Ins_IType::kValueDouble: {
-                insn.imms.push_back(protoImm.valuedouble());
+                imms.push_back(protoImm.valuedouble());
                 break;
             }
             default:
                 UNREACHABLE();
         }
     }
-    insn.label = protoInsn.label();
-    insn.set_label = protoInsn.setlabelval();
+
+    auto set_label = protoInsn.setlabelval();
+    if (set_label) {
+        auto label = protoInsn.label();
+        insn = new pandasm::LabelIns(label);
+    } else {
+        insn = pandasm::Ins::CreateIns(opcode, regs, imms, ids);
+    }
+
     const protoPanda::DebuginfoIns &protoDebugInfoIns = protoInsn.insdebug();
-    DebuginfoIns::Deserialize(protoDebugInfoIns, insn.ins_debug);
+    DebuginfoIns::Deserialize(protoDebugInfoIns, insn->ins_debug);
 }
 } // panda::proto

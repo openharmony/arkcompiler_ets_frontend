@@ -23,8 +23,8 @@
 namespace panda::proto {
 class Ins {
 public:
-    static void Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn);
-    static void Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &insn);
+    static void Serialize(const panda::pandasm::InsPtr &insn, protoPanda::Ins &protoInsn);
+    static void Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins *&insn);
 };
 } // panda::proto
 #endif
