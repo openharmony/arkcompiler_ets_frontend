@@ -24,8 +24,8 @@ class array_type  {
     }
 }
 
+/* @@@ label Error TypeError: Property 'a' might not have been initialized.  */
+/* @@@ label1 Error TypeError: Property 'f' might not have been initialized.  */
 /* @@@ label2 Error TypeError: Function with a non void return type must return a value.  */
 /* @@@ label3 Error TypeError: Function with a non void return type must return a value.  */
-/* @@@ label Warning Warning: Property 'a' might not have been initialized.  */
-/* @@@ label1 Warning Warning: Property 'f' might not have been initialized.  */
 

@@ -1130,3 +1130,7 @@ semantic:
 - name: INTERFACE_PROPERTY_REQUIRES_SETTER
   id: 284
   message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
+
+- name: PROPERTY_MAYBE_MISSING_INIT
+  id: 285
+  message: "Property '{}' might not have been initialized."
