@@ -56,6 +56,9 @@ public:
 
     [[nodiscard]] ETSTypeReference *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    ETSTypeReference *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     ir::ETSTypeReferencePart *part_;
 };

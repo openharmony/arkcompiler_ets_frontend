@@ -87,10 +87,13 @@ public:
         v->Accept(this);
     }
 
+    FunctionDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     ArenaVector<Decorator *> decorators_;
     ScriptFunction *func_;
-    const bool isAnonymous_;
+    bool isAnonymous_;
 };
 }  // namespace ark::es2panda::ir
 

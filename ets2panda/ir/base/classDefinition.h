@@ -486,6 +486,11 @@ public:
         return exportedClasses_;
     }
 
+protected:
+    ClassDefinition *Construct(ArenaAllocator *allocator) override;
+
+    void CopyTo(AstNode *other) const override;
+
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
                                         const std::vector<compiler::VReg> &staticComputedFieldKeys) const;
@@ -510,8 +515,8 @@ private:
     TSEnumDeclaration *origEnumDecl_ {};
     ClassDeclaration *anonClass_ {nullptr};
     static int classCounter_;
-    const int localIndex_ {};
-    const std::string localPrefix_ {};
+    int localIndex_ {};
+    std::string localPrefix_ {};
     ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir

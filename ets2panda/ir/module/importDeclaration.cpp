@@ -20,6 +20,7 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 
@@ -94,4 +95,22 @@ checker::VerifiedType ImportDeclaration::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+ImportDeclaration *ImportDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<AstNode *> specifiers(allocator->Adapter());
+    return allocator->New<ImportDeclaration>(nullptr, std::move(specifiers));
+}
+
+void ImportDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsImportDeclaration();
+
+    otherImpl->source_ = source_;
+    otherImpl->specifiers_ = specifiers_;
+    otherImpl->importKinds_ = importKinds_;
+
+    Statement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

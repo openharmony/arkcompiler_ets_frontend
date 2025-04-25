@@ -212,4 +212,19 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 
     return clone;
 }
+
+ClassProperty *ClassProperty::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ClassProperty>(nullptr, nullptr, nullptr, ModifierFlags::NONE, allocator, false);
+}
+
+void ClassProperty::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsClassProperty();
+
+    otherImpl->typeAnnotation_ = typeAnnotation_;
+
+    AnnotationAllowed<ClassElement>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

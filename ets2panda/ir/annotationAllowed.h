@@ -92,6 +92,13 @@ protected:
     {
     }
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = static_cast<AnnotationAllowed<T> *>(other);
+        otherImpl->annotations_ = annotations_;
+        T::CopyTo(other);
+    }
+
 private:
     ArenaVector<AnnotationUsage *> annotations_;
 };

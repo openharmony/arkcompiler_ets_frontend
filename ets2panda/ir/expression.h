@@ -101,6 +101,8 @@ public:
 
     [[nodiscard]] virtual std::string ToString() const;
 
+    void CopyTo(AstNode *other) const override;
+
 protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}
     explicit Expression(AstNodeType const type, ModifierFlags const flags) : TypedAstNode(type, flags) {}

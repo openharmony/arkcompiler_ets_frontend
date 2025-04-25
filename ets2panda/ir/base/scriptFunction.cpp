@@ -20,6 +20,8 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "mem/arena_allocator.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 
@@ -230,4 +232,32 @@ checker::VerifiedType ScriptFunction::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+ScriptFunction *ScriptFunction::Construct(ArenaAllocator *allocator)
+{
+    auto adapter = allocator->Adapter();
+    return allocator->New<ScriptFunction>(
+        allocator,
+        ScriptFunctionData {nullptr, FunctionSignature(nullptr, ArenaVector<Expression *>(adapter), nullptr)});
+}
+
+void ScriptFunction::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsScriptFunction();
+
+    otherImpl->id_ = id_;
+
+    otherImpl->irSignature_.CopyFrom(irSignature_);
+
+    otherImpl->body_ = body_;
+    otherImpl->scope_ = scope_;
+    otherImpl->funcFlags_ = funcFlags_;
+    otherImpl->signature_ = signature_;
+    otherImpl->preferredReturnType_ = preferredReturnType_;
+    otherImpl->lang_ = lang_;
+    otherImpl->returnStatements_ = returnStatements_;
+
+    AnnotationAllowed<AstNode>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

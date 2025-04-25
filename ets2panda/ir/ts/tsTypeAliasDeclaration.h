@@ -140,6 +140,9 @@ public:
         typeParamTypes_.clear();
     }
 
+    TSTypeAliasDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     ArenaVector<Decorator *> decorators_;
     ArenaVector<AnnotationUsage *> annotations_;

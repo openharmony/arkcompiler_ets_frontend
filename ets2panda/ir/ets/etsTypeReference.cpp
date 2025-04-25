@@ -136,4 +136,19 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
     clone->SetRange(Range());
     return clone;
 }
+
+ETSTypeReference *ETSTypeReference::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ETSTypeReference>(nullptr, allocator);
+}
+
+void ETSTypeReference::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSTypeReference();
+
+    otherImpl->part_ = part_;
+
+    TypeNode::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

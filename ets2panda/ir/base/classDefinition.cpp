@@ -301,6 +301,38 @@ checker::VerifiedType ClassDefinition::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+ClassDefinition *ClassDefinition::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<AstNode *> body {allocator->Adapter()};
+    return allocator->New<ClassDefinition>(allocator, nullptr, std::move(body), ClassDefinitionModifiers::NONE,
+                                           ModifierFlags::NONE, Language::Id::COUNT);
+}
+
+void ClassDefinition::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsClassDefinition();
+
+    otherImpl->scope_ = scope_;
+    otherImpl->internalName_ = internalName_;
+    otherImpl->ident_ = ident_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->superTypeParams_ = superTypeParams_;
+    otherImpl->implements_ = implements_;
+    otherImpl->ctor_ = ctor_;
+    otherImpl->superClass_ = superClass_;
+    otherImpl->body_ = body_;
+    otherImpl->modifiers_ = modifiers_;
+    otherImpl->lang_ = lang_;
+    otherImpl->capturedVars_ = capturedVars_;
+    otherImpl->localVariableIsNeeded_ = localVariableIsNeeded_;
+    otherImpl->origEnumDecl_ = origEnumDecl_;
+    otherImpl->anonClass_ = anonClass_;
+    otherImpl->localIndex_ = localIndex_;
+    otherImpl->localPrefix_ = localPrefix_;
+
+    AnnotationAllowed<TypedAstNode>::CopyTo(other);
+}
+
 int ClassDefinition::classCounter_ = 0;
 
 }  // namespace ark::es2panda::ir

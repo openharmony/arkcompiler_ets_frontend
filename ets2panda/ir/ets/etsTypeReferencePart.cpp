@@ -247,4 +247,21 @@ ir::Identifier *ETSTypeReferencePart::GetIdent()
     }
     return name_->AsIdentifier();
 }
+
+ETSTypeReferencePart *ETSTypeReferencePart::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ETSTypeReferencePart>(nullptr, nullptr, nullptr, allocator);
+}
+
+void ETSTypeReferencePart::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSTypeReferencePart();
+
+    otherImpl->name_ = name_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->prev_ = prev_;
+
+    TypeNode::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

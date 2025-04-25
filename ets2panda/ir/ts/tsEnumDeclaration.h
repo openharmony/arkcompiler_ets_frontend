@@ -151,6 +151,9 @@ public:
         v->Accept(this);
     }
 
+    TSEnumDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<ir::Decorator *> decorators_;

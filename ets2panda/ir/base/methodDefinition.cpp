@@ -335,4 +335,23 @@ void MethodDefinition::CleanUp()
     ResetOverloads();
 }
 
+MethodDefinition *MethodDefinition::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<MethodDefinition>(MethodDefinitionKind::NONE, nullptr, nullptr, ModifierFlags::NONE,
+                                            allocator, false);
+}
+
+void MethodDefinition::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsMethodDefinition();
+
+    otherImpl->kind_ = kind_;
+    otherImpl->overloads_ = overloads_;
+    otherImpl->baseOverloadMethod_ = baseOverloadMethod_;
+    otherImpl->asyncPairMethod_ = asyncPairMethod_;
+    otherImpl->overloadInfo_ = overloadInfo_;
+
+    ClassElement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir
