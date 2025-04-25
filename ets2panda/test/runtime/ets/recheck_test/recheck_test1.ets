@@ -49,7 +49,9 @@ class ExpectExtend {
     };
     (this).tst = tst;
   }
-  public constructor() {}
+  public constructor(tst: test) {
+    this.tst = tst
+  }
 }
 
 assertEQ(true, true);
