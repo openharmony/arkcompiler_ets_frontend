@@ -639,6 +639,7 @@ ast/parser/ets/wrong_context_function_1.ets
 ast/parser/ets/empty_array_map_inference_fail.ets
 ast/parser/ets/illegal_continue_statement.ets
 ast/parser/ets/minus_sign_as_index_1.ets
+ast/parser/ets/export_after_statement.ets
 ast/compiler/ets/union_string_literals_5.ets
 ast/compiler/ets/annotation_tests/annotation_for_type_parameter01.ets
 ast/compiler/ets/readonlyType_4.ets
