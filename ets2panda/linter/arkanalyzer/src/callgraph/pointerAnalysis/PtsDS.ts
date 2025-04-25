@@ -215,12 +215,15 @@ export class PtsBV<T extends Idx> implements IPtsCollection<T> {
     }
 }
 
-export enum PtsCollectionType { Set, BitVector };
+export enum PtsCollectionType {
+    Set,
+    BitVector,
+}
 export class DiffPTData<K, D extends Idx, DS extends IPtsCollection<D>> {
     private diffPtsMap: Map<K, DS>;
     private propaPtsMap: Map<K, DS>;
 
-    constructor(private DSCreator: (new () => DS)) {
+    constructor(private DSCreator: new () => DS) {
         this.diffPtsMap = new Map();
         this.propaPtsMap = new Map();
     }

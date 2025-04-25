@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,6 @@ import { ImportInfo } from '../ArkImport';
 import { buildModifiers } from './builderUtils';
 import { IRUtils } from '../../common/IRUtils';
 import { ArkFile } from '../ArkFile';
-
 
 export function buildImportInfo(node: ts.ImportEqualsDeclaration | ts.ImportDeclaration, sourceFile: ts.SourceFile, arkFile: ArkFile): ImportInfo[] {
     if (ts.isImportDeclaration(node)) {
@@ -72,7 +71,7 @@ function buildImportDeclarationNode(node: ts.ImportDeclaration, sourceFile: ts.S
     if (node.importClause && node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
         let importType = 'NamedImports';
         if (node.importClause.namedBindings.elements) {
-            node.importClause.namedBindings.elements.forEach((element) => {
+            node.importClause.namedBindings.elements.forEach(element => {
                 if (element.name && ts.isIdentifier(element.name)) {
                     let importClauseName = element.name.text;
                     const pos = LineColPosition.buildFromNode(element, sourceFile);
@@ -122,8 +121,12 @@ function buildImportEqualsDeclarationNode(node: ts.ImportEqualsDeclaration, sour
     if (node.modifiers) {
         modifiers = buildModifiers(node);
     }
-    if (node.moduleReference && ts.isExternalModuleReference(node.moduleReference) &&
-        node.moduleReference.expression && ts.isStringLiteral(node.moduleReference.expression)) {
+    if (
+        node.moduleReference &&
+        ts.isExternalModuleReference(node.moduleReference) &&
+        node.moduleReference.expression &&
+        ts.isStringLiteral(node.moduleReference.expression)
+    ) {
         let importFrom = node.moduleReference.expression.text;
         let importClauseName = node.name.text;
         let importInfo = new ImportInfo();

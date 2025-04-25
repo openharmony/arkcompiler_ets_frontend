@@ -40,20 +40,28 @@ export type PagNodeType = Value;
  * Implementation of pointer-to assignment graph for pointer analysis
  */
 
-const DUMMY_PAG_NODE_ID = -1
+const DUMMY_PAG_NODE_ID = -1;
 
 export enum PagEdgeKind {
-    Address, Copy, Load, Write, This, Unknown, InterProceduralCopy
-};
+    Address,
+    Copy,
+    Load,
+    Write,
+    This,
+    Unknown,
+    InterProceduralCopy,
+}
 
 export enum StorageType {
-    APP_STORAGE, LOCAL_STORAGE, Undefined
-};
+    APP_STORAGE,
+    LOCAL_STORAGE,
+    Undefined,
+}
 
 export enum StorageLinkEdgeType {
     Property2Local,
     Local2Property,
-    TwoWay
+    TwoWay,
 }
 
 export class PagEdge extends BaseEdge {
@@ -62,27 +70,27 @@ export class PagEdge extends BaseEdge {
     constructor(n: PagNode, d: PagNode, k: PagEdgeKind, s?: Stmt) {
         super(n, d, k);
         this.stmt = s;
-    };
+    }
 
     public getDotAttr(): string {
         switch (this.getKind()) {
             case PagEdgeKind.Address:
-                return "color=green";
+                return 'color=green';
             case PagEdgeKind.Copy:
                 if (this.stmt?.getInvokeExpr() !== undefined || this.stmt instanceof ArkReturnStmt) {
-                    return "color=black,style=dotted";
+                    return 'color=black,style=dotted';
                 }
-                return "color=black";
+                return 'color=black';
             case PagEdgeKind.Load:
-                return "color=red";
+                return 'color=red';
             case PagEdgeKind.Write:
-                return "color=blue"
+                return 'color=blue';
             case PagEdgeKind.This:
-                return "color=orange"
+                return 'color=orange';
             case PagEdgeKind.InterProceduralCopy:
-                return "color=purple,style=dashed";
+                return 'color=purple,style=dashed';
             default:
-                return "color=black";
+                return 'color=black';
         }
     }
 }
@@ -90,36 +98,46 @@ export class PagEdge extends BaseEdge {
 export class AddrPagEdge extends PagEdge {
     constructor(n: PagNode, d: PagNode, s: Stmt) {
         super(n, d, PagEdgeKind.Address, s);
-    };
+    }
 }
 
 export class CopyPagEdge extends PagEdge {
     constructor(n: PagNode, d: PagNode, s: Stmt) {
         super(n, d, PagEdgeKind.Copy, s);
-    };
+    }
 }
 
 export class LoadPagEdge extends PagEdge {
     constructor(n: PagNode, d: PagNode, s: Stmt) {
         super(n, d, PagEdgeKind.Copy, s);
-    };
+    }
 }
 
 export class WritePagEdge extends PagEdge {
     constructor(n: PagNode, d: PagNode, s: Stmt) {
         super(n, d, PagEdgeKind.Write, s);
-    };
+    }
 }
 
 export class ThisPagEdge extends PagEdge {
     constructor(n: PagNode, d: PagNode, s: Stmt) {
         super(n, d, PagEdgeKind.This, s);
-    };
+    }
 }
 
 type PagEdgeSet = Set<PagEdge>;
 
-export enum PagNodeKind { HeapObj, LocalVar, RefVar, Param, ThisRef, Function, GlobalThis, ExportInfo }
+export enum PagNodeKind {
+    HeapObj,
+    LocalVar,
+    RefVar,
+    Param,
+    ThisRef,
+    Function,
+    GlobalThis,
+    ExportInfo,
+}
+
 export class PagNode extends BaseNode {
     private cid: ContextID | undefined;
     private value: Value;
@@ -156,22 +174,22 @@ export class PagNode extends BaseNode {
         return this.basePt;
     }
 
-    public setBasePt(pt: NodeID) {
+    public setBasePt(pt: NodeID): void {
         this.basePt = pt;
     }
 
     public getCid(): ContextID {
         if (this.cid === undefined) {
-            throw new Error('cid is undefine')
+            throw new Error('cid is undefine');
         }
         return this.cid;
     }
 
-    public setCid(cid: ContextID) {
+    public setCid(cid: ContextID): void {
         this.cid = cid;
     }
 
-    public setStmt(s: Stmt) {
+    public setStmt(s: Stmt): void {
         this.stmt = s;
     }
 
@@ -180,7 +198,7 @@ export class PagNode extends BaseNode {
     }
 
     public hasOutgoingCopyEdge(): boolean {
-        return (this.copyOutEdges.size !== 0);
+        return this.copyOutEdges.size !== 0;
     }
 
     public getOutgoingCopyEdges(): PagEdgeSet {
@@ -212,38 +230,38 @@ export class PagNode extends BaseNode {
     }
 
     public addAddressInEdge(e: AddrPagEdge): void {
-        this.addressInEdges === undefined ? this.addressInEdges = new Set() : undefined;
+        this.addressInEdges === undefined ? (this.addressInEdges = new Set()) : undefined;
         this.addressInEdges.add(e);
         this.addIncomingEdge(e);
     }
 
     public addAddressOutEdge(e: AddrPagEdge): void {
-        this.addressOutEdges === undefined ? this.addressOutEdges = new Set() : undefined;
+        this.addressOutEdges === undefined ? (this.addressOutEdges = new Set()) : undefined;
         this.addressOutEdges.add(e);
         this.addOutgoingEdge(e);
     }
 
     public addCopyInEdge(e: CopyPagEdge): void {
-        this.copyInEdges === undefined ? this.copyInEdges = new Set() : undefined;
+        this.copyInEdges === undefined ? (this.copyInEdges = new Set()) : undefined;
         this.copyInEdges.add(e);
         this.addIncomingEdge(e);
     }
 
     public addCopyOutEdge(e: CopyPagEdge): void {
-        this.copyOutEdges === undefined ? this.copyOutEdges = new Set() : undefined;
+        this.copyOutEdges === undefined ? (this.copyOutEdges = new Set()) : undefined;
 
         this.copyOutEdges.add(e);
         this.addOutgoingEdge(e);
     }
 
     public addLoadInEdge(e: LoadPagEdge): void {
-        this.loadInEdges === undefined ? this.loadInEdges = new Set() : undefined;
+        this.loadInEdges === undefined ? (this.loadInEdges = new Set()) : undefined;
         this.loadInEdges.add(e);
         this.addIncomingEdge(e);
     }
 
     public addLoadOutEdge(e: LoadPagEdge): void {
-        this.loadOutEdges === undefined ? this.loadOutEdges = new Set() : undefined;
+        this.loadOutEdges === undefined ? (this.loadOutEdges = new Set()) : undefined;
         this.loadOutEdges.add(e);
         this.addOutgoingEdge(e);
     }
@@ -280,7 +298,7 @@ export class PagNode extends BaseNode {
         return this.pointTo;
     }
 
-    public addPointToElement(node: NodeID) {
+    public addPointToElement(node: NodeID): void {
         this.pointTo.insert(node);
     }
 
@@ -288,13 +306,18 @@ export class PagNode extends BaseNode {
         this.pointTo = pts;
     }
 
-    public getOutEdges() {
+    public getOutEdges(): {
+        AddressEdge: PagEdgeSet;
+        CopyEdge: PagEdgeSet;
+        LoadEdge: PagEdgeSet;
+        WriteEdge: PagEdgeSet;
+    } {
         return {
             AddressEdge: this.addressOutEdges,
             CopyEdge: this.copyOutEdges,
             LoadEdge: this.loadOutEdges,
-            WriteEdge: this.writeOutEdges
-        }
+            WriteEdge: this.writeOutEdges,
+        };
     }
 
     public getClonedFrom(): NodeID {
@@ -320,7 +343,7 @@ export class PagNode extends BaseNode {
             case PagNodeKind.ExportInfo:
                 return 'shape=tab,color=purple';
             case PagNodeKind.ThisRef:
-                return 'shape=box,color=orange'
+                return 'shape=box,color=orange';
             default:
                 return 'shape=box';
         }
@@ -335,7 +358,7 @@ export class PagNode extends BaseNode {
         if (this.basePt) {
             label = label + ` base:{${this.basePt}}`;
         }
-        label = label + ` pts:{${Array.from(this.pointTo).join(',')}}`
+        label = label + ` pts:{${Array.from(this.pointTo).join(',')}}`;
 
         if (this.getKind() === PagNodeKind.Param) {
             param = this.value as ArkParameterRef;
@@ -347,7 +370,7 @@ export class PagNode extends BaseNode {
         }
 
         if (this.getKind() === PagNodeKind.Function) {
-            label = label + ` thisPt:{${((this as unknown) as PagFuncNode).getThisPt()}}`;
+            label = label + ` thisPt:{${(this as unknown as PagFuncNode).getThisPt()}}`;
         }
 
         if (this.stmt) {
@@ -375,13 +398,13 @@ export class PagLocalNode extends PagNode {
     private sdkParam: boolean = false;
 
     constructor(id: NodeID, cid: ContextID | undefined = undefined, value: Local, stmt?: Stmt) {
-        super(id, cid, value, PagNodeKind.LocalVar, stmt)
+        super(id, cid, value, PagNodeKind.LocalVar, stmt);
     }
 
     public addRelatedDynCallSite(cs: DynCallSite) {
-        this.relatedDynamicCallSite = this.relatedDynamicCallSite ?? new Set()
+        this.relatedDynamicCallSite = this.relatedDynamicCallSite ?? new Set();
 
-        this.relatedDynamicCallSite.add(cs)
+        this.relatedDynamicCallSite.add(cs);
     }
 
     public getRelatedDynCallSites(): Set<DynCallSite> {
@@ -404,10 +427,10 @@ export class PagLocalNode extends PagNode {
         this.propertyName = propertyName;
     }
 
-    public getStorage(): { StorageType: StorageType, PropertyName: string } {
+    public getStorage(): { StorageType: StorageType; PropertyName: string } {
         return {
             StorageType: this.storageType!,
-            PropertyName: this.propertyName!
+            PropertyName: this.propertyName!,
         };
     }
 
@@ -426,14 +449,13 @@ export class PagLocalNode extends PagNode {
 
 export class PagInstanceFieldNode extends PagNode {
     constructor(id: NodeID, cid: ContextID | undefined = undefined, instanceFieldRef: ArkInstanceFieldRef, stmt?: Stmt) {
-        super(id, cid, instanceFieldRef, PagNodeKind.RefVar, stmt)
+        super(id, cid, instanceFieldRef, PagNodeKind.RefVar, stmt);
     }
-
 }
 
 export class PagStaticFieldNode extends PagNode {
     constructor(id: NodeID, cid: ContextID | undefined = undefined, staticFieldRef: ArkStaticFieldRef, stmt?: Stmt) {
-        super(id, cid, staticFieldRef, PagNodeKind.RefVar, stmt)
+        super(id, cid, staticFieldRef, PagNodeKind.RefVar, stmt);
     }
 }
 
@@ -449,7 +471,7 @@ export class PagThisRefNode extends PagNode {
     }
 
     public addPTNode(ptNode: NodeID) {
-        this.pointToNode.push(ptNode)
+        this.pointToNode.push(ptNode);
     }
 }
 
@@ -462,41 +484,40 @@ export class PagArrayNode extends PagNode {
     }
 }
 
-
 /**
  * below is heapObj like Node
  */
 export class PagNewExprNode extends PagNode {
     // store the cloned field node
-    fieldNodes!: Map<string, NodeID>
+    fieldNodes!: Map<string, NodeID>;
 
     constructor(id: NodeID, cid: ContextID | undefined = undefined, expr: AbstractExpr, stmt?: Stmt) {
-        super(id, cid, expr, PagNodeKind.HeapObj, stmt)
+        super(id, cid, expr, PagNodeKind.HeapObj, stmt);
     }
 
     public addFieldNode(fieldSignature: AbstractFieldRef, nodeID: NodeID): boolean {
         if (!this.fieldNodes) {
-            this.fieldNodes = new Map()
+            this.fieldNodes = new Map();
         }
         if (this.fieldNodes.has(fieldSignature.getFieldSignature().toString())) {
-            return false
+            return false;
         }
         this.fieldNodes.set(fieldSignature.getFieldSignature().toString(), nodeID);
-        return true
+        return true;
     }
 
     public getFieldNode(fieldSignature: AbstractFieldRef): NodeID | undefined {
         if (!this.fieldNodes) {
-            return undefined
+            return undefined;
         }
-        return this.fieldNodes.get(fieldSignature.getFieldSignature().toString())
+        return this.fieldNodes.get(fieldSignature.getFieldSignature().toString());
     }
 
     public getFieldNodes(): Map<string, NodeID> | undefined {
         if (!this.fieldNodes) {
-            return undefined
+            return undefined;
         }
-        return this.fieldNodes
+        return this.fieldNodes;
     }
 }
 
@@ -526,7 +547,7 @@ export class PagNewContainerExprNode extends PagNode {
 
 export class PagParamNode extends PagNode {
     constructor(id: NodeID, cid: ContextID | undefined = undefined, r: ArkParameterRef, stmt?: Stmt) {
-        super(id, cid, r, PagNodeKind.Param, stmt)
+        super(id, cid, r, PagNodeKind.Param, stmt);
     }
 }
 
@@ -541,7 +562,7 @@ export class PagFuncNode extends PagNode {
     // TODO: may add obj interface
 
     constructor(id: NodeID, cid: ContextID | undefined = undefined, r: Value, stmt?: Stmt, method?: MethodSignature, thisInstanceID?: NodeID) {
-        super(id, cid, r, PagNodeKind.Function, stmt)
+        super(id, cid, r, PagNodeKind.Function, stmt);
         if (method) {
             this.methodSignature = method;
             this.methodType = getBuiltInApiType(method);
@@ -602,32 +623,31 @@ export class PagFuncNode extends PagNode {
  * almost same as PagNewExprNode, used only for globalThis and its field reference
  */
 export class PagGlobalThisNode extends PagNode {
-    fieldNodes: Map<string, NodeID>
+    fieldNodes: Map<string, NodeID>;
 
     constructor(id: NodeID, cid: ContextID | undefined = undefined, r: Value, stmt?: Stmt) {
-        super(id, cid, r, PagNodeKind.GlobalThis, stmt)
-        this.fieldNodes = new Map()
+        super(id, cid, r, PagNodeKind.GlobalThis, stmt);
+        this.fieldNodes = new Map();
     }
 
     public addFieldNode(fieldSignature: AbstractFieldRef, nodeID: NodeID): boolean {
         if (this.fieldNodes.has(fieldSignature.getFieldSignature().toString())) {
-            return false
+            return false;
         }
         this.fieldNodes.set(fieldSignature.getFieldSignature().toString(), nodeID);
-        return true
+        return true;
     }
 
     public getFieldNode(fieldSignature: AbstractFieldRef): NodeID | undefined {
-        return this.fieldNodes.get(fieldSignature.getFieldSignature().toString())
+        return this.fieldNodes.get(fieldSignature.getFieldSignature().toString());
     }
 
     public getFieldNodes(): Map<string, NodeID> | undefined {
-        return this.fieldNodes
+        return this.fieldNodes;
     }
 }
 
 export class Pag extends BaseExplicitGraph {
-
     private cg!: CallGraph;
     private contextValueToIdMap: Map<Value, Map<ContextID, NodeID>> = new Map();
     private ExportInfoToIdMap?: Map<ExportInfo, NodeID>;
@@ -664,27 +684,27 @@ export class Pag extends BaseExplicitGraph {
         }
 
         // Not found
-        let cloneNode = this.addPagNode(src.getCid(), src.getValue(), src.getStmt(), false)
+        let cloneNode = this.addPagNode(src.getCid(), src.getValue(), src.getStmt(), false);
         cloneNode.setClonedFrom(src.getID());
         cloneSet.set(basePt, cloneNode.getID());
         return cloneNode;
     }
 
     public getOrClonePagFieldNode(src: PagInstanceFieldNode, basePt: NodeID): PagInstanceFieldNode | undefined {
-        let baseNode = this.getNode(basePt)
+        let baseNode = this.getNode(basePt);
         if (baseNode instanceof PagNewExprNode || baseNode instanceof PagGlobalThisNode) {
             // check if real field node has been created with basePT, using FieldSignature as key
-            let existedNode = baseNode.getFieldNode(src.getValue() as ArkInstanceFieldRef)
+            let existedNode = baseNode.getFieldNode(src.getValue() as ArkInstanceFieldRef);
             if (existedNode) {
-                return this.getNode(existedNode) as PagInstanceFieldNode
+                return this.getNode(existedNode) as PagInstanceFieldNode;
             }
 
-            let fieldNode = this.getOrClonePagNode(src, basePt)
-            baseNode.addFieldNode(src.getValue() as ArkInstanceFieldRef, fieldNode.getID())
-            fieldNode.setBasePt(basePt)
-            return fieldNode
+            let fieldNode = this.getOrClonePagNode(src, basePt);
+            baseNode.addFieldNode(src.getValue() as ArkInstanceFieldRef, fieldNode.getID());
+            fieldNode.setBasePt(basePt);
+            return fieldNode;
         } else {
-            logger.error(`Error clone field node ${src.getValue()}`)
+            logger.error(`Error clone field node ${src.getValue()}`);
             return undefined;
         }
     }
@@ -702,12 +722,15 @@ export class Pag extends BaseExplicitGraph {
             if (src) {
                 fieldNode = this.getOrClonePagNode(src, basePt);
             } else if (base) {
-                const containerFieldSignature = new FieldSignature('field',
+                const containerFieldSignature = new FieldSignature(
+                    'field',
                     new ClassSignature('container', new FileSignature('container', 'lib.es2015.collection.d.ts')),
-                    new UnclearReferenceType(''));
+                    new UnclearReferenceType('')
+                );
                 fieldNode = this.getOrClonePagNode(
                     // TODO: cid check
-                    this.addPagNode(0, new ArkInstanceFieldRef(base, containerFieldSignature)), basePt
+                    this.addPagNode(0, new ArkInstanceFieldRef(base, containerFieldSignature)),
+                    basePt
                 );
             }
 
@@ -804,8 +827,7 @@ export class Pag extends BaseExplicitGraph {
         }
     }
 
-    private addContextOrExportInfoMap(refresh: boolean, cid: ContextID, id: NodeID,
-        value: PagNodeType, pagNode: PagNode, stmt?: Stmt): void {
+    private addContextOrExportInfoMap(refresh: boolean, cid: ContextID, id: NodeID, value: PagNodeType, pagNode: PagNode, stmt?: Stmt): void {
         if (!(value instanceof ExportInfo)) {
             this.addContextMap(refresh, cid, id, value, stmt!, pagNode!);
         } else {
@@ -837,9 +859,11 @@ export class Pag extends BaseExplicitGraph {
         let base = value.getBase();
         //TODO: remove below once this Local is not uniq in %instInit is fix
         if (base instanceof Local && base.getName() === 'this') {
-            stmt?.getCfg() ?.getStmts() .forEach((s) => {
-                if (s instanceof ArkAssignStmt && s.getLeftOp() instanceof Local &&
-                    (s.getLeftOp() as Local).getName() === 'this') {
+            stmt
+                ?.getCfg()
+                ?.getStmts()
+                .forEach(s => {
+                    if (s instanceof ArkAssignStmt && s.getLeftOp() instanceof Local && (s.getLeftOp() as Local).getName() === 'this') {
                         base = s.getLeftOp() as Local;
                         return;
                     }
@@ -883,11 +907,11 @@ export class Pag extends BaseExplicitGraph {
 
     public getOrNewThisRefNode(thisRefNodeID: NodeID, value: ArkThisRef): PagNode {
         if (thisRefNodeID !== -1) {
-            return this.getNode(thisRefNodeID) as PagNode
+            return this.getNode(thisRefNodeID) as PagNode;
         }
 
-        let thisRefNode = this.addPagThisRefNode(value)
-        return thisRefNode
+        let thisRefNode = this.addPagThisRefNode(value);
+        return thisRefNode;
     }
 
     public getOrNewThisLocalNode(cid: ContextID, ptNode: NodeID, value: Local, s?: Stmt): PagNode {
@@ -967,11 +991,7 @@ export class Pag extends BaseExplicitGraph {
             case PagEdgeKind.InterProceduralCopy:
                 src.addCopyOutEdge(edge);
                 dst.addCopyInEdge(edge);
-                if (src instanceof PagFuncNode ||
-                    src instanceof PagGlobalThisNode ||
-                    src instanceof PagNewExprNode ||
-                    src instanceof PagNewContainerExprNode
-                ) {
+                if (src instanceof PagFuncNode || src instanceof PagGlobalThisNode || src instanceof PagNewExprNode || src instanceof PagNewContainerExprNode) {
                     this.addrEdge.add(edge);
                     this.stashAddrEdge.add(edge);
                 }
@@ -995,7 +1015,6 @@ export class Pag extends BaseExplicitGraph {
                 dst.addThisInEdge(edge);
                 break;
             default:
-                ;
         }
         return true;
     }
@@ -1004,7 +1023,7 @@ export class Pag extends BaseExplicitGraph {
         return this.stashAddrEdge;
     }
 
-    public resetAddrEdges() {
+    public resetAddrEdges(): void {
         this.stashAddrEdge.clear();
     }
 
@@ -1019,8 +1038,17 @@ export class Pag extends BaseExplicitGraph {
 }
 
 export type InterProceduralSrcType = Local;
-export type IntraProceduralEdge = { src: Value, dst: Value, kind: PagEdgeKind, stmt: Stmt }
-export type InterProceduralEdge = { src: InterProceduralSrcType, dst: Value, kind: PagEdgeKind }
+export type IntraProceduralEdge = {
+    src: Value;
+    dst: Value;
+    kind: PagEdgeKind;
+    stmt: Stmt;
+};
+export type InterProceduralEdge = {
+    src: InterProceduralSrcType;
+    dst: Value;
+    kind: PagEdgeKind;
+};
 
 export class FuncPag {
     private internalEdges!: Set<IntraProceduralEdge>;
@@ -1063,7 +1091,7 @@ export class FuncPag {
     }
 
     public addInternalEdge(stmt: ArkAssignStmt, k: PagEdgeKind): boolean {
-        this.internalEdges === undefined ? this.internalEdges = new Set() : undefined;
+        this.internalEdges === undefined ? (this.internalEdges = new Set()) : undefined;
         let lhOp = stmt.getLeftOp();
         let rhOp = stmt.getRightOp();
 
@@ -1071,7 +1099,12 @@ export class FuncPag {
             return false;
         }
 
-        let iEdge: IntraProceduralEdge = { src: rhOp, dst: lhOp, kind: k, stmt: stmt };
+        let iEdge: IntraProceduralEdge = {
+            src: rhOp,
+            dst: lhOp,
+            kind: k,
+            stmt: stmt,
+        };
         this.internalEdges.add(iEdge);
 
         return true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-import { AbstractExpr, ArkAssignStmt, ArkFile, ArkNormalBinopExpr, ArkStaticFieldRef, ClassSignature, ClassType, Constant, ImportInfo, Local, Stmt, StringType, Value } from "arkanalyzer";
-import { ClassCategory } from "arkanalyzer/lib/core/model/ArkClass";
-import { VarInfo } from "../../model/VarInfo";
-import { StmtExt } from "../../model/StmtExt";
-import { CheckerStorage } from "../common/CheckerStorage";
-import { Scope } from "../../model/Scope";
+import { AbstractExpr, ArkAssignStmt, ArkFile, ArkNormalBinopExpr, ArkStaticFieldRef, ClassSignature, ClassType, Constant, ImportInfo, Local, Stmt, StringType, Value } from 'arkanalyzer';
+import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
+import { VarInfo } from '../../model/VarInfo';
+import { StmtExt } from '../../model/StmtExt';
+import { CheckerStorage } from '../common/CheckerStorage';
+import { Scope } from '../../model/Scope';
 
 export class StringUtils {
     public static getStringByScope(arkFile: ArkFile, valueStmtInfo: VarInfo, value: Value): string {

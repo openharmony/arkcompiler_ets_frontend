@@ -13,18 +13,31 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, ArkClass, ArkFile, ArkIfStmt, ArkInstanceFieldRef, ArkInstanceInvokeExpr, ArkMethod, ClassType, FunctionType, Local, Stmt, Value } from "arkanalyzer";
+import {
+    ArkAssignStmt,
+    ArkClass,
+    ArkFile,
+    ArkIfStmt,
+    ArkInstanceFieldRef,
+    ArkInstanceInvokeExpr,
+    ArkMethod,
+    ClassType,
+    FunctionType,
+    Local,
+    Stmt,
+    Value,
+} from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherTypes, MethodMatcher, MatcherCallback, ClassMatcher } from "../../Index";
-import { IssueReport } from "../../model/Defects";
-import { ClassCategory } from "arkanalyzer/lib/core/model/ArkClass";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherTypes, MethodMatcher, MatcherCallback, ClassMatcher } from '../../Index';
+import { IssueReport } from '../../model/Defects';
+import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'NoMethodOverridingFieldCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: ''
+    ruleDocPath: '',
+    description: '',
 };
 
 export class NoMethodOverridingFieldCheck implements BaseChecker {
@@ -35,28 +48,31 @@ export class NoMethodOverridingFieldCheck implements BaseChecker {
 
     private classMetcher: ClassMatcher = {
         matcherType: MatcherTypes.CLASS,
-        ClassCategory: [ClassCategory.CLASS]
+        ClassCategory: [ClassCategory.CLASS],
     };
 
     public registerMatchers(): MatcherCallback[] {
         const methodCb: MatcherCallback = {
             matcher: this.classMetcher,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [methodCb];
     }
 
-    public check = (target: ArkClass) => {
+    public check = (target: ArkClass): void => {
         const interfaces = target.getAllHeritageClasses().filter(c => c.getCategory() === ClassCategory.INTERFACE);
         for (const i of interfaces) {
-            const fields = i.getFields().filter(f => f.getType() instanceof FunctionType).map(f => f.getName());
+            const fields = i
+                .getFields()
+                .filter(f => f.getType() instanceof FunctionType)
+                .map(f => f.getName());
             fields.forEach(f => {
                 const method = target.getMethodWithName(f);
                 if (method) {
                     // record class
                     // console.log(`111`)
                 }
-            })
+            });
         }
-    }
+    };
 }

@@ -13,19 +13,34 @@
  * limitations under the License.
  */
 
-import { ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, DVFGBuilder, ArkInstanceOfExpr, ArkNewExpr, CallGraph, CallGraphBuilder, ArkParameterRef, ArkInstanceFieldRef } from "arkanalyzer/lib";
+import {
+    ArkMethod,
+    ArkAssignStmt,
+    FieldSignature,
+    Stmt,
+    Scene,
+    Value,
+    DVFGBuilder,
+    ArkInstanceOfExpr,
+    ArkNewExpr,
+    CallGraph,
+    CallGraphBuilder,
+    ArkParameterRef,
+    ArkInstanceFieldRef,
+} from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherCallback } from "../../Index";
-import { IssueReport } from "../../model/Defects";
-import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherCallback } from '../../Index';
+import { IssueReport } from '../../model/Defects';
+import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper } from './Utils';
+import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: 'Object literal shall generate instance of a specific class'
+    ruleDocPath: '',
+    description: 'Object literal shall generate instance of a specific class',
 };
 
 export class ObjectLiteralCheck implements BaseChecker {
@@ -41,12 +56,12 @@ export class ObjectLiteralCheck implements BaseChecker {
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
             matcher: undefined,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [matchBuildCb];
     }
 
-    public check = (scene: Scene) => {
+    public check = (scene: Scene): void => {
         this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
         this.dvfg = new DVFG(this.cg);
@@ -66,9 +81,9 @@ export class ObjectLiteralCheck implements BaseChecker {
                 }
             }
         }
-    }
+    };
 
-    public processArkMethod(target: ArkMethod, scene: Scene) {
+    public processArkMethod(target: ArkMethod, scene: Scene): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             if (!(stmt instanceof ArkAssignStmt)) {
@@ -92,10 +107,16 @@ export class ObjectLiteralCheck implements BaseChecker {
                 this.addIssueReport(stmt, rightOp);
             }
         }
-
     }
 
-    private checkFromStmt(stmt: Stmt, scene: Scene, res: Stmt[], checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0) {
+    private checkFromStmt(
+        stmt: Stmt,
+        scene: Scene,
+        res: Stmt[],
+        checkAll: { value: boolean },
+        visited: Set<Stmt>,
+        depth: number = 0
+    ): void {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return;
@@ -123,12 +144,16 @@ export class ObjectLiteralCheck implements BaseChecker {
                     this.dvfgBuilder.buildForSingleMethod(declaringMtd);
                     this.visited.add(declaringMtd);
                 }
-                declaringMtd.getReturnStmt().forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
-            })
+                declaringMtd
+                    .getReturnStmt()
+                    .forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
+            });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
+                const callsites = this.cg.getInvokeStmtByMethod(
+                    currentStmt.getCfg().getDeclaringMethod().getSignature()
+                );
                 callsites.forEach(cs => {
                     const declaringMtd = cs.getCfg().getDeclaringMethod();
                     if (!this.visited.has(declaringMtd)) {
@@ -136,7 +161,9 @@ export class ObjectLiteralCheck implements BaseChecker {
                         this.visited.add(declaringMtd);
                     }
                 });
-                this.collectArgDefs(paramIdx, callsites).forEach(d => this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1));
+                this.collectArgDefs(paramIdx, callsites).forEach(d =>
+                    this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
+                );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
@@ -170,7 +197,7 @@ export class ObjectLiteralCheck implements BaseChecker {
 
     private collectArgDefs(argIdx: number, callsites: Stmt[]): Stmt[] {
         const getKey = (v: Value) => {
-            return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v
+            return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {
             const target: Value | FieldSignature = getKey(callsite.getInvokeExpr()!.getArg(argIdx));
@@ -182,17 +209,29 @@ export class ObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value) {
+    private addIssueReport(stmt: Stmt, operand: Value): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'ObjectLiteral';
         const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
-            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            desc,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private getLineAndColumn(stmt: Stmt, operand: Value) {
+    private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
         const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,6 @@ export class VisibleValue {
         }
         logger.info('---- into scope:{', name, '}');
 
-
         // get values in this scope
         let values: Value[] = [];
         if (model instanceof ArkFile || model instanceof ArkNamespace) {
@@ -99,7 +98,6 @@ export class VisibleValue {
         this.deleteScope(targetDepth);
     }
 
-
     /** clear up previous scope */
     private deleteScope(targetDepth: number): void {
         const prevDepth = this.currScope.depth;
@@ -118,7 +116,7 @@ export class VisibleValue {
         }
 
         this.scopeChain.splice(this.scopeChain.length - popScopeCnt, popScopeCnt)[0]; // popScopeCnt >= 1
-        this.currScope = this.scopeChain[this.scopeChain.length - 1]
+        this.currScope = this.scopeChain[this.scopeChain.length - 1];
         const totalValuesCnt = this.currVisibleValues.length;
         this.currVisibleValues.splice(totalValuesCnt - popScopeValuesCnt, popScopeValuesCnt);
     }
@@ -143,13 +141,13 @@ export class VisibleValue {
             } else {
                 targetDepth = prevDepth;
             }
-        } else if ((model instanceof ArkFile) && (prevModel instanceof ArkFile)) {
+        } else if (model instanceof ArkFile && prevModel instanceof ArkFile) {
             targetDepth = prevDepth;
-        } else if ((model instanceof ArkNamespace) && (prevModel instanceof ArkNamespace)) {
+        } else if (model instanceof ArkNamespace && prevModel instanceof ArkNamespace) {
             targetDepth = prevDepth;
-        } else if ((model instanceof ArkClass) && (prevModel instanceof ArkClass)) {
+        } else if (model instanceof ArkClass && prevModel instanceof ArkClass) {
             targetDepth = prevDepth;
-        } else if ((model instanceof ArkMethod) && (prevModel instanceof ArkMethod)) {
+        } else if (model instanceof ArkMethod && prevModel instanceof ArkMethod) {
             targetDepth = prevDepth;
         }
         return targetDepth;
@@ -159,7 +157,6 @@ export class VisibleValue {
         let values: Value[] = [];
         return values;
     }
-
 
     private getVisibleValuesIntoClass(cls: ArkClass): Value[] {
         const values: Value[] = [];
@@ -192,7 +189,6 @@ export class VisibleValue {
         return visibleValues;
     }
 }
-
 
 type ArkModel = ArkFile | ArkNamespace | ArkClass | ArkMethod | BasicBlock;
 

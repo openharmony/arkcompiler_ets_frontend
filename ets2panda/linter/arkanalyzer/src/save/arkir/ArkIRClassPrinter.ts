@@ -53,7 +53,7 @@ export class ArkIRClassPrinter extends BasePrinter {
 
         const genericsTypes = this.cls.getGenericsTypes();
         if (genericsTypes) {
-            this.printer.write(`<${genericsTypes.map((v) => v.toString()).join(', ')}>`);
+            this.printer.write(`<${genericsTypes.map(v => v.toString()).join(', ')}>`);
         }
         if (this.cls.getSuperClassName() && !this.cls.hasComponentDecorator()) {
             this.printer.write(` extends ${this.cls.getSuperClassName()}`);

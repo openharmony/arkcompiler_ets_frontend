@@ -14,8 +14,8 @@
  */
 
 import { CallGraph, CallGraphNode, CallGraphNodeKind, CallSite, DynCallSite, FuncID } from '../model/CallGraph';
-import { Scene } from '../../Scene'
-import { ArkAssignStmt, ArkInvokeStmt, ArkReturnStmt, Stmt } from '../../core/base/Stmt'
+import { Scene } from '../../Scene';
+import { ArkAssignStmt, ArkInvokeStmt, ArkReturnStmt, Stmt } from '../../core/base/Stmt';
 import {
     AbstractExpr,
     AbstractInvokeExpr,
@@ -23,19 +23,12 @@ import {
     ArkNewArrayExpr,
     ArkNewExpr,
     ArkPtrInvokeExpr,
-    ArkStaticInvokeExpr
+    ArkStaticInvokeExpr,
 } from '../../core/base/Expr';
-import {
-    AbstractFieldRef,
-    ArkArrayRef,
-    ArkInstanceFieldRef,
-    ArkParameterRef,
-    ArkStaticFieldRef,
-    ArkThisRef
-} from '../../core/base/Ref';
+import { AbstractFieldRef, ArkArrayRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef, ArkThisRef } from '../../core/base/Ref';
 import { Value } from '../../core/base/Value';
 import { ArkMethod } from '../../core/model/ArkMethod';
-import Logger, { LOG_MODULE_TYPE } from "../../utils/logger";
+import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { Local } from '../../core/base/Local';
 import { NodeID } from '../../core/graph/BaseExplicitGraph';
 import { ClassSignature } from '../../core/model/ArkSignature';
@@ -59,7 +52,7 @@ import {
     PagNodeType,
     PagThisRefNode,
     StorageLinkEdgeType,
-    StorageType
+    StorageType,
 } from './Pag';
 import { GLOBAL_THIS_NAME } from '../../core/common/TSConst';
 import { IPtsCollection } from './PtsDS';
@@ -85,7 +78,7 @@ export class PagBuilder {
     private scale: PtaAnalysisScale;
     private funcPags: Map<FuncID, FuncPag>;
     private interFuncPags?: Map<FuncID, InterFuncPag>;
-    private handledFunc: Set<string> = new Set()
+    private handledFunc: Set<string> = new Set();
     private ctx: KLimitedContextSensitive;
     private scene: Scene;
     private worklist: CSFuncID[] = [];
@@ -99,9 +92,9 @@ export class PagBuilder {
     private sdkMethodReturnValueMap: Map<ArkMethod, Map<ContextID, ArkNewExpr>> = new Map();
     // record the SDK API param, and create fake Values
     private methodParamValueMap: Map<FuncID, Map<number, Value>> = new Map();
-    private fakeSdkMethodParamDeclaringStmt: Stmt = new ArkAssignStmt(new Local(""), new Local(""));
+    private fakeSdkMethodParamDeclaringStmt: Stmt = new ArkAssignStmt(new Local(''), new Local(''));
     private funcHandledThisRound: Set<FuncID> = new Set();
-    private updatedNodesThisRound: Map<NodeID, IPtsCollection<NodeID>> = new Map()
+    private updatedNodesThisRound: Map<NodeID, IPtsCollection<NodeID>> = new Map();
     private singletonFuncMap: Map<FuncID, boolean> = new Map();
     private globalThisValue: Local = new Local(GLOBAL_THIS_NAME);
     private globalThisPagNode?: PagGlobalThisNode;
@@ -113,7 +106,7 @@ export class PagBuilder {
         this.pag = p;
         this.cg = cg;
         this.scale = scale;
-        this.funcPags = new Map<FuncID, FuncPag>;
+        this.funcPags = new Map<FuncID, FuncPag>();
         this.ctx = new KLimitedContextSensitive(kLimit);
         this.scene = s;
         this.pagStat = new PAGStat();
@@ -130,15 +123,15 @@ export class PagBuilder {
         }
 
         this.worklist.push(cs);
-        return cs
+        return cs;
     }
 
-    private addToFuncHandledListThisRound(id: FuncID) {
+    private addToFuncHandledListThisRound(id: FuncID): void {
         if (this.funcHandledThisRound.has(id)) {
             return;
         }
 
-        this.funcHandledThisRound.add(id)
+        this.funcHandledThisRound.add(id);
     }
 
     public buildForEntries(funcIDs: FuncID[]): void {
@@ -189,13 +182,13 @@ export class PagBuilder {
             return false;
         }
 
-        let cfg = arkMethod.getCfg()
+        let cfg = arkMethod.getCfg();
         if (!cfg) {
             this.buildSDKFuncPag(funcID);
-            return false
+            return false;
         }
 
-        logger.trace(`[build FuncPag] ${arkMethod.getSignature().toString()}`)
+        logger.trace(`[build FuncPag] ${arkMethod.getSignature().toString()}`);
 
         let fpag = new FuncPag();
         for (let stmt of cfg.getStmts()) {
@@ -230,7 +223,7 @@ export class PagBuilder {
             if (callSites.length !== 0) {
                 // direct call is already existing in CG
                 // TODO: API Invoke stmt has anonymous method param, how to add these param into callee
-                callSites.forEach((cs) => {
+                callSites.forEach(cs => {
                     this.addFuncPagCallSite(fpag, cs, ivkExpr);
                 });
             } else {
@@ -246,8 +239,7 @@ export class PagBuilder {
 
     private addFuncPagCallSite(fpag: FuncPag, cs: CallSite, ivkExpr: AbstractInvokeExpr): void {
         if (ivkExpr instanceof ArkStaticInvokeExpr) {
-            if (ivkExpr.getMethodSignature().getDeclaringClassSignature()
-                .getDeclaringFileSignature().getFileName() === UNKNOWN_FILE_NAME) {
+            if (ivkExpr.getMethodSignature().getDeclaringClassSignature().getDeclaringFileSignature().getFileName() === UNKNOWN_FILE_NAME) {
                 fpag.addUnknownCallSite(cs);
             } else {
                 fpag.addNormalCallSite(cs);
@@ -263,7 +255,7 @@ export class PagBuilder {
             // direct call or constructor call is already existing in CG
             // TODO: some ptr invoke stmt is recognized as Static invoke in tests/resources/callgraph/funPtrTest1/fnPtrTest4.ts
             // TODO: instance invoke(ptr invoke)
-            callSites.forEach((cs) => {
+            callSites.forEach(cs => {
                 if (this.cg.isUnknownMethod(cs.calleeFuncID)) {
                     fpag.addUnknownCallSite(cs);
                 } else {
@@ -286,7 +278,7 @@ export class PagBuilder {
         if (value instanceof Local) {
             this.handleValueFromExternalScope(value, funcID);
         } else if (value instanceof ArkInstanceInvokeExpr) {
-            value.getUses().forEach((v) => {
+            value.getUses().forEach(v => {
                 this.handleValueFromExternalScope(v, funcID);
             });
         }
@@ -358,7 +350,7 @@ export class PagBuilder {
         return paramPagNodes;
     }
 
-    public buildPagFromFuncPag(funcID: FuncID, cid: ContextID) {
+    public buildPagFromFuncPag(funcID: FuncID, cid: ContextID): void {
         let funcPag = this.funcPags.get(funcID);
         if (funcPag === undefined) {
             return;
@@ -435,11 +427,10 @@ export class PagBuilder {
             }
 
             // Add edge to thisRef for special calls
-            if (calleeCGNode.getKind() === CallGraphNodeKind.constructor ||
-                calleeCGNode.getKind() === CallGraphNodeKind.intrinsic) {
-                let callee = this.scene.getMethod(this.cg.getMethodByFuncID(cs.calleeFuncID)!)!
+            if (calleeCGNode.getKind() === CallGraphNodeKind.constructor || calleeCGNode.getKind() === CallGraphNodeKind.intrinsic) {
+                let callee = this.scene.getMethod(this.cg.getMethodByFuncID(cs.calleeFuncID)!)!;
                 if (ivkExpr instanceof ArkInstanceInvokeExpr) {
-                    let baseNode = this.getOrNewPagNode(cid, ivkExpr.getBase())
+                    let baseNode = this.getOrNewPagNode(cid, ivkExpr.getBase());
                     let baseNodeID = baseNode.getID();
 
                     this.addThisRefCallEdge(baseNodeID, cid, ivkExpr.getBase(), callee, calleeCid, cs.callerFuncID);
@@ -452,7 +443,7 @@ export class PagBuilder {
         return true;
     }
 
-    public addDynamicCallSite(funcPag: FuncPag, funcID: FuncID, cid: ContextID) {
+    public addDynamicCallSite(funcPag: FuncPag, funcID: FuncID, cid: ContextID): void {
         // add dyn callsite in funcpag to base node
         for (let cs of funcPag.getDynamicCallSites()) {
             let invokeExpr: AbstractInvokeExpr = cs.callStmt.getInvokeExpr()!;
@@ -501,9 +492,8 @@ export class PagBuilder {
 
         let locals = method.getBody()?.getLocals()!;
 
-        funcPag.getUnknownCallSites().forEach((unknownCallSite) => {
-            let calleeName = unknownCallSite.callStmt.getInvokeExpr()?.getMethodSignature()
-                .getMethodSubSignature().getMethodName()!;
+        funcPag.getUnknownCallSites().forEach(unknownCallSite => {
+            let calleeName = unknownCallSite.callStmt.getInvokeExpr()?.getMethodSignature().getMethodSubSignature().getMethodName()!;
 
             let base = locals.get(calleeName);
             if (!base) {
@@ -522,7 +512,7 @@ export class PagBuilder {
 
                 node.addRelatedUnknownCallSite(unknownCallSite);
             }
-        })
+        });
     }
 
     public addDynamicCallEdge(cs: DynCallSite | CallSite, baseClassPTNode: NodeID, cid: ContextID): NodeID[] {
@@ -541,7 +531,7 @@ export class PagBuilder {
             let dstCGNode = this.cg.getCallGraphNodeByMethod(callee.getSignature());
             let callerNode = this.cg.getNode(cs.callerFuncID) as CallGraphNode;
             if (!callerNode) {
-                throw new Error("Can not get caller method node");
+                throw new Error('Can not get caller method node');
             }
             // update call graph
             // TODO: movo to cgbuilder
@@ -651,9 +641,7 @@ export class PagBuilder {
             if (!(thisValue instanceof Local)) {
                 return srcNodes;
             }
-            this.addThisRefCallEdge(baseClassPTNode, (ptNode as PagFuncNode).getOriginCid(),
-                thisValue, callee!, calleeCid, staticCS.callerFuncID
-            );
+            this.addThisRefCallEdge(baseClassPTNode, (ptNode as PagFuncNode).getOriginCid(), thisValue, callee!, calleeCid, staticCS.callerFuncID);
         }
 
         return srcNodes;
@@ -745,15 +733,27 @@ export class PagBuilder {
         return srcNodes;
     }
 
-    private handleFunctionCall(staticCS: CallSite, cid: ContextID, calleeCid: ContextID,
-        realCallee: ArkMethod, srcNodes: NodeID[], baseClassPTNode: NodeID): void {
+    private handleFunctionCall(
+        staticCS: CallSite,
+        cid: ContextID,
+        calleeCid: ContextID,
+        realCallee: ArkMethod,
+        srcNodes: NodeID[],
+        baseClassPTNode: NodeID
+    ): void {
         this.buildFuncPagAndAddToWorklist(new CSFuncID(calleeCid, staticCS.calleeFuncID));
         srcNodes.push(...this.addCallParamPagEdge(realCallee, staticCS.args!, staticCS.callStmt, cid, calleeCid, 1));
         this.addThisEdge(staticCS, cid, realCallee, srcNodes, baseClassPTNode, calleeCid);
     }
 
-    private handleFunctionApply(staticCS: CallSite, cid: ContextID, calleeCid: ContextID,
-        realCallee: ArkMethod, srcNodes: NodeID[], baseClassPTNode: NodeID): void {
+    private handleFunctionApply(
+        staticCS: CallSite,
+        cid: ContextID,
+        calleeCid: ContextID,
+        realCallee: ArkMethod,
+        srcNodes: NodeID[],
+        baseClassPTNode: NodeID
+    ): void {
         this.buildFuncPagAndAddToWorklist(new CSFuncID(calleeCid, staticCS.calleeFuncID));
         let callerMethod = this.cg.getArkMethodByFuncID(staticCS.callerFuncID);
         if (!callerMethod) {
@@ -781,7 +781,7 @@ export class PagBuilder {
     }
 
     private addThisEdge(staticCS: CallSite, cid: ContextID, realCallee: ArkMethod, srcNodes: NodeID[], baseClassPTNode: NodeID, calleeCid: ContextID): void {
-        if (!(staticCS.args![0] instanceof NullConstant) && !(realCallee.isStatic())) {
+        if (!(staticCS.args![0] instanceof NullConstant) && !realCallee.isStatic()) {
             srcNodes.push(this.addThisRefCallEdge(baseClassPTNode, cid, staticCS.args![0] as Local, realCallee, calleeCid, staticCS.callerFuncID));
         }
     }
@@ -800,15 +800,13 @@ export class PagBuilder {
         }
     }
 
-
     public handleUnkownDynamicCall(cs: DynCallSite, cid: ContextID): NodeID[] {
         let srcNodes: NodeID[] = [];
         let callerNode = this.cg.getNode(cs.callerFuncID) as CallGraphNode;
         let ivkExpr = cs.callStmt.getInvokeExpr() as AbstractInvokeExpr;
-        logger.warn("Handling unknown dyn call site : \n  " + callerNode.getMethod().toString()
-            + '\n  --> ' + ivkExpr.toString() + '\n  CID: ' + cid);
+        logger.warn('Handling unknown dyn call site : \n  ' + callerNode.getMethod().toString() + '\n  --> ' + ivkExpr.toString() + '\n  CID: ' + cid);
 
-        let callees: ArkMethod[] = []
+        let callees: ArkMethod[] = [];
         let callee: ArkMethod | null = null;
         callee = this.scene.getMethod(ivkExpr.getMethodSignature());
         if (!callee) {
@@ -821,7 +819,7 @@ export class PagBuilder {
                 if (callee) {
                     callees.push(callee);
                 }
-            })
+            });
         } else {
             callees.push(callee);
         }
@@ -833,7 +831,7 @@ export class PagBuilder {
         callees.forEach(callee => {
             let dstCGNode = this.cg.getCallGraphNodeByMethod(callee.getSignature());
             if (!callerNode) {
-                throw new Error("Can not get caller method node");
+                throw new Error('Can not get caller method node');
             }
 
             if (this.processStorage(cs, dstCGNode, cid)) {
@@ -844,7 +842,7 @@ export class PagBuilder {
                 }
             }
 
-            logger.warn(`\tAdd call edge of unknown call ${callee.getSignature().toString()}`)
+            logger.warn(`\tAdd call edge of unknown call ${callee.getSignature().toString()}`);
             this.cg.addDynamicCallEdge(callerNode.getID(), dstCGNode.getID(), cs.callStmt);
             if (!this.cg.detectReachable(dstCGNode.getID(), callerNode.getID())) {
                 let calleeCid = this.ctx.getOrNewContext(cid, dstCGNode.getID(), true);
@@ -852,22 +850,22 @@ export class PagBuilder {
                 let staticSrcNodes = this.addStaticPagCallEdge(staticCS, cid, calleeCid);
                 srcNodes.push(...staticSrcNodes);
             }
-        })
+        });
         return srcNodes;
     }
 
     public handleUnprocessedCallSites(processedCallSites: Set<DynCallSite>): NodeID[] {
         let reAnalyzeNodes: NodeID[] = [];
         for (let funcID of this.funcHandledThisRound) {
-            let funcPag = this.funcPags.get(funcID)
+            let funcPag = this.funcPags.get(funcID);
             if (!funcPag) {
-                logger.error(`can not find funcPag of handled func ${funcID}`)
-                continue
+                logger.error(`can not find funcPag of handled func ${funcID}`);
+                continue;
             }
-            let callSites = funcPag.getDynamicCallSites()
+            let callSites = funcPag.getDynamicCallSites();
 
-            const diffCallSites = new Set(Array.from(callSites).filter(item => !processedCallSites.has(item)))
-            diffCallSites.forEach((cs) => {
+            const diffCallSites = new Set(Array.from(callSites).filter(item => !processedCallSites.has(item)));
+            diffCallSites.forEach(cs => {
                 let ivkExpr = cs.callStmt.getInvokeExpr();
                 if (!(ivkExpr instanceof ArkInstanceInvokeExpr)) {
                     return;
@@ -875,7 +873,7 @@ export class PagBuilder {
                 // Get local of base class
                 let base = ivkExpr.getBase();
                 // TODO: remove this after multiple this local fixed
-                base = this.getRealThisLocal(base, cs.callerFuncID)
+                base = this.getRealThisLocal(base, cs.callerFuncID);
                 // Get PAG nodes for this base's local
                 let ctx2NdMap = this.pag.getNodesByValue(base);
                 if (!ctx2NdMap) {
@@ -885,15 +883,20 @@ export class PagBuilder {
                 for (let [cid] of ctx2NdMap.entries()) {
                     reAnalyzeNodes.push(...this.handleUnkownDynamicCall(cs, cid));
                 }
-            })
+            });
         }
 
         return reAnalyzeNodes;
     }
 
-    private addThisRefCallEdge(baseClassPTNode: NodeID, cid: ContextID,
-        baseLocal: Local, callee: ArkMethod, calleeCid: ContextID, callerFunID: FuncID): NodeID {
-
+    private addThisRefCallEdge(
+        baseClassPTNode: NodeID,
+        cid: ContextID,
+        baseLocal: Local,
+        callee: ArkMethod,
+        calleeCid: ContextID,
+        callerFunID: FuncID
+    ): NodeID {
         let thisRefNodeID = this.recordThisRefNode(baseClassPTNode, callee, calleeCid);
         let thisRefNode = this.pag.getNode(thisRefNodeID) as PagThisRefNode;
         let srcBaseLocal = baseLocal;
@@ -921,8 +924,10 @@ export class PagBuilder {
             logger.error(`callee is null`);
             return -1;
         }
-        let thisAssignStmt = callee.getCfg()?.getStmts().filter(s =>
-            s instanceof ArkAssignStmt && s.getRightOp() instanceof ArkThisRef);
+        let thisAssignStmt = callee
+            .getCfg()
+            ?.getStmts()
+            .filter(s => s instanceof ArkAssignStmt && s.getRightOp() instanceof ArkThisRef);
         let thisPtr = (thisAssignStmt?.at(0) as ArkAssignStmt).getRightOp() as ArkThisRef;
         if (!thisPtr) {
             throw new Error('Can not get this ptr');
@@ -946,7 +951,7 @@ export class PagBuilder {
             calleeCid = this.ctx.getOrNewContext(callerCid, cs.calleeFuncID, true);
         }
 
-        let srcNodes: NodeID[] = []
+        let srcNodes: NodeID[] = [];
         // Add reachable
 
         let calleeNode = this.cg.getNode(cs.calleeFuncID) as CallGraphNode;
@@ -967,7 +972,7 @@ export class PagBuilder {
 
         let calleeCS = this.buildFuncPagAndAddToWorklist(new CSFuncID(calleeCid, cs.calleeFuncID));
         // callee cid will updated if callee is singleton
-        calleeCid = calleeCS.cid
+        calleeCid = calleeCS.cid;
 
         let realArgs: Value[] = cs.args ?? [];
         let argsOffset: number = 0;
@@ -988,14 +993,16 @@ export class PagBuilder {
      * only process the param PAG edge for invoke stmt
      */
     private addCallParamPagEdge(calleeMethod: ArkMethod, args: Value[], callStmt: Stmt, callerCid: ContextID, calleeCid: ContextID, offset: number): NodeID[] {
-        let params = calleeMethod.getCfg()!.getStmts()
+        let params = calleeMethod
+            .getCfg()!
+            .getStmts()
             .filter(stmt => stmt instanceof ArkAssignStmt && stmt.getRightOp() instanceof ArkParameterRef)
             .map(stmt => (stmt as ArkAssignStmt).getRightOp());
 
         let srcNodes: NodeID[] = [];
 
         /**
-         *  process foreach situation 
+         *  process foreach situation
          *  e.g. arr.forEach((item) => { ... })
          *  cs.args is anonymous method local, will have only 1 parameter
          *  but inside foreach will have >= 1 parameters
@@ -1134,7 +1141,7 @@ export class PagBuilder {
 
         srcNodes.push(...this.addSDKMethodReturnPagEdge(cs, callerCid, calleeCid, calleeMethod));
         srcNodes.push(...this.addSDKMethodParamPagEdge(cs, callerCid, calleeCid, calleeNode.getID()));
-        return srcNodes
+        return srcNodes;
     }
 
     private addSDKMethodReturnPagEdge(cs: CallSite, callerCid: ContextID, calleeCid: ContextID, calleeMethod: ArkMethod): NodeID[] {
@@ -1145,20 +1152,20 @@ export class PagBuilder {
         }
 
         // check fake heap object exists or not
-        let cidMap = this.sdkMethodReturnValueMap.get(calleeMethod)
+        let cidMap = this.sdkMethodReturnValueMap.get(calleeMethod);
         if (!cidMap) {
-            cidMap = new Map()
+            cidMap = new Map();
         }
-        let newExpr = cidMap.get(calleeCid)
+        let newExpr = cidMap.get(calleeCid);
         if (!newExpr) {
             if (returnType instanceof ClassType) {
-                newExpr = new ArkNewExpr(returnType)
+                newExpr = new ArkNewExpr(returnType);
             }
         }
-        cidMap.set(calleeCid, newExpr!)
-        this.sdkMethodReturnValueMap.set(calleeMethod, cidMap)
+        cidMap.set(calleeCid, newExpr!);
+        this.sdkMethodReturnValueMap.set(calleeMethod, cidMap);
 
-        let srcPagNode = this.getOrNewPagNode(calleeCid, newExpr!)
+        let srcPagNode = this.getOrNewPagNode(calleeCid, newExpr!);
         let dstPagNode = this.getOrNewPagNode(callerCid, cs.callStmt.getLeftOp(), cs.callStmt);
 
         this.pag.addPagEdge(srcPagNode, dstPagNode, PagEdgeKind.Address, cs.callStmt);
@@ -1206,9 +1213,7 @@ export class PagBuilder {
                  * when this API is called, the anonymous method pointer will not be able to pass into the fake Value PagNode
                  */
                 dstPagNode.setSdkParam();
-                let sdkParamInvokeStmt = new ArkInvokeStmt(
-                    new ArkPtrInvokeExpr((arg.getType() as FunctionType).getMethodSignature(), paramValue as Local, [])
-                );
+                let sdkParamInvokeStmt = new ArkInvokeStmt(new ArkPtrInvokeExpr((arg.getType() as FunctionType).getMethodSignature(), paramValue as Local, []));
 
                 // create new DynCallSite
                 let sdkParamCallSite = new DynCallSite(funcID, sdkParamInvokeStmt, undefined, undefined);
@@ -1232,11 +1237,11 @@ export class PagBuilder {
 
         // globalThis process can not be removed while all `globalThis` ref is the same Value
         if (v instanceof Local) {
-            if (v.getName() === "this") {
+            if (v.getName() === 'this') {
                 return this.getOrNewThisLoalNode(cid, v as Local, s);
             } else if (v.getName() === GLOBAL_THIS_NAME && v.getDeclaringStmt() == null) {
                 // globalThis node has no cid
-                return this.getOrNewGlobalThisNode(-1)
+                return this.getOrNewGlobalThisNode(-1);
             }
         }
 
@@ -1252,19 +1257,19 @@ export class PagBuilder {
      * @param cid: current contextID
      */
     public getOrNewThisRefNode(cid: ContextID, v: ArkThisRef): PagNode {
-        let thisRefNodeID = this.cid2ThisRefMap.get(cid)
+        let thisRefNodeID = this.cid2ThisRefMap.get(cid);
         if (!thisRefNodeID) {
             thisRefNodeID = -1;
         }
 
-        let thisRefNode = this.pag.getOrNewThisRefNode(thisRefNodeID, v)
-        this.cid2ThisRefMap.set(cid, thisRefNode.getID())
-        return thisRefNode
+        let thisRefNode = this.pag.getOrNewThisRefNode(thisRefNodeID, v);
+        this.cid2ThisRefMap.set(cid, thisRefNode.getID());
+        return thisRefNode;
     }
 
     // TODO: remove it once this local not uniq issue is fixed
     public getOrNewThisLoalNode(cid: ContextID, v: Local, s?: Stmt): PagNode {
-        let thisLocalNodeID = this.cid2ThisLocalMap.get(cid)
+        let thisLocalNodeID = this.cid2ThisLocalMap.get(cid);
         if (thisLocalNodeID) {
             return this.pag.getNode(thisLocalNodeID) as PagNode;
         }
@@ -1316,7 +1321,6 @@ export class PagBuilder {
             propertyLocal = storageMap.get(propertyName)!;
         }
 
-
         if (propertyLocal) {
             return this.getOrNewPagNode(-1, propertyLocal, stmt);
         }
@@ -1351,9 +1355,9 @@ export class PagBuilder {
     /*
      * In ArkIR, ArkField has multiple instances for each stmt which use it
      * But the unique one is needed for pointer analysis
-     * This is a temp solution to use a ArkField->(first instance) 
+     * This is a temp solution to use a ArkField->(first instance)
      *  as the unique instance
-     * 
+     *
      * node merge condition:
      * instance field: value and ArkField
      * static field: ArkField
@@ -1364,18 +1368,18 @@ export class PagBuilder {
         }
 
         let sig = v.getFieldSignature();
-        let sigStr = sig.toString()
+        let sigStr = sig.toString();
         let base: Local;
         let real: Value | undefined;
 
         if (v instanceof ArkInstanceFieldRef) {
-            base = (v as ArkInstanceFieldRef).getBase()
+            base = (v as ArkInstanceFieldRef).getBase();
             if (base instanceof Local && base.getName() === GLOBAL_THIS_NAME && base.getDeclaringStmt() == null) {
                 // replace the base in fieldRef
                 base = this.getGlobalThisValue();
-                (v as ArkInstanceFieldRef).setBase(base as Local)
+                (v as ArkInstanceFieldRef).setBase(base as Local);
             }
-            let key = `${base.getSignature()}-${sigStr}`
+            let key = `${base.getSignature()}-${sigStr}`;
 
             real = this.instanceField2UniqInstanceMap.get(key);
             if (!real) {
@@ -1413,9 +1417,7 @@ export class PagBuilder {
         }
 
         let funcPag = this.funcPags.get(funcID)!;
-        let heapObjects = [...funcPag.getInternalEdges()!]
-            .filter(edge => edge.kind === PagEdgeKind.Address)
-            .map(edge => edge.dst);
+        let heapObjects = [...funcPag.getInternalEdges()!].filter(edge => edge.kind === PagEdgeKind.Address).map(edge => edge.dst);
 
         let returnValues = arkMethod.getReturnValues();
 
@@ -1470,8 +1472,7 @@ export class PagBuilder {
         return false;
     }
 
-    private funcPagDfs(graph: Map<Value, Value[]>, visited: Set<Value>, currentNode: Value, targetNode: Value,
-        staticFieldFound: boolean): boolean {
+    private funcPagDfs(graph: Map<Value, Value[]>, visited: Set<Value>, currentNode: Value, targetNode: Value, staticFieldFound: boolean): boolean {
         if (currentNode === targetNode) {
             return staticFieldFound;
         }
@@ -1640,10 +1641,7 @@ export class PagBuilder {
             return;
         }
 
-        this.pag.addPagEdge(
-            propertyNode, this.pag.getOrNewNode(cid, leftOp, cs.callStmt),
-            PagEdgeKind.Copy, cs.callStmt
-        );
+        this.pag.addPagEdge(propertyNode, this.pag.getOrNewNode(cid, leftOp, cs.callStmt), PagEdgeKind.Copy, cs.callStmt);
     }
 
     private getPropertyName(value: Value): string | undefined {
@@ -1696,11 +1694,12 @@ export class PagBuilder {
     private stmtIsCreateAddressObj(stmt: ArkAssignStmt): boolean {
         let lhOp = stmt.getLeftOp();
         let rhOp = stmt.getRightOp();
-        if ((rhOp instanceof ArkNewExpr || rhOp instanceof ArkNewArrayExpr) ||
-            (lhOp instanceof Local && (
-                (rhOp instanceof Local && rhOp.getType() instanceof FunctionType &&
-                    rhOp.getDeclaringStmt() === null) ||
-                (rhOp instanceof AbstractFieldRef && rhOp.getType() instanceof FunctionType))) ||
+        if (
+            rhOp instanceof ArkNewExpr ||
+            rhOp instanceof ArkNewArrayExpr ||
+            (lhOp instanceof Local &&
+                ((rhOp instanceof Local && rhOp.getType() instanceof FunctionType && rhOp.getDeclaringStmt() === null) ||
+                    (rhOp instanceof AbstractFieldRef && rhOp.getType() instanceof FunctionType))) ||
             (rhOp instanceof Local && rhOp.getName() === GLOBAL_THIS_NAME && rhOp.getDeclaringStmt() == null)
         ) {
             return true;
@@ -1716,10 +1715,9 @@ export class PagBuilder {
         let rhOp = stmt.getRightOp();
 
         let condition: boolean =
-            (lhOp instanceof Local && (
-                rhOp instanceof Local || rhOp instanceof ArkParameterRef ||
-                rhOp instanceof ArkThisRef || rhOp instanceof ArkStaticFieldRef)) ||
-            (lhOp instanceof ArkStaticFieldRef && rhOp instanceof Local)
+            (lhOp instanceof Local &&
+                (rhOp instanceof Local || rhOp instanceof ArkParameterRef || rhOp instanceof ArkThisRef || rhOp instanceof ArkStaticFieldRef)) ||
+            (lhOp instanceof ArkStaticFieldRef && rhOp instanceof Local);
 
         if (condition) {
             return true;
@@ -1731,8 +1729,7 @@ export class PagBuilder {
         let lhOp = stmt.getLeftOp();
         let rhOp = stmt.getRightOp();
 
-        if (rhOp instanceof Local &&
-            (lhOp instanceof ArkInstanceFieldRef || lhOp instanceof ArkArrayRef)) {
+        if (rhOp instanceof Local && (lhOp instanceof ArkInstanceFieldRef || lhOp instanceof ArkArrayRef)) {
             return true;
         }
         return false;
@@ -1742,8 +1739,7 @@ export class PagBuilder {
         let lhOp = stmt.getLeftOp();
         let rhOp = stmt.getRightOp();
 
-        if (lhOp instanceof Local &&
-            (rhOp instanceof ArkInstanceFieldRef || rhOp instanceof ArkArrayRef)) {
+        if (lhOp instanceof Local && (rhOp instanceof ArkInstanceFieldRef || rhOp instanceof ArkArrayRef)) {
             return true;
         }
         return false;
@@ -1753,7 +1749,7 @@ export class PagBuilder {
         funcPag.addDynamicCallSite(cs);
         this.pagStat.numDynamicCall++;
 
-        logger.trace("[add dynamic callsite] " + cs.callStmt.toString() + ":  " + cs.callStmt.getCfg()?.getDeclaringMethod().getSignature().toString());
+        logger.trace('[add dynamic callsite] ' + cs.callStmt.toString() + ':  ' + cs.callStmt.getCfg()?.getDeclaringMethod().getSignature().toString());
     }
 
     public setPtForNode(node: NodeID, pts: IPtsCollection<NodeID> | undefined): void {
@@ -1765,19 +1761,21 @@ export class PagBuilder {
     }
 
     public getRealThisLocal(input: Local, funcId: FuncID): Local {
-        if (input.getName() !== 'this')
-            return input;
+        if (input.getName() !== 'this') return input;
         let real = input;
 
         let f = this.cg.getArkMethodByFuncID(funcId);
-        f?.getCfg()?.getStmts().forEach(s => {
-            if (s instanceof ArkAssignStmt && s.getLeftOp() instanceof Local) {
-                if ((s.getLeftOp() as Local).getName() === 'this') {
-                    real = s.getLeftOp() as Local;
-                    return;
+        f
+            ?.getCfg()
+            ?.getStmts()
+            .forEach(s => {
+                if (s instanceof ArkAssignStmt && s.getLeftOp() instanceof Local) {
+                    if ((s.getLeftOp() as Local).getName() === 'this') {
+                        real = s.getLeftOp() as Local;
+                        return;
+                    }
                 }
-            }
-        })
+            });
         return real;
     }
 
@@ -1813,7 +1811,7 @@ export class PagBuilder {
      */
     private handleValueFromExternalScope(value: Value, funcID: FuncID, originValue?: Value): void {
         if (value instanceof Local) {
-            if (value.getDeclaringStmt() || (value.getName() === 'this')) {
+            if (value.getDeclaringStmt() || value.getName() === 'this') {
                 // not from external scope
                 return;
             }
@@ -1842,7 +1840,11 @@ export class PagBuilder {
         // Export a local
         // Add a InterProcedural edge
         if (dst instanceof Local) {
-            let e: InterProceduralEdge = { src: src, dst: dst, kind: PagEdgeKind.InterProceduralCopy };
+            let e: InterProceduralEdge = {
+                src: src,
+                dst: dst,
+                kind: PagEdgeKind.InterProceduralCopy,
+            };
             interFuncPag.addToInterProceduralEdgeSet(e);
             this.addExportVariableMap(src, dst as Local);
         } else if (dst instanceof ArkInstanceFieldRef) {
@@ -1877,13 +1879,12 @@ export class PagBuilder {
         // namespace check
         let arkMethod = this.cg.getArkMethodByFuncID(funcID);
         if (!arkMethod) {
-            return;
+            return undefined;
         }
 
         let declaringNameSpace = arkMethod.getDeclaringArkClass().getDeclaringArkNamespace();
         while (declaringNameSpace) {
-            let nameSpaceLocals = declaringNameSpace.getDefaultClass()
-                .getDefaultArkMethod()?.getBody()?.getLocals() ?? new Map();
+            let nameSpaceLocals = declaringNameSpace.getDefaultClass().getDefaultArkMethod()?.getBody()?.getLocals() ?? new Map();
             if (nameSpaceLocals.has(value.getName())) {
                 return nameSpaceLocals.get(value.getName());
             }
@@ -1893,10 +1894,9 @@ export class PagBuilder {
 
         // file check
         let declaringFile = arkMethod.getDeclaringArkFile();
-        let fileLocals = declaringFile.getDefaultClass()
-            .getDefaultArkMethod()?.getBody()?.getLocals() ?? new Map();
+        let fileLocals = declaringFile.getDefaultClass().getDefaultArkMethod()?.getBody()?.getLocals() ?? new Map();
         if (!fileLocals.has(value.getName())) {
-            return;
+            return undefined;
         }
 
         return fileLocals.get(value.getName());
@@ -1905,18 +1905,18 @@ export class PagBuilder {
     private getExportSourceValue(value: Local, funcID: FuncID): Local | undefined {
         let curMethod = this.cg.getArkMethodByFuncID(funcID);
         if (!curMethod) {
-            return;
+            return undefined;
         }
 
         let curFile = curMethod.getDeclaringArkFile();
         let impInfo = curFile.getImportInfoBy(value.getName());
         if (!impInfo) {
-            return;
+            return undefined;
         }
 
         let exportSource = impInfo.getLazyExportInfo();
         if (!exportSource) {
-            return;
+            return undefined;
         }
 
         let exportSouceValue = exportSource.getArkExport();
@@ -1973,11 +1973,11 @@ export class PagBuilder {
         this.updatedNodesThisRound.set(nodeID, updatedNode);
     }
 
-    public getUpdatedNodes() {
+    public getUpdatedNodes(): Map<number, IPtsCollection<number>> {
         return this.updatedNodesThisRound;
     }
 
-    public resetUpdatedNodes() {
+    public resetUpdatedNodes(): void {
         this.updatedNodesThisRound.clear();
     }
 

@@ -21,13 +21,7 @@ import ts from 'ohos-typescript';
 import { ArkNamespace } from '../ArkNamespace';
 import { buildDecorators, buildModifiers } from './builderUtils';
 import Logger, { LOG_MODULE_TYPE } from '../../../utils/logger';
-import {
-    buildExportAssignment,
-    buildExportDeclaration,
-    buildExportInfo,
-    buildExportVariableStatement,
-    isExported
-} from './ArkExportBuilder';
+import { buildExportAssignment, buildExportDeclaration, buildExportInfo, buildExportVariableStatement, isExported } from './ArkExportBuilder';
 import { ArkClass } from '../ArkClass';
 import { ArkMethod } from '../ArkMethod';
 import { NamespaceSignature } from '../ArkSignature';
@@ -35,7 +29,7 @@ import { IRUtils } from '../../common/IRUtils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'ArkNamespaceBuilder');
 
-export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance: ArkFile | ArkNamespace, ns: ArkNamespace, sourceFile: ts.SourceFile) {
+export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance: ArkFile | ArkNamespace, ns: ArkNamespace, sourceFile: ts.SourceFile): void {
     // modifiers
     if (node.modifiers) {
         ns.setModifiers(buildModifiers(node));
@@ -50,18 +44,18 @@ export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance:
     }
     ns.setDeclaringInstance(declaringInstance);
     const namespaceName = node.name.text;
-    const namespaceSignature = new NamespaceSignature(namespaceName, ns.getDeclaringArkFile().getFileSignature(),
-        ns.getDeclaringArkNamespace()?.getSignature() || null);
+    const namespaceSignature = new NamespaceSignature(
+        namespaceName,
+        ns.getDeclaringArkFile().getFileSignature(),
+        ns.getDeclaringArkNamespace()?.getSignature() || null
+    );
     ns.setSignature(namespaceSignature);
 
     // TODO: whether needed?
     ns.setCode(node.getText(sourceFile));
 
     // set line and column
-    const { line, character } = ts.getLineAndCharacterOfPosition(
-        sourceFile,
-        node.getStart(sourceFile),
-    );
+    const { line, character } = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
     ns.setLine(line + 1);
     ns.setColumn(character + 1);
 
@@ -72,7 +66,7 @@ export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance:
         if (ts.isModuleBlock(node.body)) {
             buildNamespaceMembers(node.body, ns, sourceFile);
         }
-            // NamespaceDeclaration extends ModuleDeclaration
+        // NamespaceDeclaration extends ModuleDeclaration
         //TODO: Check
         else if (ts.isModuleDeclaration(node.body)) {
             logger.warn('This ModuleBody is an NamespaceDeclaration.');
@@ -91,33 +85,25 @@ export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance:
 }
 
 // TODO: check and update
-function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, sourceFile: ts.SourceFile) {
+function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, sourceFile: ts.SourceFile): void {
     const statements = node.statements;
     const nestedNamespaces: ArkNamespace[] = [];
-    statements.forEach((child) => {
-        if (
-            ts.isModuleDeclaration(child)
-        ) {
+    statements.forEach(child => {
+        if (ts.isModuleDeclaration(child)) {
             let childNs: ArkNamespace = new ArkNamespace();
             childNs.setDeclaringArkNamespace(namespace);
             childNs.setDeclaringArkFile(namespace.getDeclaringArkFile());
 
             buildArkNamespace(child, namespace, childNs, sourceFile);
             nestedNamespaces.push(childNs);
-        } else if (
-            ts.isClassDeclaration(child) ||
-            ts.isInterfaceDeclaration(child) ||
-            ts.isEnumDeclaration(child) ||
-            ts.isStructDeclaration(child)
-        ) {
+        } else if (ts.isClassDeclaration(child) || ts.isInterfaceDeclaration(child) || ts.isEnumDeclaration(child) || ts.isStructDeclaration(child)) {
             let cls: ArkClass = new ArkClass();
 
             buildNormalArkClassFromArkNamespace(child, namespace, cls, sourceFile);
             namespace.addArkClass(cls);
 
             if (cls.isExported()) {
-                namespace.addExportInfo(buildExportInfo(cls, namespace.getDeclaringArkFile(),
-                    LineColPosition.buildFromNode(child, sourceFile)));
+                namespace.addExportInfo(buildExportInfo(cls, namespace.getDeclaringArkFile(), LineColPosition.buildFromNode(child, sourceFile)));
             }
         }
         // TODO: Check
@@ -128,8 +114,7 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
             buildArkMethodFromArkClass(child, namespace.getDefaultClass(), mthd, sourceFile);
 
             if (mthd.isExported()) {
-                namespace.addExportInfo(buildExportInfo(mthd, namespace.getDeclaringArkFile(),
-                    LineColPosition.buildFromNode(child, sourceFile)));
+                namespace.addExportInfo(buildExportInfo(mthd, namespace.getDeclaringArkFile(), LineColPosition.buildFromNode(child, sourceFile)));
             }
         } else if (ts.isFunctionDeclaration(child)) {
             let mthd: ArkMethod = new ArkMethod();
@@ -137,15 +122,12 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
             buildArkMethodFromArkClass(child, namespace.getDefaultClass(), mthd, sourceFile);
 
             if (mthd.isExported()) {
-                namespace.addExportInfo(buildExportInfo(mthd, namespace.getDeclaringArkFile(),
-                    LineColPosition.buildFromNode(child, sourceFile)));
+                namespace.addExportInfo(buildExportInfo(mthd, namespace.getDeclaringArkFile(), LineColPosition.buildFromNode(child, sourceFile)));
             }
         } else if (ts.isExportDeclaration(child)) {
-            buildExportDeclaration(child, sourceFile, namespace.getDeclaringArkFile())
-                .forEach(item => namespace.addExportInfo(item));
+            buildExportDeclaration(child, sourceFile, namespace.getDeclaringArkFile()).forEach(item => namespace.addExportInfo(item));
         } else if (ts.isExportAssignment(child)) {
-            buildExportAssignment(child, sourceFile, namespace.getDeclaringArkFile())
-                .forEach(item => namespace.addExportInfo(item));
+            buildExportAssignment(child, sourceFile, namespace.getDeclaringArkFile()).forEach(item => namespace.addExportInfo(item));
         } else if (ts.isVariableStatement(child) && isExported(child.modifiers)) {
             buildExportVariableStatement(child, sourceFile, namespace.getDeclaringArkFile(), namespace).forEach(item => namespace.addExportInfo(item));
         } else {
@@ -164,14 +146,13 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
     });
 }
 
-function genDefaultArkClass(ns: ArkNamespace, node: ts.ModuleDeclaration, sourceFile: ts.SourceFile) {
+function genDefaultArkClass(ns: ArkNamespace, node: ts.ModuleDeclaration, sourceFile: ts.SourceFile): void {
     let defaultClass = new ArkClass();
 
     buildDefaultArkClassFromArkNamespace(ns, defaultClass, node, sourceFile);
     ns.setDefaultClass(defaultClass);
     ns.addArkClass(defaultClass);
 }
-
 
 export function mergeNameSpaces(arkNamespaces: ArkNamespace[]): ArkNamespace[] {
     const namespaceMap = new Map<string, ArkNamespace>();

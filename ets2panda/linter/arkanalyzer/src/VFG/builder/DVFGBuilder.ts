@@ -24,7 +24,7 @@ import { NodeID } from '../../core/graph/BaseExplicitGraph';
 import { ArkMethod } from '../../core/model/ArkMethod';
 import { FieldSignature } from '../../core/model/ArkSignature';
 import { Scene } from '../../Scene';
-import { DVFG } from '../DVFG';
+import { DVFG, DVFGNode } from '../DVFG';
 
 export class DVFGBuilder {
     private dvfg: DVFG;
@@ -35,27 +35,33 @@ export class DVFGBuilder {
         this.scene = s;
     }
 
-    public build() {
-        this.scene.getMethods().forEach(m => { if (m.getCfg()) { this.buildForSingleMethod(m) } });
+    public build(): void {
+        this.scene.getMethods().forEach(m => {
+            if (m.getCfg()) {
+                this.buildForSingleMethod(m);
+            }
+        });
     }
 
-    public buildForSingleMethod(m: ArkMethod) {
+    public buildForSingleMethod(m: ArkMethod): void {
         let problem = new ReachingDefProblem(m);
         let solver = new MFPDataFlowSolver();
         let solution = solver.calculateMopSolutionForwards(problem);
 
         let defMap = new Map<Value | FieldSignature, Set<Stmt>>();
-        m.getCfg()!.getStmts().forEach((s) => {
-            let def: Value | FieldSignature | null = s.getDef();
-            if (def != null) {
-                if (def instanceof AbstractFieldRef) {
-                    def = def.getFieldSignature();
+        m.getCfg()!
+            .getStmts()
+            .forEach(s => {
+                let def: Value | FieldSignature | null = s.getDef();
+                if (def != null) {
+                    if (def instanceof AbstractFieldRef) {
+                        def = def.getFieldSignature();
+                    }
+                    let defStmts = defMap.get(def) ?? new Set<Stmt>();
+                    defStmts.add(s);
+                    defMap.set(def, defStmts);
                 }
-                let defStmts = defMap.get(def) ?? new Set<Stmt>();
-                defStmts.add(s);
-                defMap.set(def, defStmts);
-            }
-        });
+            });
 
         solution.in.forEach((defs, reach) => {
             let addNewNodes = (defId: NodeID, def: Stmt, reach: Stmt): void => {
@@ -72,7 +78,7 @@ export class DVFGBuilder {
                 if (target instanceof AbstractFieldRef) {
                     target = target.getFieldSignature();
                 }
-                defMap.get(target)?.forEach((defStmt) => {
+                defMap.get(target)?.forEach(defStmt => {
                     let defId = problem.flowGraph.getNodeID(defStmt);
                     addNewNodes(defId, defStmt, reachStmt);
                 });
@@ -101,9 +107,13 @@ export class DVFGBuilder {
     private getUsedValues(val: Value): Value[] {
         if (val instanceof AbstractExpr) {
             if (val instanceof AbstractInvokeExpr) {
-                return val.getArgs().flatMap((current) => { return this.getUsedValues(current) }, []);
+                return val.getArgs().flatMap(current => {
+                    return this.getUsedValues(current);
+                }, []);
             } else {
-                return val.getUses().flatMap((current) => { return this.getUsedValues(current) }, []);
+                return val.getUses().flatMap(current => {
+                    return this.getUsedValues(current);
+                }, []);
             }
         }
         if (val instanceof Constant) {
@@ -112,11 +122,11 @@ export class DVFGBuilder {
         return [val];
     }
 
-    public getOrNewDVFGNode(stmt: Stmt) {
+    public getOrNewDVFGNode(stmt: Stmt): DVFGNode {
         return this.dvfg.getOrNewDVFGNode(stmt);
     }
 
-    public addDVFGNodes(): void { }
+    public addDVFGNodes(): void {}
 
-    public addDVFGEdges(): void { }
+    public addDVFGEdges(): void {}
 }

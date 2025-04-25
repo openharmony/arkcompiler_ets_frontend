@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,29 +22,29 @@ import { ModifyStateVarCheck } from '../../checker/migration/ModifyStateVarCheck
 import { NoMethodOverridingFieldCheck } from '../../checker/migration/NoMethodOverridingFieldCheck';
 import { CustomBuilderCheck } from '../../checker/migration/CustomBuilderCheck';
 import { InteropBackwardDFACheck } from '../../checker/migration/InteropBackwardDFACheck';
-import { InteropBoxedTypeCheck } from "../../checker/migration/InteropBoxedTypeCheck";
-import { InteropObjectLiteralCheck } from "../../checker/migration/InteropDynamicObjectLiteralsCheck";
+import { InteropBoxedTypeCheck } from '../../checker/migration/InteropBoxedTypeCheck';
+import { InteropObjectLiteralCheck } from '../../checker/migration/InteropDynamicObjectLiteralsCheck';
 import { InteropAssignCheck } from '../../checker/migration/InteropAssignCheck';
 import { InteropJSModifyPropertyCheck } from '../../checker/migration/InteropJSModifyPropertyCheck';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
 export const fileRules = {
-    "@migration/arkts-instance-method-bind-this": ThisBindCheck,
-    "@migration/arkui-data-observation-2": ObservedDecoratorCheck,
-    "@migration/arkui-stateful-appstorage": AppStorageGetCheck,
-    "@migration/arkui-no-update-in-build": ModifyStateVarCheck,
-    "@migration/arkui-custombuiler": CustomBuilderCheck,
-    "@migration/no-method-overriding-field-check": NoMethodOverridingFieldCheck,
-    "@migration/interop-typeof-boxed-types": InteropBoxedTypeCheck,
-    "@migration/interop-dynamic-object-literals": InteropObjectLiteralCheck,
+    '@migration/arkts-instance-method-bind-this': ThisBindCheck,
+    '@migration/arkui-data-observation-2': ObservedDecoratorCheck,
+    '@migration/arkui-stateful-appstorage': AppStorageGetCheck,
+    '@migration/arkui-no-update-in-build': ModifyStateVarCheck,
+    '@migration/arkui-custombuiler': CustomBuilderCheck,
+    '@migration/no-method-overriding-field-check': NoMethodOverridingFieldCheck,
+    '@migration/interop-typeof-boxed-types': InteropBoxedTypeCheck,
+    '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
 };
 
 export const projectRules = {
-    "@migration/arkts-obj-literal-generate-class-instance": ObjectLiteralCheck,
-    "@migration/interop-backward-dfa": InteropBackwardDFACheck,
-    "@migration/interop-assign": InteropAssignCheck,
-    "@migration/interop-js-modify-property": InteropJSModifyPropertyCheck,
+    '@migration/arkts-obj-literal-generate-class-instance': ObjectLiteralCheck,
+    '@migration/interop-backward-dfa': InteropBackwardDFACheck,
+    '@migration/interop-assign': InteropAssignCheck,
+    '@migration/interop-js-modify-property': InteropJSModifyPropertyCheck,
 };
 
 // 新增文件级的checker，需要在此处注册

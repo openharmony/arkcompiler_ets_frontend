@@ -53,9 +53,7 @@ export class ImportPrinter extends BasePrinter {
                 clauseNames.push(`* as ${info.getImportClauseName()}`);
             } else if (info.getImportType() === 'EqualsImport') {
                 // sample: import mmmm = require('./xxx')
-                this.printer
-                    .writeIndent()
-                    .writeLine(`import ${info.getImportClauseName()} =  require('${info.getFrom() as string}');`);
+                this.printer.writeIndent().writeLine(`import ${info.getImportClauseName()} =  require('${info.getFrom() as string}');`);
             } else {
                 // sample: import '../xxx'
                 this.printer.writeIndent().writeLine(`import '${info.getFrom() as string}';`);
@@ -66,9 +64,7 @@ export class ImportPrinter extends BasePrinter {
             clauseNames.push(`{${namedImports.join(', ')}}`);
         }
 
-        this.printer
-            .writeIndent()
-            .writeLine(`import ${clauseNames.join(', ')} from '${this.infos[0].getFrom() as string}';`);
+        this.printer.writeIndent().writeLine(`import ${clauseNames.join(', ')} from '${this.infos[0].getFrom() as string}';`);
 
         return this.printer.toString();
     }
@@ -78,7 +74,7 @@ function mergeImportInfos(infos: ImportInfo[]): Map<string, ImportInfo[]> {
     let map = new Map<string, ImportInfo[]>();
 
     for (let info of infos) {
-        let key = `${info.getOriginTsPosition().getLineNo()}-${info.getFrom()}`
+        let key = `${info.getOriginTsPosition().getLineNo()}-${info.getFrom()}`;
         let merge = map.get(key) || [];
         merge.push(info);
         map.set(key, merge);

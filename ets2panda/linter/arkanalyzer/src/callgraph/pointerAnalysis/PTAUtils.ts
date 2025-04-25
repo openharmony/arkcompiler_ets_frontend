@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,7 @@
 import { ClassSignature, MethodSignature } from '../../core/model/ArkSignature';
 
 export function IsCollectionClass(classSignature: ClassSignature): boolean {
-    if (classSignature.toString().endsWith('lib.es2015.collection.d.ts: Set') ||
-        classSignature.toString().endsWith('lib.es2015.collection.d.ts: Map')) {
+    if (classSignature.toString().endsWith('lib.es2015.collection.d.ts: Set') || classSignature.toString().endsWith('lib.es2015.collection.d.ts: Map')) {
         return true;
     }
     return false;
@@ -29,7 +28,7 @@ export enum BuiltApiType {
     FunctionCall,
     FunctionApply,
     FunctionBind,
-    NotBuiltIn
+    NotBuiltIn,
 }
 
 export function getBuiltInApiType(method: MethodSignature): BuiltApiType {

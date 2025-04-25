@@ -89,7 +89,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      * Returns the **string**name of this class.
      * @returns The name of this class.
      */
-    public getName() {
+    public getName(): string {
         return this.classSignature.getClassName();
     }
 
@@ -97,11 +97,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      * Returns the codes of class as a **string.**
      * @returns the codes of class.
      */
-    public getCode() {
+    public getCode(): string | undefined {
         return this.code;
     }
 
-    public setCode(code: string) {
+    public setCode(code: string): void {
         this.code = code;
     }
 
@@ -109,11 +109,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      * Returns the line position of this class.
      * @returns The line position of this class.
      */
-    public getLine() {
+    public getLine(): number {
         return getLineNo(this.lineCol);
     }
 
-    public setLine(line: number) {
+    public setLine(line: number): void {
         this.lineCol = setLine(this.lineCol, line);
     }
 
@@ -121,11 +121,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      * Returns the column position of this class.
      * @returns The column position of this class.
      */
-    public getColumn() {
+    public getColumn(): number {
         return getColNo(this.lineCol);
     }
 
-    public setColumn(column: number) {
+    public setColumn(column: number): void {
         this.lineCol = setCol(this.lineCol, column);
     }
 
@@ -147,11 +147,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      const arkFile = arkClass.getDeclaringArkFile();
      ```
      */
-    public getDeclaringArkFile() {
+    public getDeclaringArkFile(): ArkFile {
         return this.declaringArkFile;
     }
 
-    public setDeclaringArkFile(declaringArkFile: ArkFile) {
+    public setDeclaringArkFile(declaringArkFile: ArkFile): void {
         this.declaringArkFile = declaringArkFile;
     }
 
@@ -163,7 +163,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return this.declaringArkNamespace;
     }
 
-    public setDeclaringArkNamespace(declaringArkNamespace: ArkNamespace | undefined) {
+    public setDeclaringArkNamespace(declaringArkNamespace: ArkNamespace | undefined): void {
         this.declaringArkNamespace = declaringArkNamespace;
     }
 
@@ -180,11 +180,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      * The {@link ClassSignature} can uniquely identify a class, according to which we can find the class from the scene.
      * @returns The class signature.
      */
-    public getSignature() {
+    public getSignature(): ClassSignature {
         return this.classSignature;
     }
 
-    public setSignature(classSig: ClassSignature) {
+    public setSignature(classSig: ClassSignature): void {
         this.classSignature = classSig;
     }
 
@@ -218,8 +218,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
             if (type) {
                 type = TypeInference.replaceAliasType(type);
             }
-            if (type instanceof ClassType &&
-                (superClass = this.declaringArkFile.getScene().getClass(type.getClassSignature()))) {
+            if (type instanceof ClassType && (superClass = this.declaringArkFile.getScene().getClass(type.getClassSignature()))) {
                 superClass.addExtendedClass(this);
                 const realGenericTypes = type.getRealGenericTypes();
                 if (realGenericTypes) {
@@ -246,7 +245,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return this.extendedClasses;
     }
 
-    public addExtendedClass(extendedClass: ArkClass) {
+    public addExtendedClass(extendedClass: ArkClass): void {
         this.extendedClasses.set(extendedClass.getName(), extendedClass);
     }
 
@@ -257,7 +256,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return Array.from(this.heritageClasses.keys()).slice(1);
     }
 
-    public hasImplementedInterface(interfaceName: string) {
+    public hasImplementedInterface(interfaceName: string): boolean {
         return this.heritageClasses.has(interfaceName) && this.getSuperClassName() !== interfaceName;
     }
 
@@ -302,7 +301,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return allFields;
     }
 
-    public addField(field: ArkField) {
+    public addField(field: ArkField): void {
         if (field.isStatic()) {
             this.staticFields.set(field.getName(), field);
         } else {
@@ -310,8 +309,8 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         }
     }
 
-    public addFields(fields: ArkField[]) {
-        fields.forEach((field) => {
+    public addFields(fields: ArkField[]): void {
+        fields.forEach(field => {
             this.addField(field);
         });
     }
@@ -324,7 +323,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return this.genericsTypes ? Array.from(this.genericsTypes) : undefined;
     }
 
-    public addGenericType(gType: GenericType) {
+    public addGenericType(gType: GenericType): void {
         if (!this.genericsTypes) {
             this.genericsTypes = [];
         }
@@ -348,8 +347,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
      ```
      */
     public getMethods(generated?: boolean): ArkMethod[] {
-        const allMethods = Array.from(this.methods.values())
-            .filter(f => !generated && !f.isGenerated() || generated);
+        const allMethods = Array.from(this.methods.values()).filter(f => (!generated && !f.isGenerated()) || generated);
         allMethods.push(...this.staticMethods.values());
         return [...new Set(allMethods)];
     }
@@ -404,7 +402,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         }
     }
 
-    public setDefaultArkMethod(defaultMethod: ArkMethod) {
+    public setDefaultArkMethod(defaultMethod: ArkMethod): void {
         this.defaultMethod = defaultMethod;
         this.addMethod(defaultMethod);
     }
@@ -413,7 +411,7 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return this.defaultMethod;
     }
 
-    public setViewTree(viewTree: ViewTree) {
+    public setViewTree(viewTree: ViewTree): void {
         this.viewTree = viewTree;
     }
 
@@ -483,11 +481,11 @@ export class ArkClass extends ArkBaseModel implements ArkExport {
         return globalMap.get(this.declaringArkFile.getFileSignature())!;
     }
 
-    public getAnonymousMethodNumber() {
+    public getAnonymousMethodNumber(): number {
         return this.anonymousMethodNumber++;
     }
 
-    public getIndexSignatureNumber() {
+    public getIndexSignatureNumber(): number {
         return this.indexSignatureNumber++;
     }
 

@@ -13,22 +13,37 @@
  * limitations under the License.
  */
 
-import { ArkMethod, ArkAssignStmt, FieldSignature, Stmt, Scene, Value, DVFGBuilder, ArkInstanceOfExpr, ArkNewExpr, CallGraph, CallGraphBuilder, ArkParameterRef, ArkInstanceFieldRef, ClassType } from "arkanalyzer/lib";
+import {
+    ArkMethod,
+    ArkAssignStmt,
+    FieldSignature,
+    Stmt,
+    Scene,
+    Value,
+    DVFGBuilder,
+    ArkInstanceOfExpr,
+    ArkNewExpr,
+    CallGraph,
+    CallGraphBuilder,
+    ArkParameterRef,
+    ArkInstanceFieldRef,
+    ClassType,
+} from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherCallback, FileMatcher, MatcherTypes } from "../../Index";
-import { IssueReport } from "../../model/Defects";
-import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherCallback, FileMatcher, MatcherTypes } from '../../Index';
+import { IssueReport } from '../../model/Defects';
+import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 import { CALL_DEPTH_LIMIT, getLanguageStr, getLineAndColumn, GlobalCallGraphHelper } from './Utils';
-import { ClassCategory } from "arkanalyzer/lib/core/model/ArkClass";
-import { Language } from "arkanalyzer/lib/core/model/ArkFile";
-import { WarnInfo } from "../../utils/common/Utils";
+import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
+import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: '(interop-dynamic-object-literals)'
+    ruleDocPath: '',
+    description: '(interop-dynamic-object-literals)',
 };
 
 export class InteropObjectLiteralCheck implements BaseChecker {
@@ -44,12 +59,12 @@ export class InteropObjectLiteralCheck implements BaseChecker {
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
             matcher: undefined,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [matchBuildCb];
     }
 
-    public check = (scene: Scene) => {
+    public check = (scene: Scene): void => {
         this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
         this.dvfg = new DVFG(this.cg);
@@ -72,9 +87,9 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 }
             }
         }
-    }
+    };
 
-    public processArkMethod(target: ArkMethod, scene: Scene) {
+    public processArkMethod(target: ArkMethod, scene: Scene): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             if (!(stmt instanceof ArkAssignStmt)) {
@@ -103,15 +118,24 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 if (opTypeClass === null || opTypeClass.getCategory() === ClassCategory.OBJECT) {
                     continue;
                 }
-                if (opTypeClass.getLanguage() === Language.TYPESCRIPT || opTypeClass.getLanguage() === Language.ARKTS1_1) {
+                if (
+                    opTypeClass.getLanguage() === Language.TYPESCRIPT ||
+                    opTypeClass.getLanguage() === Language.ARKTS1_1
+                ) {
                     this.addIssueReport(stmt, rightOp, result, opTypeClass.getLanguage());
                 }
             }
         }
-
     }
 
-    private checkFromStmt(stmt: Stmt, scene: Scene, res: Stmt[], checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0) {
+    private checkFromStmt(
+        stmt: Stmt,
+        scene: Scene,
+        res: Stmt[],
+        checkAll: { value: boolean },
+        visited: Set<Stmt>,
+        depth: number = 0
+    ): void {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return;
@@ -139,12 +163,16 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                     this.dvfgBuilder.buildForSingleMethod(declaringMtd);
                     this.visited.add(declaringMtd);
                 }
-                declaringMtd.getReturnStmt().forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
-            })
+                declaringMtd
+                    .getReturnStmt()
+                    .forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
+            });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
+                const callsites = this.cg.getInvokeStmtByMethod(
+                    currentStmt.getCfg().getDeclaringMethod().getSignature()
+                );
                 callsites.forEach(cs => {
                     const declaringMtd = cs.getCfg().getDeclaringMethod();
                     if (!this.visited.has(declaringMtd)) {
@@ -152,7 +180,9 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                         this.visited.add(declaringMtd);
                     }
                 });
-                this.collectArgDefs(paramIdx, callsites).forEach(d => this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1));
+                this.collectArgDefs(paramIdx, callsites).forEach(d =>
+                    this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
+                );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
@@ -183,7 +213,7 @@ export class InteropObjectLiteralCheck implements BaseChecker {
 
     private collectArgDefs(argIdx: number, callsites: Stmt[]): Stmt[] {
         const getKey = (v: Value) => {
-            return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v
+            return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {
             const target: Value | FieldSignature = getKey(callsite.getInvokeExpr()!.getArg(argIdx));
@@ -195,7 +225,7 @@ export class InteropObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value, result: Stmt[], targetLanguage: Language) {
+    private addIssueReport(stmt: Stmt, operand: Value, result: Stmt[], targetLanguage: Language): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = getLineAndColumn(stmt, operand);
         let targetLan = getLanguageStr(targetLanguage);
@@ -204,8 +234,20 @@ export class InteropObjectLiteralCheck implements BaseChecker {
         result.forEach(stmt => resPos.push(stmt.getOriginPositionInfo().getLineNo()));
         const problem = 'Interop';
         const desc = `Operator in instanceof expr is declared by class from ${targetLan} and has been assign by object literal in Lines ${resPos.join(', ')} ${this.metaData.description}`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
-            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            desc,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, undefined));
     }
 }

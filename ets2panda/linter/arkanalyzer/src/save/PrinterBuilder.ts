@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,7 @@ export class PrinterBuilder {
         this.outputDir = outputDir;
     }
 
-    public static dump(source: Printer, output: string) {
+    public static dump(source: Printer, output: string): void {
         fs.writeFileSync(output, source.dump());
     }
 
@@ -62,10 +62,7 @@ export class PrinterBuilder {
         }
     }
 
-    public dumpToDot(
-        arkFile: ArkFile,
-        output: string | undefined = undefined
-    ): void {
+    public dumpToDot(arkFile: ArkFile, output: string | undefined = undefined): void {
         let filename = output;
         if (filename === undefined) {
             filename = path.join(this.getOutputDir(arkFile), arkFile.getName() + '.dot');
@@ -76,10 +73,7 @@ export class PrinterBuilder {
         PrinterBuilder.dump(printer, filename as string);
     }
 
-    public dumpToTs(
-        arkFile: ArkFile,
-        output: string | undefined = undefined
-    ): void {
+    public dumpToTs(arkFile: ArkFile, output: string | undefined = undefined): void {
         let filename = output;
         if (filename === undefined) {
             filename = path.join(this.getOutputDir(arkFile), arkFile.getName());
@@ -104,17 +98,14 @@ export class PrinterBuilder {
         PrinterBuilder.dump(printer, filename);
     }
 
-    public dumpToIR(
-        arkFile: ArkFile,
-        output: string | undefined = undefined
-    ): void {
+    public dumpToIR(arkFile: ArkFile, output: string | undefined = undefined): void {
         let filename = output;
         if (filename === undefined) {
             filename = path.join(this.getOutputDir(arkFile), arkFile.getName());
         }
-        
+
         filename += '.ir';
-        
+
         fs.mkdirSync(path.dirname(filename), { recursive: true });
 
         let printer: Printer = new ArkIRFilePrinter(arkFile);
@@ -145,26 +136,26 @@ export class ScenePrinter {
         }
     }
 
-    public dumpToDot() {
+    public dumpToDot(): void {
         for (let f of this.scene.getFiles()) {
             this.printer.dumpToDot(f);
         }
     }
 
-    public dumpToTs() {
+    public dumpToTs(): void {
         for (let f of this.scene.getFiles()) {
             let relativePath = path.relative(f.getProjectDir(), f.getFilePath());
             this.printer.dumpToTs(f, path.join(this.outputDir, relativePath));
         }
     }
 
-    public dumpToJson() {
+    public dumpToJson(): void {
         for (let f of this.scene.getFiles()) {
             this.printer.dumpToJson(f);
         }
     }
 
-    public dumpToIR() {
+    public dumpToIR(): void {
         for (let f of this.scene.getFiles()) {
             this.printer.dumpToIR(f);
         }

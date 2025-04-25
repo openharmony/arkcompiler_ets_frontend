@@ -39,7 +39,7 @@ export abstract class AbstractRef implements Value {
 }
 
 export class ArkArrayRef extends AbstractRef {
-    private base: Local;  // 数组变量
+    private base: Local; // 数组变量
     private index: Value; // 索引
 
     constructor(base: Local, index: Value) {
@@ -167,7 +167,7 @@ export abstract class AbstractFieldRef extends AbstractRef {
 }
 
 export class ArkInstanceFieldRef extends AbstractFieldRef {
-    private base: Local;       // which obj this field belong to
+    private base: Local; // which obj this field belong to
 
     constructor(base: Local, fieldSignature: FieldSignature) {
         super(fieldSignature);
@@ -216,7 +216,6 @@ export class ArkInstanceFieldRef extends AbstractFieldRef {
     public inferType(arkMethod: ArkMethod): AbstractRef {
         return IRInference.inferFieldRef(this, arkMethod);
     }
-
 }
 
 export class ArkStaticFieldRef extends AbstractFieldRef {
@@ -271,7 +270,6 @@ export class ArkParameterRef extends AbstractRef {
         return 'parameter' + this.index + ': ' + this.paramType;
     }
 }
-
 
 export class ArkThisRef extends AbstractRef {
     private type: ClassType;
@@ -400,7 +398,10 @@ export class ClosureFieldRef extends AbstractRef {
         if (TypeInference.isUnclearType(this.type)) {
             let type: Type | undefined = this.base.getType();
             if (type instanceof LexicalEnvType) {
-                type = type.getClosures().find(c => c.getName() === this.fieldName)?.getType();
+                type = type
+                    .getClosures()
+                    .find(c => c.getName() === this.fieldName)
+                    ?.getType();
             }
             if (type && !TypeInference.isUnclearType(type)) {
                 this.type = type;

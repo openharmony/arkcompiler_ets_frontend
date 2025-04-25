@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,11 +21,11 @@ export interface ImageInfo {
 
 export type ImagesInfo = {
     images?: ImageInfo[]
-} & ImageInfo
+} & ImageInfo;
 
 export interface ImageData {
     validate: (intput: Uint8Array) => boolean;
-    calculate: (input: Uint8Array, filepath?: string) => ImagesInfo
+    calculate: (input: Uint8Array, filepath?: string) => ImagesInfo;
 }
 
 export interface IAttributes {

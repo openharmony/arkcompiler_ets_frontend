@@ -21,7 +21,7 @@ import { Cfg } from '../graph/Cfg';
 import { ViewTree } from '../graph/ViewTree';
 import { ArkBody } from './ArkBody';
 import { ArkClass, ClassCategory } from './ArkClass';
-import { MethodSignature } from './ArkSignature';
+import { MethodSignature, MethodSubSignature } from './ArkSignature';
 import { BodyBuilder } from './builder/BodyBuilder';
 import { ArkExport, ExportType } from './ArkExport';
 import { ANONYMOUS_METHOD_PREFIX, DEFAULT_ARK_METHOD_NAME } from '../common/Const';
@@ -32,11 +32,22 @@ import { CALL_BACK } from '../common/EtsConst';
 import { Scene } from '../../Scene';
 import { Constant } from '../base/Constant';
 import { Local } from '../base/Local';
-import { Language } from './ArkFile';
+import { ArkFile, Language } from './ArkFile';
 import { CONSTRUCTOR_NAME } from '../common/TSConst';
+import { MethodParameter } from './builder/ArkMethodBuilder';
 
-export const arkMethodNodeKind = ['MethodDeclaration', 'Constructor', 'FunctionDeclaration', 'GetAccessor',
-    'SetAccessor', 'ArrowFunction', 'FunctionExpression', 'MethodSignature', 'ConstructSignature', 'CallSignature'];
+export const arkMethodNodeKind = [
+    'MethodDeclaration',
+    'Constructor',
+    'FunctionDeclaration',
+    'GetAccessor',
+    'SetAccessor',
+    'ArrowFunction',
+    'FunctionExpression',
+    'MethodSignature',
+    'ConstructSignature',
+    'CallSignature',
+];
 
 /**
  * @category core/model
@@ -79,7 +90,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return ExportType.METHOD;
     }
 
-    public getName() {
+    public getName(): string {
         return this.getSignature().getMethodSubSignature().getMethodName();
     }
 
@@ -87,11 +98,11 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
      * Returns the codes of method as a **string.**
      * @returns the codes of method.
      */
-    public getCode() {
+    public getCode(): string | undefined {
         return this.code;
     }
 
-    public setCode(code: string) {
+    public setCode(code: string): void {
         this.code = code;
     }
 
@@ -231,15 +242,15 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
      * Returns the declaring class of the method.
      * @returns The declaring class of the method.
      */
-    public getDeclaringArkClass() {
+    public getDeclaringArkClass(): ArkClass {
         return this.declaringArkClass;
     }
 
-    public setDeclaringArkClass(declaringArkClass: ArkClass) {
+    public setDeclaringArkClass(declaringArkClass: ArkClass): void {
         this.declaringArkClass = declaringArkClass;
     }
 
-    public getDeclaringArkFile() {
+    public getDeclaringArkFile(): ArkFile {
         return this.declaringArkClass.getDeclaringArkFile();
     }
 
@@ -251,11 +262,11 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return this.getName().startsWith(ANONYMOUS_METHOD_PREFIX);
     }
 
-    public getParameters() {
+    public getParameters(): MethodParameter[] {
         return this.getSignature().getMethodSubSignature().getParameters();
     }
 
-    public getReturnType() {
+    public getReturnType(): Type {
         return this.getSignature().getType();
     }
 
@@ -353,7 +364,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         this.methodSignature = signature;
     }
 
-    public getSubSignature() {
+    public getSubSignature(): MethodSubSignature {
         return this.getSignature().getMethodSubSignature();
     }
 
@@ -398,7 +409,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return this.body;
     }
 
-    public setBody(body: ArkBody) {
+    public setBody(body: ArkBody): void {
         this.body = body;
     }
 
@@ -501,19 +512,23 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
     public getReturnValues(): Value[] {
         // 获取方法体中return值实例
         let resultValues: Value[] = [];
-        this.getCfg()?.getStmts().forEach(stmt => {
-            if (stmt instanceof ArkReturnStmt) {
-                resultValues.push(stmt.getOp());
-            }
-        });
+        this.getCfg()
+            ?.getStmts()
+            .forEach(stmt => {
+                if (stmt instanceof ArkReturnStmt) {
+                    resultValues.push(stmt.getOp());
+                }
+            });
         return resultValues;
     }
 
     public getReturnStmt(): Stmt[] {
-        return this.getCfg()!.getStmts().filter(stmt => stmt instanceof ArkReturnStmt);
+        return this.getCfg()!
+            .getStmts()
+            .filter(stmt => stmt instanceof ArkReturnStmt);
     }
 
-    public setViewTree(viewTree: ViewTree) {
+    public setViewTree(viewTree: ViewTree): void {
         this.viewTree = viewTree;
     }
 
@@ -525,7 +540,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return this.viewTree !== undefined;
     }
 
-    public setBodyBuilder(bodyBuilder: BodyBuilder) {
+    public setBodyBuilder(bodyBuilder: BodyBuilder): void {
         this.bodyBuilder = bodyBuilder;
         if (this.getDeclaringArkFile().getScene().buildClassDone()) {
             this.buildBody();
@@ -536,7 +551,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         this.bodyBuilder = undefined;
     }
 
-    public buildBody() {
+    public buildBody(): void {
         if (this.bodyBuilder) {
             const arkBody: ArkBody | null = this.bodyBuilder.build();
             if (arkBody) {
@@ -553,7 +568,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return this.isGeneratedFlag;
     }
 
-    public setIsGeneratedFlag(isGeneratedFlag: boolean) {
+    public setIsGeneratedFlag(isGeneratedFlag: boolean): void {
         this.isGeneratedFlag = isGeneratedFlag;
     }
 
@@ -561,7 +576,7 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         return this.asteriskToken;
     }
 
-    public setAsteriskToken(asteriskToken: boolean) {
+    public setAsteriskToken(asteriskToken: boolean): void {
         this.asteriskToken = asteriskToken;
     }
 
@@ -574,25 +589,25 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
         if (declareSignatures === null && signature === null) {
             return {
                 errCode: ArkErrorCode.METHOD_SIGNATURE_UNDEFINED,
-                errMsg: 'methodDeclareSignatures and methodSignature are both undefined.'
+                errMsg: 'methodDeclareSignatures and methodSignature are both undefined.',
             };
         }
         if ((declareSignatures === null) !== (declareLineCols === null)) {
             return {
                 errCode: ArkErrorCode.METHOD_SIGNATURE_LINE_UNMATCHED,
-                errMsg: 'methodDeclareSignatures and methodDeclareLineCols are not matched.'
+                errMsg: 'methodDeclareSignatures and methodDeclareLineCols are not matched.',
             };
         }
         if (declareSignatures !== null && declareLineCols !== null && declareSignatures.length !== declareLineCols.length) {
             return {
                 errCode: ArkErrorCode.METHOD_SIGNATURE_LINE_UNMATCHED,
-                errMsg: 'methodDeclareSignatures and methodDeclareLineCols are not matched.'
+                errMsg: 'methodDeclareSignatures and methodDeclareLineCols are not matched.',
             };
         }
         if ((signature === null) !== (lineCol === null)) {
             return {
                 errCode: ArkErrorCode.METHOD_SIGNATURE_LINE_UNMATCHED,
-                errMsg: 'methodSignature and lineCol are not matched.'
+                errMsg: 'methodSignature and lineCol are not matched.',
             };
         }
         return this.validateFields(['declaringArkClass']);
@@ -609,19 +624,23 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
             return args.length >= min && args.length <= max;
         });
         const scene = this.getDeclaringArkFile().getScene();
-        return signatures?.find(p => {
-            const parameters = p.getMethodSubSignature().getParameters();
-            for (let i = 0; i < parameters.length; i++) {
-                if (!args[i]) {
-                    return parameters[i].isOptional();
+        return (
+            signatures?.find(p => {
+                const parameters = p.getMethodSubSignature().getParameters();
+                for (let i = 0; i < parameters.length; i++) {
+                    if (!args[i]) {
+                        return parameters[i].isOptional();
+                    }
+                    const isMatched = this.matchParam(parameters[i].getType(), args[i], scene);
+                    if (!isMatched) {
+                        return false;
+                    }
                 }
-                const isMatched = this.matchParam(parameters[i].getType(), args[i], scene);
-                if (!isMatched) {
-                    return false;
-                }
-            }
-            return true;
-        }) ?? signatures?.[0] ?? this.getSignature();
+                return true;
+            }) ??
+            signatures?.[0] ??
+            this.getSignature()
+        );
     }
 
     private matchParam(paramType: Type, arg: Value, scene: Scene): boolean {
@@ -643,12 +662,16 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
             return matched;
         } else if (argType instanceof FunctionType && paramType instanceof FunctionType) {
             return argType.getMethodSignature().getParamLength() === paramType.getMethodSignature().getParamLength();
-        } else if (paramType instanceof ClassType &&
-            paramType.getClassSignature().getClassName().includes(CALL_BACK)) {
+        } else if (paramType instanceof ClassType && paramType.getClassSignature().getClassName().includes(CALL_BACK)) {
             return argType instanceof FunctionType;
         } else if (paramType instanceof LiteralType && arg instanceof Constant) {
-            return arg.getValue().replace(/[\"|\']/g, '') === paramType.getLiteralName()
-                .toString().replace(/[\"|\']/g, '');
+            return (
+                arg.getValue().replace(/[\"|\']/g, '') ===
+                paramType
+                    .getLiteralName()
+                    .toString()
+                    .replace(/[\"|\']/g, '')
+            );
         } else if (paramType instanceof ClassType && argType instanceof EnumValueType) {
             return paramType.getClassSignature() === argType.getFieldSignature().getDeclaringSignature();
         } else if (paramType instanceof EnumValueType) {
@@ -684,14 +707,16 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
 
     // For class method, if there is no public/private/protected access modifier, it is actually public
     public isPublic(): boolean {
-        if (!this.containsModifier(ModifierType.PUBLIC) &&
+        if (
+            !this.containsModifier(ModifierType.PUBLIC) &&
             !this.containsModifier(ModifierType.PRIVATE) &&
             !this.containsModifier(ModifierType.PROTECTED) &&
             !this.getDeclaringArkClass().isDefaultArkClass() &&
             !this.isGenerated() &&
             !this.isAnonymousMethod() &&
             this.getName() !== CONSTRUCTOR_NAME &&
-            this.getDeclaringArkClass().getCategory() === ClassCategory.CLASS) {
+            this.getDeclaringArkClass().getCategory() === ClassCategory.CLASS
+        ) {
             return true;
         }
         return this.containsModifier(ModifierType.PUBLIC);

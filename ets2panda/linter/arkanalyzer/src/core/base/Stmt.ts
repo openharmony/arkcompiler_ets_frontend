@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,12 +30,12 @@ import { AbstractTypeExpr } from './TypeExpr';
  * @category core/base/stmt
  */
 export abstract class Stmt {
-    protected text?: string;                            // just for debug
+    protected text?: string; // just for debug
     protected originalText?: string;
     protected originalPosition: LineColPosition = LineColPosition.DEFAULT;
     protected cfg!: Cfg;
     protected operandOriginalPositions?: FullPosition[]; // operandOriginalPositions correspond with
-                                                                      // def and uses one by one
+    // def and uses one by one
     metadata?: ArkMetadata;
 
     public getMetadata(kind: ArkMetadataKind): ArkMetadataType | undefined {
@@ -48,7 +48,7 @@ export abstract class Stmt {
         }
         return this.metadata?.setMetadata(kind, value);
     }
-    
+
     /** Return a list of values which are uesd in this statement */
     public getUses(): Value[] {
         return [];
@@ -274,7 +274,7 @@ export abstract class Stmt {
         return this.originalPosition;
     }
 
-    abstract toString(): string ;
+    abstract toString(): string;
 
     public setText(text: string): void {
         this.text = text;
@@ -290,14 +290,14 @@ export abstract class Stmt {
 
     public setOperandOriginalPositions(operandOriginalPositions: FullPosition[]): void {
         this.operandOriginalPositions = operandOriginalPositions;
-    };
+    }
 
     public getOperandOriginalPositions(): FullPosition[] | undefined {
         return this.operandOriginalPositions;
-    };
+    }
 
     public getOperandOriginalPosition(indexOrOperand: number | Value): FullPosition | null {
-        let index:number = -1;
+        let index: number = -1;
         if (typeof indexOrOperand !== 'number') {
             index = IRUtils.findOperandIdx(this, indexOrOperand);
         } else {
@@ -308,7 +308,7 @@ export abstract class Stmt {
             return null;
         }
         return this.operandOriginalPositions[index];
-    };
+    }
 }
 
 export class ArkAssignStmt extends Stmt {
@@ -322,7 +322,7 @@ export class ArkAssignStmt extends Stmt {
     }
 
     /**
-     * Returns the left operand of the assigning statement. 
+     * Returns the left operand of the assigning statement.
      * @returns The left operand of the assigning statement.
      * @example
      * 1. If the statement is `a=b;`, the right operand is `a`; if the statement is `dd = cc + 5;`, the right operand
@@ -381,11 +381,11 @@ export class ArkInvokeStmt extends Stmt {
         this.invokeExpr = invokeExpr;
     }
 
-    public replaceInvokeExpr(newExpr: AbstractInvokeExpr) {
+    public replaceInvokeExpr(newExpr: AbstractInvokeExpr): void {
         this.invokeExpr = newExpr;
     }
 
-    public getInvokeExpr() {
+    public getInvokeExpr(): AbstractInvokeExpr {
         return this.invokeExpr;
     }
 

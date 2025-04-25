@@ -14,23 +14,32 @@
  */
 
 import {
-    AbstractInvokeExpr, ArkAssignStmt, ArkClass, ArkField, ArkNewExpr,
-    ArkReturnStmt, AstTreeUtils, ClassType, Local, Scene, Type
-} from "arkanalyzer";
+    AbstractInvokeExpr,
+    ArkAssignStmt,
+    ArkClass,
+    ArkField,
+    ArkNewExpr,
+    ArkReturnStmt,
+    AstTreeUtils,
+    ClassType,
+    Local,
+    Scene,
+    Type,
+} from 'arkanalyzer';
 import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, ClassMatcher, MatcherTypes, MatcherCallback } from "../../Index";
-import { IssueReport } from "../../model/Defects";
-import { RuleFix } from "../../model/Fix";
-import { FixPosition, FixUtils } from "../../utils/common/FixUtils";
-import { WarnInfo } from "../../utils/common/Utils";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, ClassMatcher, MatcherTypes, MatcherCallback } from '../../Index';
+import { IssueReport } from '../../model/Defects';
+import { RuleFix } from '../../model/Fix';
+import { FixPosition, FixUtils } from '../../utils/common/FixUtils';
+import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: ''
+    ruleDocPath: '',
+    description: '',
 };
 
 const DECORATOR_SET: Set<string> = new Set<string>([
@@ -42,7 +51,7 @@ const DECORATOR_SET: Set<string> = new Set<string>([
     'LocalStorageProp',
     'LocalStorageLink',
     'StorageProp',
-    'StorageLink'
+    'StorageLink',
 ]);
 
 // TODO: 需要考虑type alias、union type、intersection type中涉及class的场景
@@ -54,13 +63,13 @@ export class ObservedDecoratorCheck implements BaseChecker {
 
     private clsMatcher: ClassMatcher = {
         matcherType: MatcherTypes.CLASS,
-        category: [ClassCategory.STRUCT]
+        category: [ClassCategory.STRUCT],
     };
 
     public registerMatchers(): MatcherCallback[] {
         const matchClsCb: MatcherCallback = {
             matcher: this.clsMatcher,
-            callback: this.check
+            callback: this.check,
         };
         return [matchClsCb];
     }
@@ -112,7 +121,8 @@ export class ObservedDecoratorCheck implements BaseChecker {
                     // 此处需要区分field = new cls()和field = {}两种场景，查找完毕需继续遍历stmts以解析条件表达式造成的多赋值场景
                     canFindAllTargets = canFindAllTargets && this.handleNewExpr(scene, fieldType, rightOp, usedClasses);
                 } else if (rightOp instanceof AbstractInvokeExpr) {
-                    canFindAllTargets = canFindAllTargets && this.handleInvokeExpr(scene, fieldType, rightOp, usedClasses);
+                    canFindAllTargets =
+                        canFindAllTargets && this.handleInvokeExpr(scene, fieldType, rightOp, usedClasses);
                 } else {
                     // 对应场景为使用条件表达式cond ? 123 : 456赋值时
                     continue;
@@ -121,7 +131,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
 
             for (const cls of usedClasses) {
                 issueClasses.add(cls);
-                this.getAllSuperClasses(cls, (superCls) => superCls.getCategory() === ClassCategory.CLASS && issueClasses.add(superCls));
+                this.getAllSuperClasses(
+                    cls,
+                    superCls => superCls.getCategory() === ClassCategory.CLASS && issueClasses.add(superCls)
+                );
             }
 
             for (const target of issueClasses) {
@@ -179,7 +192,12 @@ export class ObservedDecoratorCheck implements BaseChecker {
     // 此处需要区分返回值为class和object literal两种场景
     // 对于返回值为class的场景，需要查找此class的所有父class
     // 对于存在返回值为object literal的场景，需要查找左边field类型为class时的所有父class
-    private handleInvokeExpr(scene: Scene, fieldType: Type, invokeExpr: AbstractInvokeExpr, targets: Set<ArkClass>): boolean {
+    private handleInvokeExpr(
+        scene: Scene,
+        fieldType: Type,
+        invokeExpr: AbstractInvokeExpr,
+        targets: Set<ArkClass>
+    ): boolean {
         let canFindAllTargets = true;
         const callMethod = scene.getMethod(invokeExpr.getMethodSignature());
         if (callMethod === null) {
@@ -239,10 +257,9 @@ export class ObservedDecoratorCheck implements BaseChecker {
 
     private generateIssueDescription(field: ArkField, canFindAllTargets: boolean = true): string {
         if (canFindAllTargets) {
-            const delimiter = '%';
             const fieldLine = field.getOriginPosition().getLineNo();
             const fieldColumn = field.getOriginPosition().getColNo();
-            return `used by state property ${fieldLine}${delimiter}${fieldColumn}${delimiter}${field.getName()}`;
+            return `used by state property '${field.getName()}' defined in line ${fieldLine}, column ${fieldColumn}`;
         }
         return `can not find all classes, check this field`;
     }
@@ -279,8 +296,20 @@ export class ObservedDecoratorCheck implements BaseChecker {
     private addIssueReport(warnInfo: WarnInfo, description: string, ruleFix?: RuleFix): void {
         const problem = 'DataObservationNeedObserved';
         const severity = this.rule.alert ?? this.metaData.severity;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, description,
-            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            description,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, ruleFix));
     }
 

@@ -15,12 +15,12 @@
 
 /**
  * Generic Data Flow Analysis Framework
- * 
+ *
  * This module provides a generic framework for implementing data flow analyses,
  * such as Reaching Definitions, Live Variables, and Available Expressions.
  * The framework is designed to be flexible and extensible, allowing users to
  * define custom flow graphs, transfer functions, and meet operations.
- * 
+ *
  * Design Notes:
  * - The framework is designed to be generic and reusable, allowing users to
  *   implement custom data flow analyses by defining appropriate transfer functions
@@ -28,7 +28,7 @@
  * - The solver uses a worklist algorithm to efficiently compute the MFP solution.
  * - The analysis can be configured as either forward or backward, depending on
  *   the problem requirements.
- * 
+ *
  */
 
 /**
@@ -168,11 +168,11 @@ export class MFPDataFlowSolver {
 
         while (workList.length > 0) {
             newEntries.clear();
-            workList.forEach((n) => {
+            workList.forEach(n => {
                 let inSet: V | undefined;
                 const predecessors = problem.flowGraph.pred(n);
                 if (predecessors && predecessors.length > 0) {
-                    const predecessorOuts = predecessors.map((pred) => _out.get(pred));
+                    const predecessorOuts = predecessors.map(pred => _out.get(pred));
                     inSet = predecessorOuts.reduce((acc, cur) => problem.meet(acc!, cur!), problem.empty);
                 } else {
                     inSet = problem.empty;
@@ -184,7 +184,7 @@ export class MFPDataFlowSolver {
 
                 if (!old || old.count() === 0 || !old.equals(newSet)) {
                     _out.set(n, newSet);
-                    problem.flowGraph.succ(n).forEach((succ) => newEntries.add(succ));
+                    problem.flowGraph.succ(n).forEach(succ => newEntries.add(succ));
                 }
             });
 
@@ -210,7 +210,7 @@ export class MFPDataFlowSolver {
 
         while (workList.length > 0) {
             newEntries.clear();
-            workList.forEach((n) => {
+            workList.forEach(n => {
                 let outSet: T = problem.flowGraph.succ(n).reduce((acc, curr) => {
                     return problem.meet(acc, _in.get(curr)!);
                 }, problem.empty);
@@ -220,7 +220,7 @@ export class MFPDataFlowSolver {
                 let newSet: T = problem.transferFunction.apply(n, outSet);
                 if (!old || !old.equals(newSet)) {
                     _in.set(n, newSet);
-                    problem.flowGraph.pred(n).forEach((pred) => newEntries.add(pred));
+                    problem.flowGraph.pred(n).forEach(pred => newEntries.add(pred));
                 }
             });
 

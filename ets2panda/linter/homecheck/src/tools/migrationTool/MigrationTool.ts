@@ -20,7 +20,7 @@ import { Utils } from '../../utils/common/Utils';
 import { CheckerStorage } from '../../utils/common/CheckerStorage';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { FileUtils } from '../../utils/common/FileUtils';
-import { defaultMessage } from '../../model/Message';
+import { DefaultMessage } from '../../model/Message';
 import { exportIssues, ProblemInfo } from './ExportIssue';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'MigrationTool');
@@ -52,7 +52,7 @@ export class MigrationTool {
 
         // 外部没有建立消息通道，使用默认通道
         if (!this.checkEntry.message) {
-            this.checkEntry.message = new defaultMessage();
+            this.checkEntry.message = new DefaultMessage();
         }
 
         // 前处理

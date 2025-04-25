@@ -55,7 +55,7 @@ export class SourceMethod extends SourceBase {
         const commentsMetadata = this.method.getMetadata(ArkMetadataKind.LEADING_COMMENTS);
         if (commentsMetadata instanceof CommentsMetadata) {
             const comments = commentsMetadata.getComments();
-            comments.forEach((comment) => {
+            comments.forEach(comment => {
                 this.printer.writeIndent().writeLine(comment.content);
             });
         }
@@ -84,7 +84,7 @@ export class SourceMethod extends SourceBase {
         if (cfg) {
             cfg.getStmts()
                 .reverse()
-                .forEach((stmt) => stmts.push(stmt));
+                .forEach(stmt => stmts.push(stmt));
         }
         for (const stmt of stmts) {
             if (stmt.getOriginPositionInfo().getLineNo() > 0) {
@@ -163,7 +163,7 @@ export class SourceMethod extends SourceBase {
         methodSig
             .getMethodSubSignature()
             .getParameters()
-            .forEach((parameter) => {
+            .forEach(parameter => {
                 let str: string = parameter.getName();
                 if (parameter.hasDotDotDotToken()) {
                     str = `...${parameter.getName()}`;
@@ -174,17 +174,13 @@ export class SourceMethod extends SourceBase {
                 if (parameter.getType()) {
                     str += ': ' + this.transformer.typeToString(parameter.getType());
                 }
-                if (!str.startsWith(LEXICAL_ENV_NAME_PREFIX))
-                {
+                if (!str.startsWith(LEXICAL_ENV_NAME_PREFIX)) {
                     parameters.push(str);
                 }
             });
         code.write(`(${parameters.join(', ')})`);
         const returnType = methodSig.getMethodSubSignature().getReturnType();
-        if (
-            methodSig.getMethodSubSignature().getMethodName() !== 'constructor' &&
-            !(returnType instanceof UnknownType)
-        ) {
+        if (methodSig.getMethodSubSignature().getMethodName() !== 'constructor' && !(returnType instanceof UnknownType)) {
             code.write(`: ${this.transformer.typeToString(returnType)}`);
         }
         if (PrinterUtils.isAnonymousMethod(methodSig.getMethodSubSignature().getMethodName())) {
@@ -197,7 +193,7 @@ export class SourceMethod extends SourceBase {
         let code = new ArkCodeBuffer();
 
         let parameters: string[] = [];
-        this.method.getParameters().forEach((parameter) => {
+        this.method.getParameters().forEach(parameter => {
             let str: string = parameter.getName();
             if (parameter.isOptional()) {
                 str += '?';
