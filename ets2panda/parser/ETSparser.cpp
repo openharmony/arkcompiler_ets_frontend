@@ -654,6 +654,9 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
+    if (typeAnnotation == nullptr) {
+        return nullptr;
+    }
     typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
     typeAnnotation->SetParent(typeAliasDecl);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
