@@ -70,8 +70,7 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
             checker->LogError(diagnostic::EXTENSION_FUNC_NAME_CONFLICT_WITH_METH, {funcType->Name(), objType->Name()},
                               extensionFunc->Body()->Start());
         } else {
-            checker->ReportWarning({"The extension function '", funcType->Name(),
-                                    "' has the same name with non-public method in class ", objType->Name()},
+            checker->LogDiagnostic(diagnostic::EXTENSION_NONPUBLIC_COLLISION, {funcType->Name(), objType->Name()},
                                    extensionFunc->Body()->Start());
         }
         return;

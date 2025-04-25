@@ -47,8 +47,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 {
     if (checker_->HasStatus(CheckerStatus::IN_INSTANCEOF_CONTEXT)) {
         if (typeArgs != nullptr) {
-            checker_->ReportWarning(
-                {"Type parameter is erased from type '", type->Name(), "' when used in instanceof expression."}, pos);
+            checker_->LogDiagnostic(diagnostic::INSTANCEOF_ERASED, {type->Name()}, pos);
         }
         result_ = type;
         return true;

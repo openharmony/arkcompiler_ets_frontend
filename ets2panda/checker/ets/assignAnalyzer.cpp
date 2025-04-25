@@ -190,16 +190,11 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     AnalyzeNodes(node);
 }
 
-void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
+void AssignAnalyzer::Warning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                             const lexer::SourcePosition &pos)
 {
     ++numErrors_;
-    checker_->Warning(message, pos);
-}
-
-void AssignAnalyzer::Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
-{
-    ++numErrors_;
-    checker_->ReportWarning(list, pos);
+    checker_->LogDiagnostic(kind, list, pos);
 }
 
 void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
@@ -1406,9 +1401,9 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
 
         if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {
             if (declNode->IsClassProperty() && classDef_ != declNode->Parent()) {
-                Warning({"Cannot assign to '", name, "' because it is a read-only property."}, pos);
+                Warning(diagnostic::ASSIGN_TO_READONLY, {name}, pos);
             } else if (!uninits_.IsMember(adr)) {
-                Warning({Capitalize(type).c_str(), " '", name, "' might already have been assigned."}, pos);
+                Warning(diagnostic::MAYBE_REASSIGNED, {Capitalize(type).c_str(), name}, pos);
             } else {
                 uninit(adr);
             }
@@ -1462,8 +1457,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             if (node->IsClassProperty()) {
                 checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
-                ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
-                Warning(ss.str(), pos);
+                Warning(diagnostic::USE_BEFORE_INIT, util::DiagnosticMessageParams {Capitalize(type), name}, pos);
             }
         }
     }

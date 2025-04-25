@@ -171,8 +171,13 @@ public:
                   const lexer::SourcePosition &pos);
     void LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                       const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &pos)
+    {
+        LogDiagnostic(kind, {}, pos);
+    }
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,

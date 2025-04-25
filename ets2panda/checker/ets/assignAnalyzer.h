@@ -136,8 +136,8 @@ private:
     void AnalyzeArrowFunctionExpr(const ir::ArrowFunctionExpression *arrowFuncExpr);
 
     // utils
-    void Warning(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void Warning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                 const lexer::SourcePosition &pos);
     bool Trackable(const ir::AstNode *node) const;
     bool IsConstUninitializedField(const ir::AstNode *node) const;
     bool IsConstUninitializedStaticField(const ir::AstNode *node) const;

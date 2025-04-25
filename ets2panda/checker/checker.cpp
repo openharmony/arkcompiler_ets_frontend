@@ -52,14 +52,10 @@ void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition
     diagnosticEngine_.LogSemanticError(message, pos);
 }
 
-void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
+void Checker::LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                            const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogWarning(message, pos);
-}
-
-void Checker::ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
-{
-    diagnosticEngine_.LogWarning(list, pos);
+    diagnosticEngine_.LogDiagnostic(kind, list, pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)

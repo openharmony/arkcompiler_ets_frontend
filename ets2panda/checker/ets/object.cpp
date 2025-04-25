@@ -2200,11 +2200,9 @@ void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *co
     }
     if (parent != nullptr && ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
         if (parent->AsMethodDefinition()->Function()->IsGetter()) {
-            Warning("Reading the value of the property inside its getter may lead to an endless loop.",
-                    memberExpr->Property()->AsIdentifier()->Start());
+            LogDiagnostic(diagnostic::GETTER_LOOP, memberExpr->Property()->AsIdentifier()->Start());
         } else {
-            Warning("Assigning new value to the property inside its setter may lead to an endless loop.",
-                    memberExpr->Property()->AsIdentifier()->Start());
+            LogDiagnostic(diagnostic::SETTER_LOOP, memberExpr->Property()->AsIdentifier()->Start());
         }
     }
 }

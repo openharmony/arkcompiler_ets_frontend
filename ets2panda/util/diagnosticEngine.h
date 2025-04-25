@@ -94,11 +94,6 @@ public:
     {
         LogThrowableDiagnostic(DiagnosticType::FATAL, std::forward<T>(args)...);
     }
-    template <typename... T>
-    void LogWarning(T &&...args)
-    {
-        LogThrowableDiagnostic(DiagnosticType::WARNING, std::forward<T>(args)...);
-    }
 
     // NOTE(schernykh): should not be able from ETS
     template <typename... T>

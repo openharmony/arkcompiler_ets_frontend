@@ -1148,8 +1148,7 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
 
     ldInfo.needHelperOverload &= ldInfo.isDeclare;
     if (ldInfo.needHelperOverload) {
-        Warning("Function " + std::string(funcType->Name()) + " with this assembly signature already declared.",
-                method->Start());
+        LogDiagnostic(diagnostic::FUNCTION_ASM_SIG_COLLISION, {std::string(funcType->Name())}, method->Start());
     }
 
     if (method->Function()->Signature()->HasRestParameter()) {

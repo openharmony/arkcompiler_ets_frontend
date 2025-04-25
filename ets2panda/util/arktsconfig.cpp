@@ -245,7 +245,7 @@ bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
         auto &key = dynamicPaths->get()->GetKeyByIndex(keyIdx);
         auto data = dynamicPaths->get()->GetValue<JsonObject::JsonObjPointer>(key);
         if (IsAbsolute(key)) {
-            diagnosticEngine_.LogWarning("Don't use absolute path '" + key + "' as key in 'dynamicPaths'");
+            diagnosticEngine_.LogDiagnostic(diagnostic::DYNAMIC_PATHS_ABSOLUTE, util::DiagnosticMessageParams {key});
         }
         if (!Check(data != nullptr, diagnostic::INVALID_VALUE, {"dynamic path", key})) {
             return false;
@@ -264,7 +264,7 @@ bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
         }
         auto ohmUrl = data->get()->GetValue<JsonObject::StringT>(OHM_URL);
         if (ohmUrl == nullptr) {
-            diagnosticEngine_.LogWarning("\"ohmUrl\" for module '" + key + "' wasn't specified");
+            diagnosticEngine_.LogDiagnostic(diagnostic::NO_OHMURL, util::DiagnosticMessageParams {key});
         }
         std::string ohmUrlValue = (ohmUrl == nullptr) ? "" : *ohmUrl;
         auto declPathValue = data->get()->GetValue<JsonObject::StringT>(DECL_PATH);
