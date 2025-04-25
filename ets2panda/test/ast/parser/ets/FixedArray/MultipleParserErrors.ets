@@ -18,7 +18,7 @@ function foo(param? : Object)
    for (let i? of "blablabla") { }
 }
 
-function foo(a : int = 10, b : int, c : int = 15) : int
+function foo(b : int, a : int = 10, c : int = 15) : int
 {
     return a + b;
 }
