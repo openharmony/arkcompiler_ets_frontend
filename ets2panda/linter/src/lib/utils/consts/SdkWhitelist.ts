@@ -28,6 +28,11 @@ export enum SdkProblem {
   ComputedPropertyName = 'ComputedPropertyName'
 }
 
+export enum SdkNameInfo {
+  ParentApiName = 'parent_api_name',
+  ImportPath = 'import_path'
+}
+
 export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
 
 // Define function argument class

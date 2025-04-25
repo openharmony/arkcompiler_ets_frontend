@@ -14,18 +14,16 @@
  */
 
 import { rcp } from '@kit.RemoteCommunicationKit';
-// case1
 const basicHeaders: rcp.RequestHeaders = {
-  'authorization': 'Bearer abc123', // error
-  'content-type': 'application/json' // error
-}
+  'authorization': 'Bearer abc123', // Error
+  'content-type': 'application/json' // Error
+};
 
-// case2
-function createHeaders(): rcp.RequestHeaders {
+function createHeaders(authToken?: string): rcp.RequestHeaders {
   return {
-    'authorization': '', // error
-    'accept': 'application/json', // error
-    'cache-control': 'no-cache', // error
-    'user-agent': 'MyApp/2.0' // error
+    'authorization': authToken ? `Bearer ${authToken}` : undefined, // Error
+    'accept': 'application/json', // Error
+    'cache-control': 'no-cache', // Error
+    'user-agent': 'MyApp/2.0' // Error
   };
 }

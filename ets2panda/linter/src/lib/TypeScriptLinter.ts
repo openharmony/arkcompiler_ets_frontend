@@ -94,7 +94,7 @@ import { InteropType, REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/Inte
 import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
-import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
+import { ApiList, SdkProblem, SdkNameInfo } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import * as builtinWhiteList from './data/BuiltinList.json';
 import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
@@ -135,6 +135,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   static indexedTypeSet: Set<ApiListItem>;
   static globalApiInfo: Map<string, Set<ApiListItem>>;
   static symbotIterSet: Set<string>;
+  static literalAsPropertyNameTypeSet: Set<ApiListItem>;
+  private localApiListItem: ApiListItem | undefined = undefined;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -200,6 +202,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private static addSdkliteralAsPropertyNameTypeSetData(item: ApiListItem): void {
+    if (item.api_info.problem === SdkProblem.LiteralAsPropertyName) {
+      TypeScriptLinter.literalAsPropertyNameTypeSet.add(item);
+    }
+  }
+
   private static addGlobalApiInfosCollocetionData(item: ApiListItem): void {
     const problemType = item.api_info.problem;
     const isGlobal = item.is_global;
@@ -214,6 +222,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private static initSdkWhitelist(): void {
     TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
+    TypeScriptLinter.literalAsPropertyNameTypeSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
@@ -224,6 +233,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
         });
         TypeScriptLinter.addSdkIndexedTypeSetData(item);
+        TypeScriptLinter.addSdkliteralAsPropertyNameTypeSetData(item);
         TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
       }
     }
@@ -957,6 +967,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleStateStyles(node as ts.PropertyAccessExpression);
     this.handleDoubleDollar(node);
+    this.handleQuotedHyphenPropsDeprecated(node as ts.PropertyAccessExpression);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     this.handleSymbolIterator(node as ts.PropertyAccessExpression);
@@ -988,7 +999,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(propertyAccessNode, FaultID.SymbolType);
     }
     if (this.options.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
-      // missing exact rule
       this.incrementCounters(propertyAccessNode.expression, FaultID.ClassAsObject);
     }
 
@@ -1200,6 +1210,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handlePropertyAssignment(node: ts.PropertyAssignment): void {
     this.handleDollarBind(node);
 
+    this.handleQuotedHyphenPropsDeprecated(node);
     const propName = node.name;
     if (!propName || !(ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       return;
@@ -3544,7 +3555,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const node = ts.isCallExpression(tsCallExpr) ?  tsCallExpr.expression : tsCallExpr.typeName;
+    const node = ts.isCallExpression(tsCallExpr) ? tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
     const callSignatures = constructorType.getCallSignatures();
     if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
@@ -4370,7 +4381,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.tsUtils.isSendableClassOrInterface(typeNameType)) {
       this.checkSendableTypeArguments(typeRef);
     }
-    this.handleQuotedHyphenPropsDeprecated(typeRef);
   }
 
   private checkPartialType(node: ts.Node): void {
@@ -6307,80 +6317,203 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handlePropertyDescriptorInScenarios(node);
   }
 
-  private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {
-    if (!this.options.arkts2 || !ts.isQualifiedName(typeRef.typeName)) {
+  private handleQuotedHyphenPropsDeprecated(node: ts.PropertyAccessExpression | ts.PropertyAssignment): void {
+    if (!this.options.arkts2 || !node) {
       return;
     }
-    const qualNode = typeRef.typeName;
-    const parent = typeRef.parent;
-    const sdkInfos = this.interfaceMap.get(qualNode.left.getText());
-    if (!sdkInfos || sdkInfos.size === 0) {
-      return;
-    }
-
-    for (const sdkInfo of sdkInfos) {
-      if (sdkInfo.api_name === undefined) {
-        continue;
+    const literalAsPropertyNameInfos = Array.from(TypeScriptLinter.literalAsPropertyNameTypeSet);
+    literalAsPropertyNameInfos.some((literalAsPropertyNameInfo) => {
+      this.localApiListItem = literalAsPropertyNameInfo;
+      const api_name = literalAsPropertyNameInfo.api_info.api_name;
+      if (api_name !== (ts.isPropertyAccessExpression(node) ? node.name.text : node.name.getText())) {
+        return false;
       }
-      this.processQuotedHyphenPropsDeprecated(parent, sdkInfo.api_name);
-    }
-  }
-
-  private processQuotedHyphenPropsDeprecated(node: ts.Node, apiName: string): void {
-    if (ts.isVariableDeclaration(node)) {
-      this.handleQuotedHyphenPropsDeprecatedOnVarDecl(node, apiName);
-    } else if (ts.isFunctionDeclaration(node)) {
-      this.handleQuotedHyphenPropsDeprecatedOnFunDecl(node, apiName);
-    }
-  }
-
-  private handleQuotedHyphenPropsDeprecatedOnVarDecl(node: ts.VariableDeclaration, apiName: string): void {
-    const initializer = node.initializer;
-    if (!(initializer && ts.isObjectLiteralExpression(initializer))) {
-      return;
-    }
-    initializer.properties.forEach((property) => {
-      if (!ts.isPropertyAssignment(property)) {
-        return;
+      const parentSym = this.getFinalSymOnQuotedHyphenPropsDeprecated(
+        ts.isPropertyAccessExpression(node) ? node.expression : node
+      );
+      if (parentSym && this.shouldWarn(parentSym)) {
+        this.incrementCounters(node, FaultID.QuotedHyphenPropsDeprecated);
+        return true;
       }
-      const propertyName = property.name.getText();
-      if (propertyName === apiName) {
-        this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
-      }
+      return false;
     });
   }
 
-  private handleQuotedHyphenPropsDeprecatedOnFunDecl(node: ts.FunctionDeclaration, apiName: string): void {
-    const body = node.body;
-    if (!body || !ts.isBlock(body)) {
-      return;
-    }
-
-    body.statements.forEach(this.processStatement.bind(this, apiName));
+  private shouldWarn(symbol: ts.Symbol): boolean {
+    const parentApiName = this.getLocalApiListItemByKey(SdkNameInfo.ParentApiName);
+    return symbol && this.isHeritageClauseisThirdPartyBySymbol(symbol) || symbol.name === parentApiName;
   }
 
-  private processStatement(apiName: string, statement: ts.Statement): void {
-    if (!ts.isReturnStatement(statement)) {
-      return;
+  private getFinalSymOnQuotedHyphenPropsDeprecated(node: ts.Node): ts.Symbol | undefined {
+    let currentNode = node;
+    while (currentNode) {
+      const symbol = this.checkNodeTypeOnQuotedHyphenPropsDeprecated(currentNode);
+      if (symbol) {
+        return symbol;
+      }
+      currentNode = currentNode.parent;
     }
-
-    const returnValue = statement.expression;
-    if (!returnValue || !ts.isObjectLiteralExpression(returnValue)) {
-      return;
-    }
-
-    returnValue.properties.forEach(this.processProperty.bind(this, apiName));
+    return undefined;
   }
 
-  private processProperty(apiName: string, property: ts.ObjectLiteralElementLike): void {
-    if (!ts.isPropertyAssignment(property)) {
-      return;
+  private checkNodeTypeOnQuotedHyphenPropsDeprecated(node: ts.Node): ts.Symbol | undefined {
+    if (ts.isVariableDeclaration(node)) {
+      return this.getTypeOfVariable(node);
     }
 
-    const isMatch = property.name.getText() === apiName;
-    if (isMatch) {
-      this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+    if (ts.isPropertySignature(node)) {
+      return this.tsTypeChecker.getTypeAtLocation(node.type!).getSymbol();
     }
+
+    const nodesWithResolvableType = [
+      ts.isFunctionDeclaration(node) && node.type,
+      ts.isMethodDeclaration(node) && node.type,
+      ts.isTypeReferenceNode(node) && node,
+      ts.isParameter(node) && node.type
+    ].filter(Boolean);
+
+    for (const typeNode of nodesWithResolvableType) {
+      return typeNode ? this.resolveTypeNodeSymbol(typeNode) : undefined;
+    }
+
+    if (ts.isIdentifier(node)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+      const declaration = symbol?.getDeclarations()?.[0];
+      if (declaration) {
+        return this.getFinalSymOnQuotedHyphenPropsDeprecated(declaration);
+      }
+    }
+
+    return undefined;
+  }
+
+  private getTypeOfVariable(variable: ts.VariableDeclaration): ts.Symbol | undefined {
+    if (variable.type) {
+      return ts.isArrayTypeNode(variable.type) ?
+        this.resolveTypeNodeSymbol(variable.type.elementType) :
+        this.resolveTypeNodeSymbol(variable.type);
+    }
+    return variable.initializer ? this.tsTypeChecker.getTypeAtLocation(variable.initializer).getSymbol() : undefined;
+  }
+
+  private resolveTypeNodeSymbol(typeNode: ts.TypeNode): ts.Symbol | undefined {
+    if (!ts.isTypeReferenceNode(typeNode)) {
+      return undefined;
+    }
+    const symbol = this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
+    if (!symbol) {
+      return this.resolveTypeNoSymbol(typeNode);
+    }
+    const declarations = symbol.getDeclarations();
+    if (declarations && declarations.length > 0) {
+      const declaration = declarations[0];
+      if (ts.isTypeAliasDeclaration(declaration)) {
+        return this.resolveTypeNodeSymbol(declaration.type);
+      } else if (ts.isInterfaceDeclaration(declaration)) {
+        const heritageSymbol = this.processQuotedHyphenPropsDeprecatedOnInterfaceDeclaration(declaration);
+        return heritageSymbol;
+      }
+    }
+    return this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
+  }
+
+  private resolveTypeNoSymbol(typeNode: ts.TypeReferenceNode): ts.Symbol | undefined {
+    if (!typeNode.typeName) {
+      return undefined;
+    }
+    if (ts.isQualifiedName(typeNode.typeName)) {
+      return this.tsTypeChecker.getSymbolAtLocation(typeNode.typeName.right);
+    }
+    const sym = this.tsUtils.trueSymbolAtLocation(typeNode.typeName);
+    if (sym) {
+      const globalDeclaration = sym.getDeclarations()?.[0];
+      if (globalDeclaration && ts.isTypeAliasDeclaration(globalDeclaration)) {
+        return this.resolveTypeNodeSymbol(globalDeclaration.type);
+      }
+    }
+
+    return this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
+  }
+
+  private isHeritageClauseisThirdPartyBySymbol(symbol: ts.Symbol): boolean {
+    const declarations = symbol.getDeclarations();
+    if (declarations && declarations.length > 0) {
+      const firstDeclaration = declarations[0];
+      if (ts.isImportSpecifier(firstDeclaration)) {
+        const importDecl = firstDeclaration.parent.parent.parent;
+        const importPath = importDecl.moduleSpecifier.getText();
+        const import_path = this.getLocalApiListItemByKey(SdkNameInfo.ImportPath);
+        if (import_path && JSON.stringify(import_path).includes(importPath)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private getLocalApiListItemByKey(key: string): string | string[] {
+    if (!this.localApiListItem) {
+      return '';
+    }
+    if (SdkNameInfo.ParentApiName === key) {
+      return this.localApiListItem.api_info.parent_api[0].api_name;
+    } else if (SdkNameInfo.ImportPath === key) {
+      return this.localApiListItem.import_path;
+    }
+    return '';
+  }
+
+  private processQuotedHyphenPropsDeprecatedOnInterfaceDeclaration(
+    node: ts.InterfaceDeclaration
+  ): ts.Symbol | undefined {
+    const heritageSymbol = this.processHeritageClauses(node);
+    if (heritageSymbol) {
+      return heritageSymbol;
+    }
+    return this.processMembers(node);
+  }
+
+  private processHeritageClauses(node: ts.InterfaceDeclaration): ts.Symbol | undefined {
+    if (!node.heritageClauses) {
+      return undefined;
+    }
+    for (const heritageClause of node.heritageClauses) {
+      return this.processHeritageClause(heritageClause);
+    }
+
+    return undefined;
+  }
+
+  private processHeritageClause(heritageClause: ts.HeritageClause): ts.Symbol | undefined {
+    for (const type of heritageClause.types) {
+      if (!type.expression) {
+        return undefined;
+      }
+      if (ts.isPropertyAccessExpression(type.expression)) {
+        return this.processPropertyAccessExpression(type.expression);
+      }
+    }
+    return undefined;
+  }
+
+  private processPropertyAccessExpression(expression: ts.PropertyAccessExpression): ts.Symbol | undefined {
+    const heritageSymbol = this.tsTypeChecker.getSymbolAtLocation(expression.expression);
+    if (heritageSymbol && expression.name.text === this.getLocalApiListItemByKey(SdkNameInfo.ParentApiName)) {
+      return heritageSymbol;
+    }
+    return undefined;
+  }
+
+  private processMembers(node: ts.InterfaceDeclaration): ts.Symbol | undefined {
+    if (!node.members) {
+      return undefined;
+    }
+    for (const member of node.members) {
+      if (ts.isPropertySignature(member) && member.type) {
+        return this.resolveTypeNodeSymbol(member.type);
+      }
+    }
+    return undefined;
   }
 
   private handleSdkDuplicateDeclName(node: ts.TypeReferenceNode | ts.NewExpression): void {
