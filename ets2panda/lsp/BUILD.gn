@@ -60,6 +60,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/signature_help_items.cpp",
     "src/string_completions.cpp",
     "src/suggestion_diagnostics.cpp",
+    "src/todo_comments.cpp",
   ]
   configs = [
     "$ark_root/assembler:arkassembler_public_config",

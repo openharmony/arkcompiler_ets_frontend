@@ -31,6 +31,7 @@
 #include "find_references.h"
 #include "find_rename_locations.h"
 #include "completions.h"
+#include "todo_comments.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -372,6 +373,9 @@ typedef struct LSPAPI {
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
+    std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(
+        char const *fileName, std::vector<ark::es2panda::lsp::TodoCommentDescriptor> &descriptors,
+        ark::es2panda::lsp::CancellationToken *cancellationToken);
 } LSPAPI;
 
 CAPI_EXPORT LSPAPI const *GetImpl();
