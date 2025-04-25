@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 348; i++) {
+for (let i = 0; i <= 357; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -321,7 +321,7 @@ cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-b
 cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
 cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';
 cookBookTag[348] = 'API is not support ctor signature and func (arkts-builtin-cotr)';
-cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-support-sharedarraybuffer)';
+cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)';
 cookBookTag[355] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)';
 cookBookTag[356] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)';
 cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
