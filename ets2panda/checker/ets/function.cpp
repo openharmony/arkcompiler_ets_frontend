@@ -174,6 +174,70 @@ bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typePara
     return true;
 }
 
+bool ETSChecker::ProcessUntypedParameter(ir::AstNode *declNode, size_t paramIndex, Signature *paramSig,
+                                         Signature *argSig, Substitution *substitution)
+{
+    if (!declNode->IsETSParameterExpression() || !HasStatus(CheckerStatus::IN_TYPE_INFER)) {
+        return false;
+    }
+
+    auto *paramExpr = declNode->AsETSParameterExpression();
+    if (paramExpr->Ident()->TypeAnnotation() != nullptr) {
+        return false;
+    }
+
+    Type *paramType = paramSig->Params()[paramIndex]->TsType();
+    Type *inferredType = paramType->Substitute(Relation(), substitution);
+
+    varbinder::Variable *argParam = argSig->Params()[paramIndex];
+    argParam->SetTsType(inferredType);
+    paramExpr->Ident()->SetTsType(inferredType);
+
+    return true;
+}
+
+static void RemoveInvalidTypeMarkers(ir::AstNode *node) noexcept
+{
+    std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *nn) {
+        if (nn->IsTyped() && !(nn->IsExpression() && nn->AsExpression()->IsTypeNode()) &&
+            nn->AsTyped()->TsType() != nullptr && nn->AsTyped()->TsType()->IsTypeError()) {
+            nn->AsTyped()->SetTsType(nullptr);
+        }
+        if (nn->IsIdentifier() && nn->AsIdentifier()->TsType() != nullptr &&
+            nn->AsIdentifier()->TsType()->IsTypeError()) {
+            nn->AsIdentifier()->SetVariable(nullptr);
+        }
+        if (!nn->IsETSTypeReference()) {
+            nn->Iterate([&](ir::AstNode *child) { doNode(child); });
+        }
+    };
+
+    doNode(node);
+}
+
+static void ResetInferredNode(ETSChecker *checker)
+{
+    auto relation = checker->Relation();
+    auto resetFuncState = [](ir::ArrowFunctionExpression *expr) {
+        auto *func = expr->Function();
+        func->SetSignature(nullptr);
+        func->ReturnStatements().clear();
+        expr->SetTsType(nullptr);
+    };
+
+    const bool hasValidNode = relation->GetNode() != nullptr && relation->GetNode()->IsArrowFunctionExpression();
+    if (!checker->HasStatus(CheckerStatus::IN_TYPE_INFER) || !hasValidNode) {
+        return;
+    }
+
+    auto *arrowFunc = relation->GetNode()->AsArrowFunctionExpression();
+    relation->SetNode(nullptr);
+
+    RemoveInvalidTypeMarkers(arrowFunc);
+    resetFuncState(arrowFunc);
+    arrowFunc->Check(checker);
+}
+
 bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
                                                 Type *argumentType, Substitution *substitution)
 {
@@ -181,32 +245,36 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
         return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution);
     };
 
-    if (argumentType->IsETSFunctionType()) {
-        auto parameterSignature = paramType->ArrowSignature();
-        auto argumentSignature = argumentType->AsETSFunctionType()->ArrowSignature();
-        // NOTE(gogabr): handle rest parameter for argumentSignature
-        if (parameterSignature->MinArgCount() < argumentSignature->MinArgCount()) {
-            return false;
-        }
-        bool res = true;
-        size_t const commonArity = std::min(argumentSignature->ArgCount(), parameterSignature->ArgCount());
-        for (size_t idx = 0; idx < commonArity; idx++) {
-            auto *declNode = argumentSignature->Params()[idx]->Declaration()->Node();
-            if (declNode->IsETSParameterExpression() &&
-                declNode->AsETSParameterExpression()->Ident()->TypeAnnotation() == nullptr) {
-                continue;
-            }
-            res &= enhance(parameterSignature->Params()[idx]->TsType(), argumentSignature->Params()[idx]->TsType());
-        }
-
-        if (argumentSignature->HasRestParameter() && parameterSignature->HasRestParameter()) {
-            res &= enhance(parameterSignature->RestVar()->TsType(), argumentSignature->RestVar()->TsType());
-        }
-        res &= enhance(parameterSignature->ReturnType(), argumentSignature->ReturnType());
-        return res;
+    if (!argumentType->IsETSFunctionType()) {
+        return true;
     }
 
-    return true;
+    auto *paramSig = paramType->ArrowSignature();
+    auto *argSig = argumentType->AsETSFunctionType()->ArrowSignature();
+
+    if (paramSig->MinArgCount() < argSig->MinArgCount()) {
+        return false;
+    }
+
+    bool res = true;
+    const size_t commonArity = std::min(argSig->ArgCount(), paramSig->ArgCount());
+
+    for (size_t idx = 0; idx < commonArity; idx++) {
+        auto *declNode = argSig->Params()[idx]->Declaration()->Node();
+        if (ProcessUntypedParameter(declNode, idx, paramSig, argSig, substitution)) {
+            continue;
+        }
+        res &= enhance(paramSig->Params()[idx]->TsType(), argSig->Params()[idx]->TsType());
+    }
+
+    ResetInferredNode(this);
+
+    if (argSig->HasRestParameter() && paramSig->HasRestParameter()) {
+        res &= enhance(paramSig->RestVar()->TsType(), argSig->RestVar()->TsType());
+    }
+    res &= enhance(paramSig->ReturnType(), argSig->ReturnType());
+
+    return res;
 }
 
 // Try to find the base type somewhere in object subtypes. Incomplete, yet safe
