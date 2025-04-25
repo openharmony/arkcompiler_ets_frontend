@@ -3147,9 +3147,6 @@ export class TypeScriptLinter {
       this.checkCollectionsSymbol(tsIdentSym, node);
       this.checkArkTSUtilsSymbol(tsIdentSym, node);
     }
-    if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
-      this.incrementCounters(node, FaultID.ExplicitFunctionType);
-    }
     this.handlePropertyDescriptor(tsIdentifier, tsIdentSym);
   }
 
@@ -3724,6 +3721,32 @@ export class TypeScriptLinter {
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
     this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
+    this.handleNoTsLikeFunctionCall(tsCallExpr);
+  }
+
+  handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const expression = callExpr.expression;
+
+    if (!ts.isIdentifier(expression)) {
+      return;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(expression);
+
+    if (!symbol) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, expression);
+    const typeText = this.tsTypeChecker.typeToString(type);
+    if (typeText === LIKE_FUNCTION) {
+      const autofix = this.autofixer?.fixNoTsLikeFunctionCall(expression);
+      this.incrementCounters(expression, FaultID.ExplicitFunctionType, autofix);
+    }
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {

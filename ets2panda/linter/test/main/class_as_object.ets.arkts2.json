@@ -345,16 +345,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 128,
-            "column": 15,
-            "endLine": 128,
-            "endColumn": 23,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
             "line": 129,
             "column": 15,
             "endLine": 129,
@@ -772,16 +762,6 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 178,
-            "column": 14,
-            "endLine": 178,
-            "endColumn": 22,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
             "severity": "ERROR"
         },
         {

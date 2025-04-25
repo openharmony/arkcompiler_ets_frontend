@@ -3550,6 +3550,19 @@ export class Autofixer {
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
   }
 
+  fixNoTsLikeFunctionCall(identifier: ts.Identifier): Autofix[] {
+    void this;
+    const funcName = identifier.getText();
+    const replacementText = `${funcName}.unSafeCall`;
+    return [
+      {
+        replacementText,
+        start: identifier.getStart(),
+        end: identifier.getEnd()
+      }
+    ];
+  }
+
   fixStaticPropertyInitializer(propDecl: ts.PropertyDeclaration): Autofix[] | undefined {
     const srcFile = propDecl.getSourceFile();
     const startPos = srcFile.getLineAndCharacterOfPosition(propDecl.getStart()).character;
