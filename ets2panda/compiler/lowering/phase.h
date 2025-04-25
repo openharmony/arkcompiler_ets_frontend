@@ -100,7 +100,6 @@ public:
 
     int32_t PreviousPhaseId() const
     {
-        ES2PANDA_ASSERT(prev_ != INVALID_PHASE_ID);
         return prev_;
     }
 
@@ -157,6 +156,7 @@ private:
 };
 
 PhaseManager *GetPhaseManager();
+void SetPhaseManager(PhaseManager *phaseManager);
 
 }  // namespace ark::es2panda::compiler
 
