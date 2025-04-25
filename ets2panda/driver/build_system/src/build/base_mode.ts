@@ -366,8 +366,8 @@ export abstract class BaseMode {
         compileFileInfos: [],
         dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
         staticDepModuleInfos: new Map<string, ModuleInfo>(),
-        declgenV1OutPath: undefined,
-        declgenBridgeCodePath: undefined,
+        declgenV1OutPath: module.declgenV1OutPath,
+        declgenBridgeCodePath: module.declgenBridgeCodePath,
         language: module.language,
         declFilesPath: module.declFilesPath,
         dependencies: module.dependencies
