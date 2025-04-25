@@ -23,40 +23,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "lambda_cast_type_has_pramas.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "lambda_cast_type_has_pramas.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "lambda_cast_type_has_pramas.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "lambda_cast_type_has_pramas.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",
