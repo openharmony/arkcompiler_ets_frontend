@@ -14,7 +14,7 @@
  */
 'use static'
 
-import { p, foo, pFuncCall, arrowFunc, pArrowCall } from "./no_import_awai.js";
+import { p, foo, pFuncCall, arrowFunc, pArrowCall } from "./no_js_await.js";
 
 // 1. 基础 Promise
 async function awaitPromise() {

@@ -41,7 +41,7 @@
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
             "suggest": "",
-            "rule": "Interop objects can't be incremented or decremented (arkts-no-js-obj-increases-decreases)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
             "suggest": "",
-            "rule": "Interop objects can't be incremented or decremented (arkts-no-js-obj-increases-decreases)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
             "suggest": "",
-            "rule": "Interop objects can't be incremented or decremented (arkts-no-js-obj-increases-decreases)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
@@ -161,7 +161,7 @@
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
             "suggest": "",
-            "rule": "Interop objects can't be incremented or decremented (arkts-no-js-obj-increases-decreases)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {

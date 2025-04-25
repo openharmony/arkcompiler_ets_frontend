@@ -111,7 +111,7 @@
             "endColumn": 15,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 18,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -201,7 +201,7 @@
             "endColumn": 19,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -251,7 +251,7 @@
             "endColumn": 20,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -351,7 +351,7 @@
             "endColumn": 35,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -371,7 +371,7 @@
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -381,7 +381,7 @@
             "endColumn": 33,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -411,7 +411,7 @@
             "endColumn": 28,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -431,7 +431,7 @@
             "endColumn": 28,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -461,7 +461,7 @@
             "endColumn": 30,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -481,7 +481,7 @@
             "endColumn": 24,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -511,7 +511,7 @@
             "endColumn": 39,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -581,7 +581,7 @@
             "endColumn": 47,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -631,7 +631,7 @@
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -671,7 +671,7 @@
             "endColumn": 30,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -681,7 +681,7 @@
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -731,7 +731,7 @@
             "endColumn": 31,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -741,7 +741,7 @@
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         }
     ]
