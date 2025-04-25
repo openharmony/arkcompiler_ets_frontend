@@ -2903,12 +2903,11 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
         flags |= ir::ModifierFlags::OPTIONAL;
     }
 
-    auto *const variableType = checker->CheckVariableDeclaration(ident, ident->TypeAnnotation(), st->Init(), flags);
-
     // Processing possible parser errors
     if (ident->Variable() == nullptr) {
         ident->Check(checker);
     }
+    auto *const variableType = checker->CheckVariableDeclaration(ident, ident->TypeAnnotation(), st->Init(), flags);
 
     //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
     //  NOTE: T_S and K_o_t_l_i_n don't act in such way, but we can try - why not? :)
