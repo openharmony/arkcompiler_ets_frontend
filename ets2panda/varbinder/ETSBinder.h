@@ -171,8 +171,8 @@ public:
                                            const varbinder::Scope::VariableMap &globalBindings,
                                            Span<parser::Program *const> record);
     Variable *FindStaticBinding(Span<parser::Program *const> records, const ir::StringLiteral *importPath);
-    void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
-    void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
+    void AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
+    void AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void ResolveMethodDefinition(ir::MethodDefinition *methodDef);

@@ -150,13 +150,13 @@ private:
         // NOLINTEND(misc-non-private-member-variables-in-classes)
     };
     ResolvedPathRes ResolvePath(std::string_view curModulePath, ir::StringLiteral *importPath) const;
-    ResolvedPathRes ResolveAbsolutePath(const ir::StringLiteral &importPath) const;
+    ResolvedPathRes ResolveAbsolutePath(const ir::StringLiteral &importPathNode) const;
     std::string_view DirOrDirWithIndexFile(StringView dir) const;
     ResolvedPathRes AppendExtensionOrIndexFileIfOmitted(StringView basePath) const;
     std::string TryMatchDynamicPath(std::string_view fixedPath) const;
     StringView GetRealPath(StringView path) const;
 
-    void AddToParseList(ImportMetadata importMetadata);
+    void AddToParseList(const ImportMetadata importMetadata);
 #ifdef USE_UNIX_SYSCALL
     void UnixWalkThroughDirectoryAndAddToParseList(ImportMetadata importMetadata);
 #endif
