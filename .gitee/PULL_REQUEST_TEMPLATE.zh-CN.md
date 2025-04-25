@@ -16,47 +16,22 @@
 
 ### 测试结果（测试截图直接贴在对应测试项，主干已知问题需明确引入pr/责任人）
 
-#### 当前GGW中未添加的测试套(请在本地进行验证)
-1.Fuzz编译测试
-```
-./build.sh --product-name rk3568 --build-target arkcompiler/runtime_core/tests/fuzztest:fuzztest
-```
-
-2."runtime_core/libpandabase/tests:host_unittest"
-release模式：
-```
-./build.sh --product-name rk3568 --build-target runtime_core_host_unittest
-```
-debug模式：
-```
-./build.sh --product-name rk3568 --build-target runtime_core_host_unittest --gn-args is_debug=true
-```
-
 #### 功能测试（除仅涉及文本外必测项）[wiki](https://gitee.com/openharmony/arkcompiler_ets_frontend/wikis/%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A6%81%E6%B1%82%E5%8F%8A%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81%E6%B5%81%E7%A8%8B)
-1. test262测试
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
+1. es2abc测试用例（Debug模式）
+- [ ] 已通过
+- [ ] 不涉及，无需验证
 
-2. ut测试
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
+2. Verifier测试
+- [ ] 已通过
+- [ ] 不涉及，无需验证
 
-3. verifier测试
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
+3. 64位RK编译
+- [ ] 已通过
+- [ ] 不涉及，无需验证
 
-#### 独立编译测试（涉及BUILD.gn改动时必测项）[wiki](https://gitee.com/ark_standalone_build/docs#arkcompiler%E5%BC%80%E5%8F%91%E6%8C%87%E5%AF%BC)
-1. test262 release
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
-
-2. ut release
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
-
-3. ut debug
-    - [ ] 已通过
-    - [ ] 不涉及，无需验证
+4. 编译mac平台sdk
+- [ ] 已通过
+- [ ] 不涉及，无需验证
 
 #### 混淆测试（涉及arkguard改动时必测项）[wiki](https://gitee.com/openharmony/arkcompiler_ets_frontend/wikis/%E6%B7%B7%E6%B7%86%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81%E6%B5%81%E7%A8%8B?sort_id=11451209)
 1. 单元测试
