@@ -3444,12 +3444,15 @@ export class TypeScriptLinter {
         const autofix = this.autofixer?.fixArrayIndexExprType(isAsExpression ? asExpr : argExpr);
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
-
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
     } else {
       this.checkNumericArgumentDeclaration(argExpr);
+    }
+
+    if (ts.isConditionalExpression(argExpr)) {
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
   }
 
