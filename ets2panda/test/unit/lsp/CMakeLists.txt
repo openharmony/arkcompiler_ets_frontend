@@ -88,6 +88,10 @@ ets2panda_add_gtest(lsp_api_get_adjusted_location_test CPP_SOURCES
     get_adjusted_location_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_class_hierarchy CPP_SOURCES
+    class_hierarchy_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_find_references CPP_SOURCES
     find_references_test.cpp
 )
@@ -135,3 +139,4 @@ ets2panda_add_gtest(lsp_api_test_create_type_help_items CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_signature_help_items CPP_SOURCES
     signature_help_items_test.cpp
 )
+
