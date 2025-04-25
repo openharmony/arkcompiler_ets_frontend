@@ -101,9 +101,11 @@ export interface DependentModuleConfig {
   modulePath: string;
   sourceRoots: string[];
   entryFile: string;
-  language: string,
-  declFilesPath?: string,
-  dependencies?: string[]
+  language: string;
+  declFilesPath?: string;
+  dependencies?: string[];
+  declgenV1OutPath?: string;
+  declgenBridgeCodePath?: string;
 }
 
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
