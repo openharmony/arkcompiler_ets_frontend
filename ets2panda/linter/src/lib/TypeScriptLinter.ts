@@ -4360,18 +4360,18 @@ export class TypeScriptLinter {
         this.incrementCounters(node, FaultID.StructuralIdentity);
       }
     }
-    this.handleAsExpressionNumber(tsAsExpr);
+    this.handleAsExpressionImport(tsAsExpr);
   }
 
-  private handleAsExpressionNumber(tsAsExpr): void {
+  private handleAsExpressionImport(tsAsExpr: ts.AsExpression): void {
     const type = tsAsExpr.type;
-
-    if (
-      this.useStatic &&
-      this.options.arkts2 &&
-      ts.isAsExpression(tsAsExpr) &&
-      type.kind === ts.SyntaxKind.NumberKeyword
-    ) {
+    const restrictedTypes = [
+      ts.SyntaxKind.NumberKeyword,
+      ts.SyntaxKind.BooleanKeyword,
+      ts.SyntaxKind.StringKeyword,
+      ts.SyntaxKind.BigIntKeyword
+    ];
+    if (this.useStatic && this.options.arkts2 && restrictedTypes.includes(type.kind)) {
       const expr = ts.isPropertyAccessExpression(tsAsExpr.expression) ?
         tsAsExpr.expression.expression :
         tsAsExpr.expression;

@@ -14,3 +14,6 @@
  */
 
 export let foo = {name: 123}
+export let foo2 = {bool: true}
+export let foo3 = {str: '123'}
+export let foo4 = {big:  123n}
