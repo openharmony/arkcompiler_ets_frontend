@@ -273,12 +273,6 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
         return;
     }
 
-    if ((!node->IsAnnotationDeclaration() && node->IsAbstract()) ||
-        (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
-        LogError(diagnostic::ANNOTATION_ABSTRACT, {}, pos);
-        return;
-    }
-
     if (node->IsExpressionStatement()) {
         ApplyAnnotationsToNode(node->AsExpressionStatement()->GetExpression(), std::move(annotations), pos);
         return;
