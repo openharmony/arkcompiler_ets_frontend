@@ -536,27 +536,28 @@ static EnumLoweringPhase::DeclarationFlags GetDeclFlags(ir::TSEnumDeclaration *c
 
 bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    bool isPerformedSuccess = true;
     if (program->Extension() != ScriptExtension::ETS) {
-        return isPerformedSuccess;
+        return true;
     }
 
     context_ = ctx;
     checker_ = ctx->checker->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program_ = program;
+
     program->Ast()->TransformChildrenRecursively(
-        [this, &isPerformedSuccess](ir::AstNode *ast) -> AstNodePtr {
+        [this](ir::AstNode *ast) -> AstNodePtr {
             if (ast->IsTSEnumDeclaration()) {
                 auto *enumDecl = ast->AsTSEnumDeclaration();
                 auto const flags = GetDeclFlags(enumDecl);
-                //  Skip processing possibly invalid enum declaration (for multi-error reporting)
                 if (!flags.IsValid() || enumDecl->Members().empty()) {
                     return ast;
                 }
+
                 bool hasLoggedError = false;
                 bool hasLongLiteral = false;
                 auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
+
                 if (itemInit->IsNumberLiteral() &&
                     CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError, hasLongLiteral)) {
                     auto res = hasLongLiteral
@@ -568,18 +569,18 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
                     CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError, hasLongLiteral)) {
                     return CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
                 }
+
                 if (!hasLoggedError) {
                     LogError(diagnostic::ENUM_INVALID_INIT, {}, itemInit->Start());
-                    isPerformedSuccess = false;
-                } else {
-                    isPerformedSuccess = false;
                 }
+
                 return ast;
             }
             return ast;
         },
         Name());
-    return isPerformedSuccess;
+
+    return true;
 }
 
 template <ir::PrimitiveType TYPE>

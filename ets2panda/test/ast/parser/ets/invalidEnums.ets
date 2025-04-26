@@ -73,6 +73,7 @@ enum MissingLeftBrace
 /* @@? 46:1 Error SyntaxError: Unexpected token 'enum'. */
 /* @@? 46:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 48:3 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 48:3 Error TypeError: Unresolved reference Member2 */
 /* @@? 49:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 56:3 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@? 56:10 Error SyntaxError: Identifier expected, got ','. */
