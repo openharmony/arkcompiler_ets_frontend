@@ -1026,6 +1026,10 @@ ir::Statement *ParserImpl::ParseForStatement()
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
     ir::Statement *bodyNode = ParseStatement();
+    if (bodyNode == nullptr) {
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
+    }
+
     return CreateForStatement({initNode, rightNode, updateNode, bodyNode}, forKind, startLoc, isAwait);
 }
 
