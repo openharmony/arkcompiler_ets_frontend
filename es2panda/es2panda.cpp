@@ -223,9 +223,9 @@ void Compiler::DumpAsm(const panda::pandasm::Program *prog)
 int Compiler::CompileFiles(CompilerOptions &options,
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator)
 {
-    util::SymbolTable *symbolTable = nullptr;
+    std::unique_ptr<util::SymbolTable> symbolTable;
     if (!options.patchFixOptions.symbolTable.empty() || !options.patchFixOptions.dumpSymbolTable.empty()) {
-        symbolTable = new util::SymbolTable(options.patchFixOptions.symbolTable,
+        symbolTable = std::make_unique<util::SymbolTable>(options.patchFixOptions.symbolTable,
             options.patchFixOptions.dumpSymbolTable);
         if (!symbolTable->Initialize(options.targetApiVersion, options.targetApiSubVersion)) {
             std::cerr << "Failed to initialize for Hotfix." << std::endl;
@@ -236,7 +236,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
     bool failed = false;
     std::unordered_set<std::string> optimizationPendingProgs;
     auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo,
-                                                optimizationPendingProgs, symbolTable, allocator);
+                                                optimizationPendingProgs, symbolTable.get(), allocator);
 
     try {
         queue->Schedule();
@@ -256,8 +256,6 @@ int Compiler::CompileFiles(CompilerOptions &options,
         if (!options.patchFixOptions.dumpSymbolTable.empty()) {
             symbolTable->WriteSymbolTable();
         }
-        delete symbolTable;
-        symbolTable = nullptr;
     }
 
     if (options.requireGlobalOptimization) {
