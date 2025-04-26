@@ -22,6 +22,7 @@ namespace ark::es2panda::compiler {
 
 using InterfacePropertyType = std::unordered_set<std::string>;
 using InterfacePropertyMapType = std::unordered_map<std::string, InterfacePropertyType>;
+using VisitedInterfacesOfClass = std::unordered_set<std::string>;
 
 class OptionalInterfacePropertyCollector {
 public:
@@ -87,10 +88,21 @@ public:
         return interfaceParents_.count(interId) != 0U;
     }
 
+    bool IsVisitedInterface(const std::string &interId)
+    {
+        return !visitedInterfaces_.insert(interId).second;
+    }
+
+    void InitVisitedInterfaces()
+    {
+        visitedInterfaces_.clear();
+    }
+
 private:
     std::string interfaceId_ {};
     InterfacePropertyMapType interfaceProperties_ {};
     InterfacePropertyMapType interfaceParents_ {};
+    VisitedInterfacesOfClass visitedInterfaces_ {};
 };
 
 class InterfacePropertyDeclarationsPhase : public PhaseForDeclarations {
