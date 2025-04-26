@@ -1026,10 +1026,6 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (!importDeclNode.importClause) {
-      return;
-    }
-
     const modulePath = importDeclNode.moduleSpecifier.getText().slice(1, -1);
     if (modulePath.startsWith('./') || modulePath.startsWith('../')) {
 
@@ -1038,6 +1034,9 @@ export class TypeScriptLinter {
        * We do not use relative paths when importing from OhModules,
        * So we do not check the relative paths
        */
+      return;
+    }
+    if (!importDeclNode.importClause) {
       return;
     }
 
@@ -1064,25 +1063,37 @@ export class TypeScriptLinter {
   }
 
   private checkFileExists(importClause: ts.ImportClause): boolean {
+    for (const child of importClause.getChildren()) {
+      if (child.kind === ts.SyntaxKind.NamedImports) {
+        return this.checkNamedImports(child as ts.NamedImports);
+      }
+    }
+    return false;
+  }
+
+  private checkNamedImports(namedImports: ts.NamedImports): boolean {
 
     /*
-     * TODO: what would have a symbol on this context
-     * would the moduleSpecifier? I don't think so
-     * I think it would be the identifier
-     * Which would be the expression
-     *
-     * We get the symbol from import clause
-     * get a identifier inside the import clause and check if that file exists or not
+     * this named import should have atleast 1 item,
+     * if we have 1 item
      */
-    for (const child of importClause.getChildren()) {
-      if (child.kind !== ts.SyntaxKind.Identifier) {
+    const checks: boolean[] = [];
+
+    for (const specifier of namedImports.getChildren()) {
+      if (!ts.isImportSpecifier(specifier)) {
         continue;
       }
-      const declNode = this.tsUtils.getDeclarationNode(child);
-      if (declNode) {
-        // this is a valid path that and the file should not be checked
-        return true;
-      }
+      const ident = specifier.name;
+      checks.push(this.checkIdentifier(ident));
+    }
+
+    return checks.includes(true);
+  }
+
+  private checkIdentifier(ident: ts.Identifier): boolean {
+    const declNode = this.tsUtils.getDeclarationNode(ident);
+    if (declNode) {
+      return true;
     }
     return false;
   }
@@ -3319,7 +3330,7 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -3416,7 +3427,12 @@ export class TypeScriptLinter {
 
     const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
     const validStringLiteralTypes = [
-      STRINGLITERAL_INT, STRINGLITERAL_BYTE, STRINGLITERAL_SHORT, STRINGLITERAL_LONG, STRINGLITERAL_CHAR];
+      STRINGLITERAL_INT,
+      STRINGLITERAL_BYTE,
+      STRINGLITERAL_SHORT,
+      STRINGLITERAL_LONG,
+      STRINGLITERAL_CHAR
+    ];
     const argTypeString = this.tsTypeChecker.typeToString(argType);
 
     if (this.tsUtils.isNumberLikeType(argType)) {
@@ -3444,7 +3460,6 @@ export class TypeScriptLinter {
         const autofix = this.autofixer?.fixArrayIndexExprType(isAsExpression ? asExpr : argExpr);
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
-
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
@@ -6096,7 +6111,7 @@ export class TypeScriptLinter {
     function traverse(node: ts.Node): void {
       const identifier = getIdentifierFromNode(node);
       if (identifier && identifier.getText() === declName) {
-          functionCalls.push(identifier);
+        functionCalls.push(identifier);
       }
 
       ts.forEachChild(node, traverse);
