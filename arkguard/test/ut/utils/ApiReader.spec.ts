@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-import { readProjectPropertiesByCollectedPaths, ReseverdSetForArkguard } from '../../../src/common/ApiReader';
+import {
+  readProjectPropertiesByCollectedPaths,
+  ReseverdSetForArkguard,
+  scanProjectConfig,
+  initScanProjectConfig
+} from '../../../src/common/ApiReader';
 import { assert, expect } from 'chai';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
 import {
@@ -40,7 +45,7 @@ describe('test for ApiReader', function () {
           mRenameProperties: true,
           mKeepStringProperty: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -88,7 +93,7 @@ describe('test for ApiReader', function () {
           mRenameProperties: true,
           mKeepStringProperty: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -142,7 +147,7 @@ describe('test for ApiReader', function () {
           mRenameProperties: false,
           mKeepStringProperty: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -181,7 +186,7 @@ describe('test for ApiReader', function () {
           mRenameProperties: false,
           mKeepStringProperty: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -270,7 +275,7 @@ describe('test for ApiReader', function () {
           mRenameProperties: true,
           mKeepStringProperty: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -360,7 +365,7 @@ describe('test for ApiReader', function () {
           mKeepStringProperty: false,
           mTopLevel: true,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -396,7 +401,7 @@ describe('test for ApiReader', function () {
           mKeepStringProperty: false,
           mTopLevel: true,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -486,7 +491,7 @@ describe('test for ApiReader', function () {
           mKeepStringProperty: false,
           mTopLevel: false,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -630,7 +635,7 @@ describe('test for ApiReader', function () {
           mKeepStringProperty: false,
           mTopLevel: true,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -776,7 +781,7 @@ describe('test for ApiReader', function () {
           mKeepStringProperty: false,
           mTopLevel: true,
           mNameGeneratorType: NameGeneratorType.ORDERED,
-          mReservedNames: [], 
+          mReservedNames: [],
           mReservedToplevelNames: []
         }
       };
@@ -875,6 +880,59 @@ describe('test for ApiReader', function () {
       expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('otherElement1')).to.be.true;
       expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('otherElement2')).to.be.false;
       expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('o2')).to.be.true;
+    });
+    it('decorate collect test', function () {
+      const filePath = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList02.ets'
+      const fileList: Set<string> = new Set([filePath]);
+      let config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mTopLevel: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [],
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
+          {
+            mNameObfuscation: config.mNameObfuscation,
+            mExportObfuscation: true,
+            mKeepFileSourceCode: {
+              mKeepSourceOfPaths: new Set(),
+              mkeepFilesAndDependencies: new Set(),
+            }
+          }, true, true);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      if (fileWhiteList?.bytecodeObfuscateKeepInfo?.decoratorMap) {
+        const decoratorKeys = Object.keys(fileWhiteList.bytecodeObfuscateKeepInfo.decoratorMap);
+        expect(decoratorKeys.length).to.be.greaterThan(0);
+      }
+    });
+  });
+
+  describe('test initScanProjectConfig', function () {
+    it('scanDecorator is false', function () {
+      let customProfiles = {}
+      initScanProjectConfig(customProfiles, false, false)
+      expect(scanProjectConfig.scanDecorator).to.be.false;
+    });
+
+    it('scanDecorator is default', function () {
+      let customProfiles = {}
+      initScanProjectConfig(customProfiles, false)
+      expect(scanProjectConfig.scanDecorator).to.be.false;
+    });
+
+    it('scanDecorator is true', function () {
+      let customProfiles = {}
+      initScanProjectConfig(customProfiles, false, true)
+      expect(scanProjectConfig.scanDecorator).to.be.true;
     });
   });
 });
