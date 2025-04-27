@@ -1,3 +1,1 @@
 # Known failures list for third_lib_js - release-x64-jit
-#18340
-Drools_test
