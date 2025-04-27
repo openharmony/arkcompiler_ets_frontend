@@ -2968,7 +2968,8 @@ export class TypeScriptLinter {
   private handleImportClause(node: ts.Node): void {
     const tsImportClause = node as ts.ImportClause;
     if (this.options.arkts2 && tsImportClause.isLazy) {
-      this.incrementCounters(node, FaultID.ImportLazyIdentifier);
+      const autofix = this.autofixer?.fixImportClause(tsImportClause);
+      this.incrementCounters(node, FaultID.ImportLazyIdentifier, autofix);
     }
     if (tsImportClause.name) {
       this.countDeclarationsWithDuplicateName(tsImportClause.name, tsImportClause);
@@ -3156,9 +3157,6 @@ export class TypeScriptLinter {
       this.checkWorkerSymbol(tsIdentSym, node);
       this.checkCollectionsSymbol(tsIdentSym, node);
       this.checkArkTSUtilsSymbol(tsIdentSym, node);
-    }
-    if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
-      this.incrementCounters(node, FaultID.ExplicitFunctionType);
     }
     this.handlePropertyDescriptor(tsIdentifier, tsIdentSym);
   }
@@ -3738,6 +3736,32 @@ export class TypeScriptLinter {
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
     this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
+    this.handleNoTsLikeFunctionCall(tsCallExpr);
+  }
+
+  handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const expression = callExpr.expression;
+
+    if (!ts.isIdentifier(expression)) {
+      return;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(expression);
+
+    if (!symbol) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, expression);
+    const typeText = this.tsTypeChecker.typeToString(type);
+    if (typeText === LIKE_FUNCTION) {
+      const autofix = this.autofixer?.fixNoTsLikeFunctionCall(expression);
+      this.incrementCounters(expression, FaultID.ExplicitFunctionType, autofix);
+    }
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -3981,7 +4005,8 @@ export class TypeScriptLinter {
      * for a detailed analysis.
      */
     if (this.options.arkts2 && TypeScriptLinter.isInvalidBuiltinGenericConstructorCall(callLikeExpr)) {
-      this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+      const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr as ts.NewExpression);
+      this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       return;
     }
     this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
@@ -4017,7 +4042,8 @@ export class TypeScriptLinter {
     const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
     if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
       if (startTypeArg !== resolvedTypeArgs.length) {
-        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+        const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr);
+        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       }
     } else {
       for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
@@ -5772,7 +5798,8 @@ export class TypeScriptLinter {
     const isStatic = TsUtils.hasModifier(propDecl.modifiers, ts.SyntaxKind.StaticKeyword);
     const hasNoInitializer = !propDecl.initializer;
     if (isStatic && hasNoInitializer) {
-      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization);
+      const autofix = this.autofixer?.fixStaticPropertyInitializer(propDecl);
+      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization, autofix);
     }
   }
 

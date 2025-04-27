@@ -162,3 +162,5 @@ function compose45(...fns: Function[]): Function {
 
 export let add: (a: number, b: number) => number;
 export let add1: (a: string) => object;
+
+f1();
