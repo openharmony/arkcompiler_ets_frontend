@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 22,
-            "column": 3,
-            "endLine": 22,
-            "endColumn": 38,
-            "problem": "DataObservation",
-            "suggest": "",
-            "rule": "Data observation needs to add \"@Observed\" (arkui-data-observation)",
-            "severity": "ERROR"
-        },
-        {
             "line": 60,
             "column": 1,
             "endLine": 64,
