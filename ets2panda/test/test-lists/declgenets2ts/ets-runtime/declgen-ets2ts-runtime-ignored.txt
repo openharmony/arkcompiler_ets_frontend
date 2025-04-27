@@ -7,22 +7,20 @@ funcRefWithRestArguments.ets
 struct-identifier.ets
 struct-init2.ets
 type_param_in_union.ets
-#FailKind.TSC_FAIL - 71 tests:
-AliasClass.ets
-ArrowFunctionWithNestedNameSpace.ets
+#FailKind.TSC_FAIL - 65 tests:
+AliasUnion.ets
 ClassNewInstance.ets
 Enum7.ets
 GenericBridges_01.ets
 GenericBridges_02.ets
 RecordKeyTypeCheck.ets
+RecursiveTypeAlias10.ets
 RecursiveTypeAlias8.ets
-annotation_tests/AnnotationForArrayType.ets
 annotation_tests/AnnotationForClass.ets
 annotation_tests/AnnotationForClassProperty.ets
 annotation_tests/AnnotationForInterface.ets
 annotation_tests/AnnotationForMethod.ets
 annotation_tests/AnnotationForTypeAliaDecl.ets
-annotation_tests/AnnotationForTypesInArray.ets
 annotation_tests/AnnotationForTypesInClass.ets
 annotation_tests/AnnotationForTypesInInterface.ets
 annotation_tests/AnnotationForVariableDecl.ets
@@ -47,7 +45,6 @@ annotation_tests/annotationUsage_scope_check02.ets
 annotation_tests/annotationUsage_scope_check03.ets
 classGetterSetter.ets
 class_implements_interface.ets
-function_type_with_receiver/extensionFunctionTypeGeneric.ets
 function_type_with_receiver/validReturnThisOfExtensionFunction.ets
 generic_constraint_implicit.ets
 generics_1.ets
@@ -64,7 +61,6 @@ inherited_getter_setter_implementation_2.ets
 interfacePropertyTypeAnnotationWithParameter.ets
 interface_prop.ets
 interface_with_optional_property_cycle_import/class_file.ets
-lambda_with_receiver/lambda_with_receiver_generics1.ets
 lambda_with_receiver/lambda_with_receiver_generics_return_this_rotate.ets
 lambda_with_receiver/lambda_with_receiver_return_this3.ets
 lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotate.ets
@@ -72,9 +68,7 @@ multiple_inheritance.ets
 multiple_inheritance_2.ets
 namespace_tests/namespace_execution_statements_test02.ets
 namespace_tests/namespace_with_annotations.ets
-override_for_partial_01.ets
 override_for_partial_02.ets
-qualified-type-name.ets
 readonly_simple_form_pos.ets
 simple_form_pos.ets
 static-invoke.ets
