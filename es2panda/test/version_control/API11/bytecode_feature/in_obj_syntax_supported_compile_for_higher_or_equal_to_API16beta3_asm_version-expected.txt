@@ -18,7 +18,6 @@ label_4:
 }
 
 slotNum = 0x4
-expectedProperty = 0x1
 .function any .#~@0=#InObjSyntax(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
