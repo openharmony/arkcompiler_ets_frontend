@@ -5314,6 +5314,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !literalTypeNode) {
       return;
     }
+    if (
+        literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
+        literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
+        literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
+    ) {
+      return;
+    }
     const literal = literalTypeNode.literal;
     if (
       !(
