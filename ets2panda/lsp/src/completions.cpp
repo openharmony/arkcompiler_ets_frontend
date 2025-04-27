@@ -54,8 +54,87 @@ std::vector<CompletionEntry> GetKeywordCompletions(const std::string &input)
     std::vector<CompletionEntry> completions;
 
     for (const auto &entry : allKeywords) {
-        if (entry.GetName().find(ToLowerCase(input)) == 0) {
+        if (ToLowerCase(entry.GetName()).find(ToLowerCase(input)) == 0) {
             completions.push_back(entry);
+        }
+    }
+    return completions;
+}
+
+CompletionEntry GetDeclarationEntry(ir::AstNode *node)
+{
+    if (node == nullptr) {
+        return CompletionEntry();
+    }
+    // GetClassPropertyName function could get name of ClassDeclaration
+    if (node->IsClassDeclaration()) {
+        return CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::CLASS,
+                               std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsTSInterfaceDeclaration()) {
+        if (node->AsTSInterfaceDeclaration()->Id() == nullptr) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsTSInterfaceDeclaration()->Id()->Name()),
+                               CompletionEntryKind::INTERFACE, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsMethodDefinition()) {
+        if (node->AsMethodDefinition()->Key() == nullptr && !node->AsMethodDefinition()->Key()->IsIdentifier()) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsMethodDefinition()->Key()->AsIdentifier()->Name()),
+                               CompletionEntryKind::METHOD, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsClassProperty()) {
+        return CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::PROPERTY,
+                               std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsETSStructDeclaration()) {
+        if (node->AsETSStructDeclaration()->Definition() == nullptr) {
+            return CompletionEntry();
+        }
+        if (node->AsETSStructDeclaration()->Definition()->Ident() == nullptr) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name()),
+                               CompletionEntryKind::STRUCT, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    return CompletionEntry();
+}
+
+std::vector<CompletionEntry> GetExportsFromProgram(parser::Program *program)
+{
+    std::vector<CompletionEntry> exportEntries;
+    auto ast = program->Ast();
+    auto collectExportNames = [&exportEntries](ir::AstNode *node) {
+        if (node->IsExported()) {
+            auto entry = GetDeclarationEntry(node);
+            if (!entry.GetName().empty()) {
+                exportEntries.emplace_back(entry);
+            }
+        }
+    };
+    ast->IterateRecursivelyPreorder(collectExportNames);
+
+    return exportEntries;
+}
+
+std::vector<CompletionEntry> GetSystemInterfaceCompletions(const std::string &input, parser::Program *program)
+{
+    std::vector<CompletionEntry> allExternalSourceExports;
+    std::vector<CompletionEntry> completions;
+    for (auto [_, programList] : program->ExternalSources()) {
+        for (auto prog : programList) {
+            auto exports = GetExportsFromProgram(prog);
+            if (!exports.empty()) {
+                allExternalSourceExports.insert(allExternalSourceExports.end(), exports.begin(), exports.end());
+            }
+        }
+    }
+
+    for (const auto &entry : allExternalSourceExports) {
+        if (ToLowerCase(entry.GetName()).find(ToLowerCase(input)) == 0) {
+            completions.emplace_back(entry);
         }
     }
     return completions;
@@ -682,8 +761,6 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
     auto prefix = GetCurrentTokenValueImpl(context, position);
     auto decls = GetDeclByScopePath(scopePath, position, allocator);
     std::vector<CompletionEntry> completions;
-    auto keywordCompletions = GetKeywordCompletions(prefix);
-    completions.insert(completions.end(), keywordCompletions.begin(), keywordCompletions.end());
 
     for (auto decl : decls) {
         auto entry = InitEntry(decl);
@@ -693,6 +770,12 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
         entry = ProcessAutoImportForEntry(entry);
         completions.push_back(entry);
     }
+
+    auto keywordCompletions = GetKeywordCompletions(prefix);
+    completions.insert(completions.end(), keywordCompletions.begin(), keywordCompletions.end());
+    auto systemInterfaceCompletions = GetSystemInterfaceCompletions(prefix, ctx->parserProgram);
+    completions.insert(completions.end(), systemInterfaceCompletions.begin(), systemInterfaceCompletions.end());
+
     return completions;
 }
 
