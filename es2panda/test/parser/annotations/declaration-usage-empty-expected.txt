@@ -14,7 +14,7 @@
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 38
             }
           }
         },
@@ -95,7 +95,7 @@
             },
             "end": {
               "line": 16,
-              "column": 19
+              "column": 41
             }
           }
         },
@@ -104,11 +104,11 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 17
+            "column": 39
           },
           "end": {
             "line": 16,
-            "column": 19
+            "column": 41
           }
         }
       },
@@ -121,7 +121,7 @@
         },
         "end": {
           "line": 16,
-          "column": 19
+          "column": 41
         }
       }
     },
@@ -216,7 +216,7 @@
               "type": "Annotation",
               "expression": {
                 "type": "Identifier",
-                "name": "__$$ETS_ANNOTATION$$__Anno",
+                "name": "Anno",
                 "loc": {
                   "start": {
                     "line": 18,
@@ -328,7 +328,7 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "__$$ETS_ANNOTATION$$__Anno",
+                    "name": "Anno",
                     "loc": {
                       "start": {
                         "line": 20,
@@ -452,7 +452,7 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "__$$ETS_ANNOTATION$$__Anno",
+                    "name": "Anno",
                     "loc": {
                       "start": {
                         "line": 23,

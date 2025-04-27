@@ -85,6 +85,11 @@ public:
         return src_;
     }
 
+    void SetIdent(const util::StringView &ident)
+    {
+        src_ = ident;
+    }
+
     const util::StringView &BigInt() const
     {
         ASSERT(type_ == TokenType::LITERAL_NUMBER && (flags_ & TokenFlags::NUMBER_BIGINT));

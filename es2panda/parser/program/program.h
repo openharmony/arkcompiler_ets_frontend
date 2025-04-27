@@ -230,7 +230,7 @@ public:
         enableAnnotations_ = enableAnnotations;
     }
 
-    bool IsEnableAnnotations()
+    bool IsEnableAnnotations() const
     {
         return enableAnnotations_;
     }

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Anno1, Anno2 } from "./test-ts-export-annotations"
+import { __$$ETS_ANNOTATION$$__Anno1, __$$ETS_ANNOTATION$$__Anno2 } from "./test-ts-export-annotations"
 
 @__$$ETS_ANNOTATION$$__Anno1
 class A {}
