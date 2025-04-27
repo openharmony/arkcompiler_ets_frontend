@@ -196,7 +196,23 @@ static std::tuple<std::string, ArenaVector<ir::Expression *>> GenerateNestedMemb
     return {newAssignmentStatements, newAssignmentExpressions};
 }
 
-static ir::Expression *GenerateStringForLoweredAssignment(
+static std::tuple<std::string, ArenaVector<ir::Expression *>> GenerateStringForAssignment(
+    const lexer::TokenType opEqual, ir::MemberExpression *expr, ArenaAllocator *const allocator, size_t counter)
+{
+    // Note: Handle "A `opAssign` B" to "A = (A `operation` B) as T"
+    // opAssign is the operation like: "+=", "-=", "*=", "/=", etc.,
+    // operation is the operation like: "+", "-", "*", "/", etc.
+    auto [retStr, retVec] = GenerateNestedMemberAccess(expr, allocator, counter);
+    counter += retVec.size();
+    auto result = GenerateNestedMemberAccess(expr, allocator, counter);
+    counter += std::get<1>(result).size();
+    retStr += " = ( " + std::get<0>(result) + ' ' + std::string {lexer::TokenToString(CombinedOpToOp(opEqual))} +
+              " (@@E" + std::to_string(counter) + ")) as @@T" + std::to_string(counter + 1);
+    retVec.insert(retVec.end(), std::get<1>(result).begin(), std::get<1>(result).end());
+    return {retStr, retVec};
+}
+
+static ir::Expression *GenerateLoweredResultForLoweredAssignment(
     const lexer::TokenType opEqual, ir::MemberExpression *expr, ArenaAllocator *const allocator,
     parser::ETSParser *parser, const std::array<ir::Expression *, 2> additionalAssignmentExpressions)
 {
@@ -206,14 +222,29 @@ static ir::Expression *GenerateStringForLoweredAssignment(
     // `operation` is the operation of the assignment like: "+", "-", "*", "/", etc.,
     // B is the right hand side of the assignment
     // T is the type of the left hand side of the assignment
-    size_t counter = 1;
-    auto [retStr, retVec] = GenerateNestedMemberAccess(expr, allocator, counter);
-    counter += retVec.size();
-    auto result = GenerateNestedMemberAccess(expr, allocator, counter);
-    counter += std::get<1>(result).size();
-    retStr += " = ( " + std::get<0>(result) + ' ' + std::string {lexer::TokenToString(CombinedOpToOp(opEqual))} +
-              " (@@E" + std::to_string(counter) + ")) as @@T" + std::to_string(counter + 1);
-    retVec.insert(retVec.end(), std::get<1>(result).begin(), std::get<1>(result).end());
+    if (expr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS && !expr->Property()->IsLiteral()) {
+        // Note: support such a situation could be okay: `a[idx++] += someExpr`.
+        // It should be lowered as: `let dummyIdx = (lower result of `idx++`); a[dummyIdx] = a[dummyIdx] + someExpr`;
+        ArenaVector<ir::Expression *> dummyIndexDeclExpression(allocator->Adapter());
+        std::string dummyIndexDeclStr = "let @@I1 = @@E2;\n";
+        auto dummyIndex = Gensym(allocator);
+        dummyIndexDeclExpression.emplace_back(dummyIndex);
+        dummyIndexDeclExpression.emplace_back(expr->Property()->Clone(allocator, nullptr)->AsExpression());
+        ClearTypesVariablesAndScopes(dummyIndexDeclExpression[1]);
+
+        // Note: Drop the old property, substitute it with dummyIdx.
+        expr->Property()->SetParent(nullptr);
+        expr->SetProperty(dummyIndex->Clone(allocator, expr));
+        auto [retStr, retVec] =
+            GenerateStringForAssignment(opEqual, expr, allocator, dummyIndexDeclExpression.size() + 1);
+        retVec.push_back(additionalAssignmentExpressions[0]);
+        retVec.push_back(additionalAssignmentExpressions[1]);
+        retVec.insert(retVec.begin(), dummyIndexDeclExpression.begin(), dummyIndexDeclExpression.end());
+        retStr = dummyIndexDeclStr + retStr;
+        return parser->CreateFormattedExpression(retStr, retVec);
+    }
+
+    auto [retStr, retVec] = GenerateStringForAssignment(opEqual, expr, allocator, 1);
     retVec.push_back(additionalAssignmentExpressions[0]);
     retVec.push_back(additionalAssignmentExpressions[1]);
     return parser->CreateFormattedExpression(retStr, retVec);
@@ -242,8 +273,8 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
                                                    GetClone(allocator, left->AsIdentifier()), right, exprType);
     } else if (left->IsMemberExpression()) {
         // Generate ArkTS code string for new lowered assignment expression:
-        retVal = GenerateStringForLoweredAssignment(opEqual, left->AsMemberExpression(), allocator, parser,
-                                                    {right, exprType});
+        retVal = GenerateLoweredResultForLoweredAssignment(opEqual, left->AsMemberExpression(), allocator, parser,
+                                                           {right, exprType});
     } else {
         ES2PANDA_UNREACHABLE();
     }
