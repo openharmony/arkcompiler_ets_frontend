@@ -21,7 +21,7 @@ function NormalStyles(instance: CommonMethod): void {
 
 @Entry
 @Component
-struct MyButton {
+struct MyButton1 {
   @BuilderParam
   @Require
   content: () => void;
@@ -31,15 +31,62 @@ struct MyButton {
   };
 
   build() {
-    Button() {
+    Button("MyButton1") {
+      this.content
+    }
+    .stateStyles({
+      pressed: this.PressedStyles,
+      selected: (instance: CommonMethod): void => {
+          instance.backgroundColor(Color.Red);
+      },
+      normal: NormalStyles
+    })
+  }
+}
+
+@Component
+struct MyButton2 {
+  @BuilderParam
+  @Require
+  content: () => void;
+
+  build() {
+    Button("MyButton2") {
       this.content
     }
     .stateStyles({
       selected: (instance: CommonMethod): void => {
-          instance.backgroundColor(menuItem.disable ? null : $r('sys.color.ohos_id_color_clicl_effect'));
+          instance.backgroundColor(Color.Red);
       },
-      pressed: this.PressedStyles,
       normal: NormalStyles
     })
+  }
+}
+
+@Component
+struct MyButton3 {
+
+  build() {
+    Button("MyButton3")
+      .stateStyles({
+        normal: NormalStyles,
+        selected: (instance: CommonMethod): void => {
+            instance.backgroundColor(Color.Red);
+        }
+      })
+  }
+}
+
+@Component
+struct MyButton4 {
+
+  build() {
+    Button("MyButton4")
+      .stateStyles({
+        selected: (instance: CommonMethod): void => {
+            instance.backgroundColor(Color.Red);
+        },
+        normal: NormalStyles
+      })
   }
 }
