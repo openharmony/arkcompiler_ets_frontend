@@ -92,6 +92,7 @@ LivenessStatus BaseAnalyzer<T>::ResolveContinues(const ir::AstNode *node)
 template <typename T>
 LivenessStatus BaseAnalyzer<T>::ResolveBreaks(const ir::AstNode *node)
 {
+    oldPendingExits_.clear();
     return ResolveJump(node, ir::AstNodeType::BREAK_STATEMENT);
 }
 
