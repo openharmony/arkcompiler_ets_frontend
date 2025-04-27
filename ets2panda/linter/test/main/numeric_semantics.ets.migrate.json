@@ -26,19 +26,49 @@
         },
         {
             "line": 110,
-            "column": 27,
+            "column": 26,
             "endLine": 110,
-            "endColumn": 27,
+            "endColumn": 26,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {
+            "line": 149,
+            "column": 6,
+            "endLine": 149,
+            "endColumn": 7,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
             "line": 155,
             "column": 9,
             "endLine": 155,
-            "endColumn": 61,
+            "endColumn": 20,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 155,
+            "column": 9,
+            "endLine": 155,
+            "endColumn": 11,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 155,
+            "column": 12,
+            "endLine": 155,
+            "endColumn": 15,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",

@@ -107,9 +107,9 @@ identity<number>(42);
 
 let an_array: number[] = [1, 2, 3]
 
-let g2: number = an_array[]
+let g: number = an_array[]
 
-const a2: number = 1
+const a: number = 1
 
 enum Test {
   A = 1,  // 显式赋值为 1
@@ -128,7 +128,7 @@ struct Index2 {
   readonly c7: number = 0b101; //2进制
   readonly c8: number[] = [1, 2, 3];
 
-  build() {
+build() {
     RelativeContainer() {
       Text(this.message)
         .onClick(() => {
@@ -139,21 +139,23 @@ struct Index2 {
 
 const c1: number = 1;
 
-export class G {
+export class G{
   readonly a5: number = 4;
 }
 
 const fingerprintPositionY: number = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
 
-class C {
-  private doCloseFolderBackgroundAnimation(): void {
-    openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
-    openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
-
-    let pos: number[] = [-1, -1];
-    pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder());
-    let editModeTranslateY = this.getEditModeTranslateY(pos);
-    if (pos.length > 1) {
+private doCloseFolderBackgroundAnimation(): (() => {
+    ({
+        openFolderLayout: openFolderLayout, : .getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight,
+        openFolderLayout: openFolderLayout, : .getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth,
+        let: let, pos: pos,
+        pos: pos,
+        let: let, editModeTranslateY: editModeTranslateY,
+        if(pos) { }, : .length > 1
+    });
+    return undefined;
+})() {
       let translateXForScreenSplit: number = AppStorage.get<number>('translateXForScreenSplit') ?? 0 as number;
       let screenWidth: number = AppStorage.get<number>('screenWidth') as number;
       let screenHeight: number = AppStorage.get<number>('screenHeight') as number;
@@ -165,5 +167,35 @@ class C {
       openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
         openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
     }
-  }
+}
+
+let f: number = 0.0;
+let b5: number = 0;
+f = b5; // OK
+
+let e: number = 0.0;
+let g1: number = 0;
+
+e += g1; // OK
+e -= g1; // OK
+e *= g1; // OK
+e /= g1; // OK
+e <<= g1; // OK
+e >>= g1; // OK
+e &= g1; // OK
+e = e & 3; // OK
+e = e | 3; // OK
+let arr1: number[] = [1, 2, 3]
+e += arr1[0]; // OK
+
+let a: number = 0.0;
+a = fun1();
+a = fun2()!;
+
+function fun1():number{
+  return 1;
+}
+
+function fun2():number|undefined{
+  return 1;
 }

@@ -104,9 +104,9 @@ identity(42);
 
 let an_array = [1,2,3]
 
-let g2 = an_array[]
+let g = an_array[]
 
-const a2 = 1
+const a = 1
 
 enum Test {
   A = 1,  // 显式赋值为 1
@@ -125,7 +125,7 @@ struct Index2 {
   readonly c7 = 0b101; //2进制
   readonly c8 = [1,2,3]
 
-  build() {
+build() {
     RelativeContainer() {
       Text(this.message)
         .onClick(() => {
@@ -136,14 +136,13 @@ struct Index2 {
 
 const c1 = 1;
 
-export class G {
+export class G{
   readonly a5 = 4;
 }
 
 const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
 
-class C {
-  private doCloseFolderBackgroundAnimation(): void {
+private doCloseFolderBackgroundAnimation(): void {
     openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
     openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
 
@@ -162,5 +161,35 @@ class C {
       openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
         openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
     }
-  }
+}
+
+let f = 0.0;
+let b5: number = 0;
+f = b5; // OK
+
+let e = 0.0;
+let g1: number = 0;
+
+e += g1; // OK
+e -= g1; // OK
+e *= g1; // OK
+e /= g1; // OK
+e <<= g1; // OK
+e >>= g1; // OK
+e &= g1; // OK
+e = e & 3; // OK
+e = e | 3; // OK
+let arr1 = [1,2,3]
+e += arr1[0]; // OK
+
+let a = 0.0;
+a = fun1();
+a = fun2()!;
+
+function fun1():number{
+  return 1;
+}
+
+function fun2():number|undefined{
+  return 1;
 }
