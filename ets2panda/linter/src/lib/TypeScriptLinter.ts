@@ -3665,11 +3665,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleBuiltinCtorSignatureCall(tsCallExpr: ts.CallExpression): void {
+  private handleBuiltinCtorCallSignature(tsCallExpr: ts.CallExpression | ts.TypeReferenceNode): void {
     if (!this.options.arkts2) {
       return;
     }
-    const node = tsCallExpr.expression as ts.Identifier;
+    const node = ts.isCallExpression(tsCallExpr) ?  tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
     const callSignatures = constructorType.getCallSignatures();
     if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
@@ -3703,7 +3703,7 @@ export class TypeScriptLinter {
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
-    this.handleBuiltinCtorSignatureCall(tsCallExpr);
+    this.handleBuiltinCtorCallSignature(tsCallExpr);
 
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
@@ -4461,6 +4461,7 @@ export class TypeScriptLinter {
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
 
+    this.handleBuiltinCtorCallSignature(typeRef);
     this.handleSharedArrayBuffer(typeRef);
     this.handleSdkDuplicateDeclName(typeRef);
 
