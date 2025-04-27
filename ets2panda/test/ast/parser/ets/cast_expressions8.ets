@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-class A {}
-class B extends A {}
-
 function main(): void {
   let int_a: int[] = [1,2,3];
-  let Int_a: Int[] = /* @@ label */int_a as Int[];
+  let Int_a: Int[] = int_a as Int[];
 }
-
-/* @@@ label Error TypeError: Cannot cast type 'int[]' to 'Int[]'  */
