@@ -189,6 +189,7 @@ export enum FaultID {
   DuplicateDeclNameFromSdk,
   SdkTypeQuery,
   IsConcurrentDeprecated,
+  InteropStaticObjectLiterals,
   InteropJsObjectUsage,
   InteropJsObjectExport,
   InteropArkTs1ObjectExport,
