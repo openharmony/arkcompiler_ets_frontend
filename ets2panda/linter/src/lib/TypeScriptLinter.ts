@@ -2659,11 +2659,17 @@ export class TypeScriptLinter {
 
   private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
     let currentNode = typeNode;
-    /* CC-OFFNXT(no_explicit_any) std lib */
-    // Handle comment directive '@ts-nocheck'
+
+    /*
+     * CC-OFFNXT(no_explicit_any) std lib
+     * Handle comment directive '@ts-nocheck'
+     */
     while ((currentNode as any).expression) {
-      /* CC-OFFNXT(no_explicit_any) std lib */
-      // Handle comment directive '@ts-nocheck'
+
+      /*
+       * CC-OFFNXT(no_explicit_any) std lib
+       * Handle comment directive '@ts-nocheck'
+       */
       currentNode = (currentNode as any).expression;
     }
     return currentNode;
@@ -6671,7 +6677,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    this.incrementCounters(callExpr, FaultID.InteropJsObjectUsage);
+    this.incrementCounters(callExpr, FaultID.InteropJsObjectCallStaticFunc);
   }
 
   private fixJsImportExtendsClass(
@@ -6690,7 +6696,7 @@ export class TypeScriptLinter {
     if (!className) {
       return;
     }
-    this.incrementCounters(node, FaultID.InteropJsObjectUsage);
+    this.incrementCounters(node, FaultID.InteropJsObjectInheritance);
   }
 
   private fixJsImportPropertyAccessExpression(node: ts.Node): void {
@@ -6750,7 +6756,7 @@ export class TypeScriptLinter {
       elementAccessExpr.expression as ts.Identifier
     );
 
-    this.incrementCounters(elementAccessExpr, FaultID.InteropJsObjectUsage, autofix);
+    this.incrementCounters(elementAccessExpr, FaultID.InteropJsObjectTraverseJsInstance, autofix);
   }
 
   private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {

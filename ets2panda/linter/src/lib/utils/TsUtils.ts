@@ -44,7 +44,7 @@ import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS, EXTNAME_D_TS } from './consts/ExtensionName';
+import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
 import { USE_STATIC } from './consts/InteropAPI';
 
 export const SYMBOL = 'Symbol';
@@ -3646,8 +3646,7 @@ export class TsUtils {
       const declaration = symbol.declarations?.[0];
       if (declaration) {
         const sourceFile = declaration.getSourceFile();
-        const isFromJs = sourceFile.fileName.endsWith(EXTNAME_JS);
-        return isFromJs;
+        return sourceFile.fileName.endsWith(EXTNAME_JS);
       }
     }
     return false;

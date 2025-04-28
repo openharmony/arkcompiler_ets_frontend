@@ -95,7 +95,7 @@
             "column": 1,
             "endLine": 19,
             "endColumn": 7,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
                     "replacementText": "arr.getPropertyByIndex(1).toNumber()",
@@ -104,7 +104,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -129,7 +129,7 @@
             "column": 1,
             "endLine": 20,
             "endColumn": 7,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
                     "replacementText": "arr.setPropertyByIndex(3, ESObject.wrap(4))",
@@ -138,7 +138,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {

@@ -39,9 +39,9 @@
             "column": 1,
             "endLine": 34,
             "endColumn": 21,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectInheritance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
             "severity": "ERROR"
         },
         {
@@ -49,9 +49,9 @@
             "column": 1,
             "endLine": 38,
             "endColumn": 21,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectInheritance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
             "severity": "ERROR"
         },
         {
@@ -59,9 +59,9 @@
             "column": 3,
             "endLine": 41,
             "endColumn": 8,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -129,9 +129,9 @@
             "column": 11,
             "endLine": 49,
             "endColumn": 17,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -149,9 +149,9 @@
             "column": 3,
             "endLine": 50,
             "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -159,9 +159,9 @@
             "column": 1,
             "endLine": 60,
             "endColumn": 13,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -189,9 +189,9 @@
             "column": 1,
             "endLine": 61,
             "endColumn": 15,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
