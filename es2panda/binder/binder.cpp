@@ -844,6 +844,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             if (Program()->Extension() == ScriptExtension::TS && (Program()->TargetApiVersion() < 11 ||
                 (!prop->IsStatic() && !prop->IsPrivate()))) {
                 const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(prop);
+                CHECK_NOT_NULL(ctor);
                 auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
                 ResolveReferences(childNode);
                 break;
