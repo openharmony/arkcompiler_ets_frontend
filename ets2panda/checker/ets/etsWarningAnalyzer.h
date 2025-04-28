@@ -57,8 +57,7 @@ public:
     }
 
 private:
-    void LogWarning(const std::string &message, const lexer::SourcePosition &position);
-    void LogWarning(const diagnostic::DiagnosticKind &diagnostic, util::DiagnosticMessageParams &diagnosticParams,
+    void LogWarning(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
                     const lexer::SourcePosition &position) const;
     void LogWarning(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &position) const;
 

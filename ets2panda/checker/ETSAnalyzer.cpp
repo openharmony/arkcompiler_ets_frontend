@@ -1256,8 +1256,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
         expr->Signature() != nullptr) {
         // Note: Only works when rechecking in DeclareOveloadLowering phase
         auto *helperSignature = calleeType->AsETSFunctionType()->GetHelperSignature();
-        checker->ReportWarning({"Detect duplicate signatures, use '", helperSignature->Function()->Id()->Name(),
-                                helperSignature, "' to replace"},
+        checker->LogDiagnostic(diagnostic::DUPLICATE_SIGS, {helperSignature->Function()->Id()->Name(), helperSignature},
                                expr->Start());
         checker->CreateOverloadSigContainer(helperSignature);
         return checker->ResolveCallExpressionAndTrailingLambda(checker->GetOverloadSigContainer(), expr, expr->Start());
@@ -3066,9 +3065,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
     //  If the actual [smart] type is definitely 'null' or 'undefined' then probably CTE should be thrown.
     //  Anyway we'll definitely obtain NullPointerError at runtime.
     if (exprType->DefinitelyETSNullish()) {
-        checker->ReportWarning(
-            {"Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'."},
-            expr->Expr()->Start());
+        checker->LogDiagnostic(diagnostic::NULLISH_OPERAND, expr->Expr()->Start());
 
         if (expr->expr_->IsIdentifier()) {
             ES2PANDA_ASSERT(expr->expr_->AsIdentifier()->Variable() != nullptr);

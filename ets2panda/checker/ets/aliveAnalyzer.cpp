@@ -406,7 +406,7 @@ void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switchStmt)
 
         if (status_ == LivenessStatus::ALIVE && !caseClause->Consequent().empty() && i < size - 1) {
             // NOTE(user) Add lint categories and option to enable/disable compiler warnings
-            checker_->Warning("Possible fall-through into case", caseClause->Start());
+            checker_->LogDiagnostic(diagnostic::MAYBE_FALLTHROUGH, caseClause->Start());
         }
     }
 
@@ -458,7 +458,7 @@ void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
         if (status_ == LivenessStatus::DEAD) {
             isAlive = false;
             // NOTE(user) Add lint categories and option to enable/disable compiler warnings
-            checker_->Warning("Finally clause cannot complete normally", tryStmt->FinallyBlock()->Start());
+            checker_->LogDiagnostic(diagnostic::FINALLY_CANT_COMPLETE, tryStmt->FinallyBlock()->Start());
         }
     }
 
