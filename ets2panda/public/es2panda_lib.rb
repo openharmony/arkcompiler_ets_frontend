@@ -1494,6 +1494,8 @@ module Es2pandaLibApi
       class_data.template_extends = template_extends(class_definition.extends)
       flag_name = @ast_node_mapping.find { |elem| elem[1] == class_definition.name }&.first
       class_data.ast_node_type_value = Enums.get_astnodetype_value(flag_name)
+      next if class_definition.name == 'NumberLiteral'  # it is defined manually
+
       @classes['ir'][class_definition.name] = class_data
     end
 
