@@ -683,7 +683,7 @@ export class TypeScriptLinter {
       if (
         isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
         !isRecordObject &&
-          !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
+        !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
       ) {
         const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
         this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);
@@ -2270,6 +2270,7 @@ export class TypeScriptLinter {
     this.handleNoStructuralTyping(tsVarDecl);
     this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
+    this.handleObjectLiteralAssignment(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -3743,6 +3744,7 @@ export class TypeScriptLinter {
     this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
     this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
     this.handleNoTsLikeFunctionCall(tsCallExpr);
+    this.handleObjectLiteralInFunctionArgs(tsCallExpr);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -5107,6 +5109,7 @@ export class TypeScriptLinter {
       return;
     }
     this.checkAssignmentMatching(node, lhsType, expr, true);
+    this.handleObjectLiteralInReturn(returnStat);
   }
 
   /**
@@ -5194,7 +5197,7 @@ export class TypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -7004,6 +7007,174 @@ export class TypeScriptLinter {
 
     if (hasConstructor) {
       this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
+    }
+  }
+
+  private isObjectLiteralAssignedToArkts12Type(node: ts.Expression, expectedTypeNode?: ts.TypeNode): boolean {
+    if (node.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
+      return false;
+    }
+
+    let type: ts.Type;
+    if (expectedTypeNode) {
+      type = this.tsTypeChecker.getTypeAtLocation(expectedTypeNode);
+    } else {
+      type = this.tsTypeChecker.getContextualType(node) ?? this.tsTypeChecker.getTypeAtLocation(node);
+    }
+
+    if (!type) {
+      return false;
+    }
+
+    return TypeScriptLinter.isTypeFromArkts12(type);
+  }
+
+  private static isTypeFromArkts12(type: ts.Type): boolean {
+    const symbol = type?.getSymbol();
+    if (!symbol) {
+      return false;
+    }
+
+    const isFromArkts12 = (symbol.declarations ?? []).some((decl) => {
+      return TsUtils.isArkts12File(decl.getSourceFile());
+    });
+
+    if (isFromArkts12) {
+      return true;
+    }
+    return false;
+  }
+
+  private processNestedObjectLiterals(objLiteral: ts.Expression, parentType?: ts.Type): void {
+    if (!ts.isObjectLiteralExpression(objLiteral)) {
+      return;
+    }
+
+    objLiteral.properties.forEach((prop) => {
+      if (!ts.isPropertyAssignment(prop) || !ts.isObjectLiteralExpression(prop.initializer)) {
+        return;
+      }
+
+      if (this.isObjectLiteralAssignedToArkts12Type(prop.initializer)) {
+        this.incrementCounters(prop.initializer, FaultID.InteropStaticObjectLiterals);
+        return;
+      }
+
+      this.checkPropertyTypeFromParent(prop, parentType);
+      this.processNestedObjectLiterals(prop.initializer);
+    });
+  }
+
+  private checkPropertyTypeFromParent(prop: ts.PropertyAssignment, parentType?: ts.Type): void {
+    if (!parentType) {
+      return;
+    }
+    if (!ts.isObjectLiteralExpression(prop.initializer)) {
+      return;
+    }
+
+    const propName = prop.name.getText();
+    const property = parentType.getProperty(propName);
+
+    if (!property?.valueDeclaration) {
+      return;
+    }
+
+    const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(property, property.valueDeclaration);
+
+    if (TypeScriptLinter.isTypeFromArkts12(propType)) {
+      this.incrementCounters(prop.initializer, FaultID.InteropStaticObjectLiterals);
+    }
+  }
+
+  private handleObjectLiteralAssignment(node: ts.VariableDeclaration): void {
+    if (TsUtils.isArkts12File(node.getSourceFile())) {
+      return;
+    }
+
+    if (!node.initializer) {
+      return;
+    }
+
+    if (
+      ts.isObjectLiteralExpression(node.initializer) &&
+      this.isObjectLiteralAssignedToArkts12Type(node.initializer, node.type)
+    ) {
+      this.incrementCounters(node.initializer, FaultID.InteropStaticObjectLiterals);
+      return;
+    }
+
+    const parentType = node.type ?
+      this.tsTypeChecker.getTypeAtLocation(node.type) :
+      this.tsTypeChecker.getTypeAtLocation(node.initializer);
+
+    this.processNestedObjectLiterals(node.initializer, parentType);
+  }
+
+  private handleObjectLiteralInFunctionArgs(node: ts.CallExpression): void {
+    if (TsUtils.isArkts12File(node.getSourceFile())) {
+      return;
+    }
+    const signature = this.tsTypeChecker.getResolvedSignature(node);
+    if (!signature) {
+      return;
+    }
+
+    const params = signature.getParameters();
+
+    node.arguments.forEach((arg, index) => {
+      if (!ts.isObjectLiteralExpression(arg)) {
+        return;
+      }
+
+      if (index < params.length) {
+        const param = params[index];
+        if (!param.valueDeclaration) {
+          return;
+        }
+
+        const paramType = this.tsTypeChecker.getTypeOfSymbolAtLocation(param, param.valueDeclaration);
+
+        if (TypeScriptLinter.isTypeFromArkts12(paramType)) {
+          this.incrementCounters(arg, FaultID.InteropStaticObjectLiterals);
+        }
+      } else if (this.isObjectLiteralAssignedToArkts12Type(arg)) {
+        this.incrementCounters(arg, FaultID.InteropStaticObjectLiterals);
+      }
+    });
+  }
+
+  private handleObjectLiteralInReturn(node: ts.ReturnStatement): void {
+    if (TsUtils.isArkts12File(node.getSourceFile())) {
+      return;
+    }
+
+    if (!node.expression || !ts.isObjectLiteralExpression(node.expression)) {
+      return;
+    }
+
+    let current: ts.Node = node;
+    let functionNode: ts.FunctionLikeDeclaration | undefined;
+
+    while (current && !functionNode) {
+      current = current.parent;
+      if (
+        ts.isFunctionDeclaration(current) ||
+        ts.isMethodDeclaration(current) ||
+        ts.isFunctionExpression(current) ||
+        ts.isArrowFunction(current)
+      ) {
+        functionNode = current;
+      }
+    }
+
+    if (functionNode?.type) {
+      const returnType = this.tsTypeChecker.getTypeAtLocation(functionNode.type);
+      if (TypeScriptLinter.isTypeFromArkts12(returnType)) {
+        this.incrementCounters(node.expression, FaultID.InteropStaticObjectLiterals);
+      }
+    } else if (this.isObjectLiteralAssignedToArkts12Type(node.expression)) {
+      this.incrementCounters(node.expression, FaultID.InteropStaticObjectLiterals);
     }
   }
 }

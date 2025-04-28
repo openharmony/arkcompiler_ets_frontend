@@ -194,6 +194,7 @@ faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated
 faultDesc[FaultID.DuplicateDeclNameFromSdk] = 'The API path has been changed due to the duplicate names in sdk.';
 faultDesc[FaultID.SdkTypeQuery] = 'No typeof as a type in API';
 faultDesc[FaultID.IsConcurrentDeprecated] = 'isConcurrent is not supported';
+faultDesc[FaultID.InteropStaticObjectLiterals] = 'Interop call object literals';
 faultDesc[FaultID.LimitedStdLibNoImportConcurrency] = 'Import Concurrency Deprecated';
 faultDesc[FaultID.InteropStaticDynamicImport] = 'Interop import await is not allowed';
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
