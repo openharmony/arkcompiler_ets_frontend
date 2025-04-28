@@ -14,15 +14,18 @@
  */
 
 #include "signature_help_items.h"
+#include <optional>
 #include <string>
+#include <vector>
 #include "utils/arena_containers.h"
 
 namespace ark::es2panda::lsp {
 
-SignatureHelpItems CreateSignatureHelpItems(ArenaAllocator *allocator, ArenaVector<checker::Signature *> &signatures,
-                                            checker::Signature &signature, ArgumentListInfo &argumentListInfo)
+SignatureHelpItems CreateSignatureHelpItems(std::vector<checker::Signature *> &signatures,
+                                            checker::Signature *signature,
+                                            std::optional<ArgumentListInfo> argumentListInfo)
 {
-    SignatureHelpItems items(allocator);
+    SignatureHelpItems items;
 
     size_t selectedItemIndex = -1;
     size_t itemsSeen = 0;
@@ -30,7 +33,7 @@ SignatureHelpItems CreateSignatureHelpItems(ArenaAllocator *allocator, ArenaVect
 
     for (size_t i = itemsSeen; i < signatures.size(); i++) {
         auto &currentSignature = signatures[i];
-        if (currentSignature->ToString() == signature.ToString()) {
+        if (currentSignature->ToString() == signature->ToString()) {
             selectedItemIndex = itemsSeen;
             break;
         }
@@ -39,15 +42,15 @@ SignatureHelpItems CreateSignatureHelpItems(ArenaAllocator *allocator, ArenaVect
 
     ES2PANDA_ASSERT(selectedItemIndex != static_cast<size_t>(-1));
 
-    for (const auto &helpItem : GetSignatureHelpItem(allocator, signatures)) {
+    for (const auto &helpItem : GetSignatureHelpItem(signatures)) {
         items.SetItems(helpItem);
     }
 
-    items.SetApplicableSpan(argumentListInfo.GetApplicableSpan().start, argumentListInfo.GetApplicableSpan().length);
+    items.SetApplicableSpan(argumentListInfo->GetApplicableSpan().start, argumentListInfo->GetApplicableSpan().length);
 
     items.SetSelectedItemIndex(selectedItemIndex);
 
-    size_t argumentIndex = argumentListInfo.GetArgumentIndex();
+    size_t argumentIndex = argumentListInfo->GetArgumentIndex();
     const auto selectedSignature = signatures[selectedItemIndex];
 
     if (selectedSignature->HasRestParameter() && selectedSignature->ArgCount() > one) {
@@ -57,26 +60,29 @@ SignatureHelpItems CreateSignatureHelpItems(ArenaAllocator *allocator, ArenaVect
     }
 
     items.SetArgumentIndex(argumentIndex);
-    items.SetArgumentCount(argumentListInfo.GetArgumentCount());
+    items.SetArgumentCount(argumentListInfo->GetArgumentCount());
 
     return items;
 }
 
-ArenaVector<SignatureHelpItem> GetSignatureHelpItem(ArenaAllocator *allocator,
-                                                    ArenaVector<checker::Signature *> &signatures)
+std::vector<SignatureHelpItem> GetSignatureHelpItem(const std::vector<checker::Signature *> &signatures)
 {
-    ArenaVector<SignatureHelpItem> items(allocator->Adapter());
+    std::vector<SignatureHelpItem> items;
+    if (signatures.empty()) {
+        return items;
+    }
     for (auto *signature : signatures) {
-        items.push_back(CreateSignatureHelpItem(allocator, *signature));
+        const auto item = CreateSignatureHelpItem(*signature);
+        items.push_back(item);
     }
 
     return items;
 }
 
-SignatureHelpItem CreateSignatureHelpItem(ArenaAllocator *allocator, checker::Signature &signature)
+SignatureHelpItem CreateSignatureHelpItem(checker::Signature &signature)
 {
     const checker::SignatureInfo *signatureInfo = signature.GetSignatureInfo();
-    SignatureHelpItem item(allocator);
+    SignatureHelpItem item;
     if (!signatureInfo->typeParams.empty()) {
         item.SetPrefixDisplayParts(CreatePunctuation("<"));
         for (auto it = signatureInfo->typeParams.begin(); it != signatureInfo->typeParams.end(); ++it) {
@@ -91,7 +97,7 @@ SignatureHelpItem CreateSignatureHelpItem(ArenaAllocator *allocator, checker::Si
     }
     item.SetPrefixDisplayParts(CreatePunctuation("("));
 
-    SetSignatureHelpParameter(allocator, signatureInfo, item);
+    SetSignatureHelpParameter(signatureInfo, item);
 
     item.SetSuffixDisplayParts(CreatePunctuation(")"));
 
@@ -114,11 +120,10 @@ SignatureHelpItem CreateSignatureHelpItem(ArenaAllocator *allocator, checker::Si
     return item;
 }
 
-void SetSignatureHelpParameter(ArenaAllocator *allocator, const checker::SignatureInfo *signatureInfo,
-                               SignatureHelpItem &signatureHelpItem)
+void SetSignatureHelpParameter(const checker::SignatureInfo *signatureInfo, SignatureHelpItem &signatureHelpItem)
 {
     for (auto it = signatureInfo->params.begin(); it != signatureInfo->params.end(); it++) {
-        SignatureHelpParameter param(allocator);
+        SignatureHelpParameter param;
 
         std::string paramName =
             (!(*it)->Name().StartsWith(GENSYM_CORE) ? std::string((*it)->Name().Utf8()) : std::string(DUMMY_ID));
@@ -145,7 +150,7 @@ void SetSignatureHelpParameter(ArenaAllocator *allocator, const checker::Signatu
         return;
     }
 
-    SignatureHelpParameter param(allocator);
+    SignatureHelpParameter param;
 
     if (!signatureInfo->params.empty()) {
         param.SetDisplayParts(CreatePunctuation(","));

@@ -20,28 +20,25 @@
 
 namespace ark::es2panda::lsp {
 
-using Type = checker::Type;
-
-SignatureHelpItems CreateTypeHelpItems(ArenaAllocator *allocator, ir::AstNode *node, lexer::SourceRange location,
-                                       lexer::SourcePosition applicableSpan)
+SignatureHelpItems CreateTypeHelpItems(const ir::AstNode *node, lexer::SourceRange location, TextSpan applicableSpan)
 {
-    ArenaVector<Type *> result = ark::ArenaVector<Type *>(allocator->Adapter());
-    SignatureHelpItems items(allocator);
-    SignatureHelpItem item(allocator);
+    std::vector<checker::Type *> result;
+    SignatureHelpItems items;
+    SignatureHelpItem item;
     if (node == nullptr) {
         return items;
     }
     GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(node, result);
-    GetTypeHelpItem(&result, node, allocator, item);
+    GetTypeHelpItem(&result, node, item);
     items.SetItems(item);
-    items.SetApplicableSpan(applicableSpan.index, applicableSpan.line);
+    items.SetApplicableSpan(applicableSpan.start, applicableSpan.length);
     items.SetSelectedItemIndex(location.start.index);
     items.SetArgumentIndex(location.start.index);
     items.SetArgumentCount(location.end.index - location.start.index);
     return items;
 }
 
-void GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(const ir::AstNode *node, ArenaVector<Type *> &result)
+void GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(const ir::AstNode *node, std::vector<checker::Type *> &result)
 {
     if (node == nullptr) {
         return;
@@ -55,7 +52,8 @@ void GetLocalTypeParametersOfClassOrInterfaceOrTypeAlias(const ir::AstNode *node
     }
 }
 
-ArenaVector<Type *> GetEffectiveTypeParameterDeclarations(const ir::AstNode *node, ArenaVector<Type *> &result)
+std::vector<checker::Type *> GetEffectiveTypeParameterDeclarations(const ir::AstNode *node,
+                                                                   std::vector<checker::Type *> &result)
 {
     if (node == nullptr) {
         return result;
@@ -72,19 +70,18 @@ ArenaVector<Type *> GetEffectiveTypeParameterDeclarations(const ir::AstNode *nod
     } else if (node->IsTSEnumDeclaration()) {
         auto members = node->AsTSEnumDeclaration()->Members();
         for (auto member : members) {
-            result.push_back(reinterpret_cast<Type *>(member->AsTSEnumMember()->Type()));
+            result.push_back(reinterpret_cast<checker::Type *>(member->AsTSEnumMember()->Type()));
         }
     }
     if (typeParams != nullptr) {
         for (auto *param : typeParams->Params()) {
-            result.push_back(reinterpret_cast<Type *>(param));
+            result.push_back(reinterpret_cast<checker::Type *>(param));
         }
     }
     return result;
 }
 
-void GetTypeHelpItem(ArenaVector<Type *> *typeParameters, const ir::AstNode *node, ArenaAllocator *allocator,
-                     SignatureHelpItem &result)
+void GetTypeHelpItem(std::vector<checker::Type *> *typeParameters, const ir::AstNode *node, SignatureHelpItem &result)
 {
     const ir::TSTypeParameterDeclaration *typeParams = nullptr;
     if (node->IsClassDeclaration()) {
@@ -102,14 +99,14 @@ void GetTypeHelpItem(ArenaVector<Type *> *typeParameters, const ir::AstNode *nod
         result.SetPrefixDisplayParts(CreateEnumName(std::string(node->AsTSEnumDeclaration()->Key()->Name())));
         auto members = node->AsTSEnumDeclaration()->Members();
         for (auto member : members) {
-            typeParameters->push_back(reinterpret_cast<Type *>(member->AsTSEnumMember()->Type()));
+            typeParameters->push_back(reinterpret_cast<checker::Type *>(member->AsTSEnumMember()->Type()));
         }
     }
     result.SetPrefixDisplayParts(CreatePunctuation("<"));
 
     if (typeParams != nullptr) {
         for (auto *param : typeParams->Params()) {
-            typeParameters->push_back(reinterpret_cast<Type *>(param));
+            typeParameters->push_back(reinterpret_cast<checker::Type *>(param));
         }
     }
     bool isFirst = true;
@@ -118,7 +115,7 @@ void GetTypeHelpItem(ArenaVector<Type *> *typeParameters, const ir::AstNode *nod
             result.SetSeparatorDisplayParts(CreatePunctuation(", "));
         }
 
-        SignatureHelpParameter signatureHelpParameter(allocator);
+        SignatureHelpParameter signatureHelpParameter;
         auto *typeParamNode = reinterpret_cast<ir::TSTypeParameter *>(typeParam);
         signatureHelpParameter.SetName(typeParamNode->Name()->ToString());
         if (auto *constraint = typeParamNode->Constraint()) {
