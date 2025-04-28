@@ -62,9 +62,20 @@ export class QuasiEditor {
     const reportPath = './autofix-report.html';
 
     try {
-      fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), { encoding: 'utf-8' });
+      let existingReports: any[] = [];
+      if (fs.existsSync(reportPath)) {
+        const rawData = fs.readFileSync(reportPath, 'utf-8');
+        existingReports = JSON.parse(rawData);
+        if (!Array.isArray(existingReports)) {
+          throw new Error('Existing report is not an array');
+        }
+      }
+
+      existingReports.push(report);
+
+      fs.writeFileSync(reportPath, JSON.stringify(existingReports, null, 2), { encoding: 'utf-8' });
     } catch (error) {
-      Logger.error(`failed to create autofix reoprt: ${(error as Error).message}`);
+      Logger.error(`Failed to update autofix report: ${(error as Error).message}`);
     }
   }
 
