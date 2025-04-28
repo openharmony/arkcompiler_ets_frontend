@@ -17,4 +17,5 @@ enum /* @@ label */double {
     A, B, C
 }
 
-/* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */
+/* @@@ label Error SyntaxError: Cannot be used as user-defined type. */
+/* @@@ label Error SyntaxError: Identifier expected, got 'double'. */
