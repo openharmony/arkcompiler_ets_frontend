@@ -4386,6 +4386,7 @@ export class TypeScriptLinter {
       }
     }
     this.handleAsExpressionImport(tsAsExpr);
+    this.handleNoTuplesArrays(node, targetType, exprType);
   }
 
   private handleAsExpressionImport(tsAsExpr: ts.AsExpression): void {
@@ -5628,7 +5629,9 @@ export class TypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple)
+        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+      this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
+        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }

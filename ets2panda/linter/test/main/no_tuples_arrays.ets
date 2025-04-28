@@ -73,3 +73,18 @@ let ff = new A().ff()
 let hh: (boolean | number | boolean)[] =ff
 let mm: (boolean | number | boolean)[] = a.gg();
 let test: (boolean | string | A)[] = this.test3()
+
+let tuple14: [number, boolean] = [3.14, true]
+let array13: (number|boolean)[] = tuple as (number|boolean)[]  //error
+let array14: (number|boolean)[] = tuple14 as (number|boolean)[]  //error
+let array15: (number|boolean)[] = array as (number|boolean)[]
+let array16: (boolean | number | boolean)[] = a.gg() as (boolean | number | boolean)[]   //error
+let tuple15: [string, number, boolean] = this.test2() as [string, number, boolean]
+let tuple16: [number, number, boolean] = array as [number, number, boolean]
+let tuple17: [number, string, boolean] = ['s', 3.14, true] as [number, string, boolean]
+const array17 = Array.from({ length: 5 }, (_, index) => index % 2 === 0 ? index : index % 3 === 0);
+let tuple19: [number, boolean] = array17 as [number, boolean]  //error
+const originalArray: [number] = [1, 2, 3, 4, 5];
+const array18 = originalArray.map((value) => value % 2 === 0 ? true : value * 2);
+let tuple20: [number, boolean] = array18 as [number, boolean]   //error
+let array20: (number)[] = originalArray as (number)[]   //error
