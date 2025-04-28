@@ -23,4 +23,4 @@ class B {
   }
 }
 
-/* @@@ label Warning Warning: Property 'a' might not have been initialized.  */
+/* @@@ label Error TypeError: Property 'a' might not have been initialized.  */
