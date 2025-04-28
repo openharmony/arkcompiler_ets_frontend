@@ -1426,13 +1426,17 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     if (argument->IsCallExpression() && argument->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
         argument->Compile(etsg);
 
-        if (isAsyncImpl) {
-            etsg->LoadAccumulatorUndefined(st);
+        if (etsg->ReturnType()->IsETSVoidType()) {
+            if (isAsyncImpl) {
+                etsg->LoadAccumulatorUndefined(st);
+                etsg->ReturnAcc(st);
+            } else {
+                etsg->EmitReturnVoid(st);
+            }
+        } else {
+            etsg->LoadDefaultValue(st, etsg->ReturnType());
             etsg->ReturnAcc(st);
-            return;
         }
-
-        etsg->EmitReturnVoid(st);
         return;
     }
 
