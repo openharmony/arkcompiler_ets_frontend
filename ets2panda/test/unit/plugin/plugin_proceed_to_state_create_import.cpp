@@ -27,6 +27,7 @@
 // NOLINTBEGIN
 
 static es2panda_Impl *g_impl = nullptr;
+static es2panda_Context *g_ctx = nullptr;
 
 static es2panda_AstNode *CreateImportDecl(es2panda_Context *context, es2panda_Program *program, const char *importIdStr,
                                           const char *importAliasStr, const char *importPathStr)
@@ -128,6 +129,39 @@ void InsertImportInHeaderAfterParse(es2panda_Context *context, [[maybe_unused]] 
     }
 }
 
+bool Find(es2panda_AstNode *ast)
+{
+    if (g_impl->IsETSImportDeclaration(ast)) {
+        size_t len = 0;
+        auto specifiers = g_impl->ImportDeclarationSpecifiers(g_ctx, ast, &len);
+        auto source = g_impl->ImportDeclarationSource(g_ctx, ast);
+        auto importDeclaration =
+            g_impl->UpdateETSImportDeclaration(g_ctx, ast, source, specifiers, len, IMPORT_KINDS_ALL);
+        auto declPath = g_impl->ETSImportDeclarationDeclPathConst(g_ctx, ast);
+        auto ohmUrl = g_impl->ETSImportDeclarationOhmUrlConst(g_ctx, ast);
+        auto resolvedSource = g_impl->ETSImportDeclarationResolvedSourceConst(g_ctx, ast);
+        g_impl->ETSImportDeclarationSetImportMetadata(g_ctx, importDeclaration, IMPORT_FLAGS_NONE, ID_ETS,
+                                                      resolvedSource, declPath, ohmUrl);
+        for (size_t i = 0; i < len; i++) {
+            g_impl->AstNodeSetParent(g_ctx, specifiers[i], importDeclaration);
+        }
+        g_impl->AstNodeSetParent(g_ctx, source, importDeclaration);
+        auto parent = g_impl->AstNodeParent(g_ctx, ast);
+        if (g_impl->AstNodeIsProgramConst(g_ctx, parent)) {
+            size_t sizeOfStatements = 0;
+            auto *statements = g_impl->BlockStatementStatements(g_ctx, parent, &sizeOfStatements);
+            statements[0] = importDeclaration;
+            g_impl->BlockStatementSetStatements(g_ctx, parent, statements, sizeOfStatements);
+            g_impl->AstNodeSetParent(g_ctx, importDeclaration, parent);
+            std::string str(g_impl->AstNodeDumpEtsSrcConst(g_ctx, parent));
+            if (str.find("import { A as A } from \"./export\"") != std::string::npos) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 int main(int argc, char **argv)
 {
     if (argc < MIN_ARGC) {
@@ -149,10 +183,16 @@ int main(int argc, char **argv)
         std::cerr << "FAILED TO CREATE CONTEXT" << std::endl;
         return NULLPTR_CONTEXT_ERROR_CODE;
     }
+    g_ctx = context;
     g_impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
 
     auto *program = g_impl->ContextProgram(context);
+    auto ast = g_impl->ProgramAst(context, program);
+    if (!g_impl->AstNodeIsAnyChildConst(context, ast, Find)) {
+        return TEST_ERROR_CODE;
+    }
+
     if (!TestInsertImportAfterParse(context, config, program)) {
         return 1;
     }
@@ -175,12 +215,6 @@ int main(int argc, char **argv)
     std::cout << g_impl->AstNodeDumpEtsSrcConst(context, rootAst) << std::endl;
 
     g_impl->AstNodeRecheck(context, rootAst);
-
-    g_impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
-    CheckForErrors("LOWERED", context);
-
-    g_impl->ProceedToState(context, ES2PANDA_STATE_ASM_GENERATED);
-    CheckForErrors("ASM", context);
 
     g_impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);
