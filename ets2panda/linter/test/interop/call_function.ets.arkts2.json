@@ -39,9 +39,9 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 6,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +69,9 @@
             "column": 1,
             "endLine": 19,
             "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {

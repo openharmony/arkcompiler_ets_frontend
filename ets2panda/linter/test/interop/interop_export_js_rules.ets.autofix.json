@@ -53,7 +53,7 @@
       "endColumn": 13,
       "problem": "InteropJsObjectExport",
       "suggest": "",
-      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js-object-export)",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
       "severity": "ERROR"
     },
     {
@@ -63,7 +63,7 @@
       "endColumn": 59,
       "problem": "InteropJsObjectExport",
       "suggest": "",
-      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js-object-export)",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
       "severity": "ERROR"
     },
     {
@@ -73,7 +73,7 @@
       "endColumn": 57,
       "problem": "InteropArkTs1ObjectExport",
       "suggest": "",
-      "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-arkts1-object-export)",
+      "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
       "severity": "ERROR"
     }
   ]
