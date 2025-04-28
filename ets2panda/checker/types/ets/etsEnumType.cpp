@@ -27,7 +27,9 @@ bool ETSStringEnumType::AssignmentSource(TypeRelation *relation, Type *target)
         result = true;
     } else if (target->IsETSStringType()) {
         result = true;
-        relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        if (relation->GetNode() != nullptr) {
+            relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        }
     } else if (target->IsETSUnionType()) {
         auto &unionConstituentTypes = target->AsETSUnionType()->ConstituentTypes();
         for (auto *constituentType : unionConstituentTypes) {
@@ -72,7 +74,8 @@ bool ETSIntEnumType::AssignmentSource(TypeRelation *relation, Type *target)
 {
     bool result = false;
     if (target->IsETSObjectType()) {
-        if (target->AsETSObjectType()->IsGlobalETSObjectType()) {
+        if (target->AsETSObjectType()->IsGlobalETSObjectType() ||
+            target->AsETSObjectType()->Name() == compiler::Signatures::NUMERIC) {
             result = true;
         } else if (target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC)) {
             result = true;

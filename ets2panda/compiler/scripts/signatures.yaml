@@ -200,6 +200,8 @@ defines:
     ref: TYPE
   - name: 'from'
     ref: FROM
+  - name: 'Numeric'
+    ref: NUMERIC
 
 packages:
   - name: 'std.core'
