@@ -5894,9 +5894,13 @@ export class TypeScriptLinter {
       return;
     }
     const decoratorName = TsUtils.getDecoratorName(decorator);
-    if (decoratorName === SENDABLE_DECORATOR || decoratorName === CONCURRENT_DECORATOR) {
-      const autofix = this.autofixer?.removeNode(decorator);
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
+    const autofix = this.autofixer?.removeNode(decorator);
+    if (decoratorName === SENDABLE_DECORATOR) {
+      this.incrementCounters(decorator, FaultID.LimitedStdLibNoSendableDecorator, autofix);
+    }
+
+    if (decoratorName === CONCURRENT_DECORATOR) {
+      this.incrementCounters(decorator, FaultID.LimitedStdLibNoDoncurrentDecorator, autofix);
     }
   }
 
@@ -5934,7 +5938,7 @@ export class TypeScriptLinter {
   }
 
   private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    this.checkSymbol(symbol, node, WORKER_TEXT, WORKER_MODULES, FaultID.LimitedStdLibApi);
+    this.checkSymbol(symbol, node, WORKER_TEXT, WORKER_MODULES, FaultID.NoNeedStdlibWorker);
   }
 
   private checkSymbol(symbol: ts.Symbol, node: ts.Node, symbolName: string, modules: string[], faultId: FaultID): void {
