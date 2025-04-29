@@ -880,6 +880,19 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
         if (parameter == nullptr) {
             return false;
         }
+        bool seenOptional = false;
+        for (auto const param : params) {
+            if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->IsOptional()) {
+                seenOptional = true;
+                break;
+            }
+        }
+
+        if (seenOptional && !(parameter->IsETSParameterExpression() &&
+                              (parameter->AsETSParameterExpression()->IsOptional() ||
+                               parameter->AsETSParameterExpression()->RestParameter() != nullptr))) {
+            LogError(diagnostic::REQUIRED_PARAM_AFTER_OPTIONAL, {}, parameter->Start());
+        }
 
         if (parameter->IsETSParameterExpression() && parameter->AsETSParameterExpression()->Ident()->IsReceiver() &&
             !params.empty()) {

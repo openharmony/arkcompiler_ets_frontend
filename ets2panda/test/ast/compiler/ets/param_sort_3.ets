@@ -12,14 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+function foo(p1: int, p2: int = 44, /* @@ label */p3: int) { }
 
-function foo(b : int, a : int = 10, c : int = 15) : int
-{
-    return a + b;
-}
-
-function foo2 (x: int, y: int = 0, ...r: FixedArray<int>): int {
-  return 4;
-}
-
-
+/* @@@ label Error SyntaxError: A required parameter cannot follow an optional parameter. */
