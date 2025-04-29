@@ -143,8 +143,8 @@ def re_gen_ts_and_dur(data_with_parent):
         os.remove('data.json')
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     modes = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open('data.json', flags, modes), 'w') as f:
-        json.dump(flattened, f, indent=2)
+    with os.fdopen(os.open('data.json', flags, modes), 'w') as file:
+        json.dump(flattened, file, indent=2)
     return groups
 
 
@@ -165,8 +165,8 @@ def group_by_parent(data):
 if __name__ == "__main__":
     # Load input data from a JSON file
     with open("timePerformanceData.json", "r") as f:
-        data = json.load(f)
+        datas = json.load(f)
         # Generate parent information for each event
-        data_with_parent = gen_parent(data)
+        data_with_parents = gen_parent(datas)
         # Regenerate timestamps and durations based on parent relationships
-        re_gen_ts_and_dur(data_with_parent)
+        re_gen_ts_and_dur(data_with_parents)
