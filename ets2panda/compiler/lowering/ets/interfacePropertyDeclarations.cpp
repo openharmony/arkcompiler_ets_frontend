@@ -262,6 +262,10 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(ch
 void InterfacePropertyDeclarationsPhase::CollectSuperInterfaceProperties(InterfacePropertyType &implInterfaceProperties,
                                                                          const std::string &interId)
 {
+    if (GetPropCollector().IsVisitedInterface(interId)) {
+        return;
+    }
+
     if (GetPropCollector().IsInterfaceHasProperty(interId)) {
         InterfacePropertyType &properties = GetPropCollector().GetInterfaceProperty(interId);
         implInterfaceProperties.insert(properties.begin(), properties.end());
@@ -281,6 +285,8 @@ void InterfacePropertyDeclarationsPhase::UpdateClassProperties(checker::ETSCheck
     }
 
     InterfacePropertyType implInterfaceProperties = {};
+
+    GetPropCollector().InitVisitedInterfaces();
     for (const auto &implement : klass->Implements()) {
         std::string interId = implement->Expr()->AsETSTypeReference()->Part()->Name()->ToString();
         CollectSuperInterfaceProperties(implInterfaceProperties, interId);
