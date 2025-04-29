@@ -33,6 +33,15 @@ API_VERSION_MAP = {
 
 ARK_JS_VM_LIST = {"API9", "API10", "API11", "API12beta1", "API12beta3", "API18"}
 
+ES2ABC_API_SUPPORT = {
+    "default": ["API9", "API10", "API11", "API12beta1", "API12beta2", "API12beta3",
+                "API13", "API14", "API15", "API16", "API17", "API18"],
+    "5.0": ["API9", "API10", "API11", "API12beta1", "API12beta2", "API12beta3",
+            "API13", "API14", "API15", "API16", "API17"],
+    "5.1": ["API9", "API10", "API11", "API12beta1", "API12beta2", "API12beta3",
+            "API13",  "API14", "API15", "API16", "API17", "API18"],
+}
+
 MIN_SUPPORT_BC_VERSION = "API12beta1"
 
 MIX_COMPILE_ENTRY_POINT = "import"

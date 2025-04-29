@@ -30,7 +30,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x8
+slotNum = 0x4
 .language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
@@ -38,18 +38,14 @@ label_0:
 	newlexenv 0x1
 	ldhole
 	sta v0
-	defineclasswithbuffer 0x0, .TopLevelSendableClass1, _1, 0x0, v0
-	sta v0
-	ldobjbyname 0x1, prototype
-	lda v0
+	callruntime.definesendableclass 0x0, .TopLevelSendableClass1, _2, 0x0, v0
 	stlexvar 0x0, 0x0
 	ldhole
 	sta v0
-	defineclasswithbuffer 0x3, .SendableTestClass1, _2, 0x0, v0
+	callruntime.definesendableclass 0x1, .SendableTestClass1, _4, 0x0, v0
 	sta v0
-	ldobjbyname 0x4, prototype
 	mov v1, v0
-	newobjrange 0x6, 0x1, v1
+	newobjrange 0x2, 0x1, v1
 	returnundefined
 label_2: 
 }
