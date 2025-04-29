@@ -14,11 +14,21 @@
         "limitations under the License."
     ],
     "result": [
- {
+        {
             "line": 17,
-            "column": 17,
+            "column": 1,
             "endLine": 17,
-            "endColumn": 57,
+            "endColumn": 62,
+            "problem": "InteropDynamicImport",
+            "suggest": "",
+            "rule": "No support for static dynamic import (arkts-interop-d2s-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 22,
+            "endLine": 17,
+            "endColumn": 62,
             "problem": "DynamicImport",
             "suggest": "",
             "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
@@ -26,9 +36,19 @@
         },
         {
             "line": 18,
-            "column": 17,
+            "column": 1,
             "endLine": 18,
-            "endColumn": 53,
+            "endColumn": 59,
+            "problem": "InteropDynamicImportTs",
+            "suggest": "",
+            "rule": "No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 23,
+            "endLine": 18,
+            "endColumn": 59,
             "problem": "DynamicImport",
             "suggest": "",
             "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
@@ -36,9 +56,19 @@
         },
         {
             "line": 19,
-            "column": 17,
+            "column": 1,
             "endLine": 19,
-            "endColumn": 53,
+            "endColumn": 58,
+            "problem": "InteropDynamicImportJs",
+            "suggest": "",
+            "rule": "No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 22,
+            "endLine": 19,
+            "endColumn": 58,
             "problem": "DynamicImport",
             "suggest": "",
             "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",

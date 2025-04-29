@@ -271,16 +271,19 @@ cookBookTag[264] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)';
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';
+cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
+cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
+cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =
-  'Class type is not compatible with "Object" parameter in interop call (arkts-interop-call-object-param)';
+  'Class type is not compatible with "Object" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)';
 cookBookTag[303] =
-  'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-call-reflect)';
+  'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
-cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-no-decorators)';
-cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-access-ts-types)';
-cookBookTag[307] = 'Trying to catch typescript errors is not permitted (arkts-interop-ts-function)';
+cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-ts2s-no-ts-decorator)';
+cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)';
+cookBookTag[307] = 'Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)';
 cookBookTag[308] = 'Type "void" has no instances.(sdk-limited-void-type)';
 cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-methods)';
 cookBookTag[310] =
@@ -300,7 +303,6 @@ cookBookTag[323] = 'Direct export of interop JS objects is not supported (arkts-
 cookBookTag[324] = 'Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)';
 cookBookTag[325] = 'Object literal not compatible with target class or union type. (interop-dynamic-object-literals)';
 cookBookTag[326] = 'It is not allowed to create object literal in interop calls (interop-static-object-literals)';
-cookBookTag[329] = 'No support for static dynamic import (interop-static-dynamically-import-dynamic)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';

@@ -98,7 +98,7 @@ import {
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
-import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
+import { InteropType, REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
@@ -683,7 +683,7 @@ export class TypeScriptLinter {
       if (
         isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
         !isRecordObject &&
-        !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
+          !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
       ) {
         const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
         this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);
@@ -5197,7 +5197,7 @@ export class TypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -6869,40 +6869,57 @@ export class TypeScriptLinter {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-
     const initializer = variableDecl.initializer;
 
     if (initializer === undefined) {
       return;
     }
+
     if (!ts.isAwaitExpression(initializer)) {
-      // from now on we know that initializer is is await expression
+      return;
+    }
+    const identifier = variableDecl.name;
+
+    this.checkInteropForDynamicImport(identifier, initializer, variableDecl);
+  }
+
+  private checkInteropForDynamicImport(
+    targetNode: ts.Node,
+    initializer: ts.AwaitExpression,
+    variableDecl: ts.VariableDeclaration
+  ): void {
+    if (!ts.isIdentifier(targetNode)) {
       return;
     }
 
-    const identifier = variableDecl.name;
+    if (!ts.isCallExpression(initializer.expression)) {
+      return;
+    }
+    const callExpr = initializer.expression;
+    if (callExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
+      return;
+    }
 
-    const checkInterop = (targetNode: ts.Node): void => {
-      if (!ts.isIdentifier(targetNode)) {
-        return;
-      }
-      // check if there is any interop with JS,TS or ArkTS 1.0
-      if (!this.tsUtils.isInterop(targetNode)) {
-        return;
-      }
+    const currentFile = targetNode.getSourceFile().fileName;
+    const interopType = TsUtils.resolveModuleAndCheckInterop(callExpr, currentFile);
 
-      if (!ts.isCallExpression(initializer.expression)) {
-        return;
-      }
-      const callExpr = initializer.expression;
-      if (callExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
-        return;
-      }
+    if (!interopType) {
+      return;
+    }
 
-      this.incrementCounters(variableDecl.parent, FaultID.InteropStaticDynamicImport);
-    };
-
-    checkInterop(identifier);
+    switch (interopType) {
+      case InteropType.JS:
+        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImportJs);
+        break;
+      case InteropType.TS:
+        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImportTs);
+        break;
+      case InteropType.LEGACY:
+        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImport);
+        break;
+      default:
+        break;
+    }
   }
 
   handleInstanceOfExpression(node: ts.BinaryExpression): void {

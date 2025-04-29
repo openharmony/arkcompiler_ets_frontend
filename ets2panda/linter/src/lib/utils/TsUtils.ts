@@ -15,6 +15,7 @@
 
 import * as path from 'node:path';
 import * as ts from 'typescript';
+import * as fs from 'fs';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_DIRS_OH_MODULES, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
@@ -44,8 +45,8 @@ import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
-import { USE_STATIC } from './consts/InteropAPI';
+import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS, EXTNAME_D_TS } from './consts/ExtensionName';
+import { InteropType, USE_STATIC } from './consts/InteropAPI';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -3617,27 +3618,56 @@ export class TsUtils {
     return str;
   }
 
-  isInterop(node: ts.Node): boolean {
-    const declNode = this.getDeclarationNode(node);
-    if (!declNode) {
-      return false;
+  static resolveModuleAndCheckInterop(callExpr: ts.CallExpression, currentFile: string): InteropType | undefined {
+    const moduleName = callExpr.arguments[0];
+    if (!ts.isStringLiteral(moduleName)) {
+      return undefined;
     }
-    const sourceFile = declNode.getSourceFile();
-    const fileName = sourceFile.fileName;
 
+    const modules = currentFile.split('/');
+    modules.pop();
+    const currentModule = modules.join('/');
+    const importedModule = path.resolve(currentModule, moduleName.text);
+
+    const importedFile = TsUtils.resolveImportModule(importedModule);
+    if (!importedFile) {
+      return undefined;
+    }
+
+    const importSource = ts.sys.readFile(importedFile);
+    if (!importSource) {
+      return undefined;
+    }
+
+    return TsUtils.checkFileForInterop(importedFile, importSource);
+  }
+
+  static resolveImportModule(importedModule: string): string | undefined {
+    const extensions = ['.ts', '.js', '.ets'];
+    for (const ext of extensions) {
+      const tryPath = path.resolve(importedModule + ext);
+      if (fs.existsSync(tryPath)) {
+        return tryPath;
+      }
+    }
+
+    return undefined;
+  }
+
+  static checkFileForInterop(fileName: string, importSource: string): InteropType {
     if (fileName.endsWith(EXTNAME_JS)) {
-      return true;
+      return InteropType.JS;
     }
 
     if (fileName.endsWith(EXTNAME_TS) && !fileName.endsWith(EXTNAME_D_TS)) {
-      return true;
+      return InteropType.TS;
     }
 
-    if (fileName.endsWith(EXTNAME_ETS) && !TsUtils.isArkts12File(sourceFile)) {
-      return true;
+    if (fileName.endsWith(EXTNAME_ETS) && !importSource.includes('\'use static\'')) {
+      return InteropType.LEGACY;
     }
 
-    return false;
+    return InteropType.NONE;
   }
 
   isJsImport(node: ts.Node): boolean {
