@@ -23,6 +23,7 @@
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
 #include "ir/ets/etsTuple.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/module/importSpecifier.h"
@@ -622,31 +623,45 @@ void TSDeclGen::ProcessFunctionReturnType(const checker::Signature *sig)
 void TSDeclGen::GenUnionType(const checker::ETSUnionType *unionType)
 {
     state_.inUnionBodyStack.push(true);
-    const auto &originTypes = unionType->ConstituentTypes();
+    std::vector<checker::Type *> filteredTypes = FilterUnionTypes(unionType->ConstituentTypes());
+    GenSeparated(
+        filteredTypes, [this](checker::Type *arg) { GenType(arg); }, " | ");
+    state_.inUnionBodyStack.pop();
+}
+
+template <class UnionType>
+std::vector<UnionType *> TSDeclGen::FilterUnionTypes(const ArenaVector<UnionType *> &originTypes)
+{
+    if (originTypes.empty()) {
+        return {};
+    }
     bool hasNumber = false;
     bool hasString = false;
-    std::vector<checker::Type *> filteredTypes;
+    std::vector<UnionType *> filteredTypes;
     for (auto originType : originTypes) {
         std::string typeStr = originType->ToString();
+        if constexpr (std::is_same_v<UnionType, ir::TypeNode>) {
+            if (originType->IsTSThisType()) {
+                filteredTypes.push_back(originType);
+                continue;
+            }
+            typeStr = originType->GetType(checker_)->ToString();
+            typeStr[0] = std::toupper(typeStr[0]);
+        }
         if (stringTypes_.count(typeStr) != 0U) {
             if (hasString) {
                 continue;
             }
-            filteredTypes.push_back(originType);
             hasString = true;
         } else if (numberTypes_.count(typeStr) != 0U) {
             if (hasNumber) {
                 continue;
             }
-            filteredTypes.push_back(originType);
             hasNumber = true;
-        } else {
-            filteredTypes.push_back(originType);
         }
+        filteredTypes.push_back(originType);
     }
-    GenSeparated(
-        filteredTypes, [this](checker::Type *arg) { GenType(arg); }, " | ");
-    state_.inUnionBodyStack.pop();
+    return filteredTypes;
 }
 
 void TSDeclGen::GenTupleType(const checker::ETSTupleType *tupleType)
@@ -740,44 +755,20 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typePara
         OutDts("<");
         GenSeparated(typeParams->Params(), [this](ir::TSTypeParameter *param) {
             OutDts(param->Name()->Name());
-            if (param->DefaultType() != nullptr) {
-                OutDts(" = ");
-                GenType(param->DefaultType()->GetType(checker_));
-            }
             auto *constraint = param->Constraint();
             if (constraint != nullptr) {
                 OutDts(" extends ");
                 GenType(constraint->GetType(checker_));
             }
+            auto *defaultType = param->DefaultType();
+            if (defaultType != nullptr) {
+                OutDts(" = ");
+                defaultType->IsETSTypeReference() ? ProcessETSTypeReferenceType(defaultType->AsETSTypeReference())
+                                                  : GenType(defaultType->TsType());
+            }
         });
         OutDts(">");
     }
-}
-
-void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams)
-{
-    if (typeParams == nullptr) {
-        return;
-    }
-    OutDts("<");
-    GenSeparated(typeParams->Params(), [this](ir::TypeNode *param) {
-        if (param->IsETSTypeReference()) {
-            const auto paramName = param->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
-            if (stringTypes_.count(paramName) != 0U) {
-                OutDts("string");
-            } else if (numberTypes_.count(paramName) != 0U) {
-                OutDts("number");
-            } else if (paramName == "NullPointerError") {
-                OutDts("Error");
-            } else {
-                importSet_.insert(paramName);
-                OutDts(paramName);
-            }
-        } else {
-            GenType(param->GetType(checker_));
-        }
-    });
-    OutDts(">");
 }
 
 void TSDeclGen::GenExport(const ir::Identifier *symbol)
@@ -876,6 +867,9 @@ void TSDeclGen::GenAnnotations(const T *node)
     GenSeparated(
         node->Annotations(),
         [this](ir::AnnotationUsage *anno) {
+            if (annotationList_.count(anno->GetBaseName()->Name().Mutf8()) == 0U) {
+                return;
+            }
             OutDts("@", anno->GetBaseName()->Name());
             GenAnnotationProperties(anno);
             OutEndlDts();
@@ -1162,44 +1156,76 @@ void TSDeclGen::ProcessTypeAnnotationType(const ir::TypeNode *typeAnnotation, co
         OutDts("this");
         return;
     }
+    if (typeAnnotation->IsETSPrimitiveType() &&
+        typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::VOID) {
+        OutDts("void");
+        return;
+    }
     if (typeAnnotation->IsETSStringLiteralType()) {
         importSet_.insert(aliasedType->ToString());
         OutDts(aliasedType->ToString());
         return;
     }
     if (typeAnnotation->IsETSTypeReference()) {
-        if (ProcessTypeAnnotationSpecificTypes(checkerType)) {
-            return;
-        }
-        if (checkerType != nullptr &&
-            typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Name().Is("NullishType")) {
-            OutDts(typeAnnotation->Parent()->IsTSArrayType() ? "(" : "");
-            GenType(checkerType);
-            OutDts(typeAnnotation->Parent()->IsTSArrayType() ? ")" : "");
-            return;
-        }
-        ProcessETSTypeReferenceType(typeAnnotation->AsETSTypeReference(), checkerType);
+        ProcessETSTypeReference(typeAnnotation, checkerType);
         return;
     }
     if (typeAnnotation->IsETSTuple()) {
-        OutDts("[");
-        GenSeparated(
-            typeAnnotation->AsETSTuple()->GetTupleTypeAnnotationsList(),
-            [this](ir::TypeNode *arg) { ProcessTypeAnnotationType(arg, arg->GetType(checker_)); }, " , ");
-        OutDts("]");
+        ProcessETSTuple(typeAnnotation->AsETSTuple());
+        return;
+    }
+    if (typeAnnotation->IsETSUnionType()) {
+        ProcessETSUnionType(typeAnnotation->AsETSUnionType());
         return;
     }
     if (typeAnnotation->IsTSArrayType() && typeAnnotation->AsTSArrayType()->ElementType() != nullptr) {
-        auto *elementType = typeAnnotation->AsTSArrayType()->ElementType();
-        auto *elementCheckerType = const_cast<ir::TypeNode *>(elementType)->GetType(checker_);
-        bool needParentheses = !elementType->IsETSTypeReference() && elementCheckerType->IsETSUnionType();
-        OutDts(needParentheses ? "(" : "");
-        ProcessTypeAnnotationType(elementType, elementCheckerType);
-        OutDts(needParentheses ? ")" : "");
-        OutDts("[]");
+        ProcessTSArrayType(typeAnnotation->AsTSArrayType());
         return;
     }
     checkerType != nullptr ? GenType(checkerType) : GenType(aliasedType);
+}
+
+void TSDeclGen::ProcessETSTypeReference(const ir::TypeNode *typeAnnotation, const checker::Type *checkerType)
+{
+    if (ProcessTypeAnnotationSpecificTypes(checkerType)) {
+        return;
+    }
+    if (checkerType != nullptr && typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Name().Is("NullishType")) {
+        OutDts(typeAnnotation->Parent()->IsTSArrayType() ? "(" : "");
+        GenType(checkerType);
+        OutDts(typeAnnotation->Parent()->IsTSArrayType() ? ")" : "");
+        return;
+    }
+    ProcessETSTypeReferenceType(typeAnnotation->AsETSTypeReference(), checkerType);
+}
+
+void TSDeclGen::ProcessETSTuple(const ir::ETSTuple *etsTuple)
+{
+    OutDts("[");
+    GenSeparated(
+        etsTuple->GetTupleTypeAnnotationsList(),
+        [this](ir::TypeNode *arg) { ProcessTypeAnnotationType(arg, arg->GetType(checker_)); }, " , ");
+    OutDts("]");
+}
+
+void TSDeclGen::ProcessETSUnionType(const ir::ETSUnionType *etsUnionType)
+{
+    state_.inUnionBodyStack.push(true);
+    std::vector<ir::TypeNode *> filteredTypes = FilterUnionTypes(etsUnionType->Types());
+    GenSeparated(
+        filteredTypes, [this](ir::TypeNode *arg) { ProcessTypeAnnotationType(arg, arg->GetType(checker_)); }, " | ");
+    state_.inUnionBodyStack.pop();
+}
+
+void TSDeclGen::ProcessTSArrayType(const ir::TSArrayType *tsArrayType)
+{
+    auto *elementType = tsArrayType->ElementType();
+    auto *elementCheckerType = const_cast<ir::TypeNode *>(elementType)->GetType(checker_);
+    bool needParentheses = !elementType->IsETSTypeReference() && elementCheckerType->IsETSUnionType();
+    OutDts(needParentheses ? "(" : "");
+    ProcessTypeAnnotationType(elementType, elementCheckerType);
+    OutDts(needParentheses ? ")" : "");
+    OutDts("[]");
 }
 
 void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias)
@@ -1219,7 +1245,7 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     }
     GenTypeParameters(typeAlias->TypeParams());
     OutDts(" = ");
-    ProcessTypeAnnotationType(typeAlias->TypeAnnotation());
+    ProcessTypeAnnotationType(typeAlias->TypeAnnotation(), typeAlias->TypeAnnotation()->GetType(checker_));
     OutDts(";");
     OutEndlDts();
     if (typeAlias->IsDefaultExported()) {
@@ -1438,7 +1464,7 @@ void TSDeclGen::HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classD
     state_.super = super;
     if (super != nullptr && !classDef->IsEnumTransformed()) {
         OutDts(" extends ");
-        GenType(super->TsType());
+        HandleClassInherit(super);
     }
 
     const auto &interfaces = classDef->TsType()->AsETSObjectType()->Interfaces();
@@ -1446,10 +1472,22 @@ void TSDeclGen::HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classD
         OutDts(" implements ");
         ES2PANDA_ASSERT(classDef->TsType()->IsETSObjectType());
         GenSeparated(interfaces, [this](checker::ETSObjectType *interface) { GenType(interface); });
+    } else if (!classDef->Implements().empty()) {
+        OutDts(" implements ");
+        GenSeparated(classDef->Implements(), [this](ir::TSClassImplements *impl) { HandleClassInherit(impl->Expr()); });
     }
 
     OutDts(" {");
     OutEndlDts();
+}
+
+void TSDeclGen::HandleClassInherit(const ir::Expression *expr)
+{
+    if (!expr->TsType()->IsTypeError()) {
+        GenType(expr->TsType());
+    } else if (expr->IsETSTypeReference()) {
+        ProcessETSTypeReferenceType(expr->AsETSTypeReference());
+    }
 }
 
 void TSDeclGen::EmitClassGlueCode(const ir::ClassDefinition *classDef, const std::string &className)

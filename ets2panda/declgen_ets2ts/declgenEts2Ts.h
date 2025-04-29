@@ -101,9 +101,17 @@ private:
                                      const checker::Type *checkerType = nullptr);
     bool ProcessTypeAnnotationSpecificTypes(const checker::Type *checkerType);
     void ProcessTypeAnnotationType(const ir::TypeNode *typeAnnotation, const checker::Type *checkerType = nullptr);
+    void ProcessETSTypeReference(const ir::TypeNode *typeAnnotation, const checker::Type *checkerType);
+    void ProcessETSTuple(const ir::ETSTuple *etsTuple);
+    void ProcessETSUnionType(const ir::ETSUnionType *etsUnionType);
+    void ProcessTSArrayType(const ir::TSArrayType *tsArrayType);
+
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenUnionType(const checker::ETSUnionType *unionType);
     void GenTupleType(const checker::ETSTupleType *tupleType);
+
+    template <class UnionType>
+    std::vector<UnionType *> FilterUnionTypes(const ArenaVector<UnionType *> &originTypes);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenNamespaceImport(const ir::AstNode *specifier, const std::string &source);
@@ -137,7 +145,6 @@ private:
     void GenAnnotationPropertyValue(ir::Expression *value);
 
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
-    void GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams);
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
@@ -150,6 +157,7 @@ private:
     bool ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef);
     bool ShouldSkipClassDeclaration(const std::string_view &className) const;
     void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
+    void HandleClassInherit(const ir::Expression *expr);
     void ProcessClassBody(const ir::ClassDefinition *classDef);
     void ProcessParamDefaultToMap(const ir::Statement *stmt);
     void ProcessFuncParameter(varbinder::LocalVariable *param);
@@ -256,6 +264,12 @@ private:
     const std::unordered_set<std::string_view> numberTypes_ = {"Long",  "Float", "Double", "Byte",
                                                                "Short", "Int",   "Number"};
     const std::unordered_set<std::string_view> stringTypes_ = {"Char", "String"};
+    const std::unordered_set<std::string_view> annotationList_ = {
+        "Component", "Builder",    "LocalBuilder", "BuilderParam", "Styles",     "Extend",   "AnimatableExtend",
+        "Require",   "Reusable",   "State",        "Prop",         "Link",       "Provide",  "Consume",
+        "Observed",  "ObjectLink", "Watch",        "Track",        "ObservedV2", "Trace",    "ComponentV2",
+        "Local",     "Param",      "Once",         "Event",        "Provider",   "Consumer", "Monitor",
+        "Computed",  "Type"};
     const std::set<std::string> extensions_ = {".sts", ".ets", ".ts", ".js"};
 
     std::stringstream outputDts_;
