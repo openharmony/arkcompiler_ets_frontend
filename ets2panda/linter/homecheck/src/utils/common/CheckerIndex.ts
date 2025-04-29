@@ -31,10 +31,10 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
 export const fileRules = {
     '@migration/arkts-instance-method-bind-this': ThisBindCheck,
-    '@migration/arkui-data-observation-2': ObservedDecoratorCheck,
+    '@migration/arkui-data-observation': ObservedDecoratorCheck,
     '@migration/arkui-stateful-appstorage': AppStorageGetCheck,
     '@migration/arkui-no-update-in-build': ModifyStateVarCheck,
-    '@migration/arkui-custombuiler': CustomBuilderCheck,
+    '@migration/arkui-custombuilder-passing': CustomBuilderCheck,
     '@migration/no-method-overriding-field-check': NoMethodOverridingFieldCheck,
     '@migration/interop-typeof-boxed-types': InteropBoxedTypeCheck,
     '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
@@ -53,7 +53,7 @@ export const file2CheckRuleMap: Map<string, any> = new Map(Object.entries(fileRu
 export const project2CheckRuleMap: Map<string, any> = new Map(Object.entries(projectRules));
 
 export class ProxyChecker {
-    static getClass(ruleId: string) {
+    static getClass(ruleId: string): any {
         const checker = file2CheckRuleMap.get(ruleId) ?? project2CheckRuleMap.get(ruleId);
         if (!checker) {
             logger.error(`${ruleId} is not matched to any checker`);

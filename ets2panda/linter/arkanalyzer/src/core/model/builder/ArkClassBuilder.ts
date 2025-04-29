@@ -377,7 +377,9 @@ function buildArkClassMembers(clsNode: ClassLikeNode, cls: ArkClass, sourceFile:
                     getInitStmts(staticIRTransformer, arkField, member.initializer);
                     arkField.getInitializer().forEach(stmt => staticInitStmts.push(stmt));
                 } else {
-                    if (!instanceIRTransformer) console.log(clsNode.getText(sourceFile));
+                    if (!instanceIRTransformer) {
+                        console.log(clsNode.getText(sourceFile));
+                    }
                     getInitStmts(instanceIRTransformer, arkField, member.initializer);
                     arkField.getInitializer().forEach(stmt => instanceInitStmts.push(stmt));
                 }

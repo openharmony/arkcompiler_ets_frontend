@@ -41,22 +41,26 @@ export interface AutoFix {
 
 export async function exportIssues(checkEntry: CheckEntry): Promise<Map<string, ProblemInfo[]>> {
     let result = new Map<string, ProblemInfo[]>();
-    checkEntry.sortIssues().forEach(fileIssue => {
-        const problemInfos: ProblemInfo[] = fileIssue.issues.map(issueReport => {
+    checkEntry.sortIssues().forEach(fileIssues => {
+        fileIssues.issues.forEach(issueReport => {
             const defect = issueReport.defect;
-            const line = defect.reportLine;
-            const column = defect.reportColumn;
-            const endLine = line;
-            const endColumn = column;
-            const severity = defect.severity;
-            const problem = defect.problem;
-            const suggest = '';
-            const rule = defect.description;
-            const ruleTag = -1;
-            const autofixable = false;
-            return { line, column, endLine, endColumn, severity, problem, suggest, rule, ruleTag, autofixable };
+            const problemInfo: ProblemInfo = {
+                line: defect.reportLine,
+                column: defect.reportColumn,
+                endLine: defect.reportLine,
+                endColumn: defect.reportColumn,
+                severity: defect.severity,
+                problem: defect.problem,
+                suggest: '',
+                rule: defect.description,
+                ruleTag: -1,
+                autofixable: false
+            }
+            const filePath = defect.mergeKey.split('%')[0];
+            const problems = result.get(filePath) || [];
+            problems.push(problemInfo);
+            result.set(filePath, problems);
         });
-        result.set(fileIssue.filePath, problemInfos);
     });
     return result;
 }

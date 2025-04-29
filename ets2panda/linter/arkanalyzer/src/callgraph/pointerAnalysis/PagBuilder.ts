@@ -1761,7 +1761,9 @@ export class PagBuilder {
     }
 
     public getRealThisLocal(input: Local, funcId: FuncID): Local {
-        if (input.getName() !== 'this') return input;
+        if (input.getName() !== 'this') {
+            return input;
+        }
         let real = input;
 
         let f = this.cg.getArkMethodByFuncID(funcId);
@@ -1923,6 +1925,7 @@ export class PagBuilder {
         if (exportSouceValue instanceof Local) {
             return exportSouceValue;
         }
+        return undefined;
     }
 
     private addExportVariableMap(src: Local, dst: Local): void {
@@ -1966,7 +1969,7 @@ export class PagBuilder {
         return retriggerNodes;
     }
 
-    public addUpdatedNode(nodeID: NodeID, diffPT: IPtsCollection<NodeID>) {
+    public addUpdatedNode(nodeID: NodeID, diffPT: IPtsCollection<NodeID>): void {
         let ptaConfig = PointerAnalysisConfig.getInstance();
         let updatedNode = this.updatedNodesThisRound.get(nodeID) ?? new ptaConfig.ptsCollectionCtor();
         updatedNode.union(diffPT);

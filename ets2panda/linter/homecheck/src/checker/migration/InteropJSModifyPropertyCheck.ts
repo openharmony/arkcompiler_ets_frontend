@@ -22,12 +22,20 @@ import {
     FunctionType,
     ClassType,
     MethodSignature,
+    CallGraph,
+    ArkParameterRef,
+    Value,
+    Stmt,
+    ArkDeleteExpr,
+    FieldSignature,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { ArkFile, Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { CALL_DEPTH_LIMIT, DVFGHelper, GlobalCallGraphHelper } from './Utils';
+import { DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropJSModifyPropertyCheck');
 const gMetaData: BaseMetaData = {
@@ -53,8 +61,17 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
     }
 
     public check = (scene: Scene): void => {
-        const targetMethods: Map<MethodSignature, boolean[]> = new Map();
+        const targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]> = new Map();
+        this.collectTargetMethods(targetMethods, scene);
+        this.checkTargetMethods(targetMethods, scene);
+    };
+
+    private collectTargetMethods(targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
         scene.getFiles().forEach(file => {
+            // 只处理 ArkTS1.2 import JS 函数的情况
+            if (file.getLanguage() != Language.ARKTS1_2) {
+                return;
+            }
             file.getImportInfos().forEach(importInfo => {
                 const exportInfo = importInfo.getLazyExportInfo();
                 if (exportInfo === null) {
@@ -65,11 +82,15 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                     return;
                 }
                 if (arkExport instanceof ArkMethod && arkExport.getLanguage() === Language.JAVASCRIPT) {
-                    const idxFlag = new Array(arkExport.getParameters().length).fill(false);
-                    targetMethods.set(arkExport.getSignature(), idxFlag);
+                    // 创建初始化的参数标志位信息（标志位代表该参数是否被传入了 1.2 对象，默认为 false）
+                    const paramInfo = this.createParamInfo(arkExport);
+                    if (paramInfo.length > 0) {
+                        targetMethods.set(arkExport.getSignature(), paramInfo);
+                    }
                 }
             });
 
+            // 寻找 JS 函数的被调用点，检查是否传入 ArkTS1.2 类型的对象并维护参数标志位信息
             for (let clazz of file.getClasses()) {
                 for (let mtd of clazz.getMethods()) {
                     this.findCallsite(mtd, targetMethods, scene);
@@ -84,22 +105,120 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
             }
         });
 
-        targetMethods.forEach((idxFlag, methodSig) => {
+        // 跨函数检查 ArkTS1.2 类型对象是否被跨函数传到其他 JS 函数
+        for (let i = 0; i < CALL_DEPTH_LIMIT; ++i) {
+            this.collectInterprocedualCallSites(targetMethods, scene);
+        }
+    }
+
+    private createParamInfo(method: ArkMethod): [boolean, ArkAssignStmt][] {
+        // 初始化参数标志数组
+        const idxFlag = new Array(method.getParameters().length).fill(false);
+        // 寻找参数对应的 xxx = parameter 语句
+        const paramAssigns = (method.getCfg()?.getStmts() ?? [])
+            .filter(s => s instanceof ArkAssignStmt && s.getRightOp() instanceof ArkParameterRef)
+            .map(s => s as ArkAssignStmt);
+        if (idxFlag.length !== paramAssigns.length) {
+            logger.error('param index num != param assign num');
+            return [];
+        }
+        const result: [boolean, ArkAssignStmt][] = [];
+        for (let i = 0; i < idxFlag.length; i++) {
+            result.push([idxFlag[i], paramAssigns[i]]);
+        }
+        return result;
+    }
+
+    private collectInterprocedualCallSites(
+        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
+        scene: Scene
+    ): void {
+        new Map(targets).forEach((paramInfo, sig) => {
+            const method = scene.getMethod(sig)!;
+            DVFGHelper.buildSingleDVFG(method, scene);
+            paramInfo.forEach(([flag, assign]): void => {
+                if (flag) {
+                    this.checkIfParamPassedToOtherMethod(assign, targets, scene);
+                }
+            });
+        });
+    }
+
+    private checkIfParamPassedToOtherMethod(
+        assign: ArkAssignStmt,
+        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
+        scene: Scene
+    ): void {
+        const worklist: DVFGNode[] = [DVFGHelper.getOrNewDVFGNode(assign, scene)];
+        const visited: Set<Stmt> = new Set();
+        while (worklist.length > 0) {
+            const current = worklist.shift()!;
+            const cunrrentStmt = current.getStmt();
+            if (visited.has(cunrrentStmt)) {
+                continue;
+            }
+            visited.add(cunrrentStmt);
+            if (!(cunrrentStmt instanceof ArkAssignStmt)) {
+                continue;
+            }
+            current.getOutgoingEdges().forEach(edge => {
+                const dst = edge.getDstNode() as DVFGNode;
+                const dstStmt = dst.getStmt();
+                // 假设有 JS 函数声明： function foo(obj)，其中 obj 为受关注的参数
+                // 只有类似 let obj2 = obj 或者 goo(obj) 这样的语句受到关注
+                if (dstStmt instanceof ArkAssignStmt && dstStmt.getRightOp() === cunrrentStmt.getLeftOp()) {
+                    return worklist.push(dst);
+                }
+                const invoke = dstStmt.getInvokeExpr();
+                if (!invoke) {
+                    return;
+                }
+                const calleeSig = invoke.getMethodSignature();
+                const callee = scene.getMethod(calleeSig);
+                if (!callee || !callee.getCfg() || callee.getLanguage() !== Language.JAVASCRIPT) {
+                    return;
+                }
+                if (!targets.has(calleeSig)) {
+                    targets.set(calleeSig, this.createParamInfo(callee));
+                }
+                const getKey = (v: Value): Value | FieldSignature => {
+                    return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
+                };
+                invoke.getArgs().forEach((arg, idx) => {
+                    if (getKey(arg) === getKey(cunrrentStmt.getLeftOp())) {
+                        targets.get(calleeSig)![idx][0] = true;
+                    }
+                });
+            });
+        }
+    }
+
+    private checkTargetMethods(targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
+        targetMethods.forEach((paramInfos, methodSig): void => {
             const method = scene.getMethod(methodSig);
             if (!method) {
-                return logger.error(`cannot find ark method by method sig: ${methodSig.toString()}`);
+                logger.error(`cannot find ark method by method sig: ${methodSig.toString()}`);
+                return;
             }
-            const targetParams = method.getParameterInstances().filter((_, idx) => idxFlag[idx]);
+            const targetParams = paramInfos.filter(([flag, _]) => flag).map(([_, assign]) => assign.getLeftOp());
             const stmts = method.getBody()?.getCfg().getStmts() ?? [];
             for (const stmt of stmts) {
                 if (!(stmt instanceof ArkAssignStmt)) {
                     continue;
                 }
-                const leftOp = stmt.getLeftOp();
-                if (!(leftOp instanceof ArkInstanceFieldRef)) {
-                    continue;
-                }
-                if (targetParams.includes(leftOp.getBase())) {
+                const isDeleteProperty = (assign: ArkAssignStmt): boolean => {
+                    const rightOp = assign.getRightOp();
+                    if (!(rightOp instanceof ArkDeleteExpr)) {
+                        return false;
+                    }
+                    const fieldRef = rightOp.getField();
+                    return fieldRef instanceof ArkInstanceFieldRef && targetParams.includes(fieldRef.getBase());
+                };
+                const isAddOrModifyProperty = (assign: ArkAssignStmt): boolean => {
+                    const leftOp = assign.getLeftOp();
+                    return leftOp instanceof ArkInstanceFieldRef && targetParams.includes(leftOp.getBase());
+                };
+                if (isDeleteProperty(stmt) || isAddOrModifyProperty(stmt)) {
                     const line = stmt.getOriginPositionInfo().getLineNo();
                     const column = stmt.getOriginPositionInfo().getColNo();
                     const problem = 'Interop';
@@ -125,9 +244,13 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 }
             }
         });
-    };
+    }
 
-    private findCallsite(method: ArkMethod, targets: Map<MethodSignature, boolean[]>, scene: Scene): void {
+    private findCallsite(
+        method: ArkMethod,
+        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
+        scene: Scene
+    ): void {
         const stmts = method.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             const invoke = stmt.getInvokeExpr();
@@ -138,11 +261,11 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
             if (!targets.has(methodSig)) {
                 continue;
             }
-            invoke.getArgs().forEach((arg, idx) => {
+            invoke.getArgs().forEach((arg, idx): void => {
                 if (this.getTypeDefinedLang(arg.getType(), method.getDeclaringArkFile(), scene) !== Language.ARKTS1_2) {
                     return;
                 }
-                targets.get(methodSig)![idx] = true;
+                targets.get(methodSig)![idx][0] = true;
             });
         }
     }

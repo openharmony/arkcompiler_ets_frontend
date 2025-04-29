@@ -125,7 +125,7 @@ export class ConfigUtils {
 
         // 解析自定义规则集配置
         this.parseExtRuleConfig(ruleConfig, projectConfig, message, allRules, ruleMap);
-        return ruleMap;;
+        return ruleMap;
     }
 
     /**

@@ -39,7 +39,7 @@ export class NumberUtils {
         } else if (value instanceof AbstractExpr && value.getType() instanceof NumberType) {
             return NumberUtils.isExprSupportCalculate(arkFile, valueStmtInfo, value);
         } else if (value instanceof ArkStaticFieldRef && value.getType() instanceof NumberType) {
-            return true
+            return true;
         }
         return false;
     }
@@ -106,7 +106,7 @@ export class NumberUtils {
         }
         for (let varDef of scope.defList) {
             if (varDef.getName() !== value.getName()) {
-                continue
+                continue;
             }
             let stmt = varDef.defStmt;
             if (stmt instanceof ArkAssignStmt) {
@@ -204,7 +204,7 @@ export class NumberUtils {
             let stmt = nearReDefStmtInfo.stmt;
             if (stmt instanceof ArkAssignStmt) {
                 let rightOp = stmt.getRightOp();
-                return this.getNumberByScope(arkFile, nearReDefStmtInfo, rightOp)
+                return this.getNumberByScope(arkFile, nearReDefStmtInfo, rightOp);
             }
         }
 
@@ -298,7 +298,7 @@ export class NumberUtils {
     public static getOriginalValueText(stmt: Stmt, value: Value): string {
         let valStr = '';
         if (value instanceof Constant) {
-            valStr = value.toString()
+            valStr = value.toString();
         } else if (value instanceof Local) {
             if (!value.toString().includes('%')) {
                 valStr = value.toString();

@@ -21,33 +21,26 @@ import {
     Stmt,
     Scene,
     Value,
-    DVFGBuilder,
-    ArkFile,
-    ArkNewExpr,
     CallGraph,
-    CallGraphBuilder,
     ArkParameterRef,
     ArkInstanceFieldRef,
-    ArkField,
     ArkInstanceInvokeExpr,
-    ClassSignature,
     FunctionType,
     AnyType,
-    MethodSignature,
     ClassType,
     ArkStaticInvokeExpr,
     AbstractInvokeExpr,
     UnknownType,
+    Local,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
-import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
+import { DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper, DVFGHelper } from './Utils';
-import { InteropRuleInfo, findInteropRule } from './InteropRuleInfo';
+import { findInteropRule } from './InteropRuleInfo';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
-import { timeStamp } from 'console';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropBackwardDFACheck');
 const gMetaData: BaseMetaData = {
@@ -125,10 +118,11 @@ export class InteropBackwardDFACheck implements BaseChecker {
         }
     };
 
-    private processArkMethod(target: ArkMethod, scene: Scene) {
+    private processArkMethod(target: ArkMethod, scene: Scene): void {
         const currentLang = target.getLanguage();
         if (currentLang === Language.UNKNOWN) {
-            return logger.warn(`cannot find the language for method: ${target.getSignature()}`);
+            logger.warn(`cannot find the language for method: ${target.getSignature()}`);
+            return;
         }
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
@@ -156,7 +150,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
             DVFGHelper.buildSingleDVFG(target, scene);
 
             const objDefs: Stmt[] = [];
-            const getKey = (v: Value) => {
+            const getKey = (v: Value): Value | FieldSignature => {
                 return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
             };
             const param: Value | FieldSignature = getKey((invoke as AbstractInvokeExpr).getArg(paramIdx));
@@ -178,7 +172,8 @@ export class InteropBackwardDFACheck implements BaseChecker {
                     const objDefLang = objDefInfo.objDef.getCfg().getDeclaringMethod().getLanguage();
                     const typeDefLang = this.getTypeDefinedLang(objDefInfo.objType, scene) ?? objDefLang;
                     if (objDefLang === Language.UNKNOWN || typeDefLang === Language.UNKNOWN) {
-                        return logger.warn(`cannot find the language for def: ${objDefInfo.objDef.toString()}`);
+                        logger.warn(`cannot find the language for def: ${objDefInfo.objDef.toString()}`);
+                        return;
                     }
                     const interopRule = findInteropRule(currentLang, objDefLang, typeDefLang, isReflect);
                     if (!interopRule) {
@@ -187,7 +182,9 @@ export class InteropBackwardDFACheck implements BaseChecker {
                     const line = stmt.getOriginPositionInfo().getLineNo();
                     const column = stmt.getOriginPositionInfo().getColNo();
                     const problem = 'Interop';
-                    const desc = `${interopRule.description}: ${this.generateDesc(objDefInfo.objDef)} (${interopRule.ruleId})`;
+                    const desc = `${interopRule.description}: ${this.generateDesc(objDefInfo.objDef)} (${
+                        interopRule.ruleId
+                    })`;
                     const severity = interopRule.severity;
                     const ruleId = this.rule.ruleId;
                     const filePath = target.getDeclaringArkFile()?.getFilePath() ?? '';
@@ -235,7 +232,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
         checkAll: { value: boolean },
         visited: Set<Stmt>,
         depth: number = 0
-    ) {
+    ): void {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return;
@@ -249,18 +246,26 @@ export class InteropBackwardDFACheck implements BaseChecker {
                 continue;
             }
             visited.add(currentStmt);
-            if (stmt instanceof ArkAssignStmt) {
-                const rightOpTy = stmt.getRightOp().getType();
-                const isObjectTy = (ty: Type) => {
+            if (currentStmt instanceof ArkAssignStmt) {
+                const rightOp = currentStmt.getRightOp();
+                if (rightOp instanceof ArkInstanceFieldRef) {
+                    const base = rightOp.getBase();
+                    if (base instanceof Local && base.getDeclaringStmt()) {
+                        worklist.push(DVFGHelper.getOrNewDVFGNode(base.getDeclaringStmt()!, scene));
+                        continue;
+                    }
+                }
+                const rightOpTy = rightOp.getType();
+                const isObjectTy = (ty: Type): boolean => {
                     return ty instanceof ClassType && ty.getClassSignature().getClassName() === 'Object';
                 };
-                const isESObjectTy = (ty: Type) => {
+                const isESObjectTy = (ty: Type): boolean => {
                     return ty.toString() === 'ESObject';
                 };
-                const isAnyTy = (ty: Type) => {
+                const isAnyTy = (ty: Type): ty is AnyType => {
                     return ty instanceof AnyType;
                 };
-                const isUnkwonTy = (ty: Type) => {
+                const isUnkwonTy = (ty: Type): ty is UnknownType => {
                     return ty instanceof UnknownType;
                 };
                 if (
@@ -269,7 +274,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
                     !isAnyTy(rightOpTy) &&
                     !isUnkwonTy(rightOpTy)
                 ) {
-                    res.push({ objDef: stmt, objType: rightOpTy });
+                    res.push({ objDef: currentStmt, objType: rightOpTy });
                     continue;
                 }
             }
@@ -314,7 +319,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
     }
 
     private collectArgDefs(argIdx: number, callsites: Stmt[], scene: Scene): Stmt[] {
-        const getKey = (v: Value) => {
+        const getKey = (v: Value): Value | FieldSignature => {
             return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {
@@ -339,5 +344,6 @@ export class InteropBackwardDFACheck implements BaseChecker {
         } else {
             logger.error(`fail to identify which file the type definition ${type.toString()} is in.`);
         }
+        return undefined;
     }
 }

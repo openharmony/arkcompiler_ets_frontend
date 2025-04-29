@@ -37,12 +37,12 @@ export class MigrationTool {
     }
 
     public async buildCheckEntry(): Promise<Boolean> {
-        logger.info(`buildCheckEntry start`);
         // 日志配置
         const logPath = this.checkEntry.projectConfig.logPath;
         Utils.setLogConfig(logPath.length === 0 ? './HomeCheck.log' : logPath,
             this.checkEntry.projectConfig.arkAnalyzerLogLevel,
             this.checkEntry.projectConfig.logLevel);
+        logger.info(`buildCheckEntry start`);
         // api版本配置
         CheckerStorage.getInstance().setApiVersion(this.checkEntry.projectConfig.apiVersion);
         // product配置

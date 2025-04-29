@@ -269,7 +269,7 @@ export class InteropAssignCheck implements BaseChecker {
     }
 
     private collectArgDefs(argIdx: number, callsites: Stmt[], scene: Scene): Stmt[] {
-        const getKey = (v: Value) => {
+        const getKey = (v: Value): Value | FieldSignature => {
             return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {

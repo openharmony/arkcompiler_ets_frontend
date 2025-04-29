@@ -820,7 +820,7 @@ export class ViewTreeImpl extends TreeNodeStack implements ViewTree {
     private findMethodInvokeBuilderMethod(method: ArkMethod): ArkMethod | undefined {
         let stmts = method.getCfg()?.getStmts();
         if (!stmts) {
-            return;
+            return undefined;
         }
         for (const stmt of stmts) {
             let expr: AbstractInvokeExpr | undefined;
@@ -843,6 +843,7 @@ export class ViewTreeImpl extends TreeNodeStack implements ViewTree {
                 return method;
             }
         }
+        return undefined;
     }
 
     private parseFieldInObjectLiteral(field: ArkField, cls: ArkClass, transferMap: Map<ArkField, ArkField | ArkMethod>): void {

@@ -54,7 +54,7 @@ export class EsLintFixEngine implements Engine {
             this.updateRemainIssues(text, issue, remainIssues, remainIssuesCopy);
         }
         output += text.slice(Math.max(0, lastPos));
-        return { defects: remainIssues.map((issue => issue.defect)), output: bom + output, filePath: arkFile.getFilePath() }
+        return { defects: remainIssues.map((issue => issue.defect)), output: bom + output, filePath: arkFile.getFilePath() };
     }
 
     private checkAndSortIssues(fixIssues: IssueReport[], remainIssues: IssueReport[]): {

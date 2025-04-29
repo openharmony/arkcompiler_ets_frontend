@@ -49,7 +49,7 @@ const ARKUI_RULE_ID = '@migration/arkui-buildparam-passing';
 const arkuiMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: "Instance method shall bind the 'this' by default",
+    description: "The execution context of the function annotated with @Builder is determined at the time of declaration. Please check the code carefully to ensure the correct function context",
 };
 
 export class ThisBindCheck implements BaseChecker {

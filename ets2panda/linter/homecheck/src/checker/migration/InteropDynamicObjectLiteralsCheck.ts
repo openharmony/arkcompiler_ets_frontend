@@ -212,7 +212,7 @@ export class InteropObjectLiteralCheck implements BaseChecker {
     }
 
     private collectArgDefs(argIdx: number, callsites: Stmt[]): Stmt[] {
-        const getKey = (v: Value) => {
+        const getKey = (v: Value): Value | FieldSignature => {
             return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {

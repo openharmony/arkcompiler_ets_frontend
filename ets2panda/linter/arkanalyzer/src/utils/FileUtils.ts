@@ -128,6 +128,7 @@ export function getFileRecursively(srcDir: string, fileName: string, visited: Se
         }
         const tmpDir = path.resolve(srcDir, '../');
         res = getFileRecursively(tmpDir, fileName, visited);
+        return res;
     });
     return res;
 }
