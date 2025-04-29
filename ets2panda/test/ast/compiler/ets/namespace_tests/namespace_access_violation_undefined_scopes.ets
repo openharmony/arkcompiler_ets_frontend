@@ -22,4 +22,3 @@ namespace ParentSpace {
 let result = ParentSpace.ChildSpace.value; // Error: 'ChildSpace' is not defined
 
 /* @@? 22:26 Error TypeError: Property 'ChildSpace' does not exist on type 'ParentSpace' */
-/* @@? 22:26 Error TypeError: Property 'ChildSpace' does not exist on type 'ParentSpace' */

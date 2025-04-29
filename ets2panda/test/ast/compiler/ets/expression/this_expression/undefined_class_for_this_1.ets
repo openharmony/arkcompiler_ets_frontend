@@ -25,12 +25,7 @@ let fecthResult = await checkAsyncDelay(async (): Promise< AA.B<string> > => {
 
 /* @@? 19:25 Error TypeError: Unresolved reference checkAsyncDelay  */
 /* @@? 19:25 Error TypeError: 'await' expressions require Promise object as argument.  */
-/* @@? 19:25 Error TypeError: Unresolved reference checkAsyncDelay  */
-/* @@? 19:25 Error TypeError: 'await' expressions require Promise object as argument.  */
 /* @@? 20:10 Error TypeError: Bad operand type, the type of the operand must be boolean type.  */
 /* @@? 21:16 Error TypeError: Type 'undefined' is not compatible with the enclosing method's return type 'Promise<B<String>>'  */
-/* @@? 23:18 Error TypeError: 'await' expressions require Promise object as argument.  */
-/* @@? 1:1 Error TypeError: Cannot reference 'this' in this context.  */
-/* @@? 20:10 Error TypeError: Bad operand type, the type of the operand must be boolean type.  */
 /* @@? 23:18 Error TypeError: 'await' expressions require Promise object as argument.  */
 /* @@? 1:1 Error TypeError: Cannot reference 'this' in this context.  */

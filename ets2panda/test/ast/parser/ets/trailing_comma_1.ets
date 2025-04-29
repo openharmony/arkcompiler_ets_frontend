@@ -56,6 +56,4 @@ foo(,)
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 35:10 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 36:5 Error SyntaxError: Unexpected token ','. */

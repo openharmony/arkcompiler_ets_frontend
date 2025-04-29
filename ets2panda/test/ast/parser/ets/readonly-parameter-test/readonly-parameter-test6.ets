@@ -29,4 +29,3 @@ let tuple = foo2()
 
 /* @@@ label Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
 /* @@@ label1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */

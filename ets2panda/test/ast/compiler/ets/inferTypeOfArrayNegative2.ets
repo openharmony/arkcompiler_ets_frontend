@@ -19,4 +19,3 @@ a[1] = "1"
 let b = a[0] + a[1]
 
 /* @@? 19:9 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */
-/* @@? 19:9 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */

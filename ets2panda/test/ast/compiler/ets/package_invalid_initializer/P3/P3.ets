@@ -46,7 +46,6 @@ static {
 /* @@? P3.ets:27:23 Error SyntaxError: Non-constant initializer of Package should be apply in Initializer Block. */
 /* @@? P3.ets:29:14 Error SyntaxError: Missing initialization for const package property */
 /* @@? P3.ets:29:18 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? P3.ets:29:18 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? P3.ets:30:30 Error SyntaxError: Non-constant initializer of Package should be apply in Initializer Block. */
 /* @@? P3.ets:31:14 Error TypeError: Cannot reassign constant c_nn2 */
 /* @@? P3.ets:32:6 Error SyntaxError: Non-constant initializer of Package should be apply in Initializer Block. */

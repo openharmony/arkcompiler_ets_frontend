@@ -24,10 +24,6 @@
 /* @@? 17:16 Error SyntaxError: Expected '{', got 'identification literal'. */
 /* @@? 17:39 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
 /* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:26 Error SyntaxError: Unexpected token '{'. */
-/* @@? 34:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 30:1 Error SyntaxError: Expected '}', got 'eos'. */

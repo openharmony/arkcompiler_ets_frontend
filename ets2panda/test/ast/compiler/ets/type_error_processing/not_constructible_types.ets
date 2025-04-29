@@ -29,7 +29,6 @@ WeakSet [12] = new undefined()
 
 
 /* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
-/* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
 /* @@? 17:1 Error TypeError: Type 'null' is not constructible. */
 /* @@? 18:1 Error TypeError: Type 'undefined' is not constructible. */
 /* @@? 19:1 Error TypeError: Type 'never' is not constructible. */

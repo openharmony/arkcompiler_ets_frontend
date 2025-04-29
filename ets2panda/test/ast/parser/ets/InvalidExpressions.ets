@@ -106,7 +106,6 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 55:10 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 55:24 Error SyntaxError: Unexpected token '@@'. */
 /* @@? 55:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 55:24 Error SyntaxError: Unexpected token '@@'. */
 /* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
 /* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
 /* @@? 55:29 Error TypeError: Unresolved reference void */

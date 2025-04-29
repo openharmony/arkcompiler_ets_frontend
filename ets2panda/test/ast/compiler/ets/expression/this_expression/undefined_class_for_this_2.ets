@@ -17,6 +17,4 @@
  })
 
  /* @@? 15:11 Error TypeError: Unresolved reference ca  */
- /* @@? 15:11 Error TypeError: Unresolved reference ca  */
- /* @@? 1:1 Error TypeError: Cannot reference 'this' in this context.  */
  /* @@? 1:1 Error TypeError: Cannot reference 'this' in this context.  */

@@ -128,4 +128,3 @@ interface I1 {
 /* @@? 78:8 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 78:8 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 79:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 79:1 Error SyntaxError: Unexpected token '}'. */

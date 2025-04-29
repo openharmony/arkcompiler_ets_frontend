@@ -45,9 +45,3 @@ let y2 : Readonly<[int, string]>
 /* @@@ label3 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
 /* @@@ label4 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
 /* @@@ label5 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label7 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label9 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label2 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label4 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@@ label5 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */

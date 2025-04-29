@@ -18,6 +18,3 @@ async function foo():Promise<void>{
 }
 
 /* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */

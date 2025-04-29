@@ -25,9 +25,6 @@ function foo(): Day {
 
 /* @@? package_module_with_syntax_error.ets:18:1 Error SyntaxError: Unexpected token '='. */
 /* @@? package_module_with_syntax_error.ets:18:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? package_module_with_syntax_error.ets:18:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? package_module_with_syntax_error.ets:18:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? package_module_with_syntax_error.ets:18:2 Error SyntaxError: Unexpected token ')'. */
 /* @@? package_module_with_syntax_error.ets:18:2 Error SyntaxError: Invalid package toplevel statement */
 
 /* @@? package_with_both_errors.ets:21:16 Error TypeError: Cannot find type 'good'. */

@@ -52,8 +52,6 @@ throw
 "abc"
 // there were more errors
 /* @@? 16:13 Error SyntaxError: Can only type export class or interface. */
-/* @@? 16:13 Error SyntaxError: Can only type export class or interface. */
-/* @@? 19:13 Error SyntaxError: Can only type export class or interface. */
 /* @@? 19:13 Error SyntaxError: Can only type export class or interface. */
 /* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 22:5 Error TypeError: Variable 'x' has already been declared. */
@@ -71,5 +69,4 @@ throw
 /* @@? 45:9 Error SyntaxError: Unexpected token '{'. */
 /* @@? 48:5 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 52:1 Error SyntaxError: Illegal newline after throw. */
-/* @@? 76:1 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 76:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 73:1 Error SyntaxError: Expected '}', got 'eos'. */
