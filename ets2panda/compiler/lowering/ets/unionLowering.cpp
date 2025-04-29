@@ -137,6 +137,8 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
     auto propName = expr->Property()->AsIdentifier()->Name();
     auto fieldType = expr->TsType();
+    auto uncheckedType = expr->UncheckedType();
+    auto *typeToSet = uncheckedType == nullptr ? fieldType : uncheckedType;
 
     // Create field name for synthetic class
     auto *fieldIdent = checker->AllocNode<ir::Identifier>(propName, allocator);
@@ -148,9 +150,9 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     // Add the declaration to the scope
     auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
-    var->SetTsType(fieldType);
+    var->SetTsType(typeToSet);
     fieldIdent->SetVariable(var);
-    field->SetTsType(fieldType);
+    field->SetTsType(typeToSet);
     decl->BindNode(field);
 
     ArenaVector<ir::AstNode *> fieldDecl {allocator->Adapter()};
