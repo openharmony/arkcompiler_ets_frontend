@@ -82,22 +82,19 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
     auto allocator = checker->Allocator();
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
-    auto methodType = expr->TsType()->AsETSFunctionType();
-    auto methodName = methodType->Name();
+    auto methodName = expr->TsType()->AsETSFunctionType()->Name();
 
     // Create method name for synthetic class
     auto *methodIdent = checker->AllocNode<ir::Identifier>(methodName, allocator);
 
     // Create the synthetic function node
-    auto *sig = methodType->CallSignatures().front();
+    auto *sig = expr->Parent()->AsCallExpression()->Signature();
 
     ArenaVector<ir::Expression *> params {allocator->Adapter()};
     for (auto param : sig->Function()->Params()) {
         params.emplace_back(param->Clone(allocator, nullptr)->AsETSParameterExpression());
     }
-    auto returnTypeAnno = sig->Function()->ReturnTypeAnnotation() != nullptr
-                              ? sig->Function()->ReturnTypeAnnotation()->Clone(allocator, nullptr)
-                              : checker->AllocNode<ir::OpaqueTypeNode>(sig->ReturnType(), allocator);
+    auto returnTypeAnno = checker->AllocNode<ir::OpaqueTypeNode>(sig->ReturnType(), allocator);
 
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         allocator, ir::ScriptFunction::ScriptFunctionData {
