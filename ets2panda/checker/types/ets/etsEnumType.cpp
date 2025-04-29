@@ -15,10 +15,16 @@
 
 #include "etsEnumType.h"
 
+#include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/types/ets/etsUnionType.h"
 
 namespace ark::es2panda::checker {
+
+Type *ETSEnumType::GetBaseEnumElementType(ETSChecker *checker)
+{
+    return checker->MaybeUnboxType(SuperType()->TypeArguments()[0]);
+}
 
 bool ETSStringEnumType::AssignmentSource(TypeRelation *relation, Type *target)
 {

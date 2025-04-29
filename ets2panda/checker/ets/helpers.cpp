@@ -19,6 +19,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/checkerContext.h"
 #include "checker/ETSAnalyzerHelpers.h"
+#include "checker/types/ets/etsEnumType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ets/typeConverter.h"
@@ -393,9 +394,14 @@ Type *ETSChecker::GetUnaryOperatorPromotedType(Type *type, const bool doPromotio
     return type;
 }
 
-Type *ETSChecker::ApplyUnaryOperatorPromotion(Type *type, const bool isCondExpr)
+Type *ETSChecker::ApplyUnaryOperatorPromotion(ir::Expression *expr, Type *type, const bool isCondExpr)
 {
     Type *unboxedType = isCondExpr ? MaybeUnboxConditionalInRelation(type) : MaybeUnboxInRelation(type);
+
+    if (type != nullptr && type->IsETSIntEnumType()) {
+        expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        unboxedType = type->AsETSEnumType()->GetBaseEnumElementType(this);
+    }
 
     if (unboxedType == nullptr) {
         return nullptr;

@@ -91,6 +91,7 @@ public:
         }
         return false;
     }
+    Type *GetBaseEnumElementType(ETSChecker *checker);
 
 private:
     void InitElementsShortcuts(ir::ClassDefinition *declNode)

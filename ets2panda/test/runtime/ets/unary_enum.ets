@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,10 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  function main(){
-   let a = 1;
-   a/* @@ label */~/* @@ label2 */!/* @@ label3 */;
-  }
-/* @@@ label Error SyntaxError: Unexpected token '~'. */
-/* @@@ label2 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
-/* @@@ label3 Error SyntaxError: Unexpected token ';'. */
+
+enum Color {Red = 10}
+
+function main() {
+    arktest.assertEQ(~Color.Red, ~10)
+    arktest.assertEQ(+Color.Red, 10)
+    arktest.assertEQ(-Color.Red, -10)
+    arktest.assertEQ(!Color.Red, !10)
+}
