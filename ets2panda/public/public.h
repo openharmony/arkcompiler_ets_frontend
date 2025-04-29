@@ -38,7 +38,7 @@ namespace ark::es2panda::public_lib {
 struct ConfigImpl {
     const util::Options *options = nullptr;
     util::DiagnosticEngine *diagnosticEngine = nullptr;
-    std::vector<diagnostic::DiagnosticKind> diagnosticKindStorage;
+    std::list<diagnostic::DiagnosticKind> diagnosticKindStorage;
 };
 
 struct Context {

@@ -119,6 +119,8 @@ bool DiagnosticEngine::IsError(DiagnosticType type) const
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
         case DiagnosticType::PLUGIN_WARNING:
             return wError_;
+        case DiagnosticType::SUGGESTION:
+            return false;
         default:
             ES2PANDA_UNREACHABLE();
     }

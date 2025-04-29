@@ -141,7 +141,20 @@ enum es2panda_ContextState {
     ES2PANDA_STATE_ERROR
 };
 
-enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR };
+typedef struct es2panda_SuggestionInfo {
+    const es2panda_DiagnosticKind *kind;
+    const char **args;
+    size_t argc;
+    const char *substitutionCode;
+} es2panda_SuggestionInfo;
+
+typedef struct es2panda_DiagnosticInfo {
+    const es2panda_DiagnosticKind *kind;
+    const char **args;
+    size_t argc;
+} es2panda_DiagnosticInfo;
+
+enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR, ES2PANDA_PLUGIN_SUGGESTION };
 
 typedef enum es2panda_PluginDiagnosticType es2panda_PluginDiagnosticType;
 typedef enum es2panda_ContextState es2panda_ContextState;
@@ -198,6 +211,12 @@ struct CAPI_EXPORT es2panda_Impl {
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
     const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage,
                                                            es2panda_PluginDiagnosticType etype);
+    es2panda_DiagnosticInfo *(*CreateDiagnosticInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                     const char **args, size_t argc);
+    es2panda_SuggestionInfo *(*CreateSuggestionInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                     const char **args, size_t argc, const char *substitutionCode);
+    void (*LogDiagnosticWithSuggestion)(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
+                                        const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range);
     void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
                           size_t argc, es2panda_SourcePosition *pos);
     const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);

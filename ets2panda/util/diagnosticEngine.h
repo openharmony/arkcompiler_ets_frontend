@@ -68,6 +68,12 @@ public:
     [[nodiscard]] bool IsAnyError() const noexcept;
 
     template <typename... T>
+    Suggestion *CreateSuggestion(T &&...args)
+    {
+        return CreateDiagnostic<Suggestion>(std::forward<T>(args)...);
+    }
+
+    template <typename... T>
     void LogDiagnostic(T &&...args)
     {
         LogDiagnostic<Diagnostic>(std::forward<T>(args)...);
@@ -124,11 +130,18 @@ public:
 
 private:
     template <typename DIAGNOSTIC, typename... T>
-    void LogDiagnostic(T &&...args)
+    DIAGNOSTIC *CreateDiagnostic(T &&...args)
     {
         auto diag = std::make_unique<DIAGNOSTIC>(std::forward<T>(args)...);
         auto type = diag->Type();
         diagnostics_[type].push_back(std::move(diag));
+        return reinterpret_cast<DIAGNOSTIC *>(diagnostics_[type].back().get());
+    }
+
+    template <typename DIAGNOSTIC, typename... T>
+    void LogDiagnostic(T &&...args)
+    {
+        CreateDiagnostic<DIAGNOSTIC>(std::forward<T>(args)...);
     }
 
     template <typename... T>
