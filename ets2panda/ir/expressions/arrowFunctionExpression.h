@@ -51,6 +51,16 @@ public:
         return func_;
     }
 
+    void SetPreferredType(checker::Type *preferredType) noexcept
+    {
+        preferredType_ = preferredType;
+    }
+
+    [[nodiscard]] checker::Type *GetPreferredType() noexcept
+    {
+        return preferredType_;
+    }
+
     [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -72,6 +82,7 @@ public:
 
 private:
     ScriptFunction *func_;
+    checker::Type *preferredType_ {};
 };
 }  // namespace ark::es2panda::ir
 
