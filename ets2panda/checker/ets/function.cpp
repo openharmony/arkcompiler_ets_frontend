@@ -1584,7 +1584,9 @@ bool CheckTypeParameterConstraints(ArenaVector<Type *> typeParamList1, ArenaVect
 
 bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 {
-    auto *target = site->GetProperty(signature->Function()->Id()->Name(), PropertySearchFlags::SEARCH_METHOD);
+    PropertySearchFlags flags =
+        PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+    auto *target = site->GetProperty(signature->Function()->Id()->Name(), flags);
     bool isOverridingAnySignature = false;
 
     if (target == nullptr) {
@@ -1783,7 +1785,7 @@ void ETSChecker::CheckCapturedVariables()
     }
 }
 
-bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
+bool ETSChecker::AreOverrideCompatible(Signature *const s1, Signature *const s2)
 {
     // Two functions, methods or constructors M and N have the same signature if
     // their names and type parameters (if any) are the same, and their formal parameter
@@ -1799,6 +1801,9 @@ bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
 
 bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const s2)
 {
+    if (s2->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+        s2->Function()->Parent()->Parent()->Check(this);
+    }
     auto *const r1 = s1->ReturnType();
     auto *const r2 = s2->ReturnType();
 

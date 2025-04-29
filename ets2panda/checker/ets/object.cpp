@@ -788,20 +788,25 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     return cachedComputedAbstracts_.insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
 }
 
-[[maybe_unused]] static bool DoObjectImplementInterface(const ETSObjectType *interfaceType, const ETSObjectType *target)
+[[maybe_unused]] static bool DoObjectImplementInterface(const ETSObjectType *interfaceType, const ETSObjectType *target,
+                                                        const ETSChecker *checker)
 {
-    return std::any_of(interfaceType->Interfaces().begin(), interfaceType->Interfaces().end(),
-                       [&target](auto *it) { return it == target || DoObjectImplementInterface(it, target); });
+    auto &interfaces = interfaceType->Interfaces();
+    return std::any_of(interfaces.begin(), interfaces.end(), [&target, checker](auto *it) {
+        return it->IsSameBasedGeneric(checker->Relation(), target) || DoObjectImplementInterface(it, target, checker);
+    });
 }
 
 static bool CheckIfInterfaceCanBeFoundOnDifferentPaths(const ETSObjectType *classType,
-                                                       const ETSObjectType *interfaceType)
+                                                       const ETSObjectType *interfaceType, const ETSChecker *checker)
 {
     return std::count_if(classType->Interfaces().begin(), classType->Interfaces().end(),
-                         [&interfaceType](auto *it) { return DoObjectImplementInterface(it, interfaceType); }) == 1;
+                         [&interfaceType, checker](auto *it) {
+                             return DoObjectImplementInterface(it, interfaceType, checker);
+                         }) == 1;
 }
 
-static void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType *> &interfaces)
+void ETSChecker::GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType *> &interfaces)
 {
     for (auto &classInterface : type->Interfaces()) {
         if (std::find(interfaces.begin(), interfaces.end(), classInterface) == interfaces.end()) {
@@ -811,36 +816,66 @@ static void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType 
     }
 }
 
-void ETSChecker::CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func)
+void ETSChecker::CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, Signature *sigFunc)
 {
-    if (AreOverrideEquivalent(func->Signature(), sig) && func->IsStatic() == sig->Function()->IsStatic()) {
-        if (CheckIfInterfaceCanBeFoundOnDifferentPaths(classType, func->Signature()->Owner()) &&
-            (Relation()->IsSupertypeOf(func->Signature()->Owner(), sig->Owner()) ||
-             Relation()->IsSupertypeOf(sig->Owner(), func->Signature()->Owner()))) {
+    bool throwError = false;
+    if (AreOverrideCompatible(sig, sigFunc) && sigFunc->Function()->IsStatic() == sig->Function()->IsStatic()) {
+        SavedTypeRelationFlagsContext const savedFlags(Relation(), Relation()->GetTypeRelationFlags() |
+                                                                       TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
+        if (CheckIfInterfaceCanBeFoundOnDifferentPaths(classType, sigFunc->Owner(), this) &&
+            (Relation()->IsSupertypeOf(sigFunc->Owner(), sig->Owner()) ||
+             Relation()->IsSupertypeOf(sig->Owner(), sigFunc->Owner()))) {
             return;
         }
+        throwError = true;
+    } else if (sigFunc->Function()->IsStatic() == sig->Function()->IsStatic()) {
+        Relation()->Result(false);
+        SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
 
+        Relation()->SignatureIsIdenticalTo(sig, sigFunc);
+        if ((Relation()->IsTrue() &&
+             (sig->GetSignatureInfo()->restVar == nullptr) == (sigFunc->GetSignatureInfo()->restVar == nullptr)) ||
+            (HasSameAssemblySignature(sigFunc, sig))) {
+            throwError = true;
+        }
+    }
+    if (throwError) {
         LogError(diagnostic::INTERFACE_METHOD_COLLISION,
-                 {sig->Function()->Id()->Name(), sig->Owner()->Name(), func->Signature()->Owner()->Name()},
+                 {sig->Function()->Id()->Name(), sig->Owner()->Name(), sigFunc->Owner()->Name()},
                  classType->GetDeclNode()->Start());
     }
 }
 
 void ETSChecker::CheckFunctionRedeclarationInInterface(ETSObjectType *classType,
-                                                       ArenaVector<Signature *> &similarSignatures,
-                                                       ir::ScriptFunction *func)
+                                                       ArenaVector<Signature *> &similarSignatures, Signature *sigFunc)
 {
     for (auto *const sig : similarSignatures) {
-        if (sig != func->Signature() && func->HasBody()) {
-            if (classType == sig->Owner()) {
+        if (sig == sigFunc) {
+            return;
+        }
+        if (sigFunc->Function()->Id()->Name() == sig->Function()->Id()->Name()) {
+            if (classType->IsSameBasedGeneric(Relation(), sig->Owner())) {
                 return;
             }
-
-            CheckIfOverrideIsValidInInterface(classType, sig, func);
+            if (Relation()->IsIdenticalTo(sig->Owner(), sigFunc->Owner())) {
+                continue;
+            }
+            CheckIfOverrideIsValidInInterface(classType, sig, sigFunc);
         }
     }
 
-    similarSignatures.push_back(func->Signature());
+    similarSignatures.push_back(sigFunc);
+}
+
+static void CallRedeclarationCheckForCorrectSignature(ir::MethodDefinition *method, ETSFunctionType *funcType,
+                                                      ArenaVector<Signature *> &similarSignatures,
+                                                      ETSObjectType *classType, ETSChecker *checker)
+{
+    ir::ScriptFunction *func = method->Function();
+    if (!func->IsAbstract()) {
+        auto *sigFunc = funcType->FindSignature(func);
+        checker->CheckFunctionRedeclarationInInterface(classType, similarSignatures, sigFunc);
+    }
 }
 
 void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
@@ -848,14 +883,18 @@ void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
     ArenaVector<ETSObjectType *> interfaces(Allocator()->Adapter());
     ArenaVector<Signature *> similarSignatures(Allocator()->Adapter());
     interfaces.emplace_back(classType);
-    checker::GetInterfacesOfClass(classType, interfaces);
+    GetInterfacesOfClass(classType, interfaces);
 
     for (auto *const &interface : interfaces) {
         for (auto *const &prop : interface->Methods()) {
-            ir::AstNode *node = prop->Declaration()->Node();
-            ir::ScriptFunction *func = node->AsMethodDefinition()->Function();
-            if (func->Body() != nullptr) {
-                CheckFunctionRedeclarationInInterface(classType, similarSignatures, func);
+            ir::MethodDefinition *node = prop->Declaration()->Node()->AsMethodDefinition();
+            if (prop->TsType()->IsTypeError()) {
+                continue;
+            }
+            auto *funcType = prop->TsType()->AsETSFunctionType();
+            CallRedeclarationCheckForCorrectSignature(node, funcType, similarSignatures, classType, this);
+            for (auto *const &overload : node->Overloads()) {
+                CallRedeclarationCheckForCorrectSignature(overload, funcType, similarSignatures, classType, this);
             }
         }
     }
@@ -911,7 +950,7 @@ void ETSChecker::ValidateAbstractSignature(ArenaVector<ETSFunctionType *>::itera
                 continue;
             }
 
-            if (!AreOverrideEquivalent(*abstractSignature, substImplemented) ||
+            if (!AreOverrideCompatible(*abstractSignature, substImplemented) ||
                 !IsReturnTypeSubstitutable(substImplemented, *abstractSignature)) {
                 continue;
             }
