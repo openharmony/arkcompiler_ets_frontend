@@ -19,7 +19,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 110,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "configurable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -39,7 +39,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 111,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "enumerable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -59,7 +59,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 112,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "value",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -79,7 +79,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 113,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "writable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -99,7 +99,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 114,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "get",
         "api_type": "MethodSignature",
         "api_optional": true,
@@ -120,7 +120,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 115,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "set",
         "api_type": "MethodSignature",
         "api_optional": true,
@@ -1053,7 +1053,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1498,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "enumerable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1073,7 +1073,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1499,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "configurable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1093,7 +1093,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1500,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "writable",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1113,7 +1113,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1501,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "value",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1133,7 +1133,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1502,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "get",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1153,7 +1153,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1503,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "set",
         "api_type": "PropertySignature",
         "api_optional": true,
@@ -1220,7 +1220,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1508,
-        "problem": "BuiltinAll",
+        "problem": "NoPropertyDescriptor",
         "api_name": "MethodDecorator",
         "api_type": "TypeAliasDeclaration",
         "api_func_args": [

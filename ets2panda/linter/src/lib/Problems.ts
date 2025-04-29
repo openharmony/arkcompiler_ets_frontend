@@ -215,7 +215,7 @@ export enum FaultID {
   InteropIncrementDecrement,
   BuiltinThisArgs,
   BuiltinSymbolIterator,
-  NoPropertyDescritor,
+  NoPropertyDescriptor,
   BuiltinNoCtorFunc,
   SharedArrayBufferDeprecated,
   LimitedStdLibNoSendableDecorator,
