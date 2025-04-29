@@ -5809,7 +5809,31 @@ export class TypeScriptLinter {
     }
     const isStatic = TsUtils.hasModifier(propDecl.modifiers, ts.SyntaxKind.StaticKeyword);
     const hasNoInitializer = !propDecl.initializer;
-    if (isStatic && hasNoInitializer) {
+    const isOptional = !!propDecl.questionToken;
+
+    const defaultSkipTypeCheck = (typeNode: ts.TypeNode | undefined): boolean => {
+      if (!typeNode) {
+          return false;
+      }
+
+      const typeText = typeNode.getText();
+      if (ts.isLiteralTypeNode(typeNode) || ['boolean', 'number', 'null', 'undefined'].includes(typeText)) {
+          return true;
+      }
+  
+      if (ts.isUnionTypeNode(typeNode)) {
+        return typeNode.types.some(t => {
+          const tText = t.getText();
+          return tText === 'undefined';
+        });
+      }
+  
+      return false;
+    };
+
+    const shouldSkipCheck = isOptional || defaultSkipTypeCheck(propDecl.type);
+
+    if (isStatic && hasNoInitializer && !shouldSkipCheck) {
       const autofix = this.autofixer?.fixStaticPropertyInitializer(propDecl);
       this.incrementCounters(propDecl, FaultID.ClassstaticInitialization, autofix);
     }
