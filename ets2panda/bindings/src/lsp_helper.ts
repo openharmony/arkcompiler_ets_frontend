@@ -30,6 +30,8 @@ import { unpackString } from './private';
 import { Es2pandaContextState } from './generated/Es2pandaEnums';
 import { BuildConfig } from './types';
 import { PluginDriver, PluginHook } from './ui_plugins_driver';
+import { ModuleDescriptor } from './buildConfigGenerate';
+import { generateArkTsConfigByModules } from './arktsConfigGenerate';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -42,6 +44,7 @@ function initBuildEnv(): void {
 
 export class Lsp {
   private pandaLibPath: string;
+  private projectPath: string;
   private fileNameToArktsconfig: Record<string, string>; // Map<fileName, arktsconfig.json>
   private moduleToBuildConfig: Record<string, BuildConfig>; // Map<moduleName, build_config.json>
   private getFileContent: (filePath: string) => string;
@@ -49,11 +52,20 @@ export class Lsp {
   constructor(projectPath: string, getContentCallback?: (filePath: string) => string) {
     initBuildEnv();
     this.pandaLibPath = path.resolve(__dirname, '../../ets2panda/lib');
+    this.projectPath = projectPath;
     let compileFileInfoPath = path.join(projectPath, '.idea', '.deveco', 'lsp_compileFileInfos.json');
     this.fileNameToArktsconfig = JSON.parse(fs.readFileSync(compileFileInfoPath, 'utf-8'));
     let buildConfigPath = path.join(projectPath, '.idea', '.deveco', 'lsp_build_config.json');
     this.moduleToBuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
     this.getFileContent = getContentCallback || ((path) => fs.readFileSync(path, 'utf8'));
+  }
+
+  updateConfig(buildSdkPath: string, modules?: ModuleDescriptor[]): void {
+    generateArkTsConfigByModules(buildSdkPath, this.projectPath, modules);
+    let compileFileInfoPath = path.join(this.projectPath, '.idea', '.deveco', 'lsp_compileFileInfos.json');
+    this.fileNameToArktsconfig = JSON.parse(fs.readFileSync(compileFileInfoPath, 'utf-8'));
+    let buildConfigPath = path.join(this.projectPath, '.idea', '.deveco', 'lsp_build_config.json');
+    this.moduleToBuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
   }
 
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
