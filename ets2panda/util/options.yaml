@@ -95,11 +95,6 @@ options:
   default: false
   description: Dump debug info
 
-- name: with-export-table
-  type: bool
-  default: false
-  description: enable abc file with export table info
-
 - name: opt-level
   type: int
   default: 0
@@ -182,6 +177,11 @@ options:
     type: std::string
     default: ""
     description: Output path for generated static declaration files
+
+- name: emit-declaration
+  type: bool
+  default: false
+  description: Emit declaration to .abc file
 
 - name: thread
   type: int

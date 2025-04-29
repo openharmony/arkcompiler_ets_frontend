@@ -25,6 +25,10 @@
 #include "parser/program/program.h"
 #include "ir/expressions/literals/stringLiteral.h"
 
+#include "abc2program_driver.h"
+#include "checker/types/signature.h"
+#include "compiler/lowering/ets/declGenPhase.h"
+
 #ifdef USE_UNIX_SYSCALL
 #include <dirent.h>
 #include <sys/types.h>
@@ -58,6 +62,55 @@ static bool IsAbsolute(const std::string &path)
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
+void ImportPathManager::ProcessExternalModuleImport(ImportMetadata &importData)
+{
+    ES2PANDA_ASSERT(!IsAbsolute(std::string(importData.resolvedSource)));
+    auto it = arktsConfig_->Dependencies().find(std::string(importData.resolvedSource));
+    ES2PANDA_ASSERT(it != arktsConfig_->Dependencies().cend());
+    const auto &externalModuleImportData = it->second;
+    importData.lang = externalModuleImportData.GetLanguage().GetId();
+    importData.declPath = externalModuleImportData.Path();
+
+    // process .d.ets "path" in "dependencies"
+    // process emptry "path" in dependencies, since in interop we allow imports without typecheck
+    if (!Helpers::EndsWith(std::string(externalModuleImportData.Path()), ".abc")) {
+        importData.importFlags |= ImportFlags::EXTERNAL_SOURCE_IMPORT;
+        importData.ohmUrl = externalModuleImportData.OhmUrl();
+        return;
+    }
+
+    // process .abc "path" in "dependencies"
+    ES2PANDA_ASSERT(Helpers::EndsWith(std::string(externalModuleImportData.Path()), ".abc"));
+    importData.importFlags |= ImportFlags::EXTERNAL_BINARY_IMPORT;
+    abc2program::Abc2ProgramDriver driver;
+    driver.Compile(std::string {externalModuleImportData.Path()});
+    pandasm::Program &prog = driver.GetProgram();
+
+    // NOTE(itrubachev): support binary file after ark_link #26280
+    auto etsGlobalRecord = std::find_if(prog.recordTable.begin(), prog.recordTable.end(), [](auto &record) {
+        auto annotations = record.second.metadata->GetAnnotations();
+        auto moduleDeclAnno = std::find_if(annotations.begin(), annotations.end(), [](auto &anno) {
+            return anno.GetName() == compiler::DeclGenPhase::MODULE_DECLARATION_ANNOTATION;
+        });
+        return moduleDeclAnno != annotations.end();
+    });
+    ES2PANDA_ASSERT(etsGlobalRecord != prog.recordTable.end());
+    // rely on the following mangling: <moduleName>.ETSGLOBAL
+    auto etsGlobalSuffix = std::string(".") + std::string(compiler::Signatures::ETS_GLOBAL);
+    ES2PANDA_ASSERT(Helpers::EndsWith(etsGlobalRecord->second.name, etsGlobalSuffix));
+    auto moduleName =
+        etsGlobalRecord->second.name.substr(0, etsGlobalRecord->second.name.size() - etsGlobalSuffix.size());
+    importData.ohmUrl = moduleName;
+
+    auto annotations = etsGlobalRecord->second.metadata->GetAnnotations();
+    auto moduleDeclarationAnno = std::find_if(annotations.begin(), annotations.end(), [](auto &anno) {
+        return anno.GetName() == compiler::DeclGenPhase::MODULE_DECLARATION_ANNOTATION;
+    });
+    ES2PANDA_ASSERT(moduleDeclarationAnno != annotations.end());
+    auto declText = moduleDeclarationAnno->GetElements()[0].GetValue()->GetAsScalar()->GetValue<std::string>();
+    importData.declText = declText;
+}
+
 ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser::Program *program,
                                                                           ImportFlags importFlags,
                                                                           ir::StringLiteral *importPath)
@@ -68,7 +121,7 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
     // instead of 'AbsoluteName'.
     isDynamic_ = program->ModuleInfo().isDeclForDynamicStaticInterop;
     auto curModulePath = isDynamic_ ? program->ModuleInfo().moduleName : program->AbsoluteName();
-    auto [resolvedImportPath, resolvedIsDynamic] = ResolvePath(curModulePath.Utf8(), importPath);
+    auto [resolvedImportPath, resolvedIsExternalModule] = ResolvePath(curModulePath.Utf8(), importPath);
     if (resolvedImportPath.empty()) {
         ES2PANDA_ASSERT(diagnosticEngine_.IsAnyError());
         return ImportMetadata {util::ImportFlags::NONE, Language::Id::COUNT, ERROR_LITERAL};
@@ -78,14 +131,8 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
 
     ImportMetadata importData {importFlags};
     importData.resolvedSource = resolvedImportPath;
-    if (resolvedIsDynamic) {
-        ES2PANDA_ASSERT(!IsAbsolute(std::string(importData.resolvedSource)));
-        auto it = arktsConfig_->DynamicPaths().find(std::string(importData.resolvedSource));
-        ES2PANDA_ASSERT(it != arktsConfig_->DynamicPaths().cend());
-        const auto &dynImportData = it->second;
-        importData.lang = dynImportData.GetLanguage().GetId();
-        importData.declPath = dynImportData.DeclPath();
-        importData.ohmUrl = dynImportData.OhmUrl();
+    if (resolvedIsExternalModule) {
+        ProcessExternalModuleImport(importData);
     } else {
         ES2PANDA_ASSERT(IsAbsolute(std::string(importData.resolvedSource)));
         importData.lang = ToLanguage(program->Extension()).GetId();
@@ -125,10 +172,6 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolvePath(std::string_vi
     if (importPath->Str().Empty()) {
         diagnosticEngine_.LogDiagnostic(diagnostic::EMPTY_IMPORT_PATH, util::DiagnosticMessageParams {});
         return {*importPath};
-    }
-    const auto &entriesMap = arktsConfig_->Entries();
-    if (auto it = entriesMap.find(importPath->Str().Mutf8()); it != entriesMap.cend()) {
-        return {UString(it->second, allocator_).View().Utf8()};
     }
     if (IsRelativePath(*importPath)) {
         const size_t pos = curModulePath.find_last_of("/\\");
@@ -222,11 +265,12 @@ void ImportPathManager::AddImplicitPackageImportToParseList(StringView packageDi
     srcPos_ = srcPos;
     ES2PANDA_ASSERT(
         IsAbsolute(packageDir.Mutf8()));  // This should be an absolute path for 'AddToParseList' be able to resolve it.
-    AddToParseList({util::ImportFlags::IMPLICIT_PACKAGE_IMPORT, Language::Id::ETS, packageDir.Utf8(),
-                    util::ImportPathManager::DUMMY_PATH});
+    auto importMetadata = ImportMetadata {util::ImportFlags::IMPLICIT_PACKAGE_IMPORT, Language::Id::ETS,
+                                          packageDir.Utf8(), util::ImportPathManager::DUMMY_PATH};
+    AddToParseList(importMetadata);
 }
 
-void ImportPathManager::AddToParseList(const ImportMetadata importMetadata)
+void ImportPathManager::AddToParseList(const ImportMetadata &importMetadata)
 {
     auto resolvedPath = importMetadata.resolvedSource;
     bool isDeclForDynamic = !IsAbsolute(std::string(resolvedPath));  // Avoiding interpreting dynamic-path as directory.
@@ -307,14 +351,14 @@ StringView ImportPathManager::GetRealPath(StringView path) const
     return UString(realPath, allocator_).View();
 }
 
-std::string ImportPathManager::TryMatchDynamicPath(std::string_view fixedPath) const
+std::string ImportPathManager::TryMatchDependencies(std::string_view fixedPath) const
 {
     // Probably, 'NormalizePath' should be moved to 'AppendExtensionOrIndexFileIfOmitted'.
     auto normalizedPath = ark::os::NormalizePath(std::string(fixedPath));
     std::replace_if(
         normalizedPath.begin(), normalizedPath.end(), [&](auto &c) { return c == pathDelimiter_[0]; }, '/');
     // NOTE(dkofanov): #23877. See also 'arktsconfig.cpp'.
-    if (arktsConfig_->DynamicPaths().find(normalizedPath) != arktsConfig_->DynamicPaths().cend()) {
+    if (arktsConfig_->Dependencies().find(normalizedPath) != arktsConfig_->Dependencies().cend()) {
         return normalizedPath;
     }
     return {};
@@ -342,7 +386,7 @@ ImportPathManager::ResolvedPathRes ImportPathManager::AppendExtensionOrIndexFile
     std::replace_if(
         fixedPath.begin(), fixedPath.end(), [&](auto &c) { return ((delim != c) && ((c == '\\') || (c == '/'))); },
         delim);
-    if (auto resolvedDynamic = TryMatchDynamicPath(fixedPath); !resolvedDynamic.empty()) {
+    if (auto resolvedDynamic = TryMatchDependencies(fixedPath); !resolvedDynamic.empty()) {
         return {UString(resolvedDynamic, allocator_).View().Utf8(), true};
     }
 
@@ -416,22 +460,6 @@ util::StringView ImportPathManager::FormModuleNameSolelyByAbsolutePath(const uti
     return util::UString(name, allocator_).View();
 }
 
-template <typename DynamicPaths, typename ModuleNameFormer>
-static std::string TryFormDynamicModuleName(const DynamicPaths &dynPaths, const ModuleNameFormer &tryFormModuleName)
-{
-    for (auto const &[unitName, did] : dynPaths) {
-        if (did.DeclPath().empty()) {
-            // NOTE(dkofanov): related to #23698. Current assumption: if 'declPath' is absent, it is a pure-dynamic
-            // source, and, as soon it won't be parsed, no module should be created.
-            continue;
-        }
-        if (auto res = tryFormModuleName(unitName, did.DeclPath()); res) {
-            return res.value();
-        }
-    }
-    return "";
-}
-
 util::StringView ImportPathManager::FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos)
 {
     srcPos_ = srcPos;
@@ -442,6 +470,10 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
 {
     if (!absoluteEtsPath_.empty()) {
         return FormModuleNameSolelyByAbsolutePath(path);
+    }
+
+    if (!parseList_.empty() && parseList_[0].importData.IsExternalBinaryImport()) {
+        return util::UString(parseList_[0].importData.ohmUrl, allocator_).View();
     }
 
     if (arktsConfig_->Package().empty() && !arktsConfig_->UseUrl()) {
@@ -460,13 +492,6 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
         return FormUnitName(unitName) +
                (relativePath.empty() || FormUnitName(unitName).empty() ? relativePath : ("." + relativePath));
     };
-
-    for (auto const &[unitName, unitPath] : arktsConfig_->Entries()) {
-        if (unitPath == filePath) {
-            return util::UString(unitName, allocator_).View();
-        }
-    }
-
     if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl() + pathDelimiter_.data()); res) {
         return util::UString(res.value(), allocator_).View();
     }
@@ -482,9 +507,6 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
         if (auto res = tryFormModuleName(unitName, unitPath[0]); res) {
             return util::UString(res.value(), allocator_).View();
         }
-    }
-    if (auto dmn = TryFormDynamicModuleName(arktsConfig_->DynamicPaths(), tryFormModuleName); !dmn.empty()) {
-        return util::UString(dmn, allocator_).View();
     }
     // NOTE (hurton): as a last step, try resolving using the BaseUrl again without a path delimiter at the end
     if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
@@ -522,12 +544,6 @@ util::StringView ImportPathManager::FormRelativePath(const util::Path &path)
         return path.GetFileNameWithExtension();
     }
 
-    for (auto const &[unitName, unitPath] : arktsConfig_->Entries()) {
-        if (unitPath == filePath) {
-            return util::UString(unitName, allocator_).View();
-        }
-    }
-
     if (auto res = tryFormRelativePath(arktsConfig_->BaseUrl(), arktsConfig_->Package()); res) {
         return util::UString(res.value(), allocator_).View();
     }
@@ -538,7 +554,7 @@ util::StringView ImportPathManager::FormRelativePath(const util::Path &path)
         }
     }
 
-    for (auto const &[unitName, unitPath] : arktsConfig_->DynamicPaths()) {
+    for (auto const &[unitName, unitPath] : arktsConfig_->Dependencies()) {
         if (auto res = tryFormRelativePath(unitName, unitName); res) {
             return util::UString(res.value(), allocator_).View();
         }

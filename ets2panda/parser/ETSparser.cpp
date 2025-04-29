@@ -361,15 +361,23 @@ std::vector<Program *> ETSParser::SearchForNotParsed(ArenaVector<util::ImportPat
                 importPathManager_->MarkAsParsed(data.resolvedSource);
                 return programs;
             }
-            util::DiagnosticMessageParams diagParams = {std::string(parseCandidate)};
-            std::ifstream inputStream {std::string(parseCandidate)};
+
+            std::string parseCandidateStr {parseCandidate};
+            util::DiagnosticMessageParams diagParams = {parseCandidateStr};
+            std::ifstream inputStream {parseCandidateStr};
             if (!inputStream) {
                 DiagnosticEngine().LogDiagnostic(diagnostic::OPEN_FAILED, diagParams);
                 return programs;  // Error processing.
             }
             std::stringstream ss;
             ss << inputStream.rdbuf();
-            std::string externalSource = ss.str();
+            std::string externalSource;
+            if (data.IsExternalBinaryImport()) {
+                externalSource = data.declText;
+            } else {
+                externalSource = ss.str();
+            }
+
             auto preservedLang = GetContext().SetLanguage(data.lang);
             auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
             importPathManager_->MarkAsParsed(data.resolvedSource);

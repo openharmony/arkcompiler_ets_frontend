@@ -218,51 +218,6 @@ static std::string GenerateMangledName(const std::string &baseName, const std::s
     return baseName + "$" + propName;
 }
 
-static void StoreEntity(std::vector<pandasm::LiteralArray::Literal> &literals, uint8_t type)
-{
-    uint32_t emptyValue = 0;
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
-                                                          static_cast<uint8_t>(panda_file::LiteralTag::INTEGER)});
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::INTEGER, emptyValue});
-
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
-                                                          static_cast<uint8_t>(panda_file::LiteralTag::ACCESSOR)});
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::ACCESSOR, type});
-
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
-                                                          static_cast<uint8_t>(panda_file::LiteralTag::INTEGER)});
-    literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::INTEGER, emptyValue});
-}
-
-static std::vector<std::pair<std::string, std::string>> StoreExportNodes(
-    std::vector<std::pair<std::string, ir::AstNode *>> &declGen, pandasm::Program *program)
-{
-    std::vector<pandasm::LiteralArray::Literal> literals;
-    std::vector<std::pair<std::string, std::string>> result;
-
-    for (auto &pair : declGen) {
-        auto declString = std::string {pair.first};
-        auto *node = pair.second;
-        if (node->IsClassProperty() && node->IsConst()) {
-            StoreEntity(literals, parser::EntityType::CLASS_PROPERTY);
-            result.emplace_back(declString, node->AsClassProperty()->Id()->Name().Mutf8());
-        } else if (node->IsMethodDefinition()) {
-            StoreEntity(literals, parser::EntityType::METHOD_DEFINITION);
-            result.emplace_back(declString, node->AsMethodDefinition()->Function()->Scope()->InternalName());
-        } else if (node->IsClassDefinition()) {
-            StoreEntity(literals, parser::EntityType::CLASS_DEFINITION);
-            result.emplace_back(declString, node->AsClassDefinition()->InternalName().Mutf8());
-        } else if (node->IsTSInterfaceDeclaration()) {
-            StoreEntity(literals, parser::EntityType::TS_INTERFACE_DECLARATION);
-            result.emplace_back(declString, node->AsTSInterfaceDeclaration()->InternalName().Mutf8());
-        } else {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-    program->literalarrayTable.emplace("export_entities", literals);
-    return result;
-}
-
 void ETSEmitter::GenAnnotation()
 {
     Program()->lang = EXTENSION;
@@ -308,10 +263,6 @@ void ETSEmitter::GenAnnotation()
 
     for (auto [arrType, signature] : checker->GlobalArrayTypes()) {
         GenGlobalArrayRecord(arrType, signature);
-    }
-    if (Context()->config->options->WasSetWithExportTable()) {
-        auto result = StoreExportNodes(Context()->parserProgram->DeclGenExportNodes(), Program());
-        Program()->exportStrMap = std::move(result);
     }
 }
 

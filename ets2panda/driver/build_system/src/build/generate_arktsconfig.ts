@@ -44,9 +44,9 @@ import {
   sdkConfigPrefix,
 } from '../pre_define';
 
-interface DynamicPathItem {
+interface DependencyItem {
   language: string,
-  declPath: string,
+  path: string,
   ohmUrl: string
 }
 
@@ -55,9 +55,8 @@ interface ArkTSConfigObject {
     package: string,
     baseUrl: string,
     paths: Record<string, string[]>;
-    dependencies: string[] | undefined;
     entry?: string;
-    dynamicPaths: Record<string, DynamicPathItem>;
+    dependencies: Record<string, DependencyItem>;
     useEmptyPackage?: boolean;
   }
 };
@@ -197,20 +196,13 @@ export class ArkTSConfigGenerator {
     }
   }
 
-  private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
-    let depModules: Map<string, ModuleInfo> = moduleInfo.staticDepModuleInfos;
-    depModules.forEach((depModuleInfo: ModuleInfo) => {
-      dependenciesSection.push(depModuleInfo.arktsConfigFile);
-    });
-  }
-
   private getOhmurl(file: string, moduleInfo: ModuleInfo): string {
     let unixFilePath: string = file.replace(/\\/g, '/');
     let ohmurl: string = moduleInfo.packageName + '/' + unixFilePath;
     return changeFileExtension(ohmurl, '');
   }
 
-  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
+  private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesection: Record<string, DependencyItem>): void {
     let depModules: Map<string, ModuleInfo> = moduleInfo.dynamicDepModuleInfos;
 
     depModules.forEach((depModuleInfo: ModuleInfo) => {
@@ -222,16 +214,16 @@ export class ArkTSConfigGenerator {
       let declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
       Object.keys(declFilesObject.files).forEach((file: string) => {
         let ohmurl: string = this.getOhmurl(file, depModuleInfo);
-        dynamicPathSection[ohmurl] = {
+        dependenciesection[ohmurl] = {
           language: 'js',
-          declPath: declFilesObject.files[file].declPath,
+          path: declFilesObject.files[file].declPath,
           ohmUrl: declFilesObject.files[file].ohmUrl
         };
 
         let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
         let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
         if (absFilePath === entryFileWithoutExtension) {
-          dynamicPathSection[depModuleInfo.packageName] = dynamicPathSection[ohmurl];
+          dependenciesection[depModuleInfo.packageName] = dependenciesection[ohmurl];
         }
       });
     });
@@ -250,25 +242,21 @@ export class ArkTSConfigGenerator {
       this.logger.printErrorAndExit(logData);
     }
     let pathSection = this.getPathSection(moduleInfo);
-    let dependenciesSection: string[] = [];
-    this.getDependenciesSection(moduleInfo, dependenciesSection);
+
     this.getAllFilesToPathSectionForHybrid(moduleInfo, buildConfig);
-
-    let dynamicPathSection: Record<string, DynamicPathItem> = {};
-
+    let dependenciesection: Record<string, DependencyItem> = {};
     if (!enableDeclgenEts2Ts) {
-      this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+      this.getDependenciesSection(moduleInfo, dependenciesection);
     }
-    this.processAlias(moduleInfo, dynamicPathSection);
+    this.processAlias(moduleInfo, dependenciesection);
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
     let arktsConfig: ArkTSConfigObject = {
       compilerOptions: {
         package: moduleInfo.packageName,
         baseUrl: baseUrl,
         paths: pathSection,
-        dependencies: dependenciesSection.length === 0 ? undefined : dependenciesSection,
         entry: moduleInfo.entryFile,
-        dynamicPaths: dynamicPathSection
+        dependencies: dependenciesection
       }
     };
 
@@ -292,31 +280,31 @@ export class ArkTSConfigGenerator {
     fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
   }
 
-  private processAlias(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
+  private processAlias(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
     const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(moduleInfo.packageName);
 
     aliasForPkg?.forEach((aliasConfig, aliasName) => {
         if (aliasConfig.isStatic || aliasConfig.originalAPIName.startsWith('@kit')) {
             this.processStaticAlias(aliasName, aliasConfig);
         } else {
-            this.processDynamicAlias(aliasName, aliasConfig, dynamicPathSection);
+            this.processDynamicAlias(aliasName, aliasConfig, dependencySection);
         }
     });
 
     this.dynamicSDKPaths.forEach(basePath => {
         if (fs.existsSync(basePath)) {
-            this.traverseDynamicPath(basePath, '', false, dynamicPathSection);
+            this.traverseDependencies(basePath, '', false, dependencySection);
         } else {
             this.logger.printWarn(`sdk path ${basePath} not exist.`);
         }
     });
   }
 
-  private traverseDynamicPath(
+  private traverseDependencies(
       currentDir: string,
       relativePath: string,
       isExcludedDir: boolean,
-      dynamicPathSection: Record<string, DynamicPathItem>,
+      dependencySection: Record<string, DependencyItem>,
       allowedExtensions: string[] = ['.d.ets']
   ): void {
       const items = fs.readdirSync(currentDir);
@@ -327,7 +315,7 @@ export class ArkTSConfigGenerator {
 
           if (stat.isFile()) {
               if (this.isAllowedExtension(item, allowedExtensions)) {
-                  this.processDynamicFile(itemPath, item, relativePath, isExcludedDir, dynamicPathSection);
+                  this.processDynamicFile(itemPath, item, relativePath, isExcludedDir, dependencySection);
               }
               continue;
           }
@@ -335,11 +323,11 @@ export class ArkTSConfigGenerator {
           if (stat.isDirectory()) {
               const isRuntimeAPI = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
               const newRelativePath = isRuntimeAPI ? '' : (relativePath ? `${relativePath}.${item}` : item);
-              this.traverseDynamicPath(
+              this.traverseDependencies(
                   path.resolve(currentDir, item),
                   newRelativePath,
                   isExcludedDir || isRuntimeAPI,
-                  dynamicPathSection,
+                  dependencySection,
                   allowedExtensions
               );
           }
@@ -364,16 +352,16 @@ export class ArkTSConfigGenerator {
     fileName: string,
     relativePath: string,
     isExcludedDir: boolean,
-    dynamicPathSection: Record<string, DynamicPathItem>
+    dependencySection: Record<string, DependencyItem>
   ): void {
     if (!this.isValidAPIFile(fileName)) return;
 
     const baseName = path.basename(fileName, '.d.ets');
     const key = this.buildDynamicKey(baseName, relativePath, isExcludedDir);
 
-    dynamicPathSection[key] = {
+    dependencySection[key] = {
         language: 'js',
-        declPath: filePath,
+        path: filePath,
         ohmUrl: getOhmurlByApi(baseName)
     };
   }
@@ -384,7 +372,7 @@ export class ArkTSConfigGenerator {
     }
   }
 
-  private processDynamicAlias(aliasName: string, aliasConfig: AliasConfig, dynamicPathSection: Record<string, DynamicPathItem>) {
+  private processDynamicAlias(aliasName: string, aliasConfig: AliasConfig, dependencySection: Record<string, DependencyItem>) {
     const declPath = getInteropFilePathByApi(aliasConfig.originalAPIName, this.dynamicSDKPaths);
     if (declPath === '') {
       return;
@@ -396,9 +384,9 @@ export class ArkTSConfigGenerator {
       );
       this.logger.printError(logData);
     }
-    dynamicPathSection[aliasName] = {
+    dependencySection[aliasName] = {
       language: 'js',
-      declPath: declPath,
+      path: declPath,
       ohmUrl: getOhmurlByApi(aliasConfig.originalAPIName)
     }
   }
