@@ -2331,8 +2331,8 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
                  interfaceFound->GetDeclNode()->Start());
         return;
     }
-    LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()},
-             classDef->Super()->Start());
+    auto pos = classDef->Super() == nullptr ? classDef->Ident()->Start() : classDef->Super()->Start();
+    LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()}, pos);
 }
 
 void ETSChecker::CheckReadonlyClassPropertyInImplementedInterface(ETSObjectType *classType,
