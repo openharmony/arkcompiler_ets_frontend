@@ -285,6 +285,7 @@ ast/parser/ets/string_literal_const_cast.ets
 ast/parser/ets/InvalidClasses.ets
 ast/parser/ets/interfaceExtendInterfaces1.ets
 ast/parser/ets/method_modifier_check_17.ets
+ast/parser/ets/invalid_decorator_usage.ets
 ast/parser/ets/operator_logical_and_euqal.ets
 ast/parser/ets/ambient_indexer_5.ets
 ast/parser/ets/declare_class_bad_2.ets

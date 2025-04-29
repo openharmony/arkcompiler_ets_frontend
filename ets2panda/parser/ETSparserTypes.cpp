@@ -190,7 +190,8 @@ ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options
 {
     auto startLoc = Lexer()->GetToken().Start();
     auto params = ParseFunctionParams();
-    bool hasReceiver = !params.empty() && params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
+    bool hasReceiver = !params.empty() && params[0]->IsETSParameterExpression() &&
+                       params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_ARROW)) {
         if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
