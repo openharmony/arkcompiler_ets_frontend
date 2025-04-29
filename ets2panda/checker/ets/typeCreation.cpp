@@ -426,56 +426,62 @@ ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
     return promiseType->Substitute(Relation(), substitution);
 }
 
+static bool IsInValidKeyofTypeNode(ir::AstNode *node)
+{
+    return (node->Modifiers() & ir::ModifierFlags::PRIVATE) != 0 ||
+           (node->Modifiers() & ir::ModifierFlags::PROTECTED) != 0;
+}
+
+void ETSChecker::ProcessTypeMembers(ETSObjectType *type, ArenaVector<Type *> &literals)
+{
+    if (type == GlobalETSObjectType()) {
+        return;
+    }
+
+    for (auto *method : type->Methods()) {
+        auto *methodDef = method->Declaration()->Node()->AsMethodDefinition();
+        for (auto *overload : methodDef->Overloads()) {
+            if (IsInValidKeyofTypeNode(overload)) {
+                continue;
+            }
+            literals.push_back(CreateETSStringLiteralType(overload->Key()->Variable()->Name()));
+        }
+        if (!IsInValidKeyofTypeNode(method->Declaration()->Node())) {
+            literals.push_back(CreateETSStringLiteralType(method->Name()));
+        }
+    }
+
+    for (auto *field : type->Fields()) {
+        if (IsInValidKeyofTypeNode(field->Declaration()->Node())) {
+            continue;
+        }
+        literals.push_back(CreateETSStringLiteralType(field->Name()));
+    }
+}
+
 Type *ETSChecker::CreateUnionFromKeyofType(ETSObjectType *const type)
 {
-    ArenaVector<checker::Type *> stringLiterals(Allocator()->Adapter());
-
-    std::deque<checker::ETSObjectType *> superTypes;
+    ArenaVector<Type *> stringLiterals(Allocator()->Adapter());
+    std::deque<ETSObjectType *> superTypes;
     superTypes.push_back(type);
-    auto addToUnion = [this, &stringLiterals](checker::ETSObjectType *it) {
-        if (it == GlobalETSObjectType()) {
-            return;
+    auto enqueueSupers = [&](ETSObjectType *currentType) {
+        if (currentType->SuperType() != nullptr) {
+            superTypes.push_back(currentType->SuperType());
         }
-        for (auto *method : it->Methods()) {
-            if (method->HasFlag(varbinder::VariableFlags::PRIVATE) ||
-                method->HasFlag(varbinder::VariableFlags::PROTECTED)) {
-                continue;
-            }
-            stringLiterals.push_back(this->CreateETSStringLiteralType(method->Name()));
-        }
-        for (auto *field : it->Fields()) {
-            if (field->HasFlag(varbinder::VariableFlags::PRIVATE) ||
-                field->HasFlag(varbinder::VariableFlags::PROTECTED)) {
-                continue;
-            }
-            stringLiterals.push_back(this->CreateETSStringLiteralType(field->Name()));
-        }
-    };
-
-    auto addObjToDeque = [&superTypes](checker::ETSObjectType *it) {
-        if (it->SuperType() != nullptr) {
-            superTypes.push_back(it->SuperType());
-        }
-        if (it->Interfaces().empty()) {
-            return;
-        }
-        for (auto inteface : it->Interfaces()) {
-            superTypes.push_back(inteface);
+        for (auto interface : currentType->Interfaces()) {
+            superTypes.push_back(interface);
         }
     };
 
     while (!superTypes.empty()) {
-        auto *extendsObject = superTypes.front();
+        auto *currentType = superTypes.front();
         superTypes.pop_front();
-        addToUnion(extendsObject);
-        addObjToDeque(extendsObject);
+
+        ProcessTypeMembers(currentType, stringLiterals);
+        enqueueSupers(currentType);
     }
 
-    if (stringLiterals.empty()) {
-        return GlobalETSNeverType();
-    }
-
-    return CreateETSUnionType(std::move(stringLiterals));
+    return stringLiterals.empty() ? GlobalETSNeverType() : CreateETSUnionType(std::move(stringLiterals));
 }
 
 ETSAsyncFuncReturnType *ETSChecker::CreateETSAsyncFuncReturnTypeFromPromiseType(ETSObjectType *promiseType)
