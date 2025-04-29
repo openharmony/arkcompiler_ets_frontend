@@ -633,6 +633,7 @@ ast/parser/ets/user_defined_16.ets
 ast/parser/ets/enum_default_invalid_value_type.ets
 ast/parser/ets/struct_implements_interface.ets
 ast/parser/ets/wrong_context_function_1.ets
+ast/parser/ets/empty_array_map_inference_fail.ets
 ast/parser/ets/illegal_continue_statement.ets
 ast/compiler/ets/union_string_literals_5.ets
 ast/compiler/ets/annotation_tests/annotation_for_type_parameter01.ets

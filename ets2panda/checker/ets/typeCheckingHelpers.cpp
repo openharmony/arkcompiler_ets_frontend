@@ -1395,6 +1395,9 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
 {
     ES2PANDA_ASSERT(param->IsETSParameterExpression());
     ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
+    if (typeAnn == nullptr) {
+        return false;
+    }
     if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
