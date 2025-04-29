@@ -301,6 +301,57 @@ KNativePointer impl_getCompletionAtPosition(KNativePointer context, KInt positio
 }
 TS_INTEROP_2(getCompletionAtPosition, KNativePointer, KNativePointer, KInt)
 
+KNativePointer impl_organizeImports(KNativePointer context, KStringPtr &filenamePtr)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto result = ctx->OrganizeImportsImpl(reinterpret_cast<es2panda_Context *>(context), GetStringCopy(filenamePtr));
+    return new std::vector<FileTextChanges>(result);
+}
+TS_INTEROP_2(organizeImports, KNativePointer, KNativePointer, KStringPtr)
+
+KNativePointer impl_getFileTextChanges(KNativePointer fileTextChangesVecPtr)
+{
+    auto *vec = reinterpret_cast<std::vector<FileTextChanges> *>(fileTextChangesVecPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : *vec) {
+        ptrs.push_back(new FileTextChanges(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFileTextChanges, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileNameFromFileTextChanges(KNativePointer fileTextChangesPtr)
+{
+    auto *ftc = reinterpret_cast<FileTextChanges *>(fileTextChangesPtr);
+    return new std::string(ftc->fileName);
+}
+TS_INTEROP_1(getFileNameFromFileTextChanges, KNativePointer, KNativePointer)
+
+KNativePointer impl_getTextChangesFromFileTextChanges(KNativePointer fileTextChangesPtr)
+{
+    auto *ftc = reinterpret_cast<FileTextChanges *>(fileTextChangesPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : ftc->textChanges) {
+        ptrs.push_back(new TextChange(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getTextChangesFromFileTextChanges, KNativePointer, KNativePointer)
+
+KNativePointer impl_getTextSpanFromTextChange(KNativePointer textChangePtr)
+{
+    auto *tc = reinterpret_cast<TextChange *>(textChangePtr);
+    return new TextSpan(tc->span);
+}
+TS_INTEROP_1(getTextSpanFromTextChange, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNewTextFromTextChange(KNativePointer textChangePtr)
+{
+    auto *tc = reinterpret_cast<TextChange *>(textChangePtr);
+    return new std::string(tc->newText);
+}
+TS_INTEROP_1(getNewTextFromTextChange, KNativePointer, KNativePointer)
+
 KNativePointer impl_getImplementationAtPosition(KNativePointer context, KInt position)
 {
     LSPAPI const *ctx = GetImpl();
