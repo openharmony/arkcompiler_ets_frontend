@@ -175,6 +175,7 @@ function main(): void {
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 39:29 Error SyntaxError: Unexpected token '{'. */
 /* @@? 39:31 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 39:38 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 41:1 Error TypeError: Unresolved reference type */
@@ -196,13 +197,14 @@ function main(): void {
 /* @@? 49:13 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 51:35 Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 51:37 Error SyntaxError: Unexpected token '...'. */
+/* @@? 51:40 Error SyntaxError: Unexpected token 'p'. */
 /* @@? 51:43 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 51:43 Error TypeError: Unresolved reference FixedArray */
 /* @@? 51:58 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
-/* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
+/* @@? 51:61 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 51:61 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 51:65 Error SyntaxError: Unexpected token '{'. */
 /* @@? 52:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 52:12 Error TypeError: Unresolved reference q */
@@ -221,29 +223,32 @@ function main(): void {
 /* @@? 83:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 83:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 92:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 92:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
+/* @@? 115:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 115:32 Error TypeError: Unresolved reference U */
 /* @@? 115:33 Error SyntaxError: Unexpected token ')'. */
 /* @@? 115:34 Error SyntaxError: Unexpected token ':'. */
+/* @@? 115:36 Error SyntaxError: Unexpected token 'T'. */
 /* @@? 115:36 Error TypeError: Unresolved reference T */
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
+/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
+/* @@? 119:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
 /* @@? 119:34 Error SyntaxError: Unexpected token ':'. */
+/* @@? 119:36 Error SyntaxError: Unexpected token 'T'. */
 /* @@? 119:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 120:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 120:12 Error TypeError: All return statements in the function should be empty or have a value. */
@@ -257,7 +262,9 @@ function main(): void {
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:18 Error SyntaxError: Unexpected token '0'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
+/* @@? 137:21 Error SyntaxError: Unexpected token '{'. */
 /* @@? 141:16 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 146:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
@@ -274,4 +281,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 278:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 285:1 Error SyntaxError: Expected '}', got 'end of stream'. */

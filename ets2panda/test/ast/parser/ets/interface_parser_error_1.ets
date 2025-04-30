@@ -51,11 +51,12 @@ function mdin() {    let a = new A();
 /* @@? 24:7 Error SyntaxError: Unexpected token 'A'. */
 /* @@? 24:7 Error TypeError: Unresolved reference A */
 /* @@? 24:9 Error SyntaxError: Unexpected token 'implements'. */
+/* @@? 24:20 Error SyntaxError: Unexpected token 'I'. */
 /* @@? 24:20 Error TypeError: Interface name 'I' used in the wrong context */
 /* @@? 24:22 Error SyntaxError: Unexpected token '{'. */
 /* @@? 25:4 Error TypeError: Unresolved reference reanstructor */
-/* @@? 26:19 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 26:19 Error SyntaxError: Unexpected token '�ls'. */
+/* @@? 26:19 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 27:5 Error SyntaxError: Unexpected token 'A'. */
 /* @@? 27:7 Error SyntaxError: Unexpected token '{'. */
 /* @@? 28:5 Error SyntaxError: Identifier expected, got 'constructor'. */
@@ -63,5 +64,4 @@ function mdin() {    let a = new A();
 /* @@? 29:18 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 31:2 Error SyntaxError: Unexpected token '*'. */
 /* @@? 32:1 Error SyntaxError: Nested functions are not allowed. */
-/* @@? 32:1 Error SyntaxError: Unexpected token 'function'. */
 /* @@? 68:1 Error SyntaxError: Expected '}', got 'end of stream'. */

@@ -12,10 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public @interface MyAnno {
-    testProperty1: string
-}
 
-/* @@? 15:1 Error SyntaxError: Annotation declaration can not have access modifier. */
-/* @@? 15:1 Error SyntaxError: Unexpected token 'public'. */
-/* @@? 15:8 Error SyntaxError: Unexpected token '@'. */
+(function () {})();
+
+const a = [1];
+const b = a.map(function (e) {
+    return e * 2;
+});
+
+/* @@? 16:2 Error SyntaxError: Unexpected token 'function'. */
+/* @@? 19:17 Error SyntaxError: Unexpected token 'function'. */

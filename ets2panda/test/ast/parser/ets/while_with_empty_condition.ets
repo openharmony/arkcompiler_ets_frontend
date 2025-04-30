@@ -16,4 +16,5 @@
 while () {}
 
 /* @@? 16:8 Error SyntaxError: Unexpected token ')'. */
-/* @@? 20:1 Error SyntaxError: Missing condition in while statement */
+/* @@? 16:10 Error SyntaxError: Expected ')', got '{'. */
+/* @@? 21:1 Error SyntaxError: Missing condition in while statement */

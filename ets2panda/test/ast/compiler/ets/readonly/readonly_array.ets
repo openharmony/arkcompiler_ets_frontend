@@ -18,7 +18,4 @@ let a: readonly int [/* @@ E1 */""/* @@ E2 */];
 /* @@@ E1 Error SyntaxError: Unexpected token, expected ']'. */
 /* @@@ E1 Error SyntaxError: Invalid Type. */
 /* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E2 Error SyntaxError: Unexpected token ']'. */
 /* @@@ E2 Error SyntaxError: Unexpected token ']'. */

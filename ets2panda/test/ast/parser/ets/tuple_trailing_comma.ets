@@ -18,12 +18,13 @@ let a: [number, w: number, number,] = [1, 2, 3,];
 let b: [number, /* @@ label */,number, number,] = [1, 2, 3,];
 
 /* @@? 17:17 Error TypeError: Cannot find type 'w'. */
-/* @@? 17:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 17:18 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:20 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 17:20 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:26 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:28 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 17:28 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:34 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:35 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:37 Error SyntaxError: Unexpected token '='. */
-/* @@? 18:31 Error SyntaxError: Invalid Type. */
+/* @@@ label Error SyntaxError: Invalid Type. */

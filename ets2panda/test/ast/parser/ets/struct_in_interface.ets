@@ -31,4 +31,3 @@ interface A {
 /* @@? 19:22 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 20:5 Error SyntaxError: Identifier expected. */
 /* @@? 21:1 Error SyntaxError: Unexpected token '}'. */
-

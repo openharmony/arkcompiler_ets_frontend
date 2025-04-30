@@ -27,7 +27,5 @@ function main() {
     assertTrue(!"nothing was thrown")
 }
 
-/* @@? 18:15 Error TypeError: 'await' expressions require Promise object as argument. */
 /* @@? 18:15 Error SyntaxError: Unexpected token 'import'. */
-/* @@? 18:15 Error SyntaxError: Import declarations can only be used on the top level and before any other declaration, top level statement or directive. */
-/* @@? 19:14 Error TypeError: Property 'then' does not exist on type 'String' */
+/* @@? 18:15 Error TypeError: 'await' expressions require Promise object as argument. */
