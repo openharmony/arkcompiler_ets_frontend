@@ -305,6 +305,7 @@ ast/parser/ets/empty_launch.ets
 ast/parser/ets/increment-on-nullish-type-undefined.ets
 ast/parser/ets/generics_type_param_no_typeargs_no_default.ets
 ast/parser/ets/lambda_infer_type_neg_1.ets
+ast/parser/ets/readonlyFunctionTypeAnnotation.ets
 ast/parser/ets/readonlyGetterSetterReassignment1.ets
 ast/parser/ets/interface_instantiation.ets
 ast/parser/ets/Dollar_doller_invalid2.ets

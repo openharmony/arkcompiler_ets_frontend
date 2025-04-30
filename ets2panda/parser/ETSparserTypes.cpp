@@ -514,6 +514,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
     if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        if (typeAnnotation == nullptr) {
+            return nullptr;
+        }
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
             !(typeAnnotation->IsETSTypeReference() &&
               typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
