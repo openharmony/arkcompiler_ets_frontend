@@ -312,14 +312,14 @@ cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objec
 cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
 cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
 cookBookTag[337] =
-  'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';
+  'Importing data directly from the "JS" module for comparison is not supported (arkts-interop-js2s-compare-js-data)';
 cookBookTag[338] =
-  '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
-cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index-import)';
-cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
-cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
-cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';
-cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';
+  '"JS" objects can\'t be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)';
+cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-interop-js2s-access-js-index)';
+cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)';
+cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)';
+cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)';
+cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)';
 cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';
 cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
 cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';

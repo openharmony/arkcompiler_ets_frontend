@@ -41,7 +41,7 @@
             "endColumn": 13,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 17,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 17,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 15,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 11,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 16,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 23,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         }
     ]

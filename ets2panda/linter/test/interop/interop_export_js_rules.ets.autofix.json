@@ -14,67 +14,67 @@
     "limitations under the License."
   ],
   "result": [
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 59,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 59,
-      "problem": "InterOpImportJs",
-      "autofix": [
         {
-          "start": 618,
-          "end": 676,
-          "replacementText": ""
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 59,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
         },
         {
-          "start": 676,
-          "end": 676,
-          "replacementText": "let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff1 = GeneratedImportVar_1.getPropertyByName('ff1');"
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 59,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 618,
+                    "end": 676,
+                    "replacementText": ""
+                },
+                {
+                    "start": 676,
+                    "end": 676,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff1 = GeneratedImportVar_1.getPropertyByName('ff1');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 13,
+            "problem": "InteropJsObjectExport",
+            "suggest": "",
+            "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 1,
+            "endLine": 21,
+            "endColumn": 59,
+            "problem": "InteropJsObjectExport",
+            "suggest": "",
+            "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 57,
+            "problem": "InteropArkTs1ObjectExport",
+            "suggest": "",
+            "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
+            "severity": "ERROR"
         }
-      ],
-      "suggest": "",
-      "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 19,
-      "column": 1,
-      "endLine": 19,
-      "endColumn": 13,
-      "problem": "InteropJsObjectExport",
-      "suggest": "",
-      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 21,
-      "column": 1,
-      "endLine": 21,
-      "endColumn": 59,
-      "problem": "InteropJsObjectExport",
-      "suggest": "",
-      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 23,
-      "column": 1,
-      "endLine": 23,
-      "endColumn": 57,
-      "problem": "InteropArkTs1ObjectExport",
-      "suggest": "",
-      "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
-      "severity": "ERROR"
-    }
-  ]
+    ]
 }

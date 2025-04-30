@@ -81,7 +81,7 @@
             "endColumn": 8,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 13,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 15,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         }
     ]

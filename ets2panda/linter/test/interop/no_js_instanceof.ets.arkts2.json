@@ -41,7 +41,7 @@
             "endColumn": 22,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 23,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 23,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 50,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 34,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 38,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 38,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 42,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 22,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 24,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 7,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
@@ -221,7 +221,7 @@
             "endColumn": 37,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
             "severity": "ERROR"
         },
         {
