@@ -683,7 +683,7 @@ export class TypeScriptLinter {
       if (
         isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
         !isRecordObject &&
-        !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
+          !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
       ) {
         const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
         this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);
@@ -5197,7 +5197,7 @@ export class TypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -7159,10 +7159,11 @@ export class TypeScriptLinter {
     while (current && !functionNode) {
       current = current.parent;
       if (
-        ts.isFunctionDeclaration(current) ||
-        ts.isMethodDeclaration(current) ||
-        ts.isFunctionExpression(current) ||
-        ts.isArrowFunction(current)
+        current &&
+        (ts.isFunctionDeclaration(current) ||
+          ts.isMethodDeclaration(current) ||
+          ts.isFunctionExpression(current) ||
+          ts.isArrowFunction(current))
       ) {
         functionNode = current;
       }
