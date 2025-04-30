@@ -946,6 +946,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 10,
+                                "program": "default_parameter_implicitly_typed_return_void.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 2,
+                                "program": "default_parameter_implicitly_typed_return_void.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 10,
+                                "program": "default_parameter_implicitly_typed_return_void.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 2,
+                                "program": "default_parameter_implicitly_typed_return_void.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 10,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 2,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 16,
+                            "column": 10,
+                            "program": "default_parameter_implicitly_typed_return_void.ets"
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 2,
+                            "program": "default_parameter_implicitly_typed_return_void.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 16,
+                          "column": 10,
+                          "program": "default_parameter_implicitly_typed_return_void.ets"
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 2,
+                          "program": "default_parameter_implicitly_typed_return_void.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 10,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 2,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 1,
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 10,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 2,
+                              "program": "default_parameter_implicitly_typed_return_void.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 16,
+                            "column": 10,
+                            "program": "default_parameter_implicitly_typed_return_void.ets"
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 2,
+                            "program": "default_parameter_implicitly_typed_return_void.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 10,
+                        "program": "default_parameter_implicitly_typed_return_void.ets"
+                      },
+                      "end": {
+                        "line": 18,
+                        "column": 2,
+                        "program": "default_parameter_implicitly_typed_return_void.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 16,
