@@ -23,6 +23,7 @@ set(ES2PANDA_LSP_SRC
   ./src/quick_info.cpp
   ./src/references.cpp
   ./src/get_adjusted_location.cpp
+  ./src/get_safe_delete_info.cpp
   ./src/find_rename_locations.cpp
   ./src/find_safe_delete_location.cpp
   ./src/find_references.cpp

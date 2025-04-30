@@ -54,6 +54,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/get_adjusted_location.cpp",
     "src/get_definition_and_bound_span.cpp",
     "src/inlay_hints.cpp",
+    "src/get_safe_delete_info.cpp",
     "src/internal_api.cpp",
     "src/line_column_offset.cpp",
     "src/organize_imports.cpp",

@@ -725,6 +725,14 @@ KNativePointer impl_getLocationFromList(KNativePointer listPtr)
 }
 TS_INTEROP_1(getLocationFromList, KNativePointer, KNativePointer)
 
+KBoolean impl_getSafeDeleteInfo(KNativePointer context, KInt position, KStringPtr &path)
+{
+    LSPAPI const *ctx = GetImpl();
+    return static_cast<KBoolean>(
+        ctx->getSafeDeleteInfo(reinterpret_cast<es2panda_Context *>(context), position, GetStringCopy(path)));
+}
+TS_INTEROP_3(getSafeDeleteInfo, KBoolean, KNativePointer, KInt, KStringPtr)
+
 KNativePointer impl_toLineColumnOffset(KNativePointer context, KInt position)
 {
     LSPAPI const *ctx = GetImpl();
