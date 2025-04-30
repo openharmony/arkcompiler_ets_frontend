@@ -209,6 +209,7 @@ std::optional<bool> IsCompletionEntryDataResolved(ark::es2panda::lsp::Completion
 bool StartsWith(const std::string &str, const std::string &prefix);
 std::shared_ptr<ArkTsConfig> GetArkTsConfigFromFile(const char *fileName);
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord);
+std::string GetClassPropertyName(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 #endif
