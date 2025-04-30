@@ -5333,15 +5333,80 @@ export class TypeScriptLinter {
       return;
     }
     const switchStatement = node as ts.SwitchStatement;
-    if (!this.isValidSwitchExpr(switchStatement)) {
-      this.incrementCounters(switchStatement.expression, FaultID.SwitchExpression);
-    }
+
+    this.validateSwitchExpression(switchStatement);
+
     const duplicateCases = this.findDuplicateCases(switchStatement);
     if (duplicateCases.length > 0) {
       for (const duplicateCase of duplicateCases) {
         this.incrementCounters(duplicateCase.expression, FaultID.CaseExpression);
       }
     }
+  }
+
+  private validateSwitchExpression(switchStatement: ts.SwitchStatement): void {
+    const nodeType = this.tsTypeChecker.getTypeAtLocation(switchStatement.expression);
+    const typeName = this.tsTypeChecker.typeToString(nodeType);
+    const isUnionType = (nodeType.flags & ts.TypeFlags.Union) !== 0;
+
+    const { isLiteralInitialized, isFloatLiteral, hasExplicitTypeAnnotation } = this.getDeclarationInfo(
+      switchStatement.expression
+    );
+
+    const isAllowed =
+      !isUnionType &&
+      (nodeType.flags & ts.TypeFlags.StringLike ||
+        typeName === 'String' ||
+        nodeType.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeName) ||
+        isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
+        nodeType.flags & ts.TypeFlags.EnumLike);
+
+    if (!isAllowed) {
+      this.incrementCounters(switchStatement.expression, FaultID.SwitchExpression);
+    }
+  }
+
+  private getDeclarationInfo(expression: ts.Expression): {
+    isLiteralInitialized: boolean;
+    isFloatLiteral: boolean;
+    hasExplicitTypeAnnotation: boolean;
+  } {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(expression);
+    const declaration = symbol?.valueDeclaration;
+
+    if (!declaration || !ts.isVariableDeclaration(declaration)) {
+      return { isLiteralInitialized: false, isFloatLiteral: false, hasExplicitTypeAnnotation: false };
+    }
+
+    const hasExplicitTypeAnnotation = !!declaration.type;
+    const initializerInfo = TypeScriptLinter.getInitializerInfo(declaration.initializer);
+
+    return {
+      isLiteralInitialized: initializerInfo.isLiteralInitialized,
+      isFloatLiteral: initializerInfo.isFloatLiteral,
+      hasExplicitTypeAnnotation
+    };
+  }
+
+  private static getInitializerInfo(initializer?: ts.Expression): {
+    isLiteralInitialized: boolean;
+    isFloatLiteral: boolean;
+  } {
+    if (!initializer) {
+      return { isLiteralInitialized: false, isFloatLiteral: false };
+    }
+
+    const isLiteralInitialized = ts.isNumericLiteral(initializer) || ts.isStringLiteral(initializer);
+
+    let isFloatLiteral = false;
+    if (ts.isNumericLiteral(initializer)) {
+      const literalText = initializer.getText();
+      if (!(/^0[xX]/).test(literalText)) {
+        isFloatLiteral = (/\.|e[-+]|\dE[-+]/i).test(literalText);
+      }
+    }
+
+    return { isLiteralInitialized, isFloatLiteral };
   }
 
   private findDuplicateCases(switchStatement: ts.SwitchStatement): ts.CaseClause[] {
@@ -5381,87 +5446,6 @@ export class TypeScriptLinter {
         }
         return undefined;
     }
-  }
-
-  private isValidSwitchExpr(switchStatement: ts.SwitchStatement): boolean {
-    const expressionType = this.tsTypeChecker.getTypeAtLocation(switchStatement.expression);
-    if (!expressionType) {
-      return false;
-    }
-    if (this.isSwitchAllowedType(expressionType, switchStatement.expression)) {
-      return true;
-    }
-    if (expressionType.isUnion()) {
-      const unionTypes = expressionType.types;
-      return unionTypes.every((t) => {
-        return this.isSwitchAllowedType(t, switchStatement.expression);
-      });
-    }
-    return false;
-  }
-
-  private isSwitchAllowedType(type: ts.Type, node: ts.Node): boolean {
-    if (type.flags & (ts.TypeFlags.StringLike | ts.TypeFlags.EnumLike)) {
-      return true;
-    }
-
-    if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLiteral)) {
-      if (type.isNumberLiteral()) {
-        const value = type.value;
-        return TypeScriptLinter.isValidNumber(value);
-      }
-      if (ts.isIdentifier(node)) {
-        const refValue = this.getNumberReferenceValue(node);
-        if (refValue !== null && !TypeScriptLinter.isValidNumber(refValue)) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    const typeString = this.tsTypeChecker.typeToString(type);
-    return typeString === 'String' || typeString === 'int';
-  }
-
-  private static isValidNumber(value: number): boolean {
-    const forbiddenValues = [
-      Number.NaN,
-      Number.POSITIVE_INFINITY,
-      Number.NEGATIVE_INFINITY,
-      Number.MAX_VALUE,
-      Number.MIN_VALUE
-    ];
-
-    return !forbiddenValues.includes(value) && Number.isInteger(value);
-  }
-
-  private getNumberReferenceValue(node: ts.Identifier): number | null {
-    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
-    if (!symbol) {
-      return null;
-    }
-
-    for (const decl of symbol.getDeclarations() || []) {
-      if (!ts.isVariableDeclaration(decl) || !decl.initializer) {
-        continue;
-      }
-      if (ts.isPropertyAccessExpression(decl.initializer)) {
-        const propName = decl.initializer.name.text;
-        const numberProps: Record<string, number> = {
-          NaN: Number.NaN,
-          POSITIVE_INFINITY: Number.POSITIVE_INFINITY,
-          NEGATIVE_INFINITY: Number.NEGATIVE_INFINITY,
-          MAX_VALUE: Number.MAX_VALUE,
-          MIN_VALUE: Number.MIN_VALUE
-        };
-        if (propName in numberProps) {
-          return numberProps[propName];
-        }
-      } else if (ts.isNumericLiteral(decl.initializer)) {
-        return Number(decl.initializer.text);
-      }
-    }
-    return null;
   }
 
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
