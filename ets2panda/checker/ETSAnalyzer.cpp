@@ -2392,7 +2392,8 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
-    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+    if (st->GetBaseName()->Variable() == nullptr ||
+        !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
         checker->LogError(diagnostic::NOT_AN_ANNOTATION, {st->GetBaseName()->Name()}, st->GetBaseName()->Start());
         return ReturnTypeForStatement(st);
     }
