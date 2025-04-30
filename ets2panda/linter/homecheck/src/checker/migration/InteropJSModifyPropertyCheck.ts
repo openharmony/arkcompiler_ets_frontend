@@ -13,22 +13,30 @@
  * limitations under the License.
  */
 
-import { Type, ArkMethod, ArkAssignStmt, Scene, ArkInstanceFieldRef, FunctionType, ClassType, MethodSignature } from "arkanalyzer/lib";
+import {
+    Type,
+    ArkMethod,
+    ArkAssignStmt,
+    Scene,
+    ArkInstanceFieldRef,
+    FunctionType,
+    ClassType,
+    MethodSignature,
+} from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherCallback } from "../../Index";
-import { IssueReport } from "../../model/Defects";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherCallback } from '../../Index';
+import { IssueReport } from '../../model/Defects';
 import { ArkFile, Language } from 'arkanalyzer/lib/core/model/ArkFile';
-
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropJSModifyPropertyCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: 'the layout of objects that may be passed from 1.2 should not be modified'
+    description: 'The layout of staic objects should not be modified',
 };
 
-const RULE_ID = 'interop-change-static-object-layout';
+const RULE_ID = 'arkts-interop-js2s-js-add-detele-static-prop';
 
 export class InteropJSModifyPropertyCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -36,16 +44,15 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
 
-
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
             matcher: undefined,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [matchBuildCb];
     }
 
-    public check = (scene: Scene) => {
+    public check = (scene: Scene): void => {
         const targetMethods: Map<MethodSignature, boolean[]> = new Map();
         scene.getFiles().forEach(file => {
             file.getImportInfos().forEach(importInfo => {
@@ -100,14 +107,27 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                     const severity = this.metaData.severity;
                     const ruleId = this.rule.ruleId;
                     const filePath = method.getDeclaringArkFile()?.getFilePath() ?? '';
-                    const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
+                    const defeats = new Defects(
+                        line,
+                        column,
+                        column,
+                        problem,
+                        desc,
+                        severity,
+                        ruleId,
+                        filePath,
+                        '',
+                        true,
+                        false,
+                        false
+                    );
                     this.issues.push(new IssueReport(defeats, undefined));
                 }
             }
         });
-    }
+    };
 
-    private findCallsite(method: ArkMethod, targets: Map<MethodSignature, boolean[]>, scene: Scene) {
+    private findCallsite(method: ArkMethod, targets: Map<MethodSignature, boolean[]>, scene: Scene): void {
         const stmts = method.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             const invoke = stmt.getInvokeExpr();
@@ -143,4 +163,4 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
             return Language.UNKNOWN;
         }
     }
-}  
+}

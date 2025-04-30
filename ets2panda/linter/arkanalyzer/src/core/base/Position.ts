@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -94,7 +94,7 @@ export class LineColPosition {
         return getColNo(this.lineCol);
     }
 
-    public static buildFromNode(node: ts.Node, sourceFile: ts.SourceFile) {
+    public static buildFromNode(node: ts.Node, sourceFile: ts.SourceFile): LineColPosition {
         let { line, character } = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
         // line start from 1.
         return new LineColPosition(line + 1, character + 1);
@@ -129,10 +129,7 @@ export class FullPosition {
     }
 
     public static buildFromNode(node: ts.Node, sourceFile: ts.SourceFile): FullPosition {
-        const { line: startLine, character: startCharacter } = ts.getLineAndCharacterOfPosition(
-            sourceFile,
-            node.getStart(sourceFile)
-        );
+        const { line: startLine, character: startCharacter } = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
         const { line: endLine, character: endCharacter } = ts.getLineAndCharacterOfPosition(sourceFile, node.getEnd());
 
         // line start from 1

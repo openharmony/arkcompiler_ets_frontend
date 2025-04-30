@@ -14,10 +14,10 @@
  */
 
 import { ArkMethod, CallGraph, CallGraphBuilder, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
-import { WarnInfo} from "../../utils/common/Utils";
+import { WarnInfo } from '../../utils/common/Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
-import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
-import { DVFGBuilder } from "arkanalyzer/lib/VFG/builder/DVFGBuilder";
+import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
+import { DVFGBuilder } from 'arkanalyzer/lib/VFG/builder/DVFGBuilder';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Utils');
 
@@ -41,7 +41,9 @@ export class GlobalCallGraphHelper {
             this.cgInstance = new CallGraph(scene);
             let cgBuilder = new CallGraphBuilder(this.cgInstance, scene);
             cgBuilder.buildDirectCallGraphForScene();
-            let entries = this.cgInstance.getEntries().map(funcId => this.cgInstance!.getArkMethodByFuncID(funcId)!.getSignature());
+            let entries = this.cgInstance
+                .getEntries()
+                .map((funcId) => this.cgInstance!.getArkMethodByFuncID(funcId)!.getSignature());
             cgBuilder.buildClassHierarchyCallGraph(entries);
         }
         return this.cgInstance;
@@ -53,14 +55,14 @@ export class DVFGHelper {
     private static dvfgBuilder: DVFGBuilder;
     private static built: Set<ArkMethod> = new Set();
 
-    private static createDVFGInstance(scene: Scene) {
+    private static createDVFGInstance(scene: Scene): void {
         if (!this.dvfgInstance) {
             this.dvfgInstance = new DVFG(GlobalCallGraphHelper.getCGInstance(scene));
             this.dvfgBuilder = new DVFGBuilder(this.dvfgInstance, scene);
         }
     }
 
-    public static buildSingleDVFG(method: ArkMethod, scene: Scene) {
+    public static buildSingleDVFG(method: ArkMethod, scene: Scene): void {
         if (!this.dvfgInstance) {
             this.createDVFGInstance(scene);
         }
@@ -69,6 +71,7 @@ export class DVFGHelper {
             this.built.add(method);
         }
     }
+
     public static getOrNewDVFGNode(stmt: Stmt, scene: Scene): DVFGNode {
         if (!this.dvfgInstance) {
             this.createDVFGInstance(scene);
@@ -78,22 +81,22 @@ export class DVFGHelper {
 }
 
 export const CALLBACK_METHOD_NAME: string[] = [
-    "onClick", // 点击事件，当用户点击组件时触发
-    "onTouch", // 触摸事件，当手指在组件上按下、滑动、抬起时触发
-    "onAppear", // 组件挂载显示时触发
-    "onDisAppear", // 组件卸载消失时触发
-    "onDragStart", // 拖拽开始事件，当组件被长按后开始拖拽时触发
-    "onDragEnter", // 拖拽进入组件范围时触发
-    "onDragMove", // 拖拽在组件范围内移动时触发
-    "onDragLeave", // 拖拽离开组件范围内时触发
-    "onDrop", // 拖拽释放目标，当在本组件范围内停止拖拽行为时触发
-    "onKeyEvent", // 按键事件，当组件获焦后，按键动作触发
-    "onFocus", // 焦点事件，当组件获取焦点时触发
-    "onBlur", // 当组件失去焦点时触发的回调
-    "onHover", // 鼠标悬浮事件，鼠标进入或退出组件时触发
-    "onMouse", // 鼠标事件，当鼠标按键点击或在组件上移动时触发
-    "onAreaChange", // 组件区域变化事件，组件尺寸、位置变化时触发
-    "onVisibleAreaChange", // 组件可见区域变化事件，组件在屏幕中的显示区域面积变化时触发
+    'onClick', // 点击事件，当用户点击组件时触发
+    'onTouch', // 触摸事件，当手指在组件上按下、滑动、抬起时触发
+    'onAppear', // 组件挂载显示时触发
+    'onDisAppear', // 组件卸载消失时触发
+    'onDragStart', // 拖拽开始事件，当组件被长按后开始拖拽时触发
+    'onDragEnter', // 拖拽进入组件范围时触发
+    'onDragMove', // 拖拽在组件范围内移动时触发
+    'onDragLeave', // 拖拽离开组件范围内时触发
+    'onDrop', // 拖拽释放目标，当在本组件范围内停止拖拽行为时触发
+    'onKeyEvent', // 按键事件，当组件获焦后，按键动作触发
+    'onFocus', // 焦点事件，当组件获取焦点时触发
+    'onBlur', // 当组件失去焦点时触发的回调
+    'onHover', // 鼠标悬浮事件，鼠标进入或退出组件时触发
+    'onMouse', // 鼠标事件，当鼠标按键点击或在组件上移动时触发
+    'onAreaChange', // 组件区域变化事件，组件尺寸、位置变化时触发
+    'onVisibleAreaChange', // 组件可见区域变化事件，组件在屏幕中的显示区域面积变化时触发
 ];
 
 export function getLanguageStr(language: Language): string {

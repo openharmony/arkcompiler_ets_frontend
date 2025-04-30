@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,21 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ALERT_LEVEL, ExtRuleSet, Rule } from "../../model/Rule";
-import { FileUtils } from "./FileUtils";
+import { ALERT_LEVEL, ExtRuleSet, Rule } from '../../model/Rule';
+import { FileUtils } from './FileUtils';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { Utils } from "./Utils";
-import { execSync } from "child_process";
-import { Json5parser } from "./Json5parser";
-import { OptionValues } from "commander";
-import { CheckerStorage } from "./CheckerStorage";
-import path from "path";
-import { CheckEntry } from "./CheckEntry";
-import { RuleConfig } from "../../model/RuleConfig";
-import { ProjectConfig } from "../../model/ProjectConfig";
-import { file2CheckRuleMap, project2CheckRuleMap } from "./CheckerIndex";
-import fs from "fs";
-import { Message, MessageType } from "../../model/Message";
+import { Utils } from './Utils';
+import { execSync } from 'child_process';
+import { Json5parser } from './Json5parser';
+import { OptionValues } from 'commander';
+import { CheckerStorage } from './CheckerStorage';
+import path from 'path';
+import { CheckEntry } from './CheckEntry';
+import { RuleConfig } from '../../model/RuleConfig';
+import { ProjectConfig } from '../../model/ProjectConfig';
+import { file2CheckRuleMap, project2CheckRuleMap } from './CheckerIndex';
+import fs from 'fs';
+import { Message, MessageType } from '../../model/Message';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ConfigUtils');
 
@@ -146,7 +146,7 @@ export class ConfigUtils {
                 return;
             }
             try {
-                const cmd = `${projectConfig.npmPath} install --no-save --prefix "${projectConfig.npmInstallDir}" "${ruleSet.packagePath}"`;
+                const cmd = `${projectConfig.npmPath} install --no-save --prefix '${projectConfig.npmInstallDir}' '${ruleSet.packagePath}'`;
                 logger.info('Start to execute cmd: ' + cmd);
                 const execLog = execSync(cmd);
                 logger.info('Exec log: ' + execLog.toString());
@@ -197,7 +197,7 @@ export class ConfigUtils {
     }
 
     /**
-     * 通过单个规则配置生成Rule对象，eg: "@ruleSet/ruleName": "error" | ["error", []...]
+     * 通过单个规则配置生成Rule对象，eg: '@ruleSet/ruleName': 'error' | ['error', []...]
      * @param ruleCfg - 规则配置，格式为 [string, any]
      * @returns Rule | null - 生成的规则对象或 null
      */
@@ -242,7 +242,7 @@ export class ConfigUtils {
      */
     static isOnlineRule(ruleId: string, allRules: Map<string, object>): boolean {
         for (const [ruleSet, rules] of allRules) {
-            if (rules.hasOwnProperty(ruleId)) {
+            if (Object.keys(rules).includes(ruleId)) {
                 return true;
             }
         }

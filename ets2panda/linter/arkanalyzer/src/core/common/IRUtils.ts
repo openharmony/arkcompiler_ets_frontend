@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,10 +52,7 @@ export class IRUtils {
         }
     }
 
-    public static setComments(metadata: Stmt | ArkBaseModel,
-                              node: ts.Node,
-                              sourceFile: ts.SourceFile,
-                              options: SceneOptions): void {
+    public static setComments(metadata: Stmt | ArkBaseModel, node: ts.Node, sourceFile: ts.SourceFile, options: SceneOptions): void {
         const leadingCommentsMetadata = this.getCommentsMetadata(node, sourceFile, options, true);
         if (leadingCommentsMetadata.getComments().length > 0) {
             metadata.setMetadata(ArkMetadataKind.LEADING_COMMENTS, leadingCommentsMetadata);
@@ -67,17 +64,17 @@ export class IRUtils {
         }
     }
 
-    public static getCommentsMetadata(node: ts.Node, sourceFile: ts.SourceFile, options: SceneOptions,
-                                      isLeading: boolean): CommentsMetadata {
+    public static getCommentsMetadata(node: ts.Node, sourceFile: ts.SourceFile, options: SceneOptions, isLeading: boolean): CommentsMetadata {
         const comments: CommentItem[] = [];
         if ((isLeading && !options.enableLeadingComments) || (!isLeading && !options.enableTrailingComments)) {
             return new CommentsMetadata(comments);
         }
 
-        const commentRanges = (isLeading ? ts.getLeadingCommentRanges(sourceFile.text, node.pos)
-            : ts.getTrailingCommentRanges(sourceFile.text, node.end)) || []; // node.pos is the start position of
-                                                                             // leading comment, while node.end is the
-                                                                             // end position of the statement
+        // node.pos is the start position of
+        const commentRanges =
+            (isLeading ? ts.getLeadingCommentRanges(sourceFile.text, node.pos) : ts.getTrailingCommentRanges(sourceFile.text, node.end)) || [];
+        // leading comment, while node.end is the
+        // end position of the statement
         const getPosition = (pos: number, end: number): FullPosition => {
             const start = ts.getLineAndCharacterOfPosition(sourceFile, pos);
             const endPos = ts.getLineAndCharacterOfPosition(sourceFile, end);
@@ -125,23 +122,18 @@ export class IRUtils {
 
         if (oldValue instanceof AbstractRef && newValue instanceof AbstractRef) {
             if (newValue instanceof ArkStaticFieldRef) {
-                operandOriginalPositions.splice(oldValueIdx + baseValueOffset,
-                    oldValueUseSize - newValueUseSize);
+                operandOriginalPositions.splice(oldValueIdx + baseValueOffset, oldValueUseSize - newValueUseSize);
             } else if (oldValue instanceof ArkStaticFieldRef) {
-                operandOriginalPositions.splice(oldValueIdx + baseValueOffset, 0,
-                    ...IRUtils.generateDefaultPositions(
-                        newValueUseSize - oldValueUseSize));
+                operandOriginalPositions.splice(oldValueIdx + baseValueOffset, 0, ...IRUtils.generateDefaultPositions(newValueUseSize - oldValueUseSize));
             }
 
             if (oldValue instanceof ArkInstanceFieldRef && newValue instanceof ArkArrayRef) {
-                if (operandOriginalPositionSize === defUseSize) { // may not reserve positions for field name
-                    operandOriginalPositions.splice(oldValueIdx + fieldValueOffset, 0,
-                        ...IRUtils.generateDefaultPositions(
-                            newValueUseSize - oldValueUseSize));
+                if (operandOriginalPositionSize === defUseSize) {
+                    // may not reserve positions for field name
+                    operandOriginalPositions.splice(oldValueIdx + fieldValueOffset, 0, ...IRUtils.generateDefaultPositions(newValueUseSize - oldValueUseSize));
                 }
             } else if (oldValue instanceof ArkArrayRef && newValue instanceof ArkInstanceFieldRef) {
-                operandOriginalPositions.splice(oldValueIdx + fieldValueOffset,
-                    oldValueUseSize - newValueUseSize);
+                operandOriginalPositions.splice(oldValueIdx + fieldValueOffset, oldValueUseSize - newValueUseSize);
             }
         } else if (oldValue instanceof AbstractInvokeExpr && newValue instanceof AbstractInvokeExpr) {
             if (oldValueUseSize === newValueUseSize + 1) {

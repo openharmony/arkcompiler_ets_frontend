@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-import {FuncID} from '../model/CallGraph'
+import { FuncID } from '../model/CallGraph';
 
-export type ContextID = number
-export const DUMMY_CID = 0 
+export type ContextID = number;
+export const DUMMY_CID = 0;
 
 class Context {
     private contextElems: number[];
@@ -34,7 +34,7 @@ class Context {
         return new Context(contextElems);
     }
 
-    // use old context and a new element to create a new k-limited Context 
+    // use old context and a new element to create a new k-limited Context
     static newKLimitedContext(oldCtx: Context, elem: number, k: number): Context {
         let elems: number[] = [];
         if (k > 0) {
@@ -48,7 +48,7 @@ class Context {
         return new Context(elems);
     }
 
-    static kLimitedContext(ctx: Context, k:number): Context {
+    static kLimitedContext(ctx: Context, k: number): Context {
         if (ctx.length() <= k) {
             return new Context(ctx.contextElems);
         } else {
@@ -69,7 +69,7 @@ class Context {
     }
 
     public toString(): String {
-        return this.contextElems.join('-')
+        return this.contextElems.join('-');
     }
 }
 
@@ -96,7 +96,7 @@ class ContextCache {
     }
 
     public updateContext(id: ContextID, newContext: Context, oldContext: Context): boolean {
-        if(this.contextList.length < id) {
+        if (this.contextList.length < id) {
             return false;
         }
         this.contextList[id] = newContext;
@@ -143,11 +143,11 @@ export class KLimitedContextSensitive {
         return new Context([]);
     }
 
-    public getEmptyContextID(): ContextID{
+    public getEmptyContextID(): ContextID {
         return this.getContextID(Context.newEmpty());
     }
 
-    public getContextID(context: Context): ContextID{
+    public getContextID(context: Context): ContextID {
         return this.ctxCache.getOrNewContextID(context);
     }
 
@@ -156,7 +156,7 @@ export class KLimitedContextSensitive {
     }
 
     public getNewContextID(callerFuncId: FuncID): ContextID {
-         return this.ctxCache.getOrNewContextID(Context.new([callerFuncId]));
+        return this.ctxCache.getOrNewContextID(Context.new([callerFuncId]));
     }
 
     public getOrNewContext(callerCid: ContextID, calleeFuncId: FuncID, findCalleeAsTop: boolean = false): ContextID {
@@ -166,7 +166,7 @@ export class KLimitedContextSensitive {
         }
 
         const calleeNewCtx = Context.newKLimitedContext(callerCtx, calleeFuncId, this.k);
-        if (findCalleeAsTop){
+        if (findCalleeAsTop) {
             const calleeAsTopCtx = Context.newKLimitedContext(Context.sEmptyCtx, calleeFuncId, this.k);
             let topID = this.ctxCache.getContextID(calleeAsTopCtx);
             if (topID) {

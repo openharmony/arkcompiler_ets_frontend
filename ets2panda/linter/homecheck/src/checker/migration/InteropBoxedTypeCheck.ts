@@ -13,39 +13,55 @@
  * limitations under the License.
  */
 
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { ALERT_LEVEL, Rule } from "../../model/Rule";
-import { Defects, IssueReport } from "../../model/Defects";
-import { ClassMatcher, FileMatcher, MatcherCallback, MatcherTypes } from "../../matcher/Matchers";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { ALERT_LEVEL, Rule } from '../../model/Rule';
+import { Defects, IssueReport } from '../../model/Defects';
+import { ClassMatcher, FileMatcher, MatcherCallback, MatcherTypes } from '../../matcher/Matchers';
 import {
-    AbstractInvokeExpr, AliasType, ArkAssignStmt, ArkClass, ArkFile, ArkMethod, ArkNamespace, ArkNewExpr,
-    ArkReturnStmt, ClassType,
-    ImportInfo, Local, LOG_MODULE_TYPE, Logger, Scene, Stmt, Type,
-    Value
-} from "arkanalyzer";
-import { ExportType } from "arkanalyzer/lib/core/model/ArkExport";
-import { WarnInfo } from "../../utils/common/Utils";
-import { RuleFix } from "../../model/Fix";
-import { Language } from "arkanalyzer/lib/core/model/ArkFile";
-import { getLanguageStr } from "./Utils";
+    AbstractInvokeExpr,
+    AliasType,
+    ArkAssignStmt,
+    ArkClass,
+    ArkFile,
+    ArkMethod,
+    ArkNamespace,
+    ArkNewExpr,
+    ArkReturnStmt,
+    ClassType,
+    ImportInfo,
+    Local,
+    LOG_MODULE_TYPE,
+    Logger,
+    Scene,
+    Stmt,
+    Type,
+    Value,
+} from 'arkanalyzer';
+import { ExportType } from 'arkanalyzer/lib/core/model/ArkExport';
+import { WarnInfo } from '../../utils/common/Utils';
+import { RuleFix } from '../../model/Fix';
+import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { getLanguageStr } from './Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: '(interop-typeof-boxed-types)'
+    description: '(interop-typeof-boxed-types)',
 };
 
-const rule1Import2: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts1-import-arkts2-check', ALERT_LEVEL.WARN);
-const rule2Import1: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts2-import-arkts1-check', ALERT_LEVEL.WARN);
+const rule1Import2: Rule = new Rule(
+    '@migration/interop-typeof-boxed-types-arkts1-import-arkts2-check',
+    ALERT_LEVEL.WARN
+);
+const rule2Import1: Rule = new Rule(
+    '@migration/interop-typeof-boxed-types-arkts2-import-arkts1-check',
+    ALERT_LEVEL.WARN
+);
 const rule2ImportTs: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts2-import-ts-check', ALERT_LEVEL.WARN);
 const rule2ImportJs: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts2-import-js-check', ALERT_LEVEL.WARN);
 
-const BOXED_SET: Set<string> = new Set<string>([
-    'String',
-    'Boolean',
-    'Number'
-])
+const BOXED_SET: Set<string> = new Set<string>(['String', 'Boolean', 'Number']);
 
 export class InteropBoxedTypeCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -60,8 +76,8 @@ export class InteropBoxedTypeCheck implements BaseChecker {
     public registerMatchers(): MatcherCallback[] {
         const fileMatcher: MatcherCallback = {
             matcher: this.fileMatcher,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [fileMatcher];
     }
 
@@ -100,7 +116,7 @@ export class InteropBoxedTypeCheck implements BaseChecker {
                     return;
             }
         });
-    }
+    };
 
     private findBoxedTypeInNamespace(importInfo: ImportInfo, arkNamespace: ArkNamespace): boolean {
         const exports = arkNamespace.getExportInfos();
@@ -137,8 +153,8 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             line: importOpPostion.getLineNo(),
             startCol: importOpPostion.getColNo(),
             endCol: importOpPostion.getColNo(),
-            filePath: importInfo.getDeclaringArkFile().getFilePath()
-        }
+            filePath: importInfo.getDeclaringArkFile().getFilePath(),
+        };
         const currLanguage = importInfo.getLanguage();
 
         // step1: 查找class中的所有field，包含static和非static，判断initialized stmts中是否会用boxed类型对象给field赋值
@@ -178,8 +194,8 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             line: importOpPostion.getLineNo(),
             startCol: importOpPostion.getColNo(),
             endCol: importOpPostion.getColNo(),
-            filePath: importInfo.getDeclaringArkFile().getFilePath()
-        }
+            filePath: importInfo.getDeclaringArkFile().getFilePath(),
+        };
         const currLanguage = importInfo.getLanguage();
 
         // 此处不检查method signature中的return Type，因为return type直接写String时也表示成Class Type，无法区分是否为new String()生成的
@@ -199,8 +215,8 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             line: importOpPostion.getLineNo(),
             startCol: importOpPostion.getColNo(),
             endCol: importOpPostion.getColNo(),
-            filePath: importInfo.getDeclaringArkFile().getFilePath()
-        }
+            filePath: importInfo.getDeclaringArkFile().getFilePath(),
+        };
         const currLanguage = importInfo.getLanguage();
 
         // 此处不检查local的Type，因为type直接写String时也表示成Class Type，无法区分是否为new String()生成的
@@ -230,8 +246,20 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         let targetLan = getLanguageStr(targetLanguage);
         const problem = 'Interop';
         const describe = `Could not import object with boxed type from ${targetLan}${this.metaData.description}`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, describe,
-            severity, interopRule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            describe,
+            severity,
+            interopRule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, undefined));
     }
 
@@ -309,13 +337,21 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         }
 
         const declaringStmt = local.getDeclaringStmt();
-        if (declaringStmt !== null && declaringStmt instanceof ArkAssignStmt && this.isValueAssignedByBoxed(declaringStmt, stmts)) {
+        if (
+            declaringStmt !== null &&
+            declaringStmt instanceof ArkAssignStmt &&
+            this.isValueAssignedByBoxed(declaringStmt, stmts)
+        ) {
             return true;
         }
         for (const stmt of local.getUsedStmts()) {
             if (stmt instanceof ArkAssignStmt) {
                 const leftOp = stmt.getLeftOp();
-                if (leftOp instanceof Local && leftOp.toString() === local.toString() && this.isValueAssignedByBoxed(stmt, stmts)) {
+                if (
+                    leftOp instanceof Local &&
+                    leftOp.toString() === local.toString() &&
+                    this.isValueAssignedByBoxed(stmt, stmts)
+                ) {
                     return true;
                 }
             }

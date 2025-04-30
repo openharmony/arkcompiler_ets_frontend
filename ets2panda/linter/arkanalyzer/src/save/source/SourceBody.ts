@@ -223,7 +223,7 @@ export class SourceBody implements StmtPrinterContext {
     }
 
     public getStmts(): SourceStmt[] {
-        return this.stmts.filter((value) => {
+        return this.stmts.filter(value => {
             if (!this.skipStmts.has(value.original)) {
                 return value;
             }

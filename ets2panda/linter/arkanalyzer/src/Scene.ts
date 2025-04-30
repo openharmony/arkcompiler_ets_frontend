@@ -51,8 +51,8 @@ enum SceneBuildStage {
     CLASS_COLLECTED,
     METHOD_COLLECTED,
     SDK_INFERRED,
-    TYPE_INFERRED
-};
+    TYPE_INFERRED,
+}
 
 /**
  * The Scene class includes everything in the analyzed project.
@@ -85,7 +85,7 @@ export class Scene {
     private ohPkgContent: { [k: string]: unknown } = {};
     private overRides: Map<string, string> = new Map();
     private overRideDependencyMap: Map<string, unknown> = new Map();
-    private globalModule2PathMapping?: { [k: string]: string[]; } | undefined;
+    private globalModule2PathMapping?: { [k: string]: string[] } | undefined;
     private baseUrl?: string | undefined;
 
     private buildStage: SceneBuildStage = SceneBuildStage.BUILD_INIT;
@@ -97,8 +97,7 @@ export class Scene {
     private unhandledFilePaths: string[] = [];
     private unhandledSdkFilePaths: string[] = [];
 
-    constructor() {
-    }
+    constructor() {}
 
     public getOptions(): SceneOptions {
         return this.options;
@@ -155,7 +154,7 @@ export class Scene {
      scene.buildSceneFromProjectDir(sceneConfig);
      ```
      */
-    public buildSceneFromProjectDir(sceneConfig: SceneConfig) {
+    public buildSceneFromProjectDir(sceneConfig: SceneConfig): void {
         this.buildBasicInfo(sceneConfig);
         this.genArkFiles();
     }
@@ -195,7 +194,7 @@ export class Scene {
         }
 
         // handle sdks
-        sceneConfig.getSdksObj()?.forEach((sdk) => {
+        sceneConfig.getSdksObj()?.forEach(sdk => {
             if (!sdk.moduleName) {
                 this.buildSdk(sdk.name, sdk.path);
                 this.projectSdkMap.set(sdk.name, sdk);
@@ -225,7 +224,7 @@ export class Scene {
             const buildProfileJson = parseJsonText(configurationsText);
             const modules = buildProfileJson.modules;
             if (modules instanceof Array) {
-                modules.forEach((module) => {
+                modules.forEach(module => {
                     this.modulePath2NameMap.set(path.resolve(this.realProjectDir, path.join(module.srcPath)), module.name);
                 });
             }
@@ -253,7 +252,6 @@ export class Scene {
                     this.overRideDependencyMap.set(key, globalDependency);
                 }
             }
-
         } else {
             logger.warn('This project has no oh-package.json5!');
         }
@@ -318,8 +316,8 @@ export class Scene {
         this.buildStage = SceneBuildStage.METHOD_DONE;
     }
 
-    private genArkFiles() {
-        this.projectFiles.forEach((file) => {
+    private genArkFiles(): void {
+        this.projectFiles.forEach(file => {
             logger.info('=== parse file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.fileLanguages));
@@ -426,7 +424,7 @@ export class Scene {
     private findDependenciesByTsConfig(from: string, arkFile: ArkFile): void {
         if (this.globalModule2PathMapping) {
             const paths: { [k: string]: string[] } = this.globalModule2PathMapping;
-            Object.keys(paths).forEach((key) => this.parseTsConfigParms(paths, key, from, arkFile));
+            Object.keys(paths).forEach(key => this.parseTsConfigParms(paths, key, from, arkFile));
         }
     }
 
@@ -436,7 +434,7 @@ export class Scene {
             this.processFuzzyMapping(key, from, module2pathMapping, arkFile);
         } else if (from.startsWith(key)) {
             let tail = from.substring(key.length, from.length);
-            module2pathMapping.forEach((pathMapping) => {
+            module2pathMapping.forEach(pathMapping => {
                 let originPath = path.join(this.getRealProjectDir(), pathMapping, tail);
                 if (this.baseUrl) {
                     originPath = path.resolve(this.baseUrl, originPath);
@@ -450,7 +448,7 @@ export class Scene {
         key = key.substring(0, key.indexOf(ALL) - 1);
         if (from.substring(0, key.indexOf(ALL) - 1) === key) {
             let tail = from.substring(key.indexOf(ALL) - 1, from.length);
-            module2pathMapping.forEach((pathMapping) => {
+            module2pathMapping.forEach(pathMapping => {
                 pathMapping = pathMapping.substring(0, pathMapping.indexOf(ALL) - 1);
                 let originPath = path.join(this.getRealProjectDir(), pathMapping, tail);
                 if (this.baseUrl) {
@@ -490,11 +488,10 @@ export class Scene {
         return false;
     }
 
-
     private findRelativeDependenciesByOhPkg(from: string, arkFile: ArkFile): void {
         //relative path ../from  ./from
         //order
-        //1. ../from/oh-package.json5 -> [[name]] -> overRides/overRideDependencyMap? -> 
+        //1. ../from/oh-package.json5 -> [[name]] -> overRides/overRideDependencyMap? ->
         //[[main]] -> file path ->dependencies(priority)+devDependencies? dynamicDependencies(not support) ->
         //key overRides/overRideDependencyMap?
         //2. ../from/index.ets(ts)
@@ -511,9 +508,14 @@ export class Scene {
         this.findDependenciesByRule(originPath, arkFile);
     }
 
-    private findDependenciesByOhPkg(ohPkgContentPath: string, ohPkgContentInfo: {
-        [k: string]: unknown
-    }, from: string, arkFile: ArkFile): void {
+    private findDependenciesByOhPkg(
+        ohPkgContentPath: string,
+        ohPkgContentInfo: {
+            [k: string]: unknown;
+        },
+        from: string,
+        arkFile: ArkFile
+    ): void {
         //module name @ohos/from
         const ohPkgContent: { [k: string]: unknown } | undefined = ohPkgContentInfo;
         //module main name is must be
@@ -560,9 +562,9 @@ export class Scene {
         this.filesMap.set(arkFile.getFileSignature().toMapKey(), arkFile);
     }
 
-    private buildSdk(sdkName: string, sdkPath: string) {
+    private buildSdk(sdkName: string, sdkPath: string): void {
         const allFiles = getAllFiles(sdkPath, this.options.supportFileExts!, this.options.ignoreFileNames);
-        allFiles.forEach((file) => {
+        allFiles.forEach(file => {
             logger.info('=== parse sdk file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.fileLanguages));
@@ -588,7 +590,7 @@ export class Scene {
      * dependencies from this file. Next, build a `ModuleScene` for this project to generate {@link ArkFile}. Finally,
      * it build bodies of all methods, generate extended classes, and add DefaultConstructors.
      */
-    public buildScene4HarmonyProject() {
+    public buildScene4HarmonyProject(): void {
         this.buildOhPkgContentMap();
         this.modulePath2NameMap.forEach((value, key) => {
             let moduleScene = new ModuleScene(this);
@@ -610,7 +612,7 @@ export class Scene {
         });
     }
 
-    public buildModuleScene(moduleName: string, modulePath: string, supportFileExts: string[]) {
+    public buildModuleScene(moduleName: string, modulePath: string, supportFileExts: string[]): void {
         if (this.moduleScenesMap.get(moduleName)) {
             return;
         }
@@ -642,7 +644,7 @@ export class Scene {
     private processModuleOhPkgContent(dependencies: Object, moduleOhPkgFilePath: string, supportFileExts: string[]): void {
         Object.entries(dependencies).forEach(([k, v]) => {
             const pattern = new RegExp('^(\\.\\.\\/\|\\.\\/)');
-            if (typeof (v) === 'string') {
+            if (typeof v === 'string') {
                 let dependencyModulePath: string = '';
                 if (pattern.test(v)) {
                     dependencyModulePath = path.join(moduleOhPkgFilePath, v);
@@ -680,7 +682,7 @@ export class Scene {
         return this.projectName;
     }
 
-    public getProjectFiles() {
+    public getProjectFiles(): string[] {
         return this.projectFiles;
     }
 
@@ -744,7 +746,7 @@ export class Scene {
      * @example
      * 1. In inferSimpleTypes() to check arkClass and arkMethod.
      * ```typescript
-     * public inferSimpleTypes() {
+     * public inferSimpleTypes(): void {
      *   for (let arkFile of this.getFiles()) {
      *       for (let arkClass of arkFile.getClasses()) {
      *           for (let arkMethod of arkClass.getMethods()) {
@@ -777,11 +779,11 @@ export class Scene {
         return Array.from(this.sdkArkFilesMap.values());
     }
 
-    public getModuleSdkMap() {
+    public getModuleSdkMap(): Map<string, Sdk[]> {
         return this.moduleSdkMap;
     }
 
-    public getProjectSdkMap() {
+    public getProjectSdkMap(): Map<string, Sdk> {
         return this.projectSdkMap;
     }
 
@@ -815,7 +817,7 @@ export class Scene {
     private getNamespacesMap(): Map<string, ArkNamespace> {
         if (this.buildStage === SceneBuildStage.CLASS_DONE) {
             for (const file of this.getFiles()) {
-                ModelUtils.getAllNamespacesInFile(file).forEach((namespace) => {
+                ModelUtils.getAllNamespacesInFile(file).forEach(namespace => {
                     this.namespacesMap.set(namespace.getNamespaceSignature().toMapKey(), namespace);
                 });
             }
@@ -963,7 +965,7 @@ export class Scene {
     }
 
     //Get the set of entry points that are used to build the call graph.
-    public getEntryPoints() {
+    public getEntryPoints(): MethodSignature[] {
         return [];
     }
 
@@ -972,15 +974,15 @@ export class Scene {
         return this.visibleValue;
     }
 
-    public getOhPkgContent() {
+    public getOhPkgContent(): { [p: string]: unknown } {
         return this.ohPkgContent;
     }
 
-    public getOhPkgContentMap() {
+    public getOhPkgContentMap(): Map<string, { [p: string]: unknown }> {
         return this.ohPkgContentMap;
     }
 
-    public getOhPkgFilePath() {
+    public getOhPkgFilePath(): string {
         return this.ohPkgFilePath;
     }
 
@@ -1010,7 +1012,7 @@ export class Scene {
      scene.inferTypes();
      ```
      */
-    public inferTypes() {
+    public inferTypes(): void {
         if (this.buildStage < SceneBuildStage.SDK_INFERRED) {
             this.sdkArkFilesMap.forEach(file => IRInference.inferFile(file));
             this.buildStage = SceneBuildStage.SDK_INFERRED;
@@ -1036,8 +1038,7 @@ export class Scene {
      scene.inferSimpleTypes();
      ```
      */
-    public inferSimpleTypes() {
-
+    public inferSimpleTypes(): void {
         for (let arkFile of this.getFiles()) {
             for (let arkClass of arkFile.getClasses()) {
                 for (let arkMethod of arkClass.getMethods()) {
@@ -1047,9 +1048,12 @@ export class Scene {
         }
     }
 
-    private addNSClasses(namespaceStack: ArkNamespace[], finalNamespaces: ArkNamespace[],
-                         classMap: Map<FileSignature | NamespaceSignature, ArkClass[]>,
-                         parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>): void {
+    private addNSClasses(
+        namespaceStack: ArkNamespace[],
+        finalNamespaces: ArkNamespace[],
+        classMap: Map<FileSignature | NamespaceSignature, ArkClass[]>,
+        parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>
+    ): void {
         while (namespaceStack.length > 0) {
             const ns = namespaceStack.shift()!;
             const nsClass: ArkClass[] = [];
@@ -1068,9 +1072,11 @@ export class Scene {
         }
     }
 
-    private addNSExportedClasses(finalNamespaces: ArkNamespace[],
-                                 classMap: Map<FileSignature | NamespaceSignature, ArkClass[]>,
-                                 parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>): void {
+    private addNSExportedClasses(
+        finalNamespaces: ArkNamespace[],
+        classMap: Map<FileSignature | NamespaceSignature, ArkClass[]>,
+        parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>
+    ): void {
         while (finalNamespaces.length > 0) {
             const finalNS = finalNamespaces.shift()!;
             const exportClass = [];
@@ -1117,9 +1123,7 @@ export class Scene {
                     // 遗留问题：只统计了项目文件的namespace，没统计sdk文件内部的引入
                     const importNameSpaceClasses = classMap.get(importNameSpace.getNamespaceSignature())!;
                     importClasses.push(...importNameSpaceClasses.filter(c => !importClasses.includes(c) && c.getName() !== DEFAULT_ARK_CLASS_NAME));
-                } catch {
-                }
-
+                } catch {}
             }
         }
         const fileClasses = classMap.get(file.getFileSignature())!;
@@ -1171,17 +1175,25 @@ export class Scene {
         return classMap;
     }
 
-    private addNSLocals(namespaceStack: ArkNamespace[], finalNamespaces: ArkNamespace[],
-                        parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>,
-                        globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>): void {
+    private addNSLocals(
+        namespaceStack: ArkNamespace[],
+        finalNamespaces: ArkNamespace[],
+        parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>,
+        globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>
+    ): void {
         while (namespaceStack.length > 0) {
             const ns = namespaceStack.shift()!;
             const nsGlobalLocals: Local[] = [];
-            ns.getDefaultClass().getDefaultArkMethod()!.getBody()?.getLocals().forEach(local => {
-                if (local.getDeclaringStmt() && local.getName() !== 'this' && local.getName()[0] !== '$') {
-                    nsGlobalLocals.push(local);
-                }
-            });
+            ns
+                .getDefaultClass()
+                .getDefaultArkMethod()!
+                .getBody()
+                ?.getLocals()
+                .forEach(local => {
+                    if (local.getDeclaringStmt() && local.getName() !== 'this' && local.getName()[0] !== '$') {
+                        nsGlobalLocals.push(local);
+                    }
+                });
             globalVariableMap.set(ns.getNamespaceSignature(), nsGlobalLocals);
             if (ns.getNamespaces().length === 0) {
                 finalNamespaces.push(ns);
@@ -1194,9 +1206,11 @@ export class Scene {
         }
     }
 
-    private addNSExportedLocals(finalNamespaces: ArkNamespace[],
-                                globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>,
-                                parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>): void {
+    private addNSExportedLocals(
+        finalNamespaces: ArkNamespace[],
+        globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>,
+        parentMap: Map<ArkNamespace, ArkNamespace | ArkFile>
+    ): void {
         while (finalNamespaces.length > 0) {
             const finalNS = finalNamespaces.shift()!;
             const exportLocal = [];
@@ -1242,9 +1256,7 @@ export class Scene {
                     // 遗留问题：只统计了项目文件，没统计sdk文件内部的引入
                     const importNameSpaceClasses = globalVariableMap.get(importNameSpace.getNamespaceSignature())!;
                     importLocals.push(...importNameSpaceClasses.filter(c => !importLocals.includes(c) && c.getName() !== DEFAULT_ARK_CLASS_NAME));
-                } catch {
-                }
-
+                } catch {}
             }
         }
         const fileLocals = globalVariableMap.get(file.getFileSignature())!;
@@ -1270,8 +1282,7 @@ export class Scene {
         }
     }
 
-    private handleNestedNSLocals(nsns: ArkNamespace, nsLocals: Local[],
-                                 globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>): void {
+    private handleNestedNSLocals(nsns: ArkNamespace, nsLocals: Local[], globalVariableMap: Map<FileSignature | NamespaceSignature, Local[]>): void {
         const nsnsLocals = globalVariableMap.get(nsns.getNamespaceSignature())!;
         const nsnsLocalNameSet = new Set<string>(nsnsLocals.map(item => item.getName()));
         for (const local of nsLocals) {
@@ -1288,11 +1299,16 @@ export class Scene {
             const parentMap: Map<ArkNamespace, ArkNamespace | ArkFile> = new Map();
             const finalNamespaces: ArkNamespace[] = [];
             const globalLocals: Local[] = [];
-            file.getDefaultClass()?.getDefaultArkMethod()!.getBody()?.getLocals().forEach(local => {
-                if (local.getDeclaringStmt() && local.getName() !== 'this' && local.getName()[0] !== '$') {
-                    globalLocals.push(local);
-                }
-            });
+            file
+                .getDefaultClass()
+                ?.getDefaultArkMethod()!
+                .getBody()
+                ?.getLocals()
+                .forEach(local => {
+                    if (local.getDeclaringStmt() && local.getName() !== 'this' && local.getName()[0] !== '$') {
+                        globalLocals.push(local);
+                    }
+                });
             globalVariableMap.set(file.getFileSignature(), globalLocals);
             for (const ns of file.getNamespaces()) {
                 namespaceStack.push(ns);
@@ -1326,7 +1342,7 @@ export class Scene {
         return this.buildStage >= SceneBuildStage.CLASS_DONE;
     }
 
-    public getModuleScene(moduleName: string) {
+    public getModuleScene(moduleName: string): ModuleScene | undefined {
         return this.moduleScenesMap.get(moduleName);
     }
 
@@ -1334,7 +1350,7 @@ export class Scene {
         return this.moduleScenesMap;
     }
 
-    public getGlobalModule2PathMapping(): { [k: string]: string[]; } | undefined {
+    public getGlobalModule2PathMapping(): { [k: string]: string[] } | undefined {
         return this.globalModule2PathMapping;
     }
 
@@ -1383,7 +1399,7 @@ export class ModuleScene {
     /**
      * get oh-package.json5
      */
-    private getModuleOhPkgFilePath() {
+    private getModuleOhPkgFilePath(): void {
         const moduleOhPkgFilePath = path.resolve(this.projectScene.getRealProjectDir(), path.join(this.modulePath, OH_PACKAGE_JSON5));
         if (fs.existsSync(moduleOhPkgFilePath)) {
             this.moduleOhPkgFilePath = moduleOhPkgFilePath;
@@ -1402,11 +1418,11 @@ export class ModuleScene {
         return this.modulePath;
     }
 
-    public getOhPkgFilePath() {
+    public getOhPkgFilePath(): string {
         return this.moduleOhPkgFilePath;
     }
 
-    public getOhPkgContent() {
+    public getOhPkgContent(): { [p: string]: unknown } {
         return this.ohPkgContent;
     }
 
@@ -1418,15 +1434,14 @@ export class ModuleScene {
         this.moduleFileMap.set(arkFile.getFileSignature().toMapKey(), arkFile);
     }
 
-    private genArkFiles(supportFileExts: string[]) {
-        getAllFiles(this.modulePath, supportFileExts, this.projectScene.getOptions().ignoreFileNames).forEach((file) => {
+    private genArkFiles(supportFileExts: string[]): void {
+        getAllFiles(this.modulePath, supportFileExts, this.projectScene.getOptions().ignoreFileNames).forEach(file => {
             logger.info('=== parse file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.projectScene.getFileLanguages()));
                 arkFile.setScene(this.projectScene);
                 arkFile.setModuleScene(this);
-                buildArkFileFromFile(file, this.projectScene.getRealProjectDir(), arkFile,
-                    this.projectScene.getProjectName());
+                buildArkFileFromFile(file, this.projectScene.getRealProjectDir(), arkFile, this.projectScene.getProjectName());
                 this.projectScene.setFile(arkFile);
             } catch (error) {
                 logger.error('Error parsing file:', file, error);

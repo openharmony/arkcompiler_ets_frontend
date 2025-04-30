@@ -16,7 +16,7 @@
 export const CONSTRUCTOR_NAME = 'constructor';
 export const SUPER_NAME = 'super';
 export const THIS_NAME = 'this';
-export const GLOBAL_THIS_NAME: string = 'globalThis'
+export const GLOBAL_THIS_NAME: string = 'globalThis';
 
 export const DEFAULT = 'default';
 
@@ -39,4 +39,3 @@ export const VOID_KEYWORD = 'void';
 export const NEVER_KEYWORD = 'never';
 export const BIGINT_KEYWORD = 'bigint';
 export const TSCONFIG_JSON = 'tsconfig.json';
-

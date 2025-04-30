@@ -23,7 +23,7 @@ const severitys: string[] = ['OFF', 'WARN', 'ERROR', 'SUGGESTION'];
 const FILE_NAMING_RULE = '@hw-stylistic/file-naming-convention';
 
 export class GeneratingJsonFile {
-    public static generatingJsonFile(filePath: string, fileReports: FileReports[]) {
+    public static generatingJsonFile(filePath: string, fileReports: FileReports[]): void {
         const fileDefectInfos = this.format(fileReports);
         let results: Map<string, FileDefectInfo> = new Map();
         for (let fileDefectInfo of fileDefectInfos) {
@@ -49,7 +49,7 @@ export class GeneratingJsonFile {
             const fileDefectInfo: FileDefectInfo = {
                 filePath: fileReport.filePath,
                 defects: []
-            }
+            };
             for (const defect of fileReport.defects) {
                 const defectInfo: DefectInfo = {
                     reportLine: defect.reportLine,
@@ -59,7 +59,7 @@ export class GeneratingJsonFile {
                     mergeKey: defect.mergeKey,
                     description: defect.description,
                     ruleDocPath: defect.ruleDocPath
-                }
+                };
                 fileDefectInfo.defects.push(defectInfo);
             }
             fileDefectInfos.push(fileDefectInfo);
@@ -67,7 +67,7 @@ export class GeneratingJsonFile {
         return fileDefectInfos;
     }
 
-    private static addResult(defect: FileDefectInfo, results: Map<string, FileDefectInfo>) {
+    private static addResult(defect: FileDefectInfo, results: Map<string, FileDefectInfo>): void {
         const normalizedPath = path.normalize(defect.filePath).toLocaleLowerCase();
         if (!results.has(normalizedPath)) {
             results.set(normalizedPath, defect);
@@ -92,13 +92,13 @@ export class GeneratingJsonFile {
         });
     }
 
-    private static format2(results: Map<string, FileDefectInfo>) {
+    private static format2(results: Map<string, FileDefectInfo>): string {
         const jsonResults: JsonResult[] = [];
         for (let result of results) {
             const oneResult: JsonResult = {
                 filePath: '',
                 messages: []
-            }
+            };
             oneResult.filePath = result[1].filePath;
             let defects = result[1].defects;
             for (let defect of defects) {
@@ -108,7 +108,7 @@ export class GeneratingJsonFile {
                     severity: '',
                     message: '',
                     rule: '',
-                }
+                };
                 oneDefect.line = defect.reportLine;
                 oneDefect.column = defect.reportColumn;
                 oneDefect.severity = defect.severity;

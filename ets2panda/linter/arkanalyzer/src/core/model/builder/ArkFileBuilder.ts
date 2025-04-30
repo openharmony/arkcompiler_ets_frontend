@@ -40,9 +40,24 @@ import { ARKTS_STATIC_MARK } from '../../common/Const';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'ArkFileBuilder');
 
-export const notStmtOrExprKind = ['ModuleDeclaration', 'ClassDeclaration', 'InterfaceDeclaration', 'EnumDeclaration', 'ExportDeclaration',
-    'ExportAssignment', 'MethodDeclaration', 'Constructor', 'FunctionDeclaration', 'GetAccessor', 'SetAccessor', 'ArrowFunction',
-    'FunctionExpression', 'MethodSignature', 'ConstructSignature', 'CallSignature'];
+export const notStmtOrExprKind = [
+    'ModuleDeclaration',
+    'ClassDeclaration',
+    'InterfaceDeclaration',
+    'EnumDeclaration',
+    'ExportDeclaration',
+    'ExportAssignment',
+    'MethodDeclaration',
+    'Constructor',
+    'FunctionDeclaration',
+    'GetAccessor',
+    'SetAccessor',
+    'ArrowFunction',
+    'FunctionExpression',
+    'MethodSignature',
+    'ConstructSignature',
+    'CallSignature',
+];
 
 /**
  * Entry of building ArkFile instance
@@ -50,8 +65,7 @@ export const notStmtOrExprKind = ['ModuleDeclaration', 'ClassDeclaration', 'Inte
  * @param arkFile
  * @returns
  */
-export function buildArkFileFromFile(absoluteFilePath: string, projectDir: string, arkFile: ArkFile,
-                                     projectName: string) {
+export function buildArkFileFromFile(absoluteFilePath: string, projectDir: string, arkFile: ArkFile, projectName: string): void {
     arkFile.setFilePath(absoluteFilePath);
     arkFile.setProjectDir(projectDir);
 
@@ -59,14 +73,7 @@ export function buildArkFileFromFile(absoluteFilePath: string, projectDir: strin
     arkFile.setFileSignature(fileSignature);
 
     arkFile.setCode(fs.readFileSync(arkFile.getFilePath(), 'utf8'));
-    const sourceFile = ts.createSourceFile(
-        arkFile.getName(),
-        arkFile.getCode(),
-        ts.ScriptTarget.Latest,
-        true,
-        undefined,
-        ETS_COMPILER_OPTIONS,
-    );
+    const sourceFile = ts.createSourceFile(arkFile.getName(), arkFile.getCode(), ts.ScriptTarget.Latest, true, undefined, ETS_COMPILER_OPTIONS);
     genDefaultArkClass(arkFile, sourceFile);
     buildArkFile(arkFile, sourceFile);
 }
@@ -78,13 +85,11 @@ export function buildArkFileFromFile(absoluteFilePath: string, projectDir: strin
  * @param astRoot
  * @returns
  */
-function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile) {
+function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile): void {
     const statements = astRoot.statements;
     const namespaces: ArkNamespace[] = [];
-    statements.forEach((child) => {
-        if (
-            ts.isModuleDeclaration(child)
-        ) {
+    statements.forEach(child => {
+        if (ts.isModuleDeclaration(child)) {
             let ns: ArkNamespace = new ArkNamespace();
             ns.setDeclaringArkFile(arkFile);
 
@@ -93,12 +98,7 @@ function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile) {
             if (ns.isExported()) {
                 arkFile.addExportInfo(buildExportInfo(ns, arkFile, LineColPosition.buildFromNode(child, astRoot)));
             }
-        } else if (
-            ts.isClassDeclaration(child) ||
-            ts.isInterfaceDeclaration(child) ||
-            ts.isEnumDeclaration(child) ||
-            ts.isStructDeclaration(child)
-        ) {
+        } else if (ts.isClassDeclaration(child) || ts.isInterfaceDeclaration(child) || ts.isEnumDeclaration(child) || ts.isStructDeclaration(child)) {
             let cls: ArkClass = new ArkClass();
 
             buildNormalArkClassFromArkFile(child, arkFile, cls, astRoot);
@@ -126,15 +126,11 @@ function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile) {
             if (mthd.isExported()) {
                 arkFile.addExportInfo(buildExportInfo(mthd, arkFile, LineColPosition.buildFromNode(child, astRoot)));
             }
-        } else if (
-            ts.isImportEqualsDeclaration(child) ||
-            ts.isImportDeclaration(child)
-        ) {
+        } else if (ts.isImportEqualsDeclaration(child) || ts.isImportDeclaration(child)) {
             let importInfos = buildImportInfo(child, astRoot, arkFile);
-            importInfos?.forEach((element) => {
+            importInfos?.forEach(element => {
                 element.setDeclaringArkFile(arkFile);
                 arkFile.addImportInfo(element);
-
             });
         } else if (ts.isExportDeclaration(child)) {
             buildExportDeclaration(child, astRoot, arkFile).forEach(item => arkFile.addExportInfo(item));
@@ -161,13 +157,10 @@ function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile) {
     });
 }
 
-function genDefaultArkClass(arkFile: ArkFile, astRoot: ts.SourceFile) {
+function genDefaultArkClass(arkFile: ArkFile, astRoot: ts.SourceFile): void {
     let defaultClass = new ArkClass();
 
     buildDefaultArkClassFromArkFile(arkFile, defaultClass, astRoot);
     arkFile.setDefaultClass(defaultClass);
     arkFile.addArkClass(defaultClass);
 }
-
-
-

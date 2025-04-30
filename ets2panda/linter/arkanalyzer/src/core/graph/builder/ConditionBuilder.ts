@@ -36,8 +36,7 @@ export class ConditionBuilder {
             let conditionalOperatorEndPos = -1;
             for (let i = stmtsCnt - 1; i >= 0; i--) {
                 const stmt = stmtsInCurrBasicBlock[i];
-                if (stmt instanceof DummyStmt && stmt.toString()
-                    ?.startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_END_STMT)) {
+                if (stmt instanceof DummyStmt && stmt.toString()?.startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_END_STMT)) {
                     conditionalOperatorEndPos = i;
                     break;
                 }
@@ -46,17 +45,16 @@ export class ConditionBuilder {
                 continue;
             }
 
-            let {
-                generatedTopBlock: generatedTopBlock,
-                generatedBottomBlocks: generatedBottomBlocks,
-            } = this.generateBlocksContainConditionalOperatorGroup(
-                stmtsInCurrBasicBlock.slice(0, conditionalOperatorEndPos + 1), basicBlockSet);
+            let { generatedTopBlock: generatedTopBlock, generatedBottomBlocks: generatedBottomBlocks } = this.generateBlocksContainConditionalOperatorGroup(
+                stmtsInCurrBasicBlock.slice(0, conditionalOperatorEndPos + 1),
+                basicBlockSet
+            );
 
-            if (conditionalOperatorEndPos !== stmtsCnt - 1) { // need create a new basic block for rest statements
-                const {
-                    generatedTopBlock: extraBlock,
-                } = this.generateBlockWithoutConditionalOperator(
-                    stmtsInCurrBasicBlock.slice(conditionalOperatorEndPos + 1));
+            if (conditionalOperatorEndPos !== stmtsCnt - 1) {
+                // need create a new basic block for rest statements
+                const { generatedTopBlock: extraBlock } = this.generateBlockWithoutConditionalOperator(
+                    stmtsInCurrBasicBlock.slice(conditionalOperatorEndPos + 1)
+                );
                 generatedBottomBlocks.forEach(generatedBottomBlock => {
                     generatedBottomBlock.addSuccessorBlock(extraBlock);
                     extraBlock.addPredecessorBlock(generatedBottomBlock);
@@ -69,9 +67,11 @@ export class ConditionBuilder {
         }
     }
 
-    private relinkPrevAndSuccOfBlockContainConditionalOperator(currBasicBlock: BasicBlock,
-                                                               generatedTopBlock: BasicBlock,
-                                                               generatedBottomBlocks: BasicBlock[]): void {
+    private relinkPrevAndSuccOfBlockContainConditionalOperator(
+        currBasicBlock: BasicBlock,
+        generatedTopBlock: BasicBlock,
+        generatedBottomBlocks: BasicBlock[]
+    ): void {
         const predecessorsOfCurrBasicBlock = Array.from(currBasicBlock.getPredecessors());
         predecessorsOfCurrBasicBlock.forEach(predecessor => {
             predecessor.removeSuccessorBlock(currBasicBlock);
@@ -90,9 +90,12 @@ export class ConditionBuilder {
         });
     }
 
-    private generateBlocksContainConditionalOperatorGroup(sourceStmts: Stmt[], basicBlockSet: Set<BasicBlock>): {
-        generatedTopBlock: BasicBlock,
-        generatedBottomBlocks: BasicBlock[],
+    private generateBlocksContainConditionalOperatorGroup(
+        sourceStmts: Stmt[],
+        basicBlockSet: Set<BasicBlock>
+    ): {
+        generatedTopBlock: BasicBlock;
+        generatedBottomBlocks: BasicBlock[];
     } {
         const { firstEndPos: firstEndPos } = this.findFirstConditionalOperator(sourceStmts);
         if (firstEndPos === -1) {
@@ -107,12 +110,10 @@ export class ConditionBuilder {
         let generatedBottomBlocks = firstGeneratedBottomBlocks;
         firstGeneratedAllBlocks.forEach(block => basicBlockSet.add(block));
         const stmtsCnt = sourceStmts.length;
-        if (firstEndPos !== stmtsCnt - 1) { // need handle other conditional operators
-            const {
-                generatedTopBlock: restGeneratedTopBlock,
-                generatedBottomBlocks: restGeneratedBottomBlocks,
-            } = this.generateBlocksContainConditionalOperatorGroup(
-                sourceStmts.slice(firstEndPos + 1, stmtsCnt), basicBlockSet);
+        if (firstEndPos !== stmtsCnt - 1) {
+            // need handle other conditional operators
+            const { generatedTopBlock: restGeneratedTopBlock, generatedBottomBlocks: restGeneratedBottomBlocks } =
+                this.generateBlocksContainConditionalOperatorGroup(sourceStmts.slice(firstEndPos + 1, stmtsCnt), basicBlockSet);
             firstGeneratedBottomBlocks.forEach(firstGeneratedBottomBlock => {
                 firstGeneratedBottomBlock.addSuccessorBlock(restGeneratedTopBlock);
                 restGeneratedTopBlock.addPredecessorBlock(firstGeneratedBottomBlock);
@@ -125,22 +126,17 @@ export class ConditionBuilder {
     }
 
     private generateBlocksContainSingleConditionalOperator(sourceStmts: Stmt[]): {
-        generatedTopBlock: BasicBlock,
-        generatedBottomBlocks: BasicBlock[],
-        generatedAllBlocks: BasicBlock[],
+        generatedTopBlock: BasicBlock;
+        generatedBottomBlocks: BasicBlock[];
+        generatedAllBlocks: BasicBlock[];
     } {
-        const {
-            firstIfTruePos: ifTruePos,
-            firstIfFalsePos: ifFalsePos,
-            firstEndPos: endPos,
-        } = this.findFirstConditionalOperator(sourceStmts);
+        const { firstIfTruePos: ifTruePos, firstIfFalsePos: ifFalsePos, firstEndPos: endPos } = this.findFirstConditionalOperator(sourceStmts);
         if (endPos === -1) {
             return this.generateBlockWithoutConditionalOperator(sourceStmts);
         }
-        const {
-            generatedTopBlock: generatedTopBlock,
-            generatedAllBlocks: generatedAllBlocks,
-        } = this.generateBlockWithoutConditionalOperator(sourceStmts.slice(0, ifTruePos));
+        const { generatedTopBlock: generatedTopBlock, generatedAllBlocks: generatedAllBlocks } = this.generateBlockWithoutConditionalOperator(
+            sourceStmts.slice(0, ifTruePos)
+        );
         let generatedBottomBlocks: BasicBlock[] = [];
         const {
             generatedTopBlock: generatedTopBlockOfTrueBranch,
@@ -162,10 +158,9 @@ export class ConditionBuilder {
         generatedTopBlock.addSuccessorBlock(generatedTopBlockOfFalseBranch);
         generatedTopBlockOfFalseBranch.addPredecessorBlock(generatedTopBlock);
         const stmtsCnt = sourceStmts.length;
-        if (endPos !== stmtsCnt - 1) { // need create a new basic block for rest statements
-            const {
-                generatedTopBlock: extraBlock,
-            } = this.generateBlockWithoutConditionalOperator(sourceStmts.slice(endPos + 1));
+        if (endPos !== stmtsCnt - 1) {
+            // need create a new basic block for rest statements
+            const { generatedTopBlock: extraBlock } = this.generateBlockWithoutConditionalOperator(sourceStmts.slice(endPos + 1));
             generatedBottomBlocks.forEach(generatedBottomBlock => {
                 generatedBottomBlock.addSuccessorBlock(extraBlock);
                 extraBlock.addPredecessorBlock(generatedBottomBlock);
@@ -177,9 +172,9 @@ export class ConditionBuilder {
     }
 
     private generateBlockWithoutConditionalOperator(sourceStmts: Stmt[]): {
-        generatedTopBlock: BasicBlock,
-        generatedBottomBlocks: BasicBlock[],
-        generatedAllBlocks: BasicBlock[],
+        generatedTopBlock: BasicBlock;
+        generatedBottomBlocks: BasicBlock[];
+        generatedAllBlocks: BasicBlock[];
     } {
         const generatedBlock = new BasicBlock();
         sourceStmts.forEach(stmt => generatedBlock.addStmt(stmt));
@@ -194,8 +189,7 @@ export class ConditionBuilder {
         for (const basicBlock of basicBlockSet) {
             const stmts = Array.from(basicBlock.getStmts());
             for (const stmt of stmts) {
-                if (stmt instanceof DummyStmt && stmt.toString()
-                    ?.startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR)) {
+                if (stmt instanceof DummyStmt && stmt.toString()?.startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR)) {
                     basicBlock.remove(stmt);
                 }
             }
@@ -203,7 +197,9 @@ export class ConditionBuilder {
     }
 
     private findFirstConditionalOperator(stmts: Stmt[]): {
-        firstIfTruePos: number, firstIfFalsePos: number, firstEndPos: number,
+        firstIfTruePos: number;
+        firstIfFalsePos: number;
+        firstEndPos: number;
     } {
         let firstIfTruePos = -1;
         let firstIfFalsePos = -1;
@@ -212,17 +208,12 @@ export class ConditionBuilder {
         for (let i = 0; i < stmts.length; i++) {
             const stmt = stmts[i];
             if (stmt instanceof DummyStmt) {
-                if (stmt.toString()
-                        .startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_TRUE_STMT) && firstIfTruePos ===
-                    -1) {
+                if (stmt.toString().startsWith(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_TRUE_STMT) && firstIfTruePos === -1) {
                     firstIfTruePos = i;
-                    firstConditionalOperatorNo =
-                        stmt.toString().replace(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_TRUE_STMT, '');
-                } else if (stmt.toString() === ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_FALSE_STMT +
-                           firstConditionalOperatorNo) {
+                    firstConditionalOperatorNo = stmt.toString().replace(ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_TRUE_STMT, '');
+                } else if (stmt.toString() === ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_IF_FALSE_STMT + firstConditionalOperatorNo) {
                     firstIfFalsePos = i;
-                } else if (stmt.toString() === ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_END_STMT +
-                           firstConditionalOperatorNo) {
+                } else if (stmt.toString() === ArkIRTransformer.DUMMY_CONDITIONAL_OPERATOR_END_STMT + firstConditionalOperatorNo) {
                     firstEndPos = i;
                 }
             }
@@ -230,8 +221,7 @@ export class ConditionBuilder {
         return { firstIfTruePos, firstIfFalsePos, firstEndPos };
     }
 
-    private removeUnnecessaryBlocksInConditionalOperator(bottomBlock: BasicBlock,
-                                                         allBlocks: Set<BasicBlock>): BasicBlock[] {
+    private removeUnnecessaryBlocksInConditionalOperator(bottomBlock: BasicBlock, allBlocks: Set<BasicBlock>): BasicBlock[] {
         const firstStmtInBottom = bottomBlock.getStmts()[0];
         if (!(firstStmtInBottom instanceof ArkAssignStmt)) {
             return [bottomBlock];
@@ -246,29 +236,27 @@ export class ConditionBuilder {
         const newPredecessors: BasicBlock[] = [];
         for (const predecessor of oldPredecessors) {
             predecessor.removeSuccessorBlock(bottomBlock);
-            newPredecessors.push(
-                ...this.replaceTempRecursively(predecessor, targetValue as Local, tempResultValue as Local,
-                    allBlocks));
+            newPredecessors.push(...this.replaceTempRecursively(predecessor, targetValue as Local, tempResultValue as Local, allBlocks));
         }
 
         bottomBlock.remove(firstStmtInBottom);
-        if (bottomBlock.getStmts().length === 0) { // must be a new block without successors
+        if (bottomBlock.getStmts().length === 0) {
+            // must be a new block without successors
             allBlocks.delete(bottomBlock);
             return newPredecessors;
         }
 
-        oldPredecessors.forEach((oldPredecessor) => {
+        oldPredecessors.forEach(oldPredecessor => {
             bottomBlock.removePredecessorBlock(oldPredecessor);
         });
-        newPredecessors.forEach((newPredecessor) => {
+        newPredecessors.forEach(newPredecessor => {
             bottomBlock.addPredecessorBlock(newPredecessor);
             newPredecessor.addSuccessorBlock(bottomBlock);
         });
         return [bottomBlock];
     }
 
-    private replaceTempRecursively(currBottomBlock: BasicBlock, targetLocal: Local,
-                                   tempResultLocal: Local, allBlocks: Set<BasicBlock>): BasicBlock[] {
+    private replaceTempRecursively(currBottomBlock: BasicBlock, targetLocal: Local, tempResultLocal: Local, allBlocks: Set<BasicBlock>): BasicBlock[] {
         const stmts = currBottomBlock.getStmts();
         const stmtsCnt = stmts.length;
         let tempResultReassignStmt: Stmt | null = null;
@@ -290,8 +278,7 @@ export class ConditionBuilder {
             const prevTempResultLocal = (tempResultReassignStmt as ArkAssignStmt).getRightOp() as Local;
             for (const predecessor of oldPredecessors) {
                 predecessor.removeSuccessorBlock(currBottomBlock);
-                newPredecessors.push(
-                    ...this.replaceTempRecursively(predecessor, targetLocal, prevTempResultLocal, allBlocks));
+                newPredecessors.push(...this.replaceTempRecursively(predecessor, targetLocal, prevTempResultLocal, allBlocks));
             }
 
             currBottomBlock.remove(tempResultReassignStmt);
@@ -301,7 +288,7 @@ export class ConditionBuilder {
                 allBlocks.delete(currBottomBlock);
             } else {
                 currBottomBlock.getPredecessors().splice(0, oldPredecessors.length, ...newPredecessors);
-                newPredecessors.forEach((newPredecessor) => {
+                newPredecessors.forEach(newPredecessor => {
                     newPredecessor.addSuccessorBlock(currBottomBlock);
                 });
                 newBottomBlocks = [currBottomBlock];

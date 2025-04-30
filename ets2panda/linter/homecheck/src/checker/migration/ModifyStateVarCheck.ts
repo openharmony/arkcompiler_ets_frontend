@@ -13,18 +13,30 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, ArkInstanceFieldRef, ArkInstanceInvokeExpr, CallGraph, CallGraphBuilder, Local, Stmt, Value, FieldSignature, ArkMethod } from "arkanalyzer";
+import {
+    ArkAssignStmt,
+    ArkInstanceFieldRef,
+    ArkInstanceInvokeExpr,
+    CallGraph,
+    CallGraphBuilder,
+    Local,
+    Stmt,
+    Value,
+    FieldSignature,
+    ArkMethod,
+} from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher, MethodMatcher } from "../../Index";
-import { IssueReport } from "../../model/Defects";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher, MethodMatcher } from '../../Index';
+import { IssueReport } from '../../model/Defects';
 import { CALL_DEPTH_LIMIT, CALLBACK_METHOD_NAME, CallGraphHelper } from './Utils';
+import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ModifyStateVarCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: 'It is not allowed to update state when the view is changing'
+    ruleDocPath: '',
+    description: 'It is not allowed to update state when the view is changing',
 };
 
 export class ModifyStateVarCheck implements BaseChecker {
@@ -41,13 +53,13 @@ export class ModifyStateVarCheck implements BaseChecker {
     private buildMatcher: MethodMatcher = {
         matcherType: MatcherTypes.METHOD,
         class: [this.classMatcher],
-        name: ["build"]
+        name: ['build'],
     };
 
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
             matcher: this.buildMatcher,
-            callback: this.check
+            callback: this.check,
         };
         return [matchBuildCb];
     }
@@ -58,28 +70,39 @@ export class ModifyStateVarCheck implements BaseChecker {
         let callGraphBuilder = new CallGraphBuilder(callGraph, scene);
         callGraphBuilder.buildClassHierarchyCallGraph([target.getSignature()]);
 
-        this.checkMethod(target, callGraph);
+        const arkClass = target.getDeclaringArkClass();
+        const stateVars = new Set(
+            arkClass
+                .getFields()
+                .filter(f => f.hasDecorator('State'))
+                .map(f => f.getSignature())
+        );
+        if (stateVars.size > 0) {
+            this.checkMethod(target, callGraph, stateVars);
+        }
     };
 
-    private checkMethod(target: ArkMethod, cg: CallGraph, depth: number = 0) {
+    private checkMethod(target: ArkMethod, cg: CallGraph, stateVars: Set<FieldSignature>, depth: number = 0): void {
         if (depth > CALL_DEPTH_LIMIT) {
             return;
         }
-        const arkClass = target.getDeclaringArkClass();
-        const stateVars = new Set(arkClass.getFields().filter(f => f.hasDecorator('State')).map(f => f.getSignature()));
         let aliases = new Set<Local>();
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             const invokeExpr = stmt.getInvokeExpr();
             if (invokeExpr && invokeExpr instanceof ArkInstanceInvokeExpr) {
-                if (CALLBACK_METHOD_NAME.includes(invokeExpr.getMethodSignature().getMethodSubSignature().getMethodName())) {
+                if (
+                    CALLBACK_METHOD_NAME.includes(
+                        invokeExpr.getMethodSignature().getMethodSubSignature().getMethodName()
+                    )
+                ) {
                     continue;
                 }
             }
             cg.getCallSiteByStmt(stmt).forEach(cs => {
                 const callee = cg.getArkMethodByFuncID(cs.calleeFuncID);
                 if (callee) {
-                    this.checkMethod(callee, cg, depth + 1);
+                    this.checkMethod(callee, cg, stateVars, depth + 1);
                 }
             });
             if (!(stmt instanceof ArkAssignStmt)) {
@@ -107,7 +130,11 @@ export class ModifyStateVarCheck implements BaseChecker {
         return false;
     }
 
-    private isAliasOfStateVar(stmt: ArkAssignStmt, stateVars: Set<FieldSignature>, aliases: Set<Local>): Local | undefined {
+    private isAliasOfStateVar(
+        stmt: ArkAssignStmt,
+        stateVars: Set<FieldSignature>,
+        aliases: Set<Local>
+    ): Local | undefined {
         const leftOp = stmt.getLeftOp();
         const rightOp = stmt.getRightOp();
         if (leftOp instanceof Local && rightOp instanceof ArkInstanceFieldRef) {
@@ -121,17 +148,29 @@ export class ModifyStateVarCheck implements BaseChecker {
         return undefined;
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value) {
+    private addIssueReport(stmt: Stmt, operand: Value): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'NoStateUpdateDuringRender';
         const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
-            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            desc,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private getLineAndColumn(stmt: Stmt, operand: Value) {
+    private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
         const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {

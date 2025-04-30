@@ -14,21 +14,36 @@
  */
 
 import {
-    ArkAssignStmt, Scene, Local, Stmt, Type, ArkMethod, AliasType, AbstractInvokeExpr,
-    Value, ArkFile, AstTreeUtils, ts, FunctionType, ArkClass, ANONYMOUS_METHOD_PREFIX, ArkInvokeStmt
-} from "arkanalyzer";
+    ArkAssignStmt,
+    Scene,
+    Local,
+    Stmt,
+    Type,
+    ArkMethod,
+    AliasType,
+    AbstractInvokeExpr,
+    Value,
+    ArkFile,
+    AstTreeUtils,
+    ts,
+    FunctionType,
+    ArkClass,
+    ANONYMOUS_METHOD_PREFIX,
+    ArkInvokeStmt,
+} from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherTypes, MatcherCallback, MethodMatcher } from "../../Index";
-import { IssueReport } from "../../model/Defects";
-import { FixInfo, RuleFix } from "../../model/Fix";
-import { FixPosition, FixUtils } from "../../utils/common/FixUtils";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherTypes, MatcherCallback, MethodMatcher } from '../../Index';
+import { IssueReport } from '../../model/Defects';
+import { FixInfo, RuleFix } from '../../model/Fix';
+import { FixPosition, FixUtils } from '../../utils/common/FixUtils';
+import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CustomBuilderCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: 'The CustomBuilder type parameter only accepts functions annotated with @Builder'
+    ruleDocPath: '',
+    description: 'The CustomBuilder type parameter only accepts functions annotated with @Builder',
 };
 
 export class CustomBuilderCheck implements BaseChecker {
@@ -38,13 +53,13 @@ export class CustomBuilderCheck implements BaseChecker {
     public issues: IssueReport[] = [];
 
     private buildMatcher: MethodMatcher = {
-        matcherType: MatcherTypes.METHOD
+        matcherType: MatcherTypes.METHOD,
     };
 
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
             matcher: this.buildMatcher,
-            callback: this.check
+            callback: this.check,
         };
         return [matchBuildCb];
     }
@@ -165,19 +180,31 @@ export class CustomBuilderCheck implements BaseChecker {
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'CustomBuilderTypeChanged';
         const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, problem, desc,
-            severity, this.rule.ruleId, warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            desc,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         const fixPosition: FixPosition = {
             startLine: warnInfo.line,
             startCol: warnInfo.startCol,
             endLine: -1,
-            endCol: -1
-        }
+            endCol: -1,
+        };
         const ruleFix = this.generateRuleFix(fixPosition, stmt);
         this.issues.push(new IssueReport(defects, ruleFix));
     }
 
-    private getLineAndColumn(stmt: Stmt, operand: Value) {
+    private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
         const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
@@ -210,7 +237,7 @@ export class CustomBuilderCheck implements BaseChecker {
         return ruleFix;
     }
 
-    private getEndPositionOfStmt(stmt: Stmt): { line: number, col: number } | null {
+    private getEndPositionOfStmt(stmt: Stmt): { line: number; col: number } | null {
         const allPositions = stmt.getOperandOriginalPositions();
         if (allPositions === undefined) {
             return null;
@@ -229,7 +256,7 @@ export class CustomBuilderCheck implements BaseChecker {
         return res;
     }
 
-    private generateReplaceText(sourceFile: ts.SourceFile, originalText: string, fixPosition: FixPosition,): string {
+    private generateReplaceText(sourceFile: ts.SourceFile, originalText: string, fixPosition: FixPosition): string {
         // 已经是箭头函数的场景，仅需要加上@Memo即可
         if (originalText.includes('=>') && !originalText.trimStart().startsWith('@Memo')) {
             return `@Memo ${originalText}`;

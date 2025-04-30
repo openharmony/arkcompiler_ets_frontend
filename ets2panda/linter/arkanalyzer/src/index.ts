@@ -121,7 +121,6 @@ export * from './utils/AstTreeUtils';
 export { LOG_LEVEL, LOG_MODULE_TYPE } from './utils/logger';
 export { default as Logger } from './utils/logger';
 
-
 //ohos-typescript
 import ts from 'ohos-typescript';
 export { ts };

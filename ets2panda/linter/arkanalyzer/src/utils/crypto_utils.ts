@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 import * as crypto from 'crypto';
 
 export class CryptoUtils {
-
     public static sha256(content: string): string {
         return this.hash(content, 'sha256');
     }
@@ -28,7 +27,7 @@ export class CryptoUtils {
     public static hashcode(content: string): number {
         let h = 0;
         for (let i = 0; i < content.length; i++) {
-            h = Math.imul(31, h) + content.charCodeAt(i) | 0;
+            h = (Math.imul(31, h) + content.charCodeAt(i)) | 0;
         }
         return h;
     }

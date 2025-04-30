@@ -14,12 +14,7 @@
  */
 
 import { Constant } from '../../core/base/Constant';
-import {
-    ArkInstanceInvokeExpr,
-    ArkNormalBinopExpr,
-    ArkStaticInvokeExpr,
-    NormalBinaryOperator,
-} from '../../core/base/Expr';
+import { ArkInstanceInvokeExpr, ArkNormalBinopExpr, ArkStaticInvokeExpr, NormalBinaryOperator } from '../../core/base/Expr';
 import { Local } from '../../core/base/Local';
 import { ArkAssignStmt, Stmt } from '../../core/base/Stmt';
 import {
@@ -105,10 +100,7 @@ export class PrinterUtils {
         let className = invokeExpr.getMethodSignature().getDeclaringClassSignature().getClassName();
         let methodName = invokeExpr.getMethodSignature().getMethodSubSignature().getMethodName();
 
-        if (
-            methodName === COMPONENT_POP_FUNCTION &&
-            (isEtsSystemComponent(className) || SPECIAL_CONTAINER_COMPONENT.has(className))
-        ) {
+        if (methodName === COMPONENT_POP_FUNCTION && (isEtsSystemComponent(className) || SPECIAL_CONTAINER_COMPONENT.has(className))) {
             return true;
         }
 
@@ -119,20 +111,14 @@ export class PrinterUtils {
         let className = invokeExpr.getMethodSignature().getDeclaringClassSignature().getClassName();
         let methodName = invokeExpr.getMethodSignature().getMethodSubSignature().getMethodName();
 
-        if (
-            methodName === COMPONENT_CREATE_FUNCTION &&
-            (isEtsSystemComponent(className) || SPECIAL_CONTAINER_COMPONENT.has(className))
-        ) {
+        if (methodName === COMPONENT_CREATE_FUNCTION && (isEtsSystemComponent(className) || SPECIAL_CONTAINER_COMPONENT.has(className))) {
             return true;
         }
 
         return false;
     }
 
-    public static isComponentAttributeInvoke(
-        invokeExpr: ArkInstanceInvokeExpr,
-        visitor: Set<ArkInstanceInvokeExpr> = new Set()
-    ): boolean {
+    public static isComponentAttributeInvoke(invokeExpr: ArkInstanceInvokeExpr, visitor: Set<ArkInstanceInvokeExpr> = new Set()): boolean {
         if (visitor.has(invokeExpr)) {
             return false;
         }

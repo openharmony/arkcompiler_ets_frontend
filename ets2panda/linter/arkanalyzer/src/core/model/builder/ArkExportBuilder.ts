@@ -44,8 +44,7 @@ function buildExportInfo(arkInstance: ArkExport, arkFile: ArkFile, line: LineCol
         .build();
 }
 
-
-export function buildDefaultExportInfo(im: FromInfo, file: ArkFile, arkExport?: ArkExport) {
+export function buildDefaultExportInfo(im: FromInfo, file: ArkFile, arkExport?: ArkExport): ExportInfo {
     return new ExportInfo.Builder()
         .exportClauseType(arkExport?.getExportType() ?? ExportType.CLASS)
         .exportClauseName(im.getOriginName())
@@ -65,7 +64,7 @@ function buildExportDeclaration(node: ts.ExportDeclaration, sourceFile: ts.Sourc
     let exportInfos: ExportInfo[] = [];
     // just like: export {xxx as x} from './yy'
     if (node.exportClause && ts.isNamedExports(node.exportClause) && node.exportClause.elements) {
-        node.exportClause.elements.forEach((element) => {
+        node.exportClause.elements.forEach(element => {
             let builder = new ExportInfo.Builder()
                 .exportClauseType(ExportType.UNKNOWN)
                 .exportClauseName(element.name.text)
@@ -94,9 +93,11 @@ function buildExportDeclaration(node: ts.ExportDeclaration, sourceFile: ts.Sourc
         .setLeadingComments(IRUtils.getCommentsMetadata(node, sourceFile, arkFile.getScene().getOptions(), true))
         .setTrailingComments(IRUtils.getCommentsMetadata(node, sourceFile, arkFile.getScene().getOptions(), false))
         .originTsPosition(originTsPosition);
-    if (node.exportClause && ts.isNamespaceExport(node.exportClause) && ts.isIdentifier(node.exportClause.name)) { // just like: export * as xx from './yy'
+    if (node.exportClause && ts.isNamespaceExport(node.exportClause) && ts.isIdentifier(node.exportClause.name)) {
+        // just like: export * as xx from './yy'
         exportInfos.push(builder1.exportClauseName(node.exportClause.name.text).build());
-    } else if (!node.exportClause && node.moduleSpecifier) { // just like: export * from './yy'
+    } else if (!node.exportClause && node.moduleSpecifier) {
+        // just like: export * from './yy'
         exportInfos.push(builder1.exportClauseName(ALL).build());
     }
     return exportInfos;
@@ -123,17 +124,19 @@ function buildExportAssignment(node: ts.ExportAssignment, sourceFile: ts.SourceF
         .declaringArkFile(arkFile)
         .exportClauseName(DEFAULT)
         .setLeadingComments(IRUtils.getCommentsMetadata(node, sourceFile, arkFile.getScene().getOptions(), true))
-        .setTrailingComments(IRUtils.getCommentsMetadata(node, sourceFile, arkFile.getScene().getOptions(), false))
+        .setTrailingComments(IRUtils.getCommentsMetadata(node, sourceFile, arkFile.getScene().getOptions(), false));
 
     if (ts.isNewExpression(node.expression) && ts.isClassExpression(node.expression.expression)) {
         let cls: ArkClass = new ArkClass();
         buildNormalArkClassFromArkFile(node.expression.expression, arkFile, cls, sourceFile);
     }
 
-    if (ts.isIdentifier(node.expression)) { // just like: export default xx
+    if (ts.isIdentifier(node.expression)) {
+        // just like: export default xx
         exportInfo.nameBeforeAs(node.expression.text);
-    } else if (ts.isAsExpression(node.expression)) { // just like: export default xx as YY
-        exportInfo.nameBeforeAs(node.expression.expression.getText(sourceFile))
+    } else if (ts.isAsExpression(node.expression)) {
+        // just like: export default xx as YY
+        exportInfo.nameBeforeAs(node.expression.expression.getText(sourceFile));
     }
     exportInfos.push(exportInfo.build());
 
@@ -158,12 +161,12 @@ export function buildExportVariableStatement(node: ts.VariableStatement, sourceF
             .modifiers(modifiers)
             .tsSourceCode(tsSourceCode)
             .originTsPosition(originTsPosition)
-            .declaringArkFile(arkFile)
+            .declaringArkFile(arkFile);
         if (namespace) {
             exportInfoBuilder.declaringArkNamespace(namespace);
         }
         exportInfos.push(exportInfoBuilder.build());
-    })
+    });
     return exportInfos;
 }
 

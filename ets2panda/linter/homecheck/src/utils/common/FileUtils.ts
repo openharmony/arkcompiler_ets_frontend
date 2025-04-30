@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as fs from "fs";
-import * as path from "path";
-import { createInterface } from "readline";
-import { DisableText } from "./Disable";
-import { Sdk } from "arkanalyzer/lib/Config";
+import * as fs from 'fs';
+import * as path from 'path';
+import { createInterface } from 'readline';
+import { DisableText } from './Disable';
+import { Sdk } from 'arkanalyzer/lib/Config';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { FileToCheck, ProjectConfig, SelectedFileInfo } from '../../model/ProjectConfig';
-import { RuleConfig } from "../../model/RuleConfig";
-import { GlobMatch } from "./GlobMatch";
+import { RuleConfig } from '../../model/RuleConfig';
+import { GlobMatch } from './GlobMatch';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'FileUtils');
 export class FileUtils {
@@ -125,7 +125,7 @@ export class FileUtils {
                 rl.close();
                 reject(err);
             });
-        })
+        });
     }
 
     /**
@@ -161,15 +161,15 @@ export class FileUtils {
     public static getFileInfoFromFileList(fileOrFolderList: string[]): SelectedFileInfo[] {
         const fileInfoList: SelectedFileInfo[] = [];
         fileOrFolderList.forEach((fileOrFolderPath) => {
-            if (fs.statSync(fileOrFolderPath).isFile()){
-                fileInfoList.push(new FileToCheck(fileOrFolderPath))
-            }else {
+            if (fs.statSync(fileOrFolderPath).isFile()) {
+                fileInfoList.push(new FileToCheck(fileOrFolderPath));
+            } else {
                 const filesInFolder = FileUtils.getAllFiles(fileOrFolderPath, []);
                 filesInFolder.forEach((filePath) => {
-                    fileInfoList.push(new FileToCheck(filePath))
-                })
+                    fileInfoList.push(new FileToCheck(filePath));
+                });
             }
-        })
+        });
         return fileInfoList;
     }
 
@@ -211,7 +211,7 @@ export class FileUtils {
                     filenameArr.push(realFile);
                 }
             }
-        })
+        });
         return filenameArr;
     }
 
@@ -276,7 +276,7 @@ export class FileUtils {
      * @param content 写入的内容
      * @param mode 写入模式，不传默认为追加模式
      **/
-    public static writeToFile(filePath: string, content: string, mode: WriteFileMode = WriteFileMode.APPEND) {
+    public static writeToFile(filePath: string, content: string, mode: WriteFileMode = WriteFileMode.APPEND): void {
         const dirName = path.dirname(filePath);
         if (!fs.existsSync(dirName)) {
             fs.mkdirSync(dirName, { recursive: true });

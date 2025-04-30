@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,24 +13,24 @@
  * limitations under the License.
  */
 
-import { Scene } from "arkanalyzer";
-import Logger, { LOG_MODULE_TYPE } from "arkanalyzer/lib/utils/logger";
-import { SceneConfig } from "arkanalyzer";
-import { fileRuleMapping } from "./FileRuleMapping";
-import { RuleConfig } from "../../model/RuleConfig";
-import { ProjectConfig, SelectedFileInfo } from "../../model/ProjectConfig";
-import { Project2Check } from "../../model/Project2Check";
-import { File2Check } from "../../model/File2Check";
-import { DisableText } from "./Disable";
-import { Message } from "../../model/Message";
-import { FileUtils } from "./FileUtils";
-import { ScopeHelper } from "./ScopeHelper";
-import { RuleListUtil } from "./DefectsList";
-import { FixMode } from "../../model/Fix";
-import { FileIssues, FileReports, IssueReport, engine } from "../../model/Defects";
-import { FixUtils } from "./FixUtils";
-import { FixEngine } from "../../codeFix/FixEngine";
-import { CheckerUtils } from "../checker/CheckerUtils";
+import { Scene } from 'arkanalyzer';
+import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
+import { SceneConfig } from 'arkanalyzer';
+import { fileRuleMapping } from './FileRuleMapping';
+import { RuleConfig } from '../../model/RuleConfig';
+import { ProjectConfig, SelectedFileInfo } from '../../model/ProjectConfig';
+import { Project2Check } from '../../model/Project2Check';
+import { File2Check } from '../../model/File2Check';
+import { DisableText } from './Disable';
+import { Message } from '../../model/Message';
+import { FileUtils } from './FileUtils';
+import { ScopeHelper } from './ScopeHelper';
+import { RuleListUtil } from './DefectsList';
+import { FixMode } from '../../model/Fix';
+import { FileIssues, FileReports, IssueReport, engine } from '../../model/Defects';
+import { FixUtils } from './FixUtils';
+import { FixEngine } from '../../codeFix/FixEngine';
+import { CheckerUtils } from '../checker/CheckerUtils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckEntry');
 
@@ -212,10 +212,10 @@ export async function checkEntryBuilder(checkEntry: CheckEntry): Promise<boolean
     if (checkFileList.length === 0) {
         checkFileList = FileUtils.getAllFiles(checkEntry.projectConfig.projectPath, ['.ts', '.ets', '.js', '.json5']);
     }
-    
+
     // 2、文件过滤和文件级屏蔽处理
     checkFileList = await FileUtils.getFiltedFiles(checkFileList, checkEntry.ruleConfig);
-    logger.info("File count: " + checkFileList.length);
+    logger.info('File count: ' + checkFileList.length);
     if (checkFileList.length === 0) {
         checkEntry.message?.progressNotify(1, 'No file to check.');
         return false;
@@ -236,7 +236,7 @@ export async function checkEntryBuilder(checkEntry: CheckEntry): Promise<boolean
 /**
  * 获取指定检查的文件列表
  * 
- * @param checkFilePath - 指定的检查文件路径的配置文件路径，该文件内容示例{"checkPath": [{"filePath": "xxx", "fixKey": ["%line%sCol%eCol%ruleId"]}]}
+ * @param checkFilePath - 指定的检查文件路径的配置文件路径，该文件内容示例{'checkPath': [{'filePath': 'xxx', 'fixKey': ['%line%sCol%eCol%ruleId']}]}
  * filePath为需要检查的文件路径，fixKey为需要修复的缺陷key，空数组则不修复。
  * @returns SelectFileInfo[] - 需要检查的文件列表
  */
@@ -263,19 +263,19 @@ function buildScene(fileList: string[], checkEntry: CheckEntry): boolean {
         const languageTags = checkEntry.projectConfig.languageTags;
         const sdkList = FileUtils.genSdks(checkEntry.projectConfig);
         sceneConfig.buildFromProjectFiles(projectName, projectPath, fileList, sdkList, languageTags);
-        logger.info("Build sceneConfig completed.");
+        logger.info('Build sceneConfig completed.');
         // 构建Scene信息
         checkEntry.scene = new Scene();
         checkEntry.scene.buildSceneFromFiles(sceneConfig);
-        logger.info("Build scene completed.");
+        logger.info('Build scene completed.');
         checkEntry.scene.inferTypes();
-        logger.info("Infer types completed.");
+        logger.info('Infer types completed.');
     } catch (error) {
-        logger.error("Build scene or infer types error: ", error);
+        logger.error('Build scene or infer types error: ', error);
         return false;
     }
     // 构建Scope信息
     checkEntry.buildScope();
-    logger.info("Build scope completed.");
+    logger.info('Build scope completed.');
     return true;
 }

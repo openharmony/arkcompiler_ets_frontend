@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-import { FileReports } from "../../Index";
-import { CheckEntry } from "./CheckEntry";
+import { FileReports } from '../../Index';
+import { CheckEntry } from './CheckEntry';
 
-export async function processAfterCheck(checkEntry: CheckEntry) {
+export async function processAfterCheck(checkEntry: CheckEntry): Promise<void> {
     // 按规则维度统计告警信息，按文件维度汇总告警信息
     const fileIssues = checkEntry.sortIssues();
     let fileReports: FileReports[] = [];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,5 +18,5 @@ import { Stmt } from '../base/Stmt';
 
 export class Fact {
     values: Set<Value> = new Set<Value>();
-    valueMap: Map<Value, Stmt> = new Map<Value, Stmt>();  // 用最近的def代表value的值
+    valueMap: Map<Value, Stmt> = new Map<Value, Stmt>(); // 用最近的def代表value的值
 }

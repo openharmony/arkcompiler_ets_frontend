@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -120,7 +120,7 @@ class SparseBitVectorElement {
     // Count the number of set bits in this element
     count(): number {
         let numBits = 0;
-        this.bits.forEach((word) => {
+        this.bits.forEach(word => {
             numBits += this.countBits(word);
         });
         return numBits;
@@ -385,7 +385,7 @@ export class SparseBitVector {
         let element = next.value;
         if (!element) {
             return {
-                next() {
+                next(): { value: undefined; done: true } {
                     return { value: undefined, done: true };
                 },
                 [Symbol.iterator]() {
@@ -498,7 +498,7 @@ export class SparseBitVector {
         }
 
         if (needDeleteIdx.size > 0) {
-            needDeleteIdx.forEach((idx) => this.elements.delete(idx));
+            needDeleteIdx.forEach(idx => this.elements.delete(idx));
             changed = true;
         }
 
@@ -529,7 +529,7 @@ export class SparseBitVector {
         }
 
         if (needDeleteIdx.size > 0) {
-            needDeleteIdx.forEach((idx) => this.elements.delete(idx));
+            needDeleteIdx.forEach(idx => this.elements.delete(idx));
             changed = true;
         }
 

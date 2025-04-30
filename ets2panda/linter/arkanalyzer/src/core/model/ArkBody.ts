@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,8 +27,7 @@ export class ArkBody {
     private aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>;
     private traps?: Trap[];
 
-    constructor(locals: Set<Local>, cfg: Cfg, aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>,
-                traps?: Trap[]) {
+    constructor(locals: Set<Local>, cfg: Cfg, aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>, traps?: Trap[]) {
         this.cfg = cfg;
         this.aliasTypeMap = aliasTypeMap;
         this.locals = new Map<string, Local>();
