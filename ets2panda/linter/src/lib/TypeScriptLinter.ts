@@ -34,7 +34,6 @@ import {
   STRINGLITERAL_NUMBER,
   STRINGLITERAL_STRING,
   STRINGLITERAL_INT,
-  STRINGLITERAL_ANY,
   STRINGLITERAL_BYTE,
   STRINGLITERAL_SHORT,
   STRINGLITERAL_CHAR,
@@ -3776,24 +3775,20 @@ export class TypeScriptLinter {
     if (!this.options.arkts2 || !tsCallExpr) {
       return;
     }
-    if (
-      !ts.isBinaryExpression(tsCallExpr.parent) ||
-      tsCallExpr.parent.operatorToken.kind !== ts.SyntaxKind.QuestionQuestionToken
-    ) {
+    const isNullishCoalescing =
+      ts.isBinaryExpression(tsCallExpr.parent) &&
+      tsCallExpr.parent.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken;
+    const isTypeAssertion = ts.isAsExpression(tsCallExpr.parent);
+    if (!isNullishCoalescing && !isTypeAssertion) {
       return;
     }
-
-    const varDecl = tsCallExpr.parent.parent;
-    if (!ts.isVariableDeclaration(varDecl)) {
+    const varDecl = isNullishCoalescing ? tsCallExpr.parent.parent : tsCallExpr.parent;
+    if (!varDecl || !ts.isVariableDeclaration(varDecl)) {
       return;
     }
-
-    if (varDecl.type && ts.isTypeReferenceNode(varDecl.type)) {
-      if (varDecl.type.typeName.getText() === STRINGLITERAL_ANY) {
-        return;
-      }
+    if (varDecl.type) {
+      return;
     }
-
     const callReturnType = this.tsTypeChecker.getTypeAtLocation(tsCallExpr);
     const isNumberReturnType = callReturnType.flags & ts.TypeFlags.Number;
     const isNumberGeneric = ((): boolean => {

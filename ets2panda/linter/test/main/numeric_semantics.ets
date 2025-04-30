@@ -141,3 +141,24 @@ export class G{
 }
 
 const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
+
+private doCloseFolderBackgroundAnimation(): void {
+    openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
+    openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
+
+    let pos = [-1, -1];
+    pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder());
+    let editModeTranslateY = this.getEditModeTranslateY(pos);
+    if (pos.length > 1) {
+      let translateXForScreenSplit: number = AppStorage.get<number>('translateXForScreenSplit') ?? 0 as number;
+      let screenWidth: number = AppStorage.get<number>('screenWidth') as number;
+      let screenHeight: number = AppStorage.get<number>('screenHeight') as number;
+      if (screenWidth > screenHeight) {
+        log.showInfo('doCloseFolderBackgroundAnimation screenWidth: ' + screenWidth + ', height: ' + screenHeight);
+        screenWidth = screenHeight;
+      }
+      openFolderLayout.getGridSwiperLayout().bgTranslateX = pos[0] - screenWidth / 2 + translateXForScreenSplit;
+      openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
+        openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
+    }
+}
