@@ -61,7 +61,7 @@
             "endColumn": 13,
             "problem": "InteropCallObjectParam",
             "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-call-object-param)",
+            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)",
             "severity": "ERROR"
         }
     ]

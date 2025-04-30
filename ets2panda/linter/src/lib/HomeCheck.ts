@@ -38,11 +38,7 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
   const inputFiles = cmdOptions.inputFiles;
   const ruleConfigInfo = {
     ruleSet: ['plugin:@migration/all'],
-    files: [
-      '**/*.ets',
-      '**/*.ts',
-      '**/*.js'
-    ]
+    files: ['**/*.ets', '**/*.ts', '**/*.js']
   };
   const projectConfigInfo = {
     projectName: cmdOptions.arktsWholeProjectPath,

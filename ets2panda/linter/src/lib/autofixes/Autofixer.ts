@@ -3501,11 +3501,17 @@ export class Autofixer {
     return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
   }
 
-  fixImportClause(tsImportClause : ts.ImportClause) : Autofix[] {
+  fixImportClause(tsImportClause: ts.ImportClause): Autofix[] {
     const newImportClause = ts.factory.createImportClause(
-      tsImportClause.isTypeOnly, tsImportClause.name, tsImportClause.namedBindings);
+      tsImportClause.isTypeOnly,
+      tsImportClause.name,
+      tsImportClause.namedBindings
+    );
     const replacementText = this.printer.printNode(
-      ts.EmitHint.Unspecified, newImportClause, tsImportClause.getSourceFile());
+      ts.EmitHint.Unspecified,
+      newImportClause,
+      tsImportClause.getSourceFile()
+    );
     return [{ start: tsImportClause.getStart(), end: tsImportClause.getEnd(), replacementText }];
   }
 

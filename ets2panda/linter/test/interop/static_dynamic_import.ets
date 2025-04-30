@@ -14,6 +14,6 @@
  */
 'use static'
 
-let mod = await import('./test_files/dummy_arkts1_file');
-let mod = await import('./test_files/dummy_ts_file');
-let mod = await import('./test_files/dummy_js_file');
+let arkTsMod = await import('./test_files/dummy_arkts1_file');
+let tsModule  = await import('./test_files/dummy_ts_file');
+let jsModule = await import('./test_files/dummy_js_file');

@@ -21,7 +21,7 @@
             "endColumn": 18,
             "problem": "InteropNoDecorators",
             "suggest": "",
-            "rule": "Typescript class decorators are not allowed (arkts-interop-no-decorators)",
+            "rule": "Typescript class decorators are not allowed (arkts-interop-ts2s-no-ts-decorator)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 19,
             "problem": "InteropNoDecorators",
             "suggest": "",
-            "rule": "Typescript class decorators are not allowed (arkts-interop-no-decorators)",
+            "rule": "Typescript class decorators are not allowed (arkts-interop-ts2s-no-ts-decorator)",
             "severity": "ERROR"
         },
         {
