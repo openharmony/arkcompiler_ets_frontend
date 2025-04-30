@@ -140,7 +140,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
     }
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
+    TypeStackElement tse(this, type, {{diagnostic::CYCLIC_INHERITANCE, {type->Name()}}}, classDef->Ident()->Start());
     if (tse.HasTypeError()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
         return false;
@@ -230,7 +230,7 @@ void ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
 
     auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, declNode->Id()->Start());
+    TypeStackElement tse(this, type, {{diagnostic::CYCLIC_INHERITANCE, {type->Name()}}}, declNode->Id()->Start());
     if (tse.HasTypeError()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
         declNode->SetTsType(GlobalTypeError());
@@ -1530,7 +1530,8 @@ std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const Type *co
     }
 }
 
-bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
+bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr,
+                                    const bool reportError)
 {
     auto const expressionType = expr->Property()->Check(this);
     auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
@@ -1546,18 +1547,24 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
         if (exprType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
             return ValidateTupleIndexFromEtsObject(tuple, expr);
         }
-        LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+        if (reportError) {
+            LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+        }
         return false;
     }
 
     if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX | TypeFlag::LONG)) {
-        LogError(diagnostic::TUPLE_INDEX_NOT_INT, {}, expr->Property()->Start());
+        if (reportError) {
+            LogError(diagnostic::TUPLE_INDEX_NOT_INT, {}, expr->Property()->Start());
+        }
         return false;
     }
 
     auto exprValue = GetTupleElementAccessValue(exprType);
     if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
-        LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
+        if (reportError) {
+            LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
+        }
         return false;
     }
 
@@ -1641,7 +1648,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 
     auto *funcBody = signature->Function()->Body()->AsBlockStatement();
 
-    TypeStackElement tse(this, signature, "Recursive constructor invocation", signature->Function()->Start());
+    TypeStackElement tse(this, signature, {{diagnostic::RECURSIVE_CTOR}}, signature->Function()->Start());
     if (tse.HasTypeError()) {
         return;
     }

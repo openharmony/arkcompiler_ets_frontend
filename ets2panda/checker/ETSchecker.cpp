@@ -151,6 +151,7 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_FUNCTIONR14_CLASS,
     compiler::Signatures::BUILTIN_FUNCTIONR15_CLASS,
     compiler::Signatures::BUILTIN_FUNCTIONR16_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR0_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR1_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR2_CLASS,
@@ -168,8 +169,25 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_LAMBDAR14_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR15_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR16_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAN_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE0_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE1_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE2_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE3_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE4_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE5_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE6_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE7_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE8_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE9_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE10_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE11_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE12_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE13_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE14_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE15_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE16_CLASS,
+    compiler::Signatures::BUILTIN_TUPLEN_CLASS,
 };
 // clang-format on
 
@@ -508,6 +526,11 @@ ETSObjectType *ETSChecker::GlobalBuiltinLambdaType(size_t nargs, bool hasRest) c
     return AsETSObjectType(&GlobalTypesHolder::GlobalLambdaBuiltinType, nargs, hasRest);
 }
 
+ETSObjectType *ETSChecker::GlobalBuiltinTupleType(size_t nargs) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalTupleBuiltinType, nargs);
+}
+
 size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const
 {
     return GetGlobalTypesHolder()->VariadicFunctionTypeThreshold();
@@ -569,30 +592,29 @@ Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
     return node->SetTsType(GlobalTypeError());
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
+    return TypeError(node, diagKind, util::DiagnosticMessageParams {}, at);
+}
+
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
+{
+    LogError(diagKind, list, at);
     return InvalidateType(node);
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const util::DiagnosticMessageParams &list,
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
                             const lexer::SourcePosition &at)
 {
-    LogTypeError(list, at);
-    return InvalidateType(node);
+    return TypeError(var, diagKind, {}, at);
 }
 
-Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
-    var->SetTsType(GlobalTypeError());
-    return var->TsType();
-}
-
-Type *ETSChecker::TypeError(varbinder::Variable *var, const util::DiagnosticMessageParams &list,
-                            const lexer::SourcePosition &at)
-{
-    LogTypeError(list, at);
+    LogError(diagKind, list, at);
     var->SetTsType(GlobalTypeError());
     return var->TsType();
 }

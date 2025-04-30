@@ -47,7 +47,7 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
             return;
         }
 
-        std::ignore = TypeError(var, {"Property ", var->Name(), " is not visible here."}, pos);
+        std::ignore = TypeError(var, diagnostic::PROP_INVISIBLE, {var->Name()}, pos);
     }
 }
 
@@ -56,8 +56,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
     if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
         std::ignore =
-            TypeError(ident->Variable(), {"Class or interface '", ident->ToString(), "' cannot be used as object"},
-                      ident->Start());
+            TypeError(ident->Variable(), diagnostic::CLASS_OR_IFACE_AS_OBJ, {ident->ToString()}, ident->Start());
     }
 
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
@@ -67,8 +66,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
     ES2PANDA_ASSERT(ident->Variable() != nullptr);
     if (ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
-        std::ignore = TypeError(
-            ident->Variable(), {"Namespace style identifier ", ident->ToString(), " is not callable."}, ident->Start());
+        std::ignore = TypeError(ident->Variable(), diagnostic::NAMESPACE_CALL, {ident->ToString()}, ident->Start());
     }
     if (type->IsETSFunctionType() || type->IsETSDynamicType()) {
         return;
@@ -78,7 +76,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         return;
     }
 
-    std::ignore = TypeError(ident->Variable(), "This expression is not callable.", ident->Start());
+    std::ignore = TypeError(ident->Variable(), diagnostic::EXPR_NOT_CALLABLE, {}, ident->Start());
 }
 
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
@@ -88,7 +86,7 @@ void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
 
     if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident &&
         !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) && !resolved->TsType()->IsTypeError()) {
-        LogTypeError({"Invalid reference '", ident->Name(), "'."}, ident->Start());
+        LogError(diagnostic::REF_INVALID, {ident->Name()}, ident->Start());
     }
 }
 
@@ -131,9 +129,8 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     bool isFinished = false;
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Left() == ident) {
         if (!IsReferenceType(type)) {
-            std::ignore = TypeError(ident->Variable(),
-                                    {R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
-                                    ident->Start());
+            std::ignore =
+                TypeError(ident->Variable(), diagnostic::INSTANCEOF_NONOBJECT, {ident->Name()}, ident->Start());
         }
         isFinished = true;
     }
@@ -208,12 +205,12 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
-            std::ignore = TypeError(variable, {"Cannot reassign ", fieldType, " ", variable->Name()},
+            std::ignore = TypeError(variable, diagnostic::FIELD_REASSIGNMENT, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
             return;
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
-            std::ignore = TypeError(variable, {"Cannot assign to a ", fieldType, " variable ", variable->Name()},
+            std::ignore = TypeError(variable, diagnostic::FIELD_ASSIGN_TYPE_MISMATCH, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
         }
     }
@@ -304,7 +301,7 @@ bool ETSChecker::IsArrayExprSizeValidForTuple(const ir::ArrayExpression *const a
     }
 
     if (size != tuple->GetTupleSize()) {
-        LogError(diagnostic::TUPLE_TOO_FEW_ELEMS, {size, tuple->GetTupleSize()}, arrayExpr->Start());
+        LogError(diagnostic::TUPLE_WRONG_NUMBER_OF_ELEMS, {size, tuple->GetTupleSize()}, arrayExpr->Start());
         return false;
     }
 

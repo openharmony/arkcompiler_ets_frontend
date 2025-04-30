@@ -192,7 +192,7 @@ semantic:
   id: 45
   message: "The parameter '{}' does not match any declared property in the annotation '{}'."
 
-- name: LAMBDA_TYPE_MISMATCH
+- name: TYPE_MISMATCH_AT_IDX
   id: 46
   message: "Type '{}' is not compatible with type '{}' at index {}"
 
@@ -927,7 +927,7 @@ semantic:
   id: 230
   message: "Annotation missing '@' symbol before annotation name."
 
-- name: TUPLE_TOO_FEW_ELEMS
+- name: TUPLE_WRONG_NUMBER_OF_ELEMS
   id: 231
   message: "Initializer has {} elements, but tuple requires {}"
 
@@ -1107,13 +1107,13 @@ semantic:
   id: 278
   message: "Local class '{}' shouldn't have native methods/constructors"
 
-- name: UNION_METHOD_SIGNATURE
-  id: 279
-  message: "Union constituent types should have only one common method signature."
-
 - name: TUPLEN_NOT_IMPLEMENTED
-  id: 280
+  id: 279
   message: "Tuple types with arity >16 are not yet implemented"
+
+- name: UNION_METHOD_SIGNATURE
+  id: 280
+  message: "Union constituent types should have only one common method signature."
 
 - name: NOT_ALLOWED_THIS_IN_UNION_TYPE
   id: 281
@@ -1127,10 +1127,226 @@ semantic:
   id: 283
   message: "A 'this' cannot be used as type of array."
 
-- name: INTERFACE_PROPERTY_REQUIRES_SETTER
+- name: TYPE_FROM_UNION_TYPE_UNSUPPORTED
   id: 284
+  message: "Acquiring types for union types is not supported."
+
+- name: TYPE_FROM_UNRESOLVABLE_TYPE
+  id: 285
+  message: "Unable to resolve type."
+
+- name: TYPE_FROM_TUPLE_TYPE_UNSUPPORTED
+  id: 286
+  message: "Acquiring types for tuple types is not supported."
+
+- name: TYPE_FROM_STRING_LITERAL_TYPE_UNSUPPORTED
+  id: 287
+  message: "Acquiring types for string literal types is not supported."
+
+- name: STATIC_REF_TO_NONSTATIC
+  id: 288
+  message: "Cannot make a static reference to the non-static type {}"
+
+- name: EXPR_NOT_CALLABLE
+  id: 289
+  message: "This expression is not callable."
+
+- name: CALLEE_NONCONSTRUCTIBLE
+  id: 290
+  message: "Type '{}' is not constructible."
+
+- name: NO_PARAMLESS_CTOR
+  id: 291
+  message: "type {} has no parameterless constructor"
+
+- name: EXPR_NONCONSTRUCTIBLE
+  id: 292
+  message: "This expression is not constructible."
+
+- name: PROP_INVISIBLE
+  id: 293
+  message: "Property {} is not visible here."
+
+- name: CLASS_OR_IFACE_AS_OBJ
+  id: 294
+  message: "Class or interface '{}' cannot be used as object"
+
+- name: NAMESPACE_CALL
+  id: 295
+  message: "Namespace style identifier {} is not callable."
+
+- name: INSTANCEOF_NONOBJECT
+  id: 296
+  message: "Using the 'instance of' operator with non-object type '{}'"
+
+- name: FIELD_REASSIGNMENT
+  id: 297
+  message: "Cannot reassign {} {}"
+
+- name: FIELD_ASSIGN_TYPE_MISMATCH
+  id: 298
+  message: "Cannot assign to a {} variable {}"
+
+- name: INVALID_TYPE_REF
+  id: 299
+  message: "Invalid type reference."
+
+- name: UNION_NONCONSTRUCTIBLE
+  id: 300
+  message: "The union type is not constructible."
+
+- name: UNRESOLVABLE_ARRAY
+  id: 301
+  message: "Can't resolve array type"
+
+- name: IMPORT_ARG_NOT_STRING
+  id: 302
+  message: "'import' expressions require string as argument."
+
+- name: AWAITED_NOT_PROMISE
+  id: 303
+  message: "'await' expressions require Promise object as argument."
+
+- name: NULLISH_CAST_TO_NONNULLISH
+  id: 304
+  message: "Cannot cast 'null' or 'undefined' to non-nullish type."
+
+- name: CAST_TO_NEVER
+  id: 305
+  message: "Cast to 'never' is prohibited"
+
+- name: PRIVATE_METHOD_AS_VALUE
+  id: 306
+  message: "Private method is used as value"
+
+- name: OVERLOADED_METHOD_AS_VALUE
+  id: 307
+  message: "Overloaded method is used as value"
+
+- name: CIRCULAR_DEPENDENCY
+  id: 308
+  message: "Circular dependency detected for identifier: {}"
+
+- name: RECURSIVE_CTOR
+  id: 309
+  message: "Recursive constructor invocation"
+
+- name: CYCLIC_INHERITANCE
+  id: 310
+  message: "Cyclic inheritance involving {}."
+
+- name: CYCLIC_ALIAS
+  id: 311
+  message: "Circular type alias reference"
+
+- name: RECURSIVE_EXTENSION
+  id: 312
+  message: "Type {} recursively references itself as a base type."
+
+- name: CYCLIC_ALIAS_2
+  id: 313
+  message: "Type alias {} circularly refences itself"
+
+- name: CYCLIC_VAR_REF
+  id: 314
+  message: "'{}' is referenced directly or indirectly in its own initializer ot type annotation."
+
+- name: IFACE_MULTIPLE_EXTENSION
+  id: 315
+  message: "Interface '{}' cannot simultaneously extend types '{}' and '{}'."
+
+- name: DIFFERENT_SUBSEQ_DECL
+  id: 316
+  message: "Subsequent variable declaration must have the same type. Variable '{}' must be of type '{}', but here has type '{}'."
+
+- name: DIFFERENT_SUBSEQ_PROP_DECL
+  id: 317
+  message: "Subsequent variable declaration must have the same type. Variable '{}' must be of type '{}', but here has type '{}'."
+
+- name: INVALID_ASSIGNMNENT
+  id: 318
+  message: "Type '{}' cannot be assigned to type '{}'"
+
+- name: PROP_INCOMPAT
+  id: 319
+  message: "Type '{}' is not compatible with type '{}' at property '{}'"
+
+- name: IFACE_INVALID_EXTENDS
+  id: 320
+  message: "Interface '{}' incorrectly extends interface '{}'"
+
+- name: INVALID_ASSIGNMNENT_2
+  id: 321
+  message: "Type '{}' is not assignable to type '{}'."
+
+- name: DISJOINT_CONVERSION
+  id: 322
+  message: "Conversion of type '{}' to type '{}' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first."
+
+- name: REST_PARAM_INCOMPAT_AT
+  id: 323
+  message: "Type '{}' is not compatible with rest parameter type '{}' at index {}"
+
+- name: PROP_ASSIGN_TO_NUMERIC_INDEX
+  id: 324
+  message: "Property '{}' of type '{}' is not assignable to numeric index type '{}'."
+
+- name: TUPLE_CONVERSION_FAILURE
+  id: 325
+  message: "Tuple type couldn't be converted "
+
+- name: INVALID_CAST
+  id: 326
+  message: "Cannot cast type '{}' to '{}'"
+
+- name: PROP_ASSIGN_TO_STRING_INDEX
+  id: 327
+  message: "Property '{}' of type '{}' is not assignable to string index type '{}'."
+
+- name: UNIMPLEMENTED_REST_TUPLE
+  id: 328
+  message: "Tuple types for rest arguments are not yet implemented"
+
+- name: REF_INVALID
+  id: 329
+  message: "Invalid reference '{}'."
+
+- name: ID_WRONG_CTX
+  id: 330
+  message: "Identifier '{}' is used in wrong context."
+
+- name: VARIANT_PARAM_INVARIAN_USE
+  id: 331
+  message: "Type Parameter '{}' is declared as{} but occurs in 'invariant' position."
+
+- name: VARIANCE_TPARAM_IN_OUT
+  id: 332
+  message: "Type Parameter '{}' is declared as 'in' but occurs in 'out' position."
+
+- name: VARIANCE_TPARAM_OUT_IN
+  id: 333
+  message: "Type Parameter '{}' is declared as 'out' but occurs in 'in' position."
+
+- name: SWITCH_ENUM_NOT_UNQUALIFIED_ENUM_CONST
+  id: 334
+  message: "Enum switch case must be unqualified name of an enum constant"
+
+- name: STATIC_UNION
+  id: 335
+  message: "Static union member expression cannot be interpreted."
+
+- name: CAST_FAIL_UNREACHABLE
+  id: 336
+  message: "this cast should never fail"
+
+- name: INTERFACE_PROPERTY_REQUIRES_SETTER
+  id: 337
   message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
 
+- name: READONLY_PROPERTY_REASSIGN
+  id: 338
+  message: "The 'Readonly' property cannot be reassigned."
+
 - name: PROPERTY_MAYBE_MISSING_INIT
-  id: 285
+  id: 339
   message: "Property '{}' might not have been initialized."

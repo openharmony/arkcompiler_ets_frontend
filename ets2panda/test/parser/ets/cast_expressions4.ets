@@ -18,5 +18,5 @@ function widening_array_test(): void {
   let objects: Object[] = ints as Object[];
   let ints2: Int[] = objects as Int[];
 
-  let object = ints2 as Object;
+  let obj = ints2 as Object;
 }

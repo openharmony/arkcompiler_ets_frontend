@@ -101,25 +101,22 @@ void ETSTypeParameter::CheckVarianceRecursively([[maybe_unused]] TypeRelation *r
     }
 
     if (varianceFlag == VarianceFlag::INVARIANT) {
-        relation->GetChecker()->LogTypeError({"Type Parameter '", declNode_->Name()->Name(), "' is declared as",
-                                              declNode_->IsOut() ? " 'out'" : " 'in'",
-                                              " but occurs in 'invariant' position."},
-                                             relation->GetNode()->Start());
+        relation->GetChecker()->LogError(diagnostic::VARIANT_PARAM_INVARIAN_USE,
+                                         {declNode_->Name()->Name(), declNode_->IsOut() ? " 'out'" : " 'in'"},
+                                         relation->GetNode()->Start());
         relation->Result(false);
         return;
     }
 
     if (varianceFlag == VarianceFlag::COVARIANT && !declNode_->IsOut()) {
-        relation->GetChecker()->LogTypeError(
-            {"Type Parameter '", declNode_->Name()->Name(), "' is declared as 'in' but occurs in 'out' position."},
-            relation->GetNode()->Start());
+        relation->GetChecker()->LogError(diagnostic::VARIANCE_TPARAM_IN_OUT, {declNode_->Name()->Name()},
+                                         relation->GetNode()->Start());
         relation->Result(false);
     }
 
     if (varianceFlag == VarianceFlag::CONTRAVARIANT && !declNode_->IsIn()) {
-        relation->GetChecker()->LogTypeError(
-            {"Type Parameter '", declNode_->Name()->Name(), "' is declared as 'out' but occurs in 'in' position."},
-            relation->GetNode()->Start());
+        relation->GetChecker()->LogError(diagnostic::VARIANCE_TPARAM_OUT_IN, {declNode_->Name()->Name()},
+                                         relation->GetNode()->Start());
         relation->Result(false);
     }
 }

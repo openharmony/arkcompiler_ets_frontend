@@ -15,9 +15,11 @@
 @interface MyAnno {
     testProperty1: string = 
     testProperty2/* @@ label1 */: number
-/* @@ label3 */}
+}
 
 /* @@@ label1 Error SyntaxError: Identifier expected, got ':'.  */
-/* @@@ label3 Error SyntaxError: Missing type annotation for property 'number'.  */
+/* @@? 17:35 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
+/* @@? 17:35 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
+/* @@? 18:1 Error SyntaxError: Identifier expected, got '}'.  */
 /* @@? 17:5 Error TypeError: Unresolved reference testProperty2 */
 /* @@? 17:5 Error TypeError: Invalid value for annotation field, expected a constant literal. */

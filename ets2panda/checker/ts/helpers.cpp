@@ -483,9 +483,7 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 
     varbinder::Decl *decl = var->Declaration();
 
-    util::DiagnosticMessageParams params {"'", var->Name(), "' is referenced directly or indirectly in its ",
-                                          "own initializer ot type annotation."};
-    TypeStackElement tse(this, decl->Node(), params, decl->Node()->Start());
+    TypeStackElement tse(this, decl->Node(), {{diagnostic::CYCLIC_VAR_REF, {var->Name()}}}, decl->Node()->Start());
     if (tse.HasTypeError()) {
         return GlobalErrorType();
     }
@@ -516,7 +514,7 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
         return resolvedType;
     }
 
-    TypeStackElement tse(this, var, {"Type alias ", var->Name(), " circularly refences itself"}, node->Start());
+    TypeStackElement tse(this, var, {{diagnostic::CYCLIC_ALIAS_2, {var->Name()}}}, node->Start());
     if (tse.HasTypeError()) {
         return GlobalErrorType();
     }

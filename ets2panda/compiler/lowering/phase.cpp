@@ -14,11 +14,12 @@
  */
 
 #include "phase.h"
+#include "checker/checker.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/asyncMethodLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
-#include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
+#include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
@@ -28,6 +29,7 @@
 #include "compiler/lowering/ets/defaultParametersLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
+#include "compiler/lowering/ets/restTupleLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
@@ -39,9 +41,9 @@
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
+#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/optionalArgumentsLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
-#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
@@ -52,7 +54,6 @@
 #include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
-#include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/resolveIdentifiers.h"
@@ -62,7 +63,6 @@
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
 #include "util/options.h"
-#include "checker/checker.h"
 
 namespace ark::es2panda::compiler {
 
@@ -78,6 +78,7 @@ static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
+static RestTupleConstructionPhase g_restTupleConstructionPhase;
 static SpreadConstructionPhase g_spreadConstructionPhase;
 static ExtensionAccessorPhase g_extensionAccessorPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
@@ -89,7 +90,6 @@ static ObjectIndexLowering g_objectIndexLowering;
 static ObjectIteratorLowering g_objectIteratorLowering;
 static ObjectLiteralLowering g_objectLiteralLowering;
 static InterfaceObjectLiteralLowering g_interfaceObjectLiteralLowering;
-static TupleLowering g_tupleLowering;  // Can be only applied after checking phase, and OP_ASSIGNMENT_LOWERING phase
 static UnionLowering g_unionLowering;
 static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
@@ -124,6 +124,7 @@ static InitScopesPhaseJs g_initScopesPhaseJs;
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
+    // NOLINTBEGIN
     return {
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
@@ -133,6 +134,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_defaultParametersInConstructorLowering,
         &g_defaultParametersLowering,
         &g_ambientLowering,
+        &g_restTupleConstructionPhase,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
@@ -160,7 +162,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_objectIndexLowering,
         &g_objectIteratorLowering,
         &g_lambdaConversionPhase,
-        &g_tupleLowering,
         &g_unionLowering,
         &g_expandBracketsPhase,
         &g_localClassLowering,
@@ -173,6 +174,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_genericBridgesLowering,
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
+    // NOLINTEND
     // clang-format on
 }
 

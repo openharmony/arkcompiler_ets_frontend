@@ -42,9 +42,9 @@ void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic,
     diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
-void Checker::LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
+void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogSemanticError(list, pos);
+    LogError(diagnostic, {}, pos);
 }
 
 void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
@@ -79,24 +79,21 @@ bool Checker::IsTypeIdenticalTo(Type *source, Type *target)
     return relation_->IsIdenticalTo(source, target);
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg,
-                                const lexer::SourcePosition &errPos)
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                const util::DiagnosticMessageParams &diagParams, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
+        relation_->GetChecker()->LogError(diagKind, diagParams, errPos);
+        return false;
     }
 
     return true;
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
                                 const lexer::SourcePosition &errPos)
 {
-    if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(list, errPos);
-    }
-
-    return true;
+    return IsTypeIdenticalTo(source, target, diagKind, {}, errPos);
 }
 
 bool Checker::IsTypeAssignableTo(Type *source, Type *target)
@@ -104,21 +101,11 @@ bool Checker::IsTypeAssignableTo(Type *source, Type *target)
     return relation_->IsAssignableTo(source, target);
 }
 
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos)
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                 const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
-    }
-
-    return true;
-}
-
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
-                                 const lexer::SourcePosition &errPos)
-{
-    if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(list, errPos);
+        relation_->RaiseError(diagKind, list, errPos);
     }
 
     return true;
@@ -129,21 +116,11 @@ bool Checker::IsTypeComparableTo(Type *source, Type *target)
     return relation_->IsComparableTo(source, target);
 }
 
-bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos)
+bool Checker::IsTypeComparableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                 const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
-    }
-
-    return true;
-}
-
-bool Checker::IsTypeComparableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
-                                 const lexer::SourcePosition &errPos)
-{
-    if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(list, errPos);
+        relation_->RaiseError(diagKind, list, errPos);
     }
 
     return true;

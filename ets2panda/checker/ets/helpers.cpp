@@ -127,7 +127,7 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
             break;
 
         default:
-            LogTypeError({"Identifier '", ident->Name(), "' is used in wrong context."}, ident->Start());
+            LogError(diagnostic::ID_WRONG_CTX, {ident->Name()}, ident->Start());
             return;
     }
     LogError(diagnostic::ID_IN_WRONG_CTX, {identCategoryName.c_str(), ident->Name()}, ident->Start());
@@ -524,12 +524,25 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
 checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
     ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
-    for (auto e : init->AsArrayExpression()->Elements()) {
-        Type *eType = e->Check(this);
-        if (eType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
-            return eType;
+    for (auto *elementNode : init->AsArrayExpression()->Elements()) {
+        Type *elementType = elementNode->Check(this);
+        if (elementType->IsTypeError()) {
+            return elementType;
         }
-        elementTypes.push_back(GetNonConstantType(eType));
+
+        if (elementNode->IsSpreadElement() && elementType->IsETSTupleType()) {
+            for (auto *typeFromTuple : elementType->AsETSTupleType()->GetTupleTypesList()) {
+                elementTypes.emplace_back(typeFromTuple);
+            }
+
+            continue;
+        }
+
+        if (elementNode->IsSpreadElement() && elementType->IsETSArrayType()) {
+            elementType = elementType->AsETSArrayType()->ElementType();
+        }
+
+        elementTypes.push_back(GetNonConstantType(elementType));
     }
 
     if (elementTypes.empty()) {
@@ -538,13 +551,13 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
     }
     auto const isNumeric = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC); };
     auto const isChar = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::CHAR); };
-    auto const elementType =
+    auto *const arrayElementType =
         std::all_of(elementTypes.begin(), elementTypes.end(), isNumeric)
             ? std::all_of(elementTypes.begin(), elementTypes.end(), isChar) ? GlobalCharType() : GlobalDoubleType()
             : CreateETSUnionType(std::move(elementTypes));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return Allocator()->New<ETSArrayType>(elementType);
+    return Allocator()->New<ETSArrayType>(arrayElementType);
 }
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
@@ -746,10 +759,10 @@ static void CheckRecordType(ir::Expression *init, checker::Type *annotationType,
 
         checker::AssignmentContext(
             checker->Relation(), p->Key(), keyType, typeArguments[0], p->Key()->Start(),
-            {"Type '", keyType, "' is not compatible with type '", typeArguments[0], "' at index 1"});
+            util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX, {keyType, typeArguments[0], size_t(1)}});
         checker::AssignmentContext(
             checker->Relation(), p->Value(), valueType, typeArguments[1], p->Value()->Start(),
-            {"Type '", valueType, "' is not compatible with type '", typeArguments[1], "' at index 2"});
+            util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX, {valueType, typeArguments[1], size_t(2)}});
     }
 }
 
@@ -801,7 +814,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         if (typeAnnotation != nullptr) {
             CheckRecordType(init, annotationType, this);
             AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
-                              {"Type '", initType, "' cannot be assigned to type '", annotationType, "'"});
+                              {{diagnostic::INVALID_ASSIGNMNENT, {initType, annotationType}}});
             if (!Relation()->IsTrue()) {
                 return annotationType;
             }
@@ -1700,7 +1713,7 @@ void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjec
 
 Type *ETSChecker::GetReferencedTypeFromBase([[maybe_unused]] Type *baseType, [[maybe_unused]] ir::Expression *name)
 {
-    return TypeError(name, "Invalid type reference.", name->Start());
+    return TypeError(name, diagnostic::INVALID_TYPE_REF, name->Start());
 }
 
 Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
@@ -2041,7 +2054,7 @@ static bool IsValidSwitchType(checker::Type *caseType)
 void CheckEnumCaseUnqualified(ETSChecker *checker, ir::Expression const *const caseTest)
 {
     if (!caseTest->IsMemberExpression()) {
-        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+        checker->LogError(diagnostic::SWITCH_ENUM_NOT_UNQUALIFIED_ENUM_CONST, {}, caseTest->Start());
         return;
     }
 
@@ -2054,12 +2067,12 @@ void CheckEnumCaseUnqualified(ETSChecker *checker, ir::Expression const *const c
     } else if (baseObject->IsMemberExpression()) {
         enumName = baseObject->AsMemberExpression()->Property()->AsIdentifier()->Name();
     } else {
-        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+        checker->LogError(diagnostic::SWITCH_ENUM_NOT_UNQUALIFIED_ENUM_CONST, {}, caseTest->Start());
     }
 
     auto enumType = caseTest->TsType()->AsETSObjectType();
     if (enumName != enumType->Name()) {
-        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+        checker->LogError(diagnostic::SWITCH_ENUM_NOT_UNQUALIFIED_ENUM_CONST, {}, caseTest->Start());
     }
 }
 

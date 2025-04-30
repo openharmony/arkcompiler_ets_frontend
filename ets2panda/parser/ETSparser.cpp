@@ -634,7 +634,7 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 
-    if (Lexer()->GetToken().IsReservedTypeName()) {
+    if (Lexer()->GetToken().IsReservedTypeName() && !util::Helpers::IsStdLib(GetProgram())) {
         LogError(diagnostic::TYPE_ALIAS_INVALID_NAME, {TokenToString(Lexer()->GetToken().KeywordType())});
     }
 
@@ -1420,9 +1420,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             // and resolve "{key: string}" as function body, so skip invalid types
             SkipInvalidType();
         } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType() &&
-                   !IsFixedArrayTypeNode(typeAnnotation)) {
-            // NOTE (mmartin): implement tuple types for rest parameters
-            LogError(diagnostic::ONLY_ARRAY_FOR_REST);
+                   !IsFixedArrayTypeNode(typeAnnotation) && !typeAnnotation->IsETSTuple()) {
+            LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST);
         }
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
@@ -1780,7 +1779,7 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         }
     }
     auto saveLoc = Lexer()->GetToken().Start();
-    auto *paramIdent = ExpectIdentifier();
+    auto *paramIdent = ExpectIdentifier(false, false, *options);
 
     ir::TypeNode *constraint = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {

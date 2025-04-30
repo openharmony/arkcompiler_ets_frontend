@@ -262,6 +262,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
@@ -273,7 +274,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/bigintLowering.cpp
   compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
-  compiler/lowering/ets/tupleLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
   compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp

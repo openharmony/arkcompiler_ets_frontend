@@ -170,7 +170,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         return nullptr;
     }
     checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
-                                            {diagnostic::INVISIBLE_ITERATOR, {}});
+                                            {{diagnostic::INVISIBLE_ITERATOR, {}}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 

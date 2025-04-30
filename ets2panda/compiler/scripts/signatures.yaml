@@ -570,6 +570,61 @@ builtins:
     package: PKG_STD_CORE
     ref: BUILTIN_LAMBDAR16
 
+  - name: Tuple0
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE0
+  - name: Tuple1
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE1
+  - name: Tuple2
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE2
+  - name: Tuple3
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE3
+  - name: Tuple4
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE4
+  - name: Tuple5
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE5
+  - name: Tuple6
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE6
+  - name: Tuple7
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE7
+  - name: Tuple8
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE8
+  - name: Tuple9
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE9
+  - name: Tuple10
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE10
+  - name: Tuple11
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE11
+  - name: Tuple12
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE12
+  - name: Tuple13
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE13
+  - name: Tuple14
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE14
+  - name: Tuple15
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE15
+  - name: Tuple16
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLE16
+  - name: TupleN
+    package: PKG_STD_CORE
+    ref: BUILTIN_TUPLEN
+
 signatures:
   - callee: BUILTIN_OBJECT
     method_name: $CTOR

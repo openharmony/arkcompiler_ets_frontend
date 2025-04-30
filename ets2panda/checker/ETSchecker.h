@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_CHECKER_ETS_CHECKER_H
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
+#include <cstddef>
 #include <mutex>
 
 #include "checker/checker.h"
@@ -70,7 +71,9 @@ using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
 using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Substitution *, lexer::SourcePosition>;
-using DiagnosticInfo = std::pair<std::optional<diagnostic::DiagnosticKind>, util::DiagnosticMessageParams>;
+// can't use util::DiagnosticWithParams because std::optional can't contain references
+using MaybeDiagnosticInfo =
+    std::optional<std::pair<const diagnostic::DiagnosticKind, const util::DiagnosticMessageParams>>;
 
 class ETSChecker final : public Checker {
 public:
@@ -144,6 +147,8 @@ public:
     ETSObjectType *GlobalBuiltinLambdaType(size_t nargs, bool hasRest) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
+    ETSObjectType *GlobalBuiltinTupleType(size_t nargs) const;
+
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;
 
     GlobalArraySignatureMap &GlobalArrayTypes();
@@ -151,13 +156,14 @@ public:
 
     Type *GlobalTypeError() const;
     [[nodiscard]] Type *InvalidateType(ir::Typed<ir::AstNode> *node);
-    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, std::string_view message,
+    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
                                   const lexer::SourcePosition &at);
-    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, const util::DiagnosticMessageParams &list,
+    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                                  const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at);
+    [[nodiscard]] Type *TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
                                   const lexer::SourcePosition &at);
-    [[nodiscard]] Type *TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at);
-    [[nodiscard]] Type *TypeError(varbinder::Variable *var, const util::DiagnosticMessageParams &list,
-                                  const lexer::SourcePosition &at);
+    [[nodiscard]] Type *TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
+                                  const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at);
 
     void InitializeBuiltins(varbinder::ETSBinder *varbinder);
     void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);
@@ -190,7 +196,7 @@ public:
     void ResolveDeclaredMembersOfObject(const Type *type);
     std::optional<std::size_t> GetTupleElementAccessValue(const Type *type);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
-    bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
+    bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr, bool reportError = true);
     bool ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple, ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
@@ -499,7 +505,7 @@ public:
     bool NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
                                         const lexer::SourcePosition &pos,
-                                        const DiagnosticInfo &errorInfo = {std::nullopt, {}});
+                                        const MaybeDiagnosticInfo &maybeErrorInfo = std::nullopt);
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);
