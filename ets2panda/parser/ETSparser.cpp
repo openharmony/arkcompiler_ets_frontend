@@ -2053,7 +2053,7 @@ void ETSParser::AddPackageSourcesToParseList()
                                                             Lexer()->GetToken().Start());
 
     // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
-    importPathManager_->MarkAsParsed(globalProgram_->SourceFile().GetAbsolutePath());
+    importPathManager_->MarkAsParsed(globalProgram_->AbsoluteName());
 }
 
 //================================================================================================//
