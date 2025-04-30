@@ -28,3 +28,4 @@ export {
 } from './lspNode';
 export { generateArkTsConfigByModules } from './arktsConfigGenerate';
 export type { ModuleDescriptor } from './buildConfigGenerate';
+export type { TextDocumentChangeInfo } from './lsp_helper';
