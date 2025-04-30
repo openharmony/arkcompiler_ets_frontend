@@ -473,6 +473,11 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     }
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         typeAnnotation = ParseTypeAnnotation(&options);
+        if (typeAnnotation == nullptr) {
+            LogError(diagnostic::ID_EXPECTED);
+            return;
+        }
+
         endLoc = typeAnnotation->End();
     }
 
