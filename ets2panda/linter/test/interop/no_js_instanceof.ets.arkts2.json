@@ -229,9 +229,9 @@
             "column": 22,
             "endLine": 75,
             "endColumn": 37,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectConditionJudgment",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
             "severity": "ERROR"
         },
         {

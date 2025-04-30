@@ -157,6 +157,7 @@ export enum FaultID {
   DollarBindingNotSupported,
   ExtendDecoratorNotSupported,
   MethodOverridingField,
+  InteropJsObjectConditionJudgment,
   ExplicitFunctionType,
   ClassstaticInitialization,
   TaggedTemplates,

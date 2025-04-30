@@ -271,6 +271,7 @@ cookBookTag[264] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)';
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';
+cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)';
 cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
 cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
 cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';

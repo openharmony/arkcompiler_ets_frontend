@@ -6741,7 +6741,12 @@ export class TypeScriptLinter {
       const autofix = this.autofixer?.createReplacementForJsImportPropertyAccessExpression(
         node as ts.PropertyAccessExpression
       );
-      this.incrementCounters(node, FaultID.InteropJsObjectUsage, autofix);
+
+      this.incrementCounters(
+        node,
+        TsUtils.isInsideIfCondition(node) ? FaultID.InteropJsObjectConditionJudgment : FaultID.InteropJsObjectUsage,
+        autofix
+      );
       return;
     }
 
