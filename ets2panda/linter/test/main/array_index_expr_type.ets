@@ -78,7 +78,7 @@ let c:int = 1;
 let d:long = 1;
 
 let arr:number[] = [1,2,3]
-
+arr[true?1.3:1.2]
 arr[a] = 1;
 arr[b] = 1;
 arr[c] = 1;

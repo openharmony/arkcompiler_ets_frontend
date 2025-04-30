@@ -3470,6 +3470,10 @@ export class TypeScriptLinter {
     } else {
       this.checkNumericArgumentDeclaration(argExpr);
     }
+
+    if (ts.isConditionalExpression(argExpr)) {
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+    }
   }
 
   private checkNumericArgumentDeclaration(argExpr: ts.Expression): void {
