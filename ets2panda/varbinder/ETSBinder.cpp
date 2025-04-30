@@ -561,7 +561,7 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
 {
     // NOTE issue #23214: enable it after fix default import in dynamic import
     if (specifier->IsImportDefaultSpecifier()) {
-        ThrowError(specifier->Start(), "Default import is currently not implemented in dynamic import");
+        ThrowError(specifier->Start(), diagnostic::DEFAULT_DYNAMIC_IMPORT);
         return;
     }
     const auto name = [specifier]() {
@@ -603,20 +603,21 @@ void ETSBinder::InsertOrAssignForeignBinding(ir::AstNode *const specifier, const
     TopScope()->InsertOrAssignForeignBinding(name, var);
 }
 
-std::string RedeclarationErrorMessageAssembler(const Variable *const var, const Variable *const variable,
-                                               util::StringView localName)
+void ETSBinder::ThrowRedeclarationError(const lexer::SourcePosition &pos, const Variable *const var,
+                                        const Variable *const variable, util::StringView localName)
 {
-    bool isNamespace = var->Declaration()->Node()->IsClassDefinition() &&
-                       var->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed();
-    auto type = isNamespace                                       ? "Namespace '"
-                : var->Declaration()->Node()->IsClassDefinition() ? "Class '"
-                : var->Declaration()->IsFunctionDecl()            ? "Function '"
-                                                                  : "Variable '";
-    auto str = util::Helpers::AppendAll(type, localName.Utf8(), "'");
-    str += variable->Declaration()->Type() == var->Declaration()->Type() ? " is already defined."
-                                                                         : " is already defined with different type.";
+    const bool isNamespace = var->Declaration()->Node()->IsClassDefinition() &&
+                             var->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed();
+    const auto type = isNamespace                                       ? "Namespace"
+                      : var->Declaration()->Node()->IsClassDefinition() ? "Class"
+                      : var->Declaration()->IsFunctionDecl()            ? "Function"
+                                                                        : "Variable";
 
-    return str;
+    if (variable->Declaration()->Type() == var->Declaration()->Type()) {
+        ThrowError(pos, diagnostic::REDEFINITION, {type, localName});
+    } else {
+        ThrowError(pos, diagnostic::REDEFINITION_DIFF_TYPE, {type, localName});
+    }
 }
 
 void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variable *importedVar,
@@ -688,7 +689,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
                 InsertForeignBinding(specifier, import, bindingName, var);
             }
 
-            ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
+            ThrowRedeclarationError(import->Source()->Start(), var, variable, bindingName);
         }
     }
 
@@ -831,9 +832,9 @@ void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::Stri
                                        const ir::StringLiteral *const importPath)
 {
     if (node->IsDefaultExported()) {
-        ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
+        ThrowError(importPath->Start(), diagnostic::DEFAULT_EXPORT_DIRECT_IMPORTED);
     } else if (!node->IsExported() && !node->IsExportedType() && !node->IsDefaultExported()) {
-        ThrowError(importPath->Start(), "Imported element not exported '" + imported.Mutf8() + "'");
+        ThrowError(importPath->Start(), diagnostic::IMPORTED_NOT_EXPORTED, {imported});
     }
 }
 
@@ -854,7 +855,7 @@ bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *c
         return false;
     }
 
-    ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, otherVar, localName));
+    ThrowRedeclarationError(importPath->Start(), var, otherVar, localName);
     return true;
 }
 
@@ -895,7 +896,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
             return true;
         }
 
-        ThrowError(importPath->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
+        ThrowError(importPath->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
         return false;
     }
 
@@ -913,15 +914,14 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
 
     if (var->Declaration()->Node()->IsAnnotationDeclaration() &&
         var->Declaration()->Node()->AsAnnotationDeclaration()->GetBaseName()->Name() != localName) {
-        ThrowError(importPath->Start(), "Can not rename annotation '" + var->Declaration()->Name().Mutf8() +
-                                            "' in export or import statements.");
+        ThrowError(importPath->Start(), diagnostic::IMPORT_RENAMES_ANNOTATION, {var->Declaration()->Name()});
         return false;
     }
 
     // The first part of the condition will be true, if something was given an alias when exported, but we try
     // to import it using its original name.
     if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
-        ThrowError(importSpecifier->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
+        ThrowError(importSpecifier->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
         return false;
     }
 
@@ -1005,7 +1005,7 @@ varbinder::Variable *ETSBinder::FindStaticBinding(Span<parser::Program *const> r
         return result;
     }
     if (!GetContext()->config->options->IsGenerateDeclEnableIsolated()) {
-        ThrowError(importPath->Start(), "Cannot find default imported element in the target");
+        ThrowError(importPath->Start(), diagnostic::DEFAULT_IMPORT_NOT_FOUND);
     }
 
     return nullptr;
@@ -1029,10 +1029,9 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(util::StringView so
     auto programList = GetProgramList(sourceName);
     if (programList.empty()) {
         if (ark::os::file::File::IsDirectory(sourceName.Mutf8())) {
-            ThrowError(importPath->Start(),
-                       "Cannot find index.[ets|ts] or package module in folder: " + importPath->Str().Mutf8());
+            ThrowError(importPath->Start(), diagnostic::MODULE_INDEX_MISSING, {importPath->Str()});
         } else {
-            ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
+            ThrowError(importPath->Start(), diagnostic::IMPORT_NOT_FOUND_2, {importPath->Str()});
         }
     }
 
@@ -1350,7 +1349,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
             const auto reexported = importSpecifier->Imported()->Name();
             auto *const var = ValidateImportSpecifier(importSpecifier, import);
             if (var == nullptr) {
-                ThrowError(import->Start(), "Incorrect export \"" + reexported.Mutf8() + "\"");
+                ThrowError(import->Start(), diagnostic::EXPORT_INCORRECT, {reexported});
                 continue;
             }
 
@@ -1359,7 +1358,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
 
             // Remember reexported name to check for ambiguous reexports
             if (!reexportedNames_.insert(reexported).second) {
-                ThrowError(import->Start(), "Ambiguous export \"" + reexported.Mutf8() + "\"");
+                ThrowError(import->Start(), diagnostic::AMBIGUOUS_EXPORT, {reexported});
                 continue;
             }
         }
@@ -1390,7 +1389,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
             return true;
         }
 
-        ThrowError(classElement->Id()->Start(), RedeclarationErrorMessageAssembler(var, variable, name.Utf8()));
+        ThrowRedeclarationError(classElement->Id()->Start(), var, variable, name.Utf8());
     }
 
     const auto insRes = TopScope()->InsertForeignBinding(name, var);
@@ -1402,7 +1401,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
         return true;
     }
 
-    ThrowError(classElement->Id()->Start(), RedeclarationErrorMessageAssembler(var, insRes.first->second, name.Utf8()));
+    ThrowRedeclarationError(classElement->Id()->Start(), var, insRes.first->second, name.Utf8());
     return false;
 }
 
@@ -1482,9 +1481,10 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const noexcept
     return data->specifier->IsImportNamespaceSpecifier();
 }
 
-void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
+void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                           const util::DiagnosticMessageParams &params) const
 {
-    GetContext()->diagnosticEngine->LogSemanticError(msg, pos);
+    GetContext()->diagnosticEngine->LogDiagnostic(kind, params, pos);
 }
 
 }  // namespace ark::es2panda::varbinder

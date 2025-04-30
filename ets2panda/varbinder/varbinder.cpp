@@ -45,60 +45,48 @@ Variable *VarBinder::AddParamDecl(ir::Expression *param)
 void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name,
                                    DeclType declType) const
 {
-    auto str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
+    ThrowError(pos, diagnostic::VARIABLE_REDECLARED, {name});
 
     switch (declType) {
         case DeclType::CLASS:
         case DeclType::INTERFACE:
         case DeclType::ENUM:
-            str.append(
-                " Merging declarations is not supported, please keep all definitions of classes, interfaces and enums "
-                "compact in the codebase!");
+            ThrowError(pos, diagnostic::MERGED_DECLS);
             break;
         default:
             break;
     }
-
-    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowLocalRedeclaration(const lexer::SourcePosition &pos, const util::StringView &className) const
 {
-    auto const str = std::string {"Identifier '"}.append(className.Utf8()).append("' has already been declared.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::ID_REDECLARED, {className});
 }
 
 void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Cannot find type '"}.append(name.Utf8()).append("'.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::TYPE_NOT_FOUND, {name});
 }
 
 void VarBinder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' is accessed before it's initialization.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::TEMPORAL_DEADZONE, {name});
 }
 
 void VarBinder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Cannot capture variable '"}.append(name.Utf8()).append("'.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::INVALID_CAPTURE, {name});
 }
 
 void VarBinder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str =
-        std::string {"Private field '"}.append(name.Utf8()).append("' must be declared in an enclosing class");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::PRIVATE_FIELD_MISMATCH, {name});
 }
 
-void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
+void VarBinder::ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                           const util::DiagnosticMessageParams &params) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    context_->diagnosticEngine->ThrowSyntaxError(msg, program_->SourceFilePath().Utf8(), loc.line, loc.col);
+    context_->diagnosticEngine->ThrowSyntaxError(kind, params, pos);
 }
 
 void VarBinder::IdentifierAnalysis()

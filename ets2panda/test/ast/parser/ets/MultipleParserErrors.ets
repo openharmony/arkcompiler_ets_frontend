@@ -206,16 +206,20 @@ function main(): void {
 /* @@? 52:23 Error TypeError: Unresolved reference p */
 /* @@? 55:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 67:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 67:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 73:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 73:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 73:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 74:11 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 77:20 Error TypeError: Interface expected here. */
 /* @@? 77:22 Error TypeError: 'I' type does not exist. */
 /* @@? 78:22 Error TypeError: Method fee(): int in B not overriding any method */
-/* @@? 83:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 83:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 83:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 92:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 92:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
@@ -229,11 +233,11 @@ function main(): void {
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
 /* @@? 119:34 Error SyntaxError: Unexpected token ':'. */
@@ -241,15 +245,15 @@ function main(): void {
 /* @@? 120:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 120:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 123:5 Error SyntaxError: Identifier expected, got ','. */
-/* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
 /* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
+/* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
-/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 141:16 Error TypeError: This expression is not callable. */
@@ -268,4 +272,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 272:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 276:1 Error SyntaxError: Expected '}', got 'eos'. */

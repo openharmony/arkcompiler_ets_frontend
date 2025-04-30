@@ -164,7 +164,12 @@ public:
     void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const;
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind) const
+    {
+        ThrowError(pos, kind, util::DiagnosticMessageParams {});
+    }
+    virtual void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                            const util::DiagnosticMessageParams &params) const;
 
     void PropagateDirectEval() const;
 

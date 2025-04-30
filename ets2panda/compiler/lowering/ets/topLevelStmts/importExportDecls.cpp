@@ -317,7 +317,7 @@ void ImportExportDecls::VerifySingleExportDefault(const ArenaVector<parser::Prog
             return;
         }
         if (metDefaultExport) {
-            logger.LogSemanticError("Only one default export is allowed in a module", stmt->Start());
+            logger.LogDiagnostic(diagnostic::MULTIPLE_DEFAULT_EXPORTS, util::DiagnosticMessageParams {}, stmt->Start());
         }
         metDefaultExport = true;
     };
