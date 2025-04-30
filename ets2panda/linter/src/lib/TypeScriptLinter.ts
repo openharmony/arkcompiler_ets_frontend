@@ -1116,6 +1116,7 @@ export class TypeScriptLinter {
   }
 
   private handlePropertyAccessExpression(node: ts.Node): void {
+    this.handleStateStyles(node as ts.PropertyAccessExpression);
     this.handleDoubleDollar(node);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
@@ -6094,22 +6095,38 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleStateStyles(node: ts.CallExpression): void {
+  private handleStateStyles(node: ts.CallExpression | ts.PropertyAccessExpression): void {
     if (!this.options.arkts2) {
       return;
     }
 
-    if (node.expression.getText() !== STATE_STYLES) {
-      return;
+    let args: ts.Expression[] = [];
+    let startNode: ts.Node | undefined;
+    if (ts.isCallExpression(node)) {
+      if (node.expression.getText() !== STATE_STYLES) {
+        return;
+      }
+      startNode = node.expression;
+      args = Array.from(node.arguments);
     }
 
-    const args = node.arguments;
-    if (args.length === 0) {
-      return;
+    if (ts.isPropertyAccessExpression(node)) {
+      if (node.name.getText() !== STATE_STYLES) {
+        return;
+      }
+      if (!ts.isCallExpression(node.parent)) {
+        return;
+      }
+      startNode = node.name;
+      args = Array.from(node.parent.arguments);
     }
 
+    if (args.length === 0 || !startNode) {
+      return;
+    }
+    
     const object = args[0];
-    if (!ts.isObjectLiteralExpression(object)) {
+    if (!object || !ts.isObjectLiteralExpression(object)) {
       return;
     }
 
@@ -6117,13 +6134,25 @@ export class TypeScriptLinter {
     if (properties.length === 0) {
       return;
     }
-    const property = properties[0] as ts.PropertyAssignment;
-    if (!ts.isObjectLiteralExpression(property.initializer)) {
+
+    if (!TypeScriptLinter.hasAnonBlock(properties)) {
       return;
     }
 
-    const autofix = this.autofixer?.fixStateStyles(object, this.interfacesNeedToImport);
-    this.incrementCounters(node, FaultID.StylesDecoratorNotSupported, autofix);
+    const autofix = this.autofixer?.fixStateStyles(object, startNode, this.interfacesNeedToImport);
+    this.incrementCounters(object, FaultID.StylesDecoratorNotSupported, autofix);
+  }
+
+  private static hasAnonBlock(properties: ts.NodeArray<ts.ObjectLiteralElementLike>): boolean {
+    let anonBlockCount = 0;
+
+    properties.forEach((property) => {
+      if (ts.isPropertyAssignment(property) && ts.isObjectLiteralExpression(property.initializer)) {
+        anonBlockCount++;
+      }
+    });
+
+    return anonBlockCount !== 0;
   }
 
   private handleStringLiteral(node: ts.StringLiteral): void {

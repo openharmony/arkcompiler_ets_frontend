@@ -16,9 +16,9 @@
     "result": [
         {
             "line": 27,
-            "column": 6,
+            "column": 18,
             "endLine": 40,
-            "endColumn": 7,
+            "endColumn": 6,
             "problem": "StylesDecoratorNotSupported",
             "autofix": [
                 {

@@ -3055,16 +3055,17 @@ export class Autofixer {
     });
   }
 
-  fixStateStyles(object: ts.ObjectLiteralExpression, needImport: Set<string>): Autofix[] | undefined {
+  fixStateStyles(
+    object: ts.ObjectLiteralExpression,
+    startNode: ts.Node,
+    needImport: Set<string>
+  ): Autofix[] | undefined {
     const properties = object.properties;
     const assignments: ts.PropertyAssignment[] = [];
     for (let i = 0; i < properties.length; i++) {
       const property = properties[i];
       const stateStyle = property.name;
-      if (!stateStyle || !ts.isIdentifier(stateStyle)) {
-        return undefined;
-      }
-      if (!ts.isPropertyAssignment(property)) {
+      if (!stateStyle || !ts.isIdentifier(stateStyle) || !ts.isPropertyAssignment(property)) {
         return undefined;
       }
       if (!ts.isObjectLiteralExpression(property.initializer)) {
@@ -3097,12 +3098,9 @@ export class Autofixer {
       assignments.push(assignment);
     }
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    const newExpr = ts.factory.createObjectLiteralExpression(
-      assignments,
-      true
-    );
+    const newExpr = ts.factory.createObjectLiteralExpression(assignments, true);
     let text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, object.getSourceFile());
-    const startPos = this.sourceFile.getLineAndCharacterOfPosition(object.parent.getStart()).character - 1;
+    const startPos = this.sourceFile.getLineAndCharacterOfPosition(startNode.getStart()).character - 1;
     text = Autofixer.adjustIndentation(text, startPos);
     return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
   }
