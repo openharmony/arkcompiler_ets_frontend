@@ -39,6 +39,7 @@ export function unpackNode<T extends LspNode>(peer: KNativePointer): T | undefin
   if (peer === nullptr) {
     return undefined;
   }
+  return undefined;
 }
 
 export function unpackNodeArray<T extends LspNode>(nodesPtr: KNativePointer): readonly T[] {

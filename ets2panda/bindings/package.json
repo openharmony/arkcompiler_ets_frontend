@@ -12,7 +12,10 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:clean": "rimraf dist-test",
+    "test:compile": "tsc --build --verbose test/tsconfig.json",
+    "test:build": "npm run test:clean && npm run test:compile",
+    "test": "npm run test:build && node dist-test/test/run_tests.js ./test",
     "compile": "tsc --build --verbose tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo package-lock.json",
     "run": "npm run clean && npm run compile",

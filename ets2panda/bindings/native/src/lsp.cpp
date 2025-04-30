@@ -436,6 +436,20 @@ KNativePointer impl_getTextSpan(KNativePointer quickInfoPtr)
 }
 TS_INTEROP_1(getTextSpan, KNativePointer, KNativePointer)
 
+KNativePointer impl_getHighlightTextSpan(KNativePointer highlightPtr)
+{
+    auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
+    return new TextSpan(highlight->textSpan_);
+}
+TS_INTEROP_1(getHighlightTextSpan, KNativePointer, KNativePointer)
+
+KNativePointer impl_getHighlightContextSpan(KNativePointer highlightPtr)
+{
+    auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
+    return new TextSpan(highlight->contextSpan_);
+}
+TS_INTEROP_1(getHighlightContextSpan, KNativePointer, KNativePointer)
+
 KNativePointer impl_getHighlightFileName(KNativePointer highlightPtr)
 {
     auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);

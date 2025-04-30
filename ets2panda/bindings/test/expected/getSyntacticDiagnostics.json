@@ -1,0 +1,295 @@
+{
+  "1": {
+    "diagnostics": []
+  },
+  "2": {
+    "diagnostics": [
+      {
+        "message": "Unexpected token 'add'.",
+        "source": "add",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 9
+          },
+          "end": {
+            "line": 16,
+            "character": 12
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token, expected ',' or ')'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 14
+          },
+          "end": {
+            "line": 16,
+            "character": 15
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ':'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 14
+          },
+          "end": {
+            "line": 16,
+            "character": 15
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ':'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 14
+          },
+          "end": {
+            "line": 16,
+            "character": 15
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ':'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 14
+          },
+          "end": {
+            "line": 16,
+            "character": 15
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ','.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 22
+          },
+          "end": {
+            "line": 16,
+            "character": 23
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ','.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 22
+          },
+          "end": {
+            "line": 16,
+            "character": 23
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ','.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 22
+          },
+          "end": {
+            "line": 16,
+            "character": 23
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Label must be followed by a loop statement.",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 27
+          },
+          "end": {
+            "line": 16,
+            "character": 33
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ')'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 33
+          },
+          "end": {
+            "line": 16,
+            "character": 34
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ')'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 33
+          },
+          "end": {
+            "line": 16,
+            "character": 34
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Unexpected token ')'.",
+        "source": "*ERROR_LITERAL*",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 33
+          },
+          "end": {
+            "line": 16,
+            "character": 34
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "return keyword should be used in function body.",
+        "source": "return ((a) + (b));",
+        "range": {
+          "start": {
+            "line": 17,
+            "character": 5
+          },
+          "end": {
+            "line": 17,
+            "character": 18
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      }
+    ]
+  }
+}

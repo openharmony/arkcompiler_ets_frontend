@@ -1,0 +1,534 @@
+{
+  "1": {
+    "diagnostics": [
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 609
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 609
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 609
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 609
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 618
+          },
+          "end": {
+            "line": 17,
+            "character": 661
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 662
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 662
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 662
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 662
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      },
+      {
+        "message": "This_may_be_converted_to_an_async_function",
+        "source": "",
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 671
+          },
+          "end": {
+            "line": 20,
+            "character": 717
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 0,
+        "data": 0,
+        "severity": 4,
+        "codeDescription": {
+          "href": ""
+        }
+      }
+    ]
+  }
+}

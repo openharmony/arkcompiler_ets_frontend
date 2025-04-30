@@ -1,0 +1,26 @@
+{
+  "1": [
+    {
+      "fileName": "getFileReferences1.ets",
+      "start": 625,
+      "length": 29
+    },
+    {
+      "fileName": "getFileReferences1.ets",
+      "start": 672,
+      "length": 29
+    }
+  ],
+  "2": [
+    {
+      "fileName": "getFileReferences2.ets",
+      "start": 625,
+      "length": 29
+    },
+    {
+      "fileName": "getFileReferences2.ets",
+      "start": 672,
+      "length": 29
+    }
+  ]
+}
