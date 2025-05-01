@@ -6121,7 +6121,7 @@ export class TypeScriptLinter {
     if (args.length === 0 || !startNode) {
       return;
     }
-    
+
     const object = args[0];
     if (!object || !ts.isObjectLiteralExpression(object)) {
       return;
@@ -6808,8 +6808,9 @@ export class TypeScriptLinter {
 
     if (namedBindings && ts.isNamedImports(namedBindings)) {
       for (const element of namedBindings.elements) {
-        const name = element.name.getText();
-        if (expectedImports.includes(name)) {
+        const originalName = element.propertyName ? element.propertyName.getText() : element.name.getText();
+
+        if (expectedImports.includes(originalName)) {
           this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
         }
       }
