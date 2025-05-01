@@ -7197,10 +7197,11 @@ export class TypeScriptLinter {
     while (current && !functionNode) {
       current = current.parent;
       if (
-        ts.isFunctionDeclaration(current) ||
-        ts.isMethodDeclaration(current) ||
-        ts.isFunctionExpression(current) ||
-        ts.isArrowFunction(current)
+        current &&
+        (ts.isFunctionDeclaration(current) ||
+          ts.isMethodDeclaration(current) ||
+          ts.isFunctionExpression(current) ||
+          ts.isArrowFunction(current))
       ) {
         functionNode = current;
       }
