@@ -22,8 +22,6 @@
 /* @@? 17:8 Error SyntaxError: Missing type annotation for property 'foo'. */
 /* @@? 17:8 Error SyntaxError: Identifier expected, got '('. */
 /* @@? 17:9 Error SyntaxError: Identifier expected, got ')'. */
-/* @@? 17:9 Error SyntaxError: Identifier expected, got ')'. */
-/* @@? 17:10 Error SyntaxError: Identifier expected, got '{'. */
 /* @@? 17:10 Error SyntaxError: Identifier expected, got '{'. */
 /* @@? 17:11 Error SyntaxError: Identifier expected, got '}'. */
 /* @@? 18:1 Error SyntaxError: Unexpected token '}'. */

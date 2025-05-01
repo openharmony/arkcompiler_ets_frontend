@@ -19,8 +19,3 @@ function toString(this: double[]) /* @@ label */{
 
 /* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Array */
 /* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */
-/* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */
-/* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */
-/* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */
-/* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */
-/* @@? 16:49 Error TypeError: The extension function 'toString' has the same name with public method in class Object */

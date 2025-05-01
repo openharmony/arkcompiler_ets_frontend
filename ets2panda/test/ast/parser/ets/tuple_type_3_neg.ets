@@ -20,6 +20,4 @@ let a: [number, number number] = [1, 2, 3];
 /* @@? 17:24 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 17:24 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:32 Error SyntaxError: Unexpected token '='. */

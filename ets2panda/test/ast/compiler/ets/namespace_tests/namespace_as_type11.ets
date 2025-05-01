@@ -19,4 +19,3 @@ namespace MySpace {
 let a = /* @@ label */MySpace
 
 /* @@@ label Error TypeError: Namespace name 'MySpace' used in the wrong context */
-/* @@@ label Error TypeError: Namespace name 'MySpace' used in the wrong context */

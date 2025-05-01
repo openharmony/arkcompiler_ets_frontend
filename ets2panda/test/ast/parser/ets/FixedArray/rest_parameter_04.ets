@@ -20,4 +20,3 @@ function hehe(...items: FixedArray<number>/* @@ label */: void /* @@ label1 */{
 /* @@? 16:10 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 16:57 Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 16:59 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 16:59 Error SyntaxError: Unexpected token 'void'. */

@@ -28,5 +28,4 @@ function main() : void {
 }
 
 /* @@? 22:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
-/* @@? 22:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
 /* @@? 26:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */

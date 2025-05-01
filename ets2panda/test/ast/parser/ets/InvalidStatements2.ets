@@ -60,6 +60,4 @@ function g(x: int): int {
 /* @@? 44:9 Error SyntaxError: Expected ')', got 'case'. */
 /* @@? 44:9 Error SyntaxError: Expected '{', got 'case'. */
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
-/* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
-/* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 48:9 Error SyntaxError: Multiple default clauses. */

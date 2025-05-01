@@ -63,6 +63,5 @@ export default /* @@ label7 */function TestFuncToo(): void {}
 /* @@@ label4 Error SyntaxError: Cannot export the same 'MyI' type twice.  */
 /* @@@ label5 Error SyntaxError: Can only type export class or interface.  */
 /* @@@ label1 Error SyntaxError: The given name 'foo2' is already used in another export.  */
-/* @@@ label1 Error SyntaxError: The given name 'foo2' is already used in another export.  */
 /* @@@ label2 Error SyntaxError: Cannot export 'foo3', it was already exported.  */
 /* @@@ label Error SyntaxError: Cannot find name 'foo' to export.  */

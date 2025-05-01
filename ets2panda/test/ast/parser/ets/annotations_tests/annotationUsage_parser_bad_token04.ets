@@ -20,6 +20,3 @@ const invalidUsage1 = @Log("value")) ()=>{}
 
 /* @@? 19:36 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:36 Error SyntaxError: Annotations are not allowed on this type of declaration. */
-/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */

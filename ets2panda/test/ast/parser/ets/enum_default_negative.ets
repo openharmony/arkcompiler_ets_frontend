@@ -30,9 +30,8 @@ enum D {
 /* @@? 17:10 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error SyntaxError: Invalid enum initialization value */
 /* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 39:1 Error SyntaxError: Unexpected token 'eos'. */
-/* @@? 39:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 38:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 38:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */

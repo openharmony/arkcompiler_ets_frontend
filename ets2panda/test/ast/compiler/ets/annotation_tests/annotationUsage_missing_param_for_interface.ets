@@ -29,5 +29,3 @@ interface itf {
 /* @@? 21:2 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
 /* @@? 23:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
 /* @@? 25:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
-/* @@? 25:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
-/* @@? 25:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */

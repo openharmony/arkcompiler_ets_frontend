@@ -18,5 +18,4 @@ export a as A
 let a = 2;
 
 /* @@? 16:10 Error SyntaxError: Unexpected token 'as'. */
-/* @@? 16:10 Error SyntaxError: Unexpected token 'as'. */
 /* @@? 16:13 Error TypeError: Cannot find type 'A'. */

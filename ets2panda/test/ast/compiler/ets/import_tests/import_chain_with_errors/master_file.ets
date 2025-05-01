@@ -28,5 +28,3 @@ let b = new B(10);
 // Error in main file based on class from the most distant file
 /* @@? master_file.ets:18:9 Error TypeError: Expected 0 arguments, got 1. */
 /* @@? master_file.ets:18:9 Error TypeError: No matching construct signature for import_2.B(int) */
-/* @@? master_file.ets:18:9 Error TypeError: Expected 0 arguments, got 1. */
-/* @@? master_file.ets:18:9 Error TypeError: No matching construct signature for import_2.B(int) */

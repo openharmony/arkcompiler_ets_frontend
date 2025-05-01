@@ -35,6 +35,3 @@ function main(): int {
 /* @@? 29:58 Error TypeError: No matching parameterless constructor */
 /* @@? 29:58 Error TypeError: Signature is not available here. */
 /* @@? 29:58 Error TypeError: Type 'Array<A<Y>>' is not compatible with type 'FixedArray<A<X>>' at index 1 */
-/* @@? 29:58 Error TypeError: No Matching Parameterless Constructor, parameter count 1 */
-/* @@? 29:58 Error TypeError: No matching parameterless constructor */
-/* @@? 29:58 Error TypeError: Signature is not available here. */

@@ -15,5 +15,4 @@
 function foo (): void
 let y = foo()
 /* @@? 16:9 Error TypeError: Cannot use type 'void' as value.   */
-/* @@? 16:9 Error TypeError: Cannot use type 'void' as value.   */
 /* @@? 15:10 Error TypeError: Only abstract or native methods can't have body.  */

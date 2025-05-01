@@ -63,7 +63,8 @@ void DiagnosticEngine::FlushDiagnostic()
 {
     auto log = GetAllDiagnostic();
     std::sort(log.begin(), log.end(), [](const auto &lhs, const auto &rhs) { return *lhs < *rhs; });
-    auto last = std::unique(log.begin(), log.end());
+    auto last =
+        std::unique(log.begin(), log.end(), [&](const auto &rhs, const auto &lhs) -> bool { return *rhs == *lhs; });
     for (auto it = log.begin(); it != last; it++) {
         printer_->Print(**it);
     }

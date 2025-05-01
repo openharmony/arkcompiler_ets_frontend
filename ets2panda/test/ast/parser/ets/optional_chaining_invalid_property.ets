@@ -26,4 +26,3 @@ let dog: Dog = {
 let hasSting = dog?.hasSting;
 
 /* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */

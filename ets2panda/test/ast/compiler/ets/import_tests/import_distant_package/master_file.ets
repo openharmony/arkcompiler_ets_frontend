@@ -25,7 +25,6 @@ console.log(notExist)
 /* @@? import_in_package_with_error.ets:20:32 Error SyntaxError: Unexpected token ')'. */
 
 /* @@? distant_package.ets:22:22 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? distant_package.ets:22:22 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 
 /* @@? package_with_errors_1.ets:19:32 Error TypeError: Cannot cast type 'String' to 'double' */
 

@@ -33,5 +33,3 @@ function main(): void {
 /* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:4 Error TypeError: Unresolved reference i */
 /* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
