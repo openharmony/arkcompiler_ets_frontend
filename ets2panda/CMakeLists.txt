@@ -70,6 +70,7 @@ if(PANDA_WITH_ETS)
       "      \"@ohos.xml\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.xml.ets\"],\n"
       "      \"@ohos.base\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.base.ets\"],\n"
       "      \"@arkts.math.Decimal\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.math.Decimal.ets\"],\n"
+      "      \"@arkts.collections\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.collections.ets\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
       "    },\n"
       "    \"dynamicPaths\": {\n"
