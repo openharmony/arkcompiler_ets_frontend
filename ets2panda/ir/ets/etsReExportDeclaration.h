@@ -72,7 +72,12 @@ public:
         v->Accept(this);
     }
 
+protected:
+    AstNode *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     // NOTE(rsipka): this should use a singular name
     ETSImportDeclaration *etsImportDeclarations_;
     ArenaVector<util::StringView> userPaths_;

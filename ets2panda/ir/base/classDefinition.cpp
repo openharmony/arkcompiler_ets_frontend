@@ -329,8 +329,9 @@ void ClassDefinition::CopyTo(AstNode *other) const
     otherImpl->anonClass_ = anonClass_;
     otherImpl->localIndex_ = localIndex_;
     otherImpl->localPrefix_ = localPrefix_;
+    otherImpl->exportedClasses_ = exportedClasses_;
 
-    AnnotationAllowed<TypedAstNode>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<TypedAstNode>>::CopyTo(other);
 }
 
 int ClassDefinition::classCounter_ = 0;

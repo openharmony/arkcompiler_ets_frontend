@@ -87,6 +87,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<TSTypeParameter *> params_;
     varbinder::LocalScope *scope_ {nullptr};
     size_t requiredParams_;

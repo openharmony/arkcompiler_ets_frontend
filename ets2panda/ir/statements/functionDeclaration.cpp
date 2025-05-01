@@ -119,7 +119,7 @@ void FunctionDeclaration::CopyTo(AstNode *other) const
     otherImpl->func_ = func_;
     otherImpl->isAnonymous_ = isAnonymous_;
 
-    AnnotationAllowed<Statement>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

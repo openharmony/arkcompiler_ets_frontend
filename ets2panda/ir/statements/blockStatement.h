@@ -115,6 +115,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     varbinder::Scope *scope_ {};
     ArenaVector<Statement *> statements_;
     ArenaUnorderedMap<AstNode *, BlockStatement *> trailingBlocks_;

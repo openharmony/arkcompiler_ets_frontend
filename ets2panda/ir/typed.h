@@ -71,6 +71,7 @@ protected:
     }
 
 private:
+    friend class SizeOfNodeTest;
     checker::Type *tsType_ {};
 };
 

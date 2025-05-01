@@ -157,7 +157,12 @@ public:
 
     Identifier *GetBaseName() const;
 
+protected:
+    AstNode *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     util::StringView internalName_ {};
     varbinder::LocalScope *scope_ {};
     Expression *expr_;

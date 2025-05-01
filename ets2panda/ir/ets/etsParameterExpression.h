@@ -121,6 +121,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     Identifier *ident_;
     Expression *initializer_ = nullptr;
     SpreadElement *spread_ = nullptr;

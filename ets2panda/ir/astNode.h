@@ -562,6 +562,7 @@ protected:
         type_ = type;
     }
 
+    friend class SizeOfNodeTest;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     AstNode *parent_ {};
     lexer::SourceRange range_ {};
@@ -619,6 +620,7 @@ protected:
     Annotated(Annotated const &other) : T(static_cast<T const &>(other)) {}
 
 private:
+    friend class SizeOfNodeTest;
     TypeNode *typeAnnotation_ {};
 };
 

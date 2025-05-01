@@ -209,6 +209,7 @@ private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     void ResetOverloads();
 
+    friend class SizeOfNodeTest;
     bool isDefault_ = false;
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.

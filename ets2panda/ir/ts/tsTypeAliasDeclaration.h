@@ -144,6 +144,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<AnnotationUsage *> annotations_;
     Identifier *id_;

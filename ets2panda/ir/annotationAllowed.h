@@ -100,6 +100,7 @@ protected:
     }
 
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir

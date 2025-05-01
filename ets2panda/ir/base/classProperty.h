@@ -103,6 +103,8 @@ protected:
 
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
+
+    friend class SizeOfNodeTest;
     TypeNode *typeAnnotation_;
     bool isDefault_ = false;
     bool needInitInStaticBlock_ = false;

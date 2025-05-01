@@ -372,6 +372,7 @@ protected:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     Identifier *id_ {};
     FunctionSignature irSignature_;
     AstNode *body_;

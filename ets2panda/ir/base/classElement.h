@@ -115,6 +115,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 protected:
+    friend class SizeOfNodeTest;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *key_;
     Expression *value_;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,4 +57,19 @@ checker::VerifiedType ETSReExportDeclaration::Check(checker::ETSChecker * /*chec
     return {this, nullptr};
 }
 
+AstNode *ETSReExportDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ETSReExportDeclaration>(nullptr, std::vector<std::string> {}, util::StringView {}, allocator);
+}
+
+void ETSReExportDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSReExportDeclaration();
+
+    otherImpl->etsImportDeclarations_ = etsImportDeclarations_;
+    otherImpl->userPaths_ = userPaths_;
+    otherImpl->programPath_ = programPath_;
+
+    Statement::CopyTo(other);
+}
 }  // namespace ark::es2panda::ir

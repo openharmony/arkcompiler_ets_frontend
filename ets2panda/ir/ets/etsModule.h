@@ -106,6 +106,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     Identifier *ident_;
     ModuleFlag flag_;
     parser::Program *program_;

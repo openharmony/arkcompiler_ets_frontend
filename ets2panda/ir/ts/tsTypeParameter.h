@@ -96,6 +96,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     Identifier *name_;
     TypeNode *constraint_;
     TypeNode *defaultType_;
