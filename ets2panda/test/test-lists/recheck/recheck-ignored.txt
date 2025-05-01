@@ -442,6 +442,7 @@ ast/parser/ets/class-instance-field-redeclaration.ets
 ast/parser/ets/enum11.ets
 ast/parser/ets/user_defined_11.ets
 ast/parser/ets/InvalidTyped.ets
+ast/parser/ets/invalid_type_assignment.ets
 ast/parser/ets/DeclareAsyncFunction.ets
 ast/parser/ets/unexpected_token_1.ets
 ast/parser/ets/InvalidStatements3.ets
