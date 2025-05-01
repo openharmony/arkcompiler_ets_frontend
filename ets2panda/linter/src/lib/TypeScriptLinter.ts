@@ -105,7 +105,12 @@ import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import * as builtinWhiteList from './data/BuiltinList.json';
 import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
-import { USE_SHARED, USE_CONCURRENT, ESLIB_SHAREDMEMORY_FILENAME } from './utils/consts/ConcurrentAPI';
+import {
+  USE_SHARED,
+  USE_CONCURRENT,
+  ESLIB_SHAREDMEMORY_FILENAME,
+  ESLIB_SHAREDARRAYBUFFER
+} from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -4448,6 +4453,10 @@ export class TypeScriptLinter {
       return;
     }
     const typeNameIdentifer = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    const isSameName = ts.isIdentifier(typeNameIdentifer) && typeNameIdentifer.getText() === ESLIB_SHAREDARRAYBUFFER;
+    if (!isSameName) {
+      return;
+    }
     const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifer)?.getDeclarations();
     const isSharedMemoryEsLib = decls?.some((decl) => {
       const srcFileName = decl.getSourceFile().fileName;

@@ -20,3 +20,5 @@ type NewTypeName = SharedArrayBuffer // ERROR
 let newTypeName: NewTypeName
 // disable use new NewTypeName()
 let ntn: NewTypeName = new SharedArrayBuffer(0) // ERROR
+
+function foo(atmo: Atomics) {} // NOT ERROR
