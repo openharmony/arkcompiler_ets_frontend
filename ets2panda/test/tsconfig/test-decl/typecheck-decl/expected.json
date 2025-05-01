@@ -1,0 +1,5 @@
+{
+    "returncode": 1,
+    "stdout": "TypeError: Type 'int' is not compatible with type 'String' at property 'location' [main.ets:19:28]\nTypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. [main.ets:21:9]\n",
+    "stderr": ""
+}

@@ -1793,7 +1793,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         return expr->TsType();
     }
 
-    if (expr->PreferredType()->IsETSDynamicType()) {
+    if (expr->PreferredType()->IsETSDynamicType() && !expr->PreferredType()->AsETSDynamicType()->HasDecl()) {
         return CheckDynamic(expr);
     }
 

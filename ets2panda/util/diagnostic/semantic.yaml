@@ -1350,3 +1350,7 @@ semantic:
 - name: PROPERTY_MAYBE_MISSING_INIT
   id: 339
   message: "Property '{}' might not have been initialized."
+
+- name: EXTEND_DYNAMIC
+  id: 340
+  message: "Class {} shouldn't extend dynamic class."
