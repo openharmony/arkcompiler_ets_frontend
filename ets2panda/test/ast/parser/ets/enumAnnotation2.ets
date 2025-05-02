@@ -1,6 +1,5 @@
-/* @@ label2 */
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-enum Color {
-    Red = /* @@ label */4 / 3.0
+ 
+enum Fraction: double { 
+    A = 1.2,
+    B = 3.1
 }
-
-enum Date {
-    Day = /* @@ label1 */Date.now()
-}
-
-
-/* @@@ label2 Error TypeError: Class 'Date' is already defined with different type.  */
-/* @@@ label1 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

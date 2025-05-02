@@ -43,6 +43,24 @@ public:
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
+          typeNode_(nullptr),
+          members_(std::move(members)),
+          isConst_(flags.isConst)
+    {
+        if (flags.isStatic) {
+            AddModifier(ModifierFlags::STATIC);
+        }
+        if (flags.isDeclare) {
+            AddModifier(ModifierFlags::DECLARE);
+        }
+    }
+
+    explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
+                               ConstructorFlags &&flags, ir::TypeNode *typeNode)
+        : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
+          decorators_(allocator->Adapter()),
+          key_(key),
+          typeNode_(typeNode),
           members_(std::move(members)),
           isConst_(flags.isConst)
     {
@@ -60,6 +78,7 @@ public:
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
+          typeNode_(nullptr),
           members_(std::move(members)),
           isConst_(flags.isConst)
     {
@@ -100,6 +119,11 @@ public:
     const Identifier *Key() const
     {
         return GetHistoryNodeAs<TSEnumDeclaration>()->key_;
+    }
+
+    TypeNode *TypeNodes()
+    {
+        return typeNode_;
     }
 
     Identifier *Key()
@@ -184,6 +208,7 @@ private:
     varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<ir::Decorator *> decorators_;
     Identifier *key_;
+    ir::TypeNode *typeNode_;
     ArenaVector<AstNode *> members_;
     util::StringView internalName_;
     ir::ClassDefinition *boxedClass_ {nullptr};
