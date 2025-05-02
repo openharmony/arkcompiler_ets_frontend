@@ -101,7 +101,7 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                        nullptr, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnno),
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
-                       ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::ABSTRACT});
+                       ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
     func->SetIdent(methodIdent->Clone(allocator, nullptr));
 
     // Create the synthetic function node
