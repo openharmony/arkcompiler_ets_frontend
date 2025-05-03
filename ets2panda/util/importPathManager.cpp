@@ -74,6 +74,8 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
         return ImportMetadata {util::ImportFlags::NONE, Language::Id::COUNT, ERROR_LITERAL};
     }
 
+    globalProgram_->AddFileDependencies(std::string(curModulePath), std::string(resolvedImportPath));
+
     ImportMetadata importData {importFlags};
     importData.resolvedSource = resolvedImportPath;
     if (resolvedIsDynamic) {

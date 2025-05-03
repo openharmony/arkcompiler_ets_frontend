@@ -16,6 +16,9 @@
 export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
 export const MERGED_ABC_FILE: string = 'modules_static.abc';
 export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
+export const DEPENDENCY_INPUT_FILE: string = 'dependencyFileInfo.txt';
+export const DEPENDENCY_JSON_FILE: string = 'dependency.json';
+export const PROJECT_BUILD_CONFIG_FILE: string = 'projectionConfig.json';
 
 export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const ETS_SUFFIX: string = '.ets';

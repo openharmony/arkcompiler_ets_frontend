@@ -352,6 +352,19 @@ public:
         functionScopes_.push_back(funcScope);
     }
 
+    std::unordered_map<std::string, std::unordered_set<std::string>> &GetFileDependencies()
+    {
+        return fileDependencies_;
+    }
+
+    void AddFileDependencies(const std::string &file, const std::string &depFile)
+    {
+        if (fileDependencies_.count(file) == 0U) {
+            fileDependencies_[file] = std::unordered_set<std::string>();
+        }
+        fileDependencies_[file].insert(depFile);
+    }
+
 private:
     void MaybeTransformToDeclarationModule();
 
@@ -374,6 +387,7 @@ private:
     compiler::CFG *cfg_;
     std::vector<std::pair<std::string, ir::AstNode *>> declGenExportNodes_;
     ArenaVector<varbinder::FunctionScope *> functionScopes_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> fileDependencies_;
 
 #ifndef NDEBUG
     uint32_t poisonValue_ {POISON_VALUE};

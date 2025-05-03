@@ -14,7 +14,12 @@
  */
 
 import { BaseMode } from './base_mode';
-import { BuildConfig, ModuleInfo } from '../types';
+import { BuildConfig, CompileFileInfo, ModuleInfo } from '../types';
+import { LogData, LogDataFactory } from '../logger';
+import { changeFileExtension } from '../utils';
+import { ABC_SUFFIX } from '../pre_define';
+import path from 'path';
+import { ErrorCode } from '../error_code';
 
 export class BuildFrameworkMode extends BaseMode {
   frameworkMode: boolean;
@@ -29,6 +34,43 @@ export class BuildFrameworkMode extends BaseMode {
 
   public async run(): Promise<void> {
     super.run();
+  }
+
+  protected generateModuleInfos(): void {
+    this.collectModuleInfos();
+    this.generateArkTSConfigForModules();
+    this.collectCompileFiles();
+  }
+
+  protected collectCompileFiles(): void {
+    this.entryFiles.forEach((file: string) => {
+      for (const [packageName, moduleInfo] of this.moduleInfos) {
+        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+          continue;
+        }
+        let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
+        let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
+        let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+        this.abcFiles.add(abcFilePath);
+        let fileInfo: CompileFileInfo = {
+          filePath: file,
+          dependentFiles: [],
+          abcFilePath: abcFilePath,
+          arktsConfigFile: moduleInfo.arktsConfigFile,
+          packageName: moduleInfo.packageName
+        };
+        moduleInfo.compileFileInfos.push(fileInfo);
+        this.compileFiles.set(file, fileInfo);
+        return;
+      }
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_FILE_NOT_BELONG_TO_ANY_MODULE_FAIL,
+        'File does not belong to any module in moduleInfos.',
+        '',
+        file
+      );
+      this.logger.printError(logData);
+    });
   }
 
   protected getMainModuleInfo(): ModuleInfo {
