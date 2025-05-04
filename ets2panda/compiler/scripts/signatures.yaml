@@ -202,12 +202,6 @@ defines:
     ref: FROM
   - name: 'Numeric'
     ref: NUMERIC
-  - name: 'functions'
-    ref: DEFAULT_ANNO_QUALIFIED_LEFT
-  - name: 'OptionalParametersAnnotation'
-    ref: DEFAULT_ANNO_FOR_FUNC
-  - name: 'minArgCount'
-    ref: MIN_ARGSCOUNT_OF_FUNC
 
 packages:
   - name: 'std.core'

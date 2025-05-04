@@ -37,7 +37,6 @@
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/genericBridgesLowering.h"
-#include "compiler/lowering/ets/insertOptionalParametersAnnotation.h"
 #include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
@@ -118,7 +117,6 @@ static AsyncMethodLowering g_asyncMethodLowering;
 static TypeFromLowering g_typeFromLowering;
 static ResizableArrayConvert g_resizableArrayConvert;
 static RestArgsLowering g_restArgsLowering;
-static InsertOptionalParametersAnnotation g_insertOptionalParametersAnnotation;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -144,7 +142,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_topLevelStatements,
         &g_resizableArrayConvert,
         &g_expressionLambdaConstructionPhase,
-        &g_insertOptionalParametersAnnotation,
         &g_defaultParametersInConstructorLowering,
         &g_defaultParametersLowering,
         &g_ambientLowering,
