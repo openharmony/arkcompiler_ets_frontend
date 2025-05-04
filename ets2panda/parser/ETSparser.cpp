@@ -1656,7 +1656,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
 ir::Statement *ETSParser::ParseExportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
     LogUnexpectedToken(lexer::TokenType::KEYW_EXPORT);
-    return nullptr;
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type,
