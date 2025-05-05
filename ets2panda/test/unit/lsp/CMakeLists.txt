@@ -15,6 +15,10 @@ ets2panda_add_gtest(lsp_get_definition_at_position_test CPP_SOURCES
     get_definition_at_position_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_get_applicable_refactors CPP_SOURCES
+    refactors_convert_function_test.cpp
+)
+
 ets2panda_add_gtest(lsp_get_file_references_test CPP_SOURCES
     get_file_references_test.cpp
 )

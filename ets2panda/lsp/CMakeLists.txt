@@ -26,6 +26,8 @@ set(ES2PANDA_LSP_SRC
   ./src/find_rename_locations.cpp
   ./src/find_safe_delete_location.cpp
   ./src/find_references.cpp
+  ./src/applicable_refactors.cpp
+  ./src/refactors/convert_function.cpp
   ./src/string_completions.cpp
   ./src/rename.cpp
   ./src/suggestion_diagnostics.cpp
