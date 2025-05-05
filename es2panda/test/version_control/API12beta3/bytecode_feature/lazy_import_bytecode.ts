@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import lazy { a1, a2 } from 'import_target/import_target'
+import lazy defaultImportValue, { a1, a2 } from 'import_target/import_target';
 
 class SendableLazyLoading {
     name: string = a1;
@@ -24,3 +24,4 @@ class SendableLazyLoading {
 let a: SendableLazyLoading = new SendableLazyLoading();
 let b: string = a2;
 print(a.name);
+print(defaultImportValue);
