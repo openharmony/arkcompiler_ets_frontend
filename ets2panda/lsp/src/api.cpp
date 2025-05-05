@@ -24,6 +24,7 @@
 #include "references.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "generate_constructor.h"
 #include "public/public.h"
 #include "util/options.h"
 #include "quick_info.h"
@@ -261,6 +262,13 @@ std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Contex
     return GetImplementationLocationAtPosition(context, position);
 }
 
+RefactorEditInfo GetClassConstructorInfo(es2panda_Context *context, size_t position,
+                                         const std::vector<std::string> &properties)
+{
+    auto result = RefactorEditInfo(GetRefactorActionsToGenerateConstructor(context, position, properties));
+    return result;
+}
+
 LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t position)
 {
     auto result = ToLineColumnOffset(context, position);
@@ -316,6 +324,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
                     GetBraceMatchingAtPositionWrapper,
+                    GetClassConstructorInfo,
                     GetImplementationLocationAtPositionWrapper,
                     ToLineColumnOffsetWrapper,
                     GetTodoComments,

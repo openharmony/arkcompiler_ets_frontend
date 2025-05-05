@@ -70,6 +70,7 @@ struct TypeHierarchiesInfo {
 // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 ir::AstNode *GetTargetDeclarationNodeByPosition(es2panda_Context *context, size_t pos);
+const ir::AstNode *GetEffectiveBaseTypeNode(const ir::AstNode *node);
 void GetSuperTypeHierarchies(const ir::AstNode *node, TypeHierarchies &typeHierarchies,
                              std::set<TypeHierarchies> &superLists);
 TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, const ClassHierarchyInfoType &declInfo,

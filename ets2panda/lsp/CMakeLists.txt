@@ -26,6 +26,7 @@ set(ES2PANDA_LSP_SRC
   ./src/find_references.cpp
   ./src/string_completions.cpp
   ./src/rename.cpp
+  ./src/generate_constructor.cpp
   ./src/suggestion_diagnostics.cpp
   ./src/brace_matching.cpp
   ./src/services/services.cpp

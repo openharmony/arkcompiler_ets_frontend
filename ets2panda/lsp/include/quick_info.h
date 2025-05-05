@@ -40,6 +40,7 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
 std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, const std::string &kindModifier);
 std::vector<SymbolDisplayPart> CreateDisplayForETSParameterExpression(ir::AstNode *node);
 QuickInfo GetQuickInfoAtPositionImpl(es2panda_Context *context, size_t position, std::string fileName);
+std::string GetNameForTypeReference(const ir::TypeNode *typeReference);
 std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation);
 
 }  // namespace ark::es2panda::lsp

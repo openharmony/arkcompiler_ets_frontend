@@ -231,6 +231,22 @@ public:
     }
 };
 
+struct RefactorEditInfo {
+private:
+    std::vector<FileTextChanges> fileTextChanges_;
+
+public:
+    explicit RefactorEditInfo(std::vector<FileTextChanges> fileTextChanges = {})
+        : fileTextChanges_(std::move(fileTextChanges))
+    {
+    }
+
+    std::vector<FileTextChanges> &GetFileTextChanges()
+    {
+        return fileTextChanges_;
+    }
+};
+
 struct QuickInfo {
 private:
     std::string kind_;
@@ -341,6 +357,8 @@ typedef struct LSPAPI {
     DiagnosticReferences (*getSuggestionDiagnostics)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
+    RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
+                                                const std::vector<std::string> &properties);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(
