@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,6 @@
  * limitations under the License.
  */
 
-package mypack;
-import {myvar} from "./package_module_2"
+package A;
 
-// compiling this file will fail with import from it's own package
-
-/* @@? 17:1 Error SyntaxError: Package module cannot import from a file in it's own package. */
-/* @@? 17:21 Error TypeError: Cannot find import: ./package_module_2 */
+export const num = 1;
