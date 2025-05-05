@@ -372,6 +372,8 @@ protected:
     void CopyTo(AstNode *other) const override;
 
 private:
+    void DumpBody(ir::SrcDumper *dumper) const;
+    void DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const;
     friend class SizeOfNodeTest;
     Identifier *id_ {};
     FunctionSignature irSignature_;

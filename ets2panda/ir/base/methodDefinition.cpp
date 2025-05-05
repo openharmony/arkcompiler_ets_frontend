@@ -159,25 +159,11 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"decorators", decorators_}});
 }
 
-void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
+void MethodDefinition::DumpModifierPrefix(ir::SrcDumper *dumper) const
 {
     if (compiler::HasGlobalClassParent(this)) {
-        dumper->Add("function ");
         return;
     }
-
-    if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
-        if (IsPrivate()) {
-            dumper->Add("private ");
-        } else if (IsProtected()) {
-            dumper->Add("protected ");
-        } else if (IsInternal()) {
-            dumper->Add("internal ");
-        } else {
-            dumper->Add("public ");
-        }
-    }
-
     if (IsStatic()) {
         dumper->Add("static ");
     }
@@ -186,19 +172,15 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
                           (BaseOverloadMethod() != nullptr && BaseOverloadMethod()->Parent()->IsTSInterfaceBody()))) {
         dumper->Add("abstract ");
     }
-
     if (IsFinal()) {
         dumper->Add("final ");
     }
-
     if (IsNative()) {
         dumper->Add("native ");
     }
-
     if (IsAsync()) {
         dumper->Add("async ");
     }
-
     if (IsOverride()) {
         dumper->Add("override ");
     }
@@ -210,8 +192,112 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
     }
 }
 
+bool MethodDefinition::DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (Parent() == nullptr) {
+        return false;
+    }
+
+    bool isNamespaceTransformed =
+        Parent()->IsClassDefinition() && Parent()->AsClassDefinition()->IsNamespaceTransformed();
+    if (isNamespaceTransformed) {
+        dumper->Add("function ");
+        return true;
+    }
+
+    return false;
+}
+
+void MethodDefinition::DumpPrefixForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return;
+    }
+
+    if (key_ == nullptr) {
+        return;
+    }
+
+    if (key_->Parent()->IsExported()) {
+        dumper->Add("export declare function ");
+    } else if (key_->Parent()->IsDefaultExported()) {
+        dumper->Add("export default declare function ");
+    }
+}
+
+void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
+{
+    if (DumpNamespaceForDeclGen(dumper)) {
+        return;
+    }
+
+    if (compiler::HasGlobalClassParent(this) && !dumper->IsDeclgen()) {
+        dumper->Add("function ");
+        return;
+    }
+
+    DumpPrefixForDeclGen(dumper);
+
+    if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal() &&
+        !compiler::HasGlobalClassParent(this)) {
+        if (IsPrivate()) {
+            dumper->Add("private ");
+        } else if (IsProtected()) {
+            dumper->Add("protected ");
+        } else if (IsInternal()) {
+            dumper->Add("internal ");
+        } else {
+            dumper->Add("public ");
+        }
+    }
+    DumpModifierPrefix(dumper);
+}
+
+bool MethodDefinition::FilterForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (key_ == nullptr) {
+        return false;
+    }
+
+    if (compiler::HasGlobalClassParent(this) && !key_->Parent()->IsExported() && !key_->Parent()->IsDefaultExported()) {
+        return true;
+    }
+
+    auto name = Id()->Name().Mutf8();
+    if (name.find("$asyncimpl") != std::string::npos || name == compiler::Signatures::INITIALIZER_BLOCK_INIT ||
+        name == compiler::Signatures::INIT_METHOD) {
+        return true;
+    }
+
+    if (name.rfind('#', 0) == 0) {
+        return true;
+    }
+
+    if (name == compiler::Signatures::CCTOR) {
+        return true;
+    }
+
+    if (name == compiler::Signatures::GET_INDEX_METHOD || name == compiler::Signatures::SET_INDEX_METHOD) {
+        return true;
+    }
+
+    return false;
+}
+
 void MethodDefinition::Dump(ir::SrcDumper *dumper) const
 {
+    if (FilterForDeclGen(dumper)) {
+        return;
+    }
+
     if (compiler::HasGlobalClassParent(this) && Id()->Name().Is(compiler::Signatures::INIT_METHOD)) {
         Function()->Body()->Dump(dumper);
         return;

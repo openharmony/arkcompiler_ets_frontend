@@ -155,6 +155,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
     friend class SizeOfNodeTest;
     varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<ir::Decorator *> decorators_;

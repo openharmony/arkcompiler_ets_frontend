@@ -96,14 +96,23 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"annotations", AstDumper::Optional(Annotations())}});
 }
 
-void ClassProperty::DumpPrefix(ir::SrcDumper *dumper) const
+void ClassProperty::DumpModifiers(ir::SrcDumper *dumper) const
 {
-    for (auto *anno : Annotations()) {
-        anno->Dump(dumper);
+    ES2PANDA_ASSERT(key_);
+    if (dumper->IsDeclgen()) {
+        if (key_->Parent()->IsExported()) {
+            dumper->Add("export declare ");
+        } else if (key_->Parent()->IsDefaultExported()) {
+            dumper->Add("export default declare ");
+        }
     }
 
     if (compiler::HasGlobalClassParent(this)) {
-        dumper->Add("let ");
+        if (key_->Parent()->IsConst()) {
+            dumper->Add("const ");
+        } else {
+            dumper->Add("let ");
+        }
         return;
     }
 
@@ -128,8 +137,86 @@ void ClassProperty::DumpPrefix(ir::SrcDumper *dumper) const
     }
 }
 
+bool ClassProperty::DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (Parent() == nullptr) {
+        return false;
+    }
+
+    bool isNamespaceTransformed =
+        Parent()->IsClassDefinition() && Parent()->AsClassDefinition()->IsNamespaceTransformed();
+    if (isNamespaceTransformed) {
+        dumper->Add("let ");
+        return true;
+    }
+    return false;
+}
+
+void ClassProperty::DumpPrefix(ir::SrcDumper *dumper) const
+{
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+    if (DumpNamespaceForDeclGen(dumper)) {
+        return;
+    }
+    DumpModifiers(dumper);
+}
+
+void ClassProperty::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return;
+    }
+
+    if (TsType() == nullptr) {
+        return;
+    }
+
+    auto typeStr = TsType()->ToString();
+    dumper->Add(": ");
+    dumper->Add(typeStr);
+
+    dumper->PushTask([dumper, typeStr] { dumper->DumpNode(typeStr); });
+}
+
+bool ClassProperty::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    ES2PANDA_ASSERT(key_);
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    auto name = key_->AsIdentifier()->Name().Mutf8();
+    if (name.rfind('#', 0) == 0) {
+        return true;
+    }
+
+    if (!compiler::HasGlobalClassParent(this)) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (key_->Parent()->IsExported() || key_->Parent()->IsDefaultExported() || key_->Parent()->IsExportedType()) {
+        return false;
+    }
+
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void ClassProperty::Dump(ir::SrcDumper *dumper) const
 {
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
     DumpPrefix(dumper);
 
     if (key_ != nullptr) {
@@ -140,12 +227,14 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
         dumper->Add("?");
     }
 
-    if (typeAnnotation_ != nullptr) {
+    if (typeAnnotation_ != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(": ");
         typeAnnotation_->Dump(dumper);
     }
 
-    if (value_ != nullptr) {
+    DumpCheckerTypeForDeclGen(dumper);
+
+    if (value_ != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(" = ");
         value_->Dump(dumper);
     }

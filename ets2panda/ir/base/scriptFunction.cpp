@@ -164,6 +164,31 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 
+void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return;
+    }
+
+    if (IsConstructor()) {
+        return;
+    }
+
+    if (Signature() == nullptr) {
+        return;
+    }
+
+    if (Signature()->ReturnType() == nullptr) {
+        return;
+    }
+
+    auto typeStr = Signature()->ReturnType()->ToString();
+    dumper->Add(": ");
+    dumper->Add(typeStr);
+
+    dumper->PushTask([dumper, typeStr] { dumper->DumpNode(typeStr); });
+}
+
 void ScriptFunction::Dump(ir::SrcDumper *dumper) const
 {
     if (TypeParams() != nullptr) {
@@ -179,36 +204,51 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
-    if (ReturnTypeAnnotation() != nullptr) {
+    if (ReturnTypeAnnotation() != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(": ");
         ReturnTypeAnnotation()->Dump(dumper);
     }
-
+    DumpCheckerTypeForDeclGen(dumper);
     if (IsThrowing()) {
         dumper->Add(" throws");
     } else if (IsRethrowing()) {
         dumper->Add(" rethrows");
     }
-
-    if (HasBody()) {
-        if (IsArrow()) {
-            dumper->Add(" =>");
-        }
-        if (body_->IsBlockStatement()) {
-            dumper->Add(" {");
-            if (!body_->AsBlockStatement()->Statements().empty()) {
-                dumper->IncrIndent();
-                dumper->Endl();
-                body_->Dump(dumper);
-                dumper->DecrIndent();
-                dumper->Endl();
-            }
-            dumper->Add("}");
-        } else {
-            dumper->Add(" ");
-            body_->Dump(dumper);
-        }
+    if (dumper->IsDeclgen()) {
+        dumper->Add(";");
+        dumper->Endl();
+        return;
     }
+    DumpBody(dumper);
+}
+
+void ScriptFunction::DumpBody(ir::SrcDumper *dumper) const
+{
+    if (!HasBody()) {
+        dumper->Endl();
+        return;
+    }
+
+    if (IsArrow()) {
+        dumper->Add(" =>");
+    }
+
+    if (body_->IsBlockStatement()) {
+        dumper->Add(" {");
+        const auto &statements = body_->AsBlockStatement()->Statements();
+        if (!statements.empty()) {
+            dumper->IncrIndent();
+            dumper->Endl();
+            body_->Dump(dumper);
+            dumper->DecrIndent();
+            dumper->Endl();
+        }
+        dumper->Add("}");
+    } else {
+        dumper->Add(" ");
+        body_->Dump(dumper);
+    }
+
     if (!IsArrow()) {
         dumper->Endl();
     }

@@ -144,6 +144,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
     friend class SizeOfNodeTest;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<AnnotationUsage *> annotations_;

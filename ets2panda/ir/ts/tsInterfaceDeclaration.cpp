@@ -109,15 +109,43 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
+bool TSInterfaceDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (id_->Parent()->IsDefaultExported() || id_->Parent()->IsExported()) {
+        return false;
+    }
+
+    auto name = id_->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(id_);
-
+    if (!id_->Parent()->IsDefaultExported() && !id_->Parent()->IsExported() && dumper->IsDeclgen() &&
+        !dumper->IsIndirectDepPhase()) {
+        auto name = id_->Name().Mutf8();
+        dumper->AddNode(name, this);
+        return;
+    }
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-
-    if (IsDeclare()) {
+    if (id_->Parent()->IsExported()) {
+        dumper->Add("export ");
+    } else if (id_->Parent()->IsDefaultExported()) {
+        dumper->Add("export default ");
+    }
+    if (IsDeclare() || dumper->IsDeclgen()) {
         dumper->Add("declare ");
     }
     dumper->Add("interface ");

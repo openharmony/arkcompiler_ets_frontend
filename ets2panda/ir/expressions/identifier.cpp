@@ -152,6 +152,8 @@ void Identifier::Dump(ir::SrcDumper *dumper) const
     if (IsOptional()) {
         dumper->Add("?");
     }
+
+    dumper->PushTask([dumper, name = std::string(name_)] { dumper->DumpNode(name); });
 }
 
 void Identifier::Compile(compiler::PandaGen *pg) const

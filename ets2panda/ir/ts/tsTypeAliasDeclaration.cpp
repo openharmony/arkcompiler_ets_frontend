@@ -94,13 +94,37 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
+bool TSTypeAliasDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (id_->Parent()->IsExported() || id_->Parent()->IsDefaultExported() || id_->Parent()->IsExportedType()) {
+        return false;
+    }
+
+    auto name = id_->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(id_);
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-
+    if (id_->Parent()->IsExportedType()) {
+        dumper->Add("export ");
+    }
     dumper->Add("type ");
     id_->Dump(dumper);
     if (typeParams_ != nullptr) {

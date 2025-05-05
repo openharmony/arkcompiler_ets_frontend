@@ -208,6 +208,10 @@ protected:
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     void ResetOverloads();
+    void DumpModifierPrefix(ir::SrcDumper *dumper) const;
+    bool DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const;
+    void DumpPrefixForDeclGen(ir::SrcDumper *dumper) const;
+    bool FilterForDeclGen(ir::SrcDumper *dumper) const;
 
     friend class SizeOfNodeTest;
     bool isDefault_ = false;
