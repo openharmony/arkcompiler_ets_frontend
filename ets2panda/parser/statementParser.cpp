@@ -579,8 +579,11 @@ ir::Statement *ParserImpl::ParseDoWhileStatement()
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
+
     ir::Statement *body = ParseStatement();
-    ES2PANDA_ASSERT(body != nullptr);
+    if (IsBrokenStatement(body)) {
+        LogError(diagnostic::MISSING_LOOP_BODY, {"do while"});
+    }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_WHILE) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
@@ -601,12 +604,15 @@ ir::Statement *ParserImpl::ParseDoWhileStatement()
 
     lexer_->NextToken();
 
-    ir::Expression *test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    ir::Expression *condition = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    if (condition->IsBrokenExpression()) {
+        LogError(diagnostic::MISSING_LOOP_CONDITION, {"do while"});
+    }
 
     auto endLoc = lexer_->GetToken().End();
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
-    auto *doWhileStatement = AllocNode<ir::DoWhileStatement>(body, test);
+    auto *doWhileStatement = AllocNode<ir::DoWhileStatement>(body, condition);
     doWhileStatement->SetRange({startLoc, endLoc});
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -1522,17 +1528,22 @@ ir::Statement *ParserImpl::ParseWhileStatement()
     lexer_->NextToken();
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
 
-    ir::Expression *test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    ir::Expression *condition = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
     IterationContext iterCtx(&context_);
     ir::Statement *body = ParseStatement();
-    ES2PANDA_ASSERT(body != nullptr);
-    ES2PANDA_ASSERT(test != nullptr);
+    if (IsBrokenStatement(body)) {
+        LogError(diagnostic::MISSING_LOOP_BODY, {"while"});
+    }
+
+    if (condition->IsBrokenExpression()) {
+        LogError(diagnostic::MISSING_LOOP_CONDITION, {"while"});
+    }
 
     lexer::SourcePosition endLoc = body->End();
-    auto *whileStatement = AllocNode<ir::WhileStatement>(test, body);
+    auto *whileStatement = AllocNode<ir::WhileStatement>(condition, body);
     whileStatement->SetRange({startLoc, endLoc});
 
     return whileStatement;
@@ -1949,14 +1960,17 @@ ir::Statement *ParserImpl::AllocBrokenStatement(const lexer::SourcePosition &pos
 
 ir::Statement *ParserImpl::AllocBrokenStatement(const lexer::SourceRange &range)
 {
-    auto *node = AllocEmptyStatement();
-    node->SetRange(range);
-    return node;
+    auto *broken = AllocNode<ir::EmptyStatement>(true);
+    broken->SetRange(range);
+    return broken;
 }
 
 bool ParserImpl::IsBrokenStatement(ir::Statement *st)
 {
-    return st->IsEmptyStatement();
+    if (st->IsEmptyStatement()) {
+        return st->AsEmptyStatement()->IsBrokenStatement();
+    }
+    return false;
 }
 
 ir::Statement *ParserImpl::AllocEmptyStatement()

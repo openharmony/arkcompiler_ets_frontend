@@ -1207,3 +1207,11 @@ syntax:
 - name: ERROR_ARKTS_NO_DEBUGGER_STATEMENT
   id: 299
   message: "Debugger statement is not supported!"
+
+- name: MISSING_LOOP_BODY
+  id: 300
+  message: "Missing body in {} statement"
+
+- name: MISSING_LOOP_CONDITION
+  id: 3001
+  message: "Missing condition in {} statement"
