@@ -22,8 +22,8 @@
             "problem": "ProvideAnnotation",
             "autofix": [
                 {
-                    "start": 754,
-                    "end": 771,
+                    "start": 727,
+                    "end": 744,
                     "replacementText": "@Provide({ alias: \"value\" })"
                 }
             ],
@@ -39,8 +39,8 @@
             "problem": "ProvideAnnotation",
             "autofix": [
                 {
-                    "start": 867,
-                    "end": 901,
+                    "start": 830,
+                    "end": 864,
                     "replacementText": "@Provide({ alias: \"value\", allowOverride: true })"
                 }
             ],
@@ -56,8 +56,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -73,8 +73,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -90,8 +90,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -107,8 +107,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -124,8 +124,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -141,8 +141,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -158,8 +158,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -175,8 +175,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -192,8 +192,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],

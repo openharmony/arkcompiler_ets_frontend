@@ -24,7 +24,7 @@
                 {
                     "start": 605,
                     "end": 614,
-                    "replacementText": "specialAutofixLib.debugger()"
+                    "replacementText": "specialAutofixLib.debugger();"
                 }
             ],
             "suggest": "",
@@ -41,7 +41,7 @@
                 {
                     "start": 633,
                     "end": 642,
-                    "replacementText": "specialAutofixLib.debugger()"
+                    "replacementText": "specialAutofixLib.debugger();"
                 }
             ],
             "suggest": "",

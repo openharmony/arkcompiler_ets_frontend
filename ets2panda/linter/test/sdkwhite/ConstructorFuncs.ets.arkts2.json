@@ -14,6 +14,185 @@
         "limitations under the License."
     ],
     "result": [
-        
+        {
+            "line": 62,
+            "column": 24,
+            "endLine": 62,
+            "endColumn": 35,
+            "problem": "ConstructorFuncs",
+            "suggest": "",
+            "rule": "Constructor function type is not supported (arkts-no-ctor-signatures-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 28,
+            "endLine": 64,
+            "endColumn": 39,
+            "problem": "ConstructorFuncs",
+            "suggest": "",
+            "rule": "Constructor function type is not supported (arkts-no-ctor-signatures-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 24,
+            "endLine": 70,
+            "endColumn": 40,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 29,
+            "endLine": 72,
+            "endColumn": 47,
+            "problem": "PropertyDeclOnFunction",
+            "suggest": "",
+            "rule": "Declaring properties on functions is not supported (arkts-no-func-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 12,
+            "endLine": 74,
+            "endColumn": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 13,
+            "endLine": 74,
+            "endColumn": 22,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 24,
+            "endLine": 74,
+            "endColumn": 26,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 13,
+            "endLine": 74,
+            "endColumn": 22,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 24,
+            "endLine": 79,
+            "endColumn": 40,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 33,
+            "endLine": 80,
+            "endColumn": 51,
+            "problem": "PropertyDeclOnFunction",
+            "suggest": "",
+            "rule": "Declaring properties on functions is not supported (arkts-no-func-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 12,
+            "endLine": 82,
+            "endColumn": 32,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 13,
+            "endLine": 82,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 14,
+            "endLine": 82,
+            "endColumn": 23,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 14,
+            "endLine": 82,
+            "endColumn": 23,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 19,
+            "endLine": 89,
+            "endColumn": 42,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 37,
+            "endLine": 89,
+            "endColumn": 41,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 24,
+            "endLine": 104,
+            "endColumn": 50,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 42,
+            "endLine": 104,
+            "endColumn": 49,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        }
     ]
 }

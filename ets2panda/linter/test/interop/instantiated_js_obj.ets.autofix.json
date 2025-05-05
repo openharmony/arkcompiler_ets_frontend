@@ -39,7 +39,7 @@
                 {
                     "start": 668,
                     "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');\n"
                 }
             ],
             "suggest": "",

@@ -14,61 +14,32 @@
  */
 
 import * as fs from 'node:fs';
-import { Logger } from '../Logger';
 import type * as ts from 'typescript';
+import { Logger } from '../Logger';
 import type { ProblemInfo } from '../ProblemInfo';
 import type { Autofix } from './Autofixer';
+import type { LinterOptions } from '../LinterOptions';
 
 const BACKUP_AFFIX = '~';
-const EOL = '\n';
-export const MAX_AUTOFIX_PASSES = 10;
+export const DEFAULT_MAX_AUTOFIX_PASSES = 10;
 
 export class QuasiEditor {
-  private textBuffer: string;
-  private readonly dataBuffer: Buffer;
-  private readonly srcFileName: string;
-  wasError: boolean = false;
-
   constructor(
-    readonly sourceFile: ts.SourceFile,
-    readonly passNumber?: number,
+    readonly srcFileName: string,
+    readonly sourceText: string,
+    readonly linterOpts: LinterOptions,
     readonly cancellationToken?: ts.CancellationToken
-  ) {
-    this.srcFileName = this.sourceFile.fileName;
+  ) {}
 
-    /*
-     * need to backup only once "this.backupSrcFile();"
-     * load text into buffer
-     */
-    this.dataBuffer = fs.readFileSync(this.srcFileName);
-    this.textBuffer = this.dataBuffer.toString();
-    if (!passNumber) {
-      passNumber = 1;
-    }
+  private static getBackupFileName(filePath: string): string {
+    return filePath + BACKUP_AFFIX;
   }
 
-  backupSrcFile(): void {
-    fs.copyFileSync(this.srcFileName, this.srcFileName + BACKUP_AFFIX);
+  static backupSrcFile(filePath: string): void {
+    fs.copyFileSync(filePath, QuasiEditor.getBackupFileName(filePath));
   }
 
-  backupSrcFileDebug(pass: number): void {
-    fs.copyFileSync(this.srcFileName, this.srcFileName + BACKUP_AFFIX + pass.toString());
-  }
-
-  private saveText(): void {
-    fs.truncateSync(this.srcFileName);
-
-    const srcLines = this.textBuffer.split(EOL);
-    for (let i = 0; i < srcLines.length - 1; i++) {
-      fs.appendFileSync(this.srcFileName, srcLines[i] + EOL);
-    }
-    // check if last line is empty out of loop to optimize
-    if (srcLines[srcLines.length - 1] !== '') {
-      fs.appendFileSync(this.srcFileName, srcLines[srcLines.length - 1] + EOL);
-    }
-  }
-
-  private static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
+  static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
     return problemInfos.some((problemInfo) => {
       return problemInfo.autofix !== undefined;
     });
@@ -83,7 +54,7 @@ export class QuasiEditor {
           start: fix.start,
           end: fix.end,
           replacement: fix.replacementText,
-          original: this.dataBuffer.toString().slice(fix.start, fix.end)
+          original: this.sourceText.slice(fix.start, fix.end)
         };
       })
     };
@@ -94,39 +65,39 @@ export class QuasiEditor {
       fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), { encoding: 'utf-8' });
     } catch (error) {
       Logger.error(`failed to create autofix reoprt: ${(error as Error).message}`);
-      this.wasError = true;
     }
   }
 
-  fix(problemInfos: ProblemInfo[]): void {
-    if (!QuasiEditor.hasAnyAutofixes(problemInfos)) {
-      return;
-    }
+  fix(problemInfos: ProblemInfo[]): string {
     const acceptedPatches = QuasiEditor.sortAndRemoveIntersections(problemInfos);
-    this.textBuffer = this.applyFixes(acceptedPatches);
-    this.saveText();
-    this.generateReport(acceptedPatches);
+    const result = this.applyFixes(acceptedPatches);
+
+    if (this.linterOpts.migrationReport) {
+      this.generateReport(acceptedPatches);
+    }
+
+    return result;
   }
 
   private applyFixes(autofixes: Autofix[]): string {
     let output: string = '';
-    let lastPos = Number.NEGATIVE_INFINITY;
+    let lastFixEnd = Number.NEGATIVE_INFINITY;
 
     const doFix = (fix: Autofix): void => {
       const { replacementText, start, end } = fix;
 
-      if (lastPos >= start || start > end) {
+      if (lastFixEnd > start || start > end) {
         Logger.error(`Failed to apply autofix in range [${start}, ${end}] at ${this.srcFileName}`);
         return;
       }
 
-      output += this.textBuffer.slice(Math.max(0, lastPos), Math.max(0, start));
+      output += this.sourceText.slice(Math.max(0, lastFixEnd), Math.max(0, start));
       output += replacementText;
-      lastPos = end;
+      lastFixEnd = end;
     };
 
     autofixes.forEach(doFix);
-    output += this.textBuffer.slice(Math.max(0, lastPos));
+    output += this.sourceText.slice(Math.max(0, lastFixEnd));
 
     return output;
   }
@@ -134,7 +105,7 @@ export class QuasiEditor {
   private static sortAndRemoveIntersections(problemInfos: ProblemInfo[]): Autofix[] {
     let acceptedPatches: Autofix[] = [];
 
-    problemInfos.forEach((problemInfo) => {
+    problemInfos.forEach((problemInfo): void => {
       if (!problemInfo.autofix) {
         return;
       }
@@ -152,7 +123,7 @@ export class QuasiEditor {
   }
 
   private static sortAutofixes(autofixes: Autofix[]): Autofix[] {
-    return autofixes.sort((a, b) => {
+    return autofixes.sort((a, b): number => {
       return a.start - b.start;
     });
   }

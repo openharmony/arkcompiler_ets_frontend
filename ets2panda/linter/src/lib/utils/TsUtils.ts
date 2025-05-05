@@ -945,10 +945,25 @@ export class TsUtils {
     return result;
   }
 
-  private static hasDefaultCtor(type: ts.Type): boolean {
+  private hasDefaultCtor(type: ts.Type): boolean {
+    const checkBaseTypes = (type: ts.Type): boolean => {
+      if (!this.options.arkts2) {
+        return true;
+      }
+      const baseTypes = type.getBaseTypes()?.filter((baseType) => {
+        return baseType.isClass();
+      });
+      if (!baseTypes || baseTypes.length === 0) {
+        return true;
+      }
+      return baseTypes.some((baseType: ts.Type) => {
+        return this.hasDefaultCtor(baseType);
+      });
+    };
+
     // No members -> no explicit constructors -> there is default ctor
     if (type.symbol.members === undefined) {
-      return true;
+      return checkBaseTypes(type);
     }
 
     // has any constructor
@@ -973,7 +988,11 @@ export class TsUtils {
     });
 
     // Has no any explicit constructor -> has implicit default constructor.
-    return !hasCtor || hasDefaultCtor;
+    if (!hasCtor) {
+      return checkBaseTypes(type);
+    }
+
+    return hasDefaultCtor;
   }
 
   private static isAbstractClass(type: ts.Type): boolean {
@@ -1005,7 +1024,7 @@ export class TsUtils {
     return false;
   }
 
-  static validateObjectLiteralType(type: ts.Type | undefined): boolean {
+  validateObjectLiteralType(type: ts.Type | undefined): boolean {
     if (!type) {
       return false;
     }
@@ -1013,7 +1032,7 @@ export class TsUtils {
     type = TsUtils.reduceReference(type);
     return (
       type.isClassOrInterface() &&
-      TsUtils.hasDefaultCtor(type) &&
+      this.hasDefaultCtor(type) &&
       !TsUtils.hasReadonlyFields(type) &&
       !TsUtils.isAbstractClass(type)
     );
@@ -1119,7 +1138,7 @@ export class TsUtils {
       return this.validateRecordObjectKeys(rhsExpr);
     }
     return (
-      TsUtils.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr)
+      this.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr)
     );
   }
 
@@ -2104,7 +2123,9 @@ export class TsUtils {
       }
     }
     // We allow computed property names if expression is string literal or string Enum member
-    return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
+    return (
+      !this.options.arkts2 && (ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression))
+    );
   }
 
   skipPropertyInferredTypeCheck(
@@ -3680,5 +3701,49 @@ export class TsUtils {
       }
     }
     return false;
+  }
+
+  static typeIsCapturedFromEnclosingLocalScope(type: ts.Type, enclosingStmt: ts.Node): boolean {
+    let symNode: ts.Node | undefined = TsUtils.getDeclaration(type.getSymbol());
+
+    while (symNode) {
+      if (symNode === enclosingStmt) {
+        return true;
+      }
+      symNode = symNode.parent;
+    }
+
+    return false;
+  }
+
+  nodeCapturesValueFromEnclosingLocalScope(targetNode: ts.Node, enclosingStmt: ts.Node): boolean {
+    let found = false;
+
+    const callback = (node: ts.Node): void => {
+      if (!ts.isIdentifier(node)) {
+        return;
+      }
+      const sym = this.tsTypeChecker.getSymbolAtLocation(node);
+      let symNode: ts.Node | undefined = TsUtils.getDeclaration(sym);
+      while (symNode) {
+        if (symNode === targetNode) {
+          // Symbol originated from the target node. Skip and continue to search
+          return;
+        }
+        if (symNode === enclosingStmt) {
+          found = true;
+          return;
+        }
+        symNode = symNode.parent;
+      }
+    };
+
+    const stopCondition = (node: ts.Node): boolean => {
+      void node;
+      return found;
+    };
+
+    forEachNodeInSubtree(targetNode, callback, stopCondition);
+    return found;
   }
 }

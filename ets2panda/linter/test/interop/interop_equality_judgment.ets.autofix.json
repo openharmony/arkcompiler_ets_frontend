@@ -39,7 +39,7 @@
                 {
                     "start": 669,
                     "end": 669,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');\n"
                 }
             ],
             "suggest": "",

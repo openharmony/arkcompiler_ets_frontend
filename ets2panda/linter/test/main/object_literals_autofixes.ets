@@ -102,7 +102,7 @@ function bar(): void {
     let d = {g: 7, d: foo({q:1,w:2}.q + {q:3,w:4}.w)};
 }
 
-const o9 = { 1: '1', '2': 2 };
+const o9 = { 1: '1', '2': 2 }; // Not fixable, property name is string/numeric literal
 const o10 = { [3]: 3 }; // Not fixable, computed property value
 const o11 = { [o2.hello]: 'world' }; // Not fixable, computed property value
 
@@ -110,9 +110,9 @@ const anyVal: any = 1;
 const o12 = { a: anyVal }; // Not fixable, type of property 'a' is not supported
 
 let val = 1;
-const o13 = { val }; // Not fixable, property is not 'key:value' pair
+const o13 = { val }; // Fixable
 const o14 = { ...o1 }; // Not fixable, property is not 'key:value' pair
-const o15 = { m() {} }; // Not fixable, property is not 'key:value' pair
+const o15 = { m() {} }; // Fixable
 
 const o16 = { // Not fixable, property 'c' is initialized with non-fixable nested object literal, and thus will always have unsupported type (object type literal)
     a: 1,

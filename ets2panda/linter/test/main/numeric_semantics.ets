@@ -104,9 +104,9 @@ identity(42);
 
 let an_array = [1,2,3]
 
-let g = an_array[]
+let g2 = an_array[]
 
-const a = 1
+const a2 = 1
 
 enum Test {
   A = 1,  // 显式赋值为 1
@@ -125,7 +125,7 @@ struct Index2 {
   readonly c7 = 0b101; //2进制
   readonly c8 = [1,2,3]
 
-build() {
+  build() {
     RelativeContainer() {
       Text(this.message)
         .onClick(() => {
@@ -136,13 +136,14 @@ build() {
 
 const c1 = 1;
 
-export class G{
+export class G {
   readonly a5 = 4;
 }
 
 const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
 
-private doCloseFolderBackgroundAnimation(): void {
+class C {
+  private doCloseFolderBackgroundAnimation(): void {
     openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
     openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
 
@@ -161,4 +162,5 @@ private doCloseFolderBackgroundAnimation(): void {
       openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
         openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
     }
+  }
 }

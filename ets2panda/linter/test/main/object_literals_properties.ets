@@ -13,32 +13,233 @@
  * limitations under the License.
  */
 
-class MyClass {
-   a: string = ""
-   b: number = 0
-}
+// Untyped object literals
+let method = {
+  m() { console.log(1); } // Error, fixable
+};
 
-let c: MyClass = {a: "a", b: 3} 
+let getMethod = {
+  get property() { return 2; } // Error, fixable
+};
 
-let b: MyClass = {
-  a: "Alice",
-  "c",
-  c,           // Error
-  b: "num",
-  method() {   //  Error
-    console.log(42)
-  },
-}
+let setMethod = {
+  set property(value: number) { // Error, fixable
+    console.log(value);
+  }
+};
 
-let o: MyClass = {
+let x = 1, y = '2', z = true;
+
+let shorthand = {
+  x, // Error, fixable
+  y, // Error, fixable
+  z // Error, fixable
+};
+
+let spread = {
+  ...shorthand // Error, not fixable
+};
+
+let mixed = { // Fixable
   a: "foo",
   b: 42,
-  c: {},
-  1: "number literal property",  // Error
-  "foo:bar": "string literal property",
+  c: [1, 2, 3],
+  x, // Error
+  y, // Error
 
-  get property() {}, // Error
-  set property(value) {}, // Error
+  method() { // Error
+    console.log(42)
+  },
 
-  [expression]: "computed property", // Error
+  get property() { // Error
+    return 0;
+  },
+
+  set property(value: number) { // Error
+    if (value < 0) {
+      throw new Error('Bad value');
+    }
+  }
+};
+
+let x2 = 1, y2 = 2, z2 = 3;
+let mixedBad = { // Not fixable
+  a: 1,
+  b: 2,
+  x2, // Error, fixable
+  y2, // Error, fixable
+  z2, // Error, fixable
+  m() {},
+  ...shorthand // Error, not fixable
+}
+
+// Typed object literals
+interface I {
+  m(): void;
+}
+let i: I = {
+  m() { // Fixable
+    console.log(100);
+  }
+};
+
+class C {
+  m(): void {
+    console.log(200);
+  }
+}
+let c: C = {
+  m(): void { // Fixable
+    console.log(300);
+  }
+};
+
+function foo(c: C) {}
+foo({
+  m() { console.log(300); } // Fixable
+});
+
+class C2 {
+  x2 = 10;
+  y2 = 20;
+  z2 = 30;
+
+  m() {}
+}
+let c2: C2 = {
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
+  m() { console.log(1); } // Fixable
+};
+
+let c22: C2 = {
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
+  m() { console.log(1); }, // Not fixable, object has spread property
+  ...shorthand // Not fixable
+};
+
+class C3 {
+  x2 = 10;
+  y2 = 20;
+  z2 = 30;
+
+  m() {}
+
+  constructor(a: number) {}
+}
+let c3: C3 = {
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
+  m() { console.log(1); } // Not fixable, class type has constructor with parameters
+};
+
+function capturesFromLocalScope() {
+  let a = 1, b = 2;
+  let captureLocalVal = {
+    m() { // Not fixable, captures local values 'a' and 'b'
+      console.log(a, b);
+    }
+  };
+
+  let captureLocalVal2: C = {
+    m(): void { // Not fixable, captures local values 'a' and 'b'
+      console.log(a, b);
+    }
+  };
+
+  type LocalType = {a: number, b: string};
+  let localTypeVar: LocalType = { a: 1, b: '2' };
+  let captureLocalType = {
+    m() { // Not fixable, captures value of type `LocalType` declared in local scope
+      console.log(localTypeVar);
+    }
+  };
+  let captureLocalType2 = {
+    m(x: LocalType) { // Not fixable, `x` references type `LocalType` declared in local scope
+      console.log(x);
+    }
+  };
+
+  class LocalClass { x: number = 1 };
+  let captureLocalType3 = {
+    m() { // Not fixable, references type `LocalClass` declared in local scope
+      console.log(new LocalClass());
+    }
+  };
+}
+
+// Method overriding field
+class C4 {
+  a: number = 0;
+  b() {};
+}
+let c4: C4 = { // Not fixable, overrides class method with property of functional type
+  a: 1,
+  b: () => {}
+};
+
+class C5 {
+  a: number = 0;
+  b: () => void;
+}
+let c5: C5 = { // Not fixable, overrides class property with method
+  a: 1,
+  b() {}
+};
+
+interface I2 {
+  a: number;
+  b(): void;
+}
+let i2: I2 = { // Not fixable, implements method as functional-type property
+  a: 1,
+  b: () => {}
+};
+
+interface I3 {
+  a: number;
+  b: () => void;
+}
+let ii: I3 = { // Not fixable, implements functional-type property as a method
+  a: 1,
+  b() {}
+};
+
+// Inheritance
+class Base {
+  constructor() {}
+}
+class Derived extends Base {
+  m() {}
+}
+let b: Derived = { // Fixable
+  m() { console.log(2); }
+};
+
+class Base2 {
+  constructor(a: number) {}
+}
+class Derived2 extends Base2 {
+  m() {}
+}
+let b2: Derived2 = { // Not fixable, derived class inherits a constructor with parameters from base class
+  m() { console.log(2); }
+};
+
+class Base3 {
+  constructor(a: number) {}
+}
+class Derived3 extends Base3 {
+  m() {}
+
+  constructor() {
+    super(1);
+  }
+}
+let b3: Derived3 = { // Fixable
+  m() { console.log(2); }
 };

@@ -1,0 +1,318 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 19,
+            "column": 3,
+            "endLine": 19,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 6,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 3,
+            "endLine": 31,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 3,
+            "endLine": 32,
+            "endColumn": 6,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 3,
+            "endLine": 34,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 3,
+            "endLine": 35,
+            "endColumn": 6,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 6,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 22,
+            "problem": "DefiniteAssignment",
+            "suggest": "",
+            "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 32,
+            "column": 3,
+            "endLine": 32,
+            "endColumn": 6,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 3,
+            "endLine": 35,
+            "endColumn": 6,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 31,
+            "endLine": 44,
+            "endColumn": 34,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 10,
+            "endLine": 46,
+            "endColumn": 13,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 10,
+            "endLine": 47,
+            "endColumn": 13,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 3,
+            "endLine": 57,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 3,
+            "endLine": 59,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 3,
+            "endLine": 57,
+            "endColumn": 5,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 3,
+            "endLine": 59,
+            "endColumn": 5,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 22,
+            "endLine": 64,
+            "endColumn": 24,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 18,
+            "endLine": 65,
+            "endColumn": 20,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 3,
+            "endLine": 72,
+            "endColumn": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 10,
+            "endLine": 74,
+            "endColumn": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 3,
+            "endLine": 72,
+            "endColumn": 5,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 11,
+            "endLine": 17,
+            "endColumn": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'p' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'p' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 3,
+            "endLine": 19,
+            "endColumn": 5,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'p2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'p2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '#p2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '#p2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 3,
+            "endLine": 34,
+            "endColumn": 5,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'm3' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'm3' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 11,
+            "endLine": 56,
+            "endColumn": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 3,
+            "endLine": 57,
+            "endColumn": 5,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '#p' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '#p' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 11,
+            "endLine": 71,
+            "endColumn": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 3,
+            "endLine": 72,
+            "endColumn": 5,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '#b' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '#b' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
+}

@@ -22,8 +22,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 744,
-                    "end": 749,
+                    "start": 727,
+                    "end": 732,
                     "replacementText": "a: number = 1"
                 }
             ],
@@ -99,8 +99,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1377,
-                    "end": 1384,
+                    "start": 1339,
+                    "end": 1346,
                     "replacementText": "c: number = 1.5"
                 }
             ],
@@ -136,8 +136,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1561,
-                    "end": 1566,
+                    "start": 1517,
+                    "end": 1522,
                     "replacementText": "d: number = 2"
                 }
             ],
@@ -163,8 +163,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1712,
-                    "end": 1717,
+                    "start": 1662,
+                    "end": 1667,
                     "replacementText": "n: number = 2"
                 }
             ],
@@ -180,8 +180,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1747,
-                    "end": 1760,
+                    "start": 1693,
+                    "end": 1706,
                     "replacementText": "g: number[] = [1, 2, 3]"
                 }
             ],
@@ -207,8 +207,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1786,
-                    "end": 1799,
+                    "start": 1728,
+                    "end": 1741,
                     "replacementText": "t8: number = Infinity"
                 }
             ],
@@ -224,8 +224,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1807,
-                    "end": 1821,
+                    "start": 1747,
+                    "end": 1761,
                     "replacementText": "t9: number = -Infinity"
                 }
             ],
@@ -241,8 +241,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1830,
-                    "end": 1839,
+                    "start": 1768,
+                    "end": 1777,
                     "replacementText": "t10: number = NaN"
                 }
             ],
@@ -258,8 +258,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1848,
-                    "end": 1870,
+                    "start": 1784,
+                    "end": 1806,
                     "replacementText": "t11: number = Number.MAX_VALUE"
                 }
             ],
@@ -275,8 +275,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1879,
-                    "end": 1901,
+                    "start": 1813,
+                    "end": 1835,
                     "replacementText": "t12: number = Number.MIN_VALUE"
                 }
             ],
@@ -292,8 +292,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1959,
-                    "end": 1965,
+                    "start": 1887,
+                    "end": 1893,
                     "replacementText": "o2: number = o"
                 }
             ],
@@ -309,8 +309,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1975,
-                    "end": 1982,
+                    "start": 1901,
+                    "end": 1908,
                     "replacementText": "o3: number = oo"
                 }
             ],
@@ -326,8 +326,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2001,
-                    "end": 2007,
+                    "start": 1924,
+                    "end": 1930,
                     "replacementText": "a: number = 1;"
                 }
             ],
@@ -343,8 +343,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2043,
-                    "end": 2052,
+                    "start": 1961,
+                    "end": 1970,
                     "replacementText": "t2: number = +123"
                 }
             ],
@@ -360,8 +360,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2061,
-                    "end": 2070,
+                    "start": 1977,
+                    "end": 1986,
                     "replacementText": "t3: number = -234"
                 }
             ],
@@ -377,8 +377,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2079,
-                    "end": 2100,
+                    "start": 1993,
+                    "end": 2014,
                     "replacementText": "num: number = Math.floor(4.8)"
                 }
             ],
@@ -394,8 +394,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2124,
-                    "end": 2146,
+                    "start": 2036,
+                    "end": 2058,
                     "replacementText": "value: number = parseInt(\"42\")"
                 }
             ],
@@ -411,8 +411,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2188,
-                    "end": 2193,
+                    "start": 2097,
+                    "end": 2102,
                     "replacementText": "x: number = 2"
                 }
             ],
@@ -428,8 +428,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2195,
-                    "end": 2200,
+                    "start": 2104,
+                    "end": 2109,
                     "replacementText": "y: number = 3"
                 }
             ],
@@ -445,8 +445,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2201,
-                    "end": 2201,
+                    "start": 2110,
+                    "end": 2110,
                     "replacementText": ": number"
                 }
             ],
@@ -462,8 +462,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2264,
-                    "end": 2264,
+                    "start": 2169,
+                    "end": 2169,
                     "replacementText": ": number"
                 }
             ],
@@ -479,8 +479,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2347,
-                    "end": 2359,
+                    "start": 2245,
+                    "end": 2257,
                     "replacementText": "identity<number>(42)"
                 }
             ],
@@ -496,8 +496,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2368,
-                    "end": 2386,
+                    "start": 2264,
+                    "end": 2282,
                     "replacementText": "an_array: number[] = [1, 2, 3]"
                 }
             ],
@@ -509,13 +509,13 @@
             "line": 107,
             "column": 5,
             "endLine": 107,
-            "endColumn": 19,
+            "endColumn": 20,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2394,
-                    "end": 2408,
-                    "replacementText": "g: number = an_array[]"
+                    "start": 2288,
+                    "end": 2303,
+                    "replacementText": "g2: number = an_array[]"
                 }
             ],
             "suggest": "",
@@ -524,9 +524,9 @@
         },
         {
             "line": 107,
-            "column": 18,
+            "column": 19,
             "endLine": 107,
-            "endColumn": 18,
+            "endColumn": 19,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
@@ -536,13 +536,13 @@
             "line": 109,
             "column": 7,
             "endLine": 109,
-            "endColumn": 12,
+            "endColumn": 13,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2418,
-                    "end": 2423,
-                    "replacementText": "a: number = 1"
+                    "start": 2311,
+                    "end": 2317,
+                    "replacementText": "a2: number = 1"
                 }
             ],
             "suggest": "",
@@ -557,8 +557,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2493,
-                    "end": 2506,
+                    "start": 2381,
+                    "end": 2394,
                     "replacementText": "test: number = Test.A"
                 }
             ],
@@ -574,8 +574,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2593,
-                    "end": 2609,
+                    "start": 2475,
+                    "end": 2491,
                     "replacementText": "readonly c1: number = 1;"
                 }
             ],
@@ -591,8 +591,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2620,
-                    "end": 2638,
+                    "start": 2501,
+                    "end": 2519,
                     "replacementText": "readonly c4: number = 1.7;"
                 }
             ],
@@ -608,8 +608,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2651,
-                    "end": 2671,
+                    "start": 2531,
+                    "end": 2551,
                     "replacementText": "readonly c5: number = 0x123;"
                 }
             ],
@@ -625,8 +625,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2683,
-                    "end": 2703,
+                    "start": 2562,
+                    "end": 2582,
                     "replacementText": "readonly c6: number = 0o123;"
                 }
             ],
@@ -642,8 +642,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2713,
-                    "end": 2733,
+                    "start": 2591,
+                    "end": 2611,
                     "replacementText": "readonly c7: number = 0b101;"
                 }
             ],
@@ -659,8 +659,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2743,
-                    "end": 2764,
+                    "start": 2620,
+                    "end": 2641,
                     "replacementText": "readonly c8: number[] = [1, 2, 3];"
                 }
             ],
@@ -676,8 +676,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2893,
-                    "end": 2899,
+                    "start": 2761,
+                    "end": 2767,
                     "replacementText": "c1: number = 1"
                 }
             ],
@@ -693,8 +693,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2923,
-                    "end": 2939,
+                    "start": 2789,
+                    "end": 2805,
                     "replacementText": "readonly a5: number = 4;"
                 }
             ],
@@ -721,8 +721,8 @@
             "autofix": [
                 {
                     "replacementText": "fingerprintPositionY: number = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0",
-                    "start": 2952,
-                    "end": 3068
+                    "start": 2815,
+                    "end": 2931
                 }
             ],
             "suggest": "",
@@ -730,137 +730,27 @@
             "severity": "ERROR"
         },
         {
-            "line": 145,
-            "column": 45,
-            "endLine": 145,
-            "endColumn": 49,
-            "problem": "VoidOperator",
+            "line": 150,
+            "column": 9,
+            "endLine": 150,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 3117,
-                    "end": 3558,
-                    "replacementText": "(() => {\n    ({\n        openFolderLayout, : .getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight,\n        openFolderLayout, : .getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth,\n        let, pos = [-1, -1],\n        pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder()),\n        let, editModeTranslateY = this.getEditModeTranslateY(pos),\n        if(pos) { }, : .length > 1\n    });\n    return undefined;\n})()"
+                    "start": 3218,
+                    "end": 3232,
+                    "replacementText": "pos: number[] = [-1, -1]"
                 }
             ],
             "suggest": "",
-            "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 145,
-            "column": 50,
-            "endLine": 145,
-            "endColumn": 51,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 146,
-            "column": 5,
-            "endLine": 146,
-            "endColumn": 21,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 147,
-            "column": 5,
-            "endLine": 147,
-            "endColumn": 21,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 149,
-            "column": 5,
-            "endLine": 149,
-            "endColumn": 8,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 149,
+            "line": 152,
             "column": 9,
-            "endLine": 149,
-            "endColumn": 23,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 150,
-            "column": 5,
-            "endLine": 150,
-            "endColumn": 104,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 151,
-            "column": 5,
-            "endLine": 151,
-            "endColumn": 8,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 151,
-            "column": 9,
-            "endLine": 151,
+            "endLine": 152,
             "endColumn": 61,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 152,
-            "column": 5,
-            "endLine": 152,
-            "endColumn": 12,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 152,
-            "column": 5,
-            "endLine": 152,
-            "endColumn": 7,
-            "problem": "LimitedReturnTypeInference",
-            "suggest": "",
-            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 152,
-            "column": 5,
-            "endLine": 152,
-            "endColumn": 7,
-            "problem": "InvalidIdentifier",
-            "suggest": "",
-            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 152,
-            "column": 9,
-            "endLine": 152,
-            "endColumn": 12,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -874,8 +764,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -891,8 +781,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -908,8 +798,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -925,8 +815,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -942,8 +832,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -959,25 +849,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
-                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
-                }
-            ],
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 153,
-            "column": 46,
-            "endLine": 153,
-            "endColumn": 56,
-            "problem": "UIInterfaceImport",
-            "autofix": [
-                {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -987,14 +860,14 @@
         },
         {
             "line": 154,
-            "column": 33,
+            "column": 46,
             "endLine": 154,
-            "endColumn": 43,
+            "endColumn": 56,
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
@@ -1004,14 +877,31 @@
         },
         {
             "line": 155,
-            "column": 34,
+            "column": 33,
             "endLine": 155,
+            "endColumn": 43,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 722,
+                    "end": 722,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 156,
+            "column": 34,
+            "endLine": 156,
             "endColumn": 44,
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 738,
+                    "start": 722,
+                    "end": 722,
                     "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
