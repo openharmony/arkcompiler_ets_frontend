@@ -602,7 +602,7 @@ private:
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,
                                                 bool isDeclare = false);
-    void VerifySupportLazyImportVersion(bool isNamedImport);
+    void VerifySupportLazyImportVersion();
 
     util::StringView GetNamespaceExportInternalName()
     {
