@@ -111,3 +111,7 @@ warning:
 - name: EXTENSION_MISMATCH
   id: 25
   message: "Not matching extensions! Sourcefile: {}, Manual(used): {}"
+
+- name: UNREACHABLE_STMT
+  id: 26
+  message: "Unreachable statement."

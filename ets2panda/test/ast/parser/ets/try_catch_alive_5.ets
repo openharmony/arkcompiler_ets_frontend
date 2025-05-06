@@ -24,4 +24,4 @@ function foo(): int {
     }
 }
 
-/* @@@ label Error TypeError: Unreachable statement.  */
+/* @@@ label Warning Warning: Unreachable statement.  */
