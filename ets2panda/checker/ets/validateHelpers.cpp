@@ -125,12 +125,23 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, Type 
 
 bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type)
 {
+    auto const resolved = ident->Variable();
     const auto *const binaryExpr = ident->Parent()->AsBinaryExpression();
     bool isFinished = false;
+
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Left() == ident) {
         if (!IsReferenceType(type)) {
             std::ignore =
                 TypeError(ident->Variable(), diagnostic::INSTANCEOF_NONOBJECT, {ident->Name()}, ident->Start());
+        }
+        isFinished = true;
+    }
+
+    if (binaryExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING ||
+        binaryExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
+        binaryExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        if ((resolved != nullptr) && (!resolved->Declaration()->PossibleTDZ() && !type->IsETSFunctionType())) {
+            WrongContextErrorClassifyByType(ident);
         }
         isFinished = true;
     }
