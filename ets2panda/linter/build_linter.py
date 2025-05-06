@@ -115,6 +115,38 @@ def clean_old_packages(directory, prefix, suffix):
     return res
 
 
+def backup_package_files(source_path):
+    package_name = 'package.json'
+    package_back_name = 'package.json.bak'
+    aa_path = os.path.join(source_path, 'arkanalyzer')
+    hc_path = os.path.join(source_path, 'homecheck')
+    linter_path = source_path
+    copy_files(os.path.join(aa_path, package_name), os.path.join(aa_path, package_back_name), True)
+    copy_files(os.path.join(hc_path, package_name), os.path.join(hc_path, package_back_name), True)
+    copy_files(os.path.join(linter_path, package_name), os.path.join(linter_path, package_back_name), True)
+
+
+def clean_env(source_path):
+    package_name = 'package.json'
+    package_back_name = 'package.json.bak'
+    package_lock_name = 'package-lock.json'
+    aa_path = os.path.join(source_path, 'arkanalyzer')
+    hc_path = os.path.join(source_path, 'homecheck')
+    linter_path = source_path
+    try:
+        copy_files(os.path.join(aa_path, package_back_name), os.path.join(aa_path, package_name), True)
+        copy_files(os.path.join(hc_path, package_back_name), os.path.join(hc_path, package_name), True)
+        copy_files(os.path.join(linter_path, package_back_name), os.path.join(linter_path, package_name), True)
+        os.remove(os.path.join(hc_path, package_lock_name))
+        os.remove(os.path.join(linter_path, package_lock_name))
+        os.remove(os.path.join(aa_path, package_back_name))
+        os.remove(os.path.join(hc_path, package_back_name))
+        os.remove(os.path.join(linter_path, package_back_name))
+    except Exception:
+        return False
+    return True
+
+
 def aa_copy_lib_files(options):
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
     source_file_1 = os.path.join(aa_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es5.d.ts')
@@ -139,9 +171,9 @@ def pack_arkanalyzer(options, new_npm):
     clean_old_packages(aa_path, pack_prefix, pack_suffix)
 
     if new_npm:
-        ts_install_cmd = [options.npm, 'install', tsc_file, '--legacy-peer-deps', '--offline']
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file, '--legacy-peer-deps', '--offline']
     else:
-        ts_install_cmd = [options.npm, 'install', tsc_file]
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file]
     compile_cmd = [options.npm, 'run', 'compile']
     pack_cmd = [options.npm, 'pack']
     run_cmd(ts_install_cmd, aa_path)
@@ -219,15 +251,15 @@ def parse_args():
 
 def main():
     options = parse_args()
+    backup_package_files(options.source_path)
     install_homecheck(options)
     install_typescript(options)
     node_modules_path = os.path.join(options.source_path, "node_modules")
     extract(options.typescript, node_modules_path, "typescript")
     build(options)
     copy_output(options)
+    clean_env(options.source_path)
 
 
 if __name__ == '__main__':
     sys.exit(main())
-
-
