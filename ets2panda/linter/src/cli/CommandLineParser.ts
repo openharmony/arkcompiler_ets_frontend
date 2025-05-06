@@ -117,6 +117,10 @@ function formMigrateOptions(cmdOptions: CommandLineOptions, commanderOpts: Optio
   }
   if (commanderOpts.migrationReport) {
     cmdOptions.linterOptions.migrationReport = true;
+    if (cmdOptions.arktsWholeProjectPath) {
+      commanderOpts.arktsWholeProjectPath = cmdOptions.arktsWholeProjectPath;
+      commanderOpts.linterOptions.wholeProjectPath = cmdOptions.arktsWholeProjectPath;
+    }
   }
 }
 

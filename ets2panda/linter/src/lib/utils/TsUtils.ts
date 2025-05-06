@@ -44,9 +44,9 @@ import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
-import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS, EXTNAME_D_TS } from './consts/ExtensionName';
 import { InteropType, USE_STATIC } from './consts/InteropAPI';
+import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
+import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -3450,6 +3450,33 @@ export class TsUtils {
     }
     const sanitizedDirectories = getPossibleModule.split('/');
     return sanitizedDirectories[sanitizedDirectories.length - 1];
+  }
+
+  static checkFileExists(
+    importIncludesModule: boolean,
+    currentNode: ts.Node,
+    importFilePath: string,
+    projectPath: string
+  ): boolean {
+    const currentModule = TsUtils.getModuleName(currentNode);
+
+    /*
+     * some imports are like this
+     * ets/pages/test1
+     * in this case, they are in the same module as the file we are trying to import to
+     * so we add the current module back in
+     */
+    if (!importIncludesModule) {
+      if (!currentModule) {
+        return false;
+      }
+
+      projectPath.concat(PATH_SEPARATOR + currentModule);
+    }
+
+    const importedFile = path.resolve(projectPath, importFilePath + EXTNAME_ETS);
+
+    return fs.existsSync(importedFile);
   }
 
   isImportedFromJS(identifier: ts.Identifier): boolean {
