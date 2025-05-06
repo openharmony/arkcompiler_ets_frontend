@@ -565,7 +565,11 @@ std::vector<SymbolDisplayPart> CreateDisplayForClass(ir::AstNode *node)
         displayParts.emplace_back(CreateClassName(GetNameFromClassDeclaration(node)));
     } else {
         // class definition
-        displayParts.emplace_back(CreateKeyword("class"));
+        if (node->AsClassDefinition()->OrigEnumDecl() != nullptr) {
+            displayParts.emplace_back(CreateKeyword("enum"));
+        } else {
+            displayParts.emplace_back(CreateKeyword("class"));
+        }
         displayParts.emplace_back(CreateSpace());
         displayParts.emplace_back(CreateClassName(GetNameFromClassDefinition(node)));
     }

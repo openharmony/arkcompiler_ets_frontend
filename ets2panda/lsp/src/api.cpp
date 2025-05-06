@@ -33,6 +33,9 @@
 #include "services/services.h"
 #include "inlay_hints.h"
 #include "signature_help.h"
+#include "completions_details.h"
+
+using ark::es2panda::lsp::details::GetCompletionEntryDetailsImpl;
 
 extern "C" {
 namespace ark::es2panda::lsp {
@@ -125,6 +128,14 @@ QuickInfo GetQuickInfoAtPosition(const char *fileName, es2panda_Context *context
 {
     auto res = GetQuickInfoAtPositionImpl(context, position, fileName);
     return res;
+}
+
+// find the Definition node by using the entryname And return CompletionEntryDetails
+CompletionEntryDetails GetCompletionEntryDetails(const char *entryName, const char *fileName, es2panda_Context *context,
+                                                 size_t position)
+{
+    auto result = GetCompletionEntryDetailsImpl(context, position, fileName, entryName);
+    return result;
 }
 
 TextSpan GetSpanOfEnclosingComment(es2panda_Context *context, size_t pos, bool onlyMultiLine)
@@ -305,6 +316,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetCurrentTokenValue,
                     OrganizeImportsImpl,
                     GetQuickInfoAtPosition,
+                    GetCompletionEntryDetails,
                     GetSpanOfEnclosingComment,
                     GetSemanticDiagnostics,
                     GetSyntacticDiagnostics,
