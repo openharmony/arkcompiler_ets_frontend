@@ -14,8 +14,10 @@
  */
 
 import type {
+  AnnotationDeclaration,
   ClassDeclaration,
   CommentRange,
+  CompilerOptions,
   Decorator,
   ElementAccessExpression,
   EnumDeclaration,
@@ -146,7 +148,8 @@ export namespace ApiExtractor {
   | FunctionDeclaration
   | ModuleDeclaration
   | VariableDeclaration
-  | TypeAliasDeclaration;
+  | TypeAliasDeclaration
+  | AnnotationDeclaration;
 
   const KEEP_SYMBOL = '//@KeepSymbol';
   const KEEP_AS_CONSUMER = '//@KeepAsConsumer';
@@ -1199,6 +1202,9 @@ export namespace ApiExtractor {
       case SyntaxKind.ModuleDeclaration:
         collectModuleDeclaration(node as ModuleDeclaration, sourceFile);
         break;
+      case SyntaxKind.AnnotationDeclaration:
+        collectAnnotationDeclaration(node as AnnotationDeclaration, sourceFile);
+        break;
     }
     forEachChild(node, child => collectNamesWithAtKeep(child, sourceFile));
   }
@@ -1433,6 +1439,13 @@ export namespace ApiExtractor {
         });
         break;
     }
+  }
+
+  function collectAnnotationDeclaration(node: AnnotationDeclaration, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+    collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
   }
 
   function getAtKeepType(node: Node, sourceFile: SourceFile): AtKeepType {

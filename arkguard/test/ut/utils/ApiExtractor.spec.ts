@@ -1091,6 +1091,22 @@ describe('test for ApiExtractor', function () {
       expect(AtKeepCollections.keepAsConsumer.propertyNames.has('globalFunc04')).to.be.true;
       expect(AtKeepCollections.keepAsConsumer.propertyNames.has('globalMyClass04')).to.be.true;
     })
+    it('should collect atKeep names from annotation declarations if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepAnnotation.ets';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyAnnotation01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyAnnotation02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(1);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyAnnotation02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyAnnotation04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyAnnotation05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(1);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyAnnotation05')).to.be.true;
+    })
     it('should collect atKeep names from .ets', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepTest01.ets';
       AtKeepCollections.clear();
