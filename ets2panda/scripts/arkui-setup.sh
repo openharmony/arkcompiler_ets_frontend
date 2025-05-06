@@ -106,6 +106,7 @@ function do_checkout() {
             git checkout FETCH_HEAD || exit 1
             [ -n "${patch}" ] && git apply "${patch}"
         }
+        git log -1
     popd >/dev/null 2>&1 || exit 1
 }
 
