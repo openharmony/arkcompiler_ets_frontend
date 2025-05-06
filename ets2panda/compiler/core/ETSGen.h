@@ -459,8 +459,7 @@ private:
     void UnaryTilde(const ir::AstNode *node);
 
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
-    void TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target);
-    void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label, VReg srcReg,
+    void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label,
                                    checker::Type const *target, bool acceptNull);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 

@@ -781,36 +781,12 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
-void ETSGen::TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target)
-{
-    if (!target->IsConstantType()) {
-        return;
-    }
-    RegScope rs(this);
-    VReg rhs = AllocReg();
-    auto ifNotEquals = AllocLabel();
-
-    LoadAccumulator(node, srcReg);
-    LoadConstantObject(node->AsExpression(), target);
-    StoreAccumulator(node, rhs);
-    EmitEtsEquals(node, srcReg, rhs);
-    BranchIfFalse(node, ifNotEquals);
-    BranchIfTrue(node, ifTrue);
-    SetLabel(node, ifNotEquals);
-    SetAccumulatorType(nullptr);
-}
-
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
-void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label, VReg srcReg,
+void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
                                        checker::Type const *target, bool acceptNull)
 {
     ES2PANDA_ASSERT(!target->IsETSDynamicType());
     auto [ifTrue, ifFalse] = label;
-
-    if (target->IsConstantType()) {
-        TestIsInstanceConstant(node, ifTrue, srcReg, target);
-        return;
-    }
 
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_UNDEFINED:
@@ -860,7 +836,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
         LoadAccumulator(n, srcReg);
         // #21835: type-alias in ApparentType
         t = t->IsETSTypeAliasType() ? t->AsETSTypeAliasType()->GetTargetType() : t;
-        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, acceptNull);
+        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), t, acceptNull);
     };
 
     if (target->IsETSUnionType()) {
