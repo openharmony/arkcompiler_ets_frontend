@@ -83,3 +83,6 @@ override_for_partial_01.ets
 
 #HEAD FILE NO NEED TO RUN
 import_self_head_tests/B/test.d.ets
+
+#Issue 25550
+enum-initialize-with-enum3.ets
