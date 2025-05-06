@@ -239,3 +239,4 @@ faultsAttrs[FaultID.LimitedStdLibNoSendableDecorator] = new FaultAttributes(355)
 faultsAttrs[FaultID.LimitedStdLibNoDoncurrentDecorator] = new FaultAttributes(356);
 faultsAttrs[FaultID.NoNeedStdlibWorker] = new FaultAttributes(357);
 faultsAttrs[FaultID.BuiltinGetOwnPropertyNames] = new FaultAttributes(358);
+faultsAttrs[FaultID.LocalBuilderDecoratorNotSupported] = new FaultAttributes(359);

@@ -26,6 +26,7 @@ export const INDENT_STEP = 2;
 
 export enum CustomDecoratorName {
   Extend = 'Extend',
+  LocalBuilder = 'LocalBuilder',
   Styles = 'Styles',
   AnimatableExtend = 'AnimatableExtend',
   Memo = 'Memo',
@@ -45,7 +46,7 @@ export const observedDecoratorName: Set<string> = new Set([
   'Track'
 ]);
 
-export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent']);
+export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent', 'LocalBuilder']);
 
 export const ENTRY_DECORATOR_NAME = 'Entry';
 export const ENTRY_STORAGE_PROPERITY = 'storage';

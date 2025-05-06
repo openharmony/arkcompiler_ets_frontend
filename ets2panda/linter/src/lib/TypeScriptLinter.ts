@@ -5204,6 +5204,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleExtendDecorator(node);
     this.handleEntryDecorator(node);
     this.handleProvideDecorator(node);
+    this.handleLocalBuilderDecorator(node);
 
     const decorator: ts.Decorator = node as ts.Decorator;
     this.checkSendableAndConcurrentDecorator(decorator);
@@ -7549,6 +7550,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     } else if (this.isObjectLiteralAssignedToArkts12Type(node.expression)) {
       this.incrementCounters(node.expression, FaultID.InteropStaticObjectLiterals);
+    }
+  }
+
+  private handleLocalBuilderDecorator(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!ts.isDecorator(node) || !ts.isIdentifier(node.expression)) {
+      return;
+    }
+    const decoratorName = node.expression.getText();
+    if (decoratorName === CustomDecoratorName.LocalBuilder) {
+      const autofix = this.autofixer?.fixBuilderDecorators(node);
+      this.incrementCounters(node, FaultID.LocalBuilderDecoratorNotSupported, autofix);
     }
   }
 }

@@ -60,5 +60,6 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [338, 'Replace with library function call'],
   [339, 'Using \'ESObject\' interface call'],
   [341, 'Create JS objects using instantite'],
-  [358, 'Replace missing attribute']
+  [358, 'Replace missing attribute'],
+  [359, '"@LocalBuilder" transform to "@Builder"']
 ]);

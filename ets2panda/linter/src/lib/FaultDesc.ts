@@ -227,3 +227,4 @@ faultDesc[FaultID.LimitedStdLibNoSendableDecorator] = 'Limited stdlib no sendabl
 faultDesc[FaultID.LimitedStdLibNoDoncurrentDecorator] = 'Limited stdlib no concurrent decorator';
 faultDesc[FaultID.NoNeedStdlibWorker] = 'No need stdlib worker';
 faultDesc[FaultID.BuiltinGetOwnPropertyNames] = 'No "Object.getOwnPropertyNames" in API';
+faultDesc[FaultID.LocalBuilderDecoratorNotSupported] = '"@LocalBuilder" decorator';
