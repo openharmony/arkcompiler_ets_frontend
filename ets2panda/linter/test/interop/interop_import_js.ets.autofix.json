@@ -39,7 +39,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getPropertyByName('Cjs');"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getPropertyByName('Cjs');\n"
                 }
             ],
             "suggest": "",
@@ -71,7 +71,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getPropertyByName('fjs');"
+                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getPropertyByName('fjs');\n"
                 }
             ],
             "suggest": "",
@@ -103,7 +103,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getPropertyByName('CPreview');\nlet bar = GeneratedImportVar_3.getPropertyByName('bar');\nlet foo = GeneratedImportVar_3.getPropertyByName('foo');"
+                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getPropertyByName('CPreview');\nlet bar = GeneratedImportVar_3.getPropertyByName('bar');\nlet foo = GeneratedImportVar_3.getPropertyByName('foo');\n"
                 }
             ],
             "suggest": "",
@@ -135,7 +135,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_4 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getPropertyByName('aaa');"
+                    "replacementText": "let GeneratedImportVar_4 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getPropertyByName('aaa');\n"
                 }
             ],
             "suggest": "",
@@ -167,7 +167,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_5 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_5.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_5.getPropertyByName('Dog');"
+                    "replacementText": "let GeneratedImportVar_5 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_5.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_5.getPropertyByName('Dog');\n"
                 }
             ],
             "suggest": "",
@@ -199,7 +199,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_6 = ESObject.load('./interop_import_js_js');"
+                    "replacementText": "let GeneratedImportVar_6 = ESObject.load('./interop_import_js_js');\n"
                 }
             ],
             "suggest": "",
@@ -231,7 +231,7 @@
                 {
                     "start": 971,
                     "end": 971,
-                    "replacementText": "let GeneratedImportVar_7 = ESObject.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getPropertyByName('Wiki');\nlet Doge = GeneratedImportVar_7.getPropertyByName('Dog');"
+                    "replacementText": "let GeneratedImportVar_7 = ESObject.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getPropertyByName('Wiki');\nlet Doge = GeneratedImportVar_7.getPropertyByName('Dog');\n"
                 }
             ],
             "suggest": "",

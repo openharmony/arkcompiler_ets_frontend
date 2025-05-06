@@ -1,0 +1,148 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 59,
+            "column": 9,
+            "endLine": 59,
+            "endColumn": 10,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 10,
+            "endLine": 59,
+            "endColumn": 16,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 22,
+            "endLine": 59,
+            "endColumn": 23,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 13,
+            "endLine": 61,
+            "endColumn": 22,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 13,
+            "endLine": 62,
+            "endColumn": 17,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 7,
+            "endLine": 84,
+            "endColumn": 10,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 36,
+            "endLine": 90,
+            "endColumn": 37,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 11,
+            "endLine": 28,
+            "endColumn": 14,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '__2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '__2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 3,
+            "endLine": 29,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'Two' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'Two' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 11,
+            "endLine": 44,
+            "endColumn": 13,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 3,
+            "endLine": 45,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'Two' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'Two' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 12,
+            "endLine": 65,
+            "endColumn": 16,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 12,
+            "endLine": 66,
+            "endColumn": 14,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
+}

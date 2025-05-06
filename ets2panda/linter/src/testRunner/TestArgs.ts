@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import * as yup from 'yup';
 
+const ARGS_CONFIG_EXT = '.args.json';
 const TAB = '    ';
 
 /**
@@ -60,6 +63,7 @@ export interface TestArguments {
 
     /**
      * Enables 'migrate' mode, runs test with '--migrate' option.
+     * Performs code migration and produces new test code.
      */
     migrate?: string;
   };
@@ -89,4 +93,18 @@ export function validateTestArgs(value: object): TestArguments {
     }
     throw error;
   }
+}
+
+export function readTestArgsFile(testDir: string, testFile: string): TestArguments | undefined {
+  const argsFileName = path.join(testDir, testFile + ARGS_CONFIG_EXT);
+  if (fs.existsSync(argsFileName)) {
+    try {
+      const data = fs.readFileSync(argsFileName).toString();
+      const json = JSON.parse(data);
+      return validateTestArgs(json);
+    } catch (error) {
+      throw new Error(`Failed to process ${argsFileName}: ${(error as Error).message}`);
+    }
+  }
+  return undefined;
 }

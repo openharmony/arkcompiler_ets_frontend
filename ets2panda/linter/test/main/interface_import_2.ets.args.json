@@ -15,7 +15,8 @@
     ],
     "mode": {
       "arkts2": "",
-      "autofix": "--arkts-2"
+      "autofix": "--arkts-2",
+      "migrate": "--arkts-2"
     }
   }
   

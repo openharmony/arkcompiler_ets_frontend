@@ -16,10 +16,6 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 357; i++) {
-  cookBookMsg[i] = '';
-}
-
 cookBookTag[1] =
   'Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)';
 cookBookTag[2] = '"Symbol()" API is not supported (arkts-no-symbol)';
@@ -317,8 +313,10 @@ cookBookTag[338] =
   '"JS" objects can\'t be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)';
 cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-interop-js2s-access-js-index)';
 cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)';
-cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)';
-cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)';
+cookBookTag[342] =
+  'Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)';
+cookBookTag[343] =
+  'Usage of "instanceof" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)';
 cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)';
 cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';
 cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-builtin-symbol-iterator)';
@@ -328,3 +326,7 @@ cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-need-stdlib-sha
 cookBookTag[355] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)';
 cookBookTag[356] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)';
 cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
+
+for (let i = 0; i <= cookBookTag.length; i++) {
+  cookBookMsg[i] = '';
+}

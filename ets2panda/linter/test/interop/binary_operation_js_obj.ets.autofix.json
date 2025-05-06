@@ -14,5 +14,142 @@
         "limitations under the License."
     ],
     "result": [
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 49,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 49,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 617,
+                    "end": 665,
+                    "replacementText": ""
+                },
+                {
+                    "start": 665,
+                    "end": 665,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./binary_operation_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 9,
+            "endLine": 17,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 674,
+                    "end": 679,
+                    "replacementText": "foo.getPropertyByName(\"a\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 9,
+            "endLine": 17,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('a').toNumber()",
+                    "start": 674,
+                    "end": 679
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 9,
+            "endLine": 17,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 9,
+            "endLine": 18,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 688,
+                    "end": 693,
+                    "replacementText": "foo.getPropertyByName(\"b\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 9,
+            "endLine": 18,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('b').toNumber()",
+                    "start": 688,
+                    "end": 693
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 9,
+            "endLine": 18,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 3,
+            "endLine": 24,
+            "endColumn": 5,
+            "problem": "ExponentOp",
+            "autofix": [
+                {
+                    "replacementText": "Math.pow(a, b)",
+                    "start": 724,
+                    "end": 730
+                }
+            ],
+            "suggest": "",
+            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "severity": "ERROR"
+        }
     ]
 }

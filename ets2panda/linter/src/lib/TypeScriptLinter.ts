@@ -15,15 +15,8 @@
 
 import * as path from 'node:path';
 import * as ts from 'typescript';
-import { cookBookTag } from './CookBookMsg';
-import { faultsAttrs } from './FaultAttrs';
-import { faultDesc } from './FaultDesc';
-import { Logger } from './Logger';
-import type { ProblemInfo } from './ProblemInfo';
-import { ProblemSeverity } from './ProblemSeverity';
 import { FaultID } from './Problems';
-import { LinterConfig } from './TypeScriptLinterConfig';
-import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
+import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
 import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
 import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
@@ -111,6 +104,7 @@ import {
   ESLIB_SHAREDMEMORY_FILENAME,
   ESLIB_SHAREDARRAYBUFFER
 } from './utils/consts/ConcurrentAPI';
+import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -122,28 +116,12 @@ interface InterfaceSymbolTypePropertyNames {
   typeNames: string[];
 }
 
-export class TypeScriptLinter {
-  totalVisitedNodes: number = 0;
-  nodeCounters: number[] = [];
-  lineCounters: number[] = [];
-
-  totalErrorLines: number = 0;
-  errorLineNumbersString: string = '';
-  totalWarningLines: number = 0;
-  warningLineNumbersString: string = '';
-
-  problemsInfos: ProblemInfo[] = [];
-
-  tsUtils: TsUtils;
-
-  currentErrorLine: number;
-  currentWarningLine: number;
+export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
 
   autofixer: Autofixer | undefined;
   private fileExportDeclCaches: Set<ts.Node> | undefined;
 
-  private sourceFile?: ts.SourceFile;
   private useStatic?: boolean;
 
   private readonly compatibleSdkVersion: number;
@@ -165,6 +143,9 @@ export class TypeScriptLinter {
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
     TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
     TypeScriptLinter.symbotIterSet = new Set<string>();
+    TypeScriptLinter.initSdkWhitelist();
+    TypeScriptLinter.initSdkBuiltinInfo();
+    TypeScriptLinter.initBuiltinlist();
   }
 
   initSdkInfo(): void {
@@ -210,13 +191,6 @@ export class TypeScriptLinter {
     const etsComponentExpression: ts.SyntaxKind | undefined = ts.SyntaxKind.EtsComponentExpression;
     if (etsComponentExpression) {
       this.handlersMap.set(etsComponentExpression, this.handleEtsComponentExpression);
-    }
-  }
-
-  private initCounters(): void {
-    for (let i = 0; i < FaultID.LAST_ID; i++) {
-      this.nodeCounters[i] = 0;
-      this.lineCounters[i] = 0;
     }
   }
 
@@ -274,20 +248,17 @@ export class TypeScriptLinter {
   }
 
   constructor(
-    private readonly tsTypeChecker: ts.TypeChecker,
-    readonly options: LinterOptions,
-    private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>
+    tsTypeChecker: ts.TypeChecker,
+    options: LinterOptions,
+    sourceFile: ts.SourceFile,
+    readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>
   ) {
-    this.tsUtils = new TsUtils(this.tsTypeChecker, options);
-    this.currentErrorLine = 0;
-    this.currentWarningLine = 0;
+    super(tsTypeChecker, options, sourceFile);
     this.supportedStdCallApiChecker = new SupportedStdCallApiChecker(this.tsUtils, this.tsTypeChecker);
     this.compatibleSdkVersion = options.compatibleSdkVersion || DEFAULT_COMPATIBLE_SDK_VERSION;
     this.compatibleSdkVersionStage = options.compatibleSdkVersionStage || DEFAULT_COMPATIBLE_SDK_VERSION_STAGE;
     this.initEtsHandlers();
-    this.initCounters();
-    TypeScriptLinter.initSdkWhitelist();
-    TypeScriptLinter.initBuiltinlist();
+    this.initSdkInfo();
   }
 
   readonly handlersMap = new Map([
@@ -368,139 +339,27 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
   ]);
 
-  private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
-    const startPos = TsUtils.getStartPos(node);
-    const { line, character } = this.sourceFile!.getLineAndCharacterOfPosition(startPos);
-    // TSC counts lines and columns from zero
-    return { line: line + 1, character: character + 1 };
-  }
-
-  incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
-    this.nodeCounters[faultId]++;
-    const { line, character } = this.getLineAndCharacterOfNode(node);
-    if ((this.options.ideMode || this.options.migratorMode) && !this.options.ideInteractive) {
-      this.incrementCountersIdeMode(node, faultId, autofix);
-    } else if (this.options.ideInteractive) {
-      this.incrementCountersIdeInteractiveMode(node, faultId, autofix);
-    } else {
-      const faultDescr = faultDesc[faultId];
-      const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-      Logger.info(
-        `Warning: ${this.sourceFile!.fileName} (${line}, ${character}): ${faultDescr ? faultDescr : faultType}`
-      );
+  lint(): void {
+    if (this.options.enableAutofix || this.options.migratorMode) {
+      this.autofixer = new Autofixer(this.tsTypeChecker, this.tsUtils, this.sourceFile, this.options.cancellationToken);
     }
-    this.lineCounters[faultId]++;
-    switch (faultsAttrs[faultId].severity) {
-      case ProblemSeverity.ERROR: {
-        this.currentErrorLine = line;
-        ++this.totalErrorLines;
-        this.errorLineNumbersString += line + ', ';
-        break;
-      }
-      case ProblemSeverity.WARNING: {
-        if (line === this.currentWarningLine) {
-          break;
-        }
-        this.currentWarningLine = line;
-        ++this.totalWarningLines;
-        this.warningLineNumbersString += line + ', ';
-        break;
-      }
-      default:
-    }
-  }
 
-  private incrementCountersIdeMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
-    if (!this.options.ideMode && !this.options.migratorMode) {
-      return;
-    }
-    const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
-    const startPos = this.sourceFile!.getLineAndCharacterOfPosition(startOffset);
-    const endPos = this.sourceFile!.getLineAndCharacterOfPosition(endOffset);
-
-    const faultDescr = faultDesc[faultId];
-    const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-
-    const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    const cookBookTg = cookBookTag[cookBookMsgNum];
-    const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
-    const isMsgNumValid = cookBookMsgNum > 0;
-    const badNodeInfo: ProblemInfo = {
-      line: startPos.line + 1,
-      column: startPos.character + 1,
-      endLine: endPos.line + 1,
-      endColumn: endPos.character + 1,
-      start: startOffset,
-      end: endOffset,
-      type: faultType,
-      severity: severity,
-      problem: FaultID[faultId],
-      suggest: '',
-      // eslint-disable-next-line no-nested-ternary
-      rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
-      ruleTag: cookBookMsgNum,
-      autofix: autofix,
-      autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
-    };
-    this.problemsInfos.push(badNodeInfo);
-    // problems with autofixes might be collected separately
-    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
-      this.options.reportAutofixCb(badNodeInfo);
-    }
-  }
-
-  private incrementCountersIdeInteractiveMode(
-    node: ts.Node | ts.CommentRange,
-    faultId: number,
-    autofix?: Autofix[]
-  ): void {
-    if (!this.options.ideInteractive) {
-      return;
-    }
-    const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
-    const startPos = this.sourceFile!.getLineAndCharacterOfPosition(startOffset);
-    const endPos = this.sourceFile!.getLineAndCharacterOfPosition(endOffset);
-
-    const faultDescr = faultDesc[faultId];
-    const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-
-    const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    const cookBookTg = cookBookTag[cookBookMsgNum];
-    const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
-    const isMsgNumValid = cookBookMsgNum > 0;
-    const badNodeInfo: ProblemInfo = {
-      line: startPos.line + 1,
-      column: startPos.character + 1,
-      endLine: endPos.line + 1,
-      endColumn: endPos.character + 1,
-      start: startOffset,
-      end: endOffset,
-      type: faultType,
-      severity: severity,
-      problem: FaultID[faultId],
-      suggest: '',
-      // eslint-disable-next-line no-nested-ternary
-      rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
-      ruleTag: cookBookMsgNum,
-      autofixable: !!autofix,
-      autofix: autofix,
-      autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
-    };
-    this.problemsInfos.push(badNodeInfo);
-    // problems with autofixes might be collected separately
-    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
-      this.options.reportAutofixCb(badNodeInfo);
-    }
+    this.useStatic = TsUtils.isArkts12File(this.sourceFile);
+    this.fileExportDeclCaches = undefined;
+    this.extractImportedNames(this.sourceFile);
+    this.visitSourceFile(this.sourceFile);
+    this.handleCommentDirectives(this.sourceFile);
+    this.processInterfacesToImport(this.sourceFile);
   }
 
   private visitSourceFile(sf: ts.SourceFile): void {
     const callback = (node: ts.Node): void => {
-      this.totalVisitedNodes++;
+      this.fileStats.visitedNodes++;
       if (isStructDeclaration(node)) {
         // early exit via exception if cancellation was requested
         this.options.cancellationToken?.throwIfCancellationRequested();
       }
-      const incrementedType = LinterConfig.incrementOnlyTokens.get(node.kind);
+      const incrementedType = TypeScriptLinterConfig.incrementOnlyTokens.get(node.kind);
       if (incrementedType !== undefined) {
         this.incrementCounters(node, incrementedType);
       } else {
@@ -526,7 +385,7 @@ export class TypeScriptLinter {
       if (node.parent && isStructDeclaration(node.parent) && ts.isConstructorDeclaration(node)) {
         return true;
       }
-      if (LinterConfig.terminalTokens.has(node.kind)) {
+      if (TypeScriptLinterConfig.terminalTokens.has(node.kind)) {
         return true;
       }
       return false;
@@ -682,16 +541,24 @@ export class TypeScriptLinter {
     objectLiteralType: ts.Type | undefined,
     objectLiteralExpr: ts.ObjectLiteralExpression
   ): void {
-    const isRecordObject = objectLiteralType && this.tsUtils.isStdRecordType(objectLiteralType);
-    for (const prop of objectLiteralExpr.properties) {
-      if (
-        isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
-        !isRecordObject &&
-          !(ts.isPropertyAssignment(prop) && (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)))
-      ) {
-        const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
-        this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);
-      }
+    let objLiteralAutofix: Autofix[] | undefined;
+    const invalidProps = objectLiteralExpr.properties.filter((prop) => {
+      return !ts.isPropertyAssignment(prop);
+    });
+
+    if (
+      invalidProps.some((prop) => {
+        return ts.isMethodDeclaration(prop) || ts.isAccessor(prop);
+      })
+    ) {
+      objLiteralAutofix = this.autofixer?.fixTypedObjectLiteral(objectLiteralExpr, objectLiteralType);
+    }
+
+    for (const prop of invalidProps) {
+      const autofix = ts.isShorthandPropertyAssignment(prop) ?
+        this.autofixer?.fixShorthandPropertyAssignment(prop) :
+        objLiteralAutofix;
+      this.incrementCounters(prop, FaultID.ObjectLiteralProperty, autofix);
     }
   }
 
@@ -1057,12 +924,12 @@ export class TypeScriptLinter {
     const etsIdx = pathParts.indexOf(ETS_PART);
 
     if (etsIdx === 0) {
-      const autofix = Autofixer.addDefaultModuleToPath(pathParts, importDeclNode);
+      const autofix = this.autofixer?.addDefaultModuleToPath(pathParts, importDeclNode);
       this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
       return;
     }
 
-    const autofix = Autofixer.fixImportPath(pathParts, etsIdx, importDeclNode);
+    const autofix = this.autofixer?.fixImportPath(pathParts, etsIdx, importDeclNode);
     this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
   }
 
@@ -1250,7 +1117,7 @@ export class TypeScriptLinter {
     const rhs = binaryExpr.right;
     const lhs = binaryExpr.left as ts.PropertyAccessExpression;
 
-    const autofix = Autofixer.fixInteropTsType(binaryExpr, lhs, rhs);
+    const autofix = this.autofixer?.fixInteropTsType(binaryExpr, lhs, rhs);
 
     this.incrementCounters(pan, FaultID.InteropDirectAccessToTSTypes, autofix);
   }
@@ -1367,7 +1234,7 @@ export class TypeScriptLinter {
     this.handleDollarBind(node);
 
     const propName = node.name;
-    if (!(!!propName && ts.isNumericLiteral(propName))) {
+    if (!propName || !(ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       return;
     }
 
@@ -1428,8 +1295,8 @@ export class TypeScriptLinter {
       if (node.type && ts.isFunctionTypeNode(node.type)) {
         const interfaceName = node.parent.name.getText();
         const propertyName = node.name.getText();
-        const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
-        const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
+        const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile);
+        const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile);
         this.visitClassMembers(allClasses, interfaceName, propertyName);
         this.visitInterfaceMembers(allInterfaces, interfaceName, propertyName);
       }
@@ -2583,7 +2450,7 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+    const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile);
     const classMap = new Map<string, ts.ClassDeclaration>();
     allClasses.forEach((classDecl) => {
       if (classDecl.name && !classDecl.heritageClauses) {
@@ -3062,8 +2929,8 @@ export class TypeScriptLinter {
     if (this.options.arkts2 && ts.isInterfaceDeclaration(node.parent)) {
       const methodName = node.name.getText();
       const interfaceName = node.parent.name.getText();
-      const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
-      const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
+      const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile);
+      const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile);
       allClasses.forEach((classDecl) => {
         if (this.classImplementsInterface(classDecl, interfaceName)) {
           this.checkClassImplementsMethod(classDecl, methodName);
@@ -5024,20 +4891,6 @@ export class TypeScriptLinter {
     return this.fileExportDeclCaches.has(decl);
   }
 
-  lint(sourceFile: ts.SourceFile): void {
-    if (this.options.enableAutofix) {
-      this.autofixer = new Autofixer(this.tsTypeChecker, this.tsUtils, sourceFile, this.options.cancellationToken);
-    }
-
-    this.sourceFile = sourceFile;
-    this.useStatic = TsUtils.isArkts12File(sourceFile);
-    this.fileExportDeclCaches = undefined;
-    this.extractImportedNames(this.sourceFile);
-    this.visitSourceFile(this.sourceFile);
-    this.handleCommentDirectives(this.sourceFile);
-    this.processInterfacesToImport(this.sourceFile);
-  }
-
   private handleExportKeyword(node: ts.Node): void {
     const parentNode = node.parent;
     if (!TypeScriptLinter.inSharedModule(node) || ts.isModuleBlock(parentNode.parent)) {
@@ -6080,13 +5933,13 @@ export class TypeScriptLinter {
     const decl = node.parent;
     const declName = decl.name?.getText();
     if (ts.isFunctionDeclaration(decl)) {
-      const functionCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile as ts.SourceFile, declName as string);
+      const functionCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile, declName as string);
       const autofix = this.autofixer?.fixStylesDecoratorGlobal(decl, functionCalls, this.interfacesNeedToImport);
       this.incrementCounters(decl, FaultID.StylesDecoratorNotSupported, autofix);
     }
 
     if (ts.isMethodDeclaration(decl)) {
-      const methodCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile as ts.SourceFile, declName as string);
+      const methodCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile, declName as string);
       const autofix = this.autofixer?.fixStylesDecoratorStruct(decl, methodCalls, this.interfacesNeedToImport);
       this.incrementCounters(decl, FaultID.StylesDecoratorNotSupported, autofix);
     }
@@ -6121,7 +5974,7 @@ export class TypeScriptLinter {
     if (args.length === 0 || !startNode) {
       return;
     }
-    
+
     const object = args[0];
     if (!object || !ts.isObjectLiteralExpression(object)) {
       return;
