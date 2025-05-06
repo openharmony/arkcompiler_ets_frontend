@@ -472,11 +472,11 @@ std::vector<CompletionEntry> GetCompletionFromMethodDefinition(ir::MethodDefinit
                                                                const std::string &triggerWord)
 {
     auto value = decl->AsMethodDefinition()->Value();
-    if (value == nullptr && !value->IsFunctionExpression()) {
+    if (value == nullptr || !value->IsFunctionExpression()) {
         return {};
     }
     auto func = value->AsFunctionExpression()->Function();
-    if (func == nullptr && func->ReturnTypeAnnotation() == nullptr) {
+    if (func == nullptr || func->ReturnTypeAnnotation() == nullptr) {
         return {};
     }
     auto returnType = func->ReturnTypeAnnotation();
