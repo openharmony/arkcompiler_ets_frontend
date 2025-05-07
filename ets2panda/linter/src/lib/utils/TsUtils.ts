@@ -3548,6 +3548,17 @@ export class TsUtils {
     return conversionMethod;
   }
 
+  static isInsideIfCondition(node: ts.Node): boolean {
+    let current: ts.Node | undefined = node;
+    while (current) {
+      if (ts.isIfStatement(current)) {
+        return true;
+      }
+      current = current.parent;
+    }
+    return false;
+  }
+
   static isOhModule(path: string): boolean {
     return path.includes(ETS_MODULE);
   }

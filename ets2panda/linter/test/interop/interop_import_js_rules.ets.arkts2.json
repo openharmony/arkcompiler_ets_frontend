@@ -19,9 +19,9 @@
             "column": 5,
             "endLine": 28,
             "endColumn": 15,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectConditionJudgment",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
             "severity": "ERROR"
         },
         {
@@ -29,9 +29,9 @@
             "column": 5,
             "endLine": 30,
             "endColumn": 11,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectConditionJudgment",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
             "severity": "ERROR"
         },
         {
