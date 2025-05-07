@@ -75,7 +75,7 @@ export function initInterop(): InteropNativeModule {
 
 export function initPublicInterop(): InteropNativeModule {
   let libPath = process.env.BINDINGS_PATH;
-  if (libPath == undefined) {
+  if (libPath === undefined) {
     libPath = path.resolve(__dirname, '../public.node');
   } else {
     libPath = path.join(libPath, 'public.node');

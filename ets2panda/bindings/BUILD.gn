@@ -75,6 +75,7 @@ shared_library("ts_bindings") {
   }
 
   if (is_linux) {
+    libs = [ "stdc++fs" ]
     cflags_cc = [
       "-std=c++17",
       "-Wall",

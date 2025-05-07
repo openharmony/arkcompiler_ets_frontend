@@ -19,11 +19,11 @@ export function isNullPtr(value: KPointer): boolean {
   return value === nullptr;
 }
 
-export function ptrToString(ptr: KPointer) {
+export function ptrToString(ptr: KPointer): string {
   return `0x${ptr!.toString(16).padStart(8, '0')}`;
 }
 
-export function isSamePtr(a: KPointer, b: KPointer) {
+export function isSamePtr(a: KPointer, b: KPointer): boolean {
   return a === b;
 }
 

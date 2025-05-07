@@ -46,18 +46,22 @@ function withArray<C extends TypedArray, R>(data: C | undefined, exec: ExecWithL
   return exec(data ?? null, data?.length ?? 0);
 }
 
-export function withPtrArray<R>(data: BigUint64Array, access: Access, exec: ExecWithLength<BigUint64Array | null, R>) {
+export function withPtrArray<R>(
+  data: BigUint64Array,
+  access: Access,
+  exec: ExecWithLength<BigUint64Array | null, R>
+): R {
   return exec(data ?? null, data?.length ?? 0); // TODO rethink
 }
 
 export function toPtrArray<T extends Wrapper>(data: Array<T | undefined> | undefined): BigUint64Array {
-  if (data == undefined || data.length === 0) {
+  if (data === undefined || data.length === 0) {
     return new BigUint64Array(0);
   }
   const array = new BigUint64Array(data.length);
   for (let i = 0; i < data.length; i++) {
     let item = data[i];
-    array[i] = item != undefined ? (item.ptr as bigint) : nullptr;
+    array[i] = item !== undefined ? (item.ptr as bigint) : nullptr;
   }
   return array;
 }
@@ -69,7 +73,7 @@ export function fromPtrArray<T extends Wrapper>(array: PtrArray, factory: (ptr: 
   const result = new Array<T | undefined>(array.length);
   for (let i = 0; i < array.length; i++) {
     let ptr = array[i];
-    if (ptr == nullptr) {
+    if (ptr === nullptr) {
       result[i] = undefined;
     } else {
       result[i] = factory(ptr);
@@ -89,49 +93,49 @@ export function withInt8Array<T>(
   data: Int8Array | undefined,
   access: Access,
   exec: ExecWithLength<Int8Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withUint16Array<T>(
   data: Uint16Array | undefined,
   access: Access,
   exec: ExecWithLength<Uint16Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withInt16Array<T>(
   data: Int16Array | undefined,
   access: Access,
   exec: ExecWithLength<Int16Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withUint32Array<T>(
   data: Uint32Array | undefined,
   access: Access,
   exec: ExecWithLength<Uint32Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withInt32Array<T>(
   data: Int32Array | undefined,
   access: Access,
   exec: ExecWithLength<Int32Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withFloat32Array<T>(
   data: Float32Array | undefined,
   access: Access,
   exec: ExecWithLength<Float32Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function withFloat64Array<T>(
   data: Float64Array | undefined,
   access: Access,
   exec: ExecWithLength<Float64Array | null, T>
-) {
+): T {
   return withArray(data, exec);
 }
 export function wasmHeap(): ArrayBuffer {
@@ -143,11 +147,11 @@ export enum Access {
   WRITE = 2, // 1 << 1,
   READWRITE = 3 // READ | WRITE
 }
-export function isRead(access: Access) {
-  return access & Access.READ;
+export function isRead(access: Access): boolean {
+  return !!(access & Access.READ);
 }
-export function isWrite(access: Access) {
-  return access & Access.WRITE;
+export function isWrite(access: Access): boolean {
+  return !!(access & Access.WRITE);
 }
 
 export type Exec<P, R> = (pointer: P) => R;
