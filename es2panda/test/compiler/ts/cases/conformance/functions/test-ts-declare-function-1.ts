@@ -24,8 +24,8 @@ class C {
 }
 
 let c = new C();
-let env = ArkTools.getLexicalEnv(c.method1);
-if (env !== undefined) {
+let res = ArkTools.currentEnvIsGlobal(c.method1);
+if (res !== true) {
     print(1);
 } else {
     print(2);
