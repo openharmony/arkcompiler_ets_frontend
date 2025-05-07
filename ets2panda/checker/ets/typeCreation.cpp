@@ -23,6 +23,8 @@
 #include "checker/types/type.h"
 #include "ir/statements/annotationDeclaration.h"
 
+#include <compiler/lowering/phase.h>
+
 namespace ark::es2panda::checker {
 
 ByteType *ETSChecker::CreateByteType(int8_t value)
@@ -448,15 +450,18 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
 
 Signature *ETSChecker::CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim)
 {
-    auto res = globalArraySignatures_.find(arrayType);
-    if (res != globalArraySignatures_.end()) {
+    auto currentChecker =
+        compiler::GetPhaseManager()->Context() != nullptr ? compiler::GetPhaseManager()->Context()->GetChecker() : this;
+    auto &globalArraySignatures = currentChecker->AsETSChecker()->globalArraySignatures_;
+    auto res = globalArraySignatures.find(arrayType);
+    if (res != globalArraySignatures.end()) {
         return res->second;
     }
 
     auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
     auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE, false);
     signature->SetInternalName(internalName);
-    globalArraySignatures_.insert({arrayType, signature});
+    globalArraySignatures.insert({arrayType, signature});
 
     return signature;
 }

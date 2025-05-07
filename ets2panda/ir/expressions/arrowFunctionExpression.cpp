@@ -28,12 +28,7 @@ void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::
         func_ = transformedNode->AsScriptFunction();
     }
 
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const

@@ -209,10 +209,15 @@ public:
 
     void AddReExportImport(ir::ETSReExportDeclaration *reExport) noexcept
     {
-        reExportImports_.push_back(reExport);
+        reExportImports_.insert(reExport);
     }
 
-    [[nodiscard]] const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const noexcept
+    [[nodiscard]] const ArenaUnorderedSet<ir::ETSReExportDeclaration *> &ReExportImports() const noexcept
+    {
+        return reExportImports_;
+    }
+
+    [[nodiscard]] ArenaUnorderedSet<ir::ETSReExportDeclaration *> &ReExportImports() noexcept
     {
         return reExportImports_;
     }
@@ -273,6 +278,18 @@ public:
         globalRecordTable_.CleanUp();
     }
 
+    void CopyTo(VarBinder *target) override
+    {
+        auto targetImpl = reinterpret_cast<ETSBinder *>(target);
+
+        targetImpl->defaultImports_ = defaultImports_;
+        InitImplicitThisParam();
+        targetImpl->selectiveExportAliasMultimap_ = selectiveExportAliasMultimap_;
+        ;
+
+        VarBinder::CopyTo(target);
+    }
+
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
     void InitImplicitThisParam();
@@ -293,14 +310,14 @@ private:
     RecordTable globalRecordTable_;
     RecordTable *recordTable_;
     ArenaMap<parser::Program *, RecordTable *> externalRecordTable_;
-    ArenaVector<ir::ETSImportDeclaration *> defaultImports_;
+    ArenaVector<ir::ETSImportDeclaration *> defaultImports_;  // 1
     ArenaVector<ir::ETSImportDeclaration *> dynamicImports_;
-    ArenaVector<ir::ETSReExportDeclaration *> reExportImports_;
+    ArenaUnorderedSet<ir::ETSReExportDeclaration *> reExportImports_;
     ArenaSet<util::StringView> reexportedNames_;
     DynamicImportVariables dynamicImportVars_;
-    ir::Identifier *thisParam_ {};
+    ir::Identifier *thisParam_ {};  // 2
     ir::AstNode *defaultExport_ {};
-    ModulesToExportedNamesWithAliases selectiveExportAliasMultimap_;
+    ModulesToExportedNamesWithAliases selectiveExportAliasMultimap_;  // 3
 
     friend class RecordTableContext;
 };
@@ -310,7 +327,8 @@ public:
     RecordTableContext(ETSBinder *varBinder, parser::Program *extProgram)
         : varBinder_(varBinder), savedRecordTable_(varBinder->recordTable_)
     {
-        if (extProgram != nullptr) {
+        if (extProgram != nullptr &&
+            varBinder->externalRecordTable_.find(extProgram) != varBinder->externalRecordTable_.end()) {
             varBinder->recordTable_ = varBinder->externalRecordTable_[extProgram];
         }
     }

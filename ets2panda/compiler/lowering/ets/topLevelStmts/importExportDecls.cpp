@@ -57,8 +57,10 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
     if (!programs.empty()) {
         std::sort(programs.begin(), programs.end(), ProgramFileNameLessThan);
     }
-    for (const auto &program : programs) {
-        PreMergeNamespaces(program);
+    for (auto const &program : programs) {
+        if (!program->IsASTLowered()) {
+            PreMergeNamespaces(program);
+        }
         SavedImportExportDeclsContext savedContext(this, program);
         ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
         VerifyCollectedExportName(program);
@@ -318,7 +320,7 @@ void ImportExportDecls::PreMergeNamespaces(parser::Program *program)
         }
 
         ArenaVector<ir::ETSModule *> namespaces(program->Allocator()->Adapter());
-        auto &body = ast->AsETSModule()->Statements();
+        auto &body = ast->AsETSModule()->StatementsForUpdates();
         auto originalSize = body.size();
         auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
             if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {

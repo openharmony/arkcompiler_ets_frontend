@@ -20,23 +20,20 @@
 namespace ark::es2panda::ir {
 void ETSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : VectorIterationGuard(types_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = static_cast<TypeNode *>(transformedNode);
+    auto const &types = Types();
+    for (size_t ix = 0; ix < types.size(); ix++) {
+        if (auto *transformedNode = cb(types[ix]); types[ix] != transformedNode) {
+            types[ix]->SetTransformedNode(transformationName, transformedNode);
+            SetValueTypes(static_cast<TypeNode *>(transformedNode), ix);
         }
     }
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSUnionType::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : VectorIterationGuard(types_)) {
+    for (auto *it : VectorIterationGuard(Types())) {
         cb(it);
     }
 
@@ -47,7 +44,7 @@ void ETSUnionType::Iterate(const NodeTraverser &cb) const
 
 void ETSUnionType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSUnionType"}, {"types", types_}, {"annotations", AstDumper::Optional(Annotations())}});
+    dumper->Add({{"type", "ETSUnionType"}, {"types", Types()}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSUnionType::Dump(ir::SrcDumper *dumper) const
@@ -55,9 +52,9 @@ void ETSUnionType::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    for (auto type : types_) {
+    for (auto type : Types()) {
         type->Dump(dumper);
-        if (type != types_.back()) {
+        if (type != Types().back()) {
             dumper->Add(" | ");
         }
     }
@@ -72,7 +69,7 @@ checker::Type *ETSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
 
 checker::VerifiedType ETSUnionType::Check(checker::ETSChecker *checker)
 {
-    for (auto *it : types_) {
+    for (auto *it : Types()) {
         it->Check(checker);
     }
 
@@ -98,7 +95,7 @@ checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
 
     ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
 
-    for (auto *it : types_) {
+    for (auto *it : Types()) {
         types.push_back(it->GetType(checker));
     }
 
@@ -115,7 +112,7 @@ checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
 ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     ArenaVector<ir::TypeNode *> types(allocator->Adapter());
-    for (auto *it : types_) {
+    for (auto *it : Types()) {
         auto *type = it->Clone(allocator, nullptr);
         types.push_back(type);
     }
@@ -131,7 +128,7 @@ ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *cons
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
-    for (auto *it : clone->types_) {
+    for (auto *it : clone->Types()) {
         it->SetParent(clone);
     }
 

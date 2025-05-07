@@ -27,12 +27,7 @@ namespace ark::es2panda::ir {
 void TSFunctionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     signature_.TransformChildren(cb, transformationName);
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void TSFunctionType::Iterate(const NodeTraverser &cb) const

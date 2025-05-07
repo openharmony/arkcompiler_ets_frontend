@@ -478,6 +478,7 @@ libes2panda_sources = [
   "parser/program/program.cpp",
   "parser/statementParser.cpp",
   "parser/statementTSParser.cpp",
+  "public/public.cpp",
   "util/arktsconfig.cpp",
   "util/bitset.cpp",
   "util/diagnostic.cpp",

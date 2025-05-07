@@ -16,6 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_OBJECT_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_OBJECT_TYPE_H
 
+#include <mutex>
+#include <shared_mutex>
+
+#include "checker/checker.h"
 #include "checker/types/type.h"
 #include "checker/types/ets/etsObjectTypeConstants.h"
 #include "checker/types/signature.h"
@@ -37,14 +41,14 @@ public:
     using PropertyTraverser = std::function<void(const varbinder::LocalVariable *)>;
     using PropertyHolder = std::array<PropertyMap, static_cast<size_t>(PropertyType::COUNT)>;
 
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
+    explicit ETSObjectType(ThreadSafeArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                            ir::AstNode *declNode, ETSObjectFlags flags)
         : ETSObjectType(allocator, name, internalName, std::make_tuple(declNode, flags, nullptr),
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
 
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
+    explicit ETSObjectType(ThreadSafeArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                            std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info)
         : ETSObjectType(allocator, name, internalName, info,
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
@@ -70,6 +74,8 @@ public:
         }
     }
 
+    ETSChecker *GetETSChecker();
+
     void SetSuperType(ETSObjectType *super)
     {
         superType_ = super;
@@ -92,6 +98,7 @@ public:
 
     void SetRelation(TypeRelation *relation)
     {
+        ES2PANDA_ASSERT(relation);
         relation_ = relation;
     }
 
@@ -158,7 +165,7 @@ public:
         return interfaces_;
     }
 
-    ArenaVector<ETSObjectType *> &Interfaces()
+    const ArenaVector<ETSObjectType *> &Interfaces()
     {
         return interfaces_;
     }
@@ -276,15 +283,7 @@ public:
         return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::UNBOXABLE_TYPE);
     }
 
-    ETSObjectType *GetInstantiatedType(util::StringView hash)
-    {
-        auto found = instantiationMap_.find(hash);
-        if (found != instantiationMap_.end()) {
-            return found->second;
-        }
-
-        return nullptr;
-    }
+    ETSObjectType *GetInstantiatedType(util::StringView hash);
 
     varbinder::Scope *GetTypeArgumentScope() const
     {
@@ -295,10 +294,7 @@ public:
         return typeParams->Scope();
     }
 
-    InstantiationMap &GetInstantiationMap()
-    {
-        return instantiationMap_;
-    }
+    void InsertInstantiationMap(const util::StringView &key, ETSObjectType *value);
 
     template <PropertyType TYPE>
     varbinder::LocalVariable *GetOwnProperty(const util::StringView &name) const
@@ -361,7 +357,7 @@ public:
                                                                 const util::StringView &name,
                                                                 PropertySearchFlags flags) const;
     bool CheckIdenticalFlags(ETSObjectType *other) const;
-
+    ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     void Iterate(const PropertyTraverser &cb) const;
     void ToString(std::stringstream &ss, bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
@@ -369,7 +365,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool IsBoxedPrimitive() const;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-    void UpdateTypeProperties(checker::ETSChecker *checker, PropertyProcesser const &func);
+    void UpdateTypeProperties(PropertyProcesser const &func);
     ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution, bool cache,
                               bool isExtensionFunctionType = false);
@@ -392,7 +388,7 @@ public:
     const ArenaVector<ETSObjectType *> &ReExports() const;
     bool IsSameBasedGeneric(TypeRelation *relation, Type const *other) const;
 
-    ArenaAllocator *Allocator() const
+    ThreadSafeArenaAllocator *Allocator() const
     {
         return allocator_;
     }
@@ -414,7 +410,7 @@ protected:
 
 private:
     template <size_t... IS>
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+    explicit ETSObjectType(ThreadSafeArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
                            std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info,
                            [[maybe_unused]] std::index_sequence<IS...> s)
         : Type(TypeFlag::ETS_OBJECT),
@@ -426,7 +422,6 @@ private:
           reExports_(allocator->Adapter()),
           reExportAlias_(allocator->Adapter()),
           flags_(std::get<ETSObjectFlags>(info)),
-          instantiationMap_(allocator->Adapter()),
           typeArguments_(allocator->Adapter()),
           relation_(std::get<TypeRelation *>(info)),
           constructSignatures_(allocator->Adapter()),
@@ -448,7 +443,7 @@ private:
     void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
     void SubstitutePartialTypes(TypeRelation *relation, Type *other);
     void IsGenericSupertypeOf(TypeRelation *relation, ETSObjectType *source);
-    void UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop, PropertyType fieldType,
+    void UpdateTypeProperty(varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);
 
     varbinder::LocalVariable *SearchFieldsDecls(const util::StringView &name, PropertySearchFlags flags) const;
@@ -464,7 +459,7 @@ private:
 
     ir::TSTypeParameterDeclaration *GetTypeParams() const;
 
-    ArenaAllocator *const allocator_;
+    ThreadSafeArenaAllocator *const allocator_;
     util::StringView const name_;
     util::StringView const internalName_;
     ir::AstNode *const declNode_;
@@ -472,7 +467,6 @@ private:
     ArenaVector<ETSObjectType *> reExports_;
     ArenaMap<util::StringView, util::StringView> reExportAlias_;
     ETSObjectFlags flags_;
-    InstantiationMap instantiationMap_;
     ArenaVector<Type *> typeArguments_;
     ETSObjectType *superType_ {};
     ETSObjectType *enclosingType_ {};

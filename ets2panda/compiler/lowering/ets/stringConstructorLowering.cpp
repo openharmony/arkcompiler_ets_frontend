@@ -48,7 +48,7 @@ static constexpr char const FORMAT_TO_STRING_EXPRESSION[] = "((@@E1 as Object).t
 ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
                                          ir::ETSNewClassInstanceExpression *newClassInstExpr)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *parser = ctx->parser->AsETSParser();
 
     // Skip missing signatures

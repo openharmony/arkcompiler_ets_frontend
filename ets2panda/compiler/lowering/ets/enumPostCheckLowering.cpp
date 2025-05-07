@@ -150,7 +150,7 @@ static ir::CallExpression *CreateCallInstanceEnumExpression(public_lib::Context 
 
     auto *calleeClass = FindEnclosingClass(expr);
 
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *varBinder = checker->VarBinder()->AsETSBinder();
 
     auto *nearestScope = NearestScope(parent);
@@ -370,7 +370,7 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
 
     context_ = ctx;
     parser_ = ctx->parser->AsETSParser();
-    checker_ = ctx->checker->AsETSChecker();
+    checker_ = ctx->GetChecker()->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
 
     program->Ast()->TransformChildrenRecursivelyPostorder(

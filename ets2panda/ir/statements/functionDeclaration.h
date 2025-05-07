@@ -36,7 +36,10 @@ public:
           func_(func),
           isAnonymous_(isAnonymous)
     {
-        flags_ = func->Modifiers();
+        InitHistory();
+        if (func != nullptr) {
+            flags_ = func->Modifiers();
+        }
     }
 
     explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool isAnonymous = false)
@@ -45,27 +48,45 @@ public:
           func_(func),
           isAnonymous_(isAnonymous)
     {
-        flags_ = func->Modifiers();
+        InitHistory();
+        if (func != nullptr) {
+            flags_ = func->Modifiers();
+        }
+    }
+
+    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool isAnonymous,
+                                 AstNodeHistory *history)
+        : JsDocAllowed<AnnotationAllowed<Statement>>(AstNodeType::FUNCTION_DECLARATION, allocator),
+          decorators_(allocator->Adapter()),
+          func_(func),
+          isAnonymous_(isAnonymous)
+    {
+        if (history != nullptr) {
+            history_ = history;
+        } else {
+            InitHistory();
+        }
     }
 
     ScriptFunction *Function()
     {
-        return func_;
+        return GetHistoryNodeAs<FunctionDeclaration>()->func_;
     }
 
     bool IsAnonymous() const
     {
-        return isAnonymous_;
+        return GetHistoryNodeAs<FunctionDeclaration>()->isAnonymous_;
     }
 
     const ScriptFunction *Function() const
     {
-        return func_;
+        return GetHistoryNodeAs<FunctionDeclaration>()->func_;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
-        decorators_ = std::move(decorators);
+        auto newNode = this->GetOrCreateHistoryNode()->AsFunctionDeclaration();
+        newNode->decorators_ = std::move(decorators);
     }
 
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
@@ -90,8 +111,19 @@ public:
     FunctionDeclaration *Construct(ArenaAllocator *allocator) override;
     void CopyTo(AstNode *other) const override;
 
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const
+    {
+        return GetHistoryNodeAs<FunctionDeclaration>()->decorators_;
+    };
+
 private:
     friend class SizeOfNodeTest;
+    void SetFunction(ScriptFunction *func);
+    void EmplaceDecorators(Decorator *decorators);
+    void ClearDecorators();
+    void SetValueDecorators(Decorator *decorators, size_t index);
+    [[nodiscard]] ArenaVector<Decorator *> &DecoratorsForUpdate();
+
     ArenaVector<Decorator *> decorators_;
     ScriptFunction *func_;
     bool isAnonymous_;

@@ -34,7 +34,7 @@ void ETSModule::Dump(ir::SrcDumper *dumper) const
         }
 
         dumper->Add("namespace ");
-        ident_->Dump(dumper);
+        Ident()->Dump(dumper);
         dumper->Add(" {");
         dumper->IncrIndent();
     }
@@ -67,6 +67,7 @@ void ETSModule::CopyTo(AstNode *other) const
     otherImpl->ident_ = ident_;
     otherImpl->flag_ = flag_;
     otherImpl->program_ = program_;
+    otherImpl->globalClass_ = globalClass_;
 
     JsDocAllowed<AnnotationAllowed<BlockStatement>>::CopyTo(other);
 }

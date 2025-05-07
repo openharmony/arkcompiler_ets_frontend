@@ -185,7 +185,7 @@ static void CreateFunctionOverload(ir::MethodDefinition *method, ArenaVector<ir:
     overloadMethod->SetRange(funcExpression->Range());
 
     if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
-        overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
+        overloadMethod->Function()->Body()->AsBlockStatement()->ClearStatements();
     }
 
     method->AddOverload(overloadMethod);
@@ -214,7 +214,15 @@ static void ClearOptionalParameters(public_lib::Context *ctx, ir::ScriptFunction
 {
     auto allocator = ctx->allocator;
 
-    for (auto *&param : function->Params()) {
+    auto const &params = function->Params();
+    bool hasOptional = std::any_of(params.cbegin(), params.cend(),
+                                   [](ir::Expression *p) { return p->AsETSParameterExpression()->IsOptional(); });
+    if (!hasOptional) {
+        return;
+    }
+
+    auto &paramsToChange = function->ParamsForUpdate();
+    for (auto *&param : paramsToChange) {
         auto oldParam = param->AsETSParameterExpression();
         if (oldParam->IsOptional()) {
             param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, oldParam->Ident(), false,

@@ -22,55 +22,79 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
+
+void ETSTypeReferencePart::SetName(Expression *name)
+{
+    this->GetOrCreateHistoryNodeAs<ETSTypeReferencePart>()->name_ = name;
+}
+
+void ETSTypeReferencePart::SetTypeParams(TSTypeParameterInstantiation *typeParams)
+{
+    this->GetOrCreateHistoryNodeAs<ETSTypeReferencePart>()->typeParams_ = typeParams;
+}
+
+void ETSTypeReferencePart::SetPrevious(ETSTypeReferencePart *prev)
+{
+    this->GetOrCreateHistoryNodeAs<ETSTypeReferencePart>()->prev_ = prev;
+}
+
 void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    if (auto *transformedNode = cb(name_); name_ != transformedNode) {
-        name_->SetTransformedNode(transformationName, transformedNode);
-        name_ = transformedNode->AsExpression();
-    }
-
-    if (typeParams_ != nullptr) {
-        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
-            typeParams_->SetTransformedNode(transformationName, transformedNode);
-            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+    auto const name = Name();
+    if (name != nullptr) {
+        if (auto *transformedNode = cb(name); name != transformedNode) {
+            name->SetTransformedNode(transformationName, transformedNode);
+            SetName(transformedNode->AsExpression());
         }
     }
 
-    if (prev_ != nullptr) {
-        if (auto *transformedNode = cb(prev_); prev_ != transformedNode) {
-            prev_->SetTransformedNode(transformationName, transformedNode);
-            prev_ = transformedNode->AsETSTypeReferencePart();
+    auto const typeParams = TypeParams();
+    if (typeParams != nullptr) {
+        if (auto *transformedNode = cb(typeParams); typeParams != transformedNode) {
+            typeParams->SetTransformedNode(transformationName, transformedNode);
+            SetTypeParams(transformedNode->AsTSTypeParameterInstantiation());
+        }
+    }
+
+    auto const prev = Previous();
+    if (prev != nullptr) {
+        if (auto *transformedNode = cb(prev); prev != transformedNode) {
+            prev->SetTransformedNode(transformationName, transformedNode);
+            SetPrevious(transformedNode->AsETSTypeReferencePart());
         }
     }
 }
 
 void ETSTypeReferencePart::Iterate(const NodeTraverser &cb) const
 {
-    cb(name_);
+    auto const name = GetHistoryNodeAs<ETSTypeReferencePart>()->name_;
+    cb(name);
 
-    if (typeParams_ != nullptr) {
-        cb(typeParams_);
+    auto const typeParams = GetHistoryNodeAs<ETSTypeReferencePart>()->typeParams_;
+    if (typeParams != nullptr) {
+        cb(typeParams);
     }
 
-    if (prev_ != nullptr) {
-        cb(prev_);
+    auto const prev = GetHistoryNodeAs<ETSTypeReferencePart>()->prev_;
+    if (prev != nullptr) {
+        cb(prev);
     }
 }
 
 void ETSTypeReferencePart::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSTypeReferencePart"},
-                 {"name", name_},
-                 {"typeParams", AstDumper::Optional(typeParams_)},
-                 {"previous", AstDumper::Optional(prev_)}});
+                 {"name", Name()},
+                 {"typeParams", AstDumper::Optional(TypeParams())},
+                 {"previous", AstDumper::Optional(Previous())}});
 }
 
 void ETSTypeReferencePart::Dump(ir::SrcDumper *dumper) const
 {
-    ES2PANDA_ASSERT(name_ != nullptr);
-    name_->Dump(dumper);
-    if (typeParams_ != nullptr) {
-        typeParams_->Dump(dumper);
+    ES2PANDA_ASSERT(Name() != nullptr);
+    Name()->Dump(dumper);
+    if (TypeParams() != nullptr) {
+        TypeParams()->Dump(dumper);
     }
 }
 
@@ -95,24 +119,25 @@ checker::VerifiedType ETSTypeReferencePart::Check(checker::ETSChecker *checker)
 
 checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker)
 {
-    ES2PANDA_ASSERT(name_->IsIdentifier() || name_->IsTSQualifiedName());
+    auto const name = Name();
+    ES2PANDA_ASSERT(name->IsIdentifier() || name->IsTSQualifiedName());
 
     Identifier *ident = GetIdent();
     varbinder::Variable *variable = nullptr;
 
-    if (name_->IsIdentifier()) {
+    if (name->IsIdentifier()) {
         variable = ident->Variable();
     } else {
-        if (name_->AsTSQualifiedName()->Left()->Variable() != nullptr &&
-            name_->AsTSQualifiedName()->Left()->Variable()->TsType() != nullptr &&
-            name_->AsTSQualifiedName()->Left()->Variable()->TsType()->IsETSObjectType()) {
-            variable = name_->AsTSQualifiedName()->Left()->Variable()->TsType()->AsETSObjectType()->GetProperty(
+        if (name->AsTSQualifiedName()->Left()->Variable() != nullptr &&
+            name->AsTSQualifiedName()->Left()->Variable()->TsType() != nullptr &&
+            name->AsTSQualifiedName()->Left()->Variable()->TsType()->IsETSObjectType()) {
+            variable = name->AsTSQualifiedName()->Left()->Variable()->TsType()->AsETSObjectType()->GetProperty(
                 ident->Name(), checker::PropertySearchFlags::SEARCH_DECL);
         }
     }
 
     if (variable != nullptr && variable->Declaration()->IsTypeAliasDecl()) {
-        return checker->HandleTypeAlias(name_, typeParams_,
+        return checker->HandleTypeAlias(name, TypeParams(),
                                         variable->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration());
     }
 
@@ -130,7 +155,7 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 
     if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
         ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
-        return checker->HandleUtilityTypeParameterNode(typeParams_, ident);
+        return checker->HandleUtilityTypeParameterNode(TypeParams(), ident);
     }
 
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
@@ -150,11 +175,12 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 
 checker::Type *ETSTypeReferencePart::HandleFixedArrayType(checker::ETSChecker *const checker)
 {
-    if (typeParams_ == nullptr || typeParams_->Params().size() != 1) {
+    auto const typeParams = TypeParams();
+    if (typeParams == nullptr || typeParams->Params().size() != 1) {
         checker->LogError(diagnostic::FIXED_ARRAY_PARAM_ERROR, {}, Start());
         return checker->GlobalTypeError();
     }
-    checker::Type *type = checker->CreateETSArrayType(typeParams_->Params()[0]->GetType(checker), IsReadonlyType());
+    checker::Type *type = checker->CreateETSArrayType(typeParams->Params()[0]->GetType(checker), IsReadonlyType());
     SetTsType(type);
     return type;
 }
@@ -162,14 +188,15 @@ checker::Type *ETSTypeReferencePart::HandleFixedArrayType(checker::ETSChecker *c
 checker::Type *ETSTypeReferencePart::HandlePartialType(checker::ETSChecker *const checker,
                                                        const Identifier *const ident)
 {
-    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident);
+    auto const typeParams = TypeParams();
+    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams, ident);
     if (baseType != nullptr && baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
         // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
         // but not a generic type param for Partial<>
-        if (typeParams_ != nullptr) {
-            for (auto &typeRef : typeParams_->Params()) {
+        if (typeParams != nullptr) {
+            for (auto &typeRef : typeParams->Params()) {
                 checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(),
-                                                  typeRef->AsETSTypeReference()->Part()->typeParams_, Start());
+                                                  typeRef->AsETSTypeReference()->Part()->TypeParams(), Start());
                 baseType = ctx.Result();
             }
         }
@@ -187,35 +214,37 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
             }
         }
     }
-    if (prev_ == nullptr) {
-        if (name_->IsIdentifier() || name_->IsTSQualifiedName()) {
+    auto const name = Name();
+    if (Previous() == nullptr) {
+        if (name->IsIdentifier() || name->IsTSQualifiedName()) {
             SetTsType(HandleInternalTypes(checker));
         }
 
         if (TsType() == nullptr) {
-            checker::Type *baseType = checker->GetReferencedTypeBase(name_);
+            checker::Type *baseType = checker->GetReferencedTypeBase(name);
 
             ES2PANDA_ASSERT(baseType != nullptr);
             if (baseType->IsETSObjectType()) {
-                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
+                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), TypeParams(), Start());
                 SetTsType(ctx.Result());
             } else {
                 SetTsType(baseType);
             }
         }
     } else {
-        checker::Type *baseType = prev_->GetType(checker);
-        SetTsType(checker->GetReferencedTypeFromBase(baseType, name_));
+        checker::Type *baseType = Previous()->GetType(checker);
+        SetTsType(checker->GetReferencedTypeFromBase(baseType, name));
     }
     return TsType();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const nameClone = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const nameClone = Name() != nullptr ? Name()->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeParamsClone =
-        typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
-    auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
+        TypeParams() != nullptr ? TypeParams()->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
+    auto *const prevClone =
+        Previous() != nullptr ? Previous()->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
     auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone, allocator);
 
     if (nameClone != nullptr) {
@@ -240,12 +269,13 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
 
 ir::Identifier *ETSTypeReferencePart::GetIdent()
 {
-    if (name_->IsTSQualifiedName()) {
-        auto ident = name_->AsTSQualifiedName()->Right();
+    auto const name = Name();
+    if (name->IsTSQualifiedName()) {
+        auto ident = name->AsTSQualifiedName()->Right();
         ES2PANDA_ASSERT(ident->IsIdentifier());
         return ident->AsIdentifier();
     }
-    return name_->AsIdentifier();
+    return name->AsIdentifier();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Construct(ArenaAllocator *allocator)

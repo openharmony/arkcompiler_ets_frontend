@@ -22,6 +22,7 @@
 #include "compiler/core/regSpiller.h"
 #include "compiler/core/ETSemitter.h"
 #include "checker/ETSAnalyzer.h"
+#include "ir/astNode.h"
 #include "util/options.h"
 #include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
@@ -38,11 +39,13 @@ namespace test::utils {
 class CheckerTest : public testing::Test {
 public:
     CheckerTest()
-        : allocator_(std::make_unique<ark::ArenaAllocator>(ark::SpaceType::SPACE_TYPE_COMPILER)),
+        : allocator_(
+              std::make_unique<ark::ThreadSafeArenaAllocator>(ark::SpaceType::SPACE_TYPE_COMPILER, nullptr, true)),
           publicContext_ {std::make_unique<plib_alias::Context>()},
+          phaseManager_ {ark::es2panda::ScriptExtension::ETS, Allocator()},
           program_ {parser_alias::Program::NewProgram<varbinder_alias::ETSBinder>(allocator_.get())},
           es2pandaPath_ {PandaExecutablePathGetter::Get()[0]},
-          checker_(diagnosticEngine_)
+          checker_(allocator_.get(), diagnosticEngine_)
     {
     }
     ~CheckerTest() override = default;
@@ -57,7 +60,7 @@ public:
         return &checker_;
     }
 
-    ark::ArenaAllocator *Allocator()
+    ark::ThreadSafeArenaAllocator *Allocator()
     {
         return allocator_.get();
     }
@@ -110,7 +113,7 @@ public:
         varbinder->SetContext(publicContext_.get());
 
         auto emitter = Emitter(publicContext_.get());
-        auto phaseManager = compiler_alias::PhaseManager(unit.ext, allocator_.get());
+        auto phaseManager = compiler_alias::PhaseManager(publicContext_.get(), unit.ext, allocator_.get());
 
         auto config = plib_alias::ConfigImpl {};
         publicContext_->config = &config;
@@ -118,12 +121,14 @@ public:
         publicContext_->sourceFile = &unit.input;
         publicContext_->allocator = allocator_.get();
         publicContext_->parser = &parser;
-        publicContext_->checker = checker;
-        publicContext_->analyzer = publicContext_->checker->GetAnalyzer();
-        publicContext_->emitter = &emitter;
+        parser.SetContext(publicContext_.get());
         publicContext_->parserProgram = program;
+        publicContext_->PushChecker(checker);
+        publicContext_->PushAnalyzer(publicContext_->GetChecker()->GetAnalyzer());
+        publicContext_->emitter = &emitter;
         publicContext_->diagnosticEngine = &diagnosticEngine_;
         publicContext_->phaseManager = &phaseManager;
+        publicContext_->GetChecker()->Initialize(varbinder);
         parser.ParseScript(unit.input,
                            unit.options.GetCompilationMode() == ark::es2panda::CompilationMode::GEN_STD_LIB);
         while (auto phase = publicContext_->phaseManager->NextPhase()) {
@@ -136,8 +141,9 @@ public:
     NO_MOVE_SEMANTIC(CheckerTest);
 
 private:
-    std::unique_ptr<ark::ArenaAllocator> allocator_;
+    std::unique_ptr<ark::ThreadSafeArenaAllocator> allocator_;
     std::unique_ptr<plib_alias::Context> publicContext_;
+    ark::es2panda::compiler::PhaseManager phaseManager_;
     parser_alias::Program program_;
     std::string es2pandaPath_;
     util_alias::DiagnosticEngine diagnosticEngine_;

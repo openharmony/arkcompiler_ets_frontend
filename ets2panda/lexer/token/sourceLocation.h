@@ -52,6 +52,11 @@ public:
 
     const parser::Program *Program() const;
 
+    bool operator!=(const SourcePosition &other) const
+    {
+        return index != other.index || line != other.line || program_ != other.program_;
+    }
+
 private:
     const parser::Program *program_ {};
 };
@@ -68,6 +73,11 @@ public:
     SourcePosition start {};
     SourcePosition end {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    bool operator!=(const SourceRange &other) const
+    {
+        return start != other.start || end != other.end;
+    }
 };
 
 class SourceLocation {

@@ -69,6 +69,7 @@ size_t SizeOfNodeTest::SizeOf<AstNode>()
         sizeof(node->flags_) +
         sizeof(node->astNodeFlags_) +
         sizeof(node->boxingUnboxingFlags_) +
+        sizeof(node->history_) +
         sizeof(node->variable_) +
         sizeof(node->originalNode_) +
         sizeof(node->transformedNode_);
@@ -588,7 +589,8 @@ size_t SizeOfNodeTest::SizeOf<ETSModule>()
     return SizeOf<JsDocAllowed<AnnotationAllowed<BlockStatement>>>() +
         sizeof(node->ident_) +
         Align(sizeof(node->flag_)) +
-        sizeof(node->program_);
+        sizeof(node->program_)+
+        sizeof(node->globalClass_);
     // clang-format on
 }
 

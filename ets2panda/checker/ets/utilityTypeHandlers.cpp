@@ -98,7 +98,7 @@ static std::pair<parser::Program *, varbinder::RecordTable *> GetPartialClassPro
                                                                                      ir::AstNode *typeNode)
 {
     auto classDefProgram = typeNode->GetTopStatement()->AsETSModule()->Program();
-    if (classDefProgram == checker->VarBinder()->Program()) {
+    if (classDefProgram == checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()->Program()) {
         return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()};
     }
     return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetExternalRecordTable().at(classDefProgram)};
@@ -204,8 +204,11 @@ Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDe
                                                              partialInterDecl->Variable());
     }
 
+    auto savedScope = VarBinder()->TopScope();
+    VarBinder()->ResetTopScope(partialProgram->GlobalScope());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *partialType = CreatePartialTypeInterfaceDecl(interfaceDecl, typeToBePartial, partialInterDecl);
+    VarBinder()->ResetTopScope(savedScope);
     ES2PANDA_ASSERT(partialType != nullptr);
     NamedTypeStackElement ntse(this, partialType);
 
@@ -465,7 +468,7 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
             auto *const newProp = CreateNullishProperty(prop->AsClassProperty(), newClassDefinition);
 
             // Put the new property into the class declaration
-            newClassDefinition->Body().emplace_back(newProp);
+            newClassDefinition->EmplaceBody(newProp);
         }
 
         if (prop->IsMethodDefinition() && (prop->AsMethodDefinition()->Function()->IsGetter() ||
@@ -476,7 +479,7 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
                 continue;
             }
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            newClassDefinition->Body().emplace_back(CreateNullishPropertyFromAccessor(method, newClassDefinition));
+            newClassDefinition->EmplaceBody(CreateNullishPropertyFromAccessor(method, newClassDefinition));
         }
     }
     if (classDef->IsDeclare()) {
@@ -599,10 +602,12 @@ ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView na
 
     // Put class declaration in global scope, and in program AST
     partialInterface->SetParent(interfaceDeclProgram->Ast());
-    interfaceDeclProgram->Ast()->Statements().push_back(partialInterface);
+    interfaceDeclProgram->Ast()->AddStatement(partialInterface);
     interfaceDeclProgram->GlobalScope()->InsertBinding(name, var);
 
     partialInterface->AddModifier(flags);
+    partialInterface->ClearModifier(ir::ModifierFlags::EXPORTED);
+    partialInterface->ClearModifier(ir::ModifierFlags::DEFAULT_EXPORT);
 
     return partialInterface;
 }
@@ -701,7 +706,7 @@ Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *con
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 BuildSuperPartialTypeReference(superPartialType, superPartialRefTypeParams);
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            partialInterface->Extends().push_back(ProgramAllocNode<ir::TSInterfaceHeritage>(superPartialRef));
+            partialInterface->EmplaceExtends(ProgramAllocNode<ir::TSInterfaceHeritage>(superPartialRef));
             partialInterface->Extends().back()->SetParent(partialInterface);
         }
     }
@@ -739,7 +744,7 @@ void ETSChecker::CreateConstructorForPartialType(ir::ClassDefinition *const part
     ctor->Id()->SetVariable(ctorId->Variable());
 
     // Put ctor in partial class body
-    partialClassDef->Body().emplace_back(ctor);
+    partialClassDef->EmplaceBody(ctor);
 }
 
 ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, parser::Program *const classDeclProgram)
@@ -772,7 +777,7 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
     decl->BindNode(classDef);
 
     // Put class declaration in global scope, and in program AST
-    classDeclProgram->Ast()->Statements().push_back(classDecl);
+    classDeclProgram->Ast()->AddStatement(classDecl);
     classDeclProgram->GlobalScope()->InsertBinding(name, var);
 
     return classDef;
@@ -964,7 +969,7 @@ Type *ETSChecker::GetReadonlyType(Type *type)
 
 void ETSChecker::MakePropertiesReadonly(ETSObjectType *const classType)
 {
-    classType->UpdateTypeProperties(this, [this](auto *property, auto *propType) {
+    classType->UpdateTypeProperties([this](auto *property, auto *propType) {
         auto *newDecl =
             ProgramAllocator()->New<varbinder::ReadonlyDecl>(property->Name(), property->Declaration()->Node());
         auto *const propCopy = property->Copy(ProgramAllocator(), newDecl);

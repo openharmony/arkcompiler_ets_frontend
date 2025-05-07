@@ -28,12 +28,8 @@ void TSLiteralType::TransformChildren(const NodeTransformer &cb, std::string_vie
         literal_->SetTransformedNode(transformationName, transformedNode);
         literal_ = transformedNode->AsExpression();
     }
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+
+    TransformAnnotations(cb, transformationName);
 }
 
 void TSLiteralType::Iterate(const NodeTraverser &cb) const

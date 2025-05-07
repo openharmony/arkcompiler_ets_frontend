@@ -91,7 +91,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
     bridgeMethod->SetParent(const_cast<ir::ClassDefinition *>(classDefinition));
 
-    auto *varBinder = context_->checker->VarBinder()->AsETSBinder();
+    auto *varBinder = context_->GetChecker()->VarBinder()->AsETSBinder();
     auto *scope = NearestScope(methodDefinition);
     auto scopeGuard = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
     InitScopesPhaseETS::RunExternalNode(bridgeMethod, varBinder);
@@ -100,7 +100,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
                                       true};
     varBinder->AsETSBinder()->ResolveReferencesForScopeWithContext(bridgeMethod, scope);
 
-    auto *checker = context_->checker->AsETSChecker();
+    auto *checker = context_->GetChecker()->AsETSChecker();
     auto const checkerCtx =
         checker::SavedCheckerContext(checker,
                                      checker::CheckerStatus::IN_CLASS | checker::CheckerStatus::IGNORE_VISIBILITY |
@@ -128,7 +128,7 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
                                                 ir::MethodDefinition *const derivedMethod,
                                                 Substitutions const &substitutions) const
 {
-    auto *const checker = context_->checker->AsETSChecker();
+    auto *const checker = context_->GetChecker()->AsETSChecker();
     auto *const relation = checker->Relation();
 
     auto const overrides = [checker, relation, classDefinition](checker::Signature const *source,
@@ -199,7 +199,7 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
     auto const &classBody = classDefinition->Body();
 
     //  Collect type parameters defaults/constraints in the derived class
-    auto *checker = context_->checker->AsETSChecker();
+    auto *checker = context_->GetChecker()->AsETSChecker();
     substitutions.derivedConstraints = checker->NewSubstitution();
 
     auto const *const classType = classDefinition->TsType()->AsETSObjectType();
@@ -239,7 +239,7 @@ GenericBridgesPhase::Substitutions GenericBridgesPhase::GetSubstitutions(
     auto const parameterNumber = typeParameters.size();
     ES2PANDA_ASSERT(parameterNumber == typeArguments.size());
 
-    auto *checker = context_->checker->AsETSChecker();
+    auto *checker = context_->GetChecker()->AsETSChecker();
     Substitutions substitutions {};
     substitutions.derivedSubstitutions = checker->NewSubstitution();
     substitutions.baseConstraints = checker->NewSubstitution();

@@ -29,6 +29,7 @@ export async function build(projectConfig: BuildConfig): Promise<void> {
   let logger: Logger = Logger.getInstance(projectConfig);
   let buildConfig: BuildConfig = processBuildConfig(projectConfig);
 
+  buildConfig.entryFiles = buildConfig.compileFiles;
   if (projectConfig.frameworkMode === true) {
     let buildframeworkMode: BuildFrameworkMode = new BuildFrameworkMode(buildConfig);
     await buildframeworkMode.run();
@@ -54,8 +55,6 @@ function clean(): void {
 }
 
 function main(): void {
-  console.log(process.argv);
-
   const buildConfigPath: string = path.resolve(process.argv[2]);
   const projectConfig: BuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
 

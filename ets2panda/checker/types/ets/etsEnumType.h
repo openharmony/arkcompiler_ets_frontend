@@ -24,7 +24,7 @@ namespace ark::es2panda::checker {
 
 class ETSEnumType : public ETSObjectType {
 public:
-    explicit ETSEnumType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
+    explicit ETSEnumType(ThreadSafeArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                          ir::AstNode *declNode, TypeRelation *relation)
         : ETSObjectType(allocator, name, internalName,
                         std::make_tuple(declNode, ETSObjectFlags::CLASS | ETSObjectFlags::ENUM_OBJECT, relation))
@@ -49,7 +49,7 @@ public:
 
 class ETSIntEnumType : public ETSEnumType {
 public:
-    explicit ETSIntEnumType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
+    explicit ETSIntEnumType(ThreadSafeArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                             ir::AstNode *declNode, TypeRelation *relation)
         : ETSEnumType(allocator, name, internalName, declNode, relation)
     {
@@ -70,8 +70,8 @@ public:
 
 class ETSStringEnumType : public ETSEnumType {
 public:
-    explicit ETSStringEnumType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
-                               ir::AstNode *declNode, TypeRelation *relation)
+    explicit ETSStringEnumType(ThreadSafeArenaAllocator *allocator, util::StringView name,
+                               util::StringView internalName, ir::AstNode *declNode, TypeRelation *relation)
         : ETSEnumType(allocator, name, internalName, declNode, relation)
     {
         AddTypeFlag(checker::TypeFlag::ETS_STRING_ENUM);

@@ -25,7 +25,6 @@
 #include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/ets/types.h"
 #include "checker/resolveResult.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/visitor/AstVisitor.h"
 #include "util/helpers.h"
 
@@ -65,8 +64,11 @@ struct PairHash {
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, ArenaUnorderedSet<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<std::pair<Type *, bool>, ETSArrayType *, PairHash>;
+using ObjectInstantiationMap = ArenaUnorderedMap<ETSObjectType *, ArenaUnorderedMap<util::StringView, ETSObjectType *>>;
 using GlobalArraySignatureMap = ArenaUnorderedMap<const ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
+using FunctionSignatureMap = ArenaUnorderedMap<ETSFunctionType *, ETSFunctionType *>;
+using FunctionInterfaceMap = ArenaUnorderedMap<ETSFunctionType *, ETSObjectType *>;
 using DynamicClassIntrinsicsMap = ArenaUnorderedMap<Language, ir::ClassDeclaration *>;
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
@@ -80,8 +82,29 @@ using AstNodePtr = ir::AstNode *;
 
 class ETSChecker final : public Checker {
 public:
-    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine);
-    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator);
+    explicit ETSChecker(ThreadSafeArenaAllocator *allocator, util::DiagnosticEngine &diagnosticEngine,
+                        ThreadSafeArenaAllocator *programAllocator = nullptr)
+        // NOLINTNEXTLINE(readability-redundant-member-init)
+        : Checker(allocator, diagnosticEngine, programAllocator),
+          arrayTypes_(Allocator()->Adapter()),
+          pendingConstraintCheckRecords_(Allocator()->Adapter()),
+          objectInstantiationMap_(Allocator()->Adapter()),
+          invokeToArrowSignatures_(Allocator()->Adapter()),
+          arrowToFuncInterfaces_(Allocator()->Adapter()),
+          globalArraySignatures_(Allocator()->Adapter()),
+          dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                              DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+          dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                           DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+          dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+          functionalInterfaceCache_(Allocator()->Adapter()),
+          apparentTypes_(Allocator()->Adapter()),
+          dynamicCallNames_ {
+              {DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+          overloadSigContainer_(Allocator()->Adapter()),
+          readdedChecker_(Allocator()->Adapter())
+    {
+    }
 
     ~ETSChecker() override = default;
 
@@ -172,6 +195,7 @@ public:
     Type *GuaranteedTypeForUncheckedCallReturn(Signature *sig);
     Type *GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *prop);
     Type *GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType);
+    void ReputCheckerData();
 
     [[nodiscard]] bool IsETSChecker() const noexcept override
     {
@@ -884,6 +908,21 @@ public:
         return overloadSigContainer_;
     }
 
+    ObjectInstantiationMap &GetObjectInstantiationMap()
+    {
+        return objectInstantiationMap_;
+    }
+
+    FunctionSignatureMap &GetInvokeToArrowSignatures()
+    {
+        return invokeToArrowSignatures_;
+    }
+
+    FunctionInterfaceMap &GetArrowToFuncInterfaces()
+    {
+        return arrowToFuncInterfaces_;
+    }
+
     void CleanUp() override
     {
         Checker::CleanUp();
@@ -1028,6 +1067,7 @@ private:
                                                const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *callExpr);
+    ir::ScriptFunction *CreateLambdaFunction(ir::BlockStatement *trailingBlock, Signature *sig);
     void TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig);
     ArenaVector<ir::Expression *> ExtendArgumentsWithFakeLamda(ir::CallExpression *callExpr);
 
@@ -1053,6 +1093,9 @@ private:
 
     ArrayMap arrayTypes_;
     ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
+    ObjectInstantiationMap objectInstantiationMap_;
+    FunctionSignatureMap invokeToArrowSignatures_;
+    FunctionInterfaceMap arrowToFuncInterfaces_;
     size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
     ComputedAbstracts *cachedComputedAbstracts_ {nullptr};
@@ -1067,6 +1110,7 @@ private:
     evaluate::ScopedDebugInfoPlugin *debugInfoPlugin_ {nullptr};
     std::unordered_set<ir::TSTypeAliasDeclaration *> elementStack_;
     ArenaVector<Signature *> overloadSigContainer_;
+    ArenaSet<ETSChecker *> readdedChecker_;
 };
 
 }  // namespace ark::es2panda::checker

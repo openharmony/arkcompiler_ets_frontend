@@ -105,7 +105,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
 static ir::OpaqueTypeNode *CreateProxyTypeNode(public_lib::Context *ctx, ir::Expression *expr)
 {
     auto *lcType = expr->TsType();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     if (checker->IsExtensionETSFunctionType(lcType) && expr->IsMemberExpression() &&
         expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
         lcType = expr->AsMemberExpression()->ExtensionAccessorType();
@@ -285,7 +285,7 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
 
 ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpression *assignment)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     if (assignment->TsType() == nullptr) {  // hasn't been through checker
         return assignment;
@@ -367,7 +367,7 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
     auto *argument = upd->Argument();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     ArgumentInfo argInfo {};
     argInfo.objType = checker->GlobalVoidType();
@@ -412,7 +412,7 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
 
     ir::Expression *loweringResult = ConstructUpdateResult(ctx, upd);
 
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
     checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY, ContainingClass(upd)};

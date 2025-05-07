@@ -14,11 +14,10 @@
  */
 
 import * as path from 'path';
-import * as fs from 'fs';
-import { BuildConfig, DependentModuleConfig } from "../types";
+import { BuildConfig, DependentModuleConfig } from '../types';
 import { toUnixPath } from '../utils';
 import { ETS_1_1, ETS_1_1_INTEROP, LANGUAGE_VERSION } from '../pre_define';
-import { readFirstLineSync } from '../utils'
+import { readFirstLineSync } from '../utils';
 
 export class FileManager {
   private static instance: FileManager | undefined = undefined;
@@ -52,7 +51,7 @@ export class FileManager {
   static initSDK(externalApiPath: Set<string>, buildSDKPath: string): void {
     externalApiPath?.forEach(path => {
       FileManager.staticApiPath.add(toUnixPath(path));
-    })
+    });
 
     const etsPath = path.resolve(buildSDKPath, '../');
 
@@ -73,7 +72,7 @@ export class FileManager {
         declFilesPath: module.declFilesPath ? toUnixPath(module.declFilesPath) : undefined,
       };
       convertedMap.set(module.packageName, convertedModule);
-    })
+    });
 
     this.arkTSModuleMap = convertedMap;
   }
@@ -101,7 +100,7 @@ export class FileManager {
       if (!path.startsWith(moduleInfo.modulePath)) {
         continue;
       }
-      if (moduleInfo.language != LANGUAGE_VERSION.ARKTS_HYBRID) {
+      if (moduleInfo.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
         return moduleInfo.language;
       }
       /**

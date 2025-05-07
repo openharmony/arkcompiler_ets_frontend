@@ -365,7 +365,7 @@ ir::ClassDeclaration *ETSChecker::BuildClass(util::StringView name, const ClassB
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *classDecl = ProgramAllocNode<ir::ClassDeclaration>(classDef, ProgramAllocator());
 
-    VarBinder()->Program()->Ast()->Statements().push_back(classDecl);
+    VarBinder()->Program()->Ast()->AddStatement(classDecl);
     classDecl->SetParent(VarBinder()->Program()->Ast());
 
     auto varBinder = VarBinder()->AsETSBinder();
@@ -597,7 +597,7 @@ void ETSChecker::EmitDynamicModuleClassInitCall()
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const node = ProgramAllocNode<ir::ExpressionStatement>(initCall);
     node->SetParent(cctorBody);
-    cctorBody->Statements().push_back(node);
+    cctorBody->AddStatement(node);
 
     ProcessScopesNode(this, node);
     ProcessCheckerNode(this, node);
@@ -620,7 +620,7 @@ void ETSChecker::BuildClassBodyFromDynamicImports(const ArenaVector<ir::ETSImpor
             assemblyName.begin(), assemblyName.end(), [](char c) { return std::isalnum(c) == 0; }, '_');
         assemblyName.append(std::to_string(fields.size()));
 
-        import->AssemblerName() = util::UString(assemblyName, ProgramAllocator()).View();
+        import->SetAssemblerName(util::UString(assemblyName, ProgramAllocator()).View());
         fields.insert(import->AssemblerName());
         imports.push_back(import);
 

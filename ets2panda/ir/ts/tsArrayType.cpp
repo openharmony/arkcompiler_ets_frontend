@@ -27,12 +27,8 @@ void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view 
         elementType_->SetTransformedNode(transformationName, transformedNode);
         elementType_ = static_cast<TypeNode *>(transformedNode);
     }
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+
+    TransformAnnotations(cb, transformationName);
 }
 
 void TSArrayType::Iterate(const NodeTraverser &cb) const

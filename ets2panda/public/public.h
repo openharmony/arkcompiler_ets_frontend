@@ -34,6 +34,8 @@ class Options;
 
 namespace ark::es2panda::compiler {
 class PhaseManager;
+void SetPhaseManager(PhaseManager *phaseManager);
+PhaseManager *GetPhaseManager();
 }  // namespace ark::es2panda::compiler
 
 namespace ark::es2panda::public_lib {
@@ -52,14 +54,14 @@ struct ConfigImpl {
 };
 
 using ExternalSources = std::unordered_map<util::StringView, ArenaVector<parser::Program *>>;
-
+using ExternalSource = ArenaUnorderedMap<util::StringView, ArenaVector<parser::Program *>>;
 using ComputedAbstracts =
     ArenaUnorderedMap<checker::ETSObjectType *,
                       std::pair<ArenaVector<checker::ETSFunctionType *>, ArenaUnorderedSet<checker::ETSObjectType *>>>;
 
 class TransitionMemory {
 public:
-    explicit TransitionMemory(ArenaAllocator *allocator)
+    explicit TransitionMemory(ThreadSafeArenaAllocator *allocator)
         : permanentAllocator_(allocator), compiledPrograms_(allocator->Adapter())
     {
         compiledPrograms_ = {};
@@ -70,7 +72,7 @@ public:
 
     ~TransitionMemory() = default;
 
-    ArenaAllocator *PermanentAllocator() const
+    ThreadSafeArenaAllocator *PermanentAllocator() const
     {
         return permanentAllocator_.get();
     }
@@ -136,11 +138,18 @@ public:
     }
 
 private:
-    std::unique_ptr<ArenaAllocator> permanentAllocator_;
+    std::unique_ptr<ThreadSafeArenaAllocator> permanentAllocator_;
     ArenaVector<parser::Program *> compiledPrograms_;
     varbinder::VarBinder *varbinder_ {nullptr};
     checker::GlobalTypesHolder *globalTypes_ {nullptr};
     ComputedAbstracts *cachedComputedAbstracts_ {nullptr};
+};
+
+struct GlobalContext {
+    std::unordered_map<std::string, ArenaAllocator *> externalProgramAllocators;
+    std::unordered_map<std::string, ExternalSource *> cachedExternalPrograms;
+    ThreadSafeArenaAllocator *stdLibAllocator = nullptr;
+    ExternalSource *stdLibAstCache = nullptr;
 };
 
 struct Context {
@@ -160,11 +169,41 @@ struct Context {
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
+    checker::Checker *GetChecker() const;
+
+    void PushChecker(checker::Checker *checker)
+    {
+        parserProgram->PushChecker(checker);
+        checkers_.push_back(checker);
+    }
+
+    void DestoryCheckers()
+    {
+        for (auto item : checkers_) {
+            delete item;
+        }
+    }
+
+    checker::SemanticAnalyzer *GetAnalyzer() const;
+
+    void PushAnalyzer(checker::SemanticAnalyzer *analyzer)
+    {
+        return analyzers_.push_back(analyzer);
+    }
+
+    void DestoryAnalyzers()
+    {
+        for (auto item : analyzers_) {
+            delete item;
+        }
+    }
+
     ConfigImpl *config = nullptr;
+    GlobalContext *globalContext = nullptr;
     std::string sourceFileName;
     std::string input;
     SourceFile const *sourceFile = nullptr;
-    ArenaAllocator *allocator = nullptr;
+    ThreadSafeArenaAllocator *allocator = nullptr;
     compiler::CompileQueue *queue = nullptr;
     std::vector<util::Plugin> const *plugins = nullptr;
     std::vector<compiler::LiteralBuffer> contextLiterals;
@@ -173,10 +212,7 @@ struct Context {
 
     parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;
-    checker::Checker *checker = nullptr;
-    checker::IsolatedDeclgenChecker *isolatedDeclgenChecker = nullptr;
 
-    checker::SemanticAnalyzer *analyzer = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
     util::DiagnosticEngine *diagnosticEngine = nullptr;
@@ -188,8 +224,16 @@ struct Context {
     CompilingState compilingState {CompilingState::NONE_COMPILING};
     ExternalSources externalSources;
     TransitionMemory *transitionMemory {nullptr};
+    bool isExternal = false;
+    bool compiledByCapi = false;
+    checker::IsolatedDeclgenChecker *isolatedDeclgenChecker {nullptr};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+private:
+    std::vector<checker::Checker *> checkers_;
+    std::vector<checker::SemanticAnalyzer *> analyzers_;
 };
+
 }  // namespace ark::es2panda::public_lib
 
 #endif

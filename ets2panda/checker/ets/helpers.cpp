@@ -1669,6 +1669,9 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
     for (auto [_, var] : bindings) {
         (void)_;
         auto [found, aliasedName] = FindSpecifierForModuleObject(importDecl, var->AsLocalVariable()->Name());
+        if (!var->AsLocalVariable()->Declaration()->Node()->IsValidInCurrentPhase()) {
+            continue;
+        }
         if ((var->AsLocalVariable()->Declaration()->Node()->IsExported()) && found) {
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
@@ -2818,6 +2821,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(checker->VarBinder(), classScope);
     checker->VarBinder()->AsETSBinder()->ResolveMethodDefinition(method);
+    method->Function()->ClearFlag(ir::ScriptFunctionFlags::EXTERNAL);
 
     functionScope->BindName(classScope->Node()->AsClassDefinition()->InternalName());
     method->Check(checker);
@@ -2836,7 +2840,7 @@ ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProp
         auto *const classProp = checker->ClassPropToImplementationProp(
             interfaceProp->Clone(checker->ProgramAllocator(), originalProp->Parent()), scope);
         classType->AddProperty<PropertyType::INSTANCE_FIELD>(classProp->Key()->Variable()->AsLocalVariable());
-        classDef->Body().push_back(classProp);
+        classDef->EmplaceBody(classProp);
         return classProp;
     }
 
@@ -2903,7 +2907,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::MethodDefinition *getter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, false, this);
-    classDef->Body().push_back(getter);
+    classDef->EmplaceBody(getter);
 
     const auto &name = getter->Key()->AsIdentifier()->Name();
 

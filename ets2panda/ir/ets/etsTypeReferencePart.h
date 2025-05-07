@@ -26,36 +26,65 @@ public:
                                   ir::ETSTypeReferencePart *prev, ArenaAllocator *const allocator)
         : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name), typeParams_(typeParams), prev_(prev)
     {
+        InitHistory();
     }
 
     explicit ETSTypeReferencePart(ir::Expression *name, ArenaAllocator *const allocator)
         : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name)
     {
+        InitHistory();
+    }
+
+    explicit ETSTypeReferencePart(ir::Expression *name, ArenaAllocator *const allocator, AstNodeHistory *history)
+        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name)
+    {
+        if (history != nullptr) {
+            history_ = history;
+        } else {
+            InitHistory();
+        }
+    }
+
+    explicit ETSTypeReferencePart(ir::Expression *name, ir::TSTypeParameterInstantiation *typeParams,
+                                  ir::ETSTypeReferencePart *prev, ArenaAllocator *const allocator,
+                                  AstNodeHistory *history)
+        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name), typeParams_(typeParams), prev_(prev)
+    {
+        if (history != nullptr) {
+            history_ = history;
+        } else {
+            InitHistory();
+        }
     }
 
     ir::ETSTypeReferencePart *Previous()
     {
-        return prev_;
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->prev_;
     }
 
     const ir::ETSTypeReferencePart *Previous() const
     {
-        return prev_;
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->prev_;
     }
 
     ir::Expression *Name()
     {
-        return name_;
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->name_;
     }
 
     ir::TSTypeParameterInstantiation *TypeParams()
     {
-        return typeParams_;
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->typeParams_;
+    }
+
+    const ir::TSTypeParameterInstantiation *TypeParams() const
+    {
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->typeParams_;
     }
 
     const ir::Expression *Name() const
     {
-        return name_;
+        return GetHistoryNodeAs<ETSTypeReferencePart>()->name_;
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -85,6 +114,10 @@ private:
     checker::Type *HandleFixedArrayType(checker::ETSChecker *const checker);
 
     friend class SizeOfNodeTest;
+    void SetName(ir::Expression *name);
+    void SetTypeParams(ir::TSTypeParameterInstantiation *typeParams);
+    void SetPrevious(ir::ETSTypeReferencePart *prev);
+
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};

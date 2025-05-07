@@ -57,13 +57,14 @@ static void TransformDefaultParameters(public_lib::Context *ctx, ir::ScriptFunct
     auto const body = function->Body()->AsBlockStatement();
     auto const allocator = ctx->allocator;
     auto const parser = ctx->parser->AsETSParser();
+    auto &bodyStmt = body->StatementsForUpdates();
 
-    body->Statements().insert(body->Statements().begin(), params.size(), nullptr);
+    bodyStmt.insert(bodyStmt.begin(), params.size(), nullptr);
 
     for (size_t dfltIdx = 0; dfltIdx < params.size(); ++dfltIdx) {
         auto const param = params.at(dfltIdx);
         auto stmt = TransformInitializer(allocator, parser, param);
-        body->Statements()[dfltIdx] = stmt;
+        bodyStmt[dfltIdx] = stmt;
         stmt->SetParent(body);
     }
 }

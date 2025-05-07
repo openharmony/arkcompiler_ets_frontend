@@ -37,7 +37,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation1)
                                   "float;\nlet g: double;\nlet h: char;\nlet i: boolean;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto checker = reinterpret_cast<Context *>(ctx)->checker->AsETSChecker();
+    auto checker = reinterpret_cast<Context *>(ctx)->GetChecker()->AsETSChecker();
     auto astNode = GetAstFromContext<AstNode>(ctx);
     auto targetNode =
         astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "a"; });
@@ -97,7 +97,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
         "undefined;\nlet tuple: [number, number] = [1, 2];\nlet union: int | null;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto checker = reinterpret_cast<Context *>(ctx)->checker->AsETSChecker();
+    auto checker = reinterpret_cast<Context *>(ctx)->GetChecker()->AsETSChecker();
     auto astNode = GetAstFromContext<AstNode>(ctx);
     auto targetNode =
         astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "j"; });

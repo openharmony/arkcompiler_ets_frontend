@@ -19,6 +19,7 @@
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::compiler {
+
 static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLike, checker::Signature *signature,
                                ArenaVector<ir::Expression *> &arguments);
 
@@ -52,7 +53,7 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
     ES2PANDA_ASSERT((callLike->IsCallExpression() && callLike->AsCallExpression()->IsTrailingCall()) ||
                     arguments.size() >= signature->MinArgCount());
 
-    auto const checker = ctx->checker->AsETSChecker();
+    auto const checker = ctx->GetChecker()->AsETSChecker();
     auto const allocator = ctx->allocator;
 
     size_t missing = signature->ArgCount() - arguments.size();

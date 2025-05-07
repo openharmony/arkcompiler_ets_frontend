@@ -60,7 +60,7 @@ TEST_F(PluginConversionRuleUnitTest, CheckerTypeRelationConstructor)
     std::string targetCAPI {R"(
     extern "C" es2panda_TypeRelation *CreateTypeRelation([[maybe_unused]] es2panda_Context *context)
     {
-        auto *checkerE2p = reinterpret_cast<Context *>(context)->checker;
+        auto *checkerE2p = reinterpret_cast<Context *>(context)->GetChecker();
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
         return reinterpret_cast<es2panda_TypeRelation *>(ctxAllocator->New<checker::TypeRelation>(checkerE2p));

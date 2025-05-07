@@ -62,7 +62,7 @@ TEST_F(PluginConversionRuleUnitTest, CheckerContextPtrReturnValue)
     extern "C" es2panda_CheckerContext *CreateCheckerContext([[maybe_unused]] es2panda_Context *context,
     [[maybe_unused]] Es2pandaCheckerStatus newStatus)
     {
-        auto *checkerE2p = reinterpret_cast<Context *>(context)->checker;
+        auto *checkerE2p = reinterpret_cast<Context *>(context)->GetChecker();
         auto newStatusE2p = E2pToIrCheckerStatus(newStatus);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
@@ -97,7 +97,7 @@ TEST_F(PluginConversionRuleUnitTest, CheckerContextPtrConstructor)
     extern "C" es2panda_CheckerContext *CreateCheckerContext([[maybe_unused]] es2panda_Context *context,
     [[maybe_unused]] Es2pandaCheckerStatus newStatus)
     {
-        auto *checkerE2p = reinterpret_cast<Context *>(context)->checker;
+        auto *checkerE2p = reinterpret_cast<Context *>(context)->GetChecker();
         auto newStatusE2p = E2pToIrCheckerStatus(newStatus);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
@@ -352,12 +352,11 @@ TEST_F(PluginConversionRuleUnitTest, PropertyProcessorInputParameter)
     extern "C" void ETSObjectTypeUpdateTypeProperties([[maybe_unused]] es2panda_Context *context,
     es2panda_Type *classInstance, [[maybe_unused]] PropertyProcessor func/*return_args:*/)
     {
-        auto *checkerE2p = reinterpret_cast<Context *>(context)->checker->AsETSChecker();
         std::function<varbinder::LocalVariable *(varbinder::LocalVariable *, checker::Type *)> funcE2p =
         [func](varbinder::LocalVariable *propertyProcessorLambdaVariable, checker::Type *propertyProcessorLambdaType) {
         return reinterpret_cast<varbinder::LocalVariable *>(func(reinterpret_cast<es2panda_Variable *>
         (propertyProcessorLambdaVariable), reinterpret_cast<es2panda_Type *>(propertyProcessorLambdaType)));};
-        ((reinterpret_cast< checker::ETSObjectType *>(classInstance))->UpdateTypeProperties(checkerE2p, funcE2p));
+        ((reinterpret_cast< checker::ETSObjectType *>(classInstance))->UpdateTypeProperties(funcE2p));
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

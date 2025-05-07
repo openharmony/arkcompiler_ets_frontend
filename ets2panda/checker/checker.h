@@ -50,6 +50,7 @@ namespace ark::es2panda::checker {
 class ETSChecker;
 class InterfaceType;
 class GlobalTypesHolder;
+class SemanticAnalyzer;
 
 using StringLiteralPool = std::unordered_map<util::StringView, Type *>;
 using NumberLiteralPool = std::unordered_map<double, Type *>;
@@ -63,15 +64,16 @@ using ArgRange = std::pair<uint32_t, uint32_t>;
 
 class Checker {
 public:
-    explicit Checker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator = nullptr);
+    explicit Checker(ThreadSafeArenaAllocator *allocator, util::DiagnosticEngine &diagnosticEngine,
+                     ThreadSafeArenaAllocator *programAllocator = nullptr);
     virtual ~Checker() = default;
 
     NO_COPY_SEMANTIC(Checker);
     NO_MOVE_SEMANTIC(Checker);
 
-    [[nodiscard]] ArenaAllocator *Allocator() noexcept
+    [[nodiscard]] ThreadSafeArenaAllocator *Allocator() noexcept
     {
-        return &allocator_;
+        return allocator_;
     }
 
     [[nodiscard]] varbinder::Scope *Scope() const noexcept
@@ -114,7 +116,7 @@ public:
         return globalTypes_;
     }
 
-    void SetGlobalTypes(GlobalTypesHolder *globalTypes) noexcept
+    void SetGlobalTypesHolder(GlobalTypesHolder *globalTypes)
     {
         globalTypes_ = globalTypes;
     }
@@ -232,9 +234,9 @@ public:
 
     virtual void CleanUp();
 
-    [[nodiscard]] ArenaAllocator *ProgramAllocator()
+    [[nodiscard]] ThreadSafeArenaAllocator *ProgramAllocator()
     {
-        return programAllocator_ == nullptr ? &allocator_ : programAllocator_;
+        return programAllocator_ == nullptr ? allocator_ : programAllocator_;
     }
 
 protected:
@@ -242,8 +244,8 @@ protected:
     void SetProgram(parser::Program *program);
 
 private:
-    ArenaAllocator allocator_;
-    ArenaAllocator *programAllocator_ {nullptr};
+    ThreadSafeArenaAllocator *allocator_;
+    ThreadSafeArenaAllocator *programAllocator_ {nullptr};
     CheckerContext context_;
     GlobalTypesHolder *globalTypes_ {nullptr};
     TypeRelation *relation_;
@@ -253,11 +255,11 @@ private:
     varbinder::Scope *scope_ {};
     util::DiagnosticEngine &diagnosticEngine_;
 
-    RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
-    RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
-    RelationHolder comparableResults_ {{}, RelationType::COMPARABLE};
-    RelationHolder uncheckedCastableResults_ {{}, RelationType::UNCHECKED_CASTABLE};
-    RelationHolder supertypeResults_ {{}, RelationType::SUPERTYPE};
+    RelationHolder identicalResults_ {Allocator(), RelationType::IDENTICAL};
+    RelationHolder assignableResults_ {Allocator(), RelationType::ASSIGNABLE};
+    RelationHolder comparableResults_ {Allocator(), RelationType::COMPARABLE};
+    RelationHolder uncheckedCastableResults_ {Allocator(), RelationType::UNCHECKED_CASTABLE};
+    RelationHolder supertypeResults_ {Allocator(), RelationType::SUPERTYPE};
 
     std::unordered_map<const void *, Type *> typeStack_;
     std::unordered_set<Type *> namedTypeStack_;

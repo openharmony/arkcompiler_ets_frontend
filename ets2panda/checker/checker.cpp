@@ -20,8 +20,9 @@
 #include "checker/types/ts/unionType.h"
 
 namespace ark::es2panda::checker {
-Checker::Checker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator)
-    : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
+Checker::Checker(ThreadSafeArenaAllocator *allocator, util::DiagnosticEngine &diagnosticEngine,
+                 ThreadSafeArenaAllocator *programAllocator)
+    : allocator_(allocator),
       programAllocator_(programAllocator),
       context_(this, CheckerStatus::NO_OPTS),
       diagnosticEngine_(diagnosticEngine)
@@ -177,9 +178,11 @@ ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
 
 void Checker::CleanUp()
 {
+    if (!program_->IsASTLowered()) {
+        globalTypes_ = allocator_->New<GlobalTypesHolder>(allocator_);
+    }
     context_ = CheckerContext(this, CheckerStatus::NO_OPTS);
-    globalTypes_ = allocator_.New<GlobalTypesHolder>(&allocator_);
-    relation_ = allocator_.New<TypeRelation>(this);
+    relation_ = allocator_->New<TypeRelation>(this);
     identicalResults_.cached.clear();
     assignableResults_.cached.clear();
     comparableResults_.cached.clear();

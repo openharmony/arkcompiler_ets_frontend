@@ -21,7 +21,7 @@ namespace ark::es2panda::compiler {
 
 bool DynamicImportLowering::PerformForModule(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    ctx->checker->AsETSChecker()->BuildDynamicImportClass();
+    ctx->GetChecker()->AsETSChecker()->BuildDynamicImportClass();
     return true;
 }
 

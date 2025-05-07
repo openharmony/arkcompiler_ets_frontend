@@ -231,7 +231,7 @@ bool ArrayLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Pr
 {
     parser_ = ctx->parser->AsETSParser();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
-    checker_ = ctx->checker->AsETSChecker();
+    checker_ = ctx->GetChecker()->AsETSChecker();
     program->Ast()->TransformChildrenRecursively(
         [this](ir::AstNode *ast) -> AstNodePtr {
             if (ast->IsArrayExpression()) {

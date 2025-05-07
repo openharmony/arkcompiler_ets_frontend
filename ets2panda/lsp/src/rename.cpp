@@ -31,7 +31,7 @@ constexpr size_t QUOTE_START_OFFSET = 1;
 RenameInfoType GetRenameInfo(es2panda_Context *context, size_t pos)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto checker = reinterpret_cast<public_lib::Context *>(ctx)->checker->AsETSChecker();
+    auto checker = reinterpret_cast<public_lib::Context *>(ctx)->GetChecker()->AsETSChecker();
     auto program = reinterpret_cast<public_lib::Context *>(ctx)->parserProgram;
     auto node = GetAdjustedLocation(GetTouchingPropertyName(context, pos), true, ctx->allocator);
     if (node.has_value() && NodeIsEligibleForRename(node.value())) {

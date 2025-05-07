@@ -28,7 +28,8 @@ class ETSDynamicType : public ETSObjectType {
     static constexpr auto RELATION = 2;
 
 public:
-    explicit ETSDynamicType(ArenaAllocator *allocator, std::tuple<util::StringView, util::StringView, Language> label,
+    explicit ETSDynamicType(ThreadSafeArenaAllocator *allocator,
+                            std::tuple<util::StringView, util::StringView, Language> label,
                             std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info, bool hasDecl)
         : ETSObjectType(allocator, std::get<NAME>(label), std::get<ASSEMBLER_NAME>(label),
                         std::make_tuple(std::get<DECL_NODE>(info), std::get<FLAGS>(info) | ETSObjectFlags::DYNAMIC,

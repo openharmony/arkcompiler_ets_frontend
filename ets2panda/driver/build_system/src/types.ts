@@ -37,6 +37,10 @@ export interface ArkTSGlobal {
   };
   es2panda: {
     _DestroyContext: Function;
+    _MemInitialize: Function;
+    _MemFinalize: Function;
+    _CreateGlobalContext: Function;
+    _DestroyGlobalContext: Function;
   }
 }
 
@@ -54,6 +58,8 @@ export interface ArkTS {
   generateTsDeclarationsFromContext: Function;
   destroyConfig: Function;
   Es2pandaContextState: typeof Es2pandaContextState;
+  MemInitialize: Function;
+  CreateGlobalContext: Function;
 }
 
 export enum Es2pandaContextState {
@@ -133,6 +139,7 @@ export interface DependentModuleConfig {
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
   compileFiles: string[];
+  entryFiles?: string[];
   dependentModuleList: DependentModuleConfig[];
 }
 // ProjectConfig ends
@@ -179,3 +186,13 @@ export interface DependencyFileConfig {
     [filePath: string]: string[];
   }
 }
+
+export interface JobInfo {
+  id: string;
+  isCompileAbc: boolean;
+  compileFileInfo: CompileFileInfo;
+  buildConfig: Object;
+  globalContextPtr?: KPointer;
+}
+
+export type KPointer = number | bigint;

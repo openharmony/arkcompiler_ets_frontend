@@ -193,7 +193,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
     for (auto *propExpr : objExpr->Properties()) {
         //  Skip possibly invalid properties:
         if (!propExpr->IsProperty()) {
-            ES2PANDA_ASSERT(ctx->checker->AsETSChecker()->IsAnyError());
+            ES2PANDA_ASSERT(ctx->GetChecker()->AsETSChecker()->IsAnyError());
             continue;
         }
 
@@ -250,9 +250,9 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
         return objExpr;
     }
 
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
-    auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *const varbinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
 
     checker->CheckObjectLiteralKeys(objExpr->Properties());
 

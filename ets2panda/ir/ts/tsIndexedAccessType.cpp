@@ -34,12 +34,8 @@ void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb, std::stri
         indexType_->SetTransformedNode(transformationName, transformedNode);
         indexType_ = static_cast<TypeNode *>(transformedNode);
     }
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+
+    TransformAnnotations(cb, transformationName);
 }
 
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const

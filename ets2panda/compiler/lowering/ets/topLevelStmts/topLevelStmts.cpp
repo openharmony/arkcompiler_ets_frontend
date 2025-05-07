@@ -58,8 +58,10 @@ bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *prog
 
     GlobalClassHandler globalClass(ctx->parser->AsETSParser(), ctx->Allocator());
     for (auto &[package, extPrograms] : program->ExternalSources()) {
-        auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
-        globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
+        if (!extPrograms.front()->IsASTLowered()) {
+            auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
+            globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
+        }
     }
 
     ArenaVector<parser::Program *> mainModule(ctx->Allocator()->Adapter());

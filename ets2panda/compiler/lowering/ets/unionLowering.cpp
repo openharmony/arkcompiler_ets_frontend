@@ -32,7 +32,7 @@ static void ReplaceAll(std::string &str, std::string_view substr, std::string_vi
     }
 }
 
-static std::string GetAccessClassName(const checker::ETSUnionType *unionType)
+std::string GetAccessClassName(const checker::ETSUnionType *unionType)
 {
     std::stringstream ss;
     ss << PREFIX;
@@ -47,7 +47,7 @@ static std::string GetAccessClassName(const checker::ETSUnionType *unionType)
 static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbinder::VarBinder *varbinder,
                                                 std::string const &name)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *allocator = ctx->Allocator();
     // Create the name for the synthetic class node
     if (auto foundVar = checker->Scope()->FindLocal(util::StringView(name), varbinder::ResolveBindingOptions::BINDINGS);
@@ -72,7 +72,7 @@ static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbin
 
     auto globalBlock = varbinder->Program()->Ast();
     classDecl->SetParent(globalBlock);
-    globalBlock->Statements().push_back(classDecl);
+    globalBlock->AddStatement(classDecl);
     classDecl->Check(checker);
     return classDef;
 }
@@ -82,7 +82,7 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
     checker::Signature *signature)
 {
     auto *allocator = ctx->Allocator();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
@@ -131,7 +131,7 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(public_lib::Context *
                                                            ir::MemberExpression *expr)
 {
     auto *const allocator = ctx->Allocator();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
@@ -166,7 +166,7 @@ static varbinder::LocalVariable *CreateNamedAccess(public_lib::Context *ctx, var
 {
     auto type = expr->TsType();
     auto name = expr->Property()->AsIdentifier()->Name();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
@@ -208,7 +208,7 @@ static ir::TSAsExpression *GenAsExpression(public_lib::Context *ctx, checker::Ty
     auto *const typeNode = ctx->AllocNode<ir::OpaqueTypeNode>(opaqueType, ctx->Allocator());
     auto *const asExpression = ctx->AllocNode<ir::TSAsExpression>(node, typeNode, false);
     asExpression->SetParent(parent);
-    asExpression->Check(ctx->checker->AsETSChecker());
+    asExpression->Check(ctx->GetChecker()->AsETSChecker());
     return asExpression;
 }
 
@@ -227,7 +227,7 @@ static ir::TSAsExpression *UnionCastToPrimitive(public_lib::Context *ctx, checke
 
 static ir::TSAsExpression *HandleUnionCastToPrimitive(public_lib::Context *ctx, ir::TSAsExpression *expr)
 {
-    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *checker = ctx->GetChecker()->AsETSChecker();
     auto *const unionType = expr->Expr()->TsType()->AsETSUnionType();
     auto *sourceType = unionType->FindExactOrBoxedType(checker, expr->TsType());
     if (sourceType == nullptr) {
@@ -262,7 +262,7 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(public_lib::Context *ctx, 
 
 bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *checker = ctx->GetChecker()->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
         [ctx, checker](checker::AstNodePtr ast) -> checker::AstNodePtr {
@@ -290,7 +290,7 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
 
 bool UnionLowering::PostconditionForModule(public_lib::Context *ctx, const parser::Program *program)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     bool current = !program->Ast()->IsAnyChild([checker](ir::AstNode *ast) {
         if (!ast->IsMemberExpression() || ast->AsMemberExpression()->Object()->TsType() == nullptr) {
             return false;

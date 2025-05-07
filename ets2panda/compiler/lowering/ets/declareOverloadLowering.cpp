@@ -24,7 +24,7 @@ namespace ark::es2panda::compiler {
 void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, size_t maxArg, bool hasRestVar,
                                   ArenaVector<ir::Expression *> &params)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     if (!hasRestVar) {
@@ -58,9 +58,9 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
 
 void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition *method)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *allocator = ctx->allocator;
-    auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *varBinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
 
     auto const &[minArg, maxArg, needHelperOverload, isDeclare, hasRestVar, returnVoid] = method->GetOverloadInfo();
     ES2PANDA_ASSERT(needHelperOverload);
@@ -107,7 +107,7 @@ void UpdateCallSignature(public_lib::Context *ctx, ir::CallExpression *expr)
 {
     ES2PANDA_ASSERT(expr->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM));
 
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     expr->SetTsType(nullptr);
     expr->Check(checker);
 }

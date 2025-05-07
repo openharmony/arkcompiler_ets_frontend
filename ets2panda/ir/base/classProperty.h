@@ -47,23 +47,17 @@ public:
 
     [[nodiscard]] bool IsDefaultAccessModifier() const noexcept
     {
-        return isDefault_;
+        return GetHistoryNodeAs<ClassProperty>()->isDefault_;
     }
 
-    void SetDefaultAccessModifier(bool isDefault)
-    {
-        isDefault_ = isDefault;
-    }
+    void SetDefaultAccessModifier(bool isDefault);
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
-        return typeAnnotation_;
+        return GetHistoryNodeAs<ClassProperty>()->typeAnnotation_;
     }
 
-    void SetTypeAnnotation(TypeNode *typeAnnotation) noexcept
-    {
-        typeAnnotation_ = typeAnnotation;
-    }
+    void SetTypeAnnotation(TypeNode *typeAnnotation);
 
     [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const isStatic) const override
     {

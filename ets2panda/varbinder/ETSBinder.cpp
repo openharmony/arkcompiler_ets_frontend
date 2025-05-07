@@ -77,7 +77,7 @@ bool ETSBinder::HandleDynamicVariables(ir::Identifier *ident, Variable *variable
 
 bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)
 {
-    auto *checker = GetContext()->checker->AsETSChecker();
+    auto *checker = GetContext()->GetChecker()->AsETSChecker();
     auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
     if (UNLIKELY(debugInfoPlugin)) {
         auto *var = debugInfoPlugin->FindClass(ident);
@@ -98,7 +98,7 @@ static void CreateDummyVariable(ETSBinder *varBinder, ir::Identifier *ident)
         varBinder->NewVarDecl<varbinder::LetDecl>(ident->Start(), compiler::GenName(varBinder->Allocator()).View());
     var->SetScope(varBinder->GetScope());
     ident->SetVariable(var);
-    ident->SetTsType(var->SetTsType(varBinder->GetContext()->checker->AsETSChecker()->GlobalTypeError()));
+    ident->SetTsType(var->SetTsType(varBinder->GetContext()->GetChecker()->AsETSChecker()->GlobalTypeError()));
     decl->BindNode(ident);
 }
 
@@ -520,7 +520,7 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
             }
         } else {
             ES2PANDA_ASSERT(GetContext()->diagnosticEngine->IsAnyError());
-            auto *checker = GetContext()->checker->AsETSChecker();
+            auto *checker = GetContext()->GetChecker()->AsETSChecker();
             prop->SetTsType(checker->GlobalTypeError());
             prop->Id()->SetTsType(checker->GlobalTypeError());
         }
@@ -647,11 +647,13 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
 
     if (!currentNode->HasOverload(method)) {
         currentNode->AddOverload(method);
-        method->Function()->Id()->SetVariable(variable);
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
-        util::UString newInternalName(method->Function()->Scope()->Name(), allocator);
-        method->Function()->Scope()->BindInternalName(newInternalName.View());
+        if (method->Function()->Scope()->InternalName() == "") {
+            method->Function()->Id()->SetVariable(variable);
+            method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+            method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+            util::UString newInternalName(method->Function()->Scope()->Name(), allocator);
+            method->Function()->Scope()->BindInternalName(newInternalName.View());
+        }
     }
 }
 
@@ -664,6 +666,9 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
     bool const isStdLib = util::Helpers::IsStdLib(Program());
 
     for (const auto [bindingName, var] : globalBindings) {
+        if (!var->Declaration()->Node()->IsValidInCurrentPhase()) {
+            continue;
+        }
         if (util::Helpers::IsGlobalVar(var)) {
             const auto *const classDef = var->Declaration()->Node()->AsClassDeclaration()->Definition();
             ImportGlobalProperties(classDef);
@@ -973,7 +978,10 @@ static Variable *FindInStatic(parser::Program *program)
 
 static Variable *FindInInstance(parser::Program *program)
 {
-    auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
+    auto predicateFunc = [](const auto &item) {
+        return item.second->Declaration()->Node()->IsValidInCurrentPhase() &&
+               item.second->Declaration()->Node()->IsDefaultExported();
+    };
     const auto &instanceMethodBindings = program->GlobalClassScope()->InstanceMethodScope()->Bindings();
     auto result = std::find_if(instanceMethodBindings.begin(), instanceMethodBindings.end(), predicateFunc);
     if (result == instanceMethodBindings.end()) {
@@ -1117,7 +1125,7 @@ bool ETSBinder::BuildInternalName(ir::ScriptFunction *scriptFunc)
 
     bool compilable = scriptFunc->Body() != nullptr && !isExternal;
     if (!compilable) {
-        recordTable_->Signatures().push_back(funcScope);
+        recordTable_->EmplaceSignatures(funcScope, scriptFunc);
     }
 
     return compilable;
@@ -1140,7 +1148,7 @@ bool ETSBinder::BuildInternalNameWithCustomRecordTable(ir::ScriptFunction *const
 
     const bool compilable = scriptFunc->Body() != nullptr && !isExternal;
     if (!compilable) {
-        recordTable->Signatures().push_back(funcScope);
+        recordTable->EmplaceSignatures(funcScope, scriptFunc);
     }
 
     return compilable;
@@ -1195,10 +1203,7 @@ void ETSBinder::BuildProgram()
     for (auto &[_, extPrograms] : Program()->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            if (!extProg->GetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED)) {
-                BuildExternalProgram(extProg);
-                extProg->SetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED);
-            }
+            BuildExternalProgram(extProg);
         }
     }
 
@@ -1208,7 +1213,7 @@ void ETSBinder::BuildProgram()
 
     ValidateReexports();
 
-    auto &stmts = Program()->Ast()->Statements();
+    auto &stmts = Program()->Ast()->StatementsForUpdates();
     const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsClassDeclaration() && stmt->AsClassDeclaration()->Definition()->IsGlobal();
     });
@@ -1234,13 +1239,19 @@ void ETSBinder::BuildExternalProgram(parser::Program *extProgram)
 
     auto flags = Program()->VarBinder()->IsGenStdLib() ? RecordTableFlags::NONE : RecordTableFlags::EXTERNAL;
     auto *extRecordTable = Allocator()->New<RecordTable>(Allocator(), extProgram, flags);
+    extRecordTable->SetClassDefinition(extProgram->GlobalClass());
+
     externalRecordTable_.insert({extProgram, extRecordTable});
 
     ResetTopScope(extProgram->GlobalScope());
     recordTable_ = extRecordTable;
     SetProgram(extProgram);
 
-    BuildProgram();
+    if (!extProgram->IsASTLowered()) {
+        BuildProgram();
+    } else {
+        extRecordTable->Merge(extProgram->VarBinder()->AsETSBinder()->GetExternalRecordTable().at(extProgram));
+    }
 
     SetProgram(savedProgram);
     recordTable_ = savedRecordTable;
@@ -1332,7 +1343,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
 
     const auto *const import = decl->GetETSImportDeclarations();
     const auto &specifiers = import->Specifiers();
-    for (auto specifier : specifiers) {
+    for (auto const specifier : specifiers) {
         // Example: export {foo} from "./A"
         if (specifier->IsImportSpecifier()) {
             auto importSpecifier = specifier->AsImportSpecifier();
