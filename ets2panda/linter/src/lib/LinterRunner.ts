@@ -31,6 +31,7 @@ import {
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { EXTNAME_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
@@ -213,6 +214,10 @@ function getMigrationCreateProgramCallback(updatedSourceTexts: Map<string, strin
 }
 
 function shouldProcessFile(options: LinterOptions, fileFsPath: string): boolean {
+  if (!options.checkTsAndJs && (path.extname(fileFsPath) === EXTNAME_TS || path.extname(fileFsPath) === EXTNAME_JS)) {
+    return false;
+  }
+
   if (
     ARKTS_IGNORE_FILES.some((ignore) => {
       return path.basename(fileFsPath) === ignore;

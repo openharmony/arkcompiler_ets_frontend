@@ -44,4 +44,5 @@ export interface LinterOptions {
   noMigrationBackupFile?: boolean;
   migrationReport?: boolean;
   wholeProjectPath?: string;
+  checkTsAndJs?: boolean;
 }
