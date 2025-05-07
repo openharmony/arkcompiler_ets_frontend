@@ -20,6 +20,8 @@ import { isNullPtr } from './Wrapper';
 import { global } from './global';
 import { NativePtrDecoder } from './Platform';
 
+enum HierarchyType { OTHERS, INTERFACE, CLASS };
+
 export abstract class LspNode {
   readonly peer: KNativePointer;
 
@@ -402,6 +404,44 @@ export class LspLineAndCharacter extends LspNode {
     this.line = global.es2panda._getLine(peer);
     this.character = global.es2panda._getChar(peer);
   }
+}
+
+export class LspTypeHierarchies extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromTypeHierarchies(peer));
+    this.name = unpackString(global.es2panda._getNameFromTypeHierarchies(peer));
+    this.type = global.es2panda._getTypeFromTypeHierarchies(peer);
+    this.pos = global.es2panda._getPosFromTypeHierarchies(peer);
+    this.subOrSuper = new NativePtrDecoder()
+      .decode(global.es2panda._getSubOrSuper(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspTypeHierarchies(elPeer);
+      });
+  }
+  readonly fileName: String;
+  readonly name: String;
+  readonly type: HierarchyType;
+  readonly pos: KInt;
+  subOrSuper: LspTypeHierarchies[];
+}
+
+export class LspTypeHierarchiesInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromTypeHierarchiesInfo(peer));
+    this.name = unpackString(global.es2panda._getNameFromTypeHierarchiesInfo(peer));
+    this.type = global.es2panda._getTypeFromTypeHierarchiesInfo(peer);
+    this.pos = global.es2panda._getPositionFromTypeHierarchiesInfo(peer);
+    this.superHierarchies = new LspTypeHierarchies(global.es2panda._getSuperFromTypeHierarchiesInfo(peer));
+    this.subHierarchies = new LspTypeHierarchies(global.es2panda._getSubFromTypeHierarchiesInfo(peer));
+  }
+  readonly fileName: String;
+  readonly name: String;
+  readonly type: HierarchyType;
+  readonly pos: KInt;
+  readonly superHierarchies: LspTypeHierarchies;
+  readonly subHierarchies: LspTypeHierarchies;
 }
 
 enum LspInlayHintKind {

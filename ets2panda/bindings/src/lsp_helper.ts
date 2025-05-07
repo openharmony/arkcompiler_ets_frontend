@@ -25,6 +25,7 @@ import {
   LspReferenceLocationList,
   LspLineAndCharacter,
   LspReferenceData,
+  LspTypeHierarchiesInfo,
   LspTextSpan,
   LspInlayHint,
   LspInlayHintList,
@@ -232,6 +233,60 @@ export class Lsp {
       result.push(...refs.referenceInfos);
     }
     return Array.from(new Set(result));
+  }
+
+  getTypeHierarchies(filename: String, offset: number): LspTypeHierarchiesInfo | null {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let ptr = global.es2panda._getTypeHierarchies(localCtx, localCtx, offset);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    let ref = new LspTypeHierarchiesInfo(ptr);
+    if (ref.fileName === '') {
+      lspDriverHelper.destroyContext(localCtx);
+      lspDriverHelper.destroyConfig(localCfg);
+      return null;
+    }
+    let result: LspTypeHierarchiesInfo[] = [];
+    let moduleName = path.basename(path.dirname(arktsconfig));
+    let buildConfig: BuildConfig = this.moduleToBuildConfig[moduleName];
+    for (let i = 0; i < buildConfig.compileFiles.length; i++) {
+      let filePath = path.resolve(buildConfig.compileFiles[i]);
+      let arktsconfig = this.fileNameToArktsconfig[filePath];
+      let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
+      let searchCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+      const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
+      let searchCtx = lspDriverHelper.createCtx(source, filePath, searchCfg);
+      PluginDriver.getInstance().getPluginContext().setContextPtr(searchCtx);
+      lspDriverHelper.proceedToState(searchCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      lspDriverHelper.proceedToState(searchCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      let ptr = global.es2panda._getTypeHierarchies(searchCtx, localCtx, offset);
+      PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+      lspDriverHelper.destroyContext(searchCtx);
+      lspDriverHelper.destroyConfig(searchCfg);
+      let refs = new LspTypeHierarchiesInfo(ptr);
+      if (i > 0) {
+        result[0].subHierarchies.subOrSuper = result[0].subHierarchies.subOrSuper.concat(refs.subHierarchies.subOrSuper);
+      } else {
+        result.push(refs);
+      }
+    }
+    for (let j = 0; j < result[0].subHierarchies.subOrSuper.length; j++) {
+      let res = this.getTypeHierarchies(result[0].subHierarchies.subOrSuper[j].fileName, result[0].subHierarchies.subOrSuper[j].pos);
+      if (res !== null) {
+        result[0].subHierarchies.subOrSuper[j].subOrSuper = result[0].subHierarchies.subOrSuper[j].subOrSuper.concat(res.subHierarchies.subOrSuper);
+      }
+    }
+    return result[0];
   }
 
   getSyntacticDiagnostics(filename: String): LspDiagsNode {
