@@ -912,17 +912,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (this.checkFileExists(importDeclNode.importClause)) {
-      return;
+    const pathParts = modulePath.split(PATH_SEPARATOR);
+    const etsIdx = pathParts.indexOf(ETS_PART);
+
+    if (this.options.wholeProjectPath) {
+      if (TsUtils.checkFileExists(etsIdx !== 0, importDeclNode, modulePath, this.options.wholeProjectPath)) {
+        return;
+      }
     }
 
     if (TsUtils.isValidOhModulePath(modulePath) || !TsUtils.isOhModule(modulePath)) {
       // Valid or paths that we do not check because they are not ohModules
       return;
     }
-
-    const pathParts = modulePath.split(PATH_SEPARATOR);
-    const etsIdx = pathParts.indexOf(ETS_PART);
 
     if (etsIdx === 0) {
       const autofix = this.autofixer?.addDefaultModuleToPath(pathParts, importDeclNode);
@@ -932,42 +934,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const autofix = this.autofixer?.fixImportPath(pathParts, etsIdx, importDeclNode);
     this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
-  }
-
-  private checkFileExists(importClause: ts.ImportClause): boolean {
-    for (const child of importClause.getChildren()) {
-      if (child.kind === ts.SyntaxKind.NamedImports) {
-        return this.checkNamedImports(child as ts.NamedImports);
-      }
-    }
-    return false;
-  }
-
-  private checkNamedImports(namedImports: ts.NamedImports): boolean {
-
-    /*
-     * this named import should have atleast 1 item,
-     * if we have 1 item
-     */
-    const checks: boolean[] = [];
-
-    for (const specifier of namedImports.getChildren()) {
-      if (!ts.isImportSpecifier(specifier)) {
-        continue;
-      }
-      const ident = specifier.name;
-      checks.push(this.checkIdentifier(ident));
-    }
-
-    return checks.includes(true);
-  }
-
-  private checkIdentifier(ident: ts.Identifier): boolean {
-    const declNode = this.tsUtils.getDeclarationNode(ident);
-    if (declNode) {
-      return true;
-    }
-    return false;
   }
 
   private handleSharedModuleNoSideEffectImport(node: ts.ImportDeclaration): void {

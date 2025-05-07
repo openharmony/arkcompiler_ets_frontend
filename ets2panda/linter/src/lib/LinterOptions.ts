@@ -43,4 +43,5 @@ export interface LinterOptions {
   migrationFilePathMap?: Map<string, string>;
   noMigrationBackupFile?: boolean;
   migrationReport?: boolean;
+  wholeProjectPath?: string;
 }
