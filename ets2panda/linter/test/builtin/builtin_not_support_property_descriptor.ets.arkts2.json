@@ -16,10 +16,20 @@
     "result": [
         {
             "line": 16,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 2,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
             "column": 12,
             "endLine": 16,
             "endColumn": 13,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -29,17 +39,7 @@
             "column": 15,
             "endLine": 16,
             "endColumn": 33,
-            "problem": "NoPropertyDescritor",
-            "suggest": "",
-            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 15,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -49,7 +49,7 @@
             "column": 2,
             "endLine": 17,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -59,7 +59,7 @@
             "column": 2,
             "endLine": 18,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -69,7 +69,7 @@
             "column": 2,
             "endLine": 19,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -79,7 +79,7 @@
             "column": 2,
             "endLine": 20,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -89,7 +89,7 @@
             "column": 2,
             "endLine": 21,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -99,7 +99,7 @@
             "column": 2,
             "endLine": 22,
             "endColumn": 3,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -109,17 +109,7 @@
             "column": 5,
             "endLine": 25,
             "endColumn": 9,
-            "problem": "NoPropertyDescritor",
-            "suggest": "",
-            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 11,
-            "endLine": 25,
-            "endColumn": 42,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
@@ -129,19 +119,9 @@
             "column": 11,
             "endLine": 25,
             "endColumn": 34,
-            "problem": "NoPropertyDescritor",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 45,
-            "endLine": 25,
-            "endColumn": 46,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
             "severity": "ERROR"
         },
         {
@@ -158,60 +138,170 @@
             "line": 28,
             "column": 3,
             "endLine": 28,
-            "endColumn": 9,
+            "endColumn": 32,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 3,
-            "endLine": 28,
+            "line": 37,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 2,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 13,
+            "problem": "NoPropertyDescriptor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 5,
+            "endLine": 38,
             "endColumn": 6,
-            "problem": "LimitedReturnTypeInference",
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
-            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 7,
-            "endLine": 28,
-            "endColumn": 8,
-            "problem": "AnyType",
+            "line": 39,
+            "column": 5,
+            "endLine": 39,
+            "endColumn": 6,
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {
-            "line": 29,
-            "column": 15,
-            "endLine": 29,
-            "endColumn": 20,
-            "problem": "LimitedLiteralType",
+            "line": 40,
+            "column": 5,
+            "endLine": 40,
+            "endColumn": 6,
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
-            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {
-            "line": 30,
-            "column": 17,
-            "endLine": 30,
-            "endColumn": 22,
-            "problem": "LimitedLiteralType",
+            "line": 41,
+            "column": 5,
+            "endLine": 41,
+            "endColumn": 6,
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
-            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
             "severity": "ERROR"
         },
         {
-            "line": 31,
-            "column": 13,
-            "endLine": 31,
-            "endColumn": 17,
-            "problem": "LimitedLiteralType",
+            "line": 42,
+            "column": 5,
+            "endLine": 42,
+            "endColumn": 6,
+            "problem": "NoPropertyDescriptor",
             "suggest": "",
-            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 5,
+            "endLine": 43,
+            "endColumn": 6,
+            "problem": "NoPropertyDescriptor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 5,
+            "endLine": 46,
+            "endColumn": 9,
+            "problem": "NoPropertyDescriptor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 5,
+            "endLine": 48,
+            "endColumn": 41,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 5,
+            "endLine": 49,
+            "endColumn": 34,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 11,
+            "endLine": 57,
+            "endColumn": 29,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 1,
+            "endLine": 57,
+            "endColumn": 32,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 5,
+            "endLine": 61,
+            "endColumn": 7,
+            "problem": "NoPropertyDescriptor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 9,
+            "endLine": 61,
+            "endColumn": 27,
+            "problem": "NoPropertyDescriptor",
+            "suggest": "",
+            "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 30,
+            "endLine": 61,
+            "endColumn": 31,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
             "severity": "ERROR"
         }
     ]

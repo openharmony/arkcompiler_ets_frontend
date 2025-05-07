@@ -624,6 +624,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
     }
+    this.handlePropertyDescriptorInScenarios(tsParam);
   }
 
   private handleEnumDeclaration(node: ts.Node): void {
@@ -2143,6 +2144,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
     this.handleObjectLiteralAssignment(tsVarDecl);
+    this.handlePropertyDescriptorInScenarios(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -3037,21 +3039,77 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.checkCollectionsSymbol(tsIdentSym, node);
       this.checkArkTSUtilsSymbol(tsIdentSym, node);
     }
-    this.handlePropertyDescriptor(tsIdentifier, tsIdentSym);
   }
 
-  private handlePropertyDescriptor(tsIdentifier: ts.Identifier, symbol: ts.Symbol): void {
+  private handlePropertyDescriptorInScenarios(node: ts.Node): void {
+    if (ts.isVariableDeclaration(node)) {
+      const name = node.name;
+      this.handlePropertyDescriptor(name);
+
+      const type = node.type;
+      if (!type || !ts.isTypeReferenceNode(type)) {
+        return;
+      }
+      const typeName = type.typeName;
+      this.handlePropertyDescriptor(typeName);
+    }
+
+    if (ts.isParameter(node)) {
+      const name = node.name;
+      this.handlePropertyDescriptor(name);
+
+      const type = node.type;
+      if (!type || !ts.isTypeReferenceNode(type)) {
+        return;
+      }
+      const typeName = type.typeName;
+      this.handlePropertyDescriptor(typeName);
+    }
+
+    if (ts.isPropertyAccessExpression(node)) {
+      const name = node.name;
+      this.handlePropertyDescriptor(name);
+
+      const expression = node.expression;
+      this.handlePropertyDescriptor(expression);
+    }
+  }
+
+  private handlePropertyDescriptor(node: ts.Node): void {
     if (!this.options.arkts2) {
       return;
     }
-    if (tsIdentifier.getFullText().includes('PropertyDescriptor')) {
-      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    if (!symbol || !ts.isIdentifier(node)) {
+      return;
+    }
+    const tsIdentifier = node;
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, tsIdentifier);
+
+    const typeSymbol = type.getSymbol();
+    const typeName = typeSymbol ? typeSymbol.getName() : symbol.getName();
+
+    const noPropertyDescriptorSet = TypeScriptLinter.globalApiInfo.get(BuiltinProblem.BuiltinNoPropertyDescriptor);
+    if (!noPropertyDescriptorSet) {
+      return;
     }
 
-    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, tsIdentifier);
-    const typeString = this.tsTypeChecker.typeToString(type);
-    if (typeString.startsWith('PropertyDescriptor') || typeString.startsWith('TypedPropertyDescriptor')) {
-      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescritor);
+    const matchedApi = [...noPropertyDescriptorSet].some((apiInfoItem) => {
+      if (apiInfoItem.api_info.parent_api?.length <= 0) {
+        return false;
+      }
+      const apiInfoParentName = apiInfoItem.api_info.parent_api[0].api_name;
+      const apiTypeName = apiInfoItem.api_info.method_return_type;
+      const isSameApi = apiInfoParentName === typeName || apiTypeName === typeName;
+      const decl = TsUtils.getDeclaration(typeSymbol ? typeSymbol : symbol);
+      const sourceFileName = path.normalize(decl?.getSourceFile().fileName || '');
+      const isSameFile = sourceFileName.endsWith(path.normalize(apiInfoItem.file_path));
+      return isSameFile && isSameApi;
+    });
+
+    if (matchedApi) {
+      this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescriptor);
     }
   }
 
@@ -4367,17 +4425,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.checkSendableTypeArguments(typeRef);
     }
     this.handleQuotedHyphenPropsDeprecated(typeRef);
-    this.handlePropertyDescriptorType(typeRef);
-  }
-
-  private handlePropertyDescriptorType(typeRef: ts.TypeReferenceNode): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    const typeName = this.tsUtils.entityNameToString(typeRef.typeName);
-    if (typeName.includes('PropertyDescriptor')) {
-      this.incrementCounters(typeRef, FaultID.NoPropertyDescritor);
-    }
   }
 
   private checkPartialType(node: ts.Node): void {
@@ -6311,6 +6358,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(node, FaultID.BinaryOperations);
       }
     }
+    this.handlePropertyDescriptorInScenarios(node);
   }
 
   private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {

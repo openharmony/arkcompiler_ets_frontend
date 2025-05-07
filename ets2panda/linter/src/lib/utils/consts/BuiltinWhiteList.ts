@@ -16,7 +16,8 @@
 export enum BuiltinProblem {
   LimitedThisArg = 'ThisArg',
   SymbolIterator = 'SymbolIterator',
-  BuiltinNoCtorFunc = 'BuiltinNoCtorFunc'
+  BuiltinNoCtorFunc = 'BuiltinNoCtorFunc',
+  BuiltinNoPropertyDescriptor = 'NoPropertyDescriptor'
 }
 
 export const SYMBOL_ITERATOR: string = 'Symbol.iterator';

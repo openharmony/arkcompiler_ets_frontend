@@ -25,8 +25,37 @@ function f(a: PropertyDescriptor) {
 let desc: TypedPropertyDescriptor<number> = {
   value:1,
   get():number {return this.value},
-  set(v) (this.value = v),
+  set(v): void {this.value = v},
   enumerable: false,
   configurable: false,
   writable: true
 }
+
+type MyPropertyDescriptor = PropertyDescriptor;
+type MyTypedPropertyDescriptor<T> = TypedPropertyDescriptor<T>;
+
+function f(a: MyPropertyDescriptor) {
+    a.configurable;
+    a.enumerable;
+    a.value;
+    a.writable;
+    a.get;
+    a.set;
+}
+
+let desc: MyTypedPropertyDescriptor<number> = {
+    value: 1,
+    get(): number { return this.value; },
+    set(v): void {this.value = v},
+    enumerable: false,
+    configurable: false,
+    writable: true
+};
+
+interface APropertyDescriptor {}
+interface PropertyDescriptorA {}
+interface PropertyDescriptor {}
+
+let a1: APropertyDescriptor = {}
+let a2: PropertyDescriptorA = {}
+let a3: PropertyDescriptor = {}

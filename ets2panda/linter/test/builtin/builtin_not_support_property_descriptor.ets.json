@@ -15,33 +15,23 @@
     ],
     "result": [
         {
-            "line": 25,
-            "column": 45,
-            "endLine": 25,
-            "endColumn": 46,
+            "line": 57,
+            "column": 1,
+            "endLine": 57,
+            "endColumn": 32,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 30,
+            "endLine": 61,
+            "endColumn": 31,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 3,
-            "endLine": 28,
-            "endColumn": 6,
-            "problem": "LimitedReturnTypeInference",
-            "suggest": "",
-            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 7,
-            "endLine": 28,
-            "endColumn": 8,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]
