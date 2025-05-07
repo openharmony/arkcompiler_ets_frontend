@@ -3687,18 +3687,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const expression = callExpr.expression;
-
-    if (!ts.isIdentifier(expression)) {
-      return;
-    }
-
-    const symbol = this.tsTypeChecker.getSymbolAtLocation(expression);
-
-    if (!symbol) {
-      return;
-    }
-
-    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, expression);
+    const type = this.tsTypeChecker.getTypeAtLocation(expression);
     const typeText = this.tsTypeChecker.typeToString(type);
     if (typeText === LIKE_FUNCTION) {
       const autofix = this.autofixer?.fixNoTsLikeFunctionCall(expression);

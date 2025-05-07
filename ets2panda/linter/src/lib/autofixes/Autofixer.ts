@@ -3893,7 +3893,7 @@ export class Autofixer {
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
   }
 
-  fixNoTsLikeFunctionCall(identifier: ts.Identifier): Autofix[] {
+  fixNoTsLikeFunctionCall(identifier: ts.Node): Autofix[] {
     void this;
     const funcName = identifier.getText();
     const replacementText = `${funcName}.unSafeCall`;

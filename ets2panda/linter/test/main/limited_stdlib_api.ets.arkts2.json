@@ -85,6 +85,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 34,
+            "column": 19,
+            "endLine": 34,
+            "endColumn": 32,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
             "line": 56,
             "column": 8,
             "endLine": 56,
