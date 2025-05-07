@@ -21,6 +21,8 @@
 #include "path_getter.h"
 #include "os/filesystem.h"
 
+namespace {
+
 class DepAnalyzerTest : public testing::Test {
 public:
     DepAnalyzerTest() = default;
@@ -96,3 +98,5 @@ TEST_F(DepAnalyzerTest, Subtestv4)
     GetExpectedAns(expected, testFolderNum, testFileCounter);
     ASSERT(GetTestSourcePaths() == expected);
 }
+
+}  // namespace

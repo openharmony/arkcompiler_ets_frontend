@@ -2481,7 +2481,11 @@ export class TypeScriptLinter {
 
   private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
     let currentNode = typeNode;
+    /* CC-OFFNXT(no_explicit_any) std lib */
+    // Handle comment directive '@ts-nocheck'
     while ((currentNode as any).expression) {
+      /* CC-OFFNXT(no_explicit_any) std lib */
+      // Handle comment directive '@ts-nocheck'
       currentNode = (currentNode as any).expression;
     }
     return currentNode;

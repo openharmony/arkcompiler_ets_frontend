@@ -24,6 +24,8 @@
 #include "varbinder/ETSBinder.h"
 #include "util/diagnosticEngine.h"
 
+namespace {
+
 using ark::es2panda::ScriptExtension;
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::ArithmeticOperationValid;
@@ -278,3 +280,5 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
         EXPECT_TRUE(Verify<VariableNameIdentifierNameSame>());
     }
 }
+
+}  // namespace
