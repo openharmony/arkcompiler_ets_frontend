@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-import lazy { lazyImportFunc } from 'import_target/import_target'
+import lazy defaultImportFunc, { lazyImportFunc } from 'import_target/import_target'
 print("lazy import");

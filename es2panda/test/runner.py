@@ -2293,10 +2293,13 @@ class TestVersionControl(Test):
         api_name = ""
         # Higher than the specific API version, expected results may differ
         if target_api_version != "" and specific_api_version != "":
-            if self.compare_two_versions(target_api_version, specific_api_version) >= 0:
-                api_name = "for_higher_or_equal_to_%s_" % (specific_api_version)
+            if self.compare_two_versions(target_api_version, "API18") >= 0:
+                api_name = "for_higher_or_equal_to_%s_" % "API18"
             else:
-                api_name = "for_below_%s_" % (specific_api_version)
+                if self.compare_two_versions(target_api_version, specific_api_version) >= 0:
+                    api_name = "for_higher_or_equal_to_%s_" % (specific_api_version)
+                else:
+                    api_name = "for_below_%s_" % (specific_api_version)
         if dump_type == "ast":
             dump_type = ""
         elif dump_type == "asm":
@@ -2676,7 +2679,8 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/import/syntax/api12/beta2", "js",
                          ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/js/language/import", "ts",
-                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=18"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=12",
+                          "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class", "ts",
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class/api12beta2", "ts",
