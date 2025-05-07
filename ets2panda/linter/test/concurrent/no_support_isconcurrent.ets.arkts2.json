@@ -1,0 +1,48 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 32,
+            "endLine": 23,
+            "endColumn": 44,
+            "problem": "IsConcurrentDeprecated",
+            "suggest": "",
+            "rule": "isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 27,
+            "endLine": 25,
+            "endColumn": 39,
+            "problem": "IsConcurrentDeprecated",
+            "suggest": "",
+            "rule": "isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)",
+            "severity": "ERROR"
+        }
+    ]
+}
