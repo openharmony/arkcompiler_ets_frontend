@@ -2282,7 +2282,7 @@ class TestVersionControl(Test):
     def run_process(self, cmd):
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = self.process.communicate()
-        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
+        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore")
         return stdout, stderr
 
     def run_process_compile(self, runner, target_api_version, target_api_sub_version="bata3", dump_type=""):
@@ -2529,17 +2529,17 @@ def add_directory_for_version_control(runners, args):
         "version_control/API12beta3/bytecode_feature/import_target",
     )
     runner.add_directory(
-        "version_control/API16/bytecode_feature",
+        "version_control/API18/bytecode_feature",
         "js",
         [],
-        "API16",
+        "API18",
         "bytecode_feature",
     )
     runner.add_directory(
-        "version_control/API16/bytecode_feature",
+        "version_control/API18/bytecode_feature",
         "ts",
-        ["--module"],
-        "API16",
+        ["--module", "--enable-annotations"],
+        "API18",
         "bytecode_feature",
     )
     runners.append(runner)
@@ -2709,7 +2709,7 @@ def add_directory_for_compiler(runners, args):
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
-                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-deps-info", "--remove-redundant-file", "--enable-annotations",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
@@ -2720,7 +2720,7 @@ def add_directory_for_compiler(runners, args):
                                                  "--abc-class-threads=4"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/cache_projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
-                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-deps-info", "--remove-redundant-file", "--enable-annotations",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4",
                                                  "--cache-file"]))
 
