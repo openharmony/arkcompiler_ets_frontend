@@ -437,7 +437,8 @@ Variable *ParamScope::AddParameter(ArenaAllocator *allocator, Decl *newDecl, Var
     return param;
 }
 
-std::tuple<Variable *, ir::Expression *> ParamScope::AddParamDecl(ArenaAllocator *allocator, ir::Expression *parameter)
+std::tuple<Variable *, ir::Expression *> ParamScope::AddParamDecl(ArenaAllocator *allocator, varbinder::VarBinder *vb,
+                                                                  ir::Expression *parameter)
 {
     auto [name, pattern] = util::Helpers::ParamName(allocator, parameter, params_.size());
     if (name.Is(ERROR_LITERAL)) {
@@ -450,7 +451,7 @@ std::tuple<Variable *, ir::Expression *> ParamScope::AddParamDecl(ArenaAllocator
     }
 
     if (pattern) {
-        std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(parameter);
+        std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(vb, parameter);
 
         for (auto *binding : bindings) {
             auto *varDecl = NewDecl<VarDecl>(allocator, binding->Name());

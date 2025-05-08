@@ -87,7 +87,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         auto *const paramExpression =
             checker->AllocNode<ir::ETSParameterExpression>(paramIdent, false, checker->Allocator());
         paramExpression->SetRange(paramIdent->Range());
-        auto [paramVar, node] = paramScope->AddParamDecl(checker->Allocator(), paramExpression);
+        auto [paramVar, node] = paramScope->AddParamDecl(checker->Allocator(), varbinder, paramExpression);
         if (node != nullptr) {
             varbinder->ThrowRedeclaration(node->Start(), paramVar->Name());
         }

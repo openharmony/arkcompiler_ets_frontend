@@ -165,6 +165,7 @@ public:
     void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
     virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const;
+    virtual bool IsGlobalIdentifier(const util::StringView &str) const;
 
     void PropagateDirectEval() const;
 
