@@ -32,7 +32,7 @@ Variable *VarBinder::AddParamDecl(ir::Expression *param)
 {
     ES2PANDA_ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
 
-    auto [var, node] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
+    auto [var, node] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), this, param);
     ES2PANDA_ASSERT(var != nullptr);
 
     if (node != nullptr) {
@@ -87,6 +87,11 @@ void VarBinder::ThrowError(const lexer::SourcePosition &pos, const diagnostic::D
                            const util::DiagnosticMessageParams &params) const
 {
     context_->diagnosticEngine->ThrowSyntaxError(kind, params, pos);
+}
+
+bool VarBinder::IsGlobalIdentifier(const util::StringView &str) const
+{
+    return util::Helpers::IsGlobalIdentifier(str);
 }
 
 void VarBinder::IdentifierAnalysis()
@@ -256,7 +261,7 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *childNode)
             auto *ident = childNode->AsIdentifier();
             const auto &name = ident->Name();
 
-            if (util::Helpers::IsGlobalIdentifier(name) || name.Is(ERROR_LITERAL)) {
+            if (IsGlobalIdentifier(name) || name.Is(ERROR_LITERAL)) {
                 break;
             }
 

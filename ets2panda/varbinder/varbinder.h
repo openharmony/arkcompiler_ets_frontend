@@ -170,6 +170,7 @@ public:
     }
     virtual void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
                             const util::DiagnosticMessageParams &params) const;
+    virtual bool IsGlobalIdentifier(const util::StringView &str) const;
 
     void PropagateDirectEval() const;
 

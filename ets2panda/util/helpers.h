@@ -149,7 +149,7 @@ public:
     static compiler::Literal ToConstantLiteral(const ir::Expression *expr);
     static bool IsBindingPattern(const ir::AstNode *node);
     static bool IsPattern(const ir::AstNode *node);
-    static std::vector<ir::Identifier *> CollectBindingNames(ir::Expression *node);
+    static std::vector<ir::Identifier *> CollectBindingNames(varbinder::VarBinder *vb, ir::Expression *node);
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static void CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
                                   const ir::ImportSpecifier *specifier, const std::string &fileName);

@@ -2690,7 +2690,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     auto *paramExpression = ProgramAllocNode<ir::ETSParameterExpression>(paramIdent, false, ProgramAllocator());
     paramExpression->SetRange(paramIdent->Range());
 
-    auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), paramExpression);
+    auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), VarBinder(), paramExpression);
     if (node != nullptr) {
         VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
     }
