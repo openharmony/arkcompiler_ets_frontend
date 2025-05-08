@@ -100,6 +100,9 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
             if (paramType == nullptr) {
                 continue;
             }
+            if (arg->IsArrowFunctionExpression()) {
+                checker->Relation()->SetNode(arg);
+            }
 
             if (checker->EnhanceSubstitutionForType(sigInfo->typeParams, paramType, argType, substitution)) {
                 inferStatus[ix] = true;
