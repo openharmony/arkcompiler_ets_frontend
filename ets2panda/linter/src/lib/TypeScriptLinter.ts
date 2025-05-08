@@ -1684,7 +1684,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         break;
       default:
     }
-    this.checkNumericSemantics(tsBinaryExpr);
     this.checkInterOpImportJsDataCompare(tsBinaryExpr);
     this.checkInteropEqualityJudgment(tsBinaryExpr);
   }
@@ -1804,30 +1803,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ) {
         this.incrementCounters(tsLhsExpr, FaultID.PropertyDeclOnFunction);
       }
-    }
-  }
-
-  private checkNumericSemantics(binaryExpr: ts.BinaryExpression): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    if (isAssignmentOperator(binaryExpr.operatorToken)) {
-      this.checkAssignmentNumericSemantics(binaryExpr);
-    } else if (binaryExpr.operatorToken.kind === ts.SyntaxKind.SlashToken) {
-      this.checkDivisionNumericSemantics(binaryExpr);
-    }
-  }
-
-  private checkAssignmentNumericSemantics(binaryExpr: ts.BinaryExpression): void {
-    const sym = this.tsTypeChecker.getSymbolAtLocation(binaryExpr.left);
-    if (this.tsUtils.isIntegerVariable(sym) && !this.tsUtils.isIntegerValue(binaryExpr.right)) {
-      this.incrementCounters(binaryExpr, FaultID.NumericSemantics);
-    }
-  }
-
-  private checkDivisionNumericSemantics(binaryExpr: ts.BinaryExpression): void {
-    if (this.tsUtils.isIntegerValue(binaryExpr.left) && this.tsUtils.isIntegerValue(binaryExpr.right)) {
-      this.incrementCounters(binaryExpr, FaultID.NumericSemantics);
     }
   }
 
@@ -3676,24 +3651,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !tsCallExpr) {
       return;
     }
-    const isNullishCoalescing =
-      ts.isBinaryExpression(tsCallExpr.parent) &&
-      tsCallExpr.parent.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken;
-    const isTypeAssertion = ts.isAsExpression(tsCallExpr.parent);
-    if (!isNullishCoalescing && !isTypeAssertion) {
-      return;
+    let varDecl: ts.VariableDeclaration | undefined;
+    let parent = tsCallExpr.parent;
+
+    while (parent) {
+      if (ts.isVariableDeclaration(parent)) {
+        varDecl = parent;
+        break;
+      }
+      parent = parent.parent;
     }
-    const varDecl = isNullishCoalescing ? tsCallExpr.parent.parent : tsCallExpr.parent;
-    if (!varDecl || !ts.isVariableDeclaration(varDecl)) {
-      return;
-    }
-    if (varDecl.type) {
+
+    if (!varDecl || varDecl.type) {
       return;
     }
     const callReturnType = this.tsTypeChecker.getTypeAtLocation(tsCallExpr);
     const isNumberReturnType = callReturnType.flags & ts.TypeFlags.Number;
     const isNumberGeneric = ((): boolean => {
       if (tsCallExpr.typeArguments?.length !== 1) {
+        return false;
+      }
+      const callText = tsCallExpr.getText();
+      if (callText.startsWith('Array<') || callText.startsWith('Set<') || callText.startsWith('Map<')) {
         return false;
       }
       const typeArg = tsCallExpr.typeArguments[0];

@@ -555,16 +555,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 77,
-            "column": 12,
-            "endLine": 77,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 78,
             "column": 7,
             "endLine": 78,
