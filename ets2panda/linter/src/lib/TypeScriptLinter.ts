@@ -875,6 +875,25 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(importDeclNode);
     this.checkStdLibConcurrencyImport(importDeclNode);
     this.handleInterOpImportJs(importDeclNode);
+    this.checkForDeprecatedModules(node);
+  }
+
+  private checkForDeprecatedModules(node: ts.Node): void {
+    if (!ts.isImportDeclaration(node)) {
+      return;
+    }
+
+    const deprecatedModules = ['@ohos.file.sendablePhotoAccessHelper'];
+
+    const importDecl = node;
+    const moduleSpecifier = importDecl.moduleSpecifier;
+
+    if (ts.isStringLiteral(moduleSpecifier)) {
+      const moduleName = moduleSpecifier.text;
+      if (deprecatedModules.includes(moduleName)) {
+        this.incrementCounters(moduleSpecifier, FaultID.SdkTypeQuery);
+      }
+    }
   }
 
   private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
@@ -6555,19 +6574,62 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !ts.isPropertyAccessExpression(decl)) {
       return;
     }
-    if (ts.isPropertyAccessExpression(decl.expression)) {
-      const importApiName = ts.isIdentifier(decl.expression.expression) && decl.expression.expression.text || '';
-      const sdkInfos = importApiName && this.interfaceMap.get(importApiName);
-      if (!sdkInfos) {
+
+    if (this.handleSelfPropertyAccess(decl)) {
+      return;
+    }
+
+    if (ts.isPropertyAccessExpression(decl)) {
+      const deprecatedProperties = [
+        'position',
+        'subtype',
+        'movingPhotoEffectMode',
+        'dynamicRangeType',
+        'thumbnailVisible'
+      ];
+
+      const propertyName = ts.isIdentifier(decl.name) ? decl.name.text : '';
+      if (deprecatedProperties.includes(propertyName)) {
+        this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
         return;
       }
-      const apiName = ts.isIdentifier(decl.name) && decl.name.text || '';
-      const matchedApi = [...sdkInfos].find((sdkInfo) => {
-        return sdkInfo.api_name === apiName;
-      });
-      if (matchedApi) {
-        this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
-      }
+    }
+
+    this.handleImportApiPropertyAccess(decl);
+  }
+
+  private handleSelfPropertyAccess(decl: ts.PropertyAccessExpression): boolean {
+    if (!ts.isPropertyAccessExpression(decl.expression)) {
+      return false;
+    }
+
+    const propertyName = ts.isIdentifier(decl.expression.name) && decl.expression.name.text || '';
+    if (propertyName !== 'self') {
+      return false;
+    }
+
+    this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
+    return true;
+  }
+
+  private handleImportApiPropertyAccess(decl: ts.PropertyAccessExpression): void {
+    if (!ts.isPropertyAccessExpression(decl.expression)) {
+      return;
+    }
+
+    const importApiName = ts.isIdentifier(decl.expression.expression) && decl.expression.expression.text || '';
+    const sdkInfos = importApiName && this.interfaceMap.get(importApiName);
+    if (!sdkInfos) {
+      return;
+    }
+
+    const apiName = ts.isIdentifier(decl.name) && decl.name.text || '';
+    const matchedApi = [...sdkInfos].find((sdkInfo) => {
+      return sdkInfo.api_name === apiName;
+    });
+
+    if (matchedApi) {
+      this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
     }
   }
 
