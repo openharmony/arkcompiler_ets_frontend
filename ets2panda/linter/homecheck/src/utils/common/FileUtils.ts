@@ -14,7 +14,7 @@
  */
 import * as fs from 'fs';
 import * as path from 'path';
-import { createInterface } from 'readline';
+import { createInterface, Interface } from 'readline';
 import { DisableText } from './Disable';
 import { Sdk } from 'arkanalyzer/lib/Config';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
@@ -126,6 +126,22 @@ export class FileUtils {
                 reject(err);
             });
         });
+    }
+
+    private processHandleLine(lineNo: number | undefined, readLineNo: number, lines: string[], rl: Interface): void {
+        const handleLine = (line: string): void => {
+            if (lineNo) {
+                if (readLineNo === lineNo) {
+                    lines.push(line);
+                    rl.close();
+                }
+            } else {
+                lines.push(line);
+            }
+            readLineNo++;
+        };
+
+        rl.on('line', handleLine);
     }
 
     /**

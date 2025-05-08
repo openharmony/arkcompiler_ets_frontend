@@ -576,6 +576,7 @@ export class Scene {
                 });
                 const fileSig = arkFile.getFileSignature().toMapKey();
                 this.sdkArkFilesMap.set(fileSig, arkFile);
+                SdkUtils.buildSdkImportMap(arkFile);
                 SdkUtils.buildGlobalMap(arkFile, this.sdkGlobalMap);
             } catch (error) {
                 logger.error('Error parsing file:', file, error);

@@ -45,18 +45,18 @@ function extractOrientation(exifBlock: Uint8Array, isBigEndian: boolean): number
         const start = offset + NUM_DIRECTORY_ENTRIES_BYTES + directoryEntryNumber * IDF_ENTRY_BYTES;
         const end = start + IDF_ENTRY_BYTES;
         if (start > exifBlock.length) {
-            return;
+            return undefined;
         }
         const block = exifBlock.slice(start, end);
         const tagNumber = readUInt(block, 16, 0, isBigEndian);
         if (tagNumber === 274) {
             const dataFormat = readUInt(block, 16, 2, isBigEndian);
             if (dataFormat !== 3) {
-                return;
+                return undefined;
             }
             const numberOfComponents = readUInt(block, 32, 4, isBigEndian);
             if (numberOfComponents !== 1) {
-                return;
+                return undefined;
             }
             return readUInt(block, 16, 8, isBigEndian);
         }

@@ -28,6 +28,7 @@ import {
     ArkParameterRef,
     ArkInstanceFieldRef,
     ClassType,
+    ArkNamespace,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -80,14 +81,18 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 }
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                for (let clazz of namespace.getClasses()) {
-                    for (let mtd of clazz.getMethods()) {
-                        this.processArkMethod(mtd, scene);
-                    }
-                }
+                this.processNameSpace(namespace, scene);
             }
         }
     };
+
+    public processNameSpace(namespace: ArkNamespace, scene: Scene): void {
+        for (let clazz of namespace.getClasses()) {
+            for (let mtd of clazz.getMethods()) {
+                this.processArkMethod(mtd, scene);
+            }
+        }
+    }
 
     public processArkMethod(target: ArkMethod, scene: Scene): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
@@ -173,19 +178,23 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 const callsites = this.cg.getInvokeStmtByMethod(
                     currentStmt.getCfg().getDeclaringMethod().getSignature()
                 );
-                callsites.forEach(cs => {
-                    const declaringMtd = cs.getCfg().getDeclaringMethod();
-                    if (!this.visited.has(declaringMtd)) {
-                        this.dvfgBuilder.buildForSingleMethod(declaringMtd);
-                        this.visited.add(declaringMtd);
-                    }
-                });
+                this.processCallsites(callsites);
                 this.collectArgDefs(paramIdx, callsites).forEach(d =>
                     this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
                 );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
+    }
+
+    private processCallsites(callsites: Stmt[]): void {
+        callsites.forEach(cs => {
+            const declaringMtd = cs.getCfg().getDeclaringMethod();
+            if (!this.visited.has(declaringMtd)) {
+                this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                this.visited.add(declaringMtd);
+            }
+        });
     }
 
     private isObjectLiteral(stmt: Stmt, scene: Scene): boolean {

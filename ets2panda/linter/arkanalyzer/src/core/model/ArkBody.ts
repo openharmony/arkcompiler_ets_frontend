@@ -19,6 +19,7 @@ import { AliasType } from '../base/Type';
 import { Trap } from '../base/Trap';
 import { Value } from '../base/Value';
 import { ArkAliasTypeDefineStmt } from '../base/Stmt';
+import { LocalSignature } from './ArkSignature';
 
 export class ArkBody {
     private locals: Map<string, Local>;
@@ -80,5 +81,14 @@ export class ArkBody {
 
     public getTraps(): Trap[] | undefined {
         return this.traps;
+    }
+
+    public getExportLocalByName(name: string): Local | null {
+        const local = this.locals?.get(name);
+        if (local) {
+            local.setSignature(new LocalSignature(name, this.cfg.getDeclaringMethod().getSignature()));
+            return local;
+        }
+        return null;
     }
 }

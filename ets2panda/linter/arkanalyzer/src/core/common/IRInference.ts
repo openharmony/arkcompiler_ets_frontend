@@ -31,22 +31,50 @@ import {
 } from '../base/Type';
 import { Local } from '../base/Local';
 import { TypeInference } from './TypeInference';
-import { AbstractExpr, AbstractInvokeExpr, AliasTypeExpr, ArkInstanceInvokeExpr, ArkPtrInvokeExpr, ArkStaticInvokeExpr } from '../base/Expr';
+import {
+    AbstractExpr,
+    AbstractInvokeExpr,
+    AliasTypeExpr,
+    ArkInstanceInvokeExpr,
+    ArkPtrInvokeExpr,
+    ArkStaticInvokeExpr
+} from '../base/Expr';
 import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { Scene } from '../../Scene';
 import { ArkClass } from '../model/ArkClass';
 import { findArkExport, ModelUtils } from './ModelUtils';
 import { ArkField, FieldCategory } from '../model/ArkField';
 import { CALL_BACK } from './EtsConst';
-import { AliasClassSignature, BaseSignature, ClassSignature, FieldSignature, MethodSignature, MethodSubSignature } from '../model/ArkSignature';
+import {
+    AliasClassSignature,
+    BaseSignature,
+    ClassSignature,
+    FieldSignature,
+    MethodSignature,
+    MethodSubSignature
+} from '../model/ArkSignature';
 import { CONSTRUCTOR_NAME, FUNCTION, IMPORT, SUPER_NAME, THIS_NAME } from './TSConst';
 import { Builtin } from './Builtin';
 import { ArkBody } from '../model/ArkBody';
 import { ArkAssignStmt, ArkInvokeStmt } from '../base/Stmt';
-import { AbstractFieldRef, AbstractRef, ArkArrayRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef } from '../base/Ref';
+import {
+    AbstractFieldRef,
+    AbstractRef,
+    ArkArrayRef,
+    ArkInstanceFieldRef,
+    ArkParameterRef,
+    ArkStaticFieldRef
+} from '../base/Ref';
 import { Value } from '../base/Value';
 import { Constant } from '../base/Constant';
-import { ANONYMOUS_CLASS_PREFIX, CALL_SIGNATURE_NAME, DEFAULT_ARK_CLASS_NAME, NAME_DELIMITER, NAME_PREFIX, UNKNOWN_CLASS_NAME } from './Const';
+import {
+    ANONYMOUS_CLASS_PREFIX,
+    CALL_SIGNATURE_NAME,
+    DEFAULT_ARK_CLASS_NAME,
+    NAME_DELIMITER,
+    NAME_PREFIX,
+    UNKNOWN_CLASS_NAME
+} from './Const';
 import { ValueUtil } from './ValueUtil';
 import { ArkFile } from '../model/ArkFile';
 import { AbstractTypeExpr, KeyofTypeExpr, TypeQueryExpr } from '../base/TypeExpr';
@@ -158,7 +186,7 @@ export class IRInference {
         } else if (arkExport instanceof ArkClass) {
             method = arkExport.getMethodWithName(CONSTRUCTOR_NAME);
         } else if (arkExport instanceof Local) {
-            const type = arkExport.getType();
+            const type = TypeInference.replaceAliasType(arkExport.getType());
             if (type instanceof ClassType) {
                 const cls = arkClass.getDeclaringArkFile().getScene().getClass(type.getClassSignature());
                 method = cls?.getMethodWithName(CONSTRUCTOR_NAME) ?? cls?.getMethodWithName(CALL_SIGNATURE_NAME);

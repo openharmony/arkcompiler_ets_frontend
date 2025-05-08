@@ -146,7 +146,7 @@ export class ConfigUtils {
                 return;
             }
             try {
-                const cmd = `${projectConfig.npmPath} install --no-save --prefix '${projectConfig.npmInstallDir}' '${ruleSet.packagePath}'`;
+                const cmd = `${projectConfig.npmPath} install --no-save --prefix "${projectConfig.npmInstallDir}" "${ruleSet.packagePath}"`;
                 logger.info('Start to execute cmd: ' + cmd);
                 const execLog = execSync(cmd);
                 logger.info('Exec log: ' + execLog.toString());
