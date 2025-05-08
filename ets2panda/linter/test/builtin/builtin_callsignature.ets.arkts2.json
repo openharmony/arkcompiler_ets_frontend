@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 28,
+            "endLine": 16,
+            "endColumn": 44,
+            "problem": "BuiltinNoCtorFunc",
+            "suggest": "",
+            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
+            "severity": "ERROR"
+        },
+        {
             "line": 17,
             "column": 10,
             "endLine": 17,
@@ -25,10 +35,30 @@
             "severity": "ERROR"
         },
         {
+            "line": 23,
+            "column": 29,
+            "endLine": 23,
+            "endColumn": 46,
+            "problem": "BuiltinNoCtorFunc",
+            "suggest": "",
+            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
+            "severity": "ERROR"
+        },
+        {
             "line": 24,
             "column": 10,
             "endLine": 24,
             "endColumn": 14,
+            "problem": "BuiltinNoCtorFunc",
+            "suggest": "",
+            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 33,
+            "endLine": 30,
+            "endColumn": 50,
             "problem": "BuiltinNoCtorFunc",
             "suggest": "",
             "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
@@ -49,6 +79,26 @@
             "column": 15,
             "endLine": 33,
             "endColumn": 24,
+            "problem": "BuiltinNoCtorFunc",
+            "suggest": "",
+            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 29,
+            "endLine": 34,
+            "endColumn": 46,
+            "problem": "BuiltinNoCtorFunc",
+            "suggest": "",
+            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 17,
+            "endLine": 35,
+            "endColumn": 35,
             "problem": "BuiltinNoCtorFunc",
             "suggest": "",
             "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
