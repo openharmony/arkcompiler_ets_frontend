@@ -513,40 +513,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 7,
-            "endLine": 41,
-            "endColumn": 14,
-            "problem": "ArrayIndexExprType",
-            "autofix": [
-                {
-                    "start": 1233,
-                    "end": 1240,
-                    "replacementText": "index_3 as int"
-                }
-            ],
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 45,
-            "column": 7,
-            "endLine": 45,
-            "endColumn": 14,
-            "problem": "ArrayIndexExprType",
-            "autofix": [
-                {
-                    "start": 1315,
-                    "end": 1322,
-                    "replacementText": "index_5 as int"
-                }
-            ],
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 50,
             "column": 5,
             "endLine": 50,
@@ -595,23 +561,6 @@
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
-            "column": 22,
-            "endLine": 55,
-            "endColumn": 23,
-            "problem": "ArrayIndexExprType",
-            "autofix": [
-                {
-                    "start": 1527,
-                    "end": 1528,
-                    "replacementText": "i as int"
-                }
-            ],
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {

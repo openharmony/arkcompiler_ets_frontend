@@ -1821,6 +1821,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    if (
+      ts.isBinaryExpression(initializer) &&
+      ts.isCallExpression(initializer.left) &&
+      TsUtils.isAppStorageAccess(initializer.left)
+    ) {
+      return;
+    }
+
     const sym = this.tsTypeChecker.getSymbolAtLocation(name);
     if (!sym) {
       return;
@@ -3336,6 +3344,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
+      if (this.isArrayIndexValidNumber(argExpr)) {
+        return;
+      }
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
     } else {
@@ -3374,6 +3385,61 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (initializerText === 'undefined') {
       this.handleUndefinedInitializer(argExpr, firstDeclaration);
     }
+  }
+
+  private evaluateValueFromDeclaration(argExpr: ts.Expression): number | null {
+    const declaration = this.tsUtils.getDeclarationNode(argExpr);
+    if (!declaration) {
+      return null;
+    }
+
+    if (!ts.isVariableDeclaration(declaration)) {
+      return null;
+    }
+
+    const initializer = declaration.initializer;
+    if (!initializer) {
+      return null;
+    }
+
+    if (!ts.isNumericLiteral(initializer)) {
+      return null;
+    }
+
+    const numericValue = Number(initializer.text);
+    if (!Number.isInteger(numericValue)) {
+      return null;
+    }
+
+    return numericValue;
+  }
+
+  private isArrayIndexValidNumber(argExpr: ts.Expression): boolean {
+    let evaluatedValue: number | null = null;
+    if (ts.isParenthesizedExpression(argExpr)) {
+      return this.isArrayIndexValidNumber(argExpr.expression);
+    }
+
+    if (ts.isBinaryExpression(argExpr)) {
+      evaluatedValue = this.evaluateNumericValueFromBinaryExpression(argExpr);
+    } else {
+      evaluatedValue = this.evaluateValueFromDeclaration(argExpr);
+    }
+    const valueString = String(evaluatedValue);
+
+    if (evaluatedValue === null) {
+      return false;
+    }
+
+    if (!Number.isInteger(evaluatedValue)) {
+      return false;
+    }
+    // floating points that can be converted to int should be fine, so as long as no floating point is here, we should be fine.
+    if (valueString.includes('.') && !valueString.endsWith('.0')) {
+      return false;
+    }
+
+    return evaluatedValue >= 0 && !valueString.includes('.');
   }
 
   private handleUndefinedInitializer(argExpr: ts.Expression, declaration: ts.VariableDeclaration): void {
@@ -3544,7 +3610,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const node = ts.isCallExpression(tsCallExpr) ?  tsCallExpr.expression : tsCallExpr.typeName;
+    const node = ts.isCallExpression(tsCallExpr) ? tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
     const callSignatures = constructorType.getCallSignatures();
     if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
@@ -3651,6 +3717,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !tsCallExpr) {
       return;
     }
+
+    if (!TsUtils.isAppStorageAccess(tsCallExpr)) {
+      return;
+    }
+
     let varDecl: ts.VariableDeclaration | undefined;
     let parent = tsCallExpr.parent;
 

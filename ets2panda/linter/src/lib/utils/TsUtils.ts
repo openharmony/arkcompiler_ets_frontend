@@ -3390,6 +3390,23 @@ export class TsUtils {
     );
   }
 
+  static isAppStorageAccess(tsCallExpr: ts.CallExpression): boolean {
+    const propertyAccessExpr = tsCallExpr.expression;
+    if (!ts.isPropertyAccessExpression(propertyAccessExpr)) {
+      return false;
+    }
+    const accessedExpr = propertyAccessExpr.expression;
+    if (!ts.isIdentifier(accessedExpr)) {
+      return false;
+    }
+
+    if (accessedExpr.text !== 'AppStorage') {
+      return false;
+    }
+
+    return true;
+  }
+
   static isArithmeticOperator(op: ts.BinaryOperatorToken): boolean {
     switch (op.kind) {
       case ts.SyntaxKind.PlusToken:
