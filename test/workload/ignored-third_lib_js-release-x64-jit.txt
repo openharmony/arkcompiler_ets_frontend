@@ -5,3 +5,6 @@ pdfview_test
 #20325
 htmlParser2_test
 
+#19623
+rebound_test
+
