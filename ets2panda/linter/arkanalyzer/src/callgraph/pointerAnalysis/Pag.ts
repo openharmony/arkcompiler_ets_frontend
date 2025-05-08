@@ -401,7 +401,7 @@ export class PagLocalNode extends PagNode {
         super(id, cid, value, PagNodeKind.LocalVar, stmt);
     }
 
-    public addRelatedDynCallSite(cs: DynCallSite) {
+    public addRelatedDynCallSite(cs: DynCallSite): void {
         this.relatedDynamicCallSite = this.relatedDynamicCallSite ?? new Set();
 
         this.relatedDynamicCallSite.add(cs);
@@ -411,7 +411,7 @@ export class PagLocalNode extends PagNode {
         return this.relatedDynamicCallSite ?? new Set();
     }
 
-    public addRelatedUnknownCallSite(cs: CallSite) {
+    public addRelatedUnknownCallSite(cs: CallSite): void {
         this.relatedUnknownCallSite = this.relatedUnknownCallSite ?? new Set();
 
         this.relatedUnknownCallSite.add(cs);
@@ -470,7 +470,7 @@ export class PagThisRefNode extends PagNode {
         return this.pointToNode;
     }
 
-    public addPTNode(ptNode: NodeID) {
+    public addPTNode(ptNode: NodeID): void {
         this.pointToNode.push(ptNode);
     }
 }
@@ -573,7 +573,7 @@ export class PagFuncNode extends PagNode {
         }
     }
 
-    public setMethod(method: MethodSignature) {
+    public setMethod(method: MethodSignature): void {
         this.methodSignature = method;
         this.methodType = getBuiltInApiType(method);
     }

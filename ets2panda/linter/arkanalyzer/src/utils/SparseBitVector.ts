@@ -354,7 +354,9 @@ export class SparseBitVector {
 
     // Find the first set bit in the vector
     findFirst(): number {
-        if (this.elements.size === 0) return -1;
+        if (this.elements.size === 0) {
+            return -1;
+        }
         const firstElement = this.elements.entries().next().value;
         if (firstElement) {
             const firstBit = firstElement[1].findFirst();
@@ -388,7 +390,7 @@ export class SparseBitVector {
                 next(): { value: undefined; done: true } {
                     return { value: undefined, done: true };
                 },
-                [Symbol.iterator]() {
+                [Symbol.iterator](): IterableIterator<number> {
                     return this; // Make the iterator itself iterable
                 },
             };
@@ -410,7 +412,7 @@ export class SparseBitVector {
                 }
                 return { value: undefined, done: true };
             },
-            [Symbol.iterator]() {
+            [Symbol.iterator](): IterableIterator<number> {
                 return this; // Make the iterator itself iterable
             },
         };

@@ -18,6 +18,7 @@ import { FileReports, IssueReport } from '../../model/Defects';
 import { Engine } from '../../model/Engine';
 import { FunctionFix } from '../../model/Fix';
 import path from 'path';
+// @ts-ignore
 import { removeSync } from 'fs-extra';
 import { FileUtils, WriteFileMode } from '../../utils/common/FileUtils';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';

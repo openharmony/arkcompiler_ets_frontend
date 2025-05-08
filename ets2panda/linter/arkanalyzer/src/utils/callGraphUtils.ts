@@ -102,7 +102,9 @@ export class SceneManager {
     }
 
     public getClass(arkClass: ClassSignature): ArkClass | null {
-        if (typeof arkClass.getClassName() === 'undefined') return null;
+        if (typeof arkClass.getClassName() === 'undefined') {
+            return null;
+        }
         let classInstance = this._scene.getClass(arkClass);
         if (classInstance != null) {
             return classInstance;
@@ -126,7 +128,9 @@ export class SceneManager {
 
         while (classList.length > 0) {
             let tempClass = classList.shift();
-            if (tempClass == null) continue;
+            if (tempClass == null) {
+                continue;
+            }
             let firstLevelSubclasses: ArkClass[] = Array.from(tempClass.getExtendedClasses().values());
 
             if (!firstLevelSubclasses) {

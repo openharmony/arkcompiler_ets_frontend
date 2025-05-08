@@ -36,7 +36,7 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ModifyStateVarCheck'
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: 'It is not allowed to update state when the view is changing',
+    description: 'It is not allowed to update state when the build function is running',
 };
 
 export class ModifyStateVarCheck implements BaseChecker {

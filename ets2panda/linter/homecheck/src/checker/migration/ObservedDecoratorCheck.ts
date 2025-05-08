@@ -32,7 +32,7 @@ import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, ClassMatcher, MatcherTypes, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { RuleFix } from '../../model/Fix';
-import { FixPosition, FixUtils } from '../../utils/common/FixUtils';
+import { FixUtils } from '../../utils/common/FixUtils';
 import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
@@ -138,6 +138,9 @@ export class ObservedDecoratorCheck implements BaseChecker {
             }
 
             for (const target of issueClasses) {
+                if (target.hasDecorator('Observed')) {
+                    continue;
+                }
                 const pos = this.getClassPos(target);
                 const description = this.generateIssueDescription(field);
                 const rulFix = this.generateRuleFix(pos, target) ?? undefined;
@@ -259,7 +262,7 @@ export class ObservedDecoratorCheck implements BaseChecker {
         if (canFindAllTargets) {
             const fieldLine = field.getOriginPosition().getLineNo();
             const fieldColumn = field.getOriginPosition().getColNo();
-            return `used by state property '${field.getName()}' defined in line ${fieldLine}, column ${fieldColumn}`;
+            return `The class is used by state property in [${fieldLine}, ${fieldColumn}], but it's not be annotated by @Observed`;
         }
         return `can not find all classes, check this field`;
     }

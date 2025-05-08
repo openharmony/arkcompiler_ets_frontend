@@ -473,7 +473,7 @@ export function fileSignatureCompare(leftSig: FileSignature, rightSig: FileSigna
     return false;
 }
 
-function arrayCompare(leftArray: any[], rightArray: any[]) {
+function arrayCompare(leftArray: any[], rightArray: any[]): boolean {
     if (leftArray.length !== rightArray.length) {
         return false;
     }

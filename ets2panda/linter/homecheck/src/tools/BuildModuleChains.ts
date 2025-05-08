@@ -72,7 +72,7 @@ export function buildModuleChains(scene: Scene, arkFiles: ArkFile[], outputDirPa
   return isOutput;
 }
 
-function clearGlobalMem() {
+function clearGlobalMem(): void {
   gFinishScanMap.clear();
   gNodeMap.clear();
   gModuleIdMap.clear();

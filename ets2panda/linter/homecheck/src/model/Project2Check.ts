@@ -30,7 +30,8 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Project2Check');
 
 export class Project2Check {
     public arkFiles: ArkFile[];
-    public enabledRuleCheckerMap: Map<string, BaseChecker> = new Map();  // TODO: key改为枚举
+    // TODO: key改为枚举
+    public enabledRuleCheckerMap: Map<string, BaseChecker> = new Map();
     public issues: IssueReport[] = [];
     public ruleMap: Map<string, Rule[]> = new Map();
 

@@ -75,7 +75,7 @@ export abstract class SourceStmt implements Dump {
         return this.line;
     }
 
-    public setLine(line: number) {
+    public setLine(line: number): void {
         this.line = line;
     }
 
@@ -909,7 +909,7 @@ export class SourceNewArrayExpr {
         this.values = [];
     }
 
-    public addInitValue(value: string) {
+    public addInitValue(value: string): void {
         this.values.push(value);
     }
 

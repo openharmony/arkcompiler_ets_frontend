@@ -223,11 +223,7 @@ export class SourceBody implements StmtPrinterContext {
     }
 
     public getStmts(): SourceStmt[] {
-        return this.stmts.filter(value => {
-            if (!this.skipStmts.has(value.original)) {
-                return value;
-            }
-        });
+        return this.stmts.filter(value => !this.skipStmts.has(value.original));
     }
 
     public pushStmt(stmt: SourceStmt): void {

@@ -61,6 +61,7 @@ function extractOrientation(exifBlock: Uint8Array, isBigEndian: boolean): number
             return readUInt(block, 16, 8, isBigEndian);
         }
     }
+    return undefined;
 }
 
 function validateExifBlock(input: Uint8Array, index: number): number | undefined {
@@ -71,6 +72,7 @@ function validateExifBlock(input: Uint8Array, index: number): number | undefined
     if (isBigEndian || isLittleEndian) {
         return extractOrientation(exifBlock, isBigEndian);
     }
+    return undefined;
 }
 
 function validateInput(input: Uint8Array, index: number): void {

@@ -254,10 +254,7 @@ export class SceneConfig {
         const configFile = this.getDefaultConfigPath();
         logger.debug(`try to parse config file ${configFile}`);
         try {
-            this.options = {
-                ...this.options,
-                ...JSON.parse(fs.readFileSync(configFile, 'utf-8')),
-            };
+            this.options = { ...this.options, ...JSON.parse(fs.readFileSync(configFile, 'utf-8')) };
         } catch (error) {
             logger.error(`Failed to parse config file with error: ${error}`);
         }

@@ -20,7 +20,7 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckEntry');
 namespace DefectsList {
     let defects: Defects[] = [];
 
-    export function add(defect: Defects) {
+    export function add(defect: Defects): void {
         defects.push(defect);
     }
 

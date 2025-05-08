@@ -88,7 +88,9 @@ export class ModelUtils {
             const names = className.split('.');
             let nameSpace = this.getNamespaceWithNameFromClass(names[0], startFrom);
             for (let i = 1; i < names.length - 1; i++) {
-                if (nameSpace) nameSpace = nameSpace.getNamespaceWithName(names[i]);
+                if (nameSpace) {
+                    nameSpace = nameSpace.getNamespaceWithName(names[i]);
+                }
             }
             if (nameSpace) {
                 return nameSpace.getClassWithName(names[names.length - 1]);
@@ -751,4 +753,5 @@ function findFileInModule(fromInfo: FromInfo, modulePath: ModulePath | undefined
     if (file && findExportInfoInfile(fromInfo, file)) {
         return file;
     }
+    return undefined;
 }
