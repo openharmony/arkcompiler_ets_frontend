@@ -104,7 +104,7 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
             ps = foo(0)
 
             let cnt = 0
-            cnt += (await ps as Promise<(p: int) => int>)(0)
+            cnt += (await (ps as Promise<(p: int) => int>))(0)
         }
     )";
 

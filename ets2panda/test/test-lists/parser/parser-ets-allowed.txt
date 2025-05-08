@@ -479,3 +479,5 @@ parser/ets/trailing_lambda_tests/trailing_lambda_with_throw.ets
 parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body.ets
 parser/ets/override.ets
 parser/ets/declare_namespace.ets
+parser/ets/await_priority.ets
+parser/ets/await_as_priority.ets
