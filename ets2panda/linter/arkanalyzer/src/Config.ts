@@ -135,7 +135,7 @@ export class SceneConfig {
 
     private processFilePaths(fileOrDirectory: string, projectDir: string): void {
         let absoluteFilePath = '';
-        if (fileOrDirectory.includes(projectDir)) {
+        if (path.isAbsolute(fileOrDirectory)) {
             absoluteFilePath = fileOrDirectory;
         } else {
             absoluteFilePath = path.join(projectDir, fileOrDirectory);
@@ -153,7 +153,7 @@ export class SceneConfig {
 
     private setLanguageTagForFiles(fileOrDirectory: string, projectDir: string, languageTag: Language): void {
         let absoluteFilePath = '';
-        if (fileOrDirectory.includes(projectDir)) {
+        if (path.isAbsolute(fileOrDirectory)) {
             absoluteFilePath = fileOrDirectory;
         } else {
             absoluteFilePath = path.join(projectDir, fileOrDirectory);
