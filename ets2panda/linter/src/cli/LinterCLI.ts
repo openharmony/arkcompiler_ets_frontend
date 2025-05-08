@@ -75,23 +75,30 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
     if (!mergedProblems.has(filePath)) {
       mergedProblems.set(filePath, []);
     }
-
     const filteredProblems = problems.filter((problem) => {
       return arkts2Rules.includes(problem.ruleTag);
     });
     mergedProblems.get(filePath)!.push(...filteredProblems);
   }
+  const reportData = Object.fromEntries(mergedProblems);
+  await generateReportFile(reportData);
 
   for (const [filePath, problems] of mergedProblems) {
-    await processSyncOut(
-      JSON.stringify({
-        filePath,
-        problems
-      }) + '\n'
-    );
+    const reportLine = JSON.stringify({ filePath, problems }) + '\n';
+    await processSyncOut(reportLine);
   }
   await processSyncErr('{"content":"report finish","messageType":1,"indictor":1}\n');
   process.exit(0);
+}
+
+async function generateReportFile(reportData): Promise<void> {
+  const reportFilePath = path.join('scan-report.json');
+  try {
+    await fs.promises.writeFile(reportFilePath, JSON.stringify(reportData, null, 2));
+    console.log('Report file generated successfully at:', reportFilePath);
+  } catch (error) {
+    console.error('Error generating report file:', error);
+  }
 }
 
 async function processSyncOut(message: string): Promise<void> {
