@@ -996,6 +996,8 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
         ParseNameSpaceSpecifier(&specifiers, true);
+        // export * as xxx from yyy, the xxx should have export flag to pass the following check.
+        specifiers[0]->AddModifier(ir::ModifierFlags::EXPORT);
     } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         auto specs = ParseNamedSpecifiers();
 
@@ -1298,12 +1300,12 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
     // should be handled at some point.
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM && !isReExport &&
         (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) == 0) {
-        LogExpectedToken(lexer::TokenType::KEYW_AS);  // invalid_namespce_import.ets
+        LogExpectedToken(lexer::TokenType::KEYW_AS);  // invalid_namespace_import.ets
     }
 
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
-        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM || isReExport) {
+        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM) {
         auto *specifier = AllocNode<ir::ImportNamespaceSpecifier>(local);
         specifier->SetRange({namespaceStart, Lexer()->GetToken().End()});
         specifiers->push_back(specifier);

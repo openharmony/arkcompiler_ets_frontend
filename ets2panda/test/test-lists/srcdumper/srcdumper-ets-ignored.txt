@@ -54,9 +54,11 @@ runtime/ets/newArrayCreationUnionType.ets
 runtime/ets/type_param_in_union.ets
 ast/parser/ets/re_export/import_18.ets
 ast/parser/ets/re_export/import_19.ets
+ast/parser/ets/re_export/import_20.ets
 ast/parser/ets/re_export/re_export_13.ets
 ast/parser/ets/re_export/re_export_14.ets
 ast/parser/ets/re_export/re_export_15.ets
+ast/parser/ets/re_export/re_export_16.ets
 parser/ets/ambient_indexer_1.ets
 parser/ets/ambient_indexer_6.ets
 parser/ets/class_init.ets

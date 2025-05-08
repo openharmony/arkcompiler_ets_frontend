@@ -926,7 +926,8 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
 
 void InitScopesPhaseETS::VisitImportSpecifier(ir::ImportSpecifier *importSpec)
 {
-    if (importSpec->Parent()->AsETSImportDeclaration()->IsPureDynamic()) {
+    if (importSpec->Parent()->IsETSImportDeclaration() &&
+        importSpec->Parent()->AsETSImportDeclaration()->IsPureDynamic()) {
         auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(importSpec->Local()->Start(),
                                                                        importSpec->Local()->Name(), importSpec);
         var->AddFlag(varbinder::VariableFlags::INITIALIZED);
@@ -1020,6 +1021,7 @@ void InitScopesPhaseETS::VisitETSReExportDeclaration(ir::ETSReExportDeclaration 
         VarBinder()->AsETSBinder()->AddDynamicImport(reExport->GetETSImportDeclarations());
     }
     VarBinder()->AsETSBinder()->AddReExportImport(reExport);
+    Iterate(reExport);
 }
 
 void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)
@@ -1184,7 +1186,7 @@ void InitScopesPhaseETS::AddGlobalToBinder(parser::Program *program)
 void InitScopesPhaseETS::HandleETSModule(ir::BlockStatement *script)
 {
     for (auto decl : script->Statements()) {
-        if (decl->IsETSImportDeclaration()) {
+        if (decl->IsETSImportDeclaration() || decl->IsETSReExportDeclaration()) {
             CallNode(decl);
         } else {
             auto classCtx =
