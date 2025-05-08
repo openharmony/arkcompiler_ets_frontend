@@ -360,6 +360,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 8,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 8,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 8,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 8,
+                          "program": "OptionalParametersWithGenericReturnTypes.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 6,
+                          "program": "OptionalParametersWithGenericReturnTypes.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 8,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 8,
+                        "program": "OptionalParametersWithGenericReturnTypes.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 6,
+                        "program": "OptionalParametersWithGenericReturnTypes.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 17,
@@ -971,6 +1123,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 8,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 6,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 8,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 6,
+                                "program": "OptionalParametersWithGenericReturnTypes.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 23,
+                            "column": 8,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          },
+                          "end": {
+                            "line": 25,
+                            "column": 6,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 23,
+                          "column": 8,
+                          "program": "OptionalParametersWithGenericReturnTypes.ets"
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 6,
+                          "program": "OptionalParametersWithGenericReturnTypes.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 8,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 6,
+                              "program": "OptionalParametersWithGenericReturnTypes.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 23,
+                            "column": 8,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          },
+                          "end": {
+                            "line": 25,
+                            "column": 6,
+                            "program": "OptionalParametersWithGenericReturnTypes.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 23,
+                        "column": 8,
+                        "program": "OptionalParametersWithGenericReturnTypes.ets"
+                      },
+                      "end": {
+                        "line": 25,
+                        "column": 6,
+                        "program": "OptionalParametersWithGenericReturnTypes.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 23,
