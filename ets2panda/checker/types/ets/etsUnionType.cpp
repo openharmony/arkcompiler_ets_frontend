@@ -14,9 +14,10 @@
  */
 
 #include <numeric>
+#include "etsObjectType.h"
 #include "etsUnionType.h"
-
 #include "checker/ets/conversion.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/ETSchecker.h"
 
@@ -377,34 +378,13 @@ bool ETSUnionType::IsAssignableType(checker::Type *sourceType) const noexcept
     return false;
 }
 
-//  NOTE! When calling this method we assume that 'AssignmentTarget(...)' check was passes successfully,
-//  thus the required assignable type always exists.
-checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, checker::Type *sourceType) const noexcept
+checker::Type *ETSUnionType::HandleNumericPrecedence(
+    checker::ETSChecker *checker, checker::ETSObjectType *objectType, checker::Type *sourceType,
+    std::map<std::uint32_t, checker::Type *> &numericTypes) const noexcept
 {
-    if (IsAssignableType(sourceType)) {
-        return sourceType;
-    }
-
-    auto *objectType = sourceType->IsETSObjectType() ? sourceType->AsETSObjectType() : nullptr;
-    if (objectType != nullptr && (!objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) ||
-                                  objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING))) {
-        //  NOTE: here wo don't cast the actual type to possible base type using in the union, but use it as is!
-        return sourceType;
-    }
-
-    std::map<std::uint32_t, checker::Type *> numericTypes {};
-    bool const isBool = objectType != nullptr ? objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)
-                                              : sourceType->HasTypeFlag(TypeFlag::ETS_BOOLEAN);
-    bool const isChar = objectType != nullptr ? objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)
-                                              : sourceType->HasTypeFlag(TypeFlag::CHAR);
-    if (checker::Type *assignableType = GetAssignableBuiltinType(checker, objectType, isBool, isChar, numericTypes);
-        assignableType != nullptr) {
-        return assignableType;
-    }
-
-    if (auto const sourceId =
-            objectType != nullptr ? ETSObjectType::GetPrecedence(checker, objectType) : Type::GetPrecedence(sourceType);
-        sourceId > 0U) {
+    auto const sourceId =
+        (objectType != nullptr) ? ETSObjectType::GetPrecedence(checker, objectType) : Type::GetPrecedence(sourceType);
+    if (sourceId > 0U) {
         for (auto const [id, type] : numericTypes) {
             if (id >= sourceId) {
                 return type;
@@ -413,6 +393,49 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
         if (sourceType->IsConstantType() && !numericTypes.empty()) {
             return numericTypes.begin()->second;
         }
+    }
+    return nullptr;
+}
+
+//  NOTE! When calling this method we assume that 'AssignmentTarget(...)' check was passes successfully,
+//  thus the required assignable type always exists.
+checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, checker::Type *sourceType) const noexcept
+{
+    if (IsAssignableType(sourceType)) {
+        return sourceType;
+    }
+
+    auto *objectType = sourceType->IsETSObjectType()  ? sourceType->AsETSObjectType()
+                       : sourceType->IsETSTupleType() ? sourceType->AsETSTupleType()->GetWrapperType()
+                                                      : nullptr;
+    std::map<std::uint32_t, checker::Type *> numericTypes {};
+    bool const isBool = objectType != nullptr ? objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)
+                                              : sourceType->HasTypeFlag(TypeFlag::ETS_BOOLEAN);
+    bool const isChar = objectType != nullptr ? objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)
+                                              : sourceType->HasTypeFlag(TypeFlag::CHAR);
+
+    if (objectType != nullptr) {
+        if (objectType->IsETSResizableArrayType() || sourceType->IsETSTupleType()) {
+            checker::Type *assignableType = GetAssignableBuiltinType(checker, objectType, isBool, isChar, numericTypes);
+            //  NOTE: For array and tuple types, they may be readonly, so we cannot simply use the it
+            if (assignableType != nullptr && assignableType->HasTypeFlag(TypeFlag::READONLY)) {
+                return assignableType;
+            }
+        }
+        if ((!objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) ||
+             objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING))) {
+            //  NOTE: here wo don't cast the actual type to possible base type using in the union, but use it as is!
+            return sourceType;
+        }
+    }
+
+    if (checker::Type *assignableType = GetAssignableBuiltinType(checker, objectType, isBool, isChar, numericTypes);
+        assignableType != nullptr) {
+        return assignableType;
+    }
+
+    if (auto *assignableType = HandleNumericPrecedence(checker, objectType, sourceType, numericTypes)) {
+        return assignableType;
     }
 
     for (auto *constituentType : constituentTypes_) {
@@ -431,11 +454,12 @@ checker::Type *ETSUnionType::GetAssignableBuiltinType(
     checker::Type *assignableType = nullptr;
 
     for (auto *constituentType : constituentTypes_) {
-        if (!constituentType->IsETSObjectType()) {
+        if (!constituentType->IsETSObjectType() && !constituentType->IsETSTupleType()) {
             continue;
         }
 
-        auto *const type = constituentType->AsETSObjectType();
+        auto *const type = constituentType->IsETSTupleType() ? constituentType->AsETSTupleType()->GetWrapperType()
+                                                             : constituentType->AsETSObjectType();
         if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)) {
             if (isBool) {
                 assignableType = constituentType;
