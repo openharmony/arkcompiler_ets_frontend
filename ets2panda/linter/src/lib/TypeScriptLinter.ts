@@ -6003,14 +6003,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const autofix = this.autofixer?.removeNode(node);
-    const text = node.text;
+    this.checkForConcurrentExpressions(node);
+  }
+
+  private checkForConcurrentExpressions(stringLiteral: ts.StringLiteral): void {
+    if (!stringLiteral.parent) {
+      return;
+    }
+
+    if (!ts.isExpressionStatement(stringLiteral.parent)) {
+      return;
+    }
+
+    const text = stringLiteral.text;
+    const autofix = this.autofixer?.removeNode(stringLiteral);
+
     if (text === USE_CONCURRENT) {
-      this.incrementCounters(node, FaultID.UseConcurrentDeprecated, autofix);
+      this.incrementCounters(stringLiteral, FaultID.UseConcurrentDeprecated, autofix);
     }
 
     if (text === USE_SHARED) {
-      this.incrementCounters(node, FaultID.UseSharedDeprecated, autofix);
+      this.incrementCounters(stringLiteral, FaultID.UseSharedDeprecated, autofix);
     }
   }
 
