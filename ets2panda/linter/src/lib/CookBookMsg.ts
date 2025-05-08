@@ -304,13 +304,13 @@ cookBookTag[327] =
   'Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)';
 cookBookTag[328] =
   'Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)';
-cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
-cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
-cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
-cookBookTag[333] = 'Casting interop JS objects to primitive types is not allowed (arkts-no-js-primitive-types-import)';
-cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-import-typeof-js)';
-cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
-cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
+cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-interop-js2s-import-js)';
+cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)';
+cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-interop-js2s-access-js-prop)';
+cookBookTag[333] = 'Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)';
+cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-js2s-typeof-js-type)';
+cookBookTag[335] = 'Interop object does not have property num (arkts-interop-js2s-unary-op)';
+cookBookTag[336] = 'Binary operations on js objects (arkts-interop-js2s-binary-op)';
 cookBookTag[337] =
   'Importing data directly from the "JS" module for comparison is not supported (arkts-interop-js2s-compare-js-data)';
 cookBookTag[338] =

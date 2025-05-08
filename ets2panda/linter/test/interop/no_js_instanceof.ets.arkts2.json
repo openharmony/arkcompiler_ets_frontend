@@ -31,7 +31,7 @@
             "endColumn": 88,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 50,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -171,7 +171,7 @@
             "endColumn": 7,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 51,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -241,7 +241,7 @@
             "endColumn": 37,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

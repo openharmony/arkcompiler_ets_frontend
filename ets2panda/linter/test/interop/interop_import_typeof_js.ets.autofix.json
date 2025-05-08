@@ -43,7 +43,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -75,7 +75,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -107,7 +107,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -124,7 +124,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -144,7 +144,7 @@
             "endColumn": 15,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -174,7 +174,7 @@
             "endColumn": 18,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -201,7 +201,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -218,7 +218,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -248,7 +248,7 @@
             "endColumn": 19,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -275,7 +275,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -305,7 +305,7 @@
             "endColumn": 20,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -332,7 +332,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -349,7 +349,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -366,7 +366,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -393,7 +393,7 @@
             "endColumn": 17,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -410,7 +410,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -427,7 +427,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -454,7 +454,7 @@
             "endColumn": 20,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -488,7 +488,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -539,7 +539,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -549,7 +549,7 @@
             "endColumn": 28,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -569,7 +569,7 @@
             "endColumn": 28,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -599,7 +599,7 @@
             "endColumn": 30,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -626,7 +626,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -663,7 +663,7 @@
             "endColumn": 39,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -700,7 +700,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -717,7 +717,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -744,7 +744,7 @@
             "endColumn": 21,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -761,7 +761,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -795,7 +795,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -812,7 +812,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -829,7 +829,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -880,7 +880,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -900,7 +900,7 @@
             "endColumn": 30,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -944,7 +944,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
@@ -974,7 +974,7 @@
             "endColumn": 31,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {

@@ -31,7 +31,7 @@
             "endColumn": 59,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 9,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 9,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 17,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 9,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 16,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 11,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 21,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 12,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]
