@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {rcp} from '@kit.RemoteCommunicationKit';
+import { rcp } from '@kit.RemoteCommunicationKit';
 // case1
 const basicHeaders: rcp.RequestHeaders = {
   'authorization': 'Bearer abc123', // error
