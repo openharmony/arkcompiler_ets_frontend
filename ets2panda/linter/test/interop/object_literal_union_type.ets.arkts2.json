@@ -19,9 +19,9 @@
             "column": 5,
             "endLine": 20,
             "endColumn": 33,
-            "problem": "InteropObjectLiteralCompatibility",
+            "problem": "InteropObjectLiteralAmbiguity",
             "suggest": "",
-            "rule": "Object literal not compatible with target class or union type. (interop-dynamic-object-literals)",
+            "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",
             "severity": "ERROR"
         }
     ]
