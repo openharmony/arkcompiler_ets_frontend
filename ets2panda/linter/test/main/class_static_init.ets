@@ -170,3 +170,8 @@ class SpecialTypes {
   static uninitializedUnknown: unknown;
   static uninitializedAny: any;
 }
+
+
+class Test1 {
+  static count: string | undefined;
+}
