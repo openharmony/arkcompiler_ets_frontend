@@ -56,6 +56,11 @@ int main(int argc, char **argv)
         return TEST_ERROR_CODE;
     }
 
+    g_impl->ProceedToState(g_ctx, ES2PANDA_STATE_BIN_GENERATED);
+    if (g_impl->ContextState(g_ctx) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
+
     g_impl->DestroyContext(g_ctx);
     g_impl->DestroyConfig(config);
 

@@ -14,6 +14,8 @@
  */
 
 #include "diagnostic.h"
+#include <memory>
+#include <vector>
 #include "generated/diagnostic.h"
 #include "lexer/token/sourceLocation.h"
 #include "parser/program/program.h"
@@ -166,6 +168,8 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Declgen ets2ts warning";
         case DiagnosticType::ARKTS_CONFIG_ERROR:
             return "ArkTS config error";
+        case DiagnosticType::SUGGESTION:
+            return "SUGGESTION";
         default:
             ES2PANDA_UNREACHABLE();
     }
@@ -215,15 +219,46 @@ ThrowableDiagnostic::ThrowableDiagnostic(const DiagnosticType type, const diagno
 {
 }
 
+Suggestion::Suggestion(const diagnostic::DiagnosticKind *kind, std::vector<std::string> &params,
+                       const char *substitutionCode, const lexer::SourceRange *range)
+    : kind_(kind), substitutionCode_(substitutionCode), message_(Format(kind->Message(), params)), range_(range)
+{
+}
+
+DiagnosticType Suggestion::Type() const
+{
+    return kind_->Type();
+}
+
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos,
+                       std::initializer_list<class Suggestion *> suggestions)
     : DiagnosticBase(pos), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
 {
+    if (suggestions.size() != 0) {
+        suggestions_ = std::make_unique<std::vector<class Suggestion *>>();
+        for (auto suggestion : suggestions) {
+            suggestions_->emplace_back(suggestion);
+        }
+    }
 }
 
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                        const util::DiagnosticMessageParams &diagnosticParams)
-    : Diagnostic(diagnosticKind, diagnosticParams, lexer::SourcePosition())
+    : Diagnostic(diagnosticKind, diagnosticParams, lexer::SourcePosition(), {})
+{
+}
+
+Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos,
+                       class Suggestion *suggestion)
+    : Diagnostic(diagnosticKind, diagnosticParams, pos, {suggestion})
+{
+}
+
+Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
+    : Diagnostic(diagnosticKind, diagnosticParams, pos, {})
 {
 }
 

@@ -125,6 +125,25 @@ dictionary es2panda_ContextState {
     i32 ES2PANDA_STATE_ERROR = 7;
 };
 
+interface es2panda_SuggestionInfo {
+    attribute es2panda_DiagnosticKind kind;
+    attribute sequence<String> args;
+    attribute u32 argc;
+    attribute String substitutionCode;
+};
+
+interface es2panda_DiagnosticInfo {
+    attribute es2panda_DiagnosticKind kind;
+    attribute sequence<String> args;
+    attribute u32 argc;
+};
+
+dictionary es2panda_PluginDiagnosticType { 
+    i32 ES2PANDA_PLUGIN_WARNING = 0;
+    i32 ES2PANDA_PLUGIN_ERROR = 1;
+    i32 ES2PANDA_PLUGIN_SUGGESTION = 2;
+};
+
 [Entity=Class] interface VoidPtr {}; // void *
 
 
@@ -174,6 +193,12 @@ interface es2panda_Impl {
     u32 SourcePositionLine(es2panda_Context context, es2panda_SourcePosition position);
     es2panda_SourcePosition SourceRangeStart(es2panda_Context context, es2panda_SourceRange range);
     es2panda_SourcePosition SourceRangeEnd(es2panda_Context context, es2panda_SourceRange range);
+    es2panda_DiagnosticInfo CreateDiagnosticInfo(es2panda_Context context, es2panda_DiagnosticKind kind,
+                                        sequence<String> args, u32 argc);
+    es2panda_SuggestionInfo CreateDiagnosticInfo(es2panda_Context context, es2panda_DiagnosticKind kind,
+                                        sequence<String> args, u32 argc, String substitutionCode);
+    void LogDiagnosticWithSuggestion(es2panda_Context context, es2panda_DiagnosticInfo diagnosticInfo,
+                                        es2panda_SuggestionInfo suggestionInfo, es2panda_SourceRange range);
     void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
     void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
     void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);

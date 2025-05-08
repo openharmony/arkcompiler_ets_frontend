@@ -16,6 +16,8 @@
 #ifndef ES2PANDA_UTIL_DIAGNOSTIC_H
 #define ES2PANDA_UTIL_DIAGNOSTIC_H
 
+#include <initializer_list>
+#include <memory>
 #include <string>
 #include <vector>
 #include "util/es2pandaMacros.h"
@@ -49,6 +51,7 @@ enum DiagnosticType {
     DECLGEN_ETS2TS_ERROR,
     DECLGEN_ETS2TS_WARNING,
     ARKTS_CONFIG_ERROR,
+    SUGGESTION,
     COUNT,
     INVALID = COUNT
 };
@@ -167,12 +170,47 @@ private:
     std::string message_ {};
 };
 
+class Suggestion : public DiagnosticBase {
+public:
+    explicit Suggestion(const diagnostic::DiagnosticKind *kind, std::vector<std::string> &params,
+                        const char *substitutionCode, const lexer::SourceRange *range);
+
+    const lexer::SourceRange *SourceRange() const
+    {
+        return range_;
+    }
+
+    std::string SubstitutionCode() const
+    {
+        return substitutionCode_;
+    }
+
+    std::string Message() const override
+    {
+        return message_;
+    }
+
+    DiagnosticType Type() const override;
+
+private:
+    const diagnostic::DiagnosticKind *kind_;
+    const std::string substitutionCode_;
+    const std::string message_;
+    const lexer::SourceRange *range_;
+};
+
 class Diagnostic : public DiagnosticBase {
 public:
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                         const util::DiagnosticMessageParams &diagnosticParams);
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                         const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos);
+    explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos,
+                        Suggestion *suggestion);
+    explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos,
+                        std::initializer_list<Suggestion *> suggestions);
 
     NO_COPY_SEMANTIC(Diagnostic);
     DEFAULT_MOVE_SEMANTIC(Diagnostic);
@@ -181,9 +219,15 @@ public:
     DiagnosticType Type() const override;
     std::string Message() const override;
 
+    const std::vector<class Suggestion *> &Suggestion() const
+    {
+        return *suggestions_;
+    }
+
 private:
     const diagnostic::DiagnosticKind *diagnosticKind_;
     std::vector<std::string> diagnosticParams_ {};
+    std::unique_ptr<std::vector<class Suggestion *>> suggestions_ {};
 };
 }  // namespace ark::es2panda::util
 
