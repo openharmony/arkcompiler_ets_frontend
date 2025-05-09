@@ -25,3 +25,20 @@ const simpleDataHandler: rcp.IncomingDataCallback = (incomingData) => {
   console.log(`Received ${incomingData.byteLength} bytes of data`);
    // Error
 };
+
+interface IDataSourcePrefetching {
+  prefetch(index: number): Promise<void> | void;
+
+  cancel?(index: number): Promise<void> | void;
+}
+export  class LocalDataSource implements IDataSourcePrefetching {
+  constructor() {}
+
+  prefetch(index: number): void | Promise<void> {
+    throw new Error("LocalDataSource Method not implemented.");
+  }
+
+  cancel(index: number): void | Promise<void> {
+    throw new Error("LocalDataSource Method not implemented.");
+  }
+}

@@ -63,6 +63,56 @@
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 44,
+            "endLine": 30,
+            "endColumn": 48,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 9,
+            "endLine": 32,
+            "endColumn": 10,
+            "problem": "OptionalMethod",
+            "suggest": "",
+            "rule": "Optional methods are not supported (arkts-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 43,
+            "endLine": 32,
+            "endColumn": 47,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 28,
+            "endLine": 37,
+            "endColumn": 32,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 26,
+            "endLine": 41,
+            "endColumn": 30,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
         }
     ]
 }
