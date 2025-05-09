@@ -75,6 +75,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
     ETS_MAP_BUILTIN,
+    ETS_RECORD_BUILTIN,
     ETS_ERROR_BUILTIN,
     ETS_RUNTIME_BUILTIN,
     ETS_RUNTIME_LINKER_BUILTIN,
@@ -324,6 +325,7 @@ public:
     Type *GlobalNullPointerErrorBuiltinType();
     Type *GlobalUncaughtExceptionErrorBuiltinType();
     Type *GlobalMapBuiltinType();
+    Type *GlobalRecordBuiltinType();
     Type *GlobalRegExpBuiltinType();
     Type *GlobalSetBuiltinType();
 

@@ -260,7 +260,7 @@ semantic:
   id: 62
   message: "need to specify target type for class composite"
 
-- name: CKASS_COMPOSITE_INVALID_TARGET
+- name: CLASS_COMPOSITE_INVALID_TARGET
   id: 63
   message: "Target type for class composite needs to be an object type, found '{}'"
 

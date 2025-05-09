@@ -614,16 +614,29 @@ checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
     }
 
     checker::Type *resolvedType = nullptr;
+    int objectTypeCount = 0;
     for (auto constituentType : annotationType->AsETSUnionType()->ConstituentTypes()) {
         if (constituentType->IsETSObjectType()) {
-            if (resolvedType != nullptr) {
-                return nullptr;
+            objectTypeCount++;
+            if (resolvedType == nullptr) {
+                resolvedType = constituentType;
             }
-            resolvedType = constituentType;
         }
     }
 
-    return resolvedType;
+    // If there's exactly one object type, return it
+    if (objectTypeCount == 1) {
+        return resolvedType;
+    }
+
+    // If there are multiple object types, return the union type itself
+    // so that our union resolution logic can handle it
+    if (objectTypeCount > 1) {
+        return annotationType;
+    }
+
+    // If there are no object types, return nullptr
+    return nullptr;
 }
 
 bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *ident, ir::TypeNode *typeAnnotation,
