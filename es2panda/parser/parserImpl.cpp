@@ -2795,6 +2795,18 @@ bool ParserImpl::CheckAnnotationPrefix(const util::StringView &Ident)
            Ident.Substr(0, prefixLen) == ir::Annotation::annotationPrefix;
 }
 
+void ParserImpl::ThrowAnnotationNotEnable()
+{
+    std::string errMessage =
+        "Current configuration does not support using annotations. "
+        "Annotations can be used in the version of API 18 or higher versions.\n"
+        "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
+        "> If compatibleSdkVersion is set to API 18 or higher version."
+        "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
+        "enable-annotations options are correctly configured.";
+    ThrowSyntaxError(errMessage);
+}
+
 ir::Statement *ParserImpl::ParseAnnotationUsage(ir::Expression *expr, lexer::SourcePosition start)
 {
     auto *exprTemp = expr;
@@ -2806,7 +2818,7 @@ ir::Statement *ParserImpl::ParseAnnotationUsage(ir::Expression *expr, lexer::Sou
                                                : exprTemp->AsMemberExpression()->Property()->AsIdentifier();
         if (CheckAnnotationPrefix(ident->Name())) {
             if (!program_.IsEnableAnnotations()) {
-                ThrowSyntaxError("Annotations are not enabled");
+                ThrowAnnotationNotEnable();
             }
             ident->SetName(ident->Name().Substr(std::strlen(ir::Annotation::annotationPrefix), ident->Name().Length()));
             ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
@@ -2834,7 +2846,7 @@ ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
     if (expr->IsIdentifier() && expr->AsIdentifier()->Name().Utf8() == ir::Annotation::interfaceString) {
         // Annotation declaration case
         if (!program_.IsEnableAnnotations()) {
-            ThrowSyntaxError("Annotations are not enabled");
+            ThrowAnnotationNotEnable();
         }
 
         if (!CheckAnnotationPrefix(lexer_->GetToken().Ident())) {

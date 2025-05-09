@@ -323,6 +323,7 @@ private:
     void CheckClassPrivateIdentifier(ClassElmentDescriptor *desc);
     void CheckFieldKey(ir::Expression *propName);
     bool CheckAnnotationPrefix(const util::StringView &Ident);
+    void ThrowAnnotationNotEnable();
 
     ir::Expression *ParseClassKeyAnnotation();
     ir::Statement *ParseAnnotationUsage(ir::Expression *expr, lexer::SourcePosition start);
