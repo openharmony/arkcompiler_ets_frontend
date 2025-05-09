@@ -3544,7 +3544,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const node = ts.isCallExpression(tsCallExpr) ?  tsCallExpr.expression : tsCallExpr.typeName;
+    const node = ts.isCallExpression(tsCallExpr) ? tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
     const callSignatures = constructorType.getCallSignatures();
     if (callSignatures.length === 0 || BUILTIN_DISABLE_CALLSIGNATURE.includes(node.getText())) {
@@ -6886,7 +6886,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
 
     if (isDefected) {
-      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
+      this.incrementCounters(node, FaultID.InteropObjectLiteralAmbiguity);
     }
   }
 
@@ -6927,7 +6927,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
 
     if (hasConstructor) {
-      this.incrementCounters(node, FaultID.InteropObjectLiteralCompatibility);
+      this.incrementCounters(node, FaultID.InteropObjectLiteralClass);
     }
   }
 

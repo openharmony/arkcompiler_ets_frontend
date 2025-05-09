@@ -559,9 +559,9 @@
             "column": 5,
             "endLine": 138,
             "endColumn": 2,
-            "problem": "InteropObjectLiteralCompatibility",
+            "problem": "InteropObjectLiteralClass",
             "suggest": "",
-            "rule": "Object literal not compatible with target class or union type. (interop-dynamic-object-literals)",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
             "severity": "ERROR"
         },
         {
@@ -839,9 +839,9 @@
             "column": 5,
             "endLine": 245,
             "endColumn": 2,
-            "problem": "InteropObjectLiteralCompatibility",
+            "problem": "InteropObjectLiteralClass",
             "suggest": "",
-            "rule": "Object literal not compatible with target class or union type. (interop-dynamic-object-literals)",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
             "severity": "ERROR"
         },
         {
