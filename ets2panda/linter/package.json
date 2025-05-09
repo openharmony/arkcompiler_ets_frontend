@@ -16,7 +16,6 @@
     "compile": "npm run tsc",
     "postcompile": "node scripts/testRunner/post-compile.mjs",
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
-    "preinstall": "npm install --production --prefix arkanalyzer && npm install --production --prefix homecheck",
     "install-ohos-typescript": "node scripts/install-ohos-typescript-and-homecheck.mjs",
     "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle",
     "pretest": " npm run fix",
@@ -44,8 +43,11 @@
   },
   "dependencies": {
     "commander": "^9.4.0",
+    "homecheck": "file:./homecheck",
     "log4js": "^6.4.0",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "fs-extra": "11.2.0",
+    "json5": "2.2.3"
   },
   "devDependencies": {
     "@eslint/compat": "latest",

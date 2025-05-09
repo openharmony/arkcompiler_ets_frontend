@@ -18,15 +18,8 @@
     "copyCollectionDefintion": "ts-node script/typescriptCollectionDefinitionCopy.ts"
   },
   "dependencies": {
-    "commander": "11.0.0",
-    "log4js": "6.7.1"
-  },
-  "bundleDependencies": [
-    "ohos-typescript"
-  ],
-  "devDependencies": {
-    "@vitest/coverage-v8": "^1.5.0",
-    "ts-node": "^10.9.1",
-    "vitest": "^1.5.0"
+    "commander": "^9.4.0",
+    "log4js": "^6.4.0",
+    "json5": "2.2.3"
   }
 }
