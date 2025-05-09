@@ -2018,11 +2018,11 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
 
 void ETSParser::AddPackageSourcesToParseList()
 {
-    importPathManager_->AddImplicitPackageImportToParseList(GetProgram()->SourceFileFolder(),
+    importPathManager_->AddImplicitPackageImportToParseList(GetProgram()->SourceFile().GetAbsoluteParentFolder(),
                                                             Lexer()->GetToken().Start());
 
     // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
-    importPathManager_->MarkAsParsed(globalProgram_->SourceFilePath());
+    importPathManager_->MarkAsParsed(globalProgram_->SourceFile().GetAbsolutePath());
 }
 
 //================================================================================================//
