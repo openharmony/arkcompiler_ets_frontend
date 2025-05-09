@@ -21,3 +21,21 @@ function concurrentFunc() {
 }
 
 function normal() {}
+
+normal('use concurrent');
+
+const variable = 'use concurrent';
+
+switch (variable) {
+    case 'use concurrent:
+        break;
+}
+
+normal('use shared');
+
+const variable2 = 'use shared';
+
+switch (variable2) {
+    case 'use shared':
+        break;
+}
