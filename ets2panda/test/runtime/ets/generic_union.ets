@@ -14,15 +14,23 @@
  */
 
 class A {
-    foo(v: string): void {}
-    foo(v: int): void {}
+    foo(a : int){}
+    foo() {
+        return 1
+    }
 }
 
 class B {
-    foo(v: string): void {}
-    foo(v: int): void {}
+    foo(a : int){}
+    foo() {
+        return 2
+    }
 }
-
-function foo(x: A|B) {
-    x.foo("123")
+type AAA = A | B
+function foo<T extends AAA>(a : T) {
+    return a.foo()
+}
+function main() {
+    assertEQ(foo(new A()), 1)
+    assertEQ(foo(new B()), 2)
 }
