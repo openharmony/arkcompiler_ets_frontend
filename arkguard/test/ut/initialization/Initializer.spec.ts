@@ -29,6 +29,7 @@ import {
 } from 'mocha';
 import {
   HvigorErrorInfo,
+  MergedConfig,
 } from '../../../src/ArkObfuscator';
 
 describe('Tester Cases for <Initializer.ts>.', function () {
@@ -74,6 +75,8 @@ const projectConfig = {
 interface ArkProjectConfig {
   isBytecodeObfEnabled?: boolean;
   isArkguardEnabled?: boolean;
+  allowEtsAnnotations?: boolean;
+  obfuscationMergedObConfig?: MergedConfig;
 }
 
 describe('test for set arkguard mode property correctly for arkProjectConfig', function () {
@@ -99,6 +102,17 @@ describe('test for set arkguard mode property correctly for arkProjectConfig', f
       initObfuscationConfig(projectConfig, arkProjectConfig, printObfLogger);
       expect(arkProjectConfig.isBytecodeObfEnabled).to.be.undefined;
       expect(arkProjectConfig.isArkguardEnabled).to.be.undefined;
+    });
+
+    it('should not set enableEtsAnnotation if allowEtsAnnotations is enabled in arkProjectConfig', () => {
+      const arkProjectConfig: ArkProjectConfig = {
+        allowEtsAnnotations: true,
+        obfuscationMergedObConfig: new MergedConfig(),
+      };
+      projectConfig.obfuscationOptions.selfConfig.ruleOptions.enable = true;
+      projectConfig.obfuscationOptions.selfConfig.ruleOptions.rules = ['./test/testData/obfuscation/Configs/bytecodeObf/arkguard_enable.txt'];
+      initObfuscationConfig(projectConfig, arkProjectConfig, printObfLogger);
+      expect(arkProjectConfig.obfuscationMergedObConfig?.options.enableEtsAnnotation).to.be.true;
     });
   });
 });

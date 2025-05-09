@@ -207,7 +207,7 @@ export class ArkObfuscator {
   // A text writer of Printer
   private mTextWriter: EmitTextWriter;
 
-  // Compiler Options for typescript,use to parse ast
+  // Compiler Options for typescript, use to parse ast
   private readonly mCompilerOptions: CompilerOptions;
 
   // User custom obfuscation profiles.
@@ -358,6 +358,10 @@ export class ArkObfuscator {
 
     if (this.mCustomProfiles.mEnableSourceMap) {
       this.mCompilerOptions.sourceMap = true;
+    }
+
+    if (this.mCustomProfiles.mAllowEtsAnnotations) {
+      this.mCompilerOptions.etsAnnotationsEnable = true;
     }
 
     const enableTopLevel: boolean = this.mCustomProfiles.mNameObfuscation?.mTopLevel;
@@ -569,7 +573,7 @@ export class ArkObfuscator {
     startSingleFileEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
     let ast: SourceFile;
     if (typeof content === 'string') {
-      ast = TypeUtils.createObfSourceFile(sourceFilePath, content);
+      ast = TypeUtils.createObfSourceFile(sourceFilePath, content, this.mCompilerOptions);
     } else {
       ast = content;
     }

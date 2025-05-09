@@ -39,7 +39,8 @@ import {
   isPropertyAssignment,
   isPrivateIdentifier,
   isParameter,
-  isPropertyAccessExpression
+  isPropertyAccessExpression,
+  isAnnotationDeclaration
 } from 'typescript';
 
 import type {
@@ -84,7 +85,7 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import type {IOptions} from '../../configs/IOptions';
 import type { INameObfuscationOption, IUnobfuscationOption } from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
-import type { MangledSymbolInfo } from '../../common/type';
+import { annotationPrefix, type MangledSymbolInfo } from '../../common/type';
 import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
@@ -99,7 +100,7 @@ import {
 } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
-import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
+import {performancePrinter, ArkObfuscator, cleanFileMangledNames, FileUtils} from '../../ArkObfuscator';
 import { endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { EventList, endSingleFileForMoreTimeEvent, startSingleFileForMoreTimeEvent } from '../../utils/PrinterTimeAndMemUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
@@ -155,6 +156,7 @@ namespace secharmony {
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       let fileExportNames: Set<string> = undefined;
       let fileImportNames: Set<string> = undefined;
+      let currentFileType: string | undefined = undefined;
       exportElementsWithoutSymbol.clear();
       exportSymbolAliasMap.clear();
       nodeSymbolMap.clear();
@@ -183,6 +185,7 @@ namespace secharmony {
         if (!isSourceFile(node) || ArkObfuscator.isKeptCurrentFile) {
           return node;
         }
+        currentFileType = FileUtils.getFileSuffix(node.fileName).ext;
         isCurFileParamertersKept = shouldKeepCurFileParamerters(node, profile);
 
         const checkRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_CHECKER);
@@ -193,7 +196,7 @@ namespace secharmony {
 
         const scopeRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.SCOPE_ANALYZE);
         startSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
-        manager.analyze(node, checker, exportObfuscation);
+        manager.analyze(node, checker, exportObfuscation, currentFileType);
         endSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
         ArkObfuscator.stopRecordStage(scopeRecordInfo);
  
@@ -314,11 +317,10 @@ namespace secharmony {
             recordHistoryUnobfuscatedNames(path); // For incremental build
             mangled = historyName;
           } else if (Reflect.has(def, 'obfuscateAsProperty')) {
-            // obfuscate toplevel, export
-            mangled = getPropertyMangledName(original, path);
+            mangled = getPropertyOrAnnotationMangledName(original, path);
           } else {
             // obfuscate local variable
-            mangled = getMangled(scope, generator);
+            mangled = getMangledLocalName(scope, generator);
           }
           // add new names to name cache
           let identifierCache = nameCache?.get(IDENTIFIER_CACHE);
@@ -383,11 +385,7 @@ namespace secharmony {
         return mangledName;
       }
 
-      function getPropertyMangledName(original: string, nameWithScope: string): string {
-        if (isInTopLevelWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope, enablePropertyObf, shouldPrintKeptNames)) {
-          return original;
-        }
-
+      function getMangledName(original: string): string {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
@@ -444,6 +442,35 @@ namespace secharmony {
         return mangledName;
       }
 
+      function getPropertyMangledName(originalName: string, nameWithScope: string): string {
+        if (isInTopLevelWhitelist(originalName, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope, enablePropertyObf, shouldPrintKeptNames)) {
+          return originalName;
+        }
+
+        let mangledName = getMangledName(originalName);
+        return mangledName;
+      }
+
+      // mangle annotation name in intermediate files
+      function getAnnotationMangledNameWithPrefix(originalName: string, nameWithScope: string): string {
+        if (isInTopLevelWhitelist(originalName, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope, enablePropertyObf, shouldPrintKeptNames)) {
+          return `${annotationPrefix}${originalName}`;
+        }
+        let mangledName: string = `${annotationPrefix}${getMangledName(originalName)}`;
+        return mangledName;
+      }
+
+      function getPropertyOrAnnotationMangledName(originalName: string, nameWithScope: string): string {
+        let name: string | undefined = originalName.startsWith(annotationPrefix) ? originalName.substring(annotationPrefix.length) : undefined;
+        if (name) {
+          // obfuscate annotation name with prefix, e.g. in intermediate files
+          return getAnnotationMangledNameWithPrefix(name, nameWithScope);
+        } else {
+          // obfuscate toplevel, export
+          return getPropertyMangledName(originalName, nameWithScope);
+        }
+      }
+
       function isExcludeScope(scope: Scope): boolean {
         if (isClassScope(scope)) {
           return true;
@@ -475,7 +502,7 @@ namespace secharmony {
         return found;
       }
 
-      function getMangled(scope: Scope, localGenerator: INameGenerator): string {
+      function getMangledLocalName(scope: Scope, localGenerator: INameGenerator): string {
         let mangled: string = '';
         do {
           mangled = localGenerator.getName()!;

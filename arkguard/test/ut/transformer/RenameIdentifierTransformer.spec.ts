@@ -617,11 +617,138 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         const expectContent = `export declare function foo(para: number): void;`;
         assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
       })
+
+      it('should obfuscate annotationDeclaration when top-level obfuscation is enable', () => {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': true,
+            'mKeepParameterNames': false
+          },
+          'mAllowEtsAnnotations': true
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `@interface __$$ETS_ANNOTATION$$__Anno1 {prop1: number = 1}`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true, undefined, {
+          'etsAnnotationsEnable': true
+        }, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `@interface __$$ETS_ANNOTATION$$__a {
+            prop1: number = 1;
+        }`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+        PropCollections.clearPropsCollections();
+      })
+
+      it('should not obfuscate when annotationName is in top-level whitelist', function () {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': true,
+            'mKeepParameterNames': false
+          },
+          'mAllowEtsAnnotations': true
+        };
+        assert.strictEqual(options !== undefined, true);
+        PropCollections.reservedProperties.add('Anno1');
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `@interface __$$ETS_ANNOTATION$$__Anno1 {prop1: number = 1}`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true, undefined, {
+          'etsAnnotationsEnable': true
+        }, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `@interface __$$ETS_ANNOTATION$$__Anno1 {
+            prop1: number = 1;
+        }`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+        PropCollections.clearPropsCollections();
+      })
+
+      it('should not obfuscate when annotationName is exported and not enable export-obfuscation', function () {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': true,
+            'mKeepParameterNames': false
+          },
+          'mAllowEtsAnnotations': true,
+          'mExportObfuscation': false,
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `export @interface __$$ETS_ANNOTATION$$__Anno1 {prop1: number = 1}`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true, undefined, {
+          'etsAnnotationsEnable': true
+        }, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `export @interface __$$ETS_ANNOTATION$$__Anno1 {
+            prop1: number = 1;
+        }`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+        PropCollections.clearPropsCollections();
+      })
+
+      it('should obfuscate when annotationName is exported and enable export-obfuscation', function () {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': true,
+            'mKeepParameterNames': false
+          },
+          'mAllowEtsAnnotations': true,
+          'mExportObfuscation': true,
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `export @interface __$$ETS_ANNOTATION$$__Anno1 {prop1: number = 1}`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true, undefined, {
+          'etsAnnotationsEnable': true
+        }, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `export @interface __$$ETS_ANNOTATION$$__a {
+            prop1: number = 1;
+        }`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+        PropCollections.clearPropsCollections();
+      })
     })
   })
 })
 
-function compareStringsIgnoreNewlines(str1: string, str2: string): boolean {
+export function compareStringsIgnoreNewlines(str1: string, str2: string): boolean {
   const normalize = (str: string) => str.replace(/[\n\r\s]+/g, '');
   return normalize(str1) === normalize(str2);
 }

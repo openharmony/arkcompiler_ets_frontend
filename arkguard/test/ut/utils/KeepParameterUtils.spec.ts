@@ -212,8 +212,8 @@ describe('Tester Cases for shouldKeepParameter.', function () {
 
   it('Tester 2-10: When node is method and method name is not kept, shouldKeepParameter returns false', function () {
     let content = `declare class A {
-      constructor(para1: number);
-      method(para2: number): void;
+      constructor(para11: number);
+      method1(para12: number): void;
       }`;
     const ast = ts.createSourceFile(path, content, ts.ScriptTarget.ES2015, true);
     let method: ts.MethodDeclaration = (ast.statements[0] as ts.ClassDeclaration).members[1] as ts.MethodDeclaration;

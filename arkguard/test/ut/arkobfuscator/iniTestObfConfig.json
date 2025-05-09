@@ -16,5 +16,6 @@
         "mReservedToplevelNames": ["a*", "*shoul?keep*", "func2"]
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": false
+    "mEnableNameCache": false,
+    "mAllowEtsAnnotations": true
 }

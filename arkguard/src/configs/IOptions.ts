@@ -69,4 +69,7 @@ export interface IOptions {
 
   // Use optimized system whitelist
   readonly mStripLanguageDefaultWhitelist?: boolean;
+
+  // Is Annotation allowed
+  readonly mAllowEtsAnnotations?: boolean;
 }

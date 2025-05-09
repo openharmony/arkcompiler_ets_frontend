@@ -47,6 +47,7 @@ import type {
   TypeNode
 } from 'typescript';
 
+import { annotationPrefix } from '../../common/type';
 import type {IOptions} from '../../configs/IOptions';
 import type { INameObfuscationOption } from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
@@ -65,6 +66,7 @@ import {
   globalGenerator,
   nameCache
 } from './RenameIdentifierTransformer';
+import { FileUtils } from '../../ArkObfuscator';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
 import { PropCollections, UnobfuscationCollections } from '../../utils/CommonCollections';
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
@@ -86,14 +88,14 @@ namespace secharmony {
     return renamePropertiesFactory;
 
     function renamePropertiesFactory(context: TransformationContext): Transformer<Node> {
-
+      let currentFileType: string | undefined = undefined;
       return renamePropertiesTransformer;
 
       function renamePropertiesTransformer(node: Node): Node {
         if (isSourceFile(node) && ArkObfuscator.isKeptCurrentFile) {
           return node;
         }
-
+        currentFileType = isSourceFile(node) ? FileUtils.getFileSuffix(node.fileName).ext : undefined;
         const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.PROPERTY_OBFUSCATION);
         startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
 
@@ -115,6 +117,10 @@ namespace secharmony {
       }
 
       function renameProperties(node: Node): Node {
+        if (NodeUtils.isObjectLiteralInAnnotation(node, currentFileType)) {
+          return node;
+        }
+
         if (!NodeUtils.isPropertyNode(node)) {
           return visitEachChild(node, renameProperties, context);
         }
@@ -204,7 +210,13 @@ namespace secharmony {
           return node;
         }
 
-        let mangledName: string = getPropertyName(original);
+        let mangledName: string = original;
+        let name: string | undefined = original.startsWith(annotationPrefix) ? original.substring(annotationPrefix.length) : undefined;
+        if (name) {
+          mangledName = getAnnotationMangledNameWithPrefix(name);
+        } else {
+          mangledName = getPropertyMangledName(original);
+        }
 
         if (isStringLiteralLike(node)) {
           return factory.createStringLiteral(mangledName);
@@ -233,7 +245,17 @@ namespace secharmony {
         return factory.createPrivateIdentifier('#' + mangledName);
       }
 
-      function getPropertyName(original: string): string {
+      function getPropertyMangledName(original: string): string {
+        let mangledName: string = getMangledName(original);
+        return mangledName;
+      }
+
+      function getAnnotationMangledNameWithPrefix(original: string): string {
+        let mangledName: string = `${annotationPrefix}${getMangledName(original)}`;
+        return mangledName;
+      }
+
+      function getMangledName(original: string): string {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {

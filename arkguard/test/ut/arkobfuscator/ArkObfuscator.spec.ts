@@ -260,6 +260,15 @@ class Demo{
       }
       expect(languageSet).to.deep.equal(UnobfuscationCollections.reservedLangForProperty);
     });
+
+    it('Tester: test case for enable annotation', function (){
+      let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
+      let obfuscator: ArkObfuscator = new ArkObfuscator();
+      let config = FileUtils.readFileAsJson(configPath) as IOptions;
+      obfuscator.init(config);
+
+      expect(config.mAllowEtsAnnotations).to.be.true;
+    });
   });
 });
 

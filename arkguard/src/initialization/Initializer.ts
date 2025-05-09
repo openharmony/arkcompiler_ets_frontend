@@ -54,7 +54,10 @@ export const printerTimeAndMemDataConfig = {
 
 export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, printObfLogger: Function): void {
   const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, true);
-  const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
+  let mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
+  if (arkProjectConfig.allowEtsAnnotations) {
+    mergedObConfig.options.enableEtsAnnotation = arkProjectConfig.allowEtsAnnotations;
+  }
   const isHarCompiled: boolean = projectConfig.compileHar;
   if (mergedObConfig.options.disableObfuscation) {
     blockPrinter();
@@ -138,7 +141,8 @@ function initArkGuardConfig(
       mKeepSourceOfPaths: new Set(),
       mkeepFilesAndDependencies: new Set(),
     },
-    mStripLanguageDefaultWhitelist: mergedObConfig.options.stripLanguageDefault
+    mStripLanguageDefaultWhitelist: mergedObConfig.options.stripLanguageDefault,
+    mAllowEtsAnnotations: mergedObConfig.options.enableEtsAnnotation,
   };
 
   const arkObfuscator: ArkObfuscator = new ArkObfuscator();

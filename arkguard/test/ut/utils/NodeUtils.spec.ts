@@ -581,4 +581,47 @@ describe('test for NodeUtils', function () {
       expect(hasExportModifier(sourceFile.statements[0])).to.be.true;
     })
   })
+
+  describe('test for isObjectLiteralInAnnotation', function () {
+    it('should return false when node is not ObjectLiteral', function () {
+        const node = ts.factory.createObjectBindingPattern([]);
+        expect(NodeUtils.isObjectLiteralInAnnotation(node, '.d.ets')).to.be.false;
+    })
+    it('should return true if annotation is in .d.ets files', function () {
+        const node = ts.factory.createObjectLiteralExpression(
+            [ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier("a"),
+              ts.factory.createNumericLiteral("1")
+            )],
+            false
+        );
+        const expr = ts.factory.createCallExpression(
+            ts.factory.createIdentifier("Anno1"),
+            undefined,
+            [node]
+        );
+        (node as Mutable<ts.Node>).parent = expr;
+        const decorator = ts.factory.createDecorator(expr);
+        (expr as Mutable<ts.Node>).parent = decorator;
+        expect(NodeUtils.isObjectLiteralInAnnotation(node, '.d.ets')).to.be.true;
+    })
+    it('should return true if annotation is in .ts files and with annotationPrefix', function () {
+        const node = ts.factory.createObjectLiteralExpression(
+            [ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier("a"),
+              ts.factory.createNumericLiteral("1")
+            )],
+            false
+        );
+        const expr = ts.factory.createCallExpression(
+            ts.factory.createIdentifier("__$$ETS_ANNOTATION$$__Anno1"),
+            undefined,
+            [node]
+        );
+        (node as Mutable<ts.Node>).parent = expr;
+        const decorator = ts.factory.createDecorator(expr);
+        (expr as Mutable<ts.Node>).parent = decorator;
+        expect(NodeUtils.isObjectLiteralInAnnotation(node, '.ts')).to.be.true;
+    })
+})
 })
