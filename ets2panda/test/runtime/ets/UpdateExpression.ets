@@ -40,30 +40,30 @@ function main(): void {
     let a: Double = new Double(30.0);
     let b = ++a;
     assertEQ(a, 31.0)
-    assertEQ(a.doubleValue(), 31.0)
+    assertEQ(a.toDouble(), 31.0)
     assertEQ(b, 31.0)
-    assertEQ(b.doubleValue(), 31.0)
+    assertEQ(b.toDouble(), 31.0)
 
-    assertEQ((++a).doubleValue(), 32.0)
+    assertEQ((++a).toDouble(), 32.0)
     assertEQ(a, 32.0)
-    assertEQ(a.doubleValue(), 32.0)
+    assertEQ(a.toDouble(), 32.0)
     assertEQ(b, 31.0)
-    assertEQ(b.doubleValue(), 31.0)
+    assertEQ(b.toDouble(), 31.0)
   }
 
   {
     let a: Int = new Int(40);
     let b = a++;
     assertEQ(a, 41)
-    assertEQ(a.intValue(), 41)
+    assertEQ(a.toInt(), 41)
     assertEQ(b, 40)
-    assertEQ(b.intValue(), 40)
+    assertEQ(b.toInt(), 40)
 
-    assertEQ((a++).intValue(), 41)
+    assertEQ((a++).toInt(), 41)
     assertEQ(a, 42)
-    assertEQ(a.intValue(), 42)
+    assertEQ(a.toInt(), 42)
     assertEQ(b, 40)
-    assertEQ(b.intValue(), 40)
+    assertEQ(b.toInt(), 40)
   }
 
   {
@@ -71,9 +71,9 @@ function main(): void {
     let a: Int = new Int(50);
     let b = fn(a++);
     assertEQ(a, 51)
-    assertEQ(a.intValue(), 51)
+    assertEQ(a.toInt(), 51)
     assertEQ(b, 50)
-    assertEQ(b.intValue(), 50)
+    assertEQ(b.toInt(), 50)
 
     assertEQ(fn(++a), 52)
     assertEQ(a, 52)
