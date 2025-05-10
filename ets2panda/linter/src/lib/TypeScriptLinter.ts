@@ -4469,18 +4469,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const typeNameIdentifer = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
-    const isSameName = ts.isIdentifier(typeNameIdentifer) && typeNameIdentifer.getText() === ESLIB_SHAREDARRAYBUFFER;
-    if (!isSameName) {
+
+    const typeNameIdentifier = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    if (!ts.isIdentifier(typeNameIdentifier) || typeNameIdentifier.getText() !== ESLIB_SHAREDARRAYBUFFER) {
       return;
     }
-    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifer)?.getDeclarations();
+
+    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifier)?.getDeclarations();
     const isSharedMemoryEsLib = decls?.some((decl) => {
       const srcFileName = decl.getSourceFile().fileName;
       return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
     });
-    if (isSharedMemoryEsLib) {
-      this.incrementCounters(typeNameIdentifer, FaultID.SharedArrayBufferDeprecated);
+    if (!isSharedMemoryEsLib) {
+      return;
+    }
+    if (ts.isNewExpression(node)) {
+      const autofix = this.autofixer?.fixSharedArrayBufferConstructor(node);
+      this.incrementCounters(node.expression, FaultID.SharedArrayBufferDeprecated, autofix);
+    } else {
+      const autofix = this.autofixer?.fixSharedArrayBufferTypeReference(node);
+      this.incrementCounters(node, FaultID.SharedArrayBufferDeprecated, autofix);
     }
   }
 
@@ -5454,9 +5462,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (
-        literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
+      literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
     ) {
       return;
     }
@@ -5805,21 +5813,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const defaultSkipTypeCheck = (typeNode: ts.TypeNode | undefined): boolean => {
       if (!typeNode) {
-          return false;
+        return false;
       }
 
       const typeText = typeNode.getText();
       if (ts.isLiteralTypeNode(typeNode) || ['boolean', 'number', 'null', 'undefined'].includes(typeText)) {
-          return true;
+        return true;
       }
-  
+
       if (ts.isUnionTypeNode(typeNode)) {
-        return typeNode.types.some(t => {
+        return typeNode.types.some((t) => {
           const tText = t.getText();
           return tText === 'undefined';
         });
       }
-  
+
       return false;
     };
 
