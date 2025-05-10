@@ -92,6 +92,10 @@ ets2panda_add_gtest(lsp_api_test_class_hierarchy CPP_SOURCES
     class_hierarchy_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_find_safe_delete_location CPP_SOURCES
+    find_safe_delete_location_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_find_references CPP_SOURCES
     find_references_test.cpp
 )

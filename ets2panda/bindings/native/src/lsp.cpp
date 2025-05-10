@@ -228,6 +228,48 @@ KNativePointer impl_getDeclInfo(KNativePointer context, KInt position)
 }
 TS_INTEROP_2(getDeclInfo, KNativePointer, KNativePointer, KInt)
 
+KNativePointer impl_findSafeDeleteLocation(KNativePointer context, KNativePointer declInfo)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *result = new std::vector<SafeDeleteLocation>(
+        ctx->FindSafeDeleteLocation(reinterpret_cast<es2panda_Context *>(context),
+                                    reinterpret_cast<std::tuple<std::string, std::string> *>(declInfo)));
+    return result;
+}
+TS_INTEROP_2(findSafeDeleteLocation, KNativePointer, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSafeDeleteLocations(KNativePointer safeDeleteLocationsPtr)
+{
+    auto *locations = reinterpret_cast<std::vector<SafeDeleteLocation> *>(safeDeleteLocationsPtr);
+    std::vector<void *> ptrs;
+    for (auto &loc : *locations) {
+        ptrs.push_back(new SafeDeleteLocation(loc));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSafeDeleteLocations, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSafeDeleteLocationUri(KNativePointer locationPtr)
+{
+    auto *location = reinterpret_cast<SafeDeleteLocation *>(locationPtr);
+    return new std::string(location->uri);
+}
+TS_INTEROP_1(getSafeDeleteLocationUri, KNativePointer, KNativePointer)
+
+KInt impl_getSafeDeleteLocationStart(KNativePointer locationPtr)
+{
+    auto *location = reinterpret_cast<SafeDeleteLocation *>(locationPtr);
+    return static_cast<KInt>(location->start);
+}
+TS_INTEROP_1(getSafeDeleteLocationStart, KInt, KNativePointer)
+
+KInt impl_getSafeDeleteLocationLength(KNativePointer locationPtr)
+{
+    auto *location = reinterpret_cast<SafeDeleteLocation *>(locationPtr);
+    return static_cast<KInt>(location->length);
+}
+TS_INTEROP_1(getSafeDeleteLocationLength, KInt, KNativePointer)
+
 KNativePointer impl_getReferencesAtPosition(KNativePointer context, KNativePointer declInfo)
 {
     LSPAPI const *ctx = GetImpl();
