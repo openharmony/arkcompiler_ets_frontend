@@ -17,7 +17,5 @@
 import type {StandardExportedClass as IT1, ClassForExport as IT2} from /* @@ label */"./type_binding_neg_to_export.ets"
 
 function main () {
-    let c1 = new IT1 // compile-time error: cannot create objects of type IT1
+    let c2 = new IT2 // compile-time error: cannot create objects of type IT2
 }
-
-/* @@@ label Error TypeError: Cannot import 'StandardExportedClass', imported type imports only exported types.  */

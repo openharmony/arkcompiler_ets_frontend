@@ -1285,7 +1285,7 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
             if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
                 Lexer()->Rewind(savedPos);
             }
-            memberModifiers |= ir::ModifierFlags::EXPORT_TYPE;
+            memberModifiers |= ir::ModifierFlags::EXPORT;
         } else {
             memberModifiers |= ir::ModifierFlags::EXPORT;
         }
