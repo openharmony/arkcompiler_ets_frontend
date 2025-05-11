@@ -26,7 +26,7 @@ import {
   FileWhiteList,
   FileContent
 } from '../../../src/utils/ProjectCollections';
-import { AtKeepCollections, UnobfuscationCollections } from '../../../src/utils/CommonCollections';
+import { AtIntentCollections, AtKeepCollections, UnobfuscationCollections } from '../../../src/utils/CommonCollections';
 import { ApiExtractor } from '../../../src/common/ApiExtractor'
 import { FileUtils } from '../../../src/utils/FileUtils';
 import * as fs from 'fs';
@@ -113,6 +113,8 @@ describe('test for CommonCollections', function () {
       expect(fileWhiteLists.fileKeepInfo.exported?.globalNames.size).to.be.equal(0);
       expect(fileWhiteLists.fileKeepInfo.enumProperties.size).to.be.equal(0);
       expect(fileWhiteLists.fileKeepInfo.stringProperties.size).to.be.equal(0);
+      expect(fileWhiteLists.fileKeepInfo.arkUIKeepInfo?.propertyNames.size).to.be.equal(0);
+      expect(fileWhiteLists.fileKeepInfo.arkUIKeepInfo?.globalNames.size).to.be.equal(0);
       expect(fileWhiteLists.fileReservedInfo.enumProperties.size).to.be.equal(0);
       expect(fileWhiteLists.fileReservedInfo.propertyParams.size).to.be.equal(0);
     });
@@ -159,6 +161,8 @@ describe('test for CommonCollections', function () {
         fileWhilteListTemp.fileKeepInfo.exported.globalNames.add('test7');
         fileWhilteListTemp.fileKeepInfo.exported.propertyNames.add('test8');
         fileWhilteListTemp.fileKeepInfo.stringProperties.add('test9');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.globalNames.add('test111');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.propertyNames.add('test112');
         fileWhilteListTemp.fileReservedInfo.enumProperties.add('test10');
         fileWhilteListTemp.fileReservedInfo.propertyParams.add('test11');
         const fileWhilteList: FileWhiteList | undefined = projectWhiteListManagerForTest.getFileWhiteListMap().get('testPath3');
@@ -171,6 +175,8 @@ describe('test for CommonCollections', function () {
         expect(fileWhilteList?.fileKeepInfo.exported.globalNames.has('test7')).to.be.true;
         expect(fileWhilteList?.fileKeepInfo.exported.propertyNames.has('test8')).to.be.true;
         expect(fileWhilteList?.fileKeepInfo.stringProperties.has('test9')).to.be.true;
+        expect(fileWhilteList?.fileKeepInfo.arkUIKeepInfo.globalNames.has('test111')).to.be.true;
+        expect(fileWhilteList?.fileKeepInfo.arkUIKeepInfo.propertyNames.has('test112')).to.be.true;
         expect(fileWhilteList?.fileReservedInfo.enumProperties.has('test10')).to.be.true;
         expect(fileWhilteList?.fileReservedInfo.propertyParams.has('test11')).to.be.true;
         expect(fileWhilteListTemp.fileKeepInfo.keepSymbol?.globalNames.size).to.be.equal(1);
@@ -184,6 +190,8 @@ describe('test for CommonCollections', function () {
         expect(fileWhilteListTemp.fileKeepInfo.stringProperties.size).to.be.equal(1);
         expect(fileWhilteListTemp.fileReservedInfo.enumProperties.size).to.be.equal(1);
         expect(fileWhilteListTemp.fileReservedInfo.propertyParams.size).to.be.equal(1);
+        expect(fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.globalNames.size).to.be.equal(1);
+        expect(fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.propertyNames.size).to.be.equal(1);
       });
       it('should not collect atKeep if not enabled', () => {
         let projectWhiteListManager = new ProjectWhiteListManager(cachePath, false, false);
@@ -198,6 +206,8 @@ describe('test for CommonCollections', function () {
         fileWhilteListTemp.fileKeepInfo.exported.globalNames.add('test7');
         fileWhilteListTemp.fileKeepInfo.exported.propertyNames.add('test8');
         fileWhilteListTemp.fileKeepInfo.stringProperties.add('test9');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.globalNames.add('test111');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.propertyNames.add('test112');
         fileWhilteListTemp.fileReservedInfo.enumProperties.add('test10');
         fileWhilteListTemp.fileReservedInfo.propertyParams.add('test11');
         const fileWhilteList: FileWhiteList | undefined = projectWhiteListManager.getFileWhiteListMap().get('testPath4');
@@ -210,6 +220,8 @@ describe('test for CommonCollections', function () {
         expect(fileWhilteList?.fileKeepInfo.exported.globalNames.has('test7')).to.be.true;
         expect(fileWhilteList?.fileKeepInfo.exported.propertyNames.has('test8')).to.be.true;
         expect(fileWhilteList?.fileKeepInfo.stringProperties.has('test9')).to.be.true;
+        expect(fileWhilteList?.fileKeepInfo.arkUIKeepInfo.globalNames.has('test111')).to.be.true;
+        expect(fileWhilteList?.fileKeepInfo.arkUIKeepInfo.propertyNames.has('test112')).to.be.true;
         expect(fileWhilteList?.fileReservedInfo.enumProperties.has('test10')).to.be.true;
         expect(fileWhilteList?.fileReservedInfo.propertyParams.has('test11')).to.be.true;
       });
@@ -236,6 +248,8 @@ describe('test for CommonCollections', function () {
         fileWhilteListTemp.fileKeepInfo.exported.globalNames.add('test7');
         fileWhilteListTemp.fileKeepInfo.exported.propertyNames.add('test8');
         fileWhilteListTemp.fileKeepInfo.stringProperties.add('test9');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo?.globalNames.add('test111');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo?.propertyNames.add('test112');
         fileWhilteListTemp.fileReservedInfo.enumProperties.add('test10');
         fileWhilteListTemp.fileReservedInfo.propertyParams.add('test11');
         projectWhiteListManager.setCurrentCollector('testPath2');
@@ -262,6 +276,10 @@ describe('test for CommonCollections', function () {
         expect(UnobfuscationCollections.reservedStrProp.size==0).to.be.true;
         expect(ApiExtractor.mConstructorPropertySet.size==0).to.be.true;
         expect(ApiExtractor.mEnumMemberSet.size==0).to.be.true;
+        expect(AtIntentCollections.globalNames.size==1).to.be.true;
+        expect(AtIntentCollections.propertyNames.size==1).to.be.true;
+        expect(AtIntentCollections.globalNames.has('test111')).to.be.true;
+        expect(AtIntentCollections.propertyNames.has('test112')).to.be.true;
       });
       it('should update fileWhiteLists and projectWhiteList if is incremental(project white list changed)', () => {
         let projectWhiteListManager = new ProjectWhiteListManager(cachePath, true, true);
@@ -281,6 +299,8 @@ describe('test for CommonCollections', function () {
         fileWhilteListTemp.fileKeepInfo.exported.globalNames.add('test7');
         fileWhilteListTemp.fileKeepInfo.exported.propertyNames.add('test8');
         fileWhilteListTemp.fileKeepInfo.stringProperties.add('test9');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.globalNames.add('test122');
+        fileWhilteListTemp.fileKeepInfo.arkUIKeepInfo.propertyNames.add('test123');
         fileWhilteListTemp.fileReservedInfo.enumProperties.add('test10');
         fileWhilteListTemp.fileReservedInfo.propertyParams.add('test11');
         fileWhilteListTemp.fileReservedInfo.propertyParams.add('test31');
@@ -313,6 +333,8 @@ describe('test for CommonCollections', function () {
         expect(ApiExtractor.mConstructorPropertySet.has('test31')).to.be.true;
         expect(UnobfuscationCollections.reservedExportName.has('test33')).to.be.true;
         expect(UnobfuscationCollections.reservedExportNameAndProp.has('test12')).to.be.false;
+        expect(AtIntentCollections.globalNames.has('test122')).to.be.true;
+        expect(AtIntentCollections.propertyNames.has('test123')).to.be.true;
       });
       it('should update fileWhiteLists and projectWhiteList if is incremental(project white list not changed)', () => {
         let projectWhiteListManager = new ProjectWhiteListManager(cachePath, true, true);

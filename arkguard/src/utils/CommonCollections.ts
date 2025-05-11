@@ -105,3 +105,13 @@ export namespace AtKeepCollections {
     keepAsConsumer.propertyNames.clear();
   };
 }
+
+export namespace AtIntentCollections{
+  export let propertyNames: Set<string> = new Set();
+  export let globalNames: Set<string> = new Set();
+  
+  export function clear(): void{
+    propertyNames.clear();
+    globalNames.clear();
+  }
+}
