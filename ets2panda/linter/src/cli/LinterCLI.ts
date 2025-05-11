@@ -95,7 +95,6 @@ async function generateReportFile(reportData): Promise<void> {
   const reportFilePath = path.join('scan-report.json');
   try {
     await fs.promises.writeFile(reportFilePath, JSON.stringify(reportData, null, 2));
-    console.log('Report file generated successfully at:', reportFilePath);
   } catch (error) {
     console.error('Error generating report file:', error);
   }
