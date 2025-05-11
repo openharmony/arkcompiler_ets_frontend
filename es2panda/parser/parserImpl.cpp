@@ -2799,9 +2799,9 @@ void ParserImpl::ThrowAnnotationNotEnable()
 {
     std::string errMessage =
         "Current configuration does not support using annotations. "
-        "Annotations can be used in the version of API 18 or higher versions.\n"
+        "Annotations can be used in the version of API 20 or higher versions.\n"
         "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
-        "> If compatibleSdkVersion is set to API 18 or higher version."
+        "> If compatibleSdkVersion is set to API 20 or higher version."
         "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
         "enable-annotations options are correctly configured.";
     ThrowSyntaxError(errMessage);
