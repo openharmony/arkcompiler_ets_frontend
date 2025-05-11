@@ -225,6 +225,7 @@ export enum FaultID {
   LimitedStdLibNoSendableDecorator,
   LimitedStdLibNoDoncurrentDecorator,
   NoNeedStdlibWorker,
+  BuiltinGetOwnPropertyNames,
   // this should always be last enum
   LAST_ID
 }

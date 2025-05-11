@@ -17,10 +17,13 @@ export enum BuiltinProblem {
   LimitedThisArg = 'ThisArg',
   SymbolIterator = 'SymbolIterator',
   BuiltinNoCtorFunc = 'BuiltinNoCtorFunc',
-  BuiltinNoPropertyDescriptor = 'NoPropertyDescriptor'
+  BuiltinNoPropertyDescriptor = 'NoPropertyDescriptor',
+  MissingAttributes = 'MissingAttributes'
 }
 
 export const SYMBOL_ITERATOR: string = 'Symbol.iterator';
+
+export const GET_OWN_PROPERTY_NAMES_TEXT: string = 'Object.getOwnPropertyNames';
 
 export const BUILTIN_DISABLE_CALLSIGNATURE = [
   'AggregateError',

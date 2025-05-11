@@ -295,6 +295,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 77,
+            "column": 13,
+            "endLine": 77,
+            "endColumn": 39,
+            "problem": "BuiltinGetOwnPropertyNames",
+            "suggest": "",
+            "rule": "Using \"Object.getOwnPropertyNames\" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))",
+            "severity": "ERROR"
+        },
+        {
             "line": 85,
             "column": 9,
             "endLine": 85,
