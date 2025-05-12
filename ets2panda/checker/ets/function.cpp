@@ -835,7 +835,7 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
         }
 
         const auto candidateLength = candidate->Function()->Params().size();
-        if (candidateLength > currentMinLength) {
+        if (candidateLength > currentMinLength && !candidate->HasRestParameter()) {
             continue;
         }
 
@@ -846,7 +846,11 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
         }
 
         const auto currentLength = result->Function()->Params().size();
-        if (candidateLength < currentLength) {
+        if (candidate->HasRestParameter() && result->HasRestParameter()) {
+            if (result->Owner() == candidate->Owner()) {
+                result = nullptr;
+            }
+        } else if (candidateLength < currentLength) {
             result = candidate;  // Shorter parameter count wins
             currentMinLength = result->Function()->Params().size();
         } else if (candidateLength == currentLength) {
