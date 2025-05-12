@@ -102,7 +102,8 @@ import {
   USE_SHARED,
   USE_CONCURRENT,
   ESLIB_SHAREDMEMORY_FILENAME,
-  ESLIB_SHAREDARRAYBUFFER
+  ESLIB_SHAREDARRAYBUFFER,
+  TASKPOOL_MODULES
 } from './utils/consts/ConcurrentAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
@@ -1043,16 +1044,35 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isCallExpression(node.parent)) {
       return;
     }
-    const expression = node.parent.expression;
 
-    if (!ts.isPropertyAccessExpression(expression)) {
+    const methodName = node.name.getText();
+
+    if (methodName !== ISCONCURRENT) {
       return;
     }
 
-    const methodName = expression.name.getText();
+    const symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
+    if (!symbol) {
+      return;
+    }
 
-    if (node.expression.getText() === TASKPOOL && methodName === ISCONCURRENT) {
-      this.incrementCounters(node, FaultID.IsConcurrentDeprecated);
+    if (symbol.name === TASKPOOL) {
+      const decl = TsUtils.getDeclaration(symbol);
+
+      if (!decl) {
+        return;
+      }
+
+      const sourceFile = decl.getSourceFile();
+      const fileName = path.basename(sourceFile.fileName);
+
+      if (
+        TASKPOOL_MODULES.some((moduleName) => {
+          return fileName.startsWith(moduleName);
+        })
+      ) {
+        this.incrementCounters(node.name, FaultID.IsConcurrentDeprecated);
+      }
     }
   }
 
@@ -3289,7 +3309,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -5198,7 +5218,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -5630,9 +5650,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }

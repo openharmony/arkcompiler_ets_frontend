@@ -13,12 +13,22 @@
  * limitations under the License.
  */
 
+import { taskpool } from '../main/oh_modules/@kit.ArkTS'
+import { taskpool as tp } from '../main/oh_modules/@ohos.taskpool'
+import { taskpool as kp } from '@some.module'
+
 @Concurrent
-function test(){}
+function test() { }
 
 let result: Boolean = taskpool.isConcurrent(test);
 
-class testObject{
+let result2: Boolean = tp.isConcurrent(test);
+
+let result3: Boolean = kp.isConcurrent(test);
+
+let result4: Boolean = taskpool.foo(test);
+
+class testObject {
     isConcurrent(): string {
         return "Test";
     }
