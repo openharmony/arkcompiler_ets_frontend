@@ -6973,8 +6973,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (namedBindings && ts.isNamedImports(namedBindings)) {
       for (const element of namedBindings.elements) {
-        const name = element.name.getText();
-        if (expectedImports.includes(name)) {
+        const originalName = element.propertyName ? element.propertyName.getText() : element.name.getText();
+
+        if (expectedImports.includes(originalName)) {
           this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
         }
       }

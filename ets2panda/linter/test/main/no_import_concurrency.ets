@@ -14,9 +14,11 @@
  */
 
 
-import { taskpool }from '@kit.ArkTS';
+import { taskpool } from '@ohos.taskpool';
+import { taskpool as tp } from '@kit.ArkTS';
 import { anyClass } from '@kit.ArkTS'; //legal
-import process from '@ohos.process';
+import process  from '@kit.ArkTS';
+import { process as ps } from '@ohos.process';
 import fooke from '@ohos.process'; //legal
-import { fooClass } from '@ohos.process'; //legal
+import { fooClass } from '@ohos.taskpool'; //legal
 import { ArkTSUtils } from '@kit.ArkTS'
