@@ -76,7 +76,7 @@ import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhi
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
-import { ARKTSUTILS_TEXT, ARKTSUTILS_MODULES } from './utils/consts/ArkTSUtilsAPI';
+import { ASON_TEXT, ASON_MODULES, JSON_TEXT } from './utils/consts/ArkTSUtilsAPI';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -3062,7 +3062,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
       this.checkCollectionsSymbol(tsIdentSym, node);
-      this.checkArkTSUtilsSymbol(tsIdentSym, node);
+      this.checkAsonSymbol(tsIdentSym, node);
     }
   }
 
@@ -5454,9 +5454,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (
-        literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
+      literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
     ) {
       return;
     }
@@ -5805,21 +5805,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const defaultSkipTypeCheck = (typeNode: ts.TypeNode | undefined): boolean => {
       if (!typeNode) {
-          return false;
+        return false;
       }
 
       const typeText = typeNode.getText();
       if (ts.isLiteralTypeNode(typeNode) || ['boolean', 'number', 'null', 'undefined'].includes(typeText)) {
-          return true;
+        return true;
       }
-  
+
       if (ts.isUnionTypeNode(typeNode)) {
-        return typeNode.types.some(t => {
+        return typeNode.types.some((t) => {
           const tText = t.getText();
           return tText === 'undefined';
         });
       }
-  
+
       return false;
     };
 
@@ -5957,19 +5957,56 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkArkTSUtilsSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    this.checkSymbol(symbol, node, ARKTSUTILS_TEXT, ARKTSUTILS_MODULES, FaultID.LimitedStdLibApi);
+  private checkAsonSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    const cb = (): void => {
+      let autofix: Autofix[] | undefined;
+      const parent = node.parent;
+      autofix = this.autofixer?.replaceNode(parent ? parent : node, JSON_TEXT);
+
+      if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
+        autofix = this.autofixer?.removeImport(node, parent);
+      }
+
+      this.incrementCounters(node, FaultID.LimitedStdLibNoASON, autofix);
+    };
+    this.checkSymbolAndExecute(symbol, ASON_TEXT, ASON_MODULES, cb);
   }
 
   private checkCollectionsSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    this.checkSymbol(symbol, node, COLLECTIONS_TEXT, COLLECTIONS_MODULES, FaultID.LimitedStdLibApi);
+    const cb = (): void => {
+      const parent = node.parent;
+      if (!parent) {
+        return;
+      }
+      if (ts.isPropertyAccessExpression(parent)) {
+        const autofix = this.autofixer?.replaceNode(parent, parent.name.text);
+        this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+      }
+
+      if (ts.isQualifiedName(parent)) {
+        const autofix = this.autofixer?.replaceNode(parent, parent.right.text);
+        this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+      }
+
+      if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
+        const autofix = this.autofixer?.removeImport(node, parent);
+        this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+      }
+    };
+
+    this.checkSymbolAndExecute(symbol, COLLECTIONS_TEXT, COLLECTIONS_MODULES, cb);
   }
 
   private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    this.checkSymbol(symbol, node, WORKER_TEXT, WORKER_MODULES, FaultID.NoNeedStdlibWorker);
+    const cb = (): void => {
+      this.incrementCounters(node, FaultID.NoNeedStdlibWorker);
+    };
+
+    this.checkSymbolAndExecute(symbol, WORKER_TEXT, WORKER_MODULES, cb);
   }
 
-  private checkSymbol(symbol: ts.Symbol, node: ts.Node, symbolName: string, modules: string[], faultId: FaultID): void {
+  private checkSymbolAndExecute(symbol: ts.Symbol, symbolName: string, modules: string[], cb: () => void): void {
+    void this;
     if (symbol.name === symbolName) {
       const decl = TsUtils.getDeclaration(symbol);
 
@@ -5985,7 +6022,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           return fileName.startsWith(moduleName);
         })
       ) {
-        this.incrementCounters(node, faultId);
+        cb();
       }
     }
   }

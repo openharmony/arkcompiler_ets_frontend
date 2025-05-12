@@ -20,6 +20,13 @@
             "endLine": 16,
             "endColumn": 21,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 605,
+                    "end": 667,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -30,6 +37,13 @@
             "endLine": 18,
             "endColumn": 21,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 669,
+                    "end": 751,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -40,6 +54,13 @@
             "endLine": 18,
             "endColumn": 41,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 669,
+                    "end": 751,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -50,6 +71,13 @@
             "endLine": 20,
             "endColumn": 21,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 753,
+                    "end": 825,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -60,6 +88,13 @@
             "endLine": 20,
             "endColumn": 39,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 753,
+                    "end": 825,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -70,6 +105,13 @@
             "endLine": 26,
             "endColumn": 34,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 965,
+                    "end": 982,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -80,6 +122,13 @@
             "endLine": 26,
             "endColumn": 66,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 997,
+                    "end": 1014,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -90,6 +139,13 @@
             "endLine": 28,
             "endColumn": 44,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1054,
+                    "end": 1076,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -100,6 +156,13 @@
             "endLine": 30,
             "endColumn": 42,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1116,
+                    "end": 1136,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -110,6 +173,13 @@
             "endLine": 32,
             "endColumn": 37,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1169,
+                    "end": 1191,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -120,6 +190,13 @@
             "endLine": 34,
             "endColumn": 39,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1224,
+                    "end": 1246,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
@@ -130,6 +207,13 @@
             "endLine": 34,
             "endColumn": 76,
             "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1261,
+                    "end": 1283,
+                    "replacementText": "Array"
+                }
+            ],
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
