@@ -106,6 +106,7 @@ import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import {
   AtIntentCollections,
   AtKeepCollections,
+  BytecodeObfuscationCollections,
   LocalVariableCollections,
   PropCollections,
   UnobfuscationCollections
@@ -870,6 +871,7 @@ namespace secharmony {
       addToSet(PropCollections.reservedProperties, AtKeepCollections.keepSymbol.globalNames);
       addToSet(PropCollections.reservedProperties, AtKeepCollections.keepAsConsumer.globalNames);
       addToSet(PropCollections.reservedProperties, AtIntentCollections.globalNames);
+      addToSet(UnobfuscationCollections.reservedSdkApiForProp, BytecodeObfuscationCollections.decoratorProp);
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       isInitializedReservedList = true;
     }

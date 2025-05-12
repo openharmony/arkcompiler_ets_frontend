@@ -115,3 +115,11 @@ export namespace AtIntentCollections{
     globalNames.clear();
   }
 }
+
+export namespace BytecodeObfuscationCollections {
+  export let decoratorProp: Set<string> = new Set();
+  
+  export function clear(): void {
+    decoratorProp.clear();
+  }
+}

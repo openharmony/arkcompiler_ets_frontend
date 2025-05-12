@@ -16,13 +16,16 @@
 import type {
   ClassDeclaration,
   CommentRange,
+  Decorator,
   ElementAccessExpression,
   EnumDeclaration,
   ExportDeclaration,
+  Expression,
   FunctionDeclaration,
   InterfaceDeclaration,
   ModifiersArray,
   ModuleDeclaration,
+  NamedDeclaration,
   Node,
   ParameterDeclaration,
   PropertyAccessExpression,
@@ -76,7 +79,9 @@ import {
   isParameter,
   isTypeParameterDeclaration,
   isIndexedAccessTypeNode,
-  Extension
+  Extension,
+  isCallExpression,
+  isDecorator
 } from 'typescript';
 
 import fs from 'fs';
@@ -99,8 +104,13 @@ import { scanProjectConfig } from './ApiReader';
 import { enumPropsSet } from '../utils/OhsUtil';
 import { FileUtils } from '../utils/FileUtils';
 import { supportedParsingExtension } from './type';
-import { addToSet, FileWhiteList, KeepInfo, projectWhiteListManager } from '../utils/ProjectCollections';
-import { AtKeepCollections } from '../utils/CommonCollections';
+import {
+  addToSet,
+  DECORATOR_WHITE_LIST,
+  FileWhiteList, KeepInfo,
+  projectWhiteListManager
+} from '../utils/ProjectCollections';
+import { AtKeepCollections, BytecodeObfuscationCollections } from '../utils/CommonCollections';
 import { hasExportModifier } from '../utils/NodeUtils';
 
 export namespace ApiExtractor {
@@ -142,6 +152,8 @@ export namespace ApiExtractor {
 
   let mCurrentExportedPropertySet: Set<string> = new Set<string>();
   let mCurrentExportNameSet: Set<string> = new Set<string>();
+
+  let decoratorMap: Map<string, Set<string>> = new Map<string, Set<string>>();
 
   let keepSymbolTemp: KeepInfo = {
     propertyNames: new Set<string>(),
@@ -693,6 +705,11 @@ export namespace ApiExtractor {
 
     collectWhiteListByApiType(sourceFile, apiType, fileName);
 
+    // collect field decorated by UI
+    if (scanProjectConfig.scanDecorator) {
+      collectAndAddFieldDecorator(sourceFile);
+    }
+
     // collect names marked with '// @KeepSymbol' or '// @KeepAsConsumer', only support .ts/.ets
     if (shouldCollectAtKeep(fileName)) {
       collectAndAddAtKeepNames(sourceFile);
@@ -710,6 +727,7 @@ export namespace ApiExtractor {
     mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
     mCurrentExportedPropertySet.clear();
     exportOriginalNameSet.clear();
+    decoratorMap.clear();
   };
 
   function shouldCollectAtKeep(fileName: string): boolean {
@@ -756,6 +774,59 @@ export namespace ApiExtractor {
       addToSet(fileWhiteLists.fileKeepInfo.keepAsConsumer.globalNames, keepAsConsumerTemp.globalNames);
       addToSet(fileWhiteLists.fileKeepInfo.keepAsConsumer.propertyNames, keepAsConsumerTemp.propertyNames);
     }
+    if (scanProjectConfig.scanDecorator) {
+      const convertedMap = new Map(
+        Array.from(decoratorMap.entries()).map(([key, value]) => [key, Array.from(value)]));
+      if (!fileWhiteLists.bytecodeObfuscateKeepInfo) {
+        fileWhiteLists.bytecodeObfuscateKeepInfo = {};
+      }
+      fileWhiteLists.bytecodeObfuscateKeepInfo.decoratorMap = Object.fromEntries(convertedMap);
+      const allProp = Array.from(convertedMap.values()).flat();
+      allProp.forEach(value => BytecodeObfuscationCollections.decoratorProp.add(value));
+    }
+  }
+
+  function collectAndAddFieldDecorator(sourceFile: SourceFile): void {
+    visitDecorator(sourceFile);
+  }
+
+  function getDecorators(node: Node): Decorator[] {
+    const decorators: Decorator[] = [];
+    forEachChild(node, child => {
+      if (isDecorator(child)) {
+        decorators.push(child);
+      }
+    });
+    return decorators;
+  }
+
+  function visitDecorator(node: Node): void {
+    const decorators = getDecorators(node) || [];
+    const propertyName = (node as NamedDeclaration).name?.getText();
+    if (!propertyName) {
+      forEachChild(node, visitDecorator);
+      return;
+    }
+
+    decorators.forEach(decorator => {
+      const expr = decorator.expression;
+      const decoratorName = getDecoratorName(expr);
+      if (!decoratorName || !isWhiteListedDecorator(decoratorName)) {
+        return;
+      }
+      ensureEntry(decoratorMap, decoratorName, () => new Set<string>());
+      const decoratorSet = decoratorMap.get(decoratorName)!;
+
+      if (isCallExpression(expr)) {
+        expr.arguments.forEach(arg => {
+          const stripped = arg.getText().replace(/^['"]|['"]$/g, '').split('.');
+          stripped.forEach(item => decoratorSet.add(item));
+        });
+      }
+      decoratorSet.add(propertyName);
+
+    });
+    forEachChild(node, visitDecorator);
   }
 
   function collectWhiteListByApiType(sourceFile: SourceFile, apiType: ApiType, fileName: string): void {
@@ -1413,5 +1484,25 @@ export namespace ApiExtractor {
     } else {
       collector.globalNames.add(name);
     }
+  }
+
+  function ensureEntry<K, V>(map: Map<K, V>, key: K, createValue: () => V): void {
+    if (!map.has(key)) {
+      map.set(key, createValue());
+    }
+  }
+
+  function isWhiteListedDecorator(name: string): boolean {
+    return DECORATOR_WHITE_LIST.includes(name);
+  }
+
+  function getDecoratorName(expr: Expression): string | undefined {
+    if (isCallExpression(expr)) {
+      return expr.expression.getText();
+    }
+    if (isIdentifier(expr)) {
+      return expr.text;
+    }
+    return undefined;
   }
 }

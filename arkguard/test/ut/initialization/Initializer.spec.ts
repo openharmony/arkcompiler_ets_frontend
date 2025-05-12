@@ -14,11 +14,22 @@
  */
 
 import {
-    clearHistoryUnobfuscatedMap,
-    historyAllUnobfuscatedNamesMap,
-    historyUnobfuscatedPropMap
+  clearHistoryUnobfuscatedMap,
+  historyAllUnobfuscatedNamesMap,
+  historyUnobfuscatedPropMap,
+  initObfuscationConfig
 } from '../../../src/initialization/Initializer';
-import { expect } from 'chai';
+import {
+  expect,
+  assert
+} from 'chai';
+import {
+  describe,
+  it
+} from 'mocha';
+import {
+  HvigorErrorInfo,
+} from '../../../src/ArkObfuscator';
 
 describe('Tester Cases for <Initializer.ts>.', function () {
   it('Tester Cases for <clearHistoryUnobfuscatedMap>.', function () {
@@ -29,5 +40,65 @@ describe('Tester Cases for <Initializer.ts>.', function () {
     clearHistoryUnobfuscatedMap();
     expect(historyAllUnobfuscatedNamesMap.size).to.equal(0);
     expect(historyUnobfuscatedPropMap.size).to.equal(0);
+  });
+});
+
+function printObfLogger(errorInfo: string, errorCodeInfo: HvigorErrorInfo | string, level: string): void {
+  switch (level) {
+    case 'warn':
+      console.warn(errorInfo);
+      break;
+    case 'error':
+      console.error(errorInfo);
+      break;
+    default:
+      break;
+  }
+}
+const projectConfig = {
+  'obfuscationOptions': {
+    'selfConfig': {
+      'ruleOptions': {
+        'enable': true,
+        'rules': ['./test/testData/obfuscation/Configs/bytecodeObf/bytecodeObf_enable.txt']
+      },
+      'consumerRules': [],
+    },
+    'dependencies': {
+      'libraries': [],
+      'hars': []
+    },
+    obfuscationCacheDir: ""
+  }
+};
+interface ArkProjectConfig {
+  isBytecodeObfEnabled?: boolean;
+  isArkguardEnabled?: boolean;
+}
+
+describe('test for set arkguard mode property correctly for arkProjectConfig', function () {
+  describe('test for set arkguard mode property correctly for arkProjectConfig', () => {
+    it('should set isBytecodeObfEnabled when enable bytecodeObf', () => {
+      const arkProjectConfig: ArkProjectConfig = {};
+      initObfuscationConfig(projectConfig, arkProjectConfig, printObfLogger);
+      expect(arkProjectConfig.isBytecodeObfEnabled).to.be.true;
+      expect(arkProjectConfig.isArkguardEnabled).to.be.false;
+    });
+
+    it('should set isArkguardEnabled when enable arkguardObf', () => {
+      const arkProjectConfig: ArkProjectConfig = {};
+      projectConfig.obfuscationOptions.selfConfig.ruleOptions.rules = ['./test/testData/obfuscation/Configs/bytecodeObf/arkguard_enable.txt'];
+      initObfuscationConfig(projectConfig, arkProjectConfig, printObfLogger);
+      expect(arkProjectConfig.isArkguardEnabled).to.be.true;
+      expect(arkProjectConfig.isBytecodeObfEnabled).to.be.false;
+    });
+
+    it('should not set isArkguardEnabled and isBytecodeObfEnabled when obf is disabled', () => {
+      const arkProjectConfig: ArkProjectConfig = {};
+      projectConfig.obfuscationOptions.selfConfig.ruleOptions.enable = false;
+      initObfuscationConfig(projectConfig, arkProjectConfig, printObfLogger);
+      expect(arkProjectConfig.isBytecodeObfEnabled).to.be.undefined;
+      expect(arkProjectConfig.isArkguardEnabled).to.be.undefined;
+    });
   });
 });
