@@ -684,11 +684,18 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 
+    const auto start = Lexer()->Save();
+
     auto newStatus = GetContext().Status();
     newStatus &= ~ParserStatus::ALLOW_JS_DOC_START;
     SavedParserContext savedContext(this, newStatus);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        Lexer()->Rewind(start);
+        return nullptr;
+    }
 
     if (Lexer()->GetToken().IsReservedTypeName() && !util::Helpers::IsStdLib(GetProgram())) {
         LogError(diagnostic::TYPE_ALIAS_INVALID_NAME, {TokenToString(Lexer()->GetToken().KeywordType())});

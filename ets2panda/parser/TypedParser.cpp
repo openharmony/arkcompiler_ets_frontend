@@ -141,7 +141,11 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_TYPE: {
-            return ParseTypeAliasDeclaration();
+            const auto maybeAlias = ParseTypeAliasDeclaration();
+            if (maybeAlias != nullptr) {
+                return maybeAlias;
+            }
+            break;
         }
         case lexer::TokenType::KEYW_ABSTRACT: {
             Lexer()->NextToken();  // eat abstract keyword

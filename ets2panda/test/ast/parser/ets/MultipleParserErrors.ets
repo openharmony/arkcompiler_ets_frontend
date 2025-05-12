@@ -177,10 +177,19 @@ function main(): void {
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
 /* @@? 39:31 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 39:38 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 41:6 Error SyntaxError: Identifier expected, got 'number literal'. */
-/* @@? 43:6 Error SyntaxError: Identifier expected, got 'null'. */
-/* @@? 43:6 Error SyntaxError: Type alias name cannot be 'null'. */
-/* @@? 45:6 Error SyntaxError: Identifier expected, got 'this'. */
+/* @@? 41:1 Error TypeError: Unresolved reference type */
+/* @@? 41:6 Error SyntaxError: Unexpected token '123'. */
+/* @@? 41:6 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 41:10 Error SyntaxError: Invalid left-hand side in assignment expression. */
+/* @@? 41:12 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 43:6 Error SyntaxError: Unexpected token 'null'. */
+/* @@? 43:6 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 43:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
+/* @@? 43:13 Error SyntaxError: Unexpected token 'byte'. */
+/* @@? 45:6 Error SyntaxError: Unexpected token 'this'. */
+/* @@? 45:6 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 45:6 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 45:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
 /* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 47:8 Error TypeError: Missing initializer in const declaration */
 /* @@? 49:12 Error TypeError: The type of parameter 'a' cannot be inferred */
@@ -192,8 +201,8 @@ function main(): void {
 /* @@? 51:39 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:41 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 52:5 Error SyntaxError: return keyword should be used in function body. */
-/* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
+/* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
 /* @@? 55:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
@@ -220,10 +229,11 @@ function main(): void {
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
 /* @@? 119:34 Error SyntaxError: Unexpected token ':'. */
@@ -236,8 +246,8 @@ function main(): void {
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
+/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
@@ -258,4 +268,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 262:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 272:1 Error SyntaxError: Expected '}', got 'eos'. */
