@@ -3186,30 +3186,18 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
     return nullptr;
 }
 
-void ParserImpl::VerifySupportLazyImportVersion(bool isNamedImport)
+void ParserImpl::VerifySupportLazyImportVersion()
 {
-    if (isNamedImport) {
-        if (!util::Helpers::IsSupportLazyImportVersion(program_.TargetApiVersion(),
-            program_.GetTargetApiSubVersion())) {
-            std::string errMessage = "Current configuration does not support using lazy import. Lazy import can be "
-                "used in the beta3 version of API 12 or higher versions.\n"
-                "Solutions: > Check the compatibleSdkVersion and compatibleSdkVersionStage in build-profile.json5."
-                "> If compatibleSdkVersion is set to API 12, then compatibleSdkVersionStage needs to be configured "
-                "as beta3."
-                "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
-                "target-api-sub-version options are correctly configured.";
-            ThrowSyntaxError(errMessage);
-        }
-    } else {
-        if (!util::Helpers::IsSupportLazyImportDefaultVersion(program_.TargetApiVersion())) {
-            std::string errMessage = "Current configuration does not support using lazy import default."
-                "Lazy import can be used in the version of API 18 or higher versions.\n"
-                "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
-                "> If compatibleSdkVersion is set to API 18."
-                "> If you're running es2abc in commandline without IDE, please check whether target-api-version "
-                "options are correctly configured.";
-            ThrowSyntaxError(errMessage);
-        }
+    if (!util::Helpers::IsSupportLazyImportVersion(program_.TargetApiVersion(),
+        program_.GetTargetApiSubVersion())) {
+        std::string errMessage = "Current configuration does not support using lazy import. Lazy import can be "
+            "used in the beta3 version of API 12 or higher versions.\n"
+            "Solutions: > Check the compatibleSdkVersion and compatibleSdkVersionStage in build-profile.json5."
+            "> If compatibleSdkVersion is set to API 12, then compatibleSdkVersionStage needs to be configured "
+            "as beta3."
+            "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
+            "target-api-sub-version options are correctly configured.";
+        ThrowSyntaxError(errMessage);
     }
 }
 
@@ -3246,7 +3234,7 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
                         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_TYPE) &&
                         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM;
         if (isNamedImport || isDefaultImport) {
-            VerifySupportLazyImportVersion(isNamedImport);
+            VerifySupportLazyImportVersion();
             isLazy = true;
         } else {
             lexer_->Rewind(savedPos);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const defaultImportValue = 'a0';
+export default defaultImportValue;
 export const a1 = 'a1';
 export const a2 = 'a2';
 export const a3 = 'a3';
