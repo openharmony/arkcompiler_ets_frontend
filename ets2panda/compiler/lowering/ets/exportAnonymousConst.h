@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,23 @@
  * limitations under the License.
  */
 
-export default /* @@ label */(a: int) => { return a }
+#ifndef ES2PANDA_COMPILER_LOWERING_EXPORT_ANONYMOUS_CONSTANT_LOWERING_H
+#define ES2PANDA_COMPILER_LOWERING_EXPORT_ANONYMOUS_CONSTANT_LOWERING_H
 
-/* @@@ label Error SyntaxError: Export is allowed only for declarations. */
+#include "compiler/lowering/phase.h"
+
+namespace ark::es2panda::compiler {
+
+class ExportAnonymousConstPhase : public Phase {
+public:
+    std::string_view Name() const override
+    {
+        return "ExportAnonymousConstPhase";
+    }
+
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+};
+
+}  // namespace ark::es2panda::compiler
+
+#endif

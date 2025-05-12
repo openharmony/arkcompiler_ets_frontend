@@ -34,6 +34,7 @@
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/ets/restTupleLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
+#include "compiler/lowering/ets/exportAnonymousConst.h"
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/genericBridgesLowering.h"
@@ -100,6 +101,7 @@ static InterfaceObjectLiteralLowering g_interfaceObjectLiteralLowering;
 static UnionLowering g_unionLowering;
 static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
+static ExportAnonymousConstPhase g_exportAnonymousConstPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static RecordLowering g_recordLowering;
 static DeclareOverloadLowering g_declareOverloadLowering;
@@ -141,6 +143,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
         &g_packageImplicitImport,
+        &g_exportAnonymousConstPhase,
         &g_topLevelStatements,
         &g_resizableArrayConvert,
         &g_expressionLambdaConstructionPhase,

@@ -31,6 +31,13 @@ enum class PrimitiveType;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::parser {
+
+struct SpecifiersInfo {
+    ArenaVector<ir::ImportSpecifier *> result;
+    ArenaVector<ir::ImportDefaultSpecifier *> resultDefault;
+    ArenaVector<ir::ExportSpecifier *> resultExportDefault;
+};
+
 class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
@@ -186,8 +193,12 @@ private:
     bool IsDefaultImport();
     void ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                           const std::string &fileName);
-    std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
+    bool ParseNamedSpecifiesImport(ArenaVector<ir::ImportSpecifier *> *result,
+                                   ArenaVector<ir::ExportSpecifier *> *resultExportDefault,
+                                   const std::string &fileName);
+    SpecifiersInfo ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
+    ir::ExportNamedDeclaration *ParseSingleExportForAnonymousConst(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
     ir::Statement *ParseImportDeclarationHelper(lexer::SourcePosition startLoc, ArenaVector<ir::AstNode *> &specifiers,
                                                 ir::ImportKinds importKind);
