@@ -183,6 +183,26 @@
           "suggest": "",
           "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
           "severity": "ERROR"
+      },
+      {
+          "line": 172,
+          "column": 1,
+          "endLine": 172,
+          "endColumn": 8,
+          "problem": "ExplicitFunctionType",
+          "suggest": "",
+          "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+          "severity": "ERROR"
+      },
+      {
+          "line": 175,
+          "column": 1,
+          "endLine": 175,
+          "endColumn": 8,
+          "problem": "ExplicitFunctionType",
+          "suggest": "",
+          "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+          "severity": "ERROR"
       }
   ]
 }
