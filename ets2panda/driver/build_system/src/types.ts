@@ -18,6 +18,10 @@ export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
+export interface PathsConfig {
+  [pathName: string]: string[];
+}
+
 export interface BuildBaseConfig {
   buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
   buildMode: 'Debug' | 'Release';
@@ -139,6 +143,7 @@ export interface DependentModuleConfig {
 
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
+  paths: PathsConfig; // paths config passed from template to generate arktsconfig.json "paths" configs.
   compileFiles: string[];
   dependentModuleList: DependentModuleConfig[];
 }

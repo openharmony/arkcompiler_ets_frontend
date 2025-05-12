@@ -314,7 +314,8 @@ export abstract class BaseMode {
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.
-        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+        // comment this in 0603 to solve free() invalid pointer
+        //arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
       }
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
