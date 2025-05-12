@@ -49,6 +49,12 @@ void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util:
     ThrowError(pos, str);
 }
 
+void VarBinder::ThrowLocalRedeclaration(const lexer::SourcePosition &pos, const util::StringView &className) const
+{
+    auto const str = std::string {"Identifier '"}.append(className.Utf8()).append("' has already been declared.");
+    ThrowError(pos, str);
+}
+
 void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     auto const str = std::string {"Cannot find type '"}.append(name.Utf8()).append("'.");
