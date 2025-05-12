@@ -66,6 +66,7 @@ import {
   JobInfo,
   KPointer,
   ModuleInfo,
+  PathsConfig,
   ES2PANDA_MODE
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
