@@ -15,6 +15,16 @@
 
 import { bad_func } from "./dynamic_lib"
 import { Deque } from '@kit.ArkTS';
+import ArrayList from '@ohos.util.ArrayList';
+import Deque from '@ohos.util.Deque';
+import HashMap from '@ohos.util.HashMap';
+import HashSet from '@ohos.util.HashSet';
+import LinkedList from '@ohos.util.LinkedList';
+import PlainArray from '@ohos.util.PlainArray';
+import Queue from '@ohos.util.Queue';
+import TreeMap from '@ohos.util.TreeMap';
+import TreeSet from '@ohos.util.TreeSet';
+
 function choose<T>(x: T, y: T): T {
   return Math.random() < 0.5 ? x : y
 }
@@ -104,3 +114,20 @@ class D{
     dd = new Deque<number>();
   }
 }
+
+class Base<T>{}
+class NewClass extends Base<number>{}
+export let obj = new NewClass();
+class NewClass2 extends Base<D>{}
+export let obj2 = new NewClass2();
+
+let test_arrayList_e: ArrayList<string> = new ArrayList(); //
+let test_deque_e: Deque<String> = new Deque(); //
+let test_hashMap_e: HashMap<String, Number> = new HashMap(); //
+let test_hashSet_e: HashSet<String> = new HashSet(); //
+let test_linkedList_e: LinkedList<String> = new LinkedList(); //
+let test_plainArray_e: PlainArray<String> = new PlainArray(); //
+let test_queue_e: Queue<String> = new Queue(); //
+let test_treeMap_e: TreeMap<String, Number> = new TreeMap(); //
+let test_treeSet_e: TreeSet<String> = new TreeSet(); //
+let test_treeSet_set_e: TreeSet<TreeSet<String>> = new TreeSet();

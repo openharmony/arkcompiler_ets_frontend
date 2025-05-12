@@ -4107,6 +4107,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     callLikeExpr: ts.CallExpression | ts.NewExpression,
     callSignature: ts.Signature
   ): void {
+    if (ts.isNewExpression(callLikeExpr) && this.isNonGenericClass(callLikeExpr)) {
+      return;
+    }
     const tsSyntaxKind = ts.isNewExpression(callLikeExpr) ?
       ts.SyntaxKind.Constructor :
       ts.SyntaxKind.FunctionDeclaration;
@@ -4144,6 +4147,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         }
       }
     }
+  }
+
+  private isNonGenericClass(expression: ts.NewExpression): boolean {
+    const declaration = this.tsUtils.getDeclarationNode(expression.expression);
+    return !!declaration && ts.isClassDeclaration(declaration) && !declaration.typeParameters;
   }
 
   checkTypeArgumentsForGenericCallWithNoTypeArgsNumber(
