@@ -201,9 +201,10 @@ public:
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
-    void CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
+    void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType *> &interfaces);
+    void CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, Signature *sigFunc);
     void CheckFunctionRedeclarationInInterface(ETSObjectType *classType, ArenaVector<Signature *> &similarSignatures,
-                                               ir::ScriptFunction *func);
+                                               Signature *sigFunc);
     void ValidateAbstractMethodsToBeImplemented(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
                                                 ETSObjectType *classType,
                                                 const std::vector<Signature *> &implementedSignatures);
@@ -500,7 +501,7 @@ public:
     OverrideErrorCode CheckOverride(Signature *signature, Signature *other);
     bool IsMethodOverridesOther(Signature *base, Signature *derived);
     bool IsOverridableIn(Signature *signature);
-    [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
+    [[nodiscard]] bool AreOverrideCompatible(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
     bool NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
@@ -678,6 +679,8 @@ public:
                                                              varbinder::ClassScope *scope, bool isSetter,
                                                              ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
+    void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectType *classType, ir::MethodDefinition *getter,
+                                ir::MethodDefinition *setter, const bool inExternal);
     Type *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
     void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);

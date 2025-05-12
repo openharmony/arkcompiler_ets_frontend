@@ -196,27 +196,41 @@ ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &
     return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
+static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
+                         varbinder::LocalVariable *found)
+{
+    for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
+        if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
+            continue;
+        }
+        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) && it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+            continue;
+        }
+        if (std::any_of(signatures.begin(), signatures.end(), [&it, &checker](auto sig) {
+                return checker->AreOverrideCompatible(sig, it) &&
+                       it->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
+                       (checker->Relation()->IsSupertypeOf(it->Owner(), sig->Owner()) ||
+                        !sig->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE));
+            })) {
+            continue;
+        }
+        // Issue: #18720
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+        signatures.emplace_back(it);
+    }
+}
+
 varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const
 {
-    auto const addSignature = [&signatures, flags](varbinder::LocalVariable *found) -> void {
-        for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-            if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
-                it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-                continue;
-            }
-            // Issue: #18720
-            // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-            signatures.push_back(&*it);
-        }
-    };
+    auto *checker = GetRelation()->GetChecker()->AsETSChecker();
 
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
             ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            addSignature(found);
+            AddSignature(signatures, flags, checker, found);
         }
     }
 
@@ -224,14 +238,28 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::
         if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
             ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            addSignature(found);
+            AddSignature(signatures, flags, checker, found);
         }
     }
 
     if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        return superType_->CollectSignaturesForSyntheticType(signatures, name, flags);
+        superType_->CollectSignaturesForSyntheticType(signatures, name, flags);
     }
 
+    ArenaVector<ETSObjectType *> interfaces(Allocator()->Adapter());
+    checker->GetInterfacesOfClass(const_cast<ETSObjectType *>(this), interfaces);
+
+    for (auto *const &interface : interfaces) {
+        if (interface != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) &&
+            !this->IsPartial()) {  // NOTE: issue 24548
+            if (auto *found =
+                    interface->GetProperty(name, flags | PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
+                found != nullptr && !found->TsType()->IsTypeError()) {
+                ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
+                AddSignature(signatures, flags, checker, found);
+            }
+        }
+    }
     return nullptr;
 }
 
