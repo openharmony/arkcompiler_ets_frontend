@@ -2491,6 +2491,9 @@ Type *ETSChecker::GetApparentType(Type *type)
     if (type->IsETSArrayType()) {
         return cached(type);
     }
+    if (type->IsETSStringType()) {
+        return GlobalBuiltinETSStringType();
+    }
     if (type->IsETSUnionType()) {
         bool differ = false;
         ArenaVector<checker::Type *> newConstituent(Allocator()->Adapter());
@@ -2516,6 +2519,9 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     }
     if (type->IsETSArrayType()) {
         return type;
+    }
+    if (type->IsETSStringType()) {
+        return GlobalBuiltinETSStringType();
     }
     if (type->IsETSUnionType() || type->IsETSNonNullishType() || type->IsETSPartialTypeParameter()) {
         ASSERT_PRINT(false, std::string("Type ") + type->ToString() + " was not found in apparent_types_");
