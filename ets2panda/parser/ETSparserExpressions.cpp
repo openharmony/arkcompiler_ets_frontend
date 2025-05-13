@@ -15,11 +15,16 @@
 
 #include "ETSparser.h"
 
+#include "generated/tokenType.h"
 #include "lexer/lexer.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
+#include "macros.h"
+#include "parserFlags.h"
 #include "util/errorRecovery.h"
 #include "generated/diagnostic.h"
+#include "parserImpl.h"
+#include "util/recursiveGuard.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -302,12 +307,26 @@ ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFla
     }
 }
 
+// This function is used to handle the left parenthesis in the expression parsing.
+ir::Expression *HandleLeftParanthesis(ETSParser *parser, ExpressionParseFlags flags)
+{
+    TrackRecursive trackRecursive(parser->recursiveCtx_);
+    if (!trackRecursive) {
+        parser->LogError(diagnostic::DEEP_NESTING);
+        while (parser->Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            parser->Lexer()->NextToken();
+        }
+        return parser->AllocBrokenExpression(parser->Lexer()->GetToken().Loc());
+    }
+    return parser->ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
 {
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
+            return HandleLeftParanthesis(this, flags);
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisExpression();

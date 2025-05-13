@@ -43,8 +43,8 @@ int = 10
 /* @@? 23:1 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 23:1 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 24:1 Error SyntaxError: Unexpected token ')'. */
-/* @@? 24:2 Error TypeError: Unresolved reference void */
-/* @@? 24:7 Error SyntaxError: Unexpected token '{'. */
+/* @@? 24:2 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 24:2 Error SyntaxError: Unexpected token 'void'. */
 /* @@? 24:8 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 24:8 Error TypeError: Unresolved reference nt */
 /* @@? 24:16 Error SyntaxError: Unexpected token ','. */
@@ -55,23 +55,24 @@ int = 10
 /* @@? 24:23 Error SyntaxError: Unexpected token 'A'. */
 /* @@? 24:23 Error TypeError: Class name 'A' used in the wrong context */
 /* @@? 24:25 Error SyntaxError: Unexpected token '{'. */
-/* @@? 25:1 Error TypeError: Unresolved reference int */
+/* @@? 25:1 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 25:5 Error SyntaxError: Unexpected token '='. */
 /* @@? 26:1 Error SyntaxError: Unexpected token ')'. */
 /* @@? 26:3 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 26:3 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 26:13 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 26:13 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 26:13 Error TypeError: Cannot find type ''. */
-/* @@? 26:14 Error SyntaxError: Expected '=>', got '+'. */
 /* @@? 26:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 26:14 Error SyntaxError: Expected '=>', got '+'. */
 /* @@? 26:15 Error SyntaxError: Unexpected token ')'. */
 /* @@? 26:15 Error SyntaxError: Unexpected token ')'. */
 /* @@? 26:15 Error SyntaxError: Unexpected token ')'. */
 /* @@? 26:15 Error SyntaxError: Unexpected token ')'. */
 /* @@? 26:16 Error SyntaxError: Unexpected token ':'. */
 /* @@? 26:16 Error SyntaxError: Unexpected token ':'. */
-/* @@? 26:18 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
 /* @@? 26:18 Error TypeError: The type of parameter 'A6' cannot be inferred */
+/* @@? 26:18 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
 /* @@? 26:25 Error TypeError: Unresolved reference reƒurn */
 /* @@? 26:32 Error SyntaxError: Unexpected token '_ew'. */
 /* @@? 26:32 Error TypeError: Unresolved reference _ew */
@@ -80,4 +81,4 @@ int = 10
 /* @@? 26:36 Error TypeError: Type 'B' has no call signatures. */
 /* @@? 26:40 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 27:2 Error TypeError: Unresolved reference ó */
-/* @@? 84:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 85:1 Error SyntaxError: Expected '}', got 'eos'. */
