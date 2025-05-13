@@ -83,6 +83,27 @@ export interface PathConfig {
   abcLinkerPath?: string;
 }
 
+/**
+ * Configuration for framework mode compilation using generate_static_abc gni.
+ * 
+ * In framework mode, the compiler generates static ABC files from framework SDK ETS files.
+ * This mode requires additional arktsconfig.json parameters for proper operation.
+ */
+export interface FrameworkConfig {
+  /**
+   * Enables or disables framework compilation mode.
+   * When enabled (true), activates special processing rules for framework-level
+   * compilation, including different output locations and packaging requirements.
+   */
+  frameworkMode?: boolean;
+  
+  /**
+   * Determines whether an empty package name should be used.
+   * Must be set to true when compiling framework components without a package name.
+   */
+  useEmptyPackage?: boolean;
+}
+
 export interface DeclgenConfig {
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath?: string;
@@ -107,7 +128,7 @@ export interface DependentModuleConfig {
   declgenBridgeCodePath?: string;
 }
 
-export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
   compileFiles: string[];
   dependentModuleList: DependentModuleConfig[];
@@ -138,6 +159,8 @@ export interface ModuleInfo {
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+  frameworkMode?: boolean;
+  useEmptyPackage?: boolean;
 }
 
 export type SetupClusterOptions = {

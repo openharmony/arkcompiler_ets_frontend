@@ -51,6 +51,7 @@ interface ArkTSConfigObject {
     dependencies: string[] | undefined;
     entry: string;
     dynamicPaths: Record<string, DynamicPathItem>;
+    useEmptyPackage?: boolean;
   }
 };
 
@@ -96,11 +97,15 @@ export class ArkTSConfigGenerator {
   }
 
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false): void {
+    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false, allowedExtensions: string[] = ['.d.ets']): void {
       const items = fs.readdirSync(currentDir);
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
         const stat = fs.statSync(itemPath);
+        const isAllowedFile = allowedExtensions.some(ext => item.endsWith(ext));
+        if (stat.isFile() && !isAllowedFile) {
+          continue;
+        }
 
         if (stat.isFile()) {
           const basename = path.basename(item, '.d.ets');
@@ -224,6 +229,9 @@ export class ArkTSConfigGenerator {
         dynamicPaths: dynamicPathSection
       }
     };
+    if (moduleInfo.frameworkMode) {
+      arktsConfig.compilerOptions.useEmptyPackage = moduleInfo.useEmptyPackage;
+    }
 
     ensurePathExists(moduleInfo.arktsConfigFile);
     fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
