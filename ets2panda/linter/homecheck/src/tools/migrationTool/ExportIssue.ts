@@ -14,22 +14,22 @@
  */
 
 import { CheckEntry } from '../../utils/common/CheckEntry';
-
+import { RuleFix } from '../../model/Fix';
 export interface ProblemInfo {
     line: number;
-    column: number,
+    column: number;
     endLine: number;
     endColumn: number;
-    start?: number;
-    end?: number;
-    type?: string;
+    start: number;
+    end: number;
+    type: string;
     severity: number;
     problem: string;
     suggest: string;
     rule: string;
     ruleTag: number;
     autofixable?: boolean;
-    aotufix?: AutoFix[];
+    autofix?: AutoFix[];
     autofixTitle?: string;
 }
 
@@ -49,12 +49,23 @@ export async function exportIssues(checkEntry: CheckEntry): Promise<Map<string, 
                 column: defect.reportColumn,
                 endLine: defect.reportLine,
                 endColumn: defect.reportColumn,
+                start: 0,
+                end: 0,
+                type: '',
                 severity: defect.severity,
                 problem: defect.problem,
                 suggest: '',
                 rule: defect.description,
                 ruleTag: -1,
-                autofixable: false
+                autofixable: defect.fixable,
+            };
+            if (problemInfo.autofixable) {
+                const fix = issueReport.fix as RuleFix;
+                const replacementText = fix.text;
+                const start = fix.range[0];
+                const end = fix.range[1];
+                problemInfo.autofix = [{ replacementText, start, end }];
+                problemInfo.autofixTitle = defect.ruleId;
             }
             const filePath = defect.mergeKey.split('%')[0];
             const problems = result.get(filePath) || [];

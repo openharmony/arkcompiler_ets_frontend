@@ -40,11 +40,7 @@ export class GlobalCallGraphHelper {
         if (!this.cgInstance) {
             this.cgInstance = new CallGraph(scene);
             let cgBuilder = new CallGraphBuilder(this.cgInstance, scene);
-            cgBuilder.buildDirectCallGraphForScene();
-            let entries = this.cgInstance
-                .getEntries()
-                .map((funcId) => this.cgInstance!.getArkMethodByFuncID(funcId)!.getSignature());
-            cgBuilder.buildClassHierarchyCallGraph(entries);
+            cgBuilder.buildCHA4WholeProject(true);
         }
         return this.cgInstance;
     }

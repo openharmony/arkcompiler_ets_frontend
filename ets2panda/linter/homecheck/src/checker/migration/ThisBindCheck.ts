@@ -72,7 +72,7 @@ export class ThisBindCheck implements BaseChecker {
 
     public check = (targetMtd: ArkMethod): void => {
         const file = targetMtd.getDeclaringArkFile();
-        if (file.getName().includes('test.ets')) {
+        if (file.getName().includes('.test.ets')) {
             return;
         }
         const scene = file.getScene();
@@ -278,23 +278,32 @@ export class ThisBindCheck implements BaseChecker {
                     continue;
                 }
                 const local = stmt.getLeftOp() as Local;
-                for (const usedStmt of local.getUsedStmts()) {
-                    const invoke = usedStmt.getInvokeExpr();
-                    if (!invoke) {
-                        continue;
-                    }
-                    const sig = invoke.getMethodSignature();
-                    if (sig.getMethodSubSignature().getMethodName() !== 'constructor') {
-                        continue;
-                    }
-                    if (sig.getDeclaringClassSignature() === anonymousClassSig) {
-                        continue;
-                    }
-                    return sig.getDeclaringClassSignature();
+                const classSignature = this.processUsedStmts(local, anonymousClassSig);
+                if (!classSignature) {
+                    continue;
                 }
+                return classSignature;
             }
         }
         return undefined;
+    }
+
+    private processUsedStmts(local: Local, anonymousClassSig: ClassSignature): ClassSignature | null {
+        for (const usedStmt of local.getUsedStmts()) {
+            const invoke = usedStmt.getInvokeExpr();
+            if (!invoke) {
+                continue;
+            }
+            const sig = invoke.getMethodSignature();
+            if (sig.getMethodSubSignature().getMethodName() !== 'constructor') {
+                continue;
+            }
+            if (sig.getDeclaringClassSignature() === anonymousClassSig) {
+                continue;
+            }
+            return sig.getDeclaringClassSignature();
+        }
+        return null;
     }
 
     private reportArkTSIssue(stmt: ArkAssignStmt, operand: Value): void {

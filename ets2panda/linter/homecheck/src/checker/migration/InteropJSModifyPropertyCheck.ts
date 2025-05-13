@@ -28,6 +28,7 @@ import {
     Stmt,
     ArkDeleteExpr,
     FieldSignature,
+    ArkNamespace,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -81,12 +82,13 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 if (arkExport === null || arkExport === undefined) {
                     return;
                 }
-                if (arkExport instanceof ArkMethod && arkExport.getLanguage() === Language.JAVASCRIPT) {
-                    // 创建初始化的参数标志位信息（标志位代表该参数是否被传入了 1.2 对象，默认为 false）
-                    const paramInfo = this.createParamInfo(arkExport);
-                    if (paramInfo.length > 0) {
-                        targetMethods.set(arkExport.getSignature(), paramInfo);
-                    }
+                if (!(arkExport instanceof ArkMethod && arkExport.getLanguage() === Language.JAVASCRIPT)) {
+                    return;
+                }
+                // 创建初始化的参数标志位信息（标志位代表该参数是否被传入了 1.2 对象，默认为 false）
+                const paramInfo = this.createParamInfo(arkExport);
+                if (paramInfo.length > 0) {
+                    targetMethods.set(arkExport.getSignature(), paramInfo);
                 }
             });
 
@@ -97,17 +99,21 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 }
             }
             for (let namespace of file.getAllNamespacesUnderThisFile()) {
-                for (let clazz of namespace.getClasses()) {
-                    for (let mtd of clazz.getMethods()) {
-                        this.findCallsite(mtd, targetMethods, scene);
-                    }
-                }
+                this.processNameSpace(namespace, targetMethods, scene);
             }
         });
 
         // 跨函数检查 ArkTS1.2 类型对象是否被跨函数传到其他 JS 函数
         for (let i = 0; i < CALL_DEPTH_LIMIT; ++i) {
             this.collectInterprocedualCallSites(targetMethods, scene);
+        }
+    }
+
+    public processNameSpace(namespace: ArkNamespace, targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
+        for (let clazz of namespace.getClasses()) {
+            for (let mtd of clazz.getMethods()) {
+                this.findCallsite(mtd, targetMethods, scene);
+            }
         }
     }
 

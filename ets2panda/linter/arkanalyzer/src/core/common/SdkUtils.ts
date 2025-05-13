@@ -20,22 +20,31 @@ import { GLOBAL_THIS_NAME, THIS_NAME } from './TSConst';
 import { TEMP_LOCAL_PREFIX } from './Const';
 import { ArkClass, ClassCategory } from '../model/ArkClass';
 import { LocalSignature } from '../model/ArkSignature';
-import { ModelUtils, sdkImportMap } from './ModelUtils';
+import { ModelUtils } from './ModelUtils';
 import { Local } from '../base/Local';
 import { ArkMethod } from '../model/ArkMethod';
 import path from 'path';
-import { IRInference } from './IRInference';
 import { ClassType } from '../base/Type';
 import { AbstractFieldRef } from '../base/Ref';
 import { ArkNamespace } from '../model/ArkNamespace';
+import { TypeInference } from './TypeInference';
 
 export class SdkUtils {
-    public static buildGlobalMap(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+
+    private static sdkImportMap: Map<string, ArkFile> = new Map<string, ArkFile>();
+
+    public static buildSdkImportMap(file: ArkFile): void {
         const fileName = path.basename(file.getName());
         if (fileName.startsWith('@')) {
-            sdkImportMap.set(fileName.replace(/\.d\.e?ts$/, ''), file);
+            this.sdkImportMap.set(fileName.replace(/\.d\.e?ts$/, ''), file);
         }
+    }
 
+    public static getImportSdkFile(from: string): ArkFile | undefined {
+        return this.sdkImportMap.get(from);
+    }
+
+    public static buildGlobalMap(file: ArkFile, globalMap: Map<string, ArkExport>): void {
         const isGlobalPath = file
             .getScene()
             .getOptions()
@@ -43,7 +52,6 @@ export class SdkUtils {
         if (!isGlobalPath) {
             return;
         }
-        IRInference.inferFile(file);
         ModelUtils.getAllClassesInFile(file).forEach(cls => {
             if (!cls.isAnonymousClass() && !cls.isDefaultArkClass()) {
                 SdkUtils.loadClass(globalMap, cls);
@@ -55,6 +63,9 @@ export class SdkUtils {
             }
         });
         const defaultArkMethod = file.getDefaultClass().getDefaultArkMethod();
+        if (defaultArkMethod) {
+            TypeInference.inferTypeInMethod(defaultArkMethod);
+        }
         defaultArkMethod
             ?.getBody()
             ?.getLocals()

@@ -26,6 +26,7 @@ import {
     ArkInstanceFieldRef,
     FunctionType,
     ClassType,
+    ArkNamespace,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -74,14 +75,18 @@ export class InteropAssignCheck implements BaseChecker {
                 }
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                for (let clazz of namespace.getClasses()) {
-                    for (let mtd of clazz.getMethods()) {
-                        this.processArkMethod(mtd, scene);
-                    }
-                }
+                this.processNameSpace(namespace, scene);
             }
         }
     };
+
+    public processNameSpace(namespace: ArkNamespace, scene: Scene): void {
+        for (let clazz of namespace.getClasses()) {
+            for (let mtd of clazz.getMethods()) {
+                this.processArkMethod(mtd, scene);
+            }
+        }
+    }
 
     public processArkMethod(target: ArkMethod, scene: Scene): void {
         const assigns: Stmt[] = [];

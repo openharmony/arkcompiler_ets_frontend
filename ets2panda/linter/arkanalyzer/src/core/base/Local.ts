@@ -14,7 +14,7 @@
  */
 
 import { Stmt } from './Stmt';
-import { Type, UnknownType } from './Type';
+import { ClassType, Type, UnknownType } from './Type';
 import { Value } from './Value';
 import { TypeInference } from '../common/TypeInference';
 import { ArkExport, ExportType } from '../model/ArkExport';
@@ -24,6 +24,7 @@ import { UNKNOWN_METHOD_NAME } from '../common/Const';
 import { ModifierType } from '../model/ArkBaseModel';
 import { ArkMethod } from '../model/ArkMethod';
 import { ModelUtils } from '../common/ModelUtils';
+import { THIS_NAME } from '../common/TSConst';
 
 /**
  * @category core/base
@@ -49,7 +50,10 @@ export class Local implements Value, ArkExport {
     }
 
     public inferType(arkMethod: ArkMethod): Local {
-        if (TypeInference.isUnclearType(this.type)) {
+        if (this.name === THIS_NAME && this.type instanceof UnknownType) {
+            const declaringArkClass = arkMethod.getDeclaringArkClass();
+            this.type = new ClassType(declaringArkClass.getSignature(), declaringArkClass.getRealTypes());
+        } else if (TypeInference.isUnclearType(this.type)) {
             const type = TypeInference.inferBaseType(this.name, arkMethod.getDeclaringArkClass()) ?? ModelUtils.findDeclaredLocal(this, arkMethod)?.getType();
             if (type) {
                 this.type = type;

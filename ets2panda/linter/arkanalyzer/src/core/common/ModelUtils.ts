@@ -37,13 +37,21 @@ import path from 'path';
 import { Sdk } from '../../Config';
 import { ALL, DEFAULT, THIS_NAME } from './TSConst';
 import { buildDefaultExportInfo } from '../model/builder/ArkExportBuilder';
-import { AnnotationNamespaceType, ClassType, FunctionType, Type, UnclearReferenceType, UnknownType } from '../base/Type';
+import {
+    AnnotationNamespaceType,
+    ClassType,
+    FunctionType,
+    Type,
+    UnclearReferenceType,
+    UnknownType
+} from '../base/Type';
 import { Scene } from '../../Scene';
 import { DEFAULT_ARK_CLASS_NAME, DEFAULT_ARK_METHOD_NAME, NAME_DELIMITER, TEMP_LOCAL_PREFIX } from './Const';
 import { EMPTY_STRING } from './ValueUtil';
 import { ArkBaseModel } from '../model/ArkBaseModel';
 import { ArkAssignStmt } from '../base/Stmt';
 import { ClosureFieldRef } from '../base/Ref';
+import { SdkUtils } from './SdkUtils';
 
 export class ModelUtils {
     public static implicitArkUIBuilderMethods: Set<ArkMethod> = new Set();
@@ -506,7 +514,6 @@ export class ModelUtils {
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'ModelUtils');
 let moduleMap: Map<string, ModulePath> | undefined;
-export const sdkImportMap: Map<string, ArkFile> = new Map<string, ArkFile>();
 
 /**
  * find arkFile by from info
@@ -534,7 +541,7 @@ export function getArkFile(im: FromInfo): ArkFile | null | undefined {
     }
 
     //sdk path
-    const file = sdkImportMap.get(from);
+    const file = SdkUtils.getImportSdkFile(from);
     if (file) {
         return file;
     }
@@ -593,9 +600,9 @@ export function findArkExport(exportInfo: ExportInfo | undefined): ArkExport | n
         const name = exportInfo.getOriginName();
         const defaultClass = exportInfo.getDeclaringArkNamespace()?.getDefaultClass() ?? exportInfo.getDeclaringArkFile().getDefaultClass();
         if (exportInfo.getExportClauseType() === ExportType.LOCAL) {
-            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getLocals().get(name) || null;
+            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getExportLocalByName(name);
         } else if (exportInfo.getExportClauseType() === ExportType.TYPE) {
-            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getAliasTypeByName(name) || null;
+            arkExport = defaultClass.getDefaultArkMethod()?.getBody()?.getAliasTypeByName(name);
         } else {
             arkExport = findArkExportInFile(name, exportInfo.getDeclaringArkFile());
         }
@@ -620,7 +627,7 @@ export function findArkExportInFile(name: string, declaringArkFile: ArkFile): Ar
         declaringArkFile.getDefaultClass().getDefaultArkMethod()?.getBody()?.getAliasTypeByName(name) ??
         declaringArkFile.getClassWithName(name) ??
         declaringArkFile.getDefaultClass().getMethodWithName(name) ??
-        declaringArkFile.getDefaultClass().getDefaultArkMethod()?.getBody()?.getLocals().get(name);
+        declaringArkFile.getDefaultClass().getDefaultArkMethod()?.getBody()?.getExportLocalByName(name);
 
     if (!arkExport) {
         const importInfo = declaringArkFile.getImportInfoBy(name);

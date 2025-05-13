@@ -32,6 +32,7 @@ import {
     AbstractInvokeExpr,
     UnknownType,
     Local,
+    ArkNamespace,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -109,14 +110,18 @@ export class InteropBackwardDFACheck implements BaseChecker {
                 }
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                for (let clazz of namespace.getClasses()) {
-                    for (let mtd of clazz.getMethods()) {
-                        this.processArkMethod(mtd, scene);
-                    }
-                }
+                this.processNameSpace(namespace, scene);
             }
         }
     };
+
+    public processNameSpace(namespace: ArkNamespace, scene: Scene): void {
+        for (let clazz of namespace.getClasses()) {
+            for (let mtd of clazz.getMethods()) {
+                this.processArkMethod(mtd, scene);
+            }
+        }
+    }
 
     private processArkMethod(target: ArkMethod, scene: Scene): void {
         const currentLang = target.getLanguage();
@@ -162,51 +167,53 @@ export class InteropBackwardDFACheck implements BaseChecker {
                 .forEach(def => {
                     objDefs.push(def);
                 });
+            this.processObjDefs(objDefs, scene, currentLang, isReflect, stmt, target)
+        }
+    }
 
-            for (const objDef of objDefs) {
-                let result: ObjDefInfo[] = [];
-                let checkAll = { value: true };
-                let visited: Set<Stmt> = new Set();
-                this.checkFromStmt(objDef, scene, result, checkAll, visited);
-                result.forEach(objDefInfo => {
-                    const objDefLang = objDefInfo.objDef.getCfg().getDeclaringMethod().getLanguage();
-                    const typeDefLang = this.getTypeDefinedLang(objDefInfo.objType, scene) ?? objDefLang;
-                    if (objDefLang === Language.UNKNOWN || typeDefLang === Language.UNKNOWN) {
-                        logger.warn(`cannot find the language for def: ${objDefInfo.objDef.toString()}`);
-                        return;
-                    }
-                    const interopRule = findInteropRule(currentLang, objDefLang, typeDefLang, isReflect);
-                    if (!interopRule) {
-                        return;
-                    }
-                    const line = stmt.getOriginPositionInfo().getLineNo();
-                    const column = stmt.getOriginPositionInfo().getColNo();
-                    const problem = 'Interop';
-                    const desc = `${interopRule.description}: ${this.generateDesc(objDefInfo.objDef)} (${
-                        interopRule.ruleId
-                    })`;
-                    const severity = interopRule.severity;
-                    const ruleId = this.rule.ruleId;
-                    const filePath = target.getDeclaringArkFile()?.getFilePath() ?? '';
-                    const defeats = new Defects(
-                        line,
-                        column,
-                        column,
-                        problem,
-                        desc,
-                        severity,
-                        ruleId,
-                        filePath,
-                        '',
-                        true,
-                        false,
-                        false
-                    );
-                    this.issues.push(new IssueReport(defeats, undefined));
-                });
-                if (!checkAll) {
-                    // report issue
+    private processObjDefs(objDefs: Stmt[], scene: Scene, currentLang: Language, isReflect: boolean, stmt: Stmt, target: ArkMethod): void {
+        for (const objDef of objDefs) {
+            let result: ObjDefInfo[] = [];
+            let checkAll = { value: true };
+            let visited: Set<Stmt> = new Set();
+            this.checkFromStmt(objDef, scene, result, checkAll, visited);
+            result.forEach(objDefInfo => {
+                const objDefLang = objDefInfo.objDef.getCfg()?.getDeclaringMethod().getLanguage() ?? Language.UNKNOWN;
+                const typeDefLang = this.getTypeDefinedLang(objDefInfo.objType, scene) ?? objDefLang;
+                if (objDefLang === Language.UNKNOWN || typeDefLang === Language.UNKNOWN) {
+                    logger.warn(`cannot find the language for def: ${objDefInfo.objDef.toString()}`);
+                    return;
                 }
+                const interopRule = findInteropRule(currentLang, objDefLang, typeDefLang, isReflect);
+                if (!interopRule) {
+                    return;
+                }
+                const line = stmt.getOriginPositionInfo().getLineNo();
+                const column = stmt.getOriginPositionInfo().getColNo();
+                const problem = 'Interop';
+                const desc = `${interopRule.description}: ${this.generateDesc(objDefInfo.objDef)} (${interopRule.ruleId
+                    })`;
+                const severity = interopRule.severity;
+                const ruleId = this.rule.ruleId;
+                const filePath = target.getDeclaringArkFile()?.getFilePath() ?? '';
+                const defeats = new Defects(
+                    line,
+                    column,
+                    column,
+                    problem,
+                    desc,
+                    severity,
+                    ruleId,
+                    filePath,
+                    '',
+                    true,
+                    false,
+                    false
+                );
+                this.issues.push(new IssueReport(defeats, undefined));
+            });
+            if (!checkAll) {
+                // report issue
             }
         }
     }

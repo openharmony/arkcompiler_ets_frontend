@@ -24,9 +24,10 @@ import {
     ArkInstanceOfExpr,
     ArkNewExpr,
     CallGraph,
-    CallGraphBuilder,
     ArkParameterRef,
     ArkInstanceFieldRef,
+    ArkNamespace,
+    Local,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -68,22 +69,47 @@ export class ObjectLiteralCheck implements BaseChecker {
         this.dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
 
         for (let arkFile of scene.getFiles()) {
+            const defaultMethod = arkFile.getDefaultClass().getDefaultArkMethod();
+            const globalVarMap: Map<string, Stmt[]> = new Map();
+            if (defaultMethod) {
+                this.dvfgBuilder.buildForSingleMethod(defaultMethod);
+                const stmts = defaultMethod.getBody()?.getCfg().getStmts() ?? [];
+                for (const stmt of stmts) {
+                    if (!(stmt instanceof ArkAssignStmt)) {
+                        continue;
+                    }
+                    const leftOp = stmt.getLeftOp();
+                    if (!(leftOp instanceof Local)) {
+                        continue;
+                    }
+                    const name = leftOp.getName();
+                    if (name.startsWith('%') || name === 'this') {
+                        continue;
+                    }
+                    globalVarMap.set(name, [...(globalVarMap.get(name) ?? []), stmt]);
+                }
+            }
+
             for (let clazz of arkFile.getClasses()) {
                 for (let mtd of clazz.getMethods()) {
-                    this.processArkMethod(mtd, scene);
+                    this.processArkMethod(mtd, globalVarMap, scene);
                 }
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                for (let clazz of namespace.getClasses()) {
-                    for (let mtd of clazz.getMethods()) {
-                        this.processArkMethod(mtd, scene);
-                    }
-                }
+                this.processNameSpace(namespace, globalVarMap, scene);
             }
         }
     };
 
-    public processArkMethod(target: ArkMethod, scene: Scene): void {
+    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+        for (let clazz of namespace.getClasses()) {
+            for (let mtd of clazz.getMethods()) {
+                this.processArkMethod(mtd, globalVarMap, scene);
+            }
+        }
+    }
+
+    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             if (!(stmt instanceof ArkAssignStmt)) {
@@ -101,7 +127,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             let result: Stmt[] = [];
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
-            this.checkFromStmt(stmt, scene, result, checkAll, visited);
+            this.checkFromStmt(stmt, scene, result, globalVarMap, checkAll, visited);
             result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
             if (!checkAll.value) {
                 this.addIssueReport(stmt, rightOp);
@@ -113,6 +139,7 @@ export class ObjectLiteralCheck implements BaseChecker {
         stmt: Stmt,
         scene: Scene,
         res: Stmt[],
+        globalVarMap: Map<string, Stmt[]>,
         checkAll: { value: boolean },
         visited: Set<Stmt>,
         depth: number = 0
@@ -134,6 +161,14 @@ export class ObjectLiteralCheck implements BaseChecker {
                 res.push(currentStmt);
                 continue;
             }
+            const gv = this.checkIfIsGlobalVar(currentStmt);
+            if (gv) {
+                const globalDefs = globalVarMap.get(gv.getName());
+                globalDefs?.forEach(d => {
+                    worklist.push(this.dvfg.getOrNewDVFGNode(d));
+                });
+                continue;
+            }
             const callsite = this.cg.getCallSiteByStmt(currentStmt);
             callsite.forEach(cs => {
                 const declaringMtd = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
@@ -146,7 +181,7 @@ export class ObjectLiteralCheck implements BaseChecker {
                 }
                 declaringMtd
                     .getReturnStmt()
-                    .forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
+                    .forEach(r => this.checkFromStmt(r, scene, res, globalVarMap, checkAll, visited, depth + 1));
             });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
@@ -154,19 +189,41 @@ export class ObjectLiteralCheck implements BaseChecker {
                 const callsites = this.cg.getInvokeStmtByMethod(
                     currentStmt.getCfg().getDeclaringMethod().getSignature()
                 );
-                callsites.forEach(cs => {
-                    const declaringMtd = cs.getCfg().getDeclaringMethod();
-                    if (!this.visited.has(declaringMtd)) {
-                        this.dvfgBuilder.buildForSingleMethod(declaringMtd);
-                        this.visited.add(declaringMtd);
-                    }
-                });
+                this.processCallsites(callsites);
                 this.collectArgDefs(paramIdx, callsites).forEach(d =>
-                    this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
+                    this.checkFromStmt(d, scene, res, globalVarMap, checkAll, visited, depth + 1)
                 );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
+    }
+
+    private checkIfIsGlobalVar(stmt: Stmt): Local | undefined {
+        if (!(stmt instanceof ArkAssignStmt)) {
+            return undefined;
+        }
+        const rightOp = stmt.getRightOp();
+        if (rightOp instanceof Local && !rightOp.getDeclaringStmt()) {
+            return rightOp;
+        }
+        if (!(rightOp instanceof ArkInstanceOfExpr)) {
+            return undefined;
+        }
+        const obj = rightOp.getOp();
+        if (obj instanceof Local && !obj.getDeclaringStmt()) {
+            return obj;
+        }
+        return undefined;
+    }
+
+    private processCallsites(callsites: Stmt[]): void {
+        callsites.forEach(cs => {
+            const declaringMtd = cs.getCfg().getDeclaringMethod();
+            if (!this.visited.has(declaringMtd)) {
+                this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                this.visited.add(declaringMtd);
+            }
+        });
     }
 
     private isObjectLiteral(stmt: Stmt, scene: Scene): boolean {
