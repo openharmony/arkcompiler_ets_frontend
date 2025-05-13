@@ -19,6 +19,7 @@ import { Logger } from '../Logger';
 import type { ProblemInfo } from '../ProblemInfo';
 import type { Autofix } from './Autofixer';
 import type { LinterOptions } from '../LinterOptions';
+import { AUTOFIX_HTML_TEMPLATE_TEXT, AutofixHtmlTemplate } from './AutofixReportHtmlHelper';
 
 const BACKUP_AFFIX = '~';
 export const DEFAULT_MAX_AUTOFIX_PASSES = 10;
@@ -51,6 +52,10 @@ export class QuasiEditor {
       fixCount: acceptedPatches.length,
       fixes: acceptedPatches.map((fix) => {
         return {
+          line: fix.line,
+          colum: fix.column,
+          endLine: fix.endLine,
+          endColum: fix.endColumn,
           start: fix.start,
           end: fix.end,
           replacement: fix.replacementText,
@@ -60,20 +65,23 @@ export class QuasiEditor {
     };
 
     const reportPath = './autofix-report.html';
+    const getOldJsonArray = (reportPath: string): Set<any> => {
+      try {
+        const RegexCaptureBraketFirst = 1;
+        const rawData = fs.readFileSync(reportPath, 'utf-8');
+        const rawContent = rawData.match(/`([\s\S]*?)`/)?.[RegexCaptureBraketFirst] ?? '';
+        return new Set(JSON.parse(rawContent) || []);
+      } catch {
+        return new Set();
+      }
+    };
 
     try {
-      let existingReports: any[] = [];
-      if (fs.existsSync(reportPath)) {
-        const rawData = fs.readFileSync(reportPath, 'utf-8');
-        existingReports = JSON.parse(rawData);
-        if (!Array.isArray(existingReports)) {
-          throw new Error('Existing report is not an array');
-        }
-      }
-
-      existingReports.push(report);
-
-      fs.writeFileSync(reportPath, JSON.stringify(existingReports, null, 2), { encoding: 'utf-8' });
+      const existingReports = getOldJsonArray(reportPath);
+      existingReports.add(report);
+      const str = JSON.stringify([...existingReports], null, 2);
+      const HtmlContent = AutofixHtmlTemplate.replace(AUTOFIX_HTML_TEMPLATE_TEXT, str);
+      fs.writeFileSync(reportPath, HtmlContent, { encoding: 'utf-8' });
     } catch (error) {
       Logger.error(`Failed to update autofix report: ${(error as Error).message}`);
     }

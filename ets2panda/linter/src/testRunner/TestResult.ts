@@ -38,7 +38,11 @@ export interface TestProblemInfo {
 const autofixResultSchema: yup.ObjectSchema<Autofix> = yup.object({
   replacementText: yup.string().defined(),
   start: yup.number().required(),
-  end: yup.number().required()
+  end: yup.number().required(),
+  line: yup.number().optional(),
+  column: yup.number().optional(),
+  endLine: yup.number().optional(),
+  endColumn: yup.number().optional()
 });
 
 const testResultSchema: yup.ObjectSchema<TestResult> = yup.object({

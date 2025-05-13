@@ -55,6 +55,20 @@ export abstract class BaseTypeScriptLinter {
     this.fileStats.lineCounters[faultId].add(line);
   }
 
+  protected static addLineColumnInfoInAutofix(
+    autofix: Autofix[],
+    startPos: ts.LineAndCharacter,
+    endPos: ts.LineAndCharacter
+  ): Autofix[] {
+    return autofix?.map((autofixElem) => {
+      autofixElem.line = startPos.line + 1;
+      autofixElem.column = startPos.character + 1;
+      autofixElem.endLine = endPos.line + 1;
+      autofixElem.endColumn = endPos.character + 1;
+      return autofixElem;
+    });
+  }
+
   protected incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
     const startPos = this.sourceFile.getLineAndCharacterOfPosition(startOffset);
@@ -67,6 +81,7 @@ export abstract class BaseTypeScriptLinter {
     const cookBookTg = cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
+    autofix = autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
     const badNodeInfo: ProblemInfo = {
       line: startPos.line + 1,
       column: startPos.character + 1,
