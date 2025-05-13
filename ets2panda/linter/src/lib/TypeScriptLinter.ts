@@ -5463,9 +5463,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (
-        literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
-        literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
+      literalTypeNode.parent.kind === ts.SyntaxKind.IntersectionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.UnionType ||
+      literalTypeNode.parent.kind === ts.SyntaxKind.TupleType
     ) {
       return;
     }
@@ -5814,21 +5814,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const defaultSkipTypeCheck = (typeNode: ts.TypeNode | undefined): boolean => {
       if (!typeNode) {
-          return false;
+        return false;
       }
 
       const typeText = typeNode.getText();
       if (ts.isLiteralTypeNode(typeNode) || ['boolean', 'number', 'null', 'undefined'].includes(typeText)) {
-          return true;
+        return true;
       }
-  
+
       if (ts.isUnionTypeNode(typeNode)) {
-        return typeNode.types.some(t => {
+        return typeNode.types.some((t) => {
           const tText = t.getText();
           return tText === 'undefined';
         });
       }
-  
+
       return false;
     };
 
