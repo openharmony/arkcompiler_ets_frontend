@@ -1994,7 +1994,7 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
     switch (memberExpr->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION: {
             if (memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
-                return FUNCTIONAL_FLAGS;
+                return PropertySearchFlags::SEARCH_ALL;
             }
             break;
         }
@@ -2260,6 +2260,15 @@ static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
     return ResolvedKind::EXTENSION_FUNCTION;
 }
 
+void ETSChecker::CheckAnnotationReference(const ir::MemberExpression *memberExpr, const varbinder::LocalVariable *prop)
+{
+    // Note: there might be a better way to handle annotations
+    if (prop != nullptr && prop->Declaration() != nullptr && prop->Declaration()->IsAnnotationDecl() &&
+        memberExpr->Parent()->IsCallExpression()) {
+        LogError(diagnostic::ANNOTATION_INSTANTIATION, {prop->Declaration()->Name()}, memberExpr->Start());
+    }
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::MemberExpression *const memberExpr,
                                                                 const ETSObjectType *const target)
@@ -2278,6 +2287,9 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     }
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
+
+    CheckAnnotationReference(memberExpr, prop);
+
     varbinder::Variable *const globalFunctionVar = ResolveInstanceExtension(memberExpr);
     if (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
         // Note: extension function only for instance.

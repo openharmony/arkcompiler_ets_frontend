@@ -1797,6 +1797,9 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
     if (!type->IsETSMethodType() ||
         (use->IsMemberExpression() && use->AsMemberExpression()->PropVar() != nullptr &&
          use->AsMemberExpression()->PropVar()->HasFlag(varbinder::VariableFlags::DYNAMIC))) {
+        if (use->Parent()->IsCallExpression() && type->IsETSObjectType() && use->IsMemberExpression()) {
+            checker->ValidateCallExpressionIdentifier(use->AsMemberExpression()->Property()->AsIdentifier(), type);
+        }
         return type;
     }
     auto const getUseSite = [use]() {

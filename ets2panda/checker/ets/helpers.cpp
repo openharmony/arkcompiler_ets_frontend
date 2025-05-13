@@ -3033,11 +3033,41 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
 }
 
+void ETSChecker::CreateTransformedCallee(ir::Identifier *ident, ir::Identifier *classId, ir::Identifier *methodId,
+                                         ir::CallExpression *callExpr)
+{
+    ir::MemberExpression *transformedCallee = nullptr;
+    classId->SetRange(ident->Range());
+    if (ident->Parent()->IsMemberExpression()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        transformedCallee = ProgramAllocNode<ir::MemberExpression>(
+            ident->Parent()->AsMemberExpression(), methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ident->Parent()->AsMemberExpression()->SetParent(transformedCallee);
+    } else {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        transformedCallee = ProgramAllocNode<ir::MemberExpression>(
+            classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        transformedCallee->SetParent(callExpr);
+    }
+
+    methodId->SetRange(ident->Range());
+    transformedCallee->SetRange(ident->Range());
+    // Note: Should not modify the AST
+    // Related issue: #issue27122
+    callExpr->SetCallee(transformedCallee);
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)
 {
-    ES2PANDA_ASSERT(ident->Parent()->IsCallExpression());
-    ES2PANDA_ASSERT(ident->Parent()->AsCallExpression()->Callee() == ident);
+    ir::CallExpression *callExpr = nullptr;
+    if (ident->Parent()->IsMemberExpression()) {
+        callExpr = ident->Parent()->Parent()->AsCallExpression();
+    } else {
+        ES2PANDA_ASSERT(ident->Parent()->IsCallExpression());
+        ES2PANDA_ASSERT(ident->Parent()->AsCallExpression()->Callee() == ident);
+        callExpr = ident->Parent()->AsCallExpression();
+    }
 
     if (!resolvedType->IsETSObjectType()) {
         return false;
@@ -3072,20 +3102,8 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     } else if (propertyName == compiler::Signatures::STATIC_INVOKE_METHOD) {
         methodId->SetVariable(invokeMethod);
     }
-
-    auto *transformedCallee =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        ProgramAllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false,
-                                               false);
-
-    classId->SetRange(ident->Range());
-    methodId->SetRange(ident->Range());
-    transformedCallee->SetRange(ident->Range());
-
-    auto *callExpr = ident->Parent()->AsCallExpression();
-    transformedCallee->SetParent(callExpr);
-    callExpr->SetCallee(transformedCallee);
-
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    CreateTransformedCallee(ident, classId, methodId, callExpr);
     if (instantiateMethod != nullptr) {
         auto lexScope {varbinder::LexicalScope<varbinder::Scope>::Enter(VarBinder(), compiler::NearestScope(callExpr))};
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
