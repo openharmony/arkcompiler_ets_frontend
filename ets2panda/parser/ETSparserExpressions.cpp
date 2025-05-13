@@ -139,7 +139,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
-        case lexer::TokenType::KEYW_TYPEOF: {
+        case lexer::TokenType::KEYW_TYPEOF:
+        case lexer::TokenType::KEYW_AWAIT: {
             break;
         }
         default: {
@@ -152,6 +153,12 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     Lexer()->NextToken(tokenFlags);
 
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
+    if (operatorType == lexer::TokenType::KEYW_AWAIT) {
+        auto *awaitExpr = AllocNode<ir::AwaitExpression>(argument);
+        awaitExpr->SetRange({start, argument->End()});
+        return awaitExpr;
+    }
+
     if (argument == nullptr) {
         return nullptr;
     }
