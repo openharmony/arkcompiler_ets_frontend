@@ -235,3 +235,4 @@ faultDesc[FaultID.BuiltinGetOwnPropertyNames] = 'No "Object.getOwnPropertyNames"
 faultDesc[FaultID.LocalBuilderDecoratorNotSupported] = '"@LocalBuilder" decorator';
 faultDesc[FaultID.MakeObservedIsNotSupported] = 'MakeObserved is not supported';
 faultDesc[FaultID.PropDecoratorsAndInterfacesAreNotSupported] = 'Prop decorators and interfaces are not supported';
+faultDesc[FaultID.NoEnumPropAsType] = 'No enum prop as type';
