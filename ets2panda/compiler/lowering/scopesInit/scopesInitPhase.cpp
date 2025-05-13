@@ -1094,6 +1094,12 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
     if (res.variable != nullptr && !res.variable->Declaration()->IsFunctionDecl() && res.scope == curScope) {
         VarBinder()->ThrowRedeclaration(methodName->Start(), res.name);
     }
+
+    auto result = curScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
+    if (result != nullptr) {
+        VarBinder()->ThrowLocalRedeclaration(methodName->Start(), result->Name());
+    }
+
     Iterate(method);
     DeclareClassMethod(method);
 }

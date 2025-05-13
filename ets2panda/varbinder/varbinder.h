@@ -160,6 +160,7 @@ public:
 
     void ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowLocalRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
