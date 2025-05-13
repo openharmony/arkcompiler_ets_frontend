@@ -31,7 +31,7 @@
             "endColumn": 43,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 6,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 9,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {

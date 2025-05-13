@@ -71,7 +71,7 @@
             "endColumn": 8,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 13,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 15,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
