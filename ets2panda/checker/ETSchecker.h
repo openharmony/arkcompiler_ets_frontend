@@ -416,6 +416,8 @@ public:
     {
         return Allocator()->New<Substitution>(*src);
     }
+    bool ValidateTypeSubstitution(const ArenaVector<Type *> &typeParams, Type *ctype, Type *argumentType,
+                                  Substitution *substitution);
     bool ProcessUntypedParameter(ir::AstNode *declNode, size_t paramIndex, Signature *paramSig, Signature *argSig,
                                  Substitution *substitution);
     void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
