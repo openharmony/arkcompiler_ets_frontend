@@ -163,6 +163,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) 
     ES2PANDA_UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNonNullishTypeNode *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSNullType *node) const
 {
     ES2PANDA_UNREACHABLE();

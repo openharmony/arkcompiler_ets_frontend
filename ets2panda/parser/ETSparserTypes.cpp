@@ -478,6 +478,11 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
         return nullptr;
     }
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+        typeAnnotation = AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator());
+        Lexer()->NextToken();
+    }
+
     if (!needFurtherProcessing) {
         return typeAnnotation;
     }

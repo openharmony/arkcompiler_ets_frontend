@@ -1346,3 +1346,7 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
+
+- name: ILLEGAL_NON_NULLISH_TYPE
+  id: 339
+  message: "Only type parameters can be used as a nonnullish type"

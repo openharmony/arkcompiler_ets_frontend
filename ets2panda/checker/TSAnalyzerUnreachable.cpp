@@ -139,6 +139,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node
     ES2PANDA_UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNonNullishTypeNode *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNullType *node) const
 {
     ES2PANDA_UNREACHABLE();

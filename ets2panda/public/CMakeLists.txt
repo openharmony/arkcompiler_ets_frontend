@@ -131,6 +131,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ts/typeReference.h
     ${ES2PANDA_ROOT}/ir/expressions/memberExpression.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsExtensionFuncHelperType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNonNullishTypeNode.h
     ${ES2PANDA_ROOT}/ir/ets/etsNullishTypes.h
     ${ES2PANDA_ROOT}/ir/expressions/awaitExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsFunctionType.h

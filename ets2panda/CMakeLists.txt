@@ -427,6 +427,7 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsPackageDeclaration.cpp
   ir/ets/etsParameterExpression.cpp
   ir/ets/etsPrimitiveType.cpp
+  ir/ets/etsNonNullishTypeNode.cpp
   ir/ets/etsNullishTypes.cpp
   ir/ets/etsNeverType.cpp
   ir/ets/etsModule.cpp
