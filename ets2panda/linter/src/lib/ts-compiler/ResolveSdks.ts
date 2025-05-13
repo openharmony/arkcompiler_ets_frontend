@@ -35,7 +35,11 @@ export function readDeclareFiles(SdkPath: string): string[] {
     return [];
   }
   const declarationsFileNames: string[] = [];
-  fs.readdirSync(path.resolve(SdkPath, './build-tools/ets-loader/declarations')).forEach((fileName: string) => {
+  const declarationsPath = path.resolve(SdkPath, './build-tools/ets-loader/declarations');
+  if (!fs.existsSync(declarationsPath)) {
+    throw new Error('get wrong sdkDefaultApiPath, declarationsPath not found');
+  }
+  fs.readdirSync(declarationsPath).forEach((fileName: string) => {
     if ((/\.d\.ts$/).test(fileName)) {
       declarationsFileNames.push(path.resolve(SdkPath, './build-tools/ets-loader/declarations', fileName));
     }
@@ -311,28 +315,16 @@ function createResolutionContext(sdkContext: SdkContext, projectPath: string): R
   return {
     sdkContext,
     projectPath,
-    compilerOptions: createCompilerOptions(projectPath)
+    compilerOptions: createCompilerOptions(sdkContext, projectPath)
   };
 }
 
-function createCompilerOptions(projectPath: string): ts.CompilerOptions {
+function createCompilerOptions(sdkContext: SdkContext, projectPath: string): ts.CompilerOptions {
   const compilerOptions: ts.CompilerOptions = ((): ts.CompilerOptions => {
-    let configPath: string | null = null;
-    let currentDir: string = __dirname;
-
-    while (currentDir) {
-      const filePath = path.resolve(currentDir, 'tsconfig.json');
-      if (fs.existsSync(filePath)) {
-        configPath = filePath;
-        break;
-      }
-      currentDir = path.dirname(currentDir);
+    const configPath = path.resolve(sdkContext.sdkDefaultApiPath, './build-tools/ets-loader/tsconfig.json');
+    if (!fs.existsSync(configPath)) {
+      throw new Error('get wrong sdkDefaultApiPath, tsconfig.json not found');
     }
-
-    if (!configPath) {
-      throw new Error('tsconfig.json not found');
-    }
-
     const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
     return configFile.config.compilerOptions;
   })();
