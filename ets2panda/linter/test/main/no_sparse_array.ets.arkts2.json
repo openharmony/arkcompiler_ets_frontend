@@ -15,23 +15,23 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 17,
-            "endLine": 18,
-            "endColumn": 20,
-            "problem": "NoEnumPropAsType",
+            "line": 16,
+            "column": 12,
+            "endLine": 16,
+            "endColumn": 12,
+            "problem": "NosparseArray",
             "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
+            "rule": "Sparse array are not supported (arkts-no-sparse-array)",
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 8,
-            "endLine": 20,
-            "endColumn": 11,
-            "problem": "NoEnumPropAsType",
+            "line": 16,
+            "column": 14,
+            "endLine": 16,
+            "endColumn": 14,
+            "problem": "NosparseArray",
             "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
+            "rule": "Sparse array are not supported (arkts-no-sparse-array)",
             "severity": "ERROR"
         }
     ]

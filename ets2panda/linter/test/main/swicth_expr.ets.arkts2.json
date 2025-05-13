@@ -245,6 +245,16 @@
         "severity": "ERROR"
     },
     {
+        "line": 216,
+        "column": 13,
+        "endLine": 216,
+        "endColumn": 32,
+        "problem": "CreatingPrimitiveTypes",
+        "suggest": "",
+        "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+        "severity": "ERROR"
+    },
+    {
         "line": 226,
         "column": 9,
         "endLine": 226,

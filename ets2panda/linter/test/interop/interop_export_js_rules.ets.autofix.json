@@ -34,12 +34,20 @@
                 {
                     "start": 618,
                     "end": 676,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 59
                 },
                 {
                     "start": 676,
                     "end": 676,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff1 = GeneratedImportVar_1.getPropertyByName('ff1');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff1 = GeneratedImportVar_1.getPropertyByName('ff1');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 59
                 }
             ],
             "suggest": "",

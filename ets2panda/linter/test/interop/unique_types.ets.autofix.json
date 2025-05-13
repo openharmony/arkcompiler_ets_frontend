@@ -34,7 +34,11 @@
                 {
                     "start": 744,
                     "end": 775,
-                    "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))"
+                    "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -51,7 +55,11 @@
                 {
                     "start": 777,
                     "end": 807,
-                    "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))"
+                    "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 22
                 }
             ],
             "suggest": "",
@@ -66,6 +74,16 @@
             "problem": "InteropTSFunctionInvoke",
             "suggest": "",
             "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 3,
+            "endLine": 32,
+            "endColumn": 2,
+            "problem": "TsLikeCatchType",
+            "suggest": "",
+            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
             "severity": "ERROR"
         },
         {

@@ -16,42 +16,52 @@
     "result": [
         {
             "line": 17,
+            "column": 5,
+            "endLine": 17,
+            "endColumn": 31,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
             "column": 1,
             "endLine": 23,
-            "endColumn": 38,
-            "problem": "ImportAfterStatement",
+            "endColumn": 7,
+            "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
             "line": 30,
             "column": 1,
             "endLine": 30,
-            "endColumn": 13,
-            "problem": "InteropTSFunctionInvoke",
+            "endColumn": 9,
+            "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
-            "line": 31,
-            "column": 3,
+            "line": 32,
+            "column": 5,
             "endLine": 32,
-            "endColumn": 2,
-            "problem": "TsLikeCatchType",
+            "endColumn": 54,
+            "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 1,
-            "endLine": 34,
-            "endColumn": 20,
-            "problem": "InteropDirectAccessToTSTypes",
+            "line": 36,
+            "column": 3,
+            "endLine": 36,
+            "endColumn": 8,
+            "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         }
     ]

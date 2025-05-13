@@ -377,7 +377,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
     [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
-    [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
+    [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression],
+    [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral]
   ]);
 
   lint(): void {
@@ -639,6 +640,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
       if (elementContextType) {
         this.checkAssignmentMatching(element, elementContextType, element, true);
+      }
+      if (this.options.arkts2 && ts.isOmittedExpression(element)) {
+        this.incrementCounters(element, FaultID.NosparseArray);
       }
     }
     if (emptyContextTypeForArrayLiteral) {
@@ -2050,11 +2054,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
         this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
         this.handleSdkDuplicateDeclName(tsBinaryExpr);
+        this.checkArrayTypeImmutable(tsBinaryExpr);
+        break;
+      case ts.SyntaxKind.AmpersandAmpersandEqualsToken:
+      case ts.SyntaxKind.QuestionQuestionEqualsToken:
+      case ts.SyntaxKind.BarBarEqualsToken:
+        if (this.options.arkts2) {
+          this.incrementCounters(tsBinaryExpr.operatorToken, FaultID.UnsupportOperator);
+        }
         break;
       default:
     }
     this.checkInterOpImportJsDataCompare(tsBinaryExpr);
     this.checkInteropEqualityJudgment(tsBinaryExpr);
+    this.handleNumericBigintCompare(tsBinaryExpr);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -2464,6 +2477,44 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignment(tsVarDecl);
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
     this.handleSdkDuplicateDeclName(tsVarDecl);
+    this.checkArrayTypeImmutable(tsVarDecl);
+  }
+
+  private checkArrayTypeImmutable(node: ts.VariableDeclaration | ts.BinaryExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (ts.isVariableDeclaration(node)) {
+      if (!node.initializer || ts.isArrayLiteralExpression(node.initializer)) {
+        return;
+      }
+      if (node.type && ts.isArrayTypeNode(node.type)) {
+        const varDeclType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.name));
+        const initializerType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.initializer));
+        if (varDeclType !== initializerType) {
+          this.incrementCounters(node, FaultID.ArrayTypeImmutable);
+        }
+      }
+    } else {
+      this.checkArrayTypeImmutableForBinaryExpression(node);
+    }
+  }
+
+  private checkArrayTypeImmutableForBinaryExpression(node: ts.BinaryExpression): void {
+    const sym = this.tsTypeChecker.getSymbolAtLocation(node.left);
+    const declaration = sym?.declarations?.[0];
+    if (
+      declaration &&
+      (ts.isVariableDeclaration(declaration) || ts.isParameter(declaration) || ts.isPropertyDeclaration(declaration))
+    ) {
+      if (declaration.type && ts.isArrayTypeNode(declaration.type) && !ts.isArrayLiteralExpression(node.right)) {
+        const leftType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.left));
+        const rightType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.right));
+        if (leftType !== rightType) {
+          this.incrementCounters(node, FaultID.ArrayTypeImmutable);
+        }
+      }
+    }
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -2765,6 +2816,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.dropTypeOnVarDecl(tsCatch.variableDeclaration);
       this.incrementCounters(node, FaultID.CatchWithUnsupportedType, autofix);
     }
+
+    if (
+      this.options.arkts2 &&
+      tsCatch.variableDeclaration &&
+      TsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(tsCatch.variableDeclaration))
+    ) {
+      this.incrementCounters(node, FaultID.TsLikeCatchType);
+    }
   }
 
   private handleClassExtends(tsClassDecl: ts.ClassDeclaration): void {
@@ -2849,6 +2908,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.processClassStaticBlocks(tsClassDecl);
     this.handleInvalidIdentifier(tsClassDecl);
     this.handleSdkMethod(tsClassDecl);
+    this.handleNotsLikeSmartType(tsClassDecl);
   }
 
   private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
@@ -4840,6 +4900,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkDuplicateDeclName(tsNewExpr);
     this.checkConstrutorAccess(tsNewExpr);
+    this.checkCreatingPrimitiveTypes(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;
@@ -4863,6 +4924,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.handleSendableGenericTypes(tsNewExpr);
     this.handleInstantiatedJsObject(tsNewExpr, sym);
+  }
+
+  private checkCreatingPrimitiveTypes(tsNewExpr: ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const typeStr = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(tsNewExpr));
+    const primitiveTypes = ['Number', 'String', 'Boolean'];
+    if (primitiveTypes.includes(typeStr)) {
+      this.incrementCounters(tsNewExpr, FaultID.CreatingPrimitiveTypes);
+    }
   }
 
   handleInstantiatedJsObject(tsNewExpr: ts.NewExpression, sym: ts.Symbol | undefined): void {
@@ -8433,6 +8505,123 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     checkAndReportJsImportAwait(expr);
     if (ts.isCallExpression(expr)) {
       checkAndReportJsImportAwait(expr.expression);
+    }
+  }
+
+  private handleNotsLikeSmartType(classDecl: ts.ClassDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const className = classDecl.name?.getText();
+    classDecl.members.forEach(member => {
+        if (ts.isMethodDeclaration(member)) {
+          this.checkMethod(member, className);
+        }
+    })
+  }
+
+  private checkMethod(methodNode: ts.MethodDeclaration, className: string | undefined): void {
+    const variableDeclarations = new Map<string, ts.TypeNode | undefined>();   
+    const returnStatements: ts.ReturnStatement[] = []; 
+    if (methodNode.body) {
+      ts.forEachChild(methodNode.body, (node) => {
+        this.visitMethodBody(node, variableDeclarations, returnStatements);
+      });
+    }
+
+    const isStaticPropertyAccess=(node: ts.Expression, className: string): boolean => {
+      return ts.isPropertyAccessExpression(node) && 
+             ts.isIdentifier(node.expression) && 
+             node.expression.text === className;
+    }
+
+    const isInstancePropertyAccess=(node: ts.Expression): boolean=> {
+      return ts.isPropertyAccessExpression(node) && 
+             node.expression.kind === ts.SyntaxKind.ThisKeyword;
+    }
+
+    this.checkReturnStatements(returnStatements, className, isStaticPropertyAccess, isInstancePropertyAccess);
+  }
+
+  private visitMethodBody(node: ts.Node, variableDeclarations: Map<string, ts.TypeNode | undefined>, returnStatements: ts.ReturnStatement[]): void {
+    if (ts.isVariableStatement(node)) {
+      node.declarationList.declarations.forEach(decl => {
+        if (ts.isIdentifier(decl.name)) {
+          variableDeclarations.set(decl.name.text, decl.type);
+        }
+      });
+    }
+
+    if (ts.isReturnStatement(node)) {
+      returnStatements.push(node);
+    }
+
+    ts.forEachChild(node, (child) => {
+      this.visitMethodBody(child, variableDeclarations, returnStatements);
+    });
+  }
+
+  private checkReturnStatements(returnStatements: ts.ReturnStatement[], className: string | undefined, 
+    isStaticPropertyAccess: (node: ts.Expression, className: string) => boolean,
+    isInstancePropertyAccess: (node: ts.Expression) => boolean): void {
+    returnStatements.forEach(returnStmt => {
+      if (!returnStmt.expression) {
+        return;
+      }       
+
+      if (className && isStaticPropertyAccess(returnStmt.expression, className)) {
+        this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
+      }      
+
+      if (isInstancePropertyAccess(returnStmt.expression)) {
+        this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
+      }
+    });
+  }
+  
+  private handleNumericBigintCompare(node: ts.BinaryExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    switch(node.operatorToken.kind) {
+      case ts.SyntaxKind.LessThanEqualsToken:
+      case ts.SyntaxKind.EqualsEqualsToken:
+      case ts.SyntaxKind.GreaterThanEqualsToken:
+      case ts.SyntaxKind.ExclamationEqualsToken:
+      case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+      case ts.SyntaxKind.EqualsEqualsEqualsToken:
+      case ts.SyntaxKind.GreaterThanToken:
+      case ts.SyntaxKind.LessThanToken:
+        this.reportNumericBigintCompare(node);
+        break;
+      default:
+    }
+  }
+
+  private reportNumericBigintCompare(node: ts.BinaryExpression): void {
+    const leftType = this.tsTypeChecker.getTypeAtLocation(node.left);
+    const rightType = this.tsTypeChecker.getTypeAtLocation(node.right);
+
+    const isLeftNumber = (leftType.flags & ts.TypeFlags.Number) !== 0;
+    const isLeftBigInt = (leftType.flags & ts.TypeFlags.BigInt) !== 0;
+
+    const isRightNumber = (rightType.flags & ts.TypeFlags.Number) !== 0;
+    const isRightBigInt = (rightType.flags & ts.TypeFlags.BigInt) !== 0;
+
+    const valid =  (isLeftNumber && isRightBigInt) || (isLeftBigInt && isRightNumber);
+    if (valid) {
+      this.incrementCounters(node, FaultID.NumericBigintCompare);
+    }
+  }
+  
+  private handleBigIntLiteral(node: ts.BigIntLiteral): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const literalText = node.getText();
+
+    if ((/^0[box]/i).test(literalText)) {
+      this.incrementCounters(node, FaultID.NondecimalBigint);
     }
   }
 }

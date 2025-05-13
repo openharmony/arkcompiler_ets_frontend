@@ -353,7 +353,16 @@ cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
 cookBookTag[358] =
   'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
-cookBookTag[371] = 'Enum prop as type are not supported(arkts-no-enum-prop-as-type)';
+cookBookTag[370] = 'Sparse array are not supported (arkts-no-sparse-array)';
+cookBookTag[371] = 'Enum prop as type are not supported (arkts-no-enum-prop-as-type)';
+cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';
+cookBookTag[373] = 'Array types follow the principle of invariance (arkts-array-type-immutable)';
+cookBookTag[374] = 'ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)';
+cookBookTag[375] = 'TS catch type are not supported (arkts-no-ts-like-catch-type)';
+cookBookTag[376] = 'Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)';
+cookBookTag[377] =
+  'Non-decimal BigInt literals (0x/0o/0b) are not supported. Use decimal format instead (arkts-only-support-decimal-bigint-literal)';
+cookBookTag[378] = 'Operator is not support (arkts-unsupport-operator)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

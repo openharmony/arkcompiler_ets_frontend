@@ -15,43 +15,43 @@
     ],
     "result": [
         {
+            "line": 22,
+            "column": 9,
+            "endLine": 22,
+            "endColumn": 29,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 17,
-            "column": 1,
-            "endLine": 23,
-            "endColumn": 38,
-            "problem": "ImportAfterStatement",
+            "column": 5,
+            "endLine": 17,
+            "endColumn": 46,
+            "problem": "ClassstaticInitialization",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
         },
         {
-            "line": 30,
-            "column": 1,
-            "endLine": 30,
-            "endColumn": 13,
-            "problem": "InteropTSFunctionInvoke",
-            "suggest": "",
-            "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
-            "column": 3,
+            "line": 32,
+            "column": 9,
             "endLine": 32,
-            "endColumn": 2,
-            "problem": "TsLikeCatchType",
+            "endColumn": 30,
+            "problem": "NoTsLikeSmartType",
             "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 1,
-            "endLine": 34,
+            "line": 27,
+            "column": 12,
+            "endLine": 27,
             "endColumn": 20,
-            "problem": "InteropDirectAccessToTSTypes",
-            "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'instance' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'instance' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
         }
     ]
