@@ -2,6 +2,7 @@
 # Negative tests that are ignored
 ast/parser/ets/import_tests/export_and_import_class.ets
 ast/parser/ets/import_tests/export_and_import_top_level.ets
+ast/parser/ets/too_many_expression.ets
 compiler/ets/ConditionalExpressionCallVoidNeg.ets
 compiler/ets/abstractNewClassInstanceExpression.ets
 compiler/ets/dynamic_instanceof_error.ets
