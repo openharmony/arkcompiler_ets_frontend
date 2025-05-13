@@ -260,6 +260,17 @@ LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t pos
     return result;
 }
 
+std::vector<ark::es2panda::lsp::TodoComment> GetTodoComments(
+    char const *fileName, std::vector<ark::es2panda::lsp::TodoCommentDescriptor> &descriptors,
+    CancellationToken *cancellationToken)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = GetTodoCommentsImpl(context, descriptors, cancellationToken);
+    initializer.DestroyContext(context);
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     IsPackageModule,
@@ -281,7 +292,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetCompletionsAtPosition,
                     GetBraceMatchingAtPositionWrapper,
                     GetImplementationLocationAtPositionWrapper,
-                    ToLineColumnOffsetWrapper};
+                    ToLineColumnOffsetWrapper,
+                    GetTodoComments};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()
