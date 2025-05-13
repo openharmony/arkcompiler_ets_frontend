@@ -15,6 +15,7 @@
 
 #include "ETSparser.h"
 
+#include "generated/tokenType.h"
 #include "lexer/lexer.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
@@ -208,6 +209,16 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     return returnProperty;
 }
 
+bool CheckNextTokenOfTypeof(const lexer::Token &token)
+{
+    bool pretendTypeof = token.KeywordType() == lexer::TokenType::KEYW_TYPEOF;
+    bool pretendIdent = token.IsLiteral();
+    bool pretendOperator = token.IsUpdate();
+    bool pretendUnary = token.IsUnary();
+    bool pretendPuctuator = token.IsTsParamToken(token.Type());
+    return (pretendTypeof || pretendIdent || pretendOperator || pretendUnary || pretendPuctuator);
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags flags)
 {
@@ -239,7 +250,12 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
 
     Lexer()->NextToken();
     bool pretendArrow = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW;
+    bool checkNextTokenOfTypeof = CheckNextTokenOfTypeof(Lexer()->GetToken());
     Lexer()->Rewind(savedPos);
+
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPEOF && checkNextTokenOfTypeof) {
+        return ParseUnaryOrPrefixUpdateExpression();
+    }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         if (pretendArrow) {
