@@ -1050,16 +1050,23 @@ void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::Annota
     if (anno->Properties().size() != 1) {
         return;
     }
-    auto policyStr = anno->Properties()[0]->AsClassProperty()->Value()->AsStringLiteral()->Str().Mutf8();
-    if (policyStr == compiler::Signatures::SOURCE_POLICY) {
-        annoDecl->SetSourceRetention();
-    } else if (policyStr == compiler::Signatures::BYTECODE_POLICY) {
-        annoDecl->SetBytecodeRetention();
-    } else if (policyStr == compiler::Signatures::RUNTIME_POLICY) {
-        annoDecl->SetRuntimeRetention();
-    } else {
-        LogError(diagnostic::ANNOTATION_POLICY_INVALID, {}, anno->Properties()[0]->Start());
+    const auto value = anno->Properties()[0]->AsClassProperty()->Value();
+    if (value->IsStringLiteral()) {
+        const auto policyStr = value->AsStringLiteral()->Str().Mutf8();
+        if (policyStr == compiler::Signatures::SOURCE_POLICY) {
+            annoDecl->SetSourceRetention();
+            return;
+        }
+        if (policyStr == compiler::Signatures::BYTECODE_POLICY) {
+            annoDecl->SetBytecodeRetention();
+            return;
+        }
+        if (policyStr == compiler::Signatures::RUNTIME_POLICY) {
+            annoDecl->SetRuntimeRetention();
+            return;
+        }
     }
+    LogError(diagnostic::ANNOTATION_POLICY_INVALID, {}, anno->Properties()[0]->Start());
 }
 
 void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
