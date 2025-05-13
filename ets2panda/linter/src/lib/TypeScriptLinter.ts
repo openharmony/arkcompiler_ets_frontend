@@ -23,6 +23,9 @@ import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
+import { METHOD_DECLARATION } from './utils/consts/MethodDeclaration';
+import { METHOD_SIGNATURE } from './utils/consts/MethodSignature';
+import { OPTIONAL_METHOD } from './utils/consts/OptionalMethod';
 import {
   STRINGLITERAL_NUMBER,
   STRINGLITERAL_STRING,
@@ -2543,12 +2546,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       return Array.from(sdkInfos).some((sdkInfo) => {
-        if (sdkInfo.api_type !== 'MethodSignature') {
+        if (sdkInfo.api_type !== METHOD_SIGNATURE && sdkInfo.api_type !== METHOD_DECLARATION) {
           return false;
         }
 
         if (!methodName) {
-          this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members);
+          this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members,tsClassDecl);
           return false;
         }
 
@@ -2577,7 +2580,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private processSdkInfoWithMembers(sdkInfo: ApiInfo, members: ts.NodeArray<ts.ClassElement>): void {
+  private processSdkInfoWithMembers(sdkInfo: ApiInfo, members: ts.NodeArray<ts.ClassElement>,tsClassDecl:ts.ClassDeclaration): void {
     for (const member of members) {
       if (!ts.isMethodDeclaration(member)) {
         continue;
@@ -2585,12 +2588,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       const memberName = member.name?.getText();
       if (sdkInfo.api_name === memberName) {
-        if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args ?? [], member.parameters)) {
-          this.incrementCounters(
-            member,
-            sdkInfo.problem === 'OptionalMethod' ? FaultID.OptionalMethodFromSdk : FaultID.LimitedVoidTypeFromSdk
-          );
+        if (!TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args ?? [], member.parameters) &&
+          !TypeScriptLinter.areGenericsParametersEqual(sdkInfo.api_func_args ?? [], tsClassDecl)) {
+          return;
         }
+        this.incrementCounters(
+          member,
+          sdkInfo.problem === OPTIONAL_METHOD ? FaultID.OptionalMethodFromSdk : FaultID.LimitedVoidTypeFromSdk
+        );
       }
     }
   }
@@ -2666,6 +2671,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(node, FaultID.LimitedVoidTypeFromSdk);
       }
     }
+  }
+  private static areGenericsParametersEqual(
+    sdkFuncArgs: { name: string; type: string }[],
+    node: ts.ClassDeclaration
+  ): boolean {
+    if (!ts.isClassDeclaration(node)) {
+      return false;
+    }
+    const apiParamCout = sdkFuncArgs.length;
+    const typeParameters = node.typeParameters;
+    if (!typeParameters) {
+      return false;
+    }
+    typeParameters.forEach(typeParam => {
+      if (!typeParam.constraint) {
+        return false;
+      }
+      for (let i = 0; i < apiParamCout; i++) {
+        if (!typeParam.constraint.getText().match(sdkFuncArgs[i].type)) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return true;
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {
