@@ -71,6 +71,10 @@ ets2panda_add_gtest(lsp_get_type_of_symbol_at_location_test CPP_SOURCES
     get_type_of_symbol_at_location_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_organize_imports CPP_SOURCES
+    organize_imports_test.cpp
+)
+
 ets2panda_add_gtest(lsp_quick_info_api_test CPP_SOURCES
     quick_info_test.cpp
 )

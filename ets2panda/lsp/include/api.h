@@ -71,6 +71,18 @@ typedef struct TextSpan {
     }
 } TextSpan;
 
+struct TextChange {
+    TextSpan span;
+    std::string newText;
+    TextChange(TextSpan s, const std::string &t) : span(s), newText(t) {}
+};
+
+struct FileTextChanges {
+    std::string fileName;
+    std::vector<TextChange> textChanges;
+    FileTextChanges(const std::string &f, const std::vector<TextChange> &t) : fileName(f), textChanges(t) {}
+};
+
 typedef struct Position {
     size_t line_;       // Line number
     size_t character_;  // Character position in the line
@@ -353,6 +365,7 @@ typedef struct LSPAPI {
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
+    std::vector<FileTextChanges> (*OrganizeImportsImpl)(es2panda_Context *context, char const *fileName);
     QuickInfo (*getQuickInfoAtPosition)(const char *fileName, es2panda_Context *context, size_t position);
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(es2panda_Context *context);

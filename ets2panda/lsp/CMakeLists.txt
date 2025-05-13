@@ -18,6 +18,7 @@ set(ES2PANDA_LSP_SRC
   ./src/internal_api.cpp
   ./src/cancellation_token.cpp
   ./src/completions.cpp
+  ./src/organize_imports.cpp
   ./src/quick_info.cpp
   ./src/references.cpp
   ./src/get_adjusted_location.cpp

@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include "lsp/include/organize_imports.h"
 #include "compiler/lowering/util.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
@@ -109,6 +110,12 @@ es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
 std::string GetCurrentTokenValue(es2panda_Context *context, size_t position)
 {
     auto result = GetCurrentTokenValueImpl(context, position);
+    return result;
+}
+
+std::vector<FileTextChanges> OrganizeImportsImpl(es2panda_Context *context, char const *fileName)
+{
+    auto result = OrganizeImports::Organize(context, fileName);
     return result;
 }
 
@@ -279,6 +286,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetReferencesAtPosition,
                     GetPrecedingToken,
                     GetCurrentTokenValue,
+                    OrganizeImportsImpl,
                     GetQuickInfoAtPosition,
                     GetSpanOfEnclosingComment,
                     GetSemanticDiagnostics,
