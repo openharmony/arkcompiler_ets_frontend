@@ -294,6 +294,7 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
     res->parser =
         new parser::ETSParser(res->parserProgram, *cfg->options, *cfg->diagnosticEngine, parser::ParserStatus::NO_OPTS);
     res->checker = new checker::ETSChecker(*res->diagnosticEngine);
+    res->isolatedDeclgenChecker = new checker::IsolatedDeclgenChecker(*res->diagnosticEngine, *(res->parserProgram));
     res->analyzer = new checker::ETSAnalyzer(res->checker);
     res->checker->SetAnalyzer(res->analyzer);
 
@@ -981,7 +982,7 @@ extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2
     if (ctxImpl->state != ES2PANDA_STATE_CHECKED) {
         return 1;
     }
-    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
+    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath, false);
 
     return ctxImpl->diagnosticEngine->IsAnyError() ? 1 : 0;
 }

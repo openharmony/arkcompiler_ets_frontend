@@ -14,6 +14,7 @@
  */
 
 #include "compilerImpl.h"
+#include <string>
 
 #include "es2panda.h"
 #include "ast_verifier/ASTVerifier.h"
@@ -34,7 +35,10 @@
 #include "compiler/lowering/phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/resolveIdentifiers.h"
+#include "compiler/lowering/ets/insertOptionalParametersAnnotation.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
+#include "generated/isa.h"
 #include "parser/parserImpl.h"
 #include "parser/JSparser.h"
 #include "parser/ASparser.h"
@@ -107,7 +111,7 @@ static bool CheckOptionsBeforePhase(const util::Options &options, const parser::
 }
 
 void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &diagnosticEngine,
-                        const std::string &outputPath)
+                        const std::string &outputPath, bool isIsolatedDeclgen)
 {
     std::ofstream outFile(outputPath);
     if (!outFile.is_open()) {
@@ -115,7 +119,13 @@ void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &
                                        lexer::SourcePosition());
         return;
     }
-    std::string result = program.Ast()->DumpDecl();
+    std::string result;
+    if (!isIsolatedDeclgen) {
+        result = program.Ast()->DumpDecl();
+    } else {
+        result = program.Ast()->IsolatedDumpDecl();
+    }
+
     result.erase(0, result.find_first_not_of('\n'));
 
     outFile << result;
@@ -138,17 +148,53 @@ static bool CheckOptionsAfterPhase(const util::Options &options, const parser::P
     return options.GetExitAfterPhase() == name;
 }
 
+static bool DoIsolatedDeclgenCheck(const util::Options &options, const std::string &phaseName,
+                                   checker::IsolatedDeclgenChecker &isolatedDeclgenChecker,
+                                   public_lib::Context &context)
+{
+    if (!options.IsGenerateDeclEnableIsolated()) {
+        return true;
+    }
+    if (phaseName == compiler::ResolveIdentifiers::NAME) {
+        isolatedDeclgenChecker.CheckBeforeChecker();
+        if (context.diagnosticEngine->IsAnyError()) {
+            return false;
+        }
+    }
+
+    if (phaseName == compiler::CheckerPhase::NAME) {
+        isolatedDeclgenChecker.CheckAfterChecker();
+        if (context.diagnosticEngine->IsAnyError()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &program)
 {
-    const auto &options = *context.config->options;
+    auto &options = const_cast<util::Options &>(*context.config->options);
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     ast_verifier::ASTVerifier verifier(context, program);
+    checker::IsolatedDeclgenChecker isolatedDeclgenChecker(*context.diagnosticEngine, program);
+    if (options.IsGenerateDeclEnableIsolated()) {
+        options.SetGenerateDeclEnabled(true);
+    }
 
+    bool skipPhase = false;
     while (auto phase = context.phaseManager->NextPhase()) {
         const auto name = std::string {phase->Name()};
-        if (options.GetSkipPhases().count(name) > 0) {
+        skipPhase = options.GetSkipPhases().count(name) > 0 ||
+                    (options.IsGenerateDeclEnableIsolated() &&
+                     phase->Name() == compiler::InsertOptionalParametersAnnotation::NAME);
+        if (skipPhase) {
             continue;
+        }
+
+        if (options.IsGenerateDeclEnableIsolated() && name == "plugins-after-check") {
+            return false;
         }
 
         if (CheckOptionsBeforePhase(options, program, name) || !phase->Apply(&context, &program) ||
@@ -156,8 +202,14 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
             return false;
         }
 
-        if (verifier.IntroduceNewInvariants(phase->Name());
-            verifierEachPhase || options.HasVerifierPhase(phase->Name())) {
+        if (!DoIsolatedDeclgenCheck(options, name, isolatedDeclgenChecker, context)) {
+            return false;
+        }
+
+        if (!options.IsGenerateDeclEnableIsolated()) {
+            verifier.IntroduceNewInvariants(phase->Name());
+        }
+        if (verifierEachPhase || options.HasVerifierPhase(phase->Name())) {
             verifier.Verify(phase->Name());
         }
 
@@ -173,7 +225,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
             } else {
                 path = options.GetGenerateDeclPath();
             }
-            HandleGenerateDecl(program, *context.diagnosticEngine, path);
+            HandleGenerateDecl(program, *context.diagnosticEngine, path, options.IsGenerateDeclEnableIsolated());
         }
     }
 

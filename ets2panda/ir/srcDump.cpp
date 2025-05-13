@@ -31,7 +31,9 @@ SrcDumper::SrcDumper(const ir::AstNode *node)
     node->Dump(this);
 }
 
-SrcDumper::SrcDumper(const ir::AstNode *node, bool isDeclgen) : isDeclgen_(isDeclgen)
+SrcDumper::SrcDumper(const ir::AstNode *node, bool isDeclgen, bool isIsolatedDeclgen)
+    : isDeclgen_(isDeclgen), isIsolatedDeclgen_(isIsolatedDeclgen)
+
 {
     node->Dump(this);
 }

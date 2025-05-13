@@ -14,6 +14,7 @@
  */
 
 #include "declgenEts2Ts.h"
+#include <cctype>
 
 #include "checker/types/ets/etsTupleType.h"
 #include "generated/diagnostic.h"
@@ -591,6 +592,29 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     }
 }
 
+void TSDeclGen::SplitUnionTypes(std::string &unionTypeString)
+{
+    std::vector<std::string> result;
+    std::string currentType;
+
+    for (char c : unionTypeString) {
+        if (std::isspace(c)) {
+            continue;
+        }
+        if (c == '|') {
+            if (!currentType.empty()) {
+                importSet_.insert(currentType);
+                currentType.clear();
+            }
+        } else {
+            currentType += c;
+        }
+    }
+    if (!currentType.empty()) {
+        importSet_.insert(currentType);
+    }
+}
+
 void TSDeclGen::ProcessFunctionReturnType(const checker::Signature *sig)
 {
     const auto returnStatements = sig->Function()->ReturnStatements();
@@ -615,6 +639,14 @@ void TSDeclGen::ProcessFunctionReturnType(const checker::Signature *sig)
         sig->HasSignatureFlag(checker::SignatureFlags::SETTER)) {
         ProcessTypeAnnotationType(param.at(0)->AsETSParameterExpression()->Ident()->TypeAnnotation(),
                                   sig->Params()[0]->TsType());
+        return;
+    }
+
+    std::string typeStr = sig->ReturnType()->ToString();
+    if (declgenOptions_.isIsolatedDeclgen && typeStr.find(ERROR_TYPE) != std::string::npos) {
+        typeStr = sig->Function()->GetIsolatedDeclgenReturnType();
+        OutDts(typeStr);
+        SplitUnionTypes(typeStr);
         return;
     }
     GenType(sig->ReturnType());

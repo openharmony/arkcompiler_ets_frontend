@@ -25,6 +25,7 @@
 #include "compiler/core/compileQueue.h"
 #include "parser/ETSparser.h"
 #include "checker/checker.h"
+#include "checker/IsolatedDeclgenChecker.h"
 #include "compiler/core/emitter.h"
 
 namespace ark::es2panda::util {
@@ -173,6 +174,8 @@ struct Context {
     parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;
     checker::Checker *checker = nullptr;
+    checker::IsolatedDeclgenChecker *isolatedDeclgenChecker = nullptr;
+
     checker::SemanticAnalyzer *analyzer = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;

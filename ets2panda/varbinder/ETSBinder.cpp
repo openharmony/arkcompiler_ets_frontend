@@ -153,7 +153,10 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         return;
     }
 
-    ThrowUnresolvableType(ident->Start(), name);
+    if (!GetContext()->config->options->IsGenerateDeclEnableIsolated()) {
+        ThrowUnresolvableType(ident->Start(), name);
+    }
+
     CreateDummyVariable(this, ident);
 }
 
@@ -1004,7 +1007,10 @@ varbinder::Variable *ETSBinder::FindStaticBinding(Span<parser::Program *const> r
     if (result != nullptr) {
         return result;
     }
-    ThrowError(importPath->Start(), "Cannot find default imported element in the target");
+    if (!GetContext()->config->options->IsGenerateDeclEnableIsolated()) {
+        ThrowError(importPath->Start(), "Cannot find default imported element in the target");
+    }
+
     return nullptr;
 }
 

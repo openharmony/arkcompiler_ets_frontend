@@ -27,6 +27,7 @@ namespace ark::es2panda::declgen_ets2ts {
 
 struct DeclgenOptions {
     bool exportAll = false;
+    bool isIsolatedDeclgen = false;
     std::string outputDeclEts;
     std::string outputEts;
 };
@@ -94,6 +95,7 @@ private:
     const checker::Signature *GetFuncSignature(const checker::ETSFunctionType *etsFunctionType,
                                                const ir::MethodDefinition *methodDef);
 
+    void SplitUnionTypes(std::string &unionTypeString);
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
     void ProcessFunctionReturnType(const checker::Signature *sig);
