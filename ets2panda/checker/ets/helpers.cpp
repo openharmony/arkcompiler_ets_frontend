@@ -2077,7 +2077,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
     }
 }
 
-bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
+bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression, bool checkForConst = false)
 {
     varbinder::Variable *var = nullptr;
     if (expression->IsIdentifier()) {
@@ -2085,8 +2085,13 @@ bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
     } else if (expression->IsMemberExpression()) {
         var = expression->AsMemberExpression()->PropVar();
     }
-    return var != nullptr && (var->Declaration()->IsConstDecl() ||
-                              (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
+
+    if (var == nullptr) {
+        return false;
+    }
+    bool isConst = checkForConst ? (var->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT)) : true;
+    return ((var->Declaration()->IsConstDecl() && isConst) ||
+            (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
 }
 
 static bool IsValidSwitchType(checker::Type *caseType)
@@ -2243,7 +2248,7 @@ void ETSChecker::CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expr
 {
     currentCase->Check(this);
 
-    if (!IsConstantMemberOrIdentifierExpression(currentCase)) {
+    if (!IsConstantMemberOrIdentifierExpression(currentCase, true)) {
         return;
     }
 
