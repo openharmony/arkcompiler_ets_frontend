@@ -126,18 +126,26 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     return true;
 }
 
+bool ETSChecker::ValidateTypeSubstitution(const ArenaVector<Type *> &typeParams, Type *ctype, Type *argumentType,
+                                          Substitution *substitution)
+{
+    if (!EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution)) {
+        return false;
+    }
+    return !ctype->IsETSTypeParameter() ||
+           (substitution->count(ctype->AsETSTypeParameter()) > 0 &&
+            Relation()->IsAssignableTo(argumentType, substitution->at(ctype->AsETSTypeParameter())));
+}
+
 bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
                                              Type *argumentType, Substitution *substitution)
 {
     if (!argumentType->IsETSUnionType()) {
-        return std::any_of(
-            paramUn->ConstituentTypes().begin(), paramUn->ConstituentTypes().end(),
-            [this, typeParams, argumentType, substitution](Type *ctype) {
-                return EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution) &&
-                       (!ctype->IsETSTypeParameter() ||
-                        (substitution->find(ctype->AsETSTypeParameter()) != substitution->end() &&
-                         Relation()->IsAssignableTo(argumentType, substitution->at(ctype->AsETSTypeParameter()))));
-            });
+        bool foundValid = false;
+        for (Type *ctype : paramUn->ConstituentTypes()) {
+            foundValid |= ValidateTypeSubstitution(typeParams, ctype, argumentType, substitution);
+        }
+        return foundValid;
     }
     auto *const argUn = argumentType->AsETSUnionType();
 
