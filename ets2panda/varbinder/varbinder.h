@@ -92,7 +92,6 @@ public:
 
     void SetContext(public_lib::Context *context)
     {
-        ES2PANDA_ASSERT(!context_);
         context_ = context;
     }
 
@@ -403,7 +402,9 @@ template <typename T, typename... Args>
 std::tuple<T *, varbinder::Variable *> VarBinder::NewVarDecl(const lexer::SourcePosition &pos, Args &&...args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
-    varbinder::Variable *var = scope_->AddDecl(Allocator(), decl, Extension());
+    auto *allocator = Allocator();
+    auto extension = Extension();
+    varbinder::Variable *var = scope_->AddDecl(allocator, decl, extension);
 
     if (var == nullptr) {
         ThrowRedeclaration(pos, decl->Name());

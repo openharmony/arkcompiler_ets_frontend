@@ -120,27 +120,26 @@ private:
         return propCollector_;
     }
 
-    void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir::ClassProperty *const field,
+    void TransformOptionalFieldTypeAnnotation(public_lib::Context *ctx, ir::ClassProperty *const field,
                                               bool isInterface = false);
 
-    ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker *const checker,
-                                                          varbinder::ETSBinder *varbinder,
+    ir::FunctionSignature GenerateGetterOrSetterSignature(public_lib::Context *ctx, varbinder::ETSBinder *varbinder,
                                                           ir::ClassProperty *const field, bool isSetter,
                                                           varbinder::FunctionParamScope *paramScope);
 
-    ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
+    ir::MethodDefinition *GenerateGetterOrSetter(public_lib::Context *ctx, varbinder::ETSBinder *varbinder,
                                                  ir::ClassProperty *const field, bool isSetter);
 
     void CollectPropertiesAndSuperInterfaces(ir::TSInterfaceBody *const interface);
 
     void HandleInternalGetterOrSetterMethod(ir::AstNode *const ast);
 
-    ir::Expression *UpdateInterfaceProperties(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
+    ir::Expression *UpdateInterfaceProperties(public_lib::Context *ctx, varbinder::ETSBinder *varbinder,
                                               ir::TSInterfaceBody *const interface);
 
     void CollectSuperInterfaceProperties(InterfacePropertyType &implInterfaceProperties, const std::string &interId);
 
-    void UpdateClassProperties(checker::ETSChecker *const checker, ir::ClassDefinition *const klass);
+    void UpdateClassProperties(public_lib::Context *ctx, ir::ClassDefinition *const klass);
 
 private:
     OptionalInterfacePropertyCollector propCollector_ {};

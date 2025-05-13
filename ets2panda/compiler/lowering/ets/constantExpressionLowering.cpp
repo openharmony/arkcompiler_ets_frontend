@@ -21,8 +21,6 @@
 
 namespace ark::es2panda::compiler {
 
-using AstNodePtr = ir::AstNode *;
-
 void ConstantExpressionLowering::LogError(const diagnostic::DiagnosticKind &diagnostic,
                                           const util::DiagnosticMessageParams &diagnosticParams,
                                           const lexer::SourcePosition &pos) const
@@ -836,9 +834,11 @@ varbinder::Variable *ConstantExpressionLowering::FindIdentifier(ir::Identifier *
 {
     auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(ident));
     auto option = varbinder::ResolveBindingOptions::ALL_VARIABLES;
-    auto *resolved = localCtx.GetScope()->FindInFunctionScope(ident->Name(), option).variable;
+    auto localScope = localCtx.GetScope();
+    ES2PANDA_ASSERT(localScope != nullptr);
+    auto *resolved = localScope->FindInFunctionScope(ident->Name(), option).variable;
     if (resolved == nullptr) {
-        resolved = localCtx.GetScope()->FindInGlobal(ident->Name(), option).variable;
+        resolved = localScope->FindInGlobal(ident->Name(), option).variable;
     }
     return resolved;
 }
@@ -1009,11 +1009,15 @@ void ConstantExpressionLowering::TryFoldInitializerOfPackage(ir::ClassDefinition
 
 bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
+    if (program->GetFlag(parser::ProgramFlags::AST_CONSTANT_EXPRESSION_LOWERED)) {
+        return true;
+    }
+
     context_ = ctx;
     program_ = program;
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program->Ast()->TransformChildrenRecursively(
-        [this](ir::AstNode *const node) -> AstNodePtr {
+        [this](checker::AstNodePtr const node) -> checker::AstNodePtr {
             if (node->IsAnnotationDeclaration() || node->IsAnnotationUsage()) {
                 return FoldConstant(UnfoldConstIdentifiers(node));
             }
@@ -1029,6 +1033,7 @@ bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, pars
         },
         Name());
 
+    program->SetFlag(parser::ProgramFlags::AST_CONSTANT_EXPRESSION_LOWERED);
     return true;
 }
 

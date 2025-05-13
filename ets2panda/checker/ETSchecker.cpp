@@ -33,6 +33,42 @@
 
 namespace ark::es2panda::checker {
 
+ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine)
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    : Checker(diagnosticEngine),
+      arrayTypes_(Allocator()->Adapter()),
+      pendingConstraintCheckRecords_(Allocator()->Adapter()),
+      globalArraySignatures_(Allocator()->Adapter()),
+      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+      functionalInterfaceCache_(Allocator()->Adapter()),
+      apparentTypes_(Allocator()->Adapter()),
+      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+      overloadSigContainer_(Allocator()->Adapter())
+{
+}
+
+ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator)
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    : Checker(diagnosticEngine, programAllocator),
+      arrayTypes_(Allocator()->Adapter()),
+      pendingConstraintCheckRecords_(Allocator()->Adapter()),
+      globalArraySignatures_(Allocator()->Adapter()),
+      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+      functionalInterfaceCache_(Allocator()->Adapter()),
+      apparentTypes_(Allocator()->Adapter()),
+      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+      overloadSigContainer_(Allocator()->Adapter())
+{
+}
+
 static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signature)
 {
     const auto varMap = checker->VarBinder()->TopScope()->Bindings();
@@ -316,19 +352,28 @@ void ETSChecker::SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo)
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
 {
+    if (program->IsASTChecked()) {
+        return;
+    }
+
     auto *savedProgram = Program();
     SetProgram(program);
 
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTChecked()) {
+                continue;
+            }
             checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
             AddStatus(checker::CheckerStatus::IN_EXTERNAL);
             CheckProgram(extProg, VarBinder()->IsGenStdLib());
+            extProg->SetFlag(parser::ProgramFlags::AST_CHECK_PROCESSED);
         }
     }
 
     ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
+
     Program()->Ast()->Check(this);
 
     if (runAnalysis && !IsAnyError()) {

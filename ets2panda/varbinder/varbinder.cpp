@@ -24,7 +24,6 @@ void VarBinder::InitTopScope()
     } else {
         topScope_ = Allocator()->New<GlobalScope>(Allocator());
     }
-
     scope_ = topScope_;
     varScope_ = topScope_;
 }
@@ -503,6 +502,7 @@ void VarBinder::ResolveReferenceWhileHelper(ir::AstNode *childNode)
     return ResolveReference(whileStatement->Body());
 }
 
+// CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 void VarBinder::ResolveReference(ir::AstNode *childNode)
 {
     switch (childNode->Type()) {
@@ -512,8 +512,9 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
         case ir::AstNodeType::SUPER_EXPRESSION:
             scope_->EnclosingVariableScope()->AddFlag(ScopeFlags::USE_SUPER);
             return ResolveReferences(childNode);
-        case ir::AstNodeType::SCRIPT_FUNCTION:
+        case ir::AstNodeType::SCRIPT_FUNCTION: {
             return VisitScriptFunctionWithPotentialTypeParams(childNode->AsScriptFunction());
+        }
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return BuildVarDeclarator(childNode->AsVariableDeclarator());
         case ir::AstNodeType::CLASS_DEFINITION:
@@ -522,17 +523,14 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
             return BuildClassProperty(childNode->AsClassProperty());
         case ir::AstNodeType::BLOCK_STATEMENT: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::BLOCK_EXPRESSION: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockExpression()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
             auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::DO_WHILE_STATEMENT:

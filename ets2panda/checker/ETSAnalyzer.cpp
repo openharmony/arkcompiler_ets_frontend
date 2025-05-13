@@ -337,7 +337,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
         return expr->TsType();
     }
 
-    ArenaVector<checker::Type *> typeArgTypes(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> typeArgTypes(checker->ProgramAllocator()->Adapter());
     typeArgTypes.push_back(exprType);  // NOTE: Box it if it's a primitive type
 
     checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), std::move(typeArgTypes),
@@ -674,7 +674,7 @@ static bool ValidArrayExprSizeForTupleSize(ETSChecker *checker, Type *possibleTu
 
 static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSChecker *checker, ir::ArrayExpression *expr)
 {
-    ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes(checker->Allocator()->Adapter());
+    ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes(checker->ProgramAllocator()->Adapter());
 
     for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
         ir::Expression *const element = expr->Elements()[idx];
@@ -769,7 +769,7 @@ static bool CheckElement(ETSChecker *checker, Type *const preferredType,
 
 static Type *InferPreferredTypeFromElements(ETSChecker *checker, ir::ArrayExpression *arrayExpr)
 {
-    ArenaVector<Type *> arrayExpressionElementTypes(checker->Allocator()->Adapter());
+    ArenaVector<Type *> arrayExpressionElementTypes(checker->ProgramAllocator()->Adapter());
     for (auto *const element : arrayExpr->Elements()) {
         auto *elementType = *element->Check(checker);
         if (element->IsSpreadElement() && elementType->IsETSTupleType()) {
@@ -1178,7 +1178,7 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     }
 
     checker::Type *argType = checker->GetApparentType(expr->argument_->Check(checker));
-    ArenaVector<Type *> awaitedTypes(checker->Allocator()->Adapter());
+    ArenaVector<Type *> awaitedTypes(checker->ProgramAllocator()->Adapter());
 
     if (argType->IsETSUnionType()) {
         for (Type *type : argType->AsETSUnionType()->ConstituentTypes()) {
@@ -2038,7 +2038,7 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
 static checker::Type *ComputeTypeOfType(ETSChecker *checker, checker::Type *argType)
 {
     checker::Type *ret = nullptr;
-    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> types(checker->ProgramAllocator()->Adapter());
     if (argType->IsETSUnionType()) {
         for (auto *it : argType->AsETSUnionType()->ConstituentTypes()) {
             checker::Type *elType = ComputeTypeOfType(checker, it);
@@ -2193,7 +2193,7 @@ checker::Type *ETSAnalyzer::Check(ir::CharLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     if (expr->TsType() == nullptr) {
-        expr->SetTsType(checker->Allocator()->New<checker::CharType>(expr->Char()));
+        expr->SetTsType(checker->ProgramAllocator()->New<checker::CharType>(expr->Char()));
     }
     return expr->TsType();
 }
@@ -2401,7 +2401,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
 
-    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
+    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->ProgramAllocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
         fieldMap.insert(std::make_pair(field->Id()->Name(), field));

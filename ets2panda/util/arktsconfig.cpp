@@ -538,7 +538,7 @@ std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &arktsCon
         includes = {ArkTsConfig::Pattern("**/*", configDir.string())};
     }
     // If outDir in not default add it into exclude
-    if (!fs::equivalent(arktsConfig->OutDir(), configDir)) {
+    if (fs::exists(arktsConfig->OutDir()) && !fs::equivalent(arktsConfig->OutDir(), configDir)) {
         excludes.emplace_back("**/*", arktsConfig->OutDir());
     }
 

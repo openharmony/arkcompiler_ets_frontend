@@ -207,10 +207,9 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
      * ...
      * map
      */
-    auto checker = ctx->checker->AsETSChecker();
 
     // Initialize map with provided type arguments
-    auto *ident = Gensym(checker->Allocator());
+    auto *ident = Gensym(ctx->Allocator());
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
 
@@ -239,7 +238,7 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     statements.push_back(CreateStatement("@@I1", ident->Clone(ctx->allocator, nullptr), nullptr, nullptr, ctx));
 
     // Create Block Expression
-    auto block = checker->AllocNode<ir::BlockExpression>(std::move(statements));
+    auto block = ctx->AllocNode<ir::BlockExpression>(std::move(statements));
     return block;
 }
 

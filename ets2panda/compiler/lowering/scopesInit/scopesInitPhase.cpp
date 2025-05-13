@@ -109,6 +109,7 @@ varbinder::FunctionParamScope *ScopesInitPhase::HandleFunctionSig(ir::TSTypePara
 void ScopesInitPhase::HandleFunction(ir::ScriptFunction *function)
 {
     CallNode(function->Id());
+
     // NOTE(gogabr): this will skip type/value parameters when they are added to an existing function sig
     auto funcParamScope = (function->Scope() == nullptr) ? HandleFunctionSig(function->TypeParams(), function->Params(),
                                                                              function->ReturnTypeAnnotation())
@@ -126,6 +127,7 @@ void ScopesInitPhase::HandleFunction(ir::ScriptFunction *function)
     }
     BindScopeNode(functionScope, function);
     funcParamScope->BindNode(function);
+
     CallNode(function->Annotations());
 }
 
@@ -181,6 +183,7 @@ void ScopesInitPhase::VisitForInStatement(ir::ForInStatement *forInStmt)
     CallNode(forInStmt->Body());
     HandleFor(declCtx.GetScope(), lexicalScope.GetScope(), forInStmt);
 }
+
 void ScopesInitPhase::VisitForOfStatement(ir::ForOfStatement *forOfStmt)
 {
     auto declCtx = (forOfStmt->Scope() == nullptr)
@@ -822,6 +825,10 @@ bool InitScopesPhaseETS::Perform(PhaseContext *ctx, parser::Program *program)
         program->VarBinder()->InitTopScope();
         BindScopeNode(GetScope(), program->Ast());
         AddGlobalToBinder(program);
+    } else if ((ctx->compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) &&
+               program->GlobalClass()->Scope() == nullptr) {
+        BindScopeNode(GetScope(), program->Ast());
+        AddGlobalToBinder(program);
     }
     HandleProgram(program);
     Finalize();
@@ -830,28 +837,33 @@ bool InitScopesPhaseETS::Perform(PhaseContext *ctx, parser::Program *program)
 
 void InitScopesPhaseETS::HandleProgram(parser::Program *program)
 {
-    for (auto &[_, prog_list] : program->ExternalSources()) {
+    for (auto &[_, progList] : program->ExternalSources()) {
         (void)_;
         auto savedTopScope(program->VarBinder()->TopScope());
-        auto mainProg = prog_list.front();
+        auto mainProg = progList.front();
         mainProg->VarBinder()->InitTopScope();
         AddGlobalToBinder(mainProg);
         BindScopeNode(mainProg->VarBinder()->GetScope(), mainProg->Ast());
         auto globalClass = mainProg->GlobalClass();
         auto globalScope = mainProg->GlobalScope();
-        for (auto &prog : prog_list) {
+        for (auto &prog : progList) {
+            if (prog->GetFlag(parser::ProgramFlags::AST_HAS_SCOPES_INITIALIZED)) {
+                continue;
+            }
             prog->SetGlobalClass(globalClass);
             BindScopeNode(prog->VarBinder()->GetScope(), prog->Ast());
             prog->VarBinder()->ResetTopScope(globalScope);
             if (mainProg->Ast() != nullptr) {
                 InitScopesPhaseETS().Perform(Context(), prog);
+                prog->SetFlag(parser::ProgramFlags::AST_HAS_SCOPES_INITIALIZED);
             }
         }
         program->VarBinder()->ResetTopScope(savedTopScope);
     }
     ES2PANDA_ASSERT(program->Ast() != nullptr);
 
-    HandleETSModule(program->Ast());
+    auto *ast = program->Ast();
+    HandleETSModule(ast);
 }
 
 void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
@@ -1170,7 +1182,24 @@ void InitScopesPhaseETS::AddGlobalToBinder(parser::Program *program)
         return;
     }
 
-    auto [decl2, var] = program->VarBinder()->NewVarDecl<varbinder::ClassDecl>(globalId->Start(), globalId->Name());
+    auto start = globalId->Start();
+    auto name = globalId->Name();
+    auto *varBinder = program->VarBinder();
+    auto *ctx = varBinder->GetContext();
+    if (ctx->compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
+        auto *scope = varBinder->GetScope();
+        auto bindings = scope->Bindings();
+        auto res = bindings.find(name);
+        if (res != bindings.end()) {
+            auto classCtx =
+                LexicalScopeCreateOrEnter<varbinder::ClassScope>(program->VarBinder(), program->GlobalClass());
+            classCtx.GetScope()->BindNode(program->GlobalClass());
+            program->GlobalClass()->SetScope(classCtx.GetScope());
+            globalId->SetVariable(res->second);
+            return;
+        }
+    }
+    auto [decl2, var] = varBinder->NewVarDecl<varbinder::ClassDecl>(start, name);
 
     auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(program->VarBinder(), program->GlobalClass());
     classCtx.GetScope()->BindNode(program->GlobalClass());

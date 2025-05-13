@@ -364,3 +364,8 @@ options:
   type: arg_list_t
   default: []
   description: Bytecode optimizer's compiler arguments
+
+- name: perm-arena
+  type: bool
+  default: true
+  description: Place AST trees in permanent arena

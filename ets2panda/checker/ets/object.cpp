@@ -261,7 +261,7 @@ std::pair<ArenaVector<Type *>, bool> ETSChecker::CreateUnconstrainedTypeParamete
     ir::TSTypeParameterDeclaration const *typeParams)
 {
     bool ok = true;
-    ArenaVector<Type *> result {Allocator()->Adapter()};
+    ArenaVector<Type *> result {ProgramAllocator()->Adapter()};
     checker::ScopeContext scopeCtx(this, typeParams->Scope());
 
     // Note: we have to run pure check loop first to avoid endless loop because of possible circular dependencies
@@ -714,15 +714,15 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
         if (found != nullptr) {
             found->AddCallSignature(it);
         } else {
-            target->push_back(CreateETSMethodType(name, {{it}, Allocator()->Adapter()}));
+            target->push_back(CreateETSMethodType(name, {{it}, ProgramAllocator()->Adapter()}));
         }
     }
 }
 
 void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 {
-    auto cached = cachedComputedAbstracts_.find(interfaceType);
-    if (cached != cachedComputedAbstracts_.end()) {
+    auto cached = GetCachedComputedAbstracts()->find(interfaceType);
+    if (cached != GetCachedComputedAbstracts()->end()) {
         return;
     }
 
@@ -730,13 +730,13 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
         ComputeAbstractsFromInterface(it);
     }
 
-    ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
+    ArenaVector<ETSFunctionType *> merged(ProgramAllocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(interfaceType), &merged);
-    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(ProgramAllocator()->Adapter());
 
     for (auto *interface : interfaceType->Interfaces()) {
-        auto found = cachedComputedAbstracts_.find(interface);
-        ES2PANDA_ASSERT(found != cachedComputedAbstracts_.end());
+        auto found = GetCachedComputedAbstracts()->find(interface);
+        ES2PANDA_ASSERT(found != GetCachedComputedAbstracts()->end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -749,18 +749,18 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
         }
     }
 
-    cachedComputedAbstracts_.insert({interfaceType, {merged, abstractInheritanceTarget}});
+    GetCachedComputedAbstracts()->insert({interfaceType, {merged, abstractInheritanceTarget}});
 }
 
 ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *classType)
 {
-    ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
+    ArenaVector<ETSFunctionType *> merged(ProgramAllocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(classType), &merged);
 
-    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(ProgramAllocator()->Adapter());
     if (classType->SuperType() != nullptr) {
-        auto base = cachedComputedAbstracts_.find(classType->SuperType());
-        ES2PANDA_ASSERT(base != cachedComputedAbstracts_.end());
+        auto base = GetCachedComputedAbstracts()->find(classType->SuperType());
+        ES2PANDA_ASSERT(base != GetCachedComputedAbstracts()->end());
         MergeComputedAbstracts(merged, base->second.first);
 
         abstractInheritanceTarget.insert(base->first);
@@ -771,8 +771,8 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
 
     for (auto *it : classType->Interfaces()) {
         ComputeAbstractsFromInterface(it);
-        auto found = cachedComputedAbstracts_.find(it);
-        ES2PANDA_ASSERT(found != cachedComputedAbstracts_.end());
+        auto found = GetCachedComputedAbstracts()->find(it);
+        ES2PANDA_ASSERT(found != GetCachedComputedAbstracts()->end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -785,7 +785,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
         }
     }
 
-    return cachedComputedAbstracts_.insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
+    return GetCachedComputedAbstracts()->insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
 }
 
 [[maybe_unused]] static bool DoObjectImplementInterface(const ETSObjectType *interfaceType, const ETSObjectType *target,
@@ -880,8 +880,8 @@ static void CallRedeclarationCheckForCorrectSignature(ir::MethodDefinition *meth
 
 void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
 {
-    ArenaVector<ETSObjectType *> interfaces(Allocator()->Adapter());
-    ArenaVector<Signature *> similarSignatures(Allocator()->Adapter());
+    ArenaVector<ETSObjectType *> interfaces(ProgramAllocator()->Adapter());
+    ArenaVector<Signature *> similarSignatures(ProgramAllocator()->Adapter());
     interfaces.emplace_back(classType);
     GetInterfacesOfClass(classType, interfaces);
 
@@ -984,20 +984,23 @@ void ETSChecker::ValidateNonOverriddenFunction(ETSObjectType *classType, ArenaVe
     while (!functionOverridden && superClassType != nullptr) {
         for (auto *field : superClassType->Fields()) {
             if (field->Name() == (*it)->Name()) {
-                auto *newProp =
-                    field->Declaration()->Node()->Clone(Allocator(), classType->GetDeclNode())->AsClassProperty();
+                auto *newProp = field->Declaration()
+                                    ->Node()
+                                    ->Clone(ProgramAllocator(), classType->GetDeclNode())
+                                    ->AsClassProperty();
                 newProp->AddModifier(ir::ModifierFlags::SUPER_OWNER);
                 newProp->AddModifier(isGetSet.isGetter && isGetSet.isSetter ? ir::ModifierFlags::GETTER_SETTER
                                      : isGetSet.isGetter                    ? ir::ModifierFlags::GETTER
                                                                             : ir::ModifierFlags::SETTER);
-                auto *newFieldDecl = Allocator()->New<varbinder::LetDecl>(newProp->Key()->AsIdentifier()->Name());
+                auto *newFieldDecl =
+                    ProgramAllocator()->New<varbinder::LetDecl>(newProp->Key()->AsIdentifier()->Name());
                 newFieldDecl->BindNode(newProp);
 
                 auto newFieldVar = classType->GetDeclNode()
                                        ->Scope()
                                        ->AsClassScope()
                                        ->InstanceFieldScope()
-                                       ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::ETS)
+                                       ->AddDecl(ProgramAllocator(), newFieldDecl, ScriptExtension::ETS)
                                        ->AsLocalVariable();
                 newFieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
                 newFieldVar->AddFlag(varbinder::VariableFlags::PUBLIC);
@@ -1215,6 +1218,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     if ((static_cast<ir::AstNode *>(classDef)->Modifiers() & ir::ModifierFlags::FUNCTIONAL) == 0) {
         ValidateOverriding(classType, classDef->Start());
     }
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     TransformProperties(classType);
     CheckClassElement(classDef);
@@ -1337,7 +1341,7 @@ void ETSChecker::CheckThisOrSuperCallInConstructor(ETSObjectType *classType, Sig
             (it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsThisExpression() ||
              it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression())) {
             ArenaVector<const ir::Expression *> expressions =
-                ArenaVector<const ir::Expression *>(Allocator()->Adapter());
+                ArenaVector<const ir::Expression *>(ProgramAllocator()->Adapter());
             expressions.insert(expressions.end(),
                                it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Arguments().begin(),
                                it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Arguments().end());
@@ -1388,7 +1392,8 @@ void ETSChecker::CheckExpressionsInConstructor(const ArenaVector<const ir::Expre
 ArenaVector<const ir::Expression *> ETSChecker::CheckMemberOrCallOrObjectExpressionInConstructor(
     const ir::Expression *arg)
 {
-    ArenaVector<const ir::Expression *> expressions = ArenaVector<const ir::Expression *>(Allocator()->Adapter());
+    ArenaVector<const ir::Expression *> expressions =
+        ArenaVector<const ir::Expression *>(ProgramAllocator()->Adapter());
 
     if (arg->IsMemberExpression()) {
         if ((arg->AsMemberExpression()->Object()->IsSuperExpression() ||
@@ -2091,17 +2096,18 @@ std::vector<ResolveResult *> ETSChecker::ValidateAccessor(ir::MemberExpression *
     }
 
     if (finalRes == propType) {
-        resolveRes.emplace_back(Allocator()->New<ResolveResult>(oAcc, ResolvedKind::PROPERTY));
+        resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(oAcc, ResolvedKind::PROPERTY));
         return resolveRes;
     }
-    resolveRes.emplace_back(Allocator()->New<ResolveResult>(eAcc, ResolvedKind::EXTENSION_ACCESSOR));
+    resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(eAcc, ResolvedKind::EXTENSION_ACCESSOR));
     return resolveRes;
 }
 
 ir::ClassProperty *ETSChecker::FindClassProperty(const ETSObjectType *const objectType, const ETSFunctionType *propType)
 {
     auto propName =
-        util::UString(std::string(compiler::Signatures::PROPERTY) + propType->Name().Mutf8(), Allocator()).View();
+        util::UString(std::string(compiler::Signatures::PROPERTY) + propType->Name().Mutf8(), ProgramAllocator())
+            .View();
 
     ir::ClassProperty *classProp = nullptr;
     if (objectType->GetDeclNode()->IsClassDefinition()) {
@@ -2173,7 +2179,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     if (target->IsETSDynamicType() && !target->AsETSDynamicType()->HasDecl()) {
         auto propName = memberExpr->Property()->AsIdentifier()->Name();
         varbinder::LocalVariable *propVar = target->AsETSDynamicType()->GetPropertyDynamic(propName, this);
-        resolveRes.emplace_back(Allocator()->New<ResolveResult>(propVar, ResolvedKind::PROPERTY));
+        resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(propVar, ResolvedKind::PROPERTY));
         return resolveRes;
     }
 
@@ -2191,7 +2197,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         // Note: extension function only for instance.
         ValidateResolvedProperty(&prop, target, memberExpr->Property()->AsIdentifier(), searchFlag);
         if (prop != nullptr) {
-            resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
+            resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
         }
         return resolveRes;
     }
@@ -2213,13 +2219,13 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
             LogError(diagnostic::EXTENSION_ACCESSOR_INVALID_CALL, {}, memberExpr->Start());
             return resolveRes;
         }
-        resolveRes.emplace_back(Allocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
+        resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
     } else {
         ValidateResolvedProperty(&prop, target, memberExpr->Property()->AsIdentifier(), searchFlag);
     }
 
     if (prop != nullptr) {
-        resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
+        resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
     }
     return resolveRes;
 }
@@ -2496,7 +2502,7 @@ Type *ETSChecker::GetApparentType(Type *type)
     }
     if (type->IsETSUnionType()) {
         bool differ = false;
-        ArenaVector<checker::Type *> newConstituent(Allocator()->Adapter());
+        ArenaVector<checker::Type *> newConstituent(ProgramAllocator()->Adapter());
         for (auto const &ct : type->AsETSUnionType()->ConstituentTypes()) {
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             newConstituent.push_back(GetApparentType(ct));

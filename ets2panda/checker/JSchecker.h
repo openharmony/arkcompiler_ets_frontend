@@ -23,7 +23,11 @@ namespace ark::es2panda::checker {
 class JSChecker : public Checker {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
-    explicit JSChecker(util::DiagnosticEngine &diagnosticEngine) : Checker(diagnosticEngine) {}
+    explicit JSChecker(util::DiagnosticEngine &diagnosticEngine,
+                       [[maybe_unused]] ArenaAllocator *programAllocator = nullptr)
+        : Checker(diagnosticEngine)
+    {
+    }
 
     bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) override;
 

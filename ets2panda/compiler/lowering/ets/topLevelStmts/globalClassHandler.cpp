@@ -262,6 +262,7 @@ void GlobalClassHandler::CheckPackageMultiInitializerBlock(
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &programs,
                                           const ModuleDependencies *moduleDependencies)
 {
@@ -269,8 +270,12 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
         return;
     }
 
-    ArenaUnorderedSet<util::StringView> packageInitializerBlockCount(allocator_->Adapter());
     parser::Program *const globalProgram = programs.front();
+    if (globalProgram->GlobalClass() != nullptr) {
+        return;
+    }
+
+    ArenaUnorderedSet<util::StringView> packageInitializerBlockCount(allocator_->Adapter());
     ir::ClassDeclaration *const globalDecl = CreateGlobalClass(globalProgram);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
