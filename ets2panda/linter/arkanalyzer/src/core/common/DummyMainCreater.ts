@@ -183,6 +183,7 @@ export class DummyMainCreater {
             paramLocals.push(paramLocal);
             if (paramType instanceof ClassType) {
                 const assStmt = new ArkAssignStmt(paramLocal, new ArkNewExpr(paramType));
+                paramLocal.setDeclaringStmt(assStmt);
                 invokeBlock.addStmt(assStmt);
             }
             paramIdx++;

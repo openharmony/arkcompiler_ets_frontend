@@ -15,6 +15,7 @@
 
 import { CheckEntry } from '../../utils/common/CheckEntry';
 import { RuleFix } from '../../model/Fix';
+
 export interface ProblemInfo {
     line: number;
     column: number;

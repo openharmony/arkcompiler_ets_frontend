@@ -49,7 +49,7 @@ const ARKUI_RULE_ID = '@migration/arkui-buildparam-passing';
 const arkuiMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: "The execution context of the function annotated with @Builder is determined at the time of declaration. Please check the code carefully to ensure the correct function context",
+    description: 'The execution context of the function annotated with @Builder is determined at the time of declaration. Please check the code carefully to ensure the correct function context',
 };
 
 export class ThisBindCheck implements BaseChecker {
@@ -98,9 +98,6 @@ export class ThisBindCheck implements BaseChecker {
             const klass = scene.getClass(classTy.getClassSignature());
             const method = klass?.getMethodWithName(rightOp.getFieldName());
             if (!method || !method.getCfg() || !this.useThisInBody(method)) {
-                continue;
-            }
-            if (base.getName() === 'this' && targetMtd.isAnonymousMethod()) {
                 continue;
             }
             const isBuilder = method.hasBuilderDecorator() || method.hasDecorator('LocalBuilder');

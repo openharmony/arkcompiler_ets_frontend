@@ -63,7 +63,8 @@ import {
     ArkArrayRef,
     ArkInstanceFieldRef,
     ArkParameterRef,
-    ArkStaticFieldRef
+    ArkStaticFieldRef,
+    GlobalRef
 } from '../base/Ref';
 import { Value } from '../base/Value';
 import { Constant } from '../base/Constant';
@@ -292,6 +293,14 @@ export class IRInference {
                 base.setType(new ClassType(declaringArkClass.getSignature(), declaringArkClass.getRealTypes()));
             }
         } else {
+            const value = arkMethod.getBody()?.getUsedGlobals()?.get(base.getName());
+            if (value instanceof GlobalRef && !value.getRef()) {
+                const arkExport = ModelUtils.findGlobalRef(base.getName(), arkMethod);
+                if (arkExport instanceof Local) {
+                    arkExport.getUsedStmts().push(...base.getUsedStmts());
+                    value.setRef(arkExport);
+                }
+            }
             this.inferLocal(instance.getBase(), arkMethod);
         }
     }

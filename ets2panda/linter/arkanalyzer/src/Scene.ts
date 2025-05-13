@@ -296,20 +296,29 @@ export class Scene {
 
     private buildAllMethodBody(): void {
         this.buildStage = SceneBuildStage.CLASS_DONE;
+        const methods: ArkMethod[] = [];
         for (const file of this.getFiles()) {
             for (const cls of file.getClasses()) {
                 for (const method of cls.getMethods(true)) {
-                    method.buildBody();
-                    method.freeBodyBuilder();
+                    methods.push(method);
                 }
             }
         }
         for (const namespace of this.getNamespacesMap().values()) {
             for (const cls of namespace.getClasses()) {
                 for (const method of cls.getMethods(true)) {
-                    method.buildBody();
-                    method.freeBodyBuilder();
+                    methods.push(method);
                 }
+            }
+        }
+
+        for (const method of methods) {
+            try {
+                method.buildBody();
+            } catch (error) {
+                logger.error('Error building body:', method.getSignature(), error);
+            } finally {
+                method.freeBodyBuilder();
             }
         }
 
@@ -1015,10 +1024,22 @@ export class Scene {
      */
     public inferTypes(): void {
         if (this.buildStage < SceneBuildStage.SDK_INFERRED) {
-            this.sdkArkFilesMap.forEach(file => IRInference.inferFile(file));
+            this.sdkArkFilesMap.forEach(file => {
+                try {
+                    IRInference.inferFile(file);
+                } catch (error) {
+                    logger.error('Error inferring types of sdk file:', file.getFileSignature(), error);
+                }
+            });
             this.buildStage = SceneBuildStage.SDK_INFERRED;
         }
-        this.filesMap.forEach(file => IRInference.inferFile(file));
+        this.filesMap.forEach(file => {
+            try {
+                IRInference.inferFile(file);
+            } catch (error) {
+                logger.error('Error inferring types of project file:', file.getFileSignature(), error);
+            }
+        });
         if (this.buildStage < SceneBuildStage.TYPE_INFERRED) {
             this.getMethodsMap(true);
             this.buildStage = SceneBuildStage.TYPE_INFERRED;

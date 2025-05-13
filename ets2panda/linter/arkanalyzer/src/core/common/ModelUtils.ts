@@ -443,6 +443,14 @@ export class ModelUtils {
         return arkModel;
     }
 
+    public static findGlobalRef(refName: string, method: ArkMethod): ArkExport | null {
+        return (
+            this.findDeclaredLocal(new Local(refName), method, 1) ??
+            this.getArkExportInImportInfoWithName(refName, method.getDeclaringArkFile()) ??
+            method.getDeclaringArkFile().getScene().getSdkGlobal(refName)
+        );
+    }
+
     public static findArkModelByRefName(refName: string, arkClass: ArkClass): ArkExport | ArkField | null {
         const singleNames = refName.split('.');
         let model = null;

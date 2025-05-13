@@ -16,18 +16,17 @@
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { ALERT_LEVEL, Rule } from '../../model/Rule';
 import { Defects, IssueReport } from '../../model/Defects';
-import { ClassMatcher, FileMatcher, MatcherCallback, MatcherTypes } from '../../matcher/Matchers';
+import { FileMatcher, MatcherCallback, MatcherTypes } from '../../matcher/Matchers';
 import {
     AbstractInvokeExpr,
-    AliasType,
     ArkAssignStmt,
     ArkClass,
     ArkFile,
     ArkMethod,
     ArkNamespace,
     ArkNewExpr,
-    ArkReturnStmt,
     ClassType,
+    FunctionType,
     ImportInfo,
     Local,
     LOG_MODULE_TYPE,
@@ -35,11 +34,9 @@ import {
     Scene,
     Stmt,
     Type,
-    Value,
 } from 'arkanalyzer';
 import { ExportType } from 'arkanalyzer/lib/core/model/ArkExport';
 import { WarnInfo } from '../../utils/common/Utils';
-import { RuleFix } from '../../model/Fix';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { getLanguageStr } from './Utils';
 
@@ -47,21 +44,21 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorChe
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: '(interop-typeof-boxed-types)',
+    description: '',
 };
 
-const rule1Import2: Rule = new Rule(
-    '@migration/interop-typeof-boxed-types-arkts1-import-arkts2-check',
-    ALERT_LEVEL.WARN
-);
-const rule2Import1: Rule = new Rule(
-    '@migration/interop-typeof-boxed-types-arkts2-import-arkts1-check',
-    ALERT_LEVEL.WARN
-);
-const rule2ImportTs: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts2-import-ts-check', ALERT_LEVEL.WARN);
-const rule2ImportJs: Rule = new Rule('@migration/interop-typeof-boxed-types-arkts2-import-js-check', ALERT_LEVEL.WARN);
+const s2dRule: Rule = new Rule('@migration/arkts-interop-s2d-boxed-type', ALERT_LEVEL.WARN);
+const d2sRule: Rule = new Rule('@migration/arkts-interop-d2s-boxed-type', ALERT_LEVEL.WARN);
+const ts2sRule: Rule = new Rule('@migration/arkts-interop-ts2s-boxed-type', ALERT_LEVEL.WARN);
+const js2Rule: Rule = new Rule('@migration/arkts-interop-js2s-boxed-type', ALERT_LEVEL.WARN);
 
 const BOXED_SET: Set<string> = new Set<string>(['String', 'Boolean', 'Number']);
+
+type CheckedObj = {
+    namespaces: Map<string, boolean | null>,
+    classes: Map<string, boolean | null>,
+    methods: Map<string, boolean | null>
+}
 
 export class InteropBoxedTypeCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -82,6 +79,11 @@ export class InteropBoxedTypeCheck implements BaseChecker {
     }
 
     public check = (arkFile: ArkFile): void => {
+        let hasChecked: CheckedObj = {
+            namespaces: new Map<string, boolean | null>(),
+            classes: new Map<string, boolean | null>(),
+            methods: new Map<string, boolean | null>() };
+        const scene = arkFile.getScene();
         // Import对象对应的Export信息的推导在类型推导过程中是懒加载机制，调用getLazyExportInfo接口会自动进行推导
         arkFile.getImportInfos().forEach(importInfo => {
             const exportInfo = importInfo.getLazyExportInfo();
@@ -101,16 +103,16 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             // 如果import的是sdk，exportType可能是namespace等，但是找不到body体等详细赋值语句等内容，所以不影响如下的判断
             switch (exportType) {
                 case ExportType.NAME_SPACE:
-                    this.findBoxedTypeInNamespace(importInfo, arkExport as ArkNamespace);
+                    this.findBoxedTypeInNamespace(importInfo, arkExport as ArkNamespace, scene, hasChecked);
                     return;
                 case ExportType.CLASS:
-                    this.findBoxedTypeInClass(importInfo, arkExport as ArkClass);
+                    this.findBoxedTypeInClass(importInfo, arkExport as ArkClass, scene, hasChecked);
                     return;
                 case ExportType.METHOD:
-                    this.findBoxedTypeWithMethodReturn(importInfo, arkExport as ArkMethod);
+                    this.findBoxedTypeWithMethodReturn(importInfo, arkExport as ArkMethod, scene, hasChecked);
                     return;
                 case ExportType.LOCAL:
-                    this.findBoxedTypeWithLocal(importInfo, arkExport as Local);
+                    this.findBoxedTypeWithLocal(importInfo, arkExport as Local, scene, hasChecked);
                     return;
                 default:
                     return;
@@ -118,9 +120,15 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         });
     };
 
-    private findBoxedTypeInNamespace(importInfo: ImportInfo, arkNamespace: ArkNamespace): boolean {
+    private findBoxedTypeInNamespace(importInfo: ImportInfo, arkNamespace: ArkNamespace, scene: Scene, hasChecked: CheckedObj): boolean | null {
+        // 判断namespace是否已查找过，避免陷入死循环
+        const existing = hasChecked.namespaces.get(arkNamespace.getSignature().toString());
+        if (existing !== undefined ) {
+            return existing;
+        }
+        hasChecked.namespaces.set(arkNamespace.getSignature().toString(), null);
         const exports = arkNamespace.getExportInfos();
-        let found = false;
+        let found: boolean | null = null;
         for (const exportInfo of exports) {
             const arkExport = exportInfo.getArkExport();
             if (arkExport === undefined) {
@@ -132,31 +140,30 @@ export class InteropBoxedTypeCheck implements BaseChecker {
                 continue;
             }
             if (arkExport instanceof Local) {
-                found = this.findBoxedTypeWithLocal(importInfo, arkExport);
+                found = this.findBoxedTypeWithLocal(importInfo, arkExport, scene, hasChecked);
             } else if (arkExport instanceof ArkMethod) {
-                found = this.findBoxedTypeWithMethodReturn(importInfo, arkExport);
+                found = this.findBoxedTypeWithMethodReturn(importInfo, arkExport, scene, hasChecked);
             } else if (arkExport instanceof ArkClass) {
-                found = this.findBoxedTypeInClass(importInfo, arkExport);
+                found = this.findBoxedTypeInClass(importInfo, arkExport, scene, hasChecked);
             } else if (arkExport instanceof ArkNamespace) {
-                found = this.findBoxedTypeInNamespace(importInfo, arkExport);
+                found = this.findBoxedTypeInNamespace(importInfo, arkExport, scene, hasChecked);
             }
             if (found) {
+                hasChecked.namespaces.set(arkNamespace.getSignature().toString(), true);
                 return true;
             }
         }
+        hasChecked.namespaces.set(arkNamespace.getSignature().toString(), false);
         return false;
     }
 
-    private findBoxedTypeInClass(importInfo: ImportInfo, arkClass: ArkClass): boolean {
-        const importOpPostion = importInfo.getOriginTsPosition();
-        const warnInfo: WarnInfo = {
-            line: importOpPostion.getLineNo(),
-            startCol: importOpPostion.getColNo(),
-            endCol: importOpPostion.getColNo(),
-            filePath: importInfo.getDeclaringArkFile().getFilePath(),
-        };
-        const currLanguage = importInfo.getLanguage();
-
+    private isClassHasBoxedType(arkClass: ArkClass, scene: Scene, hasChecked: CheckedObj): boolean | null {
+        // step0: 判断class是否已查找过，避免陷入死循环
+        const existing = hasChecked.classes.get(arkClass.getSignature().toString());
+        if (existing !== undefined ) {
+            return existing;
+        }
+        hasChecked.classes.set(arkClass.getSignature().toString(), null);
         // step1: 查找class中的所有field，包含static和非static，判断initialized stmts中是否会用boxed类型对象给field赋值
         const allFields = arkClass.getFields();
         for (const field of allFields) {
@@ -169,10 +176,10 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             if (!(lastStmt instanceof ArkAssignStmt)) {
                 continue;
             }
-            if (this.isValueAssignedByBoxed(lastStmt, initializer.slice(0, -1).reverse())) {
+            if (this.isValueAssignedByBoxed(lastStmt, initializer.slice(0, -1).reverse(), scene, hasChecked)) {
                 // 这里没有顺着field的定义语句中使用到的import对象去寻找原始的Boxed类型定义所在的文件的Language，而是直接使用field所在的语言
                 // 应该也是ok的，因为上述import chain如何不合法，也会有告警在其import的地方给出
-                this.addIssueReport(warnInfo, currLanguage, field.getLanguage());
+                hasChecked.classes.set(arkClass.getSignature().toString(), true);
                 return true;
             }
         }
@@ -180,15 +187,90 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         // step2: 查找class中的所有非generated method，判断所有的return操作符类型是否为boxed
         const methods = arkClass.getMethods();
         for (const method of methods) {
-            const found = this.findBoxedTypeWithMethodReturn(importInfo, method);
+            const found = this.isMethodReturnHasBoxedType(method, scene, hasChecked);
             if (found) {
+                hasChecked.classes.set(arkClass.getSignature().toString(), true);
                 return true;
+            }
+        }
+        hasChecked.classes.set(arkClass.getSignature().toString(), false);
+        return false;
+    }
+
+    private isMethodReturnHasBoxedType(arkMethod: ArkMethod, scene: Scene, hasChecked: CheckedObj): boolean | null {
+        // 判断method是否已查找过，避免陷入死循环
+        const existing = hasChecked.methods.get(arkMethod.getSignature().toString());
+        if (existing !== undefined ) {
+            return existing;
+        }
+        hasChecked.methods.set(arkMethod.getSignature().toString(), null);
+        const returnOps = arkMethod.getReturnValues();
+        for (const op of returnOps) {
+            if (this.isBoxedType(op.getType())) {
+                hasChecked.methods.set(arkMethod.getSignature().toString(), true);
+                return true;
+            }
+            if (op instanceof Local && this.isLocalHasBoxedType(op, scene, hasChecked)) {
+                hasChecked.methods.set(arkMethod.getSignature().toString(), true);
+                return true;
+            }
+        }
+        hasChecked.methods.set(arkMethod.getSignature().toString(), false);
+        return false;
+    }
+
+    // 此处不检查local的Type，因为type直接写String时也表示成Class Type，无法区分是否为new String()生成的
+    private isLocalHasBoxedType(local: Local, scene: Scene, hasChecked: CheckedObj): boolean {
+        const method = local.getDeclaringStmt()?.getCfg().getDeclaringMethod();
+        if (method === undefined) {
+            return false;
+        }
+        const stmts = method.getCfg()?.getStmts().reverse();
+        if (stmts === undefined || stmts.length < 1) {
+            return false;
+        }
+
+        const declaringStmt = local.getDeclaringStmt();
+        if (
+            declaringStmt !== null &&
+            declaringStmt instanceof ArkAssignStmt &&
+            this.isValueAssignedByBoxed(declaringStmt, stmts, scene, hasChecked)
+        ) {
+            return true;
+        }
+        for (const stmt of local.getUsedStmts()) {
+            if (stmt instanceof ArkAssignStmt) {
+                const leftOp = stmt.getLeftOp();
+                if (
+                    leftOp instanceof Local &&
+                    leftOp.toString() === local.toString() &&
+                    this.isValueAssignedByBoxed(stmt, stmts, scene, hasChecked)
+                ) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    private findBoxedTypeWithMethodReturn(importInfo: ImportInfo, arkMethod: ArkMethod): boolean {
+    private findBoxedTypeInClass(importInfo: ImportInfo, arkClass: ArkClass, scene: Scene, hasChecked: CheckedObj): boolean {
+        const importOpPosition = importInfo.getOriginTsPosition();
+        const warnInfo: WarnInfo = {
+            line: importOpPosition.getLineNo(),
+            startCol: importOpPosition.getColNo(),
+            endCol: importOpPosition.getColNo(),
+            filePath: importInfo.getDeclaringArkFile().getFilePath(),
+        };
+        const currLanguage = importInfo.getLanguage();
+        const result = this.isClassHasBoxedType(arkClass, scene, hasChecked);
+        if (result) {
+            this.addIssueReport(warnInfo, currLanguage, arkClass.getLanguage());
+            return true;
+        }
+        return false;
+    }
+
+    private findBoxedTypeWithMethodReturn(importInfo: ImportInfo, arkMethod: ArkMethod, scene: Scene, hasChecked: CheckedObj): boolean {
         const importOpPostion = importInfo.getOriginTsPosition();
         const warnInfo: WarnInfo = {
             line: importOpPostion.getLineNo(),
@@ -199,32 +281,27 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         const currLanguage = importInfo.getLanguage();
 
         // 此处不检查method signature中的return Type，因为return type直接写String时也表示成Class Type，无法区分是否为new String()生成的
-        const returnOps = arkMethod.getReturnValues();
-        for (const op of returnOps) {
-            if (this.isBoxedType(op.getType())) {
-                this.addIssueReport(warnInfo, currLanguage, arkMethod.getLanguage());
-                return true;
-            }
+        if (this.isMethodReturnHasBoxedType(arkMethod, scene, hasChecked)) {
+            this.addIssueReport(warnInfo, currLanguage, arkMethod.getLanguage());
+            return true;
         }
         return false;
     }
 
-    private findBoxedTypeWithLocal(importInfo: ImportInfo, local: Local): boolean {
-        const importOpPostion = importInfo.getOriginTsPosition();
+    private findBoxedTypeWithLocal(importInfo: ImportInfo, local: Local, scene: Scene, hasChecked: CheckedObj): boolean {
+        const importOpPosition = importInfo.getOriginTsPosition();
         const warnInfo: WarnInfo = {
-            line: importOpPostion.getLineNo(),
-            startCol: importOpPostion.getColNo(),
-            endCol: importOpPostion.getColNo(),
+            line: importOpPosition.getLineNo(),
+            startCol: importOpPosition.getColNo(),
+            endCol: importOpPosition.getColNo(),
             filePath: importInfo.getDeclaringArkFile().getFilePath(),
         };
         const currLanguage = importInfo.getLanguage();
-
-        // 此处不检查local的Type，因为type直接写String时也表示成Class Type，无法区分是否为new String()生成的
         const method = local.getDeclaringStmt()?.getCfg().getDeclaringMethod();
         if (method === undefined) {
             return false;
         }
-        if (this.isLocalAssignedByBoxedInMethod(method, local)) {
+        if (this.isLocalHasBoxedType(local, scene, hasChecked)) {
             this.addIssueReport(warnInfo, currLanguage, method.getLanguage());
             return true;
         }
@@ -242,10 +319,15 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         if (interopRule === null) {
             return;
         }
+        const shortRuleId = interopRule.ruleId.split('/').pop();
+        if (shortRuleId === undefined) {
+            return;
+        }
         const severity = interopRule.alert ?? this.metaData.severity;
-        let targetLan = getLanguageStr(targetLanguage);
+        const currLanStr = getLanguageStr(currLanguage);
+        const targetLanStr = getLanguageStr(targetLanguage);
         const problem = 'Interop';
-        const describe = `Could not import object with boxed type from ${targetLan}${this.metaData.description}`;
+        const describe = `Could not import object with boxed type from ${targetLanStr} to ${currLanStr} (${shortRuleId})`;
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -266,17 +348,17 @@ export class InteropBoxedTypeCheck implements BaseChecker {
     private getInteropRule(currLanguage: Language, targetLanguage: Language): Rule | null {
         if (currLanguage === Language.ARKTS1_1) {
             if (targetLanguage === Language.ARKTS1_2) {
-                return rule1Import2;
+                return s2dRule;
             }
         } else if (currLanguage === Language.ARKTS1_2) {
             if (targetLanguage === Language.TYPESCRIPT) {
-                return rule2ImportTs;
+                return ts2sRule;
             }
             if (targetLanguage === Language.ARKTS1_1) {
-                return rule2Import1;
+                return d2sRule;
             }
             if (targetLanguage === Language.JAVASCRIPT) {
-                return rule2ImportJs;
+                return js2Rule;
             }
         }
         return null;
@@ -284,11 +366,24 @@ export class InteropBoxedTypeCheck implements BaseChecker {
 
     // lastStmt为当前需要查找的对象的赋值语句，左值为查找对象，右值为往前继续查找的赋值起点
     // reverseStmtChain为以待查找对象为起点，所有一系列赋值语句的倒序排列
-    private isValueAssignedByBoxed(lastStmt: ArkAssignStmt, previousReverseChain: Stmt[]): boolean {
+    private isValueAssignedByBoxed(lastStmt: ArkAssignStmt, previousReverseChain: Stmt[], scene: Scene, hasChecked: CheckedObj): boolean {
         let locals: Set<Local> = new Set();
-        let targetLocal = lastStmt.getRightOp();
-        if (this.isBoxedType(targetLocal.getType())) {
+        const targetLocal = lastStmt.getRightOp();
+        const targetLocalType = targetLocal.getType();
+        if (this.isBoxedType(targetLocalType)) {
             return true;
+        }
+        if (targetLocalType instanceof ClassType) {
+            const arkClass = scene.getClass(targetLocalType.getClassSignature());
+            if (arkClass !== null && this.isClassHasBoxedType(arkClass, scene, hasChecked)) {
+                return true;
+            }
+        }
+        if (targetLocalType instanceof FunctionType) {
+            const arkMethod = scene.getMethod(targetLocalType.getMethodSignature());
+            if (arkMethod !== null && this.isMethodReturnHasBoxedType(arkMethod, scene, hasChecked)) {
+                return true;
+            }
         }
 
         if (!(targetLocal instanceof Local)) {
@@ -325,35 +420,6 @@ export class InteropBoxedTypeCheck implements BaseChecker {
                     return true;
                 }
                 continue;
-            }
-        }
-        return false;
-    }
-
-    private isLocalAssignedByBoxedInMethod(method: ArkMethod, local: Local): boolean {
-        const stmts = method.getCfg()?.getStmts().reverse();
-        if (stmts === undefined || stmts.length < 1) {
-            return false;
-        }
-
-        const declaringStmt = local.getDeclaringStmt();
-        if (
-            declaringStmt !== null &&
-            declaringStmt instanceof ArkAssignStmt &&
-            this.isValueAssignedByBoxed(declaringStmt, stmts)
-        ) {
-            return true;
-        }
-        for (const stmt of local.getUsedStmts()) {
-            if (stmt instanceof ArkAssignStmt) {
-                const leftOp = stmt.getLeftOp();
-                if (
-                    leftOp instanceof Local &&
-                    leftOp.toString() === local.toString() &&
-                    this.isValueAssignedByBoxed(stmt, stmts)
-                ) {
-                    return true;
-                }
             }
         }
         return false;
