@@ -33,7 +33,7 @@ class AstNode;
 }  // namespace panda::es2panda::ir
 
 namespace panda::pandasm {
-struct Ins;
+class Ins;
 }  // namespace panda::pandasm
 
 namespace panda::es2panda::compiler {
@@ -120,7 +120,7 @@ public:
     virtual Formats GetFormats() const = 0;
     virtual size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) = 0;
     virtual size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const = 0;
-    virtual void Transform(panda::pandasm::Ins *ins) const = 0;
+    virtual panda::pandasm::Ins *Transform() const = 0;
     virtual ICSlot SetIcSlot(IcSizeType currentSlot) = 0;
     virtual bool InlineCacheEnabled() = 0;
     virtual ICSlot GetIcSlot() = 0;
