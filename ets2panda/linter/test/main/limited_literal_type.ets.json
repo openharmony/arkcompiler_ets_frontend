@@ -23,6 +23,16 @@
             "suggest": "",
             "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)",
             "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 23,
+            "endLine": 48,
+            "endColumn": 33,
+            "problem": "IntersectionType",
+            "suggest": "",
+            "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)",
+            "severity": "ERROR"
         }
     ]
 }
