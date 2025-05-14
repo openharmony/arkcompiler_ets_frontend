@@ -18,9 +18,29 @@ import { TextStyle } from './sdk/declarations/styled_string'
 @Entry
 @Component
 struct Index {
-  fontStyleAttr1: TextStyle = new TextStyle({ fontColor: Color.Blue });
-  fontStyleAttr2: TextStyle;
+  fontStyleAttr1: TextStyle = new TextStyle({fontColor: Color.Blue}); // Error(2)
+  fontStyleAttr2: TextStyle; // Error
+
+  @State styleList: Array<TextStyle> = new Array(); // Error
+  aboutToAppear() {
+    for (let i = 15; i < 50; i++)
+      this.styleList.push(new TextStyle({})); // Error
+  }
+
   build() {
-    Text();
+    List() {
+      ForEach(this.styleList, (item: TextStyle) => {  // Error
+        ListItem() {
+          Text("Hello World")
+            .fontSize(item.fontSize)
+        }
+      })
+    }
+  }
+}
+
+class TextStyleDemo2 extends TextStyle { // Error
+  constructor() {
+    super();
   }
 }

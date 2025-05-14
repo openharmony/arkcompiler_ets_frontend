@@ -4658,6 +4658,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
       this.incrementCounters(tsTypeExpr, faultId);
     }
+    this.handleSdkDuplicateDeclName(tsTypeExpr);
   }
 
   private handleComputedPropertyName(node: ts.Node): void {
@@ -5967,7 +5968,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.incrementCounters(expr, FaultID.ExtendsExpression);
         } else if (ts.isIdentifier(expr)) {
           this.fixJsImportExtendsClass(node.parent, expr);
-        }
+          this.handleSdkDuplicateDeclName(expr);
+        }      
       });
     }
   }
@@ -6756,49 +6758,56 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return undefined;
   }
 
-  private handleSdkDuplicateDeclName(node: ts.TypeReferenceNode | ts.NewExpression): void {
+  private processApiNodeSdkDuplicateDeclName (apiName: string, errorNode: ts.Node): void  {
+    const setApiListItem = TypeScriptLinter.globalApiInfo.get(SdkProblem.DeclWithDuplicateName);
+    if (!setApiListItem) {
+      return;
+    }
+    const apiNamesArr = [...setApiListItem];
+    const hasSameApiName = apiNamesArr.some((apilistItem) => {
+      return apilistItem.api_info.api_name === errorNode.getText();
+    });
+    if (!hasSameApiName) {
+      return;
+    }
+    
+    if (ts.isTypeReferenceNode(errorNode)) {
+      errorNode = errorNode.typeName;
+    }
+    const matchedApi = apiNamesArr.some((sdkInfo) => {
+      const isSameName = sdkInfo.api_info.api_name === apiName;
+      const decl = this.tsUtils.getDeclarationNode(errorNode);
+      const sourceFileName = path.normalize(decl?.getSourceFile().fileName || '');
+      const isSameFile = sourceFileName.endsWith(path.normalize(sdkInfo.file_path));
+      return isSameName && isSameFile;
+    });
+
+    if (matchedApi) {
+      this.incrementCounters(errorNode, FaultID.DuplicateDeclNameFromSdk);
+    }
+  };
+
+  private handleSdkDuplicateDeclName(node: ts.TypeReferenceNode | ts.NewExpression | ts.ExpressionWithTypeArguments | ts.Identifier): void {
     if (!this.options.arkts2) {
       return;
     }
-    const processApiNode = (apiName: string, errorNode: ts.Node): void => {
-      const setApiListItem = TypeScriptLinter.globalApiInfo.get(SdkProblem.DeclWithDuplicateName);
-      if (!setApiListItem) {
-        return;
-      }
-      const apiNamesArr = [...setApiListItem];
-      const hasSameApiName = apiNamesArr.some((apilistItem) => {
-        return apilistItem.api_info.api_name === errorNode.getText();
-      });
-      if (!hasSameApiName) {
-        return;
-      }
-      if (ts.isTypeReferenceNode(errorNode)) {
-        errorNode = errorNode.typeName;
-      }
-      const matchedApi = apiNamesArr.some((sdkInfo) => {
-        const isSameName = sdkInfo.api_info.api_name === apiName;
-        const decl = this.tsUtils.getDeclarationNode(errorNode);
-        const sourceFileName = path.normalize(decl?.getSourceFile().fileName || '');
-        const isSameFile = sourceFileName.endsWith(path.normalize(sdkInfo.file_path));
-        return isSameName && isSameFile;
-      });
-
-      if (matchedApi) {
-        this.incrementCounters(errorNode, FaultID.DuplicateDeclNameFromSdk);
-      }
-    };
+    
     if (ts.isTypeReferenceNode(node)) {
       const typeName = node.typeName;
       if (ts.isIdentifier(typeName)) {
-        processApiNode(typeName.text, node);
+        this.processApiNodeSdkDuplicateDeclName(typeName.text, node);
       }
     }
     if (ts.isNewExpression(node)) {
       const expression = node.expression;
       if (ts.isIdentifier(expression)) {
-        processApiNode(expression.text, expression);
+        this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
       }
     }
+
+    if (ts.isIdentifier(node)) {
+      this.processApiNodeSdkDuplicateDeclName(node.text, node);
+    }   
   }
 
   private getOriginalSymbol(node: ts.Node): ts.Symbol | undefined {
