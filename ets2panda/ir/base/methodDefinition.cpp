@@ -182,7 +182,8 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
         dumper->Add("static ");
     }
 
-    if (IsAbstract()) {
+    if (IsAbstract() && !(Parent()->IsTSInterfaceBody() ||
+                          (BaseOverloadMethod() != nullptr && BaseOverloadMethod()->Parent()->IsTSInterfaceBody()))) {
         dumper->Add("abstract ");
     }
 

@@ -2670,10 +2670,10 @@ static ir::BlockStatement *GenGetterSetterBodyHelper(ETSChecker *checker, ArenaV
     return body;
 }
 
-ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const property,
-                                                              ir::ClassProperty *const field,
-                                                              varbinder::ClassScope *classScope, bool isSetter,
-                                                              ETSChecker *checker)
+// Need to avoid codecheck
+static std::tuple<ir::ScriptFunction *, varbinder::FunctionScope *, ir::ModifierFlags> GenGetterSetterScriptFunc(
+    ir::ClassProperty *const property, ir::ClassProperty *const field, varbinder::ClassScope *classScope, bool isSetter,
+    ETSChecker *checker)
 {
     auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
     auto *functionScope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
@@ -2705,7 +2705,18 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
         ir::ScriptFunction::ScriptFunctionData {GenGetterSetterBodyHelper(checker, stmts, property, functionScope),
                                                 ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
                                                 funcFlags, modifierFlag});
+    paramScope->BindNode(func);
+    return {func, functionScope, modifierFlag};
+}
 
+ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const property,
+                                                              ir::ClassProperty *const field,
+                                                              varbinder::ClassScope *classScope, bool isSetter,
+                                                              ETSChecker *checker)
+{
+    auto [func, functionScope, modifierFlag] =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        GenGetterSetterScriptFunc(property, field, classScope, isSetter, checker);
     func->SetRange(field->Range());
     func->SetScope(functionScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2715,8 +2726,9 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
-                                                            modifierFlag, checker->Allocator(), false);
+    auto *method = checker->AllocNode<ir::MethodDefinition>(
+        isSetter ? ir::MethodDefinitionKind::SET : ir::MethodDefinitionKind::GET, methodIdent, funcExpr, modifierFlag,
+        checker->Allocator(), false);
     auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(),
                                                                     property->Key()->AsIdentifier()->Name(), method);
     auto *var = checker->Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
@@ -2732,7 +2744,6 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     method->SetVariable(var);
     method->SetParent(field->Parent());
 
-    paramScope->BindNode(func);
     functionScope->BindNode(func);
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(checker->VarBinder(), classScope);
