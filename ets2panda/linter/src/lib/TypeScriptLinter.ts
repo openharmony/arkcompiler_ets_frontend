@@ -110,6 +110,12 @@ import {
   ESLIB_SHAREDARRAYBUFFER,
   TASKPOOL_MODULES
 } from './utils/consts/ConcurrentAPI';
+import {
+  DEPRECATED_TASKPOOL_METHOD_SETCLONELIST,
+  DEPRECATED_TASKPOOL_METHOD_SETTRANSFERLIST,
+  STDLIB_TASK_CLASS_NAME,
+  STDLIB_TASKPOOL_OBJECT_NAME
+} from './utils/consts/TaskpoolAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 interface InterfaceSymbolTypeResult {
@@ -3818,6 +3824,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
     this.handleNoTsLikeFunctionCall(tsCallExpr);
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
+    this.handleTaskPoolDeprecatedUsages(tsCallExpr);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -7053,6 +7060,61 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
 
     this.incrementCounters(elementAccessExpr, FaultID.InteropJsObjectTraverseJsInstance, autofix);
+  }
+
+  private handleTaskPoolDeprecatedUsages(node: ts.CallExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    if (!ts.isPropertyAccessExpression(node.expression)) {
+      return;
+    }
+
+    const propertyAccess = node.expression;
+    const objectExpr = propertyAccess.expression;
+
+    // Step 1: Must be either setCloneList or setTransferList
+    if (!TypeScriptLinter.isDeprecatedTaskPoolMethodCall(propertyAccess)) {
+      return;
+    }
+
+    if (!ts.isIdentifier(objectExpr)) {
+      return;
+    }
+
+    // Step 2: Resolve declaration of task
+    const variableDecl = this.tsUtils.findVariableDeclaration(objectExpr);
+    if (!variableDecl?.initializer || !ts.isNewExpression(variableDecl.initializer)) {
+      return;
+    }
+
+    // Step 3: Check new taskpool.Task()
+    const taskpoolExpr = variableDecl.initializer.expression;
+    if (!TypeScriptLinter.isTaskPoolTaskCreation(taskpoolExpr)) {
+      return;
+    }
+
+    const faultId = propertyAccess.name.text === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ?
+      FaultID.SetCloneListDeprecated :
+      FaultID.SetTransferListDeprecated;
+    this.incrementCounters(node.parent, faultId);
+  }
+
+  private static isDeprecatedTaskPoolMethodCall(propertyAccess: ts.PropertyAccessExpression): boolean {
+    if (!ts.isIdentifier(propertyAccess.expression)) {
+      return false;
+    }
+    const methodName = propertyAccess.name.text;
+    return methodName === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ||
+      methodName === DEPRECATED_TASKPOOL_METHOD_SETTRANSFERLIST;
+  }
+
+  private static isTaskPoolTaskCreation(taskpoolExpr: ts.Expression): boolean {
+    return ts.isPropertyAccessExpression(taskpoolExpr) &&
+      ts.isIdentifier(taskpoolExpr.expression) &&
+      taskpoolExpr.expression.text === STDLIB_TASKPOOL_OBJECT_NAME &&
+      taskpoolExpr.name.text === STDLIB_TASK_CLASS_NAME;
   }
 
   private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {

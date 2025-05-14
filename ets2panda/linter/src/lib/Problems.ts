@@ -222,6 +222,8 @@ export enum FaultID {
   NoPropertyDescriptor,
   BuiltinNoCtorFunc,
   SharedArrayBufferDeprecated,
+  SetCloneListDeprecated,
+  SetTransferListDeprecated,
   LimitedStdLibNoSendableDecorator,
   LimitedStdLibNoDoncurrentDecorator,
   NoNeedStdlibWorker,
