@@ -830,7 +830,6 @@ ast/compiler/ets/identifierReference3.ets
 ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated2.ets
 ast/compiler/ets/objectLiteralNoContextType.ets
 ast/compiler/ets/lambda_with_receiver_tests/MakeNormalFunctypeAsMethodCall.ets
-ast/compiler/ets/import_type_without_export.ets
 ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated3.ets
 ast/compiler/ets/inferTypeOfArrayNegative2.ets
 ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated.ets
@@ -1035,7 +1034,6 @@ ast/compiler/ets/n_assignGenericWithNullableTypeParamToNonNullable.ets
 ast/compiler/ets/overrideModifierNotOverriding.ets
 ast/compiler/ets/tryCatchIncorrectParamType.ets
 ast/compiler/ets/circular_variable_init.ets
-ast/compiler/ets/type_binding_neg_02.ets
 ast/compiler/ets/annotation_tests/annotationUsage_duplicate_for_namespace02.ets
 ast/compiler/ets/ambient_namesapce05.ets
 ast/compiler/ets/identifierReference8.ets
@@ -1278,7 +1276,6 @@ ast/parser/ets/enum_multi_error/enum_with_identifier.ets
 ast/parser/ets/enum_multi_error/enum_empty.ets
 ast/parser/ets/FixedArray/wrong-union-array-assignment.ets
 ast/parser/ets/FixedArray/array_2.ets
-ast/compiler/ets/type_binding_neg_01.ets
 ast/compiler/ets/lambdaFunction4.ets
 ast/compiler/ets/spreadMultiArrayInTuple.ets
 ast/compiler/ets/union_string_literals_3.ets

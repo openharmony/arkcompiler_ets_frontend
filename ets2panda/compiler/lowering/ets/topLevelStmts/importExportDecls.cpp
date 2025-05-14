@@ -70,7 +70,8 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 {
     for (auto spec : decl->Specifiers()) {
         if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()}, lastExportErrorPos_);
+            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()},
+                              spec->Exported()->Start());
             lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
@@ -291,20 +292,11 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringVie
         return;
     }
 
-    if (!stmt->IsExportNamedDeclaration()) {
-        parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
-        return;
-    }
-
     for (auto spec : stmt->AsExportNamedDeclaration()->Specifiers()) {
         util::StringView name = spec->Local()->Name();
         util::StringView nameFind = spec->Exported()->Name();
 
         auto element = typesMap.find(nameFind);
-        if (element == typesMap.end()) {
-            parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, spec->Local()->Start());
-            continue;
-        }
         if (!element->second->IsExportedType()) {
             element->second->AddModifier(ir::ModifierFlags::EXPORT_TYPE);
         }

@@ -17,6 +17,4 @@ function f(){
     return 1;
 }
 
-export type {/* @@ label */f}
-
-/* @@@ label Error SyntaxError: Can only type export class or interface.  */
+export type {f}

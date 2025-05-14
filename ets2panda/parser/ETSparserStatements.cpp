@@ -144,10 +144,6 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         if (stmt->IsETSModule()) {
             return stmt;
         }
-        if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
-            !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
-            parser->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
-        }
         if (stmt->IsAnnotationDeclaration()) {
             if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
                 parser->LogError(diagnostic::INVALID_EXPORT_DEFAULT, {}, stmt->Start());

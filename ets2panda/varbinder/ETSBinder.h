@@ -165,8 +165,8 @@ public:
     void AddImportDefaultSpecifiersToTopBindings(Span<parser::Program *const> records,
                                                  ir::ImportDefaultSpecifier *importDefaultSpecifier,
                                                  const ir::ETSImportDeclaration *import);
-    void ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
-                                const util::StringView &imported, const ir::StringLiteral *const importPath);
+    void ValidateImportVariable(const ir::AstNode *node, const util::StringView &imported,
+                                const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
                                            Span<parser::Program *const> record);

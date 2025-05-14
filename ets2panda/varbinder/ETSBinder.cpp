@@ -824,14 +824,11 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
     return implDecl;
 }
 
-void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
-                                       const util::StringView &imported, const ir::StringLiteral *const importPath)
+void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::StringView &imported,
+                                       const ir::StringLiteral *const importPath)
 {
     if (node->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
-    } else if (import->IsTypeKind() && !node->IsExportedType()) {
-        ThrowError(importPath->Start(),
-                   "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
     } else if (!node->IsExported() && !node->IsExportedType() && !node->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Imported element not exported '" + imported.Mutf8() + "'");
     }
@@ -901,7 +898,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
 
     auto *node = FindNodeInAliasMap(import->ResolvedSource(), imported);
 
-    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), import, imported, importPath);
+    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), imported, importPath);
 
     const auto localName = importSpecifier->Local()->Name();
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);

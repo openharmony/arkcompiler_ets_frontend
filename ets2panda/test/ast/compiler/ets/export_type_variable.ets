@@ -15,6 +15,4 @@
 
 let a = 5;
 
-export type {/* @@ label */a}
-
-/* @@@ label Error SyntaxError: Can only type export class or interface.  */
+export type {a}
