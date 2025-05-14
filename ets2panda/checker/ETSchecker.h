@@ -383,6 +383,9 @@ public:
                              Signature *maybeSubstitutedFunctionSig = nullptr);
     void InferTypesForLambda(ir::ScriptFunction *lambda, Signature *signature);
     void TryInferTypeForLambdaTypeAlias(ir::ArrowFunctionExpression *expr, ETSFunctionType *calleeType);
+    bool ResolveLambdaArgumentType(Signature *signature, ir::Expression *argument, size_t paramPosition,
+                                   size_t argumentPosition, TypeRelationFlag resolutionFlags);
+    bool TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments);
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
     bool CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,

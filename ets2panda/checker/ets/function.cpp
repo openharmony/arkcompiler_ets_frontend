@@ -410,7 +410,10 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool reportError)
 {
-    auto const commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
+    auto commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
+    if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+        commonArity = commonArity - 1;
+    }
     for (size_t index = 0; index < commonArity; ++index) {
         auto &argument = arguments[index];
 
@@ -435,9 +438,8 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 
         if (argTypeInferenceRequired[index]) {
             ES2PANDA_ASSERT(argument->IsArrowFunctionExpression());
-            auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
             // Note: If the signatures are from lambdas, then they have no `Function`.
-            ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+            ir::ScriptFunction *const lambda = argument->AsArrowFunctionExpression()->Function();
             auto targetParm = substitutedSig->GetSignatureInfo()->params[index]->Declaration()->Node();
             if (CheckLambdaAssignable(targetParm->AsETSParameterExpression(), lambda)) {
                 continue;
@@ -458,6 +460,13 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
     }
 
+    if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0 && arguments.back()->IsArrowFunctionExpression()) {
+        ir::ScriptFunction *const lambda = arguments.back()->AsArrowFunctionExpression()->Function();
+        auto targetParm = substitutedSig->GetSignatureInfo()->params.back()->Declaration()->Node();
+        if (!CheckLambdaAssignable(targetParm->AsETSParameterExpression(), lambda)) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -576,8 +585,13 @@ Signature *ETSChecker::ValidateSignature(
     size_t const argCount = arguments.size();
     auto const hasRestParameter = signature->RestVar() != nullptr;
     auto const reportError = (flags & TypeRelationFlag::NO_THROW) == 0;
+    size_t compareCount = argCount;
+    if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0 && !signature->Params().empty() &&
+        signature->Params().back()->Declaration()->Node()->AsETSParameterExpression()->IsOptional()) {
+        compareCount = compareCount - 1;
+    }
 
-    if (argCount < signature->MinArgCount() || (argCount > signature->ArgCount() && !hasRestParameter)) {
+    if (compareCount < signature->MinArgCount() || (argCount > signature->ArgCount() && !hasRestParameter)) {
         if (reportError) {
             LogError(diagnostic::PARAM_COUNT_MISMATCH, {signature->MinArgCount(), argCount}, pos);
         }
@@ -1155,8 +1169,9 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         TransformTraillingLambda(callExpr, sig);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        TypeInference(sig, callExpr->Arguments());
+        TrailingLambdaTypeInference(sig, callExpr->Arguments());
         UpdateDeclarationFromSignature(callExpr, sig);
+        callExpr->SetIsTrailingCall(true);
         return sig;
     }
 
@@ -2167,7 +2182,6 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
     auto *arrowFuncNode = ProgramAllocNode<ir::ArrowFunctionExpression>(funcNode, ProgramAllocator());
     arrowFuncNode->SetRange(trailingBlock->Range());
     arrowFuncNode->SetParent(callExpr);
-
     callExpr->Arguments().push_back(arrowFuncNode);
 }
 

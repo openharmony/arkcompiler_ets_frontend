@@ -1507,61 +1507,81 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     return false;
 }
 
-bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
-                               TypeRelationFlag flags)
+bool ETSChecker::ResolveLambdaArgumentType(Signature *signature, ir::Expression *argument, size_t paramPosition,
+                                           size_t argumentPosition, TypeRelationFlag resolutionFlags)
 {
-    bool invocable = true;
-    auto const argumentCount = arguments.size();
-    auto const commonArity = std::min(signature->ArgCount(), argumentCount);
-
-    for (size_t index = 0U; index < commonArity; ++index) {
-        auto const &argument = arguments[index];
-        if (!argument->IsArrowFunctionExpression()) {
-            continue;
-        }
-
-        if (index == argumentCount - 1 && (flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
-            continue;
-        }
-
-        auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
-        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-        if (!NeedTypeInference(lambda)) {
-            continue;
-        }
-
-        arrowFuncExpr->SetTsType(nullptr);
-
-        // Note: If the signatures are from lambdas, then they have no `Function`.
-        auto const *const param =
-            signature->GetSignatureInfo()->params[index]->Declaration()->Node()->AsETSParameterExpression();
-        ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
-        Type *const parameterType = signature->Params()[index]->TsType();
-
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
-        if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
-            Type *const argumentType = arrowFuncExpr->Check(this);
-            LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, parameterType, index + 1},
-                     arrowFuncExpr->Start());
-            rc = false;
-        } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
-            //  Need to check void return type here if there are no return statement(s) in the body.
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            if (!AssignmentContext(Relation(), ProgramAllocNode<ir::Identifier>(ProgramAllocator()), GlobalVoidType(),
-                                   lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
-                                   checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
-                     .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
-                LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},
-                         lambda->Body()->Start());
-                rc = false;
-            }
-        }
-
-        invocable &= rc;
+    if (!argument->IsArrowFunctionExpression()) {
+        return true;
     }
 
-    return invocable;
+    auto arrowFuncExpr = argument->AsArrowFunctionExpression();
+    bool typeValid = true;
+    ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+    if (!NeedTypeInference(lambda)) {
+        return typeValid;
+    }
+
+    arrowFuncExpr->SetTsType(nullptr);
+    auto const *const param =
+        signature->GetSignatureInfo()->params[paramPosition]->Declaration()->Node()->AsETSParameterExpression();
+    ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
+    Type *const parameterType = signature->Params()[paramPosition]->TsType();
+
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, resolutionFlags);
+    if (!rc) {
+        if ((resolutionFlags & TypeRelationFlag::NO_THROW) == 0) {
+            Type *const argumentType = arrowFuncExpr->Check(this);
+            LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, parameterType, argumentPosition + 1},
+                     arrowFuncExpr->Start());
+        }
+        rc = false;
+    } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
+        //  Need to check void return type here if there are no return statement(s) in the body.
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        if (!AssignmentContext(Relation(), ProgramAllocNode<ir::Identifier>(ProgramAllocator()), GlobalVoidType(),
+                               lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
+                               checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
+            LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},
+                     lambda->Body()->Start());
+            rc = false;
+        }
+    }
+
+    typeValid &= rc;
+
+    return typeValid;
+}
+
+bool ETSChecker::TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments)
+{
+    ES2PANDA_ASSERT(arguments.back()->IsArrowFunctionExpression());
+    const size_t lastParamPos = signature->GetSignatureInfo()->params.size() - 1;
+    const size_t lastArgPos = arguments.size() - 1;
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return ResolveLambdaArgumentType(signature, arguments.back(), lastParamPos, lastArgPos, TypeRelationFlag::NONE);
+}
+
+bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
+                               TypeRelationFlag inferenceFlags)
+{
+    bool typeConsistent = true;
+    auto const argumentCount = arguments.size();
+    auto const minArity = std::min(signature->ArgCount(), argumentCount);
+
+    for (size_t idx = 0U; idx < minArity; ++idx) {
+        auto const &argument = arguments[idx];
+
+        if (idx == argumentCount - 1 && (inferenceFlags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+            continue;
+        }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        const bool valid = ResolveLambdaArgumentType(signature, argument, idx, idx, inferenceFlags);
+        typeConsistent &= valid;
+    }
+
+    return typeConsistent;
 }
 
 // #22951 requires complete refactoring
