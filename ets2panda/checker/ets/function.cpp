@@ -1269,14 +1269,6 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
         LogDiagnostic(diagnostic::FUNCTION_ASM_SIG_COLLISION, {std::string(funcType->Name())}, method->Start());
     }
 
-    if (method->Function()->Signature()->HasRestParameter()) {
-        auto *restVar = method->Function()->Signature()->RestVar();
-        if (!restVar->TsType()->IsETSArrayType() && !(restVar->TsType()->IsETSResizableArrayType()) &&
-            !restVar->TsType()->IsETSTupleType()) {
-            LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, restVar->Declaration()->Node()->Start());
-        }
-    }
-
     return method->Id()->Variable()->SetTsType(funcType);
 }
 
@@ -1420,6 +1412,12 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
         if (auto param = params.back()->AsETSParameterExpression(); param->IsRestParameter()) {
             if (param->TypeAnnotation() == nullptr) {  // #23134
                 ES2PANDA_ASSERT(IsAnyError());
+                return nullptr;
+            }
+            auto restParamType = param->RestParameter()->TypeAnnotation()->GetType(this);
+            if (!restParamType->IsETSTupleType() && !restParamType->IsETSArrayType() &&
+                !restParamType->IsETSResizableArrayType()) {
+                LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, param->Start());
                 return nullptr;
             }
             signatureInfo->restVar = SetupSignatureParameter(param, param->TypeAnnotation()->GetType(this));

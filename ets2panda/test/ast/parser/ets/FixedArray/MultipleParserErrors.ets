@@ -192,11 +192,13 @@ function main(): void {
 /* @@? 51:58 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:61 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 52:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
+/* @@? 55:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
@@ -235,6 +237,7 @@ function main(): void {
 /* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
@@ -258,4 +261,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 262:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 265:1 Error SyntaxError: Expected '}', got 'eos'. */

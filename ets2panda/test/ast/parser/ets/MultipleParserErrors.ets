@@ -195,6 +195,7 @@ function main(): void {
 /* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
+/* @@? 55:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
@@ -239,6 +240,7 @@ function main(): void {
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 141:16 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
@@ -256,4 +258,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 260:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 262:1 Error SyntaxError: Expected '}', got 'eos'. */
