@@ -83,6 +83,7 @@ private:
             checker->LogError(diagnostic::VOID_VALUE, {}, expr->Start());
         }
     }
+    mutable std::vector<const varbinder::Variable *> catchParamStack_ {};
 };
 
 }  // namespace ark::es2panda::checker

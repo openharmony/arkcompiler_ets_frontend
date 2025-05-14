@@ -56,7 +56,18 @@ checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
         ES2PANDA_ASSERT(checker->IsAnyError());
     }
 
+    const varbinder::Variable *catchVar = nullptr;
+    if (st->Param() != nullptr && st->Param()->IsIdentifier()) {
+        catchVar = st->Param()->AsIdentifier()->Variable();
+        ES2PANDA_ASSERT(catchVar != nullptr);
+        catchParamStack_.push_back(catchVar);
+    }
+
     st->Body()->Check(checker);
+
+    if (catchVar != nullptr) {
+        catchParamStack_.pop_back();
+    }
 
     return st->SetTsType(exceptionType);
 }
@@ -2844,8 +2855,18 @@ checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::ThrowStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
+    const auto *arg = st->argument_;
+    checker::Type *argType = st->argument_->Check(checker);
 
-    if (checker::Type *argType = st->argument_->Check(checker); !argType->IsTypeError()) {
+    bool isRethrow = false;
+    if (arg->IsIdentifier() && !catchParamStack_.empty()) {
+        const varbinder::Variable *sym = arg->AsIdentifier()->Variable();
+        ES2PANDA_ASSERT(sym != nullptr);
+        if (!catchParamStack_.empty() && sym == catchParamStack_.back()) {
+            isRethrow = true;
+        }
+    }
+    if (!isRethrow && !argType->IsTypeError()) {
         checker->CheckExceptionOrErrorType(argType, st->Start());
     }
 
