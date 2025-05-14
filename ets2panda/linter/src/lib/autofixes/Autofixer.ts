@@ -54,6 +54,7 @@ import {
   INSTANTIATE,
   TO_NUMBER
 } from '../utils/consts/InteropAPI';
+import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -3499,6 +3500,32 @@ export class Autofixer {
         `${identifier.text}.getPropertyByIndex(${exprText})` +
           this.utils.findTypeOfNodeForConversion(elementAccessExpr);
     return [{ replacementText, start, end }];
+  }
+
+  fixSharedArrayBufferConstructor(node: ts.NewExpression): Autofix[] | undefined {
+    void this;
+
+    // Ensure it's a constructor call to SharedArrayBuffer
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== ESLIB_SHAREDARRAYBUFFER) {
+      return undefined;
+    }
+
+    // Construct replacement
+    const replacementText = 'ArrayBuffer';
+
+    return [{ replacementText, start: node.expression.getStart(), end: node.expression.getEnd() }];
+  }
+
+  fixSharedArrayBufferTypeReference(node: ts.TypeReferenceNode): Autofix[] | undefined {
+    void this;
+
+    if (!ts.isIdentifier(node.typeName) || node.typeName.text !== ESLIB_SHAREDARRAYBUFFER) {
+      return undefined;
+    }
+
+    const replacementText = 'ArrayBuffer';
+
+    return [{ replacementText, start: node.getStart(), end: node.getEnd() }];
   }
 
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {

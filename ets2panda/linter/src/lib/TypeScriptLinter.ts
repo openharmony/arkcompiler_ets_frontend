@@ -4497,18 +4497,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const typeNameIdentifer = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
-    const isSameName = ts.isIdentifier(typeNameIdentifer) && typeNameIdentifer.getText() === ESLIB_SHAREDARRAYBUFFER;
-    if (!isSameName) {
+
+    const typeNameIdentifier = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    if (!ts.isIdentifier(typeNameIdentifier) || typeNameIdentifier.getText() !== ESLIB_SHAREDARRAYBUFFER) {
       return;
     }
-    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifer)?.getDeclarations();
+
+    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifier)?.getDeclarations();
     const isSharedMemoryEsLib = decls?.some((decl) => {
       const srcFileName = decl.getSourceFile().fileName;
       return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
     });
-    if (isSharedMemoryEsLib) {
-      this.incrementCounters(typeNameIdentifer, FaultID.SharedArrayBufferDeprecated);
+    if (!isSharedMemoryEsLib) {
+      return;
+    }
+    if (ts.isNewExpression(node)) {
+      const autofix = this.autofixer?.fixSharedArrayBufferConstructor(node);
+      this.incrementCounters(node.expression, FaultID.SharedArrayBufferDeprecated, autofix);
+    } else {
+      const autofix = this.autofixer?.fixSharedArrayBufferTypeReference(node);
+      this.incrementCounters(node, FaultID.SharedArrayBufferDeprecated, autofix);
     }
   }
 
