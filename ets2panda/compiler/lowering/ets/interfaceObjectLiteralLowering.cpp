@@ -158,7 +158,8 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         }
 
         // Field identifier
-        auto anonClassFieldName = GenName(ctx->allocator);
+        util::UString anonClassFieldName(
+            std::string(compiler::Signatures::PROPERTY) + ifaceMethod->Id()->Name().Mutf8(), ctx->allocator);
         auto *field = CreateAnonClassField(ctx, copyIfaceMethod, anonClassFieldName);
         if (field->IsReadonly()) {
             readonlyFields.push_back(
