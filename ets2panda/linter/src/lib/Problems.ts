@@ -234,6 +234,8 @@ export enum FaultID {
   NoNeedStdlibWorker,
   BuiltinGetOwnPropertyNames,
   LocalBuilderDecoratorNotSupported,
+  MakeObservedIsNotSupported,
+  PropDecoratorsAndInterfacesAreNotSupported,
   // this should always be last enum
   LAST_ID
 }
