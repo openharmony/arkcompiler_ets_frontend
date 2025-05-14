@@ -1990,10 +1990,9 @@ ETSFunctionType *ETSChecker::ResolveAccessorTypeByFlag(ir::MemberExpression *con
 {
     ETSFunctionType *finalRes = nullptr;
     auto const &sourcePos = memberExpr->Property()->Start();
-    auto callExpr = memberExpr->Parent()->IsCallExpression() ? memberExpr->Parent()->AsCallExpression() : nullptr;
     if ((searchFlag & PropertySearchFlags::IS_GETTER) != 0) {
         if (propType != nullptr && propType->HasTypeFlag(TypeFlag::GETTER)) {
-            ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindGetter(), sourcePos);
+            ValidateSignatureAccessibility(memberExpr->ObjType(), propType->FindGetter(), sourcePos);
             finalRes = propType;
         }
 
@@ -2014,7 +2013,7 @@ ETSFunctionType *ETSChecker::ResolveAccessorTypeByFlag(ir::MemberExpression *con
         if (propType != nullptr) {
             ValidateReadonlyProperty(memberExpr, propType, sourcePos);
             if (propType->FindSetter() != nullptr) {
-                ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
+                ValidateSignatureAccessibility(memberExpr->ObjType(), propType->FindSetter(), sourcePos);
                 finalRes = propType;
             }
         }
