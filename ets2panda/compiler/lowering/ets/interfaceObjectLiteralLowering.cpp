@@ -179,16 +179,18 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
     }
 }
 
+// CC-OFFNXT(G.FUN.01-CPP) solid logic
 static void FillAnonClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *classBody,
                               ir::TSInterfaceDeclaration *ifaceNode, ir::ObjectExpression *objExpr,
-                              ArenaVector<ReadonlyFieldHolder> &readonlyFields)
+                              ArenaVector<ReadonlyFieldHolder> &readonlyFields,
+                              checker::ETSObjectType *interfaceType = nullptr)
 {
     for (auto *extendedIface : ifaceNode->TsType()->AsETSObjectType()->Interfaces()) {
-        auto extendedIfaceBody = extendedIface->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
-        FillClassBody(ctx, classBody, extendedIfaceBody, objExpr, readonlyFields, extendedIface);
+        FillAnonClassBody(ctx, classBody, extendedIface->GetDeclNode()->AsTSInterfaceDeclaration(), objExpr,
+                          readonlyFields, extendedIface);
     }
 
-    FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr, readonlyFields);
+    FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr, readonlyFields, interfaceType);
 }
 
 static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ctx,
