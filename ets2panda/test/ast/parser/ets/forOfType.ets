@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+function k() : long { return 0; }
 
-for ( Fi of /* @@ label */typeof `k` as ()  => bigint  | long )
+for ( Fi of /* @@ label */ k as ()  => bigint  | long )
 await this instanceof int
 
 /* @@@ label Error TypeError: 'For-of' statement source expression is not of iterable type.  */

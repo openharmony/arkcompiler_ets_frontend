@@ -27,3 +27,4 @@ function main() {
 
 /* @@? 24:17 Error TypeError: Type '() => Double' cannot be assigned to type '() => void|Double'  */
 /* @@? 25:16 Error TypeError: Cannot use type 'void' as value.   */
+/* @@? 25:17 Error TypeError: Cannot cast type '() => Double' to '() => void'  */
