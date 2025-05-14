@@ -20,8 +20,7 @@
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/statement.h>
-
-#include <string.h>
+#include <ustring.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -48,9 +47,7 @@ public:
             name_.insert(0, ".");
             expr = expr->AsMemberExpression()->Object();
         }
-
         name_.insert(0, expr->AsIdentifier()->Name().Utf8());
-        name_.erase(0, std::strlen(annotationPrefix));
         nameView_ = util::StringView(name_);
     }
 

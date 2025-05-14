@@ -15,9 +15,9 @@
 
 // import tests are located in compiler/ts/annotations-projects
 
-export @interface Anno1 {}
+export @interface __$$ETS_ANNOTATION$$__Anno1 {}
 
-export @interface Anno2 {
+export @interface __$$ETS_ANNOTATION$$__Anno2 {
     a: number = 0;
 }
 

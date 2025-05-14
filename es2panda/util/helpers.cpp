@@ -15,6 +15,7 @@
 
 #include "helpers.h"
 
+#include <abc2program/common/abc_file_utils.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
@@ -31,6 +32,7 @@
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsParameterProperty.h>
+#include <util/commonUtil.h>
 #include <util/concurrent.h>
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -955,13 +957,41 @@ bool Helpers::BelongingToRecords(const std::string &name, const std::unordered_s
     return retainRecordSet.find(recordName) != retainRecordSet.end();
 }
 
+bool Helpers::IsInnerAnnotationRecordName(const std::string &name)
+{
+    return name == panda::abc2program::CONCURRENT_MODULE_REQUEST_RECORD_NAME ||
+           name == panda::abc2program::SLOT_NUMBER_RECORD_NAME ||
+           name == panda::abc2program::EXPECTED_PROPERTY_COUNT_RECORD_NAME;
+}
+
+std::string Helpers::RemoveRecordSuffixAnnotationName(const std::string &name)
+{
+    auto pos = name.rfind(util::DOT_SEPARATOR);
+    if (pos == std::string::npos) {
+        return name;
+    }
+    return name.substr(0, pos);
+}
+
 void Helpers::RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     const std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation)
 {
     auto progInfoIter = progsInfo.begin();
     while (progInfoIter != progsInfo.end()) {
+        auto name = progInfoIter->first;
+        auto &program = progInfoIter->second->program;
+        /**
+         * The record name of a user-defined annotation is the annotation name concatenated with the record name of the
+         * file where it is declared. In order to preserve the annotated record, it is necessary to remove the
+         * concatenated annotation name from the record name before perform dependency matching.
+         */
+        if (!util::RecordNotGeneratedFromBytecode(name) &&
+            (program.record_table.begin()->second.metadata->GetAccessFlags() & ACC_ANNOTATION) != 0 &&
+            !IsInnerAnnotationRecordName(program.record_table.begin()->first)) {
+            name = RemoveRecordSuffixAnnotationName(name);
+        }
         // remove redundant sourcefiles and bytecodefile data which are not dependant in compilation
-        if (resolvedDepsRelation.find(progInfoIter->first) == resolvedDepsRelation.end()) {
+        if (resolvedDepsRelation.find(name) == resolvedDepsRelation.end()) {
             progInfoIter = progsInfo.erase(progInfoIter);
             continue;
         }
@@ -987,4 +1017,10 @@ bool Helpers::IsEnableExpectedPropertyCountApiVersion(int apiVersion)
 {
     return !(apiVersion < ENABLE_EXPECTED_PROPERTY_COUNT_MIN_SUPPORTED_API_VERSION);
 }
+
+bool Helpers::IsSupportAnnotationVersion(int apiVersion)
+{
+    return !(apiVersion < ANNOTATION_SUPPORTED_API_VERSION);
+}
+
 }  // namespace panda::es2panda::util
