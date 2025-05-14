@@ -208,6 +208,8 @@ defines:
     ref: DEFAULT_ANNO_FOR_FUNC
   - name: 'minArgCount'
     ref: MIN_ARGSCOUNT_OF_FUNC
+  - name: 'gensym%%_anonymous_const'
+    ref: EXPORT_DEFAULT_CONSTANT_ANONYMOUSLY
 
 packages:
   - name: 'std.core'

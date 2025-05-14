@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,6 +38,26 @@ public:
         return exported_;
     }
 
+    void SetDefault()
+    {
+        isDefault_ = true;
+    }
+
+    bool IsDefault() const
+    {
+        return isDefault_;
+    }
+
+    void SetConstantExpression(ir::Expression *constantExpression)
+    {
+        constantExpression_ = constantExpression;
+    }
+
+    ir::Expression *GetConstantExpression() const
+    {
+        return constantExpression_;
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -55,6 +75,8 @@ public:
 private:
     Identifier *local_;
     Identifier *exported_;
+    bool isDefault_ = false;
+    ir::Expression *constantExpression_ = nullptr;
 };
 }  // namespace ark::es2panda::ir
 

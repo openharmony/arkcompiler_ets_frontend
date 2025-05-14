@@ -161,9 +161,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
 }
 bool ETSParser::IsExportedDeclaration(ir::ModifierFlags memberModifiers)
 {
-    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U &&
-           (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U;
 }
 
 bool ETSParser::IsInitializerBlockStart() const
@@ -184,9 +182,6 @@ bool ETSParser::IsInitializerBlockStart() const
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
-    if (IsExportedDeclaration(memberModifiers)) {
-        return ParseExport(startLoc, memberModifiers);
-    }
 
     if (CheckAccessorDeclaration(memberModifiers)) {
         return ParseAccessorWithReceiver(memberModifiers);
@@ -229,6 +224,10 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         }
         default: {
         }
+    }
+
+    if (result == nullptr && IsExportedDeclaration(memberModifiers)) {
+        return ParseExport(startLoc, memberModifiers);
     }
 
     return ValidateExportableStatement(this, result, memberModifiers, startLoc);
