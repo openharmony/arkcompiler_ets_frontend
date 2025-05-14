@@ -69,6 +69,20 @@ Type *ETSTupleType::GetTypeAtIndex(const TupleSizeType index) const
     return GetTupleTypesList().at(index);
 }
 
+bool ETSTupleType::CheckElementsIdentical(TypeRelation *relation, const ETSTupleType *other) const
+{
+    if (GetTupleSize() != other->GetTupleSize()) {
+        return false;
+    }
+
+    for (TupleSizeType idx = 0; idx < GetTupleSize(); ++idx) {
+        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), other->GetTypeAtIndex(idx))) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void ETSTupleType::Identical([[maybe_unused]] TypeRelation *const relation, Type *const other)
 {
     if (!other->IsETSTupleType()) {
@@ -77,15 +91,14 @@ void ETSTupleType::Identical([[maybe_unused]] TypeRelation *const relation, Type
 
     const auto *const otherTuple = other->AsETSTupleType();
 
-    if (GetTupleSize() != otherTuple->GetTupleSize()) {
+    if (HasTypeFlag(TypeFlag::READONLY) != other->HasTypeFlag(TypeFlag::READONLY)) {
+        relation->Result(false);
         return;
     }
 
-    for (TupleSizeType idx = 0; idx < GetTupleSize(); ++idx) {
-        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), otherTuple->GetTypeAtIndex(idx))) {
-            relation->Result(false);
-            return;
-        }
+    if (!CheckElementsIdentical(relation, otherTuple)) {
+        relation->Result(false);
+        return;
     }
 
     relation->Result(true);
@@ -102,27 +115,9 @@ bool ETSTupleType::AssignmentSource(TypeRelation *const relation, Type *const ta
 
 void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const source)
 {
-    if (source->HasTypeFlag(TypeFlag::READONLY)) {
-        relation->Result(false);
-        return;
+    if (!source->HasTypeFlag(TypeFlag::READONLY) && source->IsETSTupleType()) {
+        source->AsETSTupleType()->IsSubtypeOf(relation, this);
     }
-
-    if (!source->IsETSTupleType()) {
-        return;
-    }
-
-    const auto *const sourceTuple = source->AsETSTupleType();
-    if (sourceTuple->GetTupleSize() != GetTupleSize()) {
-        return;
-    }
-
-    for (TupleSizeType idx = 0; idx < GetTupleSize(); ++idx) {
-        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), sourceTuple->GetTypeAtIndex(idx))) {
-            return;
-        }
-    }
-
-    relation->Result(true);
 }
 
 Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -142,6 +137,11 @@ void ETSTupleType::IsSubtypeOf(TypeRelation *const relation, Type *target)
     if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
         relation->Result(true);
         return;
+    }
+    if (target->IsETSTupleType()) {
+        if (!HasTypeFlag(TypeFlag::READONLY) && CheckElementsIdentical(relation, target->AsETSTupleType())) {
+            relation->Result(true);
+        }
     }
 }
 
