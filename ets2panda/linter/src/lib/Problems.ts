@@ -158,6 +158,7 @@ export enum FaultID {
   ExtendDecoratorNotSupported,
   MethodOverridingField,
   InteropJsObjectConditionJudgment,
+  InteropJsObjectExpandStaticInstance,
   ExplicitFunctionType,
   ClassstaticInitialization,
   TaggedTemplates,

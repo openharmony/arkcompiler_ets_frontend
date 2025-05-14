@@ -30,3 +30,8 @@ export function handle(cb) {
   let p  = {name: 'hello'}
   cb(p)
 }
+
+export function expand(obj) {
+  let x = obj;
+  let {a, b, c} = obj;
+}

@@ -185,6 +185,7 @@ faultsAttrs[FaultID.InteropJsObjectInheritance] = new FaultAttributes(265);
 faultsAttrs[FaultID.InteropJsObjectTraverseJsInstance] = new FaultAttributes(266);
 faultsAttrs[FaultID.InteropJsObjectCallStaticFunc] = new FaultAttributes(267);
 faultsAttrs[FaultID.InteropJsObjectConditionJudgment] = new FaultAttributes(268);
+faultsAttrs[FaultID.InteropJsObjectExpandStaticInstance] = new FaultAttributes(269);
 faultsAttrs[FaultID.InteropDynamicImport] = new FaultAttributes(271);
 faultsAttrs[FaultID.InteropDynamicImportTs] = new FaultAttributes(272);
 faultsAttrs[FaultID.InteropDynamicImportJs] = new FaultAttributes(273);
