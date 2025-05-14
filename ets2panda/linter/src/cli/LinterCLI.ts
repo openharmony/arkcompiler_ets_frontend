@@ -75,9 +75,12 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
     if (!mergedProblems.has(filePath)) {
       mergedProblems.set(filePath, []);
     }
-    const filteredProblems = problems.filter((problem) => {
-      return arkts2Rules.includes(problem.ruleTag);
-    });
+    let filteredProblems = problems;
+    if (cmdOptions.linterOptions.arkts2) {
+      filteredProblems = problems.filter((problem) => {
+        return arkts2Rules.includes(problem.ruleTag);
+      });
+    }
     mergedProblems.get(filePath)!.push(...filteredProblems);
   }
   const reportData = Object.fromEntries(mergedProblems);
