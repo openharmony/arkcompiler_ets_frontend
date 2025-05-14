@@ -24,7 +24,12 @@ import {
   LspCompletionInfo,
   LspReferenceLocationList,
   LspLineAndCharacter,
-  LspReferenceData
+  LspReferenceData,
+  LspTextSpan,
+  LspInlayHint,
+  LspInlayHintList,
+  TextSpan,
+  LspSignatureHelpItems
 } from './lspNode';
 import { unpackString } from './private';
 import { Es2pandaContextState } from './generated/Es2pandaEnums';
@@ -351,5 +356,66 @@ export class Lsp {
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
     return new LspLineAndCharacter(ptr);
+  }
+
+  getSpanOfEnclosingComment(filename: String, offset: number, onlyMultiLine: boolean): LspTextSpan {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let ptr = global.es2panda._getSpanOfEnclosingComment(localCtx, offset, onlyMultiLine);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
+    lspDriverHelper.destroyConfig(localCfg);
+    return new LspTextSpan(ptr);
+  }
+
+  provideInlayHints(filename: String, span: TextSpan): LspInlayHint[] {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    const nativeSpan = global.es2panda._createTextSpan(span.start, span.length);
+    let ptr = global.es2panda._getInlayHintList(localCtx, nativeSpan);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
+    lspDriverHelper.destroyConfig(localCfg);
+    const inlayHintList = new LspInlayHintList(ptr);
+    const inlayHints: LspInlayHint[] = [];
+    inlayHints.push(...inlayHintList.inlayHints);
+    return inlayHints;
+  }
+
+  getSignatureHelpItems(filename: String, offset: number): LspSignatureHelpItems {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let ptr = global.es2panda._getSignatureHelpItems(localCtx, offset);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
+    lspDriverHelper.destroyConfig(localCfg);
+    return new LspSignatureHelpItems(ptr);
   }
 }

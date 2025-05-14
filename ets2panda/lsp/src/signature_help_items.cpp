@@ -128,7 +128,7 @@ void SetSignatureHelpParameter(const checker::SignatureInfo *signatureInfo, Sign
         std::string paramName =
             (!(*it)->Name().StartsWith(GENSYM_CORE) ? std::string((*it)->Name().Utf8()) : std::string(DUMMY_ID));
         param.SetName(paramName);
-        param.SetDisplayParts(CreateParameterName(paramName));
+        param.SetDisplayParts(SignatureCreateParameterName(paramName));
 
         if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             param.SetDisplayParts(CreatePunctuation("?"));
@@ -160,7 +160,7 @@ void SetSignatureHelpParameter(const checker::SignatureInfo *signatureInfo, Sign
     std::string paramName =
         (!signatureInfo->restVar->Name().StartsWith(GENSYM_CORE) ? std::string(signatureInfo->restVar->Name().Utf8())
                                                                  : std::string(DUMMY_ID));
-    param.SetDisplayParts(CreateParameterName(paramName));
+    param.SetDisplayParts(SignatureCreateParameterName(paramName));
 
     param.SetDisplayParts(CreatePunctuation(":"));
 

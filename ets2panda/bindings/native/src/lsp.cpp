@@ -487,6 +487,12 @@ KNativePointer impl_getTextSpan(KNativePointer quickInfoPtr)
 }
 TS_INTEROP_1(getTextSpan, KNativePointer, KNativePointer)
 
+KNativePointer impl_createTextSpan(KInt start, KInt length)
+{
+    return new TextSpan(start, length);
+}
+TS_INTEROP_2(createTextSpan, KNativePointer, KInt, KInt)
+
 KNativePointer impl_getHighlightTextSpan(KNativePointer highlightPtr)
 {
     auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
@@ -699,3 +705,199 @@ KInt impl_getChar(KNativePointer locPtr)
     return loc->GetCharacter();
 }
 TS_INTEROP_1(getChar, KInt, KNativePointer)
+
+KNativePointer impl_getSpanOfEnclosingComment(KNativePointer context, KInt position, KBoolean onlyMultiLine)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *textSpan = new TextSpan(
+        ctx->getSpanOfEnclosingComment(reinterpret_cast<es2panda_Context *>(context), position, onlyMultiLine != 0));
+    return textSpan;
+}
+TS_INTEROP_3(getSpanOfEnclosingComment, KNativePointer, KNativePointer, KInt, KBoolean)
+
+KNativePointer impl_getInlayHintText(KNativePointer hintPtr)
+{
+    auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
+    return &hint->text;
+}
+TS_INTEROP_1(getInlayHintText, KNativePointer, KNativePointer)
+
+KInt impl_getInlayHintNumber(KNativePointer hintPtr)
+{
+    auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
+    return hint->number;
+}
+TS_INTEROP_1(getInlayHintNumber, KInt, KNativePointer)
+
+KInt impl_getInlayHintKind(KNativePointer hintPtr)
+{
+    auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
+    return static_cast<size_t>(hint->kind);
+}
+TS_INTEROP_1(getInlayHintKind, KInt, KNativePointer)
+
+KBoolean impl_getInlayHintWhitespaceBefore(KNativePointer hintPtr)
+{
+    auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
+    return hint->whitespaceBefore ? 1 : 0;
+}
+TS_INTEROP_1(getInlayHintWhitespaceBefore, KBoolean, KNativePointer)
+
+KBoolean impl_getInlayHintWhitespaceAfter(KNativePointer hintPtr)
+{
+    auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
+    return hint->whitespaceAfter ? 1 : 0;
+}
+TS_INTEROP_1(getInlayHintWhitespaceAfter, KBoolean, KNativePointer)
+
+KNativePointer impl_getInlayHints(KNativePointer inlayHintListPtr)
+{
+    auto *inlayHintList = reinterpret_cast<InlayHintList *>(inlayHintListPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : inlayHintList->hints) {
+        ptrs.push_back(new InlayHint(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getInlayHints, KNativePointer, KNativePointer)
+
+KNativePointer impl_getInlayHintList(KNativePointer context, KNativePointer span)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *inlayHints = new InlayHintList(
+        ctx->provideInlayHints(reinterpret_cast<es2panda_Context *>(context), reinterpret_cast<TextSpan *>(span)));
+    return inlayHints;
+}
+TS_INTEROP_2(getInlayHintList, KNativePointer, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpParameterName(KNativePointer parameterPtr)
+{
+    auto *parameterRef = reinterpret_cast<SignatureHelpParameter *>(parameterPtr);
+    return &parameterRef->GetName();
+}
+TS_INTEROP_1(getSignatureHelpParameterName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpParameterDocumentation(KNativePointer parameterPtr)
+{
+    auto *parameterRef = reinterpret_cast<SignatureHelpParameter *>(parameterPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : parameterRef->GetDocumentation()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpParameterDocumentation, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpParameterDisplayParts(KNativePointer parameterPtr)
+{
+    auto *parameterRef = reinterpret_cast<SignatureHelpParameter *>(parameterPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : parameterRef->GetDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpParameterDisplayParts, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItemPrefix(KNativePointer itemPtr)
+{
+    auto *itemRef = reinterpret_cast<SignatureHelpItem *>(itemPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemRef->GetPrefixDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItemPrefix, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItemSuffix(KNativePointer itemPtr)
+{
+    auto *itemRef = reinterpret_cast<SignatureHelpItem *>(itemPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemRef->GetSuffixDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItemSuffix, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItemSeparator(KNativePointer itemPtr)
+{
+    auto *itemRef = reinterpret_cast<SignatureHelpItem *>(itemPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemRef->GetSeparatorDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItemSeparator, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItemParameter(KNativePointer itemPtr)
+{
+    auto *itemRef = reinterpret_cast<SignatureHelpItem *>(itemPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemRef->GetParameters()) {
+        ptrs.push_back(new SignatureHelpParameter(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItemParameter, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItemDocumentation(KNativePointer itemPtr)
+{
+    auto *itemRef = reinterpret_cast<SignatureHelpItem *>(itemPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemRef->GetDocumentation()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItemDocumentation, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItem(KNativePointer itemsPtr)
+{
+    auto *itemsRef = reinterpret_cast<SignatureHelpItems *>(itemsPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : itemsRef->GetItems()) {
+        ptrs.push_back(new SignatureHelpItem(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSignatureHelpItem, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableSpan(KNativePointer itemsPtr)
+{
+    auto *itemsRef = reinterpret_cast<SignatureHelpItems *>(itemsPtr);
+    return new TextSpan(itemsRef->GetApplicableSpan());
+}
+TS_INTEROP_1(getApplicableSpan, KNativePointer, KNativePointer)
+
+KInt impl_getSelectedItemIndex(KNativePointer itemsPtr)
+{
+    auto *itemsRef = reinterpret_cast<SignatureHelpItems *>(itemsPtr);
+    return itemsRef->GetSelectedItemIndex();
+}
+TS_INTEROP_1(getSelectedItemIndex, KInt, KNativePointer)
+
+KInt impl_getArgumentIndex(KNativePointer itemsPtr)
+{
+    auto *itemsRef = reinterpret_cast<SignatureHelpItems *>(itemsPtr);
+    return itemsRef->GetArgumentIndex();
+}
+TS_INTEROP_1(getArgumentIndex, KInt, KNativePointer)
+
+KInt impl_getArgumentCount(KNativePointer itemsPtr)
+{
+    auto *itemsRef = reinterpret_cast<SignatureHelpItems *>(itemsPtr);
+    return itemsRef->GetArgumentCount();
+}
+TS_INTEROP_1(getArgumentCount, KInt, KNativePointer)
+
+KNativePointer impl_getSignatureHelpItems(KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *textSpan =
+        new SignatureHelpItems(ctx->getSignatureHelpItems(reinterpret_cast<es2panda_Context *>(context), position));
+    return textSpan;
+}
+TS_INTEROP_2(getSignatureHelpItems, KNativePointer, KNativePointer, KInt)

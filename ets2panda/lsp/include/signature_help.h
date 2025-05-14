@@ -22,7 +22,7 @@
 #include <variant>
 #include <vector>
 #include <cstddef>
-#include "api.h"
+#include "cancellation_token.h"
 #include "ir/astNode.h"
 #include "public/es2panda_lib.h"
 #include "public/public.h"
@@ -303,8 +303,9 @@ size_t GetArgumentIndexForTemplatePiece(size_t spanIndex, ir::AstNode *node, siz
 ir::AstNode *GetChildListThatStartsWithOpenerToken(ir::AstNode *parent, ir::AstNode *openerToken);
 ir::AstNode *FindTokenOnLeftOfPosition(es2panda_Context *context, size_t position);
 
-void GetSignatureHelpItems(es2panda_Context *ctx, size_t position, SignatureHelpTriggerReason triggeredReason,
-                           CancellationToken cancellationToken);
+SignatureHelpItems GetSignatureHelpItems(es2panda_Context *ctx, size_t position,
+                                         SignatureHelpTriggerReason triggeredReason,
+                                         CancellationToken cancellationToken);
 std::optional<InfoType> GetCandidateOrTypeInfo(const std::optional<ArgumentListInfo> info, ir::AstNode *parent,
                                                const bool onlyUseSyntacticOwners);
 checker::Signature *GetResolvedSignatureForSignatureHelp(const ir::AstNode *call, const ir::AstNode *parent,

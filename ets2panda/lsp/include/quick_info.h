@@ -19,6 +19,7 @@
 #include "ir/astNode.h"
 #include "public/es2panda_lib.h"
 #include "api.h"
+#include "types.h"
 
 namespace ark::es2panda::lsp {
 

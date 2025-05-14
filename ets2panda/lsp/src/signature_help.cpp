@@ -79,13 +79,19 @@ checker::Signature *GetResolvedSignatureForSignatureHelp(const ir::AstNode *call
 std::optional<InfoType> GetCandidateOrTypeInfo(const std::optional<ArgumentListInfo> info, ir::AstNode *parent,
                                                const bool onlyUseSyntacticOwners)
 {
-    if (const auto *call = std::get_if<CallInvocation>(&info->GetInvocation())) {
+    if (const auto *call = std::get_if<CallInvocation>(&info->GetInvocation());
+        call != nullptr && call->callExpressionNode != nullptr) {
         if (onlyUseSyntacticOwners && !IsSyntacticOwner(call->callExpressionNode)) {
             return std::nullopt;
         }
         std::vector<checker::Signature *> candidates;
-        checker::Signature *resolvedSignature =
-            GetResolvedSignatureForSignatureHelp(call->callExpressionNode->Parent(), parent, candidates);
+        checker::Signature *resolvedSignature = nullptr;
+        if (call->callExpressionNode != nullptr && call->callExpressionNode->IsCallExpression()) {
+            resolvedSignature = GetResolvedSignatureForSignatureHelp(call->callExpressionNode, parent, candidates);
+        } else {
+            resolvedSignature =
+                GetResolvedSignatureForSignatureHelp(call->callExpressionNode->Parent(), parent, candidates);
+        }
         if (!candidates.empty()) {
             const auto can = CandidateInfo {CandidateOrTypeKind::CANDIDATE, candidates, resolvedSignature};
             return std::make_optional(can);
@@ -95,6 +101,15 @@ std::optional<InfoType> GetCandidateOrTypeInfo(const std::optional<ArgumentListI
         const auto tp = CandidateOrTypeKind::TYPEENUM;
         TypeInfo val = TypeInfo {tp, called};
         return std::make_optional(val);
+    } else if (const auto *context = std::get_if<ContextualInvocation>(&info->GetInvocation()); context != nullptr) {
+        auto node = context->node;
+        std::vector<checker::Signature *> candidates;
+        if (node != nullptr && node->IsMethodDefinition()) {
+            auto funcSignature = node->AsMethodDefinition()->Function()->Signature();
+            candidates.push_back(funcSignature);
+            const auto can = CandidateInfo {CandidateOrTypeKind::CANDIDATE, candidates, funcSignature};
+            return std::make_optional(can);
+        }
     }
     return std::nullopt;
 }
@@ -125,12 +140,13 @@ std::string IsManuallyInvoked(const SignatureHelpTriggerReason &triggerReason)
         triggerReason);
 }
 
-void GetSignatureHelpItems(es2panda_Context *ctx, size_t position, SignatureHelpTriggerReason triggeredReason,
-                           CancellationToken cancellationToken)
+SignatureHelpItems GetSignatureHelpItems(es2panda_Context *ctx, size_t position,
+                                         SignatureHelpTriggerReason triggeredReason,
+                                         CancellationToken cancellationToken)
 {
     auto const startingToken = FindTokenOnLeftOfPosition(ctx, position);
     if (startingToken == nullptr) {
-        return;
+        return {};
     }
 
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -138,31 +154,33 @@ void GetSignatureHelpItems(es2panda_Context *ctx, size_t position, SignatureHelp
 
     const auto onlyUseSyntacticOwners = IsReasonCharacterTyped(triggeredReason) == "characterTyped";
     if (onlyUseSyntacticOwners) {
-        return;
+        return {};
     }
     const auto isManuallyInvoked = IsManuallyInvoked(triggeredReason) == "invoked";
     const auto argumentInfo = GetContainingArgumentInfo(startingToken, position, isManuallyInvoked);
     if (argumentInfo == std::nullopt) {
-        return;
+        return {};
     }
     if (cancellationToken.IsCancellationRequested()) {
-        return;
+        return {};
     }
     const auto candidateInfoOpt = GetCandidateOrTypeInfo(argumentInfo, astNode, onlyUseSyntacticOwners);
     if (candidateInfoOpt == std::nullopt) {
-        return;
+        return {};
     }
 
     const auto &candidateInfo = *candidateInfoOpt;
 
+    auto res = SignatureHelpItems();
     if (std::holds_alternative<TypeInfo>(candidateInfo)) {
         const auto &typeInfo = std::get<TypeInfo>(candidateInfo);
-        CreateTypeHelpItems(typeInfo.GetSymbol(), typeInfo.GetSymbol()->Range(),
-                            CreateTextSpanForNode(typeInfo.GetSymbol()));
+        res = CreateTypeHelpItems(typeInfo.GetSymbol(), typeInfo.GetSymbol()->Range(),
+                                  CreateTextSpanForNode(typeInfo.GetSymbol()));
     } else if (std::holds_alternative<CandidateInfo>(candidateInfo)) {
         auto candidate = std::get<CandidateInfo>(candidateInfo);
-        CreateSignatureHelpItems(candidate.GetSignatures(), candidate.GetResolvedSignature(), argumentInfo);
+        res = CreateSignatureHelpItems(candidate.GetSignatures(), candidate.GetResolvedSignature(), argumentInfo);
     }
+    return res;
 }
 ir::AstNode *GetHighestBinary(ir::AstNode *node)
 {
@@ -273,10 +291,16 @@ std::optional<ArgumentListInfo> TryGetParameterInfo(ir::AstNode *node)
     auto const count = info->GetArgumentCount();
     auto const span = info->GetArgumentsSpan();
 
-    const ContextualInvocation invocation =
-        ContextualInvocation {InvocationKind::CONTEXTUAL, node->AsCallExpression()->Signature(), node};
     std::optional<ArgumentListInfo> argumentList = ArgumentListInfo();
-    argumentList->SetInvocation(invocation);
+    if (node->IsCallExpression()) {
+        const ContextualInvocation invocation =
+            ContextualInvocation {InvocationKind::CONTEXTUAL, node->AsCallExpression()->Signature(), node};
+        argumentList->SetInvocation(invocation);
+    } else if (node->IsMethodDefinition()) {
+        const ContextualInvocation invocation = ContextualInvocation {
+            InvocationKind::CONTEXTUAL, node->AsMethodDefinition()->Function()->Signature(), node};
+        argumentList->SetInvocation(invocation);
+    }
     argumentList->SetApplicableSpan(span);
     argumentList->SetArgumentIndex(index);
     argumentList->SetArgumentCount(count);
@@ -318,6 +342,22 @@ std::optional<ArgumentListInfo> GetImmediatelyContainingArgumentInfo(ir::AstNode
             argumentList.SetArgumentCount(argumentCount);
             return argumentList;
         }
+    } else if (node->Parent()->Type() == ir::AstNodeType::METHOD_DEFINITION) {
+        auto const info = GetContextualSignatureLocationInfo(node->Parent());
+        if (!info) {
+            return std::nullopt;
+        }
+        auto const index = info->GetArgumentIndex();
+        auto const count = info->GetArgumentCount();
+        auto const span = info->GetArgumentsSpan();
+        std::optional<ArgumentListInfo> argumentList = ArgumentListInfo();
+        const ContextualInvocation invocation = ContextualInvocation {
+            InvocationKind::CONTEXTUAL, node->Parent()->AsMethodDefinition()->Function()->Signature(), node->Parent()};
+        argumentList->SetInvocation(invocation);
+        argumentList->SetApplicableSpan(span);
+        argumentList->SetArgumentIndex(index);
+        argumentList->SetArgumentCount(count);
+        return argumentList;
     }
     return std::nullopt;
 }
@@ -330,9 +370,6 @@ std::optional<ContextualSignatureLocationInfo> GetContextualSignatureLocationInf
         case ir::AstNodeType::FUNCTION_EXPRESSION:
         case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION:
             info = GetArgumentOrParameterListInfo(node);
-            if (info.GetArgumentIndex() == 0) {
-                return std::nullopt;
-            }
             return std::make_optional(info);
             break;
         default:

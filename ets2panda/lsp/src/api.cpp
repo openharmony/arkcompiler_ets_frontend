@@ -31,6 +31,8 @@
 #include "brace_matching.h"
 #include "line_column_offset.h"
 #include "services/services.h"
+#include "inlay_hints.h"
+#include "signature_help.h"
 
 extern "C" {
 namespace ark::es2panda::lsp {
@@ -125,13 +127,11 @@ QuickInfo GetQuickInfoAtPosition(const char *fileName, es2panda_Context *context
     return res;
 }
 
-TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
+TextSpan GetSpanOfEnclosingComment(es2panda_Context *context, size_t pos, bool onlyMultiLine)
 {
-    Initializer initializer = Initializer();
-    auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto *range = initializer.Allocator()->New<CommentRange>();
-    GetRangeOfEnclosingComment(ctx, pos, range);
-    initializer.DestroyContext(ctx);
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto *range = ctx->allocator->New<CommentRange>();
+    GetRangeOfEnclosingComment(context, pos, range);
     return (range != nullptr) && (!onlyMultiLine || range->kind_ == CommentKind::MULTI_LINE)
                ? TextSpan(range->pos_, range->end_ - range->pos_)
                : TextSpan(0, 0);
@@ -278,6 +278,23 @@ std::vector<ark::es2panda::lsp::TodoComment> GetTodoComments(
     return result;
 }
 
+InlayHintList ProvideInlayHints(es2panda_Context *context, const TextSpan *span)
+{
+    const size_t defaultTime = 20;
+    auto cancellationToken = CancellationToken(defaultTime, nullptr);
+    UserPreferences preferences = UserPreferences::GetDefaultUserPreferences();
+    preferences.SetIncludeInlayParameterNameHints(UserPreferences::IncludeInlayParameterNameHints::ALL);
+    return ProvideInlayHintsImpl(context, span, cancellationToken, preferences);
+}
+
+SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t position)
+{
+    const size_t defaultTime = 20;
+    auto invokedReason = ark::es2panda::lsp::SignatureHelpInvokedReason();
+    auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
+    return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     IsPackageModule,
@@ -301,7 +318,9 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetBraceMatchingAtPositionWrapper,
                     GetImplementationLocationAtPositionWrapper,
                     ToLineColumnOffsetWrapper,
-                    GetTodoComments};
+                    GetTodoComments,
+                    ProvideInlayHints,
+                    GetSignatureHelpItems};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()

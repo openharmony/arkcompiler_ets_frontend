@@ -268,7 +268,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getSpanOfEnclosingComment(filename: String, position: KInt): KPtr {
+  _getSpanOfEnclosingComment(context: KNativePointer, position: KInt, onlyMultiLine: boolean): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -429,6 +429,94 @@ export class Es2pandaNativeModule {
   }
 
   _toLineColumnOffset(context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintText(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintNumber(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintKind(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintWhitespaceBefore(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintWhitespaceAfter(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintList(context: KPtr, span: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHints(context: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _createTextSpan(start: KInt, length: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterDocumentation(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterDisplayParts(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemPrefix(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemSuffix(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemSeparator(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemParameter(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemDocumentation(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItem(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableSpan(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSelectedItemIndex(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getArgumentIndex(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getArgumentCount(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItems(context: KPtr, position: KInt): KPtr {
     throw new Error('Not implemented');
   }
 }

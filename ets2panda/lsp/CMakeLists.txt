@@ -36,6 +36,7 @@ set(ES2PANDA_LSP_SRC
   ./src/signature_help_items.cpp
   ./src/signature_help.cpp
   ./src/todo_comments.cpp
+  ./src/types.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
