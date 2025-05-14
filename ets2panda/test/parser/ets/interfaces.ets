@@ -26,3 +26,5 @@ interface I0 {
 
 interface I1 extends I, I0 {
 }
+
+/* @@? 22:28 Error TypeError: 'nopnop' is an instance property of 'I0' */

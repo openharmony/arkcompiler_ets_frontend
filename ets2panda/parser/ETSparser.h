@@ -288,6 +288,7 @@ private:
                                                     VariableParsingFlags flags) override;
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc) override;
+    bool IsFieldStartToken(lexer::TokenType t);
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     ir::AstNode *ParseJsDocInfoInInterfaceBody();
     ir::AstNode *ParseAnnotationsInInterfaceBody();

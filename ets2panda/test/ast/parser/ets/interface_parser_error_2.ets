@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  */
 
 interface I {
-    readonly foo()
+    : boolean
 }
 
-/* @@? 17:17 Error SyntaxError: Interface fields must have type annotation. */
-/* @@? 17:18 Error SyntaxError: Invalid Type. */
-/* @@? 17:18 Error SyntaxError: Unexpected token, expected ','. */
-/* @@? 17:18 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 17:5 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 17:7 Error SyntaxError: Identifier expected. */
+/* @@? 17:7 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 17:7 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 18:1 Error SyntaxError: Identifier expected. */
