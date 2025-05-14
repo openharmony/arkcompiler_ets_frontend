@@ -479,8 +479,11 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
         if (classDef->IsAbstract()) {
             classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
-    } else {
+    } else if (var->TsType()->IsETSObjectType()) {
         classType = var->TsType()->AsETSObjectType();
+    } else {
+        ES2PANDA_ASSERT(IsAnyError());
+        return GlobalTypeError();
     }
 
     classDef->SetTsType(classType);
