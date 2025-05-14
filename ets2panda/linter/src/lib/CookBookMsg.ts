@@ -330,6 +330,7 @@ cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-need-stdlib-sha
 cookBookTag[355] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)';
 cookBookTag[356] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)';
 cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
+cookBookTag[358] = 'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

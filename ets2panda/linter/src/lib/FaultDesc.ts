@@ -224,3 +224,4 @@ faultDesc[FaultID.SharedArrayBufferDeprecated] = 'SharedArrayBuffer is not suppo
 faultDesc[FaultID.LimitedStdLibNoSendableDecorator] = 'Limited stdlib no sendable decorator';
 faultDesc[FaultID.LimitedStdLibNoDoncurrentDecorator] = 'Limited stdlib no concurrent decorator';
 faultDesc[FaultID.NoNeedStdlibWorker] = 'No need stdlib worker';
+faultDesc[FaultID.BuiltinGetOwnPropertyNames] = 'No "Object.getOwnPropertyNames" in API';

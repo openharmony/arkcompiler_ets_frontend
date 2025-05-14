@@ -97,7 +97,12 @@ import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList, SdkProblem, SdkNameInfo } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import * as builtinWhiteList from './data/BuiltinList.json';
-import { BuiltinProblem, SYMBOL_ITERATOR, BUILTIN_DISABLE_CALLSIGNATURE } from './utils/consts/BuiltinWhiteList';
+import {
+  BuiltinProblem,
+  SYMBOL_ITERATOR,
+  BUILTIN_DISABLE_CALLSIGNATURE,
+  GET_OWN_PROPERTY_NAMES_TEXT
+} from './utils/consts/BuiltinWhiteList';
 import {
   USE_SHARED,
   USE_CONCURRENT,
@@ -136,6 +141,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   static indexedTypeSet: Set<ApiListItem>;
   static globalApiInfo: Map<string, Set<ApiListItem>>;
   static symbotIterSet: Set<string>;
+  static missingAttributeSet: Set<string>;
   static literalAsPropertyNameTypeSet: Set<ApiListItem>;
   private localApiListItem: ApiListItem | undefined = undefined;
 
@@ -146,6 +152,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
     TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
     TypeScriptLinter.symbotIterSet = new Set<string>();
+    TypeScriptLinter.missingAttributeSet = new Set<string>();
     TypeScriptLinter.initSdkWhitelist();
     TypeScriptLinter.initSdkBuiltinInfo();
     TypeScriptLinter.initBuiltinlist();
@@ -160,6 +167,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
         switch (item.api_info.problem) {
+          case BuiltinProblem.MissingAttributes:
+            TypeScriptLinter.missingAttributeSet.add(item.file_path);
+            break;
           case BuiltinProblem.SymbolIterator:
             TypeScriptLinter.symbotIterSet.add(item.file_path);
             break;
@@ -990,9 +1000,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleQuotedHyphenPropsDeprecated(node as ts.PropertyAccessExpression);
     this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
-    this.handleSymbolIterator(node as ts.PropertyAccessExpression);
     this.handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(node as ts.PropertyAccessExpression);
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
+    this.propertyAccessExpressionForBuiltin(node as ts.PropertyAccessExpression);
 
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
@@ -1033,6 +1043,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
     this.handleArkTSPropertyAccess(propertyAccessNode);
+  }
+
+  propertyAccessExpressionForBuiltin(decl: ts.PropertyAccessExpression): void {
+    if (this.options.arkts2) {
+      this.handleSymbolIterator(decl);
+      this.handleGetOwnPropertyNames(decl);
+    }
   }
 
   propertyAccessExpressionForInterop(
@@ -6909,21 +6926,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private handleGetOwnPropertyNames(decl: ts.PropertyAccessExpression): void {
+    if (this.checkPropertyAccessExpression(decl, GET_OWN_PROPERTY_NAMES_TEXT, TypeScriptLinter.missingAttributeSet)) {
+      const autofix = this.autofixer?.fixMissingAttribute(decl);
+      this.incrementCounters(decl, FaultID.BuiltinGetOwnPropertyNames, autofix);
+    }
+  }
+
   private handleSymbolIterator(decl: ts.PropertyAccessExpression): void {
-    if (!this.options.arkts2 || TypeScriptLinter.symbotIterSet.size === 0 || decl.getText() !== SYMBOL_ITERATOR) {
-      return;
+    if (this.checkPropertyAccessExpression(decl, SYMBOL_ITERATOR, TypeScriptLinter.symbotIterSet)) {
+      this.incrementCounters(decl, FaultID.BuiltinSymbolIterator);
+    }
+  }
+
+  private checkPropertyAccessExpression(decl: ts.PropertyAccessExpression, name: string, set: Set<string>): boolean {
+    if (set.size === 0 || decl.getText() !== name) {
+      return false;
     }
 
     const symbol = this.tsUtils.trueSymbolAtLocation(decl);
     const sourceFile = symbol?.declarations?.[0]?.getSourceFile();
     if (!sourceFile) {
-      return;
+      return false;
     }
 
     const fileName = path.basename(sourceFile.fileName);
-    if (TypeScriptLinter.symbotIterSet.has(fileName)) {
-      this.incrementCounters(decl, FaultID.BuiltinSymbolIterator);
-    }
+    return set.has(fileName);
   }
 
   private fixJsImportCallExpression(callExpr: ts.CallExpression): void {

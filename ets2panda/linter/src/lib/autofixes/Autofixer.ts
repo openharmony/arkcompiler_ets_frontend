@@ -88,6 +88,8 @@ const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
 const OBJECT_LITERAL_CLASS_CONSTRUCTOR_PARAM_NAME = 'init';
 
+const METHOD_KEYS = 'keys';
+
 interface CreateClassPropertyForObjectLiteralParams {
   prop: ts.PropertyAssignment | ts.ShorthandPropertyAssignment;
   enclosingStmt: ts.Node;
@@ -4169,5 +4171,15 @@ export class Autofixer {
       return funcNode.type;
     }
     return undefined;
+  }
+
+  fixMissingAttribute(node: ts.PropertyAccessExpression): Autofix[] {
+    const exprName = node.expression.getText();
+    const propertyAccessExpr = ts.factory.createPropertyAccessExpression(
+      ts.factory.createIdentifier(exprName),
+      ts.factory.createIdentifier(METHOD_KEYS)
+    );
+    const replacement = this.printer.printNode(ts.EmitHint.Unspecified, propertyAccessExpr, node.getSourceFile());
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: replacement }];
   }
 }

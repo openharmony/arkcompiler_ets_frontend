@@ -168,6 +168,27 @@
     {
       "file_path": "lib.es5.d.ts",
       "api_info": {
+        "line": 174,
+        "problem": "MissingAttributes",
+        "api_name": "getOwnPropertyNames",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "ObjectConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "string[]",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
         "line": 156,
         "problem": "BuiltinAll",
         "api_type": "CallSignature",
