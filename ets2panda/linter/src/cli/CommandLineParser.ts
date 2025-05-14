@@ -26,6 +26,7 @@ import * as path from 'node:path';
 const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
 const ETS_EXT = '.ets';
+const JS_EXT = '.js';
 
 interface CommanderParseOptions {
   exitOnFail?: boolean;
@@ -55,7 +56,7 @@ const getFiles = (dir: string): string[] => {
       resultFiles.push(...getFiles(name));
     } else {
       const extension = path.extname(name);
-      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT) {
+      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT || extension === JS_EXT) {
         resultFiles.push(name);
       }
     }
@@ -162,6 +163,9 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.ideInteractive) {
     opts.linterOptions.ideInteractive = true;
   }
+  if (options.checkTsAndJs) {
+    opts.linterOptions.checkTsAndJs = true;
+  }
   if (options.homecheck) {
     opts.homecheck = true;
   }
@@ -200,6 +204,7 @@ function createCommand(): Command {
     option('--no-migration-backup-file', 'Disable the backup files in migration mode').
     option('--migration-max-pass <num>', 'Maximum number of migration passes').
     option('--migration-report', 'Generate migration report').
+    option('--check-ts-and-js', 'check ts and js files').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).
