@@ -3400,6 +3400,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
     this.fixJsImportElementAccessExpression(tsElementAccessExpr);
     this.checkInterOpImportJsIndex(tsElementAccessExpr);
+    this.checkEnumGetMemberValue(tsElementAccessExpr);
   }
 
   private checkInterOpImportJsIndex(expr: ts.ElementAccessExpression): void {
@@ -7573,6 +7574,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (decoratorName === CustomDecoratorName.LocalBuilder) {
       const autofix = this.autofixer?.fixBuilderDecorators(node);
       this.incrementCounters(node, FaultID.LocalBuilderDecoratorNotSupported, autofix);
+    }
+  }
+
+  private checkEnumGetMemberValue(node: ts.ElementAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isIdentifier(node.expression) || !ts.isNumericLiteral(node.argumentExpression)) {
+      return;
+    }
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
+    if (!symbol?.declarations) {
+      return;
+    }
+
+    for (const decl of symbol.declarations) {
+      if (ts.isEnumDeclaration(decl)) {
+        this.incrementCounters(node, FaultID.UnsupportPropNameFromValue);
+        return;
+      }
     }
   }
 }

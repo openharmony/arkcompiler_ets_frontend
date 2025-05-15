@@ -203,6 +203,7 @@ export enum FaultID {
   InteropDynamicImportJs,
   InteropObjectLiteralAmbiguity,
   InteropObjectLiteralClass,
+  UnsupportPropNameFromValue,
   InterOpImportJs,
   CallJSFunction,
   InteropObjectProperty,
