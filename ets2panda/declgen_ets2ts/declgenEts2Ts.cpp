@@ -53,6 +53,7 @@ bool TSDeclGen::Generate()
     }
     CollectIndirectExportDependencies();
     GenDeclarations();
+    GenOtherDeclarations();
     return true;
 }
 
@@ -198,6 +199,9 @@ void TSDeclGen::ProcessClassPropDependencies(const ir::ClassDefinition *classDef
 
 void TSDeclGen::ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef)
 {
+    if (!methodDef->IsExported() && !methodDef->IsExportedType() && !methodDef->IsDefaultExported()) {
+        return;
+    }
     auto sig = methodDef->Function()->Signature();
     GenSeparated(
         sig->Params(), [this](varbinder::LocalVariable *param) { AddSuperType(param->TsType()); }, "");
@@ -262,6 +266,20 @@ void TSDeclGen::GenDeclarations()
         } else if (globalStatement->IsETSReExportDeclaration()) {
             GenReExportDeclaration(globalStatement->AsETSReExportDeclaration());
         }
+    }
+}
+
+void TSDeclGen::GenOtherDeclarations()
+{
+    const std::string recordKey = "Record";
+    const std::string recordStr = R"(
+// generated for static Record
+type Record<K extends keyof any, T> = {
+    [P in K]: T;
+};
+)";
+    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
+        OutDts(recordStr);
     }
 }
 
@@ -1271,6 +1289,10 @@ void TSDeclGen::ProcessTypeAnnotationType(const ir::TypeNode *typeAnnotation, co
         ProcessTSArrayType(typeAnnotation->AsTSArrayType());
         return;
     }
+    if (typeAnnotation->IsETSFunctionType()) {
+        ProcessETSFunctionType(typeAnnotation->AsETSFunctionType());
+        return;
+    }
     checkerType != nullptr ? GenType(checkerType) : GenType(aliasedType);
 }
 
@@ -1318,6 +1340,21 @@ void TSDeclGen::ProcessTSArrayType(const ir::TSArrayType *tsArrayType)
     ProcessTypeAnnotationType(elementType, elementCheckerType);
     OutDts(needParentheses ? ")" : "");
     OutDts("[]");
+}
+
+void TSDeclGen::ProcessETSFunctionType(const ir::ETSFunctionType *etsFunction)
+{
+    bool inUnionBody = !state_.inUnionBodyStack.empty() && state_.inUnionBodyStack.top();
+    OutDts(inUnionBody ? "((" : "(");
+    GenSeparated(etsFunction->Params(), [this](ir::Expression *param) {
+        const auto paramName = param->AsETSParameterExpression()->Name();
+        OutDts(paramName.Is("=t") ? "this" : paramName, ": ");
+        ProcessTypeAnnotationType(param->AsETSParameterExpression()->TypeAnnotation(),
+                                  param->AsETSParameterExpression()->TypeAnnotation()->TsType());
+    });
+    OutDts(") => ");
+    ProcessTypeAnnotationType(etsFunction->ReturnType(), etsFunction->ReturnType()->TsType());
+    OutDts(inUnionBody ? ")" : "");
 }
 
 void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias)
@@ -1423,6 +1460,10 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     OutDts(" {");
     OutEndlDts();
     ProcessInterfaceBody(interfaceDecl->Body());
+    if (state_.isInterfaceInNamespace) {
+        classNode_.indentLevel--;
+        OutDts(GetIndent());
+    }
     OutDts("}");
     OutEndlDts();
 }
@@ -1443,11 +1484,25 @@ void TSDeclGen::ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                         std::unordered_set<std::string> &processedMethods)
 {
     const auto methodName = GetKeyIdent(methodDef->Key())->Name().Mutf8();
-    GenMethodDeclaration(methodDef);
-    processedMethods.insert(methodName);
-    GenSeparated(
-        methodDef->Overloads(), [this](ir::MethodDefinition *overloadMethd) { GenMethodDeclaration(overloadMethd); },
-        "");
+    if (processedMethods.find(methodName) != processedMethods.end()) {
+        return;
+    }
+    if (methodDef->IsGetter() || methodDef->IsSetter()) {
+        GenMethodDeclaration(methodDef);
+        processedMethods.insert(methodName);
+    }
+    if (!methodDef->Overloads().empty()) {
+        for (const auto *overloadMethd : methodDef->Overloads()) {
+            if (overloadMethd->IsGetter() || overloadMethd->IsSetter()) {
+                GenMethodDeclaration(overloadMethd);
+            }
+        }
+        return;
+    }
+    if (!methodDef->IsGetter() && !methodDef->IsSetter()) {
+        GenMethodDeclaration(methodDef);
+        processedMethods.insert(methodName);
+    }
 }
 
 void TSDeclGen::PrepareClassDeclaration(const ir::ClassDefinition *classDef)
@@ -1495,12 +1550,6 @@ void TSDeclGen::EmitClassDeclaration(const ir::ClassDefinition *classDef, const 
         OutTs("export const enum ", className, " {");
     } else if (classDef->IsFromStruct()) {
         EmitDeclarationPrefix(classDef, "struct ", className);
-    } else if (classNode_.isIndirect) {
-        if (classDef->IsAbstract()) {
-            OutDts("declare abstract class ", className);
-        } else {
-            OutDts("declare class ", className);
-        }
     } else if (classDef->IsAbstract()) {
         EmitDeclarationPrefix(classDef, "abstract class ", className);
     } else {
@@ -1533,7 +1582,9 @@ void TSDeclGen::GenPartName(std::string &partName)
 
 void TSDeclGen::ProcessIndent()
 {
-    if (classNode_.hasNestedClass || state_.inNamespace || state_.inEnum) {
+    if (state_.isInterfaceInNamespace) {
+        OutDts(GetIndent());
+    } else if (classNode_.hasNestedClass || state_.inNamespace || state_.inEnum) {
         auto indent = GetIndent();
         OutDts(indent);
         OutTs(indent);
@@ -1601,20 +1652,25 @@ void TSDeclGen::EmitClassGlueCode(const ir::ClassDefinition *classDef, const std
     }
 }
 
-void TSDeclGen::ProcessMethodsFromInterfaces(const std::unordered_set<std::string> &processedMethods,
-                                             const ir::ClassDefinition *classDef)
+void TSDeclGen::ProcessMethodsFromInterfaces(std::unordered_set<std::string> &processedMethods,
+                                             const ArenaVector<checker::ETSObjectType *> &interfaces)
 {
-    const auto &interfaces = classDef->TsType()->AsETSObjectType()->Interfaces();
+    if (interfaces.empty()) {
+        return;
+    }
     for (const auto &interface : interfaces) {
         auto methods = interface->Methods();
+        std::unordered_set<std::string> processedInterfaceMethods;
         for (const auto &method : methods) {
             if ((method->Flags() & (varbinder::VariableFlags::PUBLIC)) != 0U &&
                 (method->Flags() & (varbinder::VariableFlags::STATIC)) == 0U &&
                 processedMethods.find(method->Name().Mutf8()) == processedMethods.end()) {
-                GenMethodDeclaration(
-                    method->AsLocalVariable()->Declaration()->AsFunctionDecl()->Node()->AsMethodDefinition());
+                ProcessMethodDefinition(
+                    method->AsLocalVariable()->Declaration()->AsFunctionDecl()->Node()->AsMethodDefinition(),
+                    processedInterfaceMethods);
             }
         }
+        ProcessMethodsFromInterfaces(processedMethods, interface->Interfaces());
     }
 }
 
@@ -1631,7 +1687,9 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
         } else if (prop->IsTSInterfaceDeclaration()) {
             state_.isInterfaceInNamespace = true;
             OutDts(GetIndent());
+            classNode_.indentLevel++;
             GenInterfaceDeclaration(prop->AsTSInterfaceDeclaration());
+            state_.inInterface = false;
             state_.isInterfaceInNamespace = false;
         } else if (prop->IsTSTypeAliasDeclaration()) {
             GenTypeAliasDeclaration(prop->AsTSTypeAliasDeclaration());
@@ -1654,7 +1712,7 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
             GenClassDeclaration(prop->AsClassDeclaration());
         }
     }
-    ProcessMethodsFromInterfaces(processedMethods, classDef);
+    ProcessMethodsFromInterfaces(processedMethods, classDef->TsType()->AsETSObjectType()->Interfaces());
 }
 
 void TSDeclGen::CloseClassBlock(const bool isDts)
@@ -1789,7 +1847,8 @@ bool TSDeclGen::GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef
             OutDts("export declare function ");
         }
     } else {
-        if (state_.inNamespace && !ShouldEmitDeclarationSymbol(methodIdent) && !methodDef->IsConstructor()) {
+        if (state_.inNamespace && !state_.isClassInNamespace && !state_.isInterfaceInNamespace &&
+            !ShouldEmitDeclarationSymbol(methodIdent) && !methodDef->IsConstructor()) {
             return true;
         }
         if (!methodDef->Function()->Annotations().empty()) {
@@ -1800,7 +1859,10 @@ bool TSDeclGen::GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef
     }
     EmitMethodGlueCode(methodName, methodIdent);
 
-    if (methodDef->IsAbstract() && !state_.inInterface) {
+    if (methodDef->Function()->IsAbstract() && !state_.inInterface &&
+        !(methodDef->Parent()->IsTSInterfaceBody() ||
+          (methodDef->BaseOverloadMethod() != nullptr &&
+           methodDef->BaseOverloadMethod()->Parent()->IsTSInterfaceBody()))) {
         OutDts("abstract ");
     }
     if (methodDef->IsGetter()) {
