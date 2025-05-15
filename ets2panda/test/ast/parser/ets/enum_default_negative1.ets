@@ -24,6 +24,6 @@ enum B {
 
 
 /* @@? 17:9 Error SyntaxError: Unsupported operator for String. */
-/* @@? 17:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 17:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 22:9 Error SyntaxError: Only constant expression is expected in the field */
-/* @@? 22:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 22:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */

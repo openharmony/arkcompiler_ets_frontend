@@ -18,4 +18,4 @@ enum Color {
 }
 
 /* @@@ label Error SyntaxError: String Interpolation Expression is not constant expression. */
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

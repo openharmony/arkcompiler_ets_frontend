@@ -26,7 +26,7 @@ enum EStrNotInit {
 }
 
 
-/* @@? 18:15 Error SyntaxError: Invalid enum initialization value */
-/* @@? 19:12 Error SyntaxError: Invalid enum initialization value */
-/* @@? 20:12 Error SyntaxError: Invalid enum initialization value */
+/* @@? 18:15 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 19:12 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 20:12 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 25:9 Error SyntaxError: All items of string-type enumeration should be explicitly initialized. */

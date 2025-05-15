@@ -552,7 +552,7 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
 
             auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), paramExpr);
             if (node != nullptr) {
-                VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+                VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
             }
 
             paramExpr->SetVariable(paramVar);

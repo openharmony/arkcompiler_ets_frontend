@@ -19,4 +19,4 @@ enum InvalidInitTypeEnum {
   Blue
 }
 
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+/* @@? 19:7 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

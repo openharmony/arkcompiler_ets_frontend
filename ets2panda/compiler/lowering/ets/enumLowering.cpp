@@ -82,7 +82,7 @@ bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &en
         auto *init = member->AsTSEnumMember()->Init();
         if constexpr (std::is_same_v<TypeNode, ir::NumberLiteral>) {
             if (!init->IsNumberLiteral() || !init->AsNumberLiteral()->Number().IsInteger()) {
-                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
+                LogError(diagnostic::ERROR_ARKTS_NO_ENUM_MIXED_TYPES, {}, init->Start());
                 hasLoggedError = true;
                 continue;
             }
@@ -95,12 +95,12 @@ bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &en
             // Invalid generated value.
             if (member->AsTSEnumMember()->IsGenerated() &&
                 init->AsNumberLiteral()->Number().GetLong() == std::numeric_limits<int64_t>::min()) {
-                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
+                LogError(diagnostic::ERROR_ARKTS_NO_ENUM_MIXED_TYPES, {}, init->Start());
                 hasLoggedError = true;
             }
         } else if constexpr (std::is_same_v<TypeNode, ir::StringLiteral>) {
             if (!init->IsStringLiteral()) {
-                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
+                LogError(diagnostic::ERROR_ARKTS_NO_ENUM_MIXED_TYPES, {}, init->Start());
                 hasLoggedError = true;
             }
             if (member->AsTSEnumMember()->IsGenerated()) {
@@ -569,7 +569,7 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
                 }
 
                 if (!hasLoggedError) {
-                    LogError(diagnostic::ENUM_INVALID_INIT, {}, itemInit->Start());
+                    LogError(diagnostic::ERROR_ARKTS_NO_ENUM_MIXED_TYPES, {}, itemInit->Start());
                 }
 
                 return ast;

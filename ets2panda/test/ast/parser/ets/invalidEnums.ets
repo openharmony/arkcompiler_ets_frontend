@@ -63,9 +63,9 @@ enum MissingLeftBrace
 /* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
-/* @@? 37:10 Error SyntaxError: Invalid enum initialization value */
+/* @@? 37:10 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 38:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 43:10 Error SyntaxError: Invalid enum initialization value */
+/* @@? 43:10 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 43:10 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 43:10 Error SyntaxError: Unexpected token '?'. */
 /* @@? 44:1 Error SyntaxError: Unexpected token '}'. */

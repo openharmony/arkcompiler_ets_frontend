@@ -1015,7 +1015,7 @@ void ETSParser::ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir:
 void ETSParser::ReportIfVarDeclaration(VariableParsingFlags flags)
 {
     if ((flags & VariableParsingFlags::VAR) != 0) {
-        LogUnexpectedToken(lexer::TokenType::KEYW_VAR);
+        LogError(diagnostic::ERROR_ARKTS_NO_VAR);
     }
 }
 

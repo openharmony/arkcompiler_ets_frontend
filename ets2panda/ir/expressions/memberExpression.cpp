@@ -398,7 +398,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         isSetter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogError(diagnostic::NO_INDEX_ACCESS_METHOD, {}, Start());
+        checker->LogError(diagnostic::ERROR_ARKTS_NO_PROPERTIES_BY_INDEX, {}, Start());
         return nullptr;
     }
 

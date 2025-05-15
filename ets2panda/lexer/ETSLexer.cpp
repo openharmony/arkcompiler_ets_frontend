@@ -26,7 +26,7 @@ void ETSLexer::NextToken(NextTokenFlags flags)
 
 void ETSLexer::ScanHashMark()
 {
-    LogUnexpectedToken(TokenType::PUNCTUATOR_HASH_MARK);
+    LogError(diagnostic::ERROR_ARKTS_NO_PRIVATE_IDENTIFIERS);
 }
 
 bool ETSLexer::ScanCharLiteral()

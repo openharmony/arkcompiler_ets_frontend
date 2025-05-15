@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,19 @@
  * limitations under the License.
  */
 
-namespace ConflictedSpace {
-    export let InnerSpace = 123;
-
-    export namespace InnerSpace {
-        export let value = 456;
+// (arkts-no-decl-merging)
+ class C {
+    field: int = 0;
+    setField(f: int): void {
+        this.field = f;
     }
-}
+ }
 
-/* @@? 19:22 Error TypeError: Variable 'InnerSpace' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!  */
+ class C {
+    setField(s: string): void {
+        this.field = s.length;
+    }
+ }
+
+/* @@? 24:8 Error TypeError: Variable 'C' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+ 

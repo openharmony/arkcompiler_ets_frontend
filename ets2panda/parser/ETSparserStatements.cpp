@@ -298,7 +298,7 @@ bool ETSParser::ValidateForInStatement()
 
 ir::Statement *ETSParser::ParseDebuggerStatement()
 {
-    LogUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
+    LogError(diagnostic::ERROR_ARKTS_NO_DEBUGGER_STATEMENT);
     return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 

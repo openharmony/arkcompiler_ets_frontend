@@ -88,7 +88,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         paramExpression->SetRange(paramIdent->Range());
         auto [paramVar, node] = paramScope->AddParamDecl(ctx->Allocator(), paramExpression);
         if (node != nullptr) {
-            varbinder->ThrowRedeclaration(node->Start(), paramVar->Name());
+            varbinder->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
         }
 
         paramIdent->SetVariable(paramVar);
