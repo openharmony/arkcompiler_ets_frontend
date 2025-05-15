@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 6,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -82,16 +72,6 @@
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         }
     ]
