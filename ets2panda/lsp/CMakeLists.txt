@@ -36,6 +36,7 @@ set(ES2PANDA_LSP_SRC
   ./src/signature_help_items.cpp
   ./src/signature_help.cpp
   ./src/todo_comments.cpp
+  ./src/get_definition_and_bound_span.cpp
   ./src/types.cpp
 )
 
