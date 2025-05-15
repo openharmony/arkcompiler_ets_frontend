@@ -33,6 +33,7 @@ set(ES2PANDA_LSP_SRC
   ./src/line_column_offset.cpp
   ./src/inlay_hints.cpp
   ./src/create_type_help_items.cpp
+  ./src/script_element_kind.cpp
   ./src/signature_help_items.cpp
   ./src/signature_help.cpp
   ./src/todo_comments.cpp

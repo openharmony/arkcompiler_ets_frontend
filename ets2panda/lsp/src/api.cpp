@@ -30,6 +30,7 @@
 #include "suggestion_diagnostics.h"
 #include "brace_matching.h"
 #include "line_column_offset.h"
+#include "script_element_kind.h"
 #include "services/services.h"
 #include "inlay_hints.h"
 #include "signature_help.h"
@@ -66,6 +67,12 @@ DefinitionInfo GetImplementationAtPosition(es2panda_Context *context, size_t pos
 bool IsPackageModule(es2panda_Context *context)
 {
     return reinterpret_cast<public_lib::Context *>(context)->parserProgram->IsPackage();
+}
+
+CompletionEntryKind GetAliasScriptElementKind(es2panda_Context *context, size_t position)
+{
+    auto result = GetAliasScriptElementKindImpl(context, position);
+    return result;
 }
 
 References GetFileReferences(char const *fileName, es2panda_Context *context, bool isPackageModule)
@@ -298,6 +305,7 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     IsPackageModule,
+                    GetAliasScriptElementKind,
                     GetFileReferences,
                     GetDeclInfo,
                     GetReferencesAtPosition,
