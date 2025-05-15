@@ -566,9 +566,7 @@ Signature *ETSChecker::ValidateSignature(
     // setting the boxing/unboxing flag for the arguments if needed.
     // So handle substitution arguments only in the case of unique function or collecting signature phase.
     Signature *const signature =
-        ((flags & TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING) == 0 && !unique)
-            ? baseSignature
-            : MaybeSubstituteTypeParameters(this, baseSignature, typeArguments, arguments, pos, flags);
+        MaybeSubstituteTypeParameters(this, baseSignature, typeArguments, arguments, pos, flags);
     if (signature == nullptr) {
         return nullptr;
     }
@@ -698,21 +696,11 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
         collectSignatures(flags);
     } else {
         for (auto flags : GetFlagVariants()) {
-            // CollectSignatures gathers the possible signatures, but in doing so, it also sets the boxing/unboxing
-            // flags where necessary. Since these might not be the actually used functions in every cases,
-            // this setting needs to be delayed for compatibleSignatures. In case of only one signature,
-            // it is not required, only when the signatures.size() > 1
-            flags = flags | resolveFlags | TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
+            flags = flags | resolveFlags;
             collectSignatures(flags);
-            if (compatibleSignatures.empty()) {
-                continue;
+            if (!compatibleSignatures.empty()) {
+                break;
             }
-            for (auto signature : compatibleSignatures) {
-                flags &= ~TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
-                ValidateSignature(std::make_tuple(signature, typeArguments, flags), arguments, pos,
-                                  argTypeInferenceRequired, signatures.size() == 1);
-            }
-            break;
         }
     }
 
@@ -723,7 +711,22 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
     return compatibleSignatures;
 }
 
-static void UpdateArrayArgs(ETSChecker *checker, Signature *sig, const ArenaVector<ir::Expression *> &arguments)
+static void ClearUnboxingFlags(TypeRelation *relation, Signature *sig, ir::Expression *argument, size_t index)
+{
+    auto identical = relation->IsIdenticalTo(sig->Params()[index]->TsType(), argument->TsType());
+    // NOTE(gaborarontakacs): The unboxing flag, which was added due to overloading, needs to be removed when it's
+    // unnecessary for the most specific signature.
+    // Do not remove the flag for tuples, e.g., `let a = [21 as Number] as [number]`,
+    // because unboxing will be executed later during the function call in this case.
+    // This condition may be removed after refactoring primitive types.
+    if (identical && argument->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG) &&
+        !(argument->IsMemberExpression() && argument->AsMemberExpression()->Object()->TsType()->IsETSTupleType())) {
+        argument->RemoveBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG);
+    }
+}
+
+static void UpdateArrayArgsAndUnboxingFlags(ETSChecker *checker, Signature *sig,
+                                            const ArenaVector<ir::Expression *> &arguments)
 {
     auto const commonArity = std::min(arguments.size(), sig->ArgCount());
     for (size_t index = 0; index < commonArity; ++index) {
@@ -732,6 +735,7 @@ static void UpdateArrayArgs(ETSChecker *checker, Signature *sig, const ArenaVect
         auto flags = TypeRelationFlag::NO_THROW | TypeRelationFlag::BOXING | TypeRelationFlag::UNBOXING |
                      TypeRelationFlag::WIDENING;
         ClearPreferredTypeForArray(checker, argument, paramType, flags, true);
+        ClearUnboxingFlags(checker->Relation(), sig, argument, index);
     }
 }
 
@@ -754,7 +758,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     }
 
     // revalidate signature for arrays
-    UpdateArrayArgs(this, mostSpecificSignature, arguments);
+    UpdateArrayArgsAndUnboxingFlags(this, mostSpecificSignature, arguments);
 
     return mostSpecificSignature;
 }
