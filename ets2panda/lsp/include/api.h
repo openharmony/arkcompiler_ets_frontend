@@ -32,6 +32,7 @@
 #include "find_rename_locations.h"
 #include "completions.h"
 #include "todo_comments.h"
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,20 +57,6 @@ typedef struct ReferenceInfo {
 typedef struct References {
     std::vector<ReferenceInfo> referenceInfos;
 } References;
-
-typedef struct TextSpan {
-    size_t start;
-    size_t length;
-    TextSpan(size_t s, size_t l) : start(s), length(l) {}
-    bool operator==(const TextSpan &other) const
-    {
-        return start == other.start && length == other.length;
-    }
-    bool operator!=(const TextSpan &other) const
-    {
-        return !(*this == other);
-    }
-} TextSpan;
 
 struct TextChange {
     TextSpan span;
@@ -215,36 +202,6 @@ typedef struct DocumentHighlightsReferences {
     std::vector<DocumentHighlights> documentHighlights_;
 } DocumentHighlightsReferences;
 
-struct SymbolDisplayPart {
-private:
-    std::string text_;
-    std::string kind_;
-
-public:
-    explicit SymbolDisplayPart(std::string text = "", std::string kind = "")
-        : text_ {std::move(text)}, kind_ {std::move(kind)}
-    {
-    }
-
-    std::string GetText() const
-    {
-        return text_;
-    }
-    std::string GetKind() const
-    {
-        return kind_;
-    }
-
-    bool operator==(const SymbolDisplayPart &other) const
-    {
-        return text_ == other.text_ && kind_ == other.kind_;
-    }
-    bool operator!=(const SymbolDisplayPart &other) const
-    {
-        return !(*this == other);
-    }
-};
-
 struct DocTagInfo {
 private:
     std::string name_;
@@ -367,7 +324,7 @@ typedef struct LSPAPI {
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
     std::vector<FileTextChanges> (*OrganizeImportsImpl)(es2panda_Context *context, char const *fileName);
     QuickInfo (*getQuickInfoAtPosition)(const char *fileName, es2panda_Context *context, size_t position);
-    TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
+    TextSpan (*getSpanOfEnclosingComment)(es2panda_Context *context, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getSyntacticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
@@ -389,6 +346,8 @@ typedef struct LSPAPI {
     std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(
         char const *fileName, std::vector<ark::es2panda::lsp::TodoCommentDescriptor> &descriptors,
         ark::es2panda::lsp::CancellationToken *cancellationToken);
+    InlayHintList (*provideInlayHints)(es2panda_Context *context, const TextSpan *span);
+    SignatureHelpItems (*getSignatureHelpItems)(es2panda_Context *context, size_t position);
 } LSPAPI;
 
 CAPI_EXPORT LSPAPI const *GetImpl();

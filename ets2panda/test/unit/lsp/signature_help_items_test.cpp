@@ -181,7 +181,7 @@ TEST_F(LSPSignatureHelpItemsTests, CreateSignatureHelpItemTest)
         callExpr = callNode->AsCallExpression();
     }
     ark::es2panda::checker::Signature *signature = callExpr->Signature();
-    ark::es2panda::lsp::SignatureHelpItem item = ark::es2panda::lsp::CreateSignatureHelpItem(*signature);
+    SignatureHelpItem item = ark::es2panda::lsp::CreateSignatureHelpItem(*signature);
     bool found1 = false;
     bool found2 = false;
     EXPECT_FALSE(item.GetPrefixDisplayParts().empty());

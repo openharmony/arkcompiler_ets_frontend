@@ -197,6 +197,11 @@ export class LspTextSpan extends LspNode {
   readonly length: KInt;
 }
 
+export interface TextSpan {
+  start: KInt;
+  length: KInt;
+}
+
 export class LspSymbolDisplayPart extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
@@ -397,4 +402,114 @@ export class LspLineAndCharacter extends LspNode {
     this.line = global.es2panda._getLine(peer);
     this.character = global.es2panda._getChar(peer);
   }
+}
+
+enum LspInlayHintKind {
+  TYPE,
+  PARAMETER,
+  ENUM
+}
+
+export class LspInlayHint extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.text = unpackString(global.es2panda._getInlayHintText(peer));
+    this.number = global.es2panda._getInlayHintNumber(peer);
+    this.kind = global.es2panda._getInlayHintKind(peer);
+    this.whitespaceBefore = global.es2panda._getInlayHintWhitespaceBefore(peer);
+    this.whitespaceAfter = global.es2panda._getInlayHintWhitespaceAfter(peer);
+  }
+  readonly text: string;
+  readonly number: number;
+  readonly kind: LspInlayHintKind;
+  readonly whitespaceBefore: KBoolean;
+  readonly whitespaceAfter: KBoolean;
+}
+
+export class LspInlayHintList extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.inlayHints = new NativePtrDecoder()
+      .decode(global.es2panda._getInlayHints(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspInlayHint(elPeer);
+      });
+  }
+  readonly inlayHints: LspInlayHint[];
+}
+
+export class LspSignatureHelpParameter extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getSignatureHelpParameterName(peer));
+    this.documentation = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpParameterDocumentation(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+    this.displayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpParameterDisplayParts(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+  }
+  readonly name: string;
+  readonly documentation: LspSymbolDisplayPart[];
+  readonly displayParts: LspSymbolDisplayPart[];
+}
+
+export class LspSignatureHelpItem extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.prefixDisplayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItemPrefix(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+    this.suffixDisplayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItemSuffix(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+    this.separatorDisplayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItemSeparator(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+    this.parameters = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItemParameter(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSignatureHelpParameter(elPeer);
+      });
+    this.documentation = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItemDocumentation(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+  }
+  readonly prefixDisplayParts: LspSymbolDisplayPart[];
+  readonly suffixDisplayParts: LspSymbolDisplayPart[];
+  readonly separatorDisplayParts: LspSymbolDisplayPart[];
+  readonly parameters: LspSignatureHelpParameter[];
+  readonly documentation: LspSymbolDisplayPart[];
+}
+
+export class LspSignatureHelpItems extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.items = new NativePtrDecoder()
+      .decode(global.es2panda._getSignatureHelpItem(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSignatureHelpItem(elPeer);
+      });
+    this.applicableSpan = new LspTextSpan(global.es2panda._getApplicableSpan(peer));
+    this.selectedItemIndex = global.es2panda._getSelectedItemIndex(peer);
+    this.argumentIndex = global.es2panda._getArgumentIndex(peer);
+    this.argumentCount = global.es2panda._getArgumentCount(peer);
+  }
+  readonly items: LspSignatureHelpItem[];
+  readonly applicableSpan: LspTextSpan;
+  readonly selectedItemIndex: number;
+  readonly argumentIndex: number;
+  readonly argumentCount: number;
 }

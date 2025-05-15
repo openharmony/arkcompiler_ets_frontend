@@ -93,7 +93,7 @@ void GetTypeHelpItem(std::vector<checker::Type *> *typeParameters, const ir::Ast
         typeParams = node->AsTSInterfaceDeclaration()->TypeParams();
     } else if (node->IsETSStructDeclaration()) {
         result.SetPrefixDisplayParts(
-            CreateStructName(std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name())));
+            SignatureCreateStructName(std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name())));
         typeParams = node->AsETSStructDeclaration()->Definition()->TypeParams();
     } else if (node->IsTSEnumDeclaration()) {
         result.SetPrefixDisplayParts(CreateEnumName(std::string(node->AsTSEnumDeclaration()->Key()->Name())));

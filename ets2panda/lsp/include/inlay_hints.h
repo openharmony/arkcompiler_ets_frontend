@@ -30,24 +30,6 @@ struct ParamInfoObj {
     bool isFirstVariadicArgument;
 };
 
-enum class InlayHintKind {
-    TYPE,
-    PARAMETER,
-    ENUM,
-};
-
-struct InlayHint {
-    std::string text;
-    int number;
-    InlayHintKind kind;
-    bool whitespaceBefore;
-    bool whitespaceAfter;
-};
-
-struct InlayHintList {
-    std::vector<InlayHint> hints;
-};
-
 int GetFullWidth(const ir::AstNode *node);
 void AddEnumMemberValueHints(const std::string &text, const int position, InlayHintList *result);
 void AddTypeHints(const std::string &text, const int position, InlayHintList *result);
@@ -66,7 +48,8 @@ void GetFunctionParameterTypeForHints(const ir::AstNode *node, InlayHintList *re
 bool IsSignatureSupportingReturnAnnotation(const ir::AstNode *node);
 void Visitor(const ir::AstNode *node, const TextSpan *span, const ir::AstNode *parent,
              CancellationToken cancellationToken, InlayHintList *result);
-InlayHintList ProvideInlayHints(const char *file, const TextSpan *span, CancellationToken cancellationToken);
+InlayHintList ProvideInlayHintsImpl(es2panda_Context *context, const TextSpan *span,
+                                    CancellationToken &cancellationToken, UserPreferences &preferences);
 
 }  // namespace ark::es2panda::lsp
 

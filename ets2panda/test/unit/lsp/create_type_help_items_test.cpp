@@ -138,7 +138,7 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemTest)
         ctxTypeHelp = initializer.CreateContext(files.at(0).c_str(), ES2PANDA_STATE_CHECKED, texts.at(0).c_str());
         auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctxTypeHelp);
         auto astNode = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-        ark::es2panda::lsp::SignatureHelpItem result;
+        SignatureHelpItem result;
         std::vector<ark::es2panda::checker::Type *> typeParameters;
         astNode->FindChild([&typeParameters, &result](const ark::es2panda::ir::AstNode *child) {
             if (child->IsClassDeclaration()) {

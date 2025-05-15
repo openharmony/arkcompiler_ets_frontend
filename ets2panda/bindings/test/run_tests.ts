@@ -23,29 +23,22 @@ import {
   ModuleDescriptor,
   generateArkTsConfigByModules
 } from '../src/index';
+import { testCases } from './cases';
+import { LspCompletionEntry } from '../src/lspNode';
 
-interface TestConfig {
-  expectedFilePath: string;
-  // CC-OFFNXT(no_explicit_any) project code style
-  [key: string]: Array<any> | string;
+interface ComparisonOptions {
+  subMatch?: boolean;
 }
 
-interface TestCases {
-  [testName: string]: TestConfig;
+interface ComparisonOutcome {
+  passed: boolean;
+  expectedJSON?: string;
+  actualJSON?: string;
 }
 
 let updateMode = false;
 
-function checkEnvironment(testDir: string): void {
-  const testCasesFilePath = path.join(testDir, 'testcases', 'cases.json');
-  if (!fs.existsSync(testCasesFilePath)) {
-    console.error(`Test cases file not found: ${testCasesFilePath}`);
-    process.exit(1);
-  }
-}
-
 function getModules(projectRoot: string): ModuleDescriptor[] {
-  const testCases = JSON.parse(fs.readFileSync(path.join(projectRoot, 'cases.json'), 'utf-8')) as TestCases;
   return Object.keys(testCases).map((name) => {
     const modulePath = path.join(projectRoot, name);
     return {
@@ -138,21 +131,100 @@ function normalizeData(obj: any): any {
 }
 
 // CC-OFFNXT(no_explicit_any) project code style
-function compareResultsHelper(testName: string, actual: any, expected: any): boolean {
-  const normalizedActual = normalizeData(actual);
+function isSubObject(actual: any, expected: any): boolean {
+  if (typeof expected !== 'object' || expected === null) {
+    return actual === expected;
+  }
+
+  if (typeof actual !== 'object' || actual === null) {
+    return false;
+  }
+
+  if (Array.isArray(expected)) {
+    if (!Array.isArray(actual)) {
+      return false;
+    }
+    return expected.every((expectedItem) => actual.some((actualItem) => isSubObject(actualItem, expectedItem)));
+  }
+
+  for (const key in expected) {
+    if (Object.prototype.hasOwnProperty.call(expected, key)) {
+      if (!Object.prototype.hasOwnProperty.call(actual, key)) {
+        return false;
+      }
+      if (!isSubObject(actual[key], expected[key])) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function performComparison(
+  normalizedActual: unknown,
+  expected: unknown,
+  options: ComparisonOptions = {}
+): ComparisonOutcome {
+  const { subMatch = false } = options;
+  if (subMatch) {
+    if (isSubObject(normalizedActual, expected)) {
+      return { passed: true };
+    }
+    return {
+      passed: false,
+      expectedJSON: JSON.stringify(expected, null, 2),
+      actualJSON: JSON.stringify(normalizedActual, null, 2)
+    };
+  }
 
   const actualJSON = JSON.stringify(normalizedActual, null, 2);
   const expectedJSON = JSON.stringify(expected, null, 2);
 
   if (actualJSON === expectedJSON) {
+    return { passed: true };
+  }
+
+  return {
+    passed: false,
+    expectedJSON: expectedJSON,
+    actualJSON: actualJSON
+  };
+}
+
+function compareResultsHelper(
+  testName: string,
+  normalizedActual: unknown,
+  expected: unknown,
+  options: ComparisonOptions = {}
+): boolean {
+  const comparison = performComparison(normalizedActual, expected, options);
+
+  if (comparison.passed) {
     console.log(`[${testName}] ✅ Passed`);
     return true;
-  } else {
-    console.log(`[${testName}] ❌ Failed`);
-    console.log(`Expected: ${expectedJSON}`);
-    console.log(`Actual:   ${actualJSON}`);
   }
+
+  console.log(`[${testName}] ❌ Failed`);
+  console.log(`Expected: ${comparison.expectedJSON}`);
+  console.log(`Actual:   ${comparison.actualJSON}`);
   return false;
+}
+
+function compareGetCompletionResult(testName: string, actual: unknown, expected: unknown): boolean {
+  const completionResult = actual as LspCompletionInfo;
+  const actualEntries = completionResult.entries as LspCompletionEntry[];
+  const expectedEntries = expected as {
+    name: string;
+    sortText: string;
+    insertText: string;
+    kind: number;
+    data: null;
+  }[];
+
+  return compareResultsHelper(testName, normalizeData(actualEntries), expectedEntries, {
+    subMatch: true
+  } as ComparisonOptions);
 }
 
 function findTextDefinitionPosition(sourceCode: string): number {
@@ -169,12 +241,7 @@ function findTextDefinitionPosition(sourceCode: string): number {
   throw new Error('Could not find Text definition in source code');
 }
 
-function compareGetDefinitionResult(
-  testName: string,
-  index: string,
-  actual: any,
-  expected: Record<string, string | number>
-) {
+function compareGetDefinitionResult(testName: string, actual: any, expected: Record<string, string | number>): boolean {
   // This is the definition info for the UI component.
   // File in the SDK might changed, so the offset needs to be checked dynamically.
   if (expected['fileName'] === 'text.d.ets') {
@@ -186,22 +253,26 @@ function compareGetDefinitionResult(
       ...expected,
       start: expectedStart
     };
-    return compareResultsHelper(`${testName}:${index}`, actual, expectedResult);
+    return compareResultsHelper(testName, normalizeData(actual), expectedResult);
   }
-  return compareResultsHelper(`${testName}:${index}`, actual, expected);
+  return compareResultsHelper(testName, normalizeData(actual), expected);
 }
 
 // CC-OFFNXT(no_explicit_any) project code style
-function compareResults(testName: string, index: string, actual: any, expected: any) {
+function compareResults(testName: string, index: string, actual: unknown, expected: unknown): boolean {
+  const name = `${testName}:${index}`;
   if (testName === 'getDefinitionAtPosition') {
-    return compareGetDefinitionResult(testName, index, actual, expected);
+    return compareGetDefinitionResult(name, actual, expected as Record<string, string | number>);
   }
-  return compareResultsHelper(`${testName}:${index}`, actual, expected);
+  if (testName === 'getCompletionAtPosition') {
+    return compareGetCompletionResult(name, actual, expected);
+  }
+
+  return compareResultsHelper(name, normalizeData(actual), expected);
 }
 
 function runTests(testDir: string, lsp: Lsp) {
   console.log('Running tests...');
-  const testCases = JSON.parse(fs.readFileSync(path.join(testDir, 'testcases', 'cases.json'), 'utf-8')) as TestCases;
   if (!testCases) {
     console.error('Failed to load test cases');
     return;
@@ -265,7 +336,6 @@ if (require.main === module) {
     updateMode = true;
   }
   const testDir = path.resolve(process.argv[2]);
-  checkEnvironment(testDir);
   const buildSdkPath = path.join(testDir, 'ets', 'ets1.2');
   const projectRoot = path.join(testDir, 'testcases');
   const modules = getModules(projectRoot);
