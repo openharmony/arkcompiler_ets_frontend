@@ -145,11 +145,13 @@ panda_gen(
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
         ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
+        ${DIAGNOSTIC_DIR}/isolated_declgen.yaml
     TARGET_NAME es2panda_diagnostic_gen
     TEMPLATES diagnostic.h.erb
     SOURCE ${DIAGNOSTIC_DIR}
     DESTINATION ${GENERATED_DIR}
     API
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
@@ -534,6 +536,7 @@ set(ES2PANDA_LIB_SRC
   checker/TSAnalyzer.cpp
   checker/TSAnalyzerUnreachable.cpp
   checker/JSchecker.cpp
+  checker/IsolatedDeclgenChecker.cpp
   checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
   checker/ets/etsWarningAnalyzer.cpp

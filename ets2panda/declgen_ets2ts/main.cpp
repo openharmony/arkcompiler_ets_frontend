@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <iostream>
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "declgenEts2Ts.h"
@@ -25,6 +26,7 @@ static void PrintUsage()
     std::cerr << "    --export-all         Treat all top level statements as exported\n";
     std::cerr << "    --output-dets=[FILE] Path to output .d.ets file\n";
     std::cerr << "    --output-ets=[FILE]  Path to output .ets file\n";
+    std::cerr << "    --generate-decl:enable-isolated Generate isolated decl\n";
     std::cerr << "    --help               Print this message and exit. Default: false\n";
     std::cerr << "Tail arguments:\n";
     std::cerr << "input: input file\n";
@@ -66,9 +68,19 @@ static DeclgenOptions ParseOptions(Span<const char *const> args)
                    std::strchr(args[i], '=') != nullptr) {
             std::string arg = args[i];
             options.outputEts = arg.substr(std::strlen("--output-ets="));
+        } else if (std::strcmp(args[i], "--generate-decl:enable-isolated") == 0) {
+            options.isIsolatedDeclgen = true;
         }
     }
     return options;
+}
+
+static void DestroyContextAndConfig(const es2panda_Impl *impl, es2panda_Context *ctx, es2panda_Config *cfg,
+                                    const char **newArgv)
+{
+    impl->DestroyContext(ctx);
+    impl->DestroyConfig(cfg);
+    delete[] newArgv;
 }
 
 static int Run(int argc, const char **argv)
@@ -95,16 +107,31 @@ static int Run(int argc, const char **argv)
     auto *ctxImpl = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *checker = reinterpret_cast<checker::ETSChecker *>(ctxImpl->checker);
 
+    auto *isolatedDeclgenChecker = reinterpret_cast<checker::IsolatedDeclgenChecker *>(ctxImpl->isolatedDeclgenChecker);
+    impl->ProceedToState(ctx, ES2PANDA_STATE_BOUND);
+    if (declgenOptions.isIsolatedDeclgen) {
+        isolatedDeclgenChecker->CheckBeforeChecker();
+        if (ctxImpl->diagnosticEngine->IsAnyError()) {
+            DestroyContextAndConfig(impl, ctx, cfg, newArgv);
+            return 1;
+        }
+    }
+
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    if (declgenOptions.isIsolatedDeclgen) {
+        isolatedDeclgenChecker->CheckAfterChecker();
+        if (ctxImpl->diagnosticEngine->IsAnyError()) {
+            DestroyContextAndConfig(impl, ctx, cfg, newArgv);
+            return 1;
+        }
+    }
 
     int res = 0;
     if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, declgenOptions)) {
         res = 1;
     }
 
-    impl->DestroyContext(ctx);
-    impl->DestroyConfig(cfg);
-    delete[] newArgv;
+    DestroyContextAndConfig(impl, ctx, cfg, newArgv);
 
     return res;
 }

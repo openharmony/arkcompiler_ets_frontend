@@ -280,7 +280,8 @@ size_t SizeOfNodeTest::SizeOf<ScriptFunction>()
         sizeof(node->signature_) +
         sizeof(node->preferredReturnType_) +
         Align(sizeof(node->lang_)) +
-        sizeof(node->returnStatements_);
+        sizeof(node->returnStatements_) +
+        sizeof(node->isolatedDeclGenInferType_);
     // clang-format on
 }
 

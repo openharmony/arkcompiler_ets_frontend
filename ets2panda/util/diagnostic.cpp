@@ -170,6 +170,8 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "ArkTS config error";
         case DiagnosticType::SUGGESTION:
             return "SUGGESTION";
+        case DiagnosticType::ISOLATED_DECLGEN:
+            return "Isolated declgen error";
         default:
             ES2PANDA_UNREACHABLE();
     }

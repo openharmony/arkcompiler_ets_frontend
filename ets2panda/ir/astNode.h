@@ -524,6 +524,7 @@ public:
     std::string DumpJSON() const;
     std::string DumpEtsSrc() const;
     std::string DumpDecl() const;
+    std::string IsolatedDumpDecl() const;
 
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Dump(ir::SrcDumper *dumper) const = 0;
