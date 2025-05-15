@@ -46,6 +46,7 @@ set(ES2PANDA_LSP_SRC
   ./src/todo_comments.cpp
   ./src/get_definition_and_bound_span.cpp
   ./src/types.cpp
+  ./src/navigate_to.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})

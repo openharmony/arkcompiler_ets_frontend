@@ -47,6 +47,7 @@ ir::AstNode *GetEnumMemberByName(ir::AstNode *node, const util::StringView &name
 std::string ModifiersToString(ir::ModifierFlags flags);
 std::string GetKindModifiers(ir::AstNode *node);
 bool IsClass(ir::AstNode *node);
+ir::AstNode *GetContainerNode(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 
