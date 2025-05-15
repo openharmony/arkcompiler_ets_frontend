@@ -63,6 +63,36 @@
             "suggest": "",
             "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
             "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 43,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
+            "endColumn": 43,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 1,
+            "endLine": 28,
+            "endColumn": 43,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
+            "severity": "ERROR"
         }
     ]
 }

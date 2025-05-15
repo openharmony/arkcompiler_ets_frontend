@@ -22,3 +22,7 @@ let foo = GeneratedImportVar_1.getPropertyByName('foo');
 -foo.getPropertyByName("num").toNumber();
 !foo.getPropertyByName("num").toNumber();
 ~foo.getPropertyByName("num").toNumber();
++(foo.getPropertyByName("num").toNumber());
+-(foo.getPropertyByName("num").toNumber());
+!(foo.getPropertyByName("num").toNumber());
+~(foo.getPropertyByName("num").toNumber());

@@ -20,3 +20,7 @@ import {foo} from "./interop_property_num_js"
 -foo.num;
 !foo.num;
 ~foo.num;
++(foo.num);
+-(foo.num);
+!(foo.num);
+~(foo.num);
