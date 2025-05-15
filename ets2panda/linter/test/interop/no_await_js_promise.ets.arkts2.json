@@ -1,0 +1,258 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 89,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 89,
+            "problem": "InterOpImportJs",
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 10,
+            "endLine": 20,
+            "endColumn": 17,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 10,
+            "endLine": 24,
+            "endColumn": 21,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 16,
+            "endLine": 24,
+            "endColumn": 21,
+            "problem": "InteropJsObjectCallStaticFunc",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 16,
+            "endLine": 24,
+            "endColumn": 21,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 10,
+            "endLine": 28,
+            "endColumn": 25,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 10,
+            "endLine": 32,
+            "endColumn": 27,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 16,
+            "endLine": 32,
+            "endColumn": 27,
+            "problem": "InteropJsObjectCallStaticFunc",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 16,
+            "endLine": 32,
+            "endColumn": 27,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 10,
+            "endLine": 36,
+            "endColumn": 26,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 12,
+            "endLine": 41,
+            "endColumn": 19,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 12,
+            "endLine": 45,
+            "endColumn": 27,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 20,
+            "endLine": 49,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 3,
+            "endLine": 52,
+            "endColumn": 4,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 12,
+            "endLine": 51,
+            "endColumn": 28,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 12,
+            "endLine": 55,
+            "endColumn": 23,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 18,
+            "endLine": 55,
+            "endColumn": 23,
+            "problem": "InteropJsObjectCallStaticFunc",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 18,
+            "endLine": 55,
+            "endColumn": 23,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 2,
+            "endLine": 61,
+            "endColumn": 2,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 31,
+            "endLine": 60,
+            "endColumn": 38,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 37,
+            "endLine": 64,
+            "endColumn": 54,
+            "problem": "NoAwaitJsPromise",
+            "suggest": "",
+            "rule": "\"Await\" operator can't be used with interop objects (arkts-interop-js2s-await-js-promise)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 43,
+            "endLine": 64,
+            "endColumn": 54,
+            "problem": "InteropJsObjectCallStaticFunc",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 43,
+            "endLine": 64,
+            "endColumn": 54,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        }
+    ]
+}
