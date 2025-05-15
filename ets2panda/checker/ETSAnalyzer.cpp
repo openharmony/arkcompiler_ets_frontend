@@ -1694,8 +1694,12 @@ checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checke
         return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
     }
 
-    if (baseType->IsETSFunctionType() || baseType->IsETSTupleType()) {
+    if (baseType->IsETSTupleType()) {
         return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
+    }
+
+    if (baseType->IsETSFunctionType()) {
+        return expr->SetAndAdjustType(checker, checker->GlobalBuiltinFunctionType());
     }
 
     if (baseType->IsETSObjectType()) {
