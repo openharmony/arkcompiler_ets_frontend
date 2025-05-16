@@ -2073,7 +2073,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
         }
         case TypeFlag::ETS_OBJECT: {
             VarBinder()->ThrowError(caseType->AsETSObjectType()->Variable()->Declaration()->Node()->Start(),
-                                    "not implemented");
+                                    diagnostic::NOT_IMPLEMENTED);
             return "error";
         }
         default: {

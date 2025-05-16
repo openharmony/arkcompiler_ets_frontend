@@ -16,4 +16,4 @@
 export {foo} from "./export"
 export /* @@ label */{foo} from "./export_2"
 
-/* @@@ label Error TypeError: Ambiguous export "foo" */
+/* @@@ label Error TypeError: Ambiguous export 'foo' */

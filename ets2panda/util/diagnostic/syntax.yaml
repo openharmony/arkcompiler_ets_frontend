@@ -1213,5 +1213,9 @@ syntax:
   message: "Missing body in {} statement"
 
 - name: MISSING_LOOP_CONDITION
-  id: 3001
+  id: 301
   message: "Missing condition in {} statement"
+
+- name: PRIVATE_FIELD_MISMATCH
+  id: 302
+  message: "Private field '{}' must be declared in an enclosing class"

@@ -187,7 +187,12 @@ public:
     void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal);
     void AddFunctionThisParam(ir::ScriptFunction *func);
 
-    void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const override;
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind) const
+    {
+        ThrowError(pos, kind, util::DiagnosticMessageParams {});
+    }
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                    const util::DiagnosticMessageParams &params) const override;
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports) noexcept
     {
@@ -281,6 +286,8 @@ private:
     void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                   const parser::Program *importProgram, const varbinder::GlobalScope *importGlobalScope,
                                   const ir::ETSImportDeclaration *import);
+    void ThrowRedeclarationError(const lexer::SourcePosition &pos, const Variable *const var,
+                                 const Variable *const variable, util::StringView localName);
 
     RecordTable globalRecordTable_;
     RecordTable *recordTable_;

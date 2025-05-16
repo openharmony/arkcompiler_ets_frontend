@@ -27,5 +27,6 @@
     }
  }
 
-/* @@? 24:8 Error TypeError: Variable 'C' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
+/* @@? 24:8 Error TypeError: Variable 'C' has already been declared. */
+/* @@? 24:8 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
  
