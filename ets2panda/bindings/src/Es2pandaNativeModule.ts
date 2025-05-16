@@ -14,7 +14,16 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr, KInt32ArrayPtr } from './InteropTypes';
+import {
+  KNativePointer as KPtr,
+  KInt,
+  KBoolean,
+  KNativePointer,
+  KDouble,
+  KUInt,
+  KStringPtr,
+  KInt32ArrayPtr
+} from './InteropTypes';
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from './loadLibraries';
 import { throwError } from './utils';
@@ -720,8 +729,13 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getCodeFixesAtPosition(context: KNativePointer, startPosition: KInt, endPosition: KInt,
-    errorCodesPtr: KInt32ArrayPtr, codeLength: KInt): KPtr {
+  _getCodeFixesAtPosition(
+    context: KNativePointer,
+    startPosition: KInt,
+    endPosition: KInt,
+    errorCodesPtr: KInt32ArrayPtr,
+    codeLength: KInt
+  ): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -837,6 +851,43 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _MemInitialize(pandaLibPath: KStringPtr): void {
+    throw new Error('Not implemented');
+  }
+
+  _MemFinalize(): void {
+    throw new Error('Not implemented');
+  }
+
+  _CreateGlobalContext(configPtr: KNativePointer, externalFileList: string[] | Uint8Array, fileNum: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _DestroyGlobalContext(contextPtr: KPtr): void {
+    throw new Error('Not implemented');
+  }
+
+  _CreateCacheContextFromString(
+    config: KPtr,
+    source: String,
+    filename: String,
+    globalContext: KPtr,
+    isExternal: boolean
+  ): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _RemoveFileCache(globalContextPtr: KPtr, filename: String): void {
+    throw new Error('Not implemented');
+  }
+
+  _AddFileCache(globalContextPtr: KPtr, filename: String): void {
+    throw new Error('Not implemented');
+  }
+
+  _InvalidateFileCache(globalContextPtr: KPtr, filename: String): void {
+    throw new Error('Not implemented');
+  }
 }
 
 export function initEs2panda(): Es2pandaNativeModule {

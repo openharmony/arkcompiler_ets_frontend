@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-import { KNativePointer as KPtr } from './InteropTypes';
+import { KNativePointer, KNativePointer as KPtr } from './InteropTypes';
 import { global } from './global';
 import { throwError } from './utils';
 import { passString, passStringArray, unpackString } from './private';
 import { isNullPtr } from './Wrapper';
+import { Worker as ThreadWorker } from 'worker_threads';
 
 export const arrayOfNullptr = new BigUint64Array([BigInt(0)]);
 
@@ -109,6 +110,25 @@ export class Context extends ArktsObject {
     }
     return global.es2pandaPublic._CreateContextFromString(cfg.peer, passString(source), passString(filePath));
   }
+
+  static lspCreateCacheContextFromString(
+    source: string,
+    filePath: string,
+    cfg: Config,
+    globalContextPtr: KNativePointer,
+    isExternal: boolean
+  ): KPtr {
+    if (cfg === undefined) {
+      throwError(`Config not initialized`);
+    }
+    return global.es2pandaPublic._CreateCacheContextFromString(
+      cfg.peer,
+      passString(source),
+      passString(filePath),
+      globalContextPtr,
+      isExternal
+    );
+  }
 }
 
 // ProjectConfig begins
@@ -195,4 +215,33 @@ export interface ModuleInfo {
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+}
+
+export interface Job {
+  id: string;
+  isDeclFile: boolean;
+  isInCycle?: boolean;
+  fileList: string[];
+  dependencies: string[];
+  dependants: string[];
+  isValid: boolean;
+}
+
+export interface JobInfo {
+  id: string;
+  filePath: string;
+  arktsConfigFile: string;
+  globalContextPtr: KNativePointer;
+  buildConfig: BuildConfig;
+  isValid: boolean;
+}
+
+export interface FileDepsInfo {
+  dependencies: Record<string, string[]>;
+  dependants: Record<string, string[]>;
+}
+
+export interface WorkerInfo {
+  worker: ThreadWorker;
+  isIdle: boolean;
 }

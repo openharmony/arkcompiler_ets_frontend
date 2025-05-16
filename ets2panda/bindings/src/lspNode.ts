@@ -20,7 +20,11 @@ import { isNullPtr } from './Wrapper';
 import { global } from './global';
 import { NativePtrDecoder } from './Platform';
 
-enum HierarchyType { OTHERS, INTERFACE, CLASS };
+enum HierarchyType {
+  OTHERS,
+  INTERFACE,
+  CLASS
+}
 
 export enum SetterStyle {
   METHOD = 0,
@@ -34,7 +38,14 @@ export enum AccessModifierStyle {
   PRIVATE
 }
 
-enum ClassRelationKind { UNKNOWN, INTERFACE, CLASS, FIELD, METHOD, PROPERTY };
+enum ClassRelationKind {
+  UNKNOWN,
+  INTERFACE,
+  CLASS,
+  FIELD,
+  METHOD,
+  PROPERTY
+}
 
 export abstract class LspNode {
   readonly peer: KNativePointer;

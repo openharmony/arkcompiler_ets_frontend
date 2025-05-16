@@ -23,5 +23,6 @@ export enum LANGUAGE_VERSION {
   ARKTS_HYBRID = 'hybrid'
 }
 
+export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
