@@ -102,6 +102,10 @@ export interface Autofix {
   replacementText: string;
   start: number;
   end: number;
+  line?: number;
+  column?: number;
+  endLine?: number;
+  endColumn?: number;
 }
 
 export class Autofixer {
