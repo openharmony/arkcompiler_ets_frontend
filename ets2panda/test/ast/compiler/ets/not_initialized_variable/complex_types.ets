@@ -35,8 +35,8 @@ export let plug: Plug
 
 console.log(car, animal, mutant, jsvalue, plug)
 
-/* @@? 36:13 Warning Warning: Variable 'car' is used before being assigned. */
-/* @@? 36:18 Warning Warning: Variable 'animal' is used before being assigned. */
-/* @@? 36:26 Warning Warning: Variable 'mutant' is used before being assigned. */
-/* @@? 36:34 Warning Warning: Variable 'jsvalue' is used before being assigned. */
-/* @@? 36:43 Warning Warning: Variable 'plug' is used before being assigned. */
+/* @@? 36:13 Error TypeError: Variable 'car' is used before being assigned. */
+/* @@? 36:18 Error TypeError: Variable 'animal' is used before being assigned. */
+/* @@? 36:26 Error TypeError: Variable 'mutant' is used before being assigned. */
+/* @@? 36:34 Error TypeError: Variable 'jsvalue' is used before being assigned. */
+/* @@? 36:43 Error TypeError: Variable 'plug' is used before being assigned. */

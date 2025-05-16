@@ -90,7 +90,7 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
 TEST_F(ASTVerifierTest, AsyncLambda1)
 {
     char const *text = R"(
-        let fs: ((p: int) => int)[]
+        let fs: ((p: int) => int)[] = [];
         async function foo(i: int): Promise<((p: int) => int)> {
             return fs[i]
         }

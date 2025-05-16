@@ -806,4 +806,4 @@
     }
   }
 }
-Warning: Variable 'func' is used before being assigned. [FunctionType2.ets:23:11]
+TypeError: Variable 'func' is used before being assigned. [FunctionType2.ets:23:11]

@@ -480,7 +480,9 @@ void AssignAnalyzer::ProcessClassDefStaticFields(const ir::ClassDefinition *clas
     for (const auto it : classDef->Body()) {
         if (it->IsClassStaticBlock() ||
             (it->IsStatic() && it->IsMethodDefinition() &&
-             it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD))) {
+             (it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD) ||
+              it->AsMethodDefinition()->Key()->AsIdentifier()->Name().StartsWith(
+                  compiler::Signatures::INITIALIZER_BLOCK_INIT)))) {
             AnalyzeNodes(it);
             ClearPendingExits();
         }
@@ -1349,6 +1351,17 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
     return ret;
 }
 
+static bool IsDefaultValueType(const Type *type, bool isNonReadonlyField)
+{
+    if (type == nullptr) {
+        return false;
+    }
+    return (type->IsETSPrimitiveType() || type->IsETSNeverType() || type->IsETSUndefinedType() ||
+            type->IsETSNullType() ||
+            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+}
+
 bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 {
     ES2PANDA_ASSERT(node != nullptr);
@@ -1366,11 +1379,7 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
     } else {
         ES2PANDA_UNREACHABLE();
     }
-
-    return type != nullptr &&
-           (type->IsETSPrimitiveType() ||
-            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
-                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+    return IsDefaultValueType(type, isNonReadonlyField);
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
@@ -1457,7 +1466,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             if (node->IsClassProperty()) {
                 checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
-                Warning(diagnostic::USE_BEFORE_INIT, util::DiagnosticMessageParams {Capitalize(type), name}, pos);
+                checker_->LogError(diagnostic::USE_BEFORE_INIT, {Capitalize(type), name}, pos);
             }
         }
     }

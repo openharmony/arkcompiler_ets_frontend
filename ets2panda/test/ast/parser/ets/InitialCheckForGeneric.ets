@@ -26,5 +26,5 @@ function main(): void {
     foo<string, string>()
 }
 
-/* @@@ label Warning Warning: Variable 'u' is used before being assigned.  */
-/* @@@ label1 Warning Warning: Variable 'v' is used before being assigned.  */
+/* @@@ label Error TypeError: Variable 'u' is used before being assigned.  */
+/* @@@ label1 Error TypeError: Variable 'v' is used before being assigned.  */

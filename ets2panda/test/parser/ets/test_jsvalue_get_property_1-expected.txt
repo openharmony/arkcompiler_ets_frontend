@@ -551,4 +551,4 @@
     }
   }
 }
-Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_property_1.ets:17:21]
+TypeError: Variable 'v' is used before being assigned. [test_jsvalue_get_property_1.ets:17:21]

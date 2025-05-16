@@ -19,5 +19,5 @@ function fn(): void {
     /* @@ label */v.prop_name = /* @@ label1 */new_prop_value;
 }
 
-/* @@@ label Warning Warning: Variable 'v' is used before being assigned.  */
-/* @@@ label1 Warning Warning: Variable 'new_prop_value' is used before being assigned.  */
+/* @@@ label Error TypeError: Variable 'v' is used before being assigned.  */
+/* @@@ label1 Error TypeError: Variable 'new_prop_value' is used before being assigned.  */

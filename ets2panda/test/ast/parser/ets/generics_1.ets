@@ -36,5 +36,5 @@ function main(): void {
     /* @@ label */d.b.a.c = 127;
 }
 
-/* @@@ label Warning Warning: Variable 'd' is used before being assigned.  */
+/* @@@ label Error TypeError: Variable 'd' is used before being assigned.  */
 /* @@@ label Error TypeError: There were errors during assign analysis (1)  */
