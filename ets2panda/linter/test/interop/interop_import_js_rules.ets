@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use static';
 
 import { foo } from "./oh_modules/interop_import_js_rules"
 import { ff1, ff2 } from "./oh_modules/interop_import_js_rules"
@@ -24,6 +25,8 @@ import { ff3 } from "./oh_modules/interop_import_js_rules"
 import { ff4 } from "./oh_modules/interop_import_js_rules"
 
 import { handle } from "./oh_modules/interop_import_js_rules"
+
+import { expand } from "./oh_modules/interop_import_js_rules"
 
 if (foo.isGood) {}
 
@@ -59,3 +62,6 @@ let lambda = (p: Person) => {}
 
 handle(foo2)
 handle(lambda)
+
+class X{a = 1; b= 2; c= 3}
+expand(new X()) // ERROR expand-static

@@ -159,6 +159,7 @@ faultDesc[FaultID.DollarBindingNotSupported] = 'Link decorator passing';
 faultDesc[FaultID.ExtendDecoratorNotSupported] = '"@Extend" decorator';
 faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep style consistent';
 faultDesc[FaultID.InteropJsObjectConditionJudgment] = 'Interop JS Object usage in a condition';
+faultDesc[FaultID.InteropJsObjectExpandStaticInstance] = 'Interop JS function usage';
 faultDesc[FaultID.ExplicitFunctionType] = 'Not explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';

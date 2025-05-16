@@ -4217,7 +4217,7 @@ export class Autofixer {
     const replacement = this.printer.printNode(ts.EmitHint.Unspecified, propertyAccessExpr, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: replacement }];
   }
-  
+
   fixBuilderDecorators(decorator: ts.Decorator): Autofix[] | undefined {
     const newDecorator = ts.factory.createDecorator(ts.factory.createIdentifier('Builder'));
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, decorator.getSourceFile());

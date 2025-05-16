@@ -271,6 +271,8 @@ cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (a
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';
 cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)';
+cookBookTag[269] =
+  'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
 cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
 cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
 cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';
@@ -330,12 +332,15 @@ cookBookTag[346] = 'Using "Symbol.iterator" is not allowed in this API (arkts-bu
 cookBookTag[347] = 'Not support propertydescriptor (arkts-builtin-no-property-descriptor)';
 cookBookTag[348] = 'API is not support ctor signature and func (arkts-builtin-cotr)';
 cookBookTag[349] = 'SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)';
-cookBookTag[350] = 'The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)';
-cookBookTag[351] = 'The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)';
+cookBookTag[350] =
+  'The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)';
+cookBookTag[351] =
+  'The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)';
 cookBookTag[355] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)';
 cookBookTag[356] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)';
 cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
-cookBookTag[358] = 'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
+cookBookTag[358] =
+  'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

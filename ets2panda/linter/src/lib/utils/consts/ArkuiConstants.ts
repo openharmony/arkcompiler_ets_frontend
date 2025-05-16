@@ -46,7 +46,13 @@ export const observedDecoratorName: Set<string> = new Set([
   'Track'
 ]);
 
-export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent', 'LocalBuilder']);
+export const skipImportDecoratorName: Set<string> = new Set([
+  'Extend',
+  'Styles',
+  'Sendable',
+  'Concurrent',
+  'LocalBuilder'
+]);
 
 export const ENTRY_DECORATOR_NAME = 'Entry';
 export const ENTRY_STORAGE_PROPERITY = 'storage';

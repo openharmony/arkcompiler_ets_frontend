@@ -14,234 +14,686 @@
     "limitations under the License."
   ],
   "result": [
+    {
+      "line": 17,
+      "column": 1,
+      "endLine": 17,
+      "endColumn": 59,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 1,
+      "endLine": 17,
+      "endColumn": 59,
+      "problem": "InterOpImportJs",
+      "autofix": [
         {
-            "line": 28,
-            "column": 5,
-            "endLine": 28,
-            "endColumn": 15,
-            "problem": "InteropJsObjectConditionJudgment",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('isGood').toBoolean()",
-                    "start": 1031,
-                    "end": 1041
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
-            "severity": "ERROR"
+          "start": 619,
+          "end": 677,
+          "replacementText": ""
         },
         {
-            "line": 30,
-            "column": 5,
-            "endLine": 30,
-            "endColumn": 11,
-            "problem": "InteropJsObjectConditionJudgment",
-            "autofix": [
-                {
-                    "replacementText": "ff1.getPropertyByName('f1').toNumber()",
-                    "start": 1051,
-                    "end": 1057
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 34,
-            "column": 1,
-            "endLine": 34,
-            "endColumn": 21,
-            "problem": "InteropJsObjectInheritance",
-            "suggest": "",
-            "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 38,
-            "column": 1,
-            "endLine": 38,
-            "endColumn": 21,
-            "problem": "InteropJsObjectInheritance",
-            "suggest": "",
-            "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 3,
-            "endLine": 41,
-            "endColumn": 8,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 3,
-            "endLine": 41,
-            "endColumn": 8,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 3,
-            "endLine": 41,
-            "endColumn": 8,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 46,
-            "column": 11,
-            "endLine": 46,
-            "endColumn": 18,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "ff3.getPropertyByName('arr')",
-                    "start": 1277,
-                    "end": 1284
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 11,
-            "endLine": 47,
-            "endColumn": 21,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "arr.getPropertyByName('length').toNumber()",
-                    "start": 1295,
-                    "end": 1315
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 10,
-            "endLine": 48,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1325,
-                    "end": 1330,
-                    "replacementText": "i: number = 0"
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
-            "column": 11,
-            "endLine": 49,
-            "endColumn": 17,
-            "problem": "InteropJsObjectTraverseJsInstance",
-            "autofix": [
-                {
-                    "replacementText": "arr.getPropertyByIndex(i).toNumber()",
-                    "start": 1358,
-                    "end": 1364
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 50,
-            "column": 3,
-            "endLine": 50,
-            "endColumn": 9,
-            "problem": "InteropJsObjectTraverseJsInstance",
-            "autofix": [
-                {
-                    "replacementText": "arr.setPropertyByIndex(i, ESObject.wrap(0))",
-                    "start": 1367,
-                    "end": 1377
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 60,
-            "column": 1,
-            "endLine": 60,
-            "endColumn": 13,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 60,
-            "column": 1,
-            "endLine": 60,
-            "endColumn": 13,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 60,
-            "column": 1,
-            "endLine": 60,
-            "endColumn": 13,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
-            "column": 1,
-            "endLine": 61,
-            "endColumn": 15,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
-            "column": 1,
-            "endLine": 61,
-            "endColumn": 15,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
-            "column": 1,
-            "endLine": 61,
-            "endColumn": 15,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
         }
-    ]
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 18,
+      "column": 1,
+      "endLine": 18,
+      "endColumn": 64,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 18,
+      "column": 1,
+      "endLine": 18,
+      "endColumn": 64,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 678,
+          "end": 741,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_2 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff1 = GeneratedImportVar_2.getPropertyByName('ff1');\nlet ff2 = GeneratedImportVar_2.getPropertyByName('ff2');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 20,
+      "column": 1,
+      "endLine": 20,
+      "endColumn": 57,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 20,
+      "column": 1,
+      "endLine": 20,
+      "endColumn": 57,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 743,
+          "end": 799,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_3 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet A = GeneratedImportVar_3.getPropertyByName('A');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 21,
+      "column": 1,
+      "endLine": 21,
+      "endColumn": 57,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 21,
+      "column": 1,
+      "endLine": 21,
+      "endColumn": 57,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 800,
+          "end": 856,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_4 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet C = GeneratedImportVar_4.getPropertyByName('C');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 23,
+      "column": 1,
+      "endLine": 23,
+      "endColumn": 59,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 23,
+      "column": 1,
+      "endLine": 23,
+      "endColumn": 59,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 858,
+          "end": 916,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_5 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff3 = GeneratedImportVar_5.getPropertyByName('ff3');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 25,
+      "column": 1,
+      "endLine": 25,
+      "endColumn": 59,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 25,
+      "column": 1,
+      "endLine": 25,
+      "endColumn": 59,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 918,
+          "end": 976,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_6 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet ff4 = GeneratedImportVar_6.getPropertyByName('ff4');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 27,
+      "column": 1,
+      "endLine": 27,
+      "endColumn": 62,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 27,
+      "column": 1,
+      "endLine": 27,
+      "endColumn": 62,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 978,
+          "end": 1039,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_7 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet handle = GeneratedImportVar_7.getPropertyByName('handle');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 29,
+      "column": 1,
+      "endLine": 29,
+      "endColumn": 62,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 29,
+      "column": 1,
+      "endLine": 29,
+      "endColumn": 62,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 1041,
+          "end": 1102,
+          "replacementText": ""
+        },
+        {
+          "start": 1102,
+          "end": 1102,
+          "replacementText": "let GeneratedImportVar_8 = ESObject.load('./oh_modules/interop_import_js_rules');\nlet expand = GeneratedImportVar_8.getPropertyByName('expand');\n"
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 31,
+      "column": 5,
+      "endLine": 31,
+      "endColumn": 15,
+      "problem": "InteropObjectProperty",
+      "autofix": [
+        {
+          "start": 1108,
+          "end": 1118,
+          "replacementText": "foo.getPropertyByName(\"isGood\")"
+        }
+      ],
+      "suggest": "",
+      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 31,
+      "column": 5,
+      "endLine": 31,
+      "endColumn": 15,
+      "problem": "InteropJsObjectConditionJudgment",
+      "autofix": [
+        {
+          "replacementText": "foo.getPropertyByName('isGood').toBoolean()",
+          "start": 1108,
+          "end": 1118
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 31,
+      "column": 5,
+      "endLine": 31,
+      "endColumn": 15,
+      "problem": "BinaryOperations",
+      "suggest": "",
+      "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 5,
+      "endLine": 33,
+      "endColumn": 11,
+      "problem": "InteropObjectProperty",
+      "autofix": [
+        {
+          "start": 1128,
+          "end": 1134,
+          "replacementText": "ff1.getPropertyByName(\"f1\")"
+        }
+      ],
+      "suggest": "",
+      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 5,
+      "endLine": 33,
+      "endColumn": 11,
+      "problem": "InteropJsObjectConditionJudgment",
+      "autofix": [
+        {
+          "replacementText": "ff1.getPropertyByName('f1').toNumber()",
+          "start": 1128,
+          "end": 1134
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 5,
+      "endLine": 33,
+      "endColumn": 11,
+      "problem": "BinaryOperations",
+      "suggest": "",
+      "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 1,
+      "endLine": 37,
+      "endColumn": 21,
+      "problem": "InteropJsObjectInheritance",
+      "suggest": "",
+      "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 41,
+      "column": 1,
+      "endLine": 41,
+      "endColumn": 21,
+      "problem": "InteropJsObjectInheritance",
+      "suggest": "",
+      "rule": "Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 44,
+      "column": 3,
+      "endLine": 44,
+      "endColumn": 8,
+      "problem": "InteropJsObjectCallStaticFunc",
+      "suggest": "",
+      "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 44,
+      "column": 3,
+      "endLine": 44,
+      "endColumn": 8,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 44,
+      "column": 3,
+      "endLine": 44,
+      "endColumn": 8,
+      "problem": "InteropCallObjectMethods",
+      "suggest": "",
+      "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 49,
+      "column": 11,
+      "endLine": 49,
+      "endColumn": 18,
+      "problem": "InteropObjectProperty",
+      "autofix": [
+        {
+          "start": 1354,
+          "end": 1361,
+          "replacementText": "ff3.getPropertyByName(\"arr\")"
+        }
+      ],
+      "suggest": "",
+      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 49,
+      "column": 11,
+      "endLine": 49,
+      "endColumn": 18,
+      "problem": "InteropJsObjectUsage",
+      "autofix": [
+        {
+          "replacementText": "ff3.getPropertyByName('arr')",
+          "start": 1354,
+          "end": 1361
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 49,
+      "column": 11,
+      "endLine": 49,
+      "endColumn": 18,
+      "problem": "BinaryOperations",
+      "suggest": "",
+      "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 50,
+      "column": 11,
+      "endLine": 50,
+      "endColumn": 21,
+      "problem": "InteropJsObjectUsage",
+      "autofix": [
+        {
+          "replacementText": "arr.getPropertyByName('length').toNumber()",
+          "start": 1372,
+          "end": 1392
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 51,
+      "column": 10,
+      "endLine": 51,
+      "endColumn": 15,
+      "problem": "NumericSemantics",
+      "autofix": [
+        {
+          "start": 1402,
+          "end": 1407,
+          "replacementText": "i: number = 0"
+        }
+      ],
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 52,
+      "column": 11,
+      "endLine": 52,
+      "endColumn": 17,
+      "problem": "InteropJsObjectTraverseJsInstance",
+      "autofix": [
+        {
+          "replacementText": "arr.getPropertyByIndex(i).toNumber()",
+          "start": 1435,
+          "end": 1441
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 52,
+      "column": 11,
+      "endLine": 52,
+      "endColumn": 17,
+      "problem": "InterOpImportJsIndex",
+      "autofix": [
+        {
+          "start": 1435,
+          "end": 1441,
+          "replacementText": "arr.getPropertyByIndex(i)"
+        }
+      ],
+      "suggest": "",
+      "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 53,
+      "column": 3,
+      "endLine": 53,
+      "endColumn": 9,
+      "problem": "InteropJsObjectTraverseJsInstance",
+      "autofix": [
+        {
+          "replacementText": "arr.setPropertyByIndex(i, ESObject.wrap(0))",
+          "start": 1444,
+          "end": 1454
+        }
+      ],
+      "suggest": "",
+      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 53,
+      "column": 3,
+      "endLine": 53,
+      "endColumn": 13,
+      "problem": "InterOpImportJsIndex",
+      "autofix": [
+        {
+          "start": 1444,
+          "end": 1454,
+          "replacementText": "arr.setPropertyByIndex(i, ESObject.wrap(0))"
+        }
+      ],
+      "suggest": "",
+      "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 63,
+      "column": 1,
+      "endLine": 63,
+      "endColumn": 13,
+      "problem": "InteropJsObjectCallStaticFunc",
+      "suggest": "",
+      "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 63,
+      "column": 1,
+      "endLine": 63,
+      "endColumn": 13,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 63,
+      "column": 1,
+      "endLine": 63,
+      "endColumn": 13,
+      "problem": "InteropCallObjectMethods",
+      "suggest": "",
+      "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 64,
+      "column": 1,
+      "endLine": 64,
+      "endColumn": 15,
+      "problem": "InteropJsObjectCallStaticFunc",
+      "suggest": "",
+      "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 64,
+      "column": 1,
+      "endLine": 64,
+      "endColumn": 15,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 64,
+      "column": 1,
+      "endLine": 64,
+      "endColumn": 15,
+      "problem": "InteropCallObjectMethods",
+      "suggest": "",
+      "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 66,
+      "column": 9,
+      "endLine": 66,
+      "endColumn": 15,
+      "problem": "NumericSemantics",
+      "autofix": [
+        {
+          "start": 1592,
+          "end": 1598,
+          "replacementText": "a: number = 1;"
+        }
+      ],
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 66,
+      "column": 16,
+      "endLine": 66,
+      "endColumn": 21,
+      "problem": "NumericSemantics",
+      "autofix": [
+        {
+          "start": 1599,
+          "end": 1604,
+          "replacementText": "b: number = 2;"
+        }
+      ],
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 66,
+      "column": 22,
+      "endLine": 66,
+      "endColumn": 26,
+      "problem": "NumericSemantics",
+      "autofix": [
+        {
+          "start": 1605,
+          "end": 1609,
+          "replacementText": "c: number = 3;"
+        }
+      ],
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 67,
+      "column": 1,
+      "endLine": 67,
+      "endColumn": 16,
+      "problem": "InteropJsObjectExpandStaticInstance",
+      "suggest": "",
+      "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 67,
+      "column": 1,
+      "endLine": 67,
+      "endColumn": 16,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 67,
+      "column": 1,
+      "endLine": 67,
+      "endColumn": 16,
+      "problem": "InteropCallObjectMethods",
+      "suggest": "",
+      "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+      "severity": "ERROR"
+    }
+  ]
 }

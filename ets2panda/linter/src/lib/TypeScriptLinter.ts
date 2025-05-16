@@ -3351,7 +3351,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -3941,7 +3941,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isExportedEntityDeclaredInJs(exportDecl: ts.ExportDeclaration): boolean {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return false;
     }
 
@@ -3960,7 +3960,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isExportedEntityDeclaredInArkTs1(exportDecl: ts.ExportDeclaration): boolean | undefined {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return false;
     }
 
@@ -5261,7 +5261,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -5693,9 +5693,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }
@@ -5952,7 +5952,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleHeritageClause(node: ts.HeritageClause): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
     if (node.token === ts.SyntaxKind.ExtendsKeyword || node.token === ts.SyntaxKind.ImplementsKeyword) {
@@ -5971,7 +5971,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         } else if (ts.isIdentifier(expr)) {
           this.fixJsImportExtendsClass(node.parent, expr);
           this.handleSdkDuplicateDeclName(expr);
-        }      
+        }
       });
     }
   }
@@ -6797,7 +6797,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return undefined;
   }
 
-  private processApiNodeSdkDuplicateDeclName (apiName: string, errorNode: ts.Node): void  {
+  private processApiNodeSdkDuplicateDeclName(apiName: string, errorNode: ts.Node): void {
     const setApiListItem = TypeScriptLinter.globalApiInfo.get(SdkProblem.DeclWithDuplicateName);
     if (!setApiListItem) {
       return;
@@ -6809,7 +6809,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!hasSameApiName) {
       return;
     }
-    
+
     if (ts.isTypeReferenceNode(errorNode)) {
       errorNode = errorNode.typeName;
     }
@@ -6824,13 +6824,15 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (matchedApi) {
       this.incrementCounters(errorNode, FaultID.DuplicateDeclNameFromSdk);
     }
-  };
+  }
 
-  private handleSdkDuplicateDeclName(node: ts.TypeReferenceNode | ts.NewExpression | ts.ExpressionWithTypeArguments | ts.Identifier): void {
+  private handleSdkDuplicateDeclName(
+    node: ts.TypeReferenceNode | ts.NewExpression | ts.ExpressionWithTypeArguments | ts.Identifier
+  ): void {
     if (!this.options.arkts2) {
       return;
     }
-    
+
     if (ts.isTypeReferenceNode(node)) {
       const typeName = node.typeName;
       if (ts.isIdentifier(typeName)) {
@@ -6846,7 +6848,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (ts.isIdentifier(node)) {
       this.processApiNodeSdkDuplicateDeclName(node.text, node);
-    }   
+    }
   }
 
   private getOriginalSymbol(node: ts.Node): ts.Symbol | undefined {
@@ -7010,7 +7012,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private fixJsImportCallExpression(callExpr: ts.CallExpression): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
@@ -7023,7 +7025,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    this.incrementCounters(callExpr, FaultID.InteropJsObjectCallStaticFunc);
+    // check if any argument is a `new` expression
+    const hasNewExpressionArg = callExpr.arguments.some((arg) => {
+      return ts.isNewExpression(arg);
+    });
+
+    const faultId = hasNewExpressionArg ?
+      FaultID.InteropJsObjectExpandStaticInstance :
+      FaultID.InteropJsObjectCallStaticFunc;
+
+    this.incrementCounters(callExpr, faultId);
   }
 
   private fixJsImportExtendsClass(
@@ -7046,7 +7057,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private fixJsImportPropertyAccessExpression(node: ts.Node): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
@@ -7080,7 +7091,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private fixJsImportElementAccessExpression(elementAccessExpr: ts.ElementAccessExpression): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
@@ -7143,9 +7154,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const faultId = propertyAccess.name.text === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ?
-      FaultID.SetCloneListDeprecated :
-      FaultID.SetTransferListDeprecated;
+    const faultId =
+      propertyAccess.name.text === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ?
+        FaultID.SetCloneListDeprecated :
+        FaultID.SetTransferListDeprecated;
     this.incrementCounters(node.parent, faultId);
   }
 
@@ -7154,15 +7166,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
     const methodName = propertyAccess.name.text;
-    return methodName === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ||
-      methodName === DEPRECATED_TASKPOOL_METHOD_SETTRANSFERLIST;
+    return (
+      methodName === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ||
+      methodName === DEPRECATED_TASKPOOL_METHOD_SETTRANSFERLIST
+    );
   }
 
   private static isTaskPoolTaskCreation(taskpoolExpr: ts.Expression): boolean {
-    return ts.isPropertyAccessExpression(taskpoolExpr) &&
+    return (
+      ts.isPropertyAccessExpression(taskpoolExpr) &&
       ts.isIdentifier(taskpoolExpr.expression) &&
       taskpoolExpr.expression.text === STDLIB_TASKPOOL_OBJECT_NAME &&
-      taskpoolExpr.name.text === STDLIB_TASK_CLASS_NAME;
+      taskpoolExpr.name.text === STDLIB_TASK_CLASS_NAME
+    );
   }
 
   private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {
