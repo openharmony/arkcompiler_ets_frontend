@@ -1262,12 +1262,36 @@ checker::Type *ETSAnalyzer::Check(ir::BinaryExpression *expr) const
     }
 
     ETSChecker *checker = GetETSChecker();
+
+    bool inSmartExpr = false;
+    if (!checker->Context().IsInTestExpression()) {
+        switch (expr->OperatorType()) {
+            case lexer::TokenType::KEYW_INSTANCEOF:
+            case lexer::TokenType::PUNCTUATOR_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
+            case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+                inSmartExpr = true;
+                SmartCastArray smartCasts = checker->Context().EnterTestExpression();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     checker::Type *newTsType {nullptr};
     std::tie(newTsType, expr->operationType_) =
         checker->CheckBinaryOperator(expr->Left(), expr->Right(), expr, expr->OperatorType(), expr->Start());
     expr->SetTsType(newTsType);
 
     checker->Context().CheckBinarySmartCastCondition(expr);
+
+    if (inSmartExpr) {
+        checker->Context().ExitTestExpression();
+    }
 
     return expr->TsType();
 }
@@ -1583,6 +1607,9 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
             }
         }
     }
+
+    // Restore smart casts to initial state.
+    checker->Context().RestoreSmartCasts(smartCasts);
 
     return expr->TsType();
 }
