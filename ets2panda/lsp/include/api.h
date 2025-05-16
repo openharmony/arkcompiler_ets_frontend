@@ -38,6 +38,12 @@
 extern "C" {
 #endif
 
+typedef struct SafeDeleteLocation {
+    std::string uri;
+    size_t start;
+    size_t length;
+} SafeDeleteLocation;
+
 typedef struct DefinitionInfo {
     DefinitionInfo() = default;
     DefinitionInfo(std::string f, size_t s, size_t l) : fileName(f), start(s), length(l) {}
@@ -336,6 +342,8 @@ typedef struct LSPAPI {
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsWithCancellationToken)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &files,
         const ark::es2panda::SourceFile &file, size_t position);
+    std::vector<SafeDeleteLocation> (*FindSafeDeleteLocation)(es2panda_Context *ctx,
+                                                              const std::tuple<std::string, std::string> *declInfo);
     std::vector<ark::es2panda::lsp::ReferencedNode> (*findReferences)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
         const ark::es2panda::SourceFile &srcFile, size_t position);

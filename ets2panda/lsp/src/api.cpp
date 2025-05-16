@@ -21,6 +21,7 @@
 #include "compiler/lowering/util.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
+#include "find_safe_delete_location.h"
 #include "references.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
@@ -200,6 +201,17 @@ DocumentHighlightsReferences GetDocumentHighlights(es2panda_Context *context, si
     return result;
 }
 
+std::vector<SafeDeleteLocation> FindSafeDeleteLocation(es2panda_Context *ctx,
+                                                       const std::tuple<std::string, std::string> *declInfo)
+{
+    std::vector<SafeDeleteLocation> result;
+    if (declInfo == nullptr) {
+        return result;
+    }
+    result = FindSafeDeleteLocationImpl(ctx, *declInfo);
+    return result;
+}
+
 std::vector<ark::es2panda::lsp::ReferencedNode> FindReferencesWrapper(
     ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
     const ark::es2panda::SourceFile &srcFile, size_t position)
@@ -320,6 +332,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetDocumentHighlights,
                     FindRenameLocationsWrapper,
                     FindRenameLocationsWithCancellationWrapper,
+                    FindSafeDeleteLocation,
                     FindReferencesWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
