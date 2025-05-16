@@ -54,6 +54,10 @@ AstNode *GetTouchingPropertyName(es2panda_Context *context, size_t pos)
         return nullptr;
     }
 
+    if (token->IsCallExpression() && token->AsCallExpression()->Callee()->IsIdentifier()) {
+        return token->AsCallExpression()->Callee()->AsIdentifier();
+    }
+
     if (token->IsProperty() || token->IsIdentifier()) {
         return token;
     }

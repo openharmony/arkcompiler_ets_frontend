@@ -592,7 +592,13 @@ std::pair<ir::AstNode *, util::StringView> GetDefinitionAtPositionImpl(es2panda_
 {
     std::pair<ir::AstNode *, util::StringView> res;
     auto node = GetTouchingToken(context, pos, false);
-    if (node == nullptr || !node->IsIdentifier()) {
+    if (node == nullptr) {
+        return res;
+    }
+    if (node->IsCallExpression()) {
+        node = node->AsCallExpression()->Callee()->AsIdentifier();
+    }
+    if (!node->IsIdentifier()) {
         return res;
     }
     res = {compiler::DeclarationFromIdentifier(node->AsIdentifier()), node->AsIdentifier()->Name()};
