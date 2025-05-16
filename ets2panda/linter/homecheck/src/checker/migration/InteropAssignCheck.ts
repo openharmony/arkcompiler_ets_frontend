@@ -45,11 +45,6 @@ const gMetaData: BaseMetaData = {
 
 const RULE_ID = 'arkts-interop-s2d-dynamic-args-to-static';
 
-class ObjDefInfo {
-    objDef: Stmt;
-    objType: Type;
-}
-
 export class InteropAssignCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
     public rule: Rule;
@@ -89,92 +84,90 @@ export class InteropAssignCheck implements BaseChecker {
     }
 
     public processArkMethod(target: ArkMethod, scene: Scene): void {
-        const assigns: Stmt[] = [];
         if (target.getLanguage() === Language.ARKTS1_2) {
-            assigns.push(...this.checkObjectParams(target));
+            this.checkPassToFunction(target, scene);
         } else if (target.getLanguage() === Language.ARKTS1_1) {
-            assigns.push(...this.checkAssignToObjectField(target, scene));
-        } else {
-            // Is this ok?
-            return;
+            this.checkAssignToField(target, scene);
         }
-        assigns.forEach(assign => {
-            let result: ObjDefInfo[] = [];
-            let checkAll = { value: true };
-            let visited: Set<Stmt> = new Set();
-            this.checkFromStmt(assign, scene, result, checkAll, visited);
-            result.forEach(objDefInfo => {
-                const typeDefLang = this.getTypeDefinedLang(objDefInfo, scene);
-                if (typeDefLang === Language.ARKTS1_2) {
-                    return;
+    }
+
+    private checkPassToFunction(target: ArkMethod, scene: Scene) {
+        const callsites = this.cg.getInvokeStmtByMethod(target.getSignature());
+        callsites.forEach(cs => {
+            let hasTargetArg = false;
+            const invoke = cs.getInvokeExpr()!;
+            const csMethod = cs.getCfg()?.getDeclaringMethod();
+            invoke.getArgs().forEach(arg => {
+                const argTy = arg.getType();
+                const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? csMethod?.getLanguage() ?? Language.UNKNOWN;
+                if (argTyLang === Language.ARKTS1_1) {
+                    hasTargetArg = true;
                 }
-                let line;
-                let column;
-                if (assign instanceof ArkAssignStmt && assign.getRightOp() instanceof ArkParameterRef) {
-                    line = objDefInfo.objDef.getOriginPositionInfo().getLineNo();
-                    column = objDefInfo.objDef.getOriginPositionInfo().getColNo();
-                } else {
-                    line = assign.getOriginPositionInfo().getLineNo();
-                    column = assign.getOriginPositionInfo().getColNo();
-                }
-                const problem = 'Interop';
-                const desc = `${this.metaData.description}: ${this.generateDesc(objDefInfo.objDef)} (${RULE_ID})`;
-                const severity = this.metaData.severity;
-                const ruleId = this.rule.ruleId;
-                const filePath =
-                    objDefInfo.objDef.getCfg().getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
-                const defeats = new Defects(
-                    line,
-                    column,
-                    column,
-                    problem,
-                    desc,
-                    severity,
-                    ruleId,
-                    filePath,
-                    '',
-                    true,
-                    false,
-                    false
-                );
-                this.issues.push(new IssueReport(defeats, undefined));
             });
-            if (!checkAll) {
-                // report issue
+            if (!hasTargetArg) {
+                return;
             }
+            let line = cs.getOriginPositionInfo().getLineNo();
+            let column = cs.getOriginPositionInfo().getColNo();
+            const problem = 'Interop';
+            const desc = `${this.metaData.description} (${RULE_ID})`;
+            const severity = this.metaData.severity;
+            const ruleId = this.rule.ruleId;
+            const filePath = csMethod?.getDeclaringArkFile()?.getFilePath() ?? '';
+            const defeats = new Defects(
+                line,
+                column,
+                column,
+                problem,
+                desc,
+                severity,
+                ruleId,
+                filePath,
+                '',
+                true,
+                false,
+                false
+            );
+            this.issues.push(new IssueReport(defeats, undefined));
         });
     }
 
-    private generateDesc(objDef: Stmt): string {
-        const obj = (objDef as ArkAssignStmt).getRightOp();
-        const objFile = objDef.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
-        const objPos = objDef.getOperandOriginalPosition(obj);
-        let objDesc = '';
-        if (objFile && objPos) {
-            const fileName = objFile.getName();
-            const line = objPos.getFirstLine();
-            const col = objPos.getFirstCol();
-            objDesc = `using object defined at line ${line}, column ${col} in file '${fileName}'`;
-        }
-        return objDesc;
-    }
-
-    private checkObjectParams(method: ArkMethod): Stmt[] {
-        const res: Stmt[] = [];
-        const stmts = method.getBody()?.getCfg().getStmts() ?? [];
-        for (const stmt of stmts) {
-            if (stmt instanceof ArkAssignStmt && stmt.getRightOp() instanceof ArkParameterRef) {
-                if (this.isObjectTy((stmt.getRightOp() as ArkParameterRef).getType())) {
-                    res.push(stmt);
-                }
-            } else {
-                break;
+    private checkAssignToField(target: ArkMethod, scene: Scene) {
+        const assigns: Stmt[] = this.collectAssignToObjectField(target, scene);
+        assigns.forEach(assign => {
+            let result: Stmt[] = [];
+            let visited: Set<Stmt> = new Set();
+            this.checkFromStmt(assign, scene, result, visited);
+            if (result.length === 0) {
+                // 这句 a.data = y 右侧的值没有从 1.1 传入的可能
+                return;
             }
-        }
-        return res;
+            let line = assign.getOriginPositionInfo().getLineNo();
+            let column = assign.getOriginPositionInfo().getColNo();
+            const problem = 'Interop';
+            const desc = `${this.metaData.description} (${RULE_ID})`;
+            const severity = this.metaData.severity;
+            const ruleId = this.rule.ruleId;
+            const filePath = assign.getCfg()?.getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
+            const defeats = new Defects(
+                line,
+                column,
+                column,
+                problem,
+                desc,
+                severity,
+                ruleId,
+                filePath,
+                '',
+                true,
+                false,
+                false
+            );
+            this.issues.push(new IssueReport(defeats, undefined));
+        });
     }
 
-    private checkAssignToObjectField(method: ArkMethod, scene: Scene): Stmt[] {
+    private collectAssignToObjectField(method: ArkMethod, scene: Scene): Stmt[] {
         const res: Stmt[] = [];
         const stmts = method.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
@@ -193,7 +186,9 @@ export class InteropAssignCheck implements BaseChecker {
                 const klass = scene.getClass(baseTy.getClassSignature());
                 if (!klass) {
                     logger.warn(
-                        `check field of type 'Object' failed: cannot find arkclass by sig ${baseTy.getClassSignature().toString()}`
+                        `check field of type 'Object' failed: cannot find arkclass by sig ${baseTy
+                            .getClassSignature()
+                            .toString()}`
                     );
                 } else if (klass.getLanguage() === Language.ARKTS1_2) {
                     res.push(stmt);
@@ -205,16 +200,8 @@ export class InteropAssignCheck implements BaseChecker {
         return res;
     }
 
-    private checkFromStmt(
-        stmt: Stmt,
-        scene: Scene,
-        res: ObjDefInfo[],
-        checkAll: { value: boolean },
-        visited: Set<Stmt>,
-        depth: number = 0
-    ): void {
+    private checkFromStmt(stmt: Stmt, scene: Scene, res: Stmt[], visited: Set<Stmt>, depth: number = 0): void {
         if (depth > CALL_DEPTH_LIMIT) {
-            checkAll.value = false;
             return;
         }
         const node = DVFGHelper.getOrNewDVFGNode(stmt, scene);
@@ -226,10 +213,10 @@ export class InteropAssignCheck implements BaseChecker {
                 continue;
             }
             visited.add(currentStmt);
-            if (stmt instanceof ArkAssignStmt) {
-                const rightOpTy = stmt.getRightOp().getType();
-                if (!this.isObjectTy(rightOpTy)) {
-                    res.push({ objDef: stmt, objType: rightOpTy });
+            if (currentStmt instanceof ArkAssignStmt) {
+                const rightOpTy = currentStmt.getRightOp().getType();
+                if (!this.isObjectTy(rightOpTy) && this.getTypeDefinedLang(rightOpTy, scene) === Language.ARKTS1_1) {
+                    res.push(currentStmt);
                     continue;
                 }
             }
@@ -240,9 +227,7 @@ export class InteropAssignCheck implements BaseChecker {
                     return;
                 }
                 DVFGHelper.buildSingleDVFG(declaringMtd, scene);
-                declaringMtd
-                    .getReturnStmt()
-                    .forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
+                declaringMtd.getReturnStmt().forEach(r => this.checkFromStmt(r, scene, res, visited, depth + 1));
             });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
@@ -255,7 +240,7 @@ export class InteropAssignCheck implements BaseChecker {
                     DVFGHelper.buildSingleDVFG(declaringMtd, scene);
                 });
                 this.collectArgDefs(paramIdx, callsites, scene).forEach(d =>
-                    this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
+                    this.checkFromStmt(d, scene, res, visited, depth + 1)
                 );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
@@ -291,22 +276,18 @@ export class InteropAssignCheck implements BaseChecker {
         return ty instanceof ClassType && ty.getClassSignature().getClassName() === 'Object';
     }
 
-    private getTypeDefinedLang(objDefInfo: ObjDefInfo, scene: Scene): Language {
-        const def = objDefInfo.objDef;
-        const type = objDefInfo.objType;
-        let file;
+    private getTypeDefinedLang(type: Type, scene: Scene): Language | undefined {
+        let file = undefined;
         if (type instanceof ClassType) {
             file = scene.getFile(type.getClassSignature().getDeclaringFileSignature());
         } else if (type instanceof FunctionType) {
             file = scene.getFile(type.getMethodSignature().getDeclaringClassSignature().getDeclaringFileSignature());
-        } else {
-            file = def.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
         }
         if (file) {
             return file.getLanguage();
         } else {
             logger.error(`fail to identify which file the type definition ${type.toString()} is in.`);
-            return Language.UNKNOWN;
         }
+        return undefined;
     }
 }

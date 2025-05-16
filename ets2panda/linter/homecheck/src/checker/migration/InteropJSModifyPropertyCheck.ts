@@ -22,7 +22,6 @@ import {
     FunctionType,
     ClassType,
     MethodSignature,
-    CallGraph,
     ArkParameterRef,
     Value,
     Stmt,
@@ -35,7 +34,7 @@ import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { ArkFile, Language } from 'arkanalyzer/lib/core/model/ArkFile';
-import { CALL_DEPTH_LIMIT, DVFGHelper, GlobalCallGraphHelper } from './Utils';
+import { CALL_DEPTH_LIMIT, DVFGHelper } from './Utils';
 import { DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropJSModifyPropertyCheck');
@@ -46,6 +45,12 @@ const gMetaData: BaseMetaData = {
 };
 
 const RULE_ID = 'arkts-interop-js2s-js-add-detele-static-prop';
+
+class ParamInfo {
+    flag: boolean;
+    paramAssign: ArkAssignStmt;
+    callsites: Set<Stmt>;
+}
 
 export class InteropJSModifyPropertyCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -62,15 +67,15 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
     }
 
     public check = (scene: Scene): void => {
-        const targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]> = new Map();
+        const targetMethods: Map<MethodSignature, ParamInfo[]> = new Map();
         this.collectTargetMethods(targetMethods, scene);
         this.checkTargetMethods(targetMethods, scene);
     };
 
-    private collectTargetMethods(targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
+    private collectTargetMethods(targetMethods: Map<MethodSignature, ParamInfo[]>, scene: Scene): void {
         scene.getFiles().forEach(file => {
             // 只处理 ArkTS1.2 import JS 函数的情况
-            if (file.getLanguage() != Language.ARKTS1_2) {
+            if (file.getLanguage() !== Language.ARKTS1_2) {
                 return;
             }
             file.getImportInfos().forEach(importInfo => {
@@ -109,7 +114,11 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
         }
     }
 
-    public processNameSpace(namespace: ArkNamespace, targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
+    public processNameSpace(
+        namespace: ArkNamespace,
+        targetMethods: Map<MethodSignature, ParamInfo[]>,
+        scene: Scene
+    ): void {
         for (let clazz of namespace.getClasses()) {
             for (let mtd of clazz.getMethods()) {
                 this.findCallsite(mtd, targetMethods, scene);
@@ -117,7 +126,7 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
         }
     }
 
-    private createParamInfo(method: ArkMethod): [boolean, ArkAssignStmt][] {
+    private createParamInfo(method: ArkMethod): ParamInfo[] {
         // 初始化参数标志数组
         const idxFlag = new Array(method.getParameters().length).fill(false);
         // 寻找参数对应的 xxx = parameter 语句
@@ -128,34 +137,52 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
             logger.error('param index num != param assign num');
             return [];
         }
-        const result: [boolean, ArkAssignStmt][] = [];
+        const result: ParamInfo[] = [];
         for (let i = 0; i < idxFlag.length; i++) {
-            result.push([idxFlag[i], paramAssigns[i]]);
+            result.push({ flag: idxFlag[i], paramAssign: paramAssigns[i], callsites: new Set() });
         }
         return result;
     }
 
-    private collectInterprocedualCallSites(
-        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
-        scene: Scene
-    ): void {
+    private findCallsite(method: ArkMethod, targets: Map<MethodSignature, ParamInfo[]>, scene: Scene): void {
+        const stmts = method.getBody()?.getCfg().getStmts() ?? [];
+        for (const stmt of stmts) {
+            const invoke = stmt.getInvokeExpr();
+            if (!invoke) {
+                continue;
+            }
+            const methodSig = invoke.getMethodSignature();
+            if (!targets.has(methodSig)) {
+                continue;
+            }
+            invoke.getArgs().forEach((arg, idx): void => {
+                if (this.getTypeDefinedLang(arg.getType(), method.getDeclaringArkFile(), scene) !== Language.ARKTS1_2) {
+                    return;
+                }
+                targets.get(methodSig)![idx].flag = true;
+                targets.get(methodSig)![idx].callsites.add(stmt);
+            });
+        }
+    }
+
+    private collectInterprocedualCallSites(targets: Map<MethodSignature, ParamInfo[]>, scene: Scene): void {
         new Map(targets).forEach((paramInfo, sig) => {
             const method = scene.getMethod(sig)!;
             DVFGHelper.buildSingleDVFG(method, scene);
-            paramInfo.forEach(([flag, assign]): void => {
-                if (flag) {
-                    this.checkIfParamPassedToOtherMethod(assign, targets, scene);
+            paramInfo.forEach((paramInfo): void => {
+                if (paramInfo.flag) {
+                    this.checkIfParamPassedToOtherMethod(paramInfo, targets, scene);
                 }
             });
         });
     }
 
     private checkIfParamPassedToOtherMethod(
-        assign: ArkAssignStmt,
-        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
+        callerParamInfo: ParamInfo,
+        targets: Map<MethodSignature, ParamInfo[]>,
         scene: Scene
     ): void {
-        const worklist: DVFGNode[] = [DVFGHelper.getOrNewDVFGNode(assign, scene)];
+        const worklist: DVFGNode[] = [DVFGHelper.getOrNewDVFGNode(callerParamInfo.paramAssign, scene)];
         const visited: Set<Stmt> = new Set();
         while (worklist.length > 0) {
             const current = worklist.shift()!;
@@ -173,7 +200,8 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 // 假设有 JS 函数声明： function foo(obj)，其中 obj 为受关注的参数
                 // 只有类似 let obj2 = obj 或者 goo(obj) 这样的语句受到关注
                 if (dstStmt instanceof ArkAssignStmt && dstStmt.getRightOp() === cunrrentStmt.getLeftOp()) {
-                    return worklist.push(dst);
+                    worklist.push(dst);
+                    return;
                 }
                 const invoke = dstStmt.getInvokeExpr();
                 if (!invoke) {
@@ -192,88 +220,49 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 };
                 invoke.getArgs().forEach((arg, idx) => {
                     if (getKey(arg) === getKey(cunrrentStmt.getLeftOp())) {
-                        targets.get(calleeSig)![idx][0] = true;
+                        targets.get(calleeSig)![idx].flag = true;
+                        callerParamInfo.callsites.forEach(cs => {
+                            targets.get(calleeSig)![idx].callsites.add(cs);
+                        });
                     }
                 });
             });
         }
     }
 
-    private checkTargetMethods(targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
+    private checkTargetMethods(targetMethods: Map<MethodSignature, ParamInfo[]>, scene: Scene): void {
         targetMethods.forEach((paramInfos, methodSig): void => {
             const method = scene.getMethod(methodSig);
             if (!method) {
                 logger.error(`cannot find ark method by method sig: ${methodSig.toString()}`);
                 return;
             }
-            const targetParams = paramInfos.filter(([flag, _]) => flag).map(([_, assign]) => assign.getLeftOp());
+            const targetParams = paramInfos
+                .filter(paramInfo => paramInfo.flag)
+                .map(paramInfo => paramInfo.paramAssign.getLeftOp());
             const stmts = method.getBody()?.getCfg().getStmts() ?? [];
             for (const stmt of stmts) {
                 if (!(stmt instanceof ArkAssignStmt)) {
                     continue;
                 }
-                const isDeleteProperty = (assign: ArkAssignStmt): boolean => {
-                    const rightOp = assign.getRightOp();
-                    if (!(rightOp instanceof ArkDeleteExpr)) {
-                        return false;
-                    }
+                let paramIdx = -1;
+                const rightOp = stmt.getRightOp();
+                if (rightOp instanceof ArkDeleteExpr) {
                     const fieldRef = rightOp.getField();
-                    return fieldRef instanceof ArkInstanceFieldRef && targetParams.includes(fieldRef.getBase());
-                };
-                const isAddOrModifyProperty = (assign: ArkAssignStmt): boolean => {
-                    const leftOp = assign.getLeftOp();
-                    return leftOp instanceof ArkInstanceFieldRef && targetParams.includes(leftOp.getBase());
-                };
-                if (isDeleteProperty(stmt) || isAddOrModifyProperty(stmt)) {
-                    const line = stmt.getOriginPositionInfo().getLineNo();
-                    const column = stmt.getOriginPositionInfo().getColNo();
-                    const problem = 'Interop';
-                    const desc = `${this.metaData.description} (${RULE_ID})`;
-                    const severity = this.metaData.severity;
-                    const ruleId = this.rule.ruleId;
-                    const filePath = method.getDeclaringArkFile()?.getFilePath() ?? '';
-                    const defeats = new Defects(
-                        line,
-                        column,
-                        column,
-                        problem,
-                        desc,
-                        severity,
-                        ruleId,
-                        filePath,
-                        '',
-                        true,
-                        false,
-                        false
-                    );
-                    this.issues.push(new IssueReport(defeats, undefined));
+                    if (fieldRef instanceof ArkInstanceFieldRef) {
+                        paramIdx = targetParams.findIndex(p => p === fieldRef.getBase());
+                    }
+                }
+                const leftOp = stmt.getLeftOp();
+                if (leftOp instanceof ArkInstanceFieldRef) {
+                    paramIdx = targetParams.findIndex(p => p === leftOp.getBase());
+                }
+                if (paramIdx !== -1) {
+                    const callers = paramInfos[paramIdx]!;
+                    callers.callsites.forEach(cs => this.reportIssue(cs));
                 }
             }
         });
-    }
-
-    private findCallsite(
-        method: ArkMethod,
-        targets: Map<MethodSignature, [boolean, ArkAssignStmt][]>,
-        scene: Scene
-    ): void {
-        const stmts = method.getBody()?.getCfg().getStmts() ?? [];
-        for (const stmt of stmts) {
-            const invoke = stmt.getInvokeExpr();
-            if (!invoke) {
-                continue;
-            }
-            const methodSig = invoke.getMethodSignature();
-            if (!targets.has(methodSig)) {
-                continue;
-            }
-            invoke.getArgs().forEach((arg, idx): void => {
-                if (this.getTypeDefinedLang(arg.getType(), method.getDeclaringArkFile(), scene) !== Language.ARKTS1_2) {
-                    return;
-                }
-                targets.get(methodSig)![idx][0] = true;
-            });
-        }
     }
 
     private getTypeDefinedLang(type: Type, defaultFile: ArkFile, scene: Scene): Language {
@@ -291,5 +280,30 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
             logger.error(`fail to identify which file the type definition ${type.toString()} is in.`);
             return Language.UNKNOWN;
         }
+    }
+
+    private reportIssue(problemStmt: Stmt) {
+        const line = problemStmt.getOriginPositionInfo().getLineNo();
+        const column = problemStmt.getOriginPositionInfo().getColNo();
+        const problem = 'Interop';
+        const desc = `${this.metaData.description} (${RULE_ID})`;
+        const severity = this.metaData.severity;
+        const ruleId = this.rule.ruleId;
+        const filePath = problemStmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
+        const defeats = new Defects(
+            line,
+            column,
+            column,
+            problem,
+            desc,
+            severity,
+            ruleId,
+            filePath,
+            '',
+            true,
+            false,
+            false
+        );
+        this.issues.push(new IssueReport(defeats, undefined));
     }
 }

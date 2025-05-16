@@ -23,7 +23,7 @@ export class InteropRuleInfo {
 
 // 1.2 import 1.1
 // 1.1 Object => ArkTS 1.2 对象
-export const ArkTS1_2_OBJECT: InteropRuleInfo = {
+export const D2S_DYNAMIC_OBJECT: InteropRuleInfo = {
     ruleId: 'arkts-interop-d2s-dynamic-object-on-static-instance',
     severity: 1,
     description: "ArkTS 1.1 Object's built-in methods work on ArkTS 1.2 objects",
@@ -31,15 +31,31 @@ export const ArkTS1_2_OBJECT: InteropRuleInfo = {
 
 // 1.2 import 1.1
 // 1.1 Reflect => ArkTS 1.2 对象
-export const ArkTS1_2_REFLECT: InteropRuleInfo = {
-    ruleId: 'arkts-interop-d2s-dynamic-object-on-static-instance',
+export const D2S_DYNAMIC_REFLECT: InteropRuleInfo = {
+    ruleId: 'arkts-interop-d2s-dynamic-reflect-on-static-instance',
     severity: 1,
     description: "ArkTS 1.1 Reflect's built-in methods work on ArkTS 1.2 objects",
 };
 
+// 1.2 import 1.1
+// 1.2 Object => ArkTS 1.1 对象
+export const D2S_STATIC_OBJECT: InteropRuleInfo = {
+    ruleId: 'arkts-interop-d2s-static-object-on-dynamic-instance',
+    severity: 1,
+    description: "ArkTS 1.2 Object's built-in methods work on ArkTS 1.1 objects",
+};
+
+// 1.2 import 1.1
+// 1.2 Reflect => ArkTS 1.1 对象
+export const D2S_STATIC_REFLECT: InteropRuleInfo = {
+    ruleId: 'arkts-interop-d2s-static-reflect-on-dynamic-instance',
+    severity: 1,
+    description: "ArkTS 1.2 Reflect's built-in methods work on ArkTS 1.1 objects",
+};
+
 // 1.1 import 1.2
 // 1.1 Object => ArkTS 1.2 对象
-export const ArkTS1_1_STATIC_OBJECT: InteropRuleInfo = {
+export const S2D_DYNAMIC_OBJECT: InteropRuleInfo = {
     ruleId: 'arkts-interop-s2d-dynamic-object-on-static-instance',
     severity: 1,
     description: "ArkTS 1.1 Object's built-in methods work on ArkTS 1.2 objects",
@@ -47,15 +63,15 @@ export const ArkTS1_1_STATIC_OBJECT: InteropRuleInfo = {
 
 // 1.1 import 1.2
 // 1.1 Reflect => ArkTS 1.2 对象
-export const ArkTS1_1_STATIC_REFLECT: InteropRuleInfo = {
-    ruleId: 'arkts-interop-s2d-dynamic-object-on-static-instance',
+export const S2D_DYNAMIC_REFLECT: InteropRuleInfo = {
+    ruleId: 'arkts-interop-s2d-dynamic-reflect-on-static-instance',
     severity: 1,
     description: "ArkTS 1.1 Reflect's built-in methods work on ArkTS 1.2 objects",
 };
 
 // 1.1 import 1.2
 // 1.2 Object => 1.1 对象
-export const ArkTS1_1_DYNAMIC_OBJECT: InteropRuleInfo = {
+export const S2D_STATIC_OBJECT: InteropRuleInfo = {
     ruleId: 'arkts-interop-s2d-static-object-on-dynamic-instance',
     severity: 1,
     description: "ArkTS 1.2 Object's built-in methods work on ArkTS 1.1 objects",
@@ -63,8 +79,8 @@ export const ArkTS1_1_DYNAMIC_OBJECT: InteropRuleInfo = {
 
 // 1.1 import 1.2
 // 1.2 Reflect => 1.1 对象
-export const ArkTS1_1_DYNAMIC_REFLECT: InteropRuleInfo = {
-    ruleId: 'arkts-interop-s2d-static-object-on-dynamic-instance',
+export const S2D_STATIC_REFLECT: InteropRuleInfo = {
+    ruleId: 'arkts-interop-s2d-static-reflect-on-dynamic-instance',
     severity: 1,
     description: "ArkTS 1.2 Reflect's built-in methods work on ArkTS 1.1 objects",
 };
@@ -76,13 +92,13 @@ export const TS_OBJECT: InteropRuleInfo = {
 };
 
 export const TS_REFLECT: InteropRuleInfo = {
-    ruleId: 'arkts-interop-ts2s-ts-object-on-static-instance',
+    ruleId: 'arkts-interop-ts2s-ts-reflect-on-static-instance',
     severity: 1,
     description: "TypeScript Reflect's built-in methods work on ArkTS objects",
 };
 
 export const JS_OBJECT: InteropRuleInfo = {
-    ruleId: 'arkts-interop-js2s-js-ojbect-on-static-instance',
+    ruleId: 'arkts-interop-js2s-js-object-on-static-instance',
     severity: 1,
     description: "JavaScript Object's built-in methods work on ArkTS objects",
 };
@@ -95,18 +111,24 @@ export const JS_REFLECT: InteropRuleInfo = {
 
 export function findInteropRule(
     methodLang: Language,
-    objDefLang: Language,
     typeDefLang: Language,
+    problemStmtLang: Language,
     isReflect: boolean
 ): InteropRuleInfo | undefined {
     if (methodLang === Language.ARKTS1_2 && typeDefLang === Language.ARKTS1_1) {
-        return isReflect ? ArkTS1_1_DYNAMIC_REFLECT : ArkTS1_1_DYNAMIC_OBJECT;
+        if (problemStmtLang === Language.ARKTS1_1) {
+            // 包含 object API 的 1.2 函数被导出到 1.1 文件使用
+            return isReflect ? S2D_STATIC_REFLECT : S2D_STATIC_OBJECT;
+        } else {
+            return isReflect ? D2S_STATIC_REFLECT : D2S_STATIC_OBJECT;
+        }
     }
     if (methodLang === Language.ARKTS1_1 && typeDefLang === Language.ARKTS1_2) {
-        if (objDefLang === Language.ARKTS1_2) {
-            return isReflect ? ArkTS1_2_REFLECT : ArkTS1_2_OBJECT;
-        } else if (objDefLang === Language.ARKTS1_1) {
-            return isReflect ? ArkTS1_1_STATIC_REFLECT : ArkTS1_1_STATIC_OBJECT;
+        if (problemStmtLang === Language.ARKTS1_2) {
+            // 包含 object API 的 1.1 函数被导出到 1.2 文件使用
+            return isReflect ? D2S_DYNAMIC_REFLECT : D2S_DYNAMIC_OBJECT;
+        } else {
+            return isReflect ? S2D_DYNAMIC_REFLECT: S2D_DYNAMIC_OBJECT ;
         }
     }
     if (methodLang === Language.TYPESCRIPT && typeDefLang === Language.ARKTS1_2) {
