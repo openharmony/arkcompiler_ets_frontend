@@ -20,5 +20,13 @@ export const BUILTIN_GENERIC_CONSTRUCTORS = new Set([
   'Promise',
   'WeakMap',
   'WeakSet',
-  'Deque'
+  'Deque',
+  'ArrayList',
+  'HashMap',
+  'HashSet',
+  'LinkedList',
+  'PlainArray',
+  'TreeMap',
+  'TreeSet',
+  'Queue'
 ]);
