@@ -1459,6 +1459,11 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
     auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
 
+    if (func->IsConstructor() && func->IsStatic()) {
+        LogError(diagnostic::INVALID_DECORATOR_CONSTRUCTOR, {}, func->Start());
+        return;
+    }
+
     if ((func->IsConstructor() || !func->IsStatic()) && !func->IsArrow()) {
         auto thisVar = func->Scope()->ParamScope()->Params().front();
         thisVar->SetTsType(Context().ContainingClass());
