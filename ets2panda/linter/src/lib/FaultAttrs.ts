@@ -216,6 +216,7 @@ faultsAttrs[FaultID.InteropArkTs1ObjectExport] = new FaultAttributes(324);
 faultsAttrs[FaultID.InteropStaticObjectLiterals] = new FaultAttributes(326);
 faultsAttrs[FaultID.InteropObjectLiteralAmbiguity] = new FaultAttributes(327);
 faultsAttrs[FaultID.InteropObjectLiteralClass] = new FaultAttributes(328);
+faultsAttrs[FaultID.UnsupportPropNameFromValue] = new FaultAttributes(329);
 faultsAttrs[FaultID.InterOpImportJs] = new FaultAttributes(330);
 faultsAttrs[FaultID.CallJSFunction] = new FaultAttributes(331);
 faultsAttrs[FaultID.InteropObjectProperty] = new FaultAttributes(332);

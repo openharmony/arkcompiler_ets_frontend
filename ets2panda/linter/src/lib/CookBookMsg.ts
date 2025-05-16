@@ -306,6 +306,7 @@ cookBookTag[327] =
   'Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)';
 cookBookTag[328] =
   'Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)';
+cookBookTag[329] = 'Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-interop-js2s-import-js)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)';
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-interop-js2s-access-js-prop)';

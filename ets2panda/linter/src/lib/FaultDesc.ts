@@ -205,6 +205,7 @@ faultDesc[FaultID.InteropDynamicImportJs] = 'Interop import await is not allowed
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
 faultDesc[FaultID.InteropObjectLiteralAmbiguity] = 'Interop Object Literal ambiguity';
 faultDesc[FaultID.InteropObjectLiteralClass] = 'Interop Object Literal incompatible with class';
+faultDesc[FaultID.UnsupportPropNameFromValue] = 'Enum cannot get member name by value';
 faultDesc[FaultID.CallJSFunction] = 'Call JS Function';
 faultDesc[FaultID.InteropObjectProperty] = 'Interop property access';
 faultDesc[FaultID.InterOpConvertImport] = 'No import primitive types from js file';
