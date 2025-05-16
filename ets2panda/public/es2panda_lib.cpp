@@ -612,6 +612,12 @@ es2panda_AstNode *UpdateNumberLiteral(es2panda_Context *ctx, es2panda_AstNode *o
     return reinterpret_cast<es2panda_AstNode *>(node);
 }
 
+extern "C" const char *NumberLiteralStrConst(es2panda_Context *context, es2panda_AstNode *classInstance)
+{
+    auto str = reinterpret_cast<const ir::NumberLiteral *>(classInstance)->Str();
+    return StringViewToCString(reinterpret_cast<Context *>(context)->allocator, str);
+}
+
 extern "C" void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
@@ -1033,6 +1039,7 @@ es2panda_Impl g_impl = {
     UpdateNumberLiteral<double>,
     CreateNumberLiteral<float>,
     UpdateNumberLiteral<float>,
+    NumberLiteralStrConst,
     AllocMemory,
     CreateSourcePosition,
     CreateSourceRange,

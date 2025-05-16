@@ -199,6 +199,7 @@ struct CAPI_EXPORT es2panda_Impl {
     CREATE_UPDATE_NUMBER_LITERAL_IMPL(3, float);
 
 #undef CREATE_UPDATE_NUMBER_LITERAL_IMPL
+    const char *(*NumberLiteralStrConst)(es2panda_Context *context, es2panda_AstNode *classInstance);
 
     void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
     es2panda_SourcePosition *(*CreateSourcePosition)(es2panda_Context *context, size_t index, size_t line);
