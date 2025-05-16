@@ -317,6 +317,7 @@ typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
     bool (*isPackageModule)(es2panda_Context *context);
+    ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
     References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
