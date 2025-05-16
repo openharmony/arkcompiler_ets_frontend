@@ -96,6 +96,15 @@ bool ETSChecker::CheckIfNumeric(Type *type)
     return (unboxed != nullptr) && unboxed->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC);
 }
 
+bool ETSChecker::CheckIfFloatingPoint(Type *type)
+{
+    if (type == nullptr) {
+        return false;
+    }
+    auto *unboxed = MaybeUnboxInRelation(type);
+    return (unboxed != nullptr) && (unboxed->IsFloatType() || unboxed->IsDoubleType());
+}
+
 static Type *EffectivePrimitiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *right)
 {
     if (left->IsDoubleType() || right->IsDoubleType()) {
@@ -202,11 +211,36 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::To
         return false;
     }
 
-    if (!left->IsETSBigIntType()) {
-        return false;
+    // Allow operations between BigInt and numeric types - number will be converted to BigInt
+    bool leftIsBigInt = left->IsETSBigIntType();
+    bool rightIsBigInt = right->IsETSBigIntType();
+    // Allow if either operand is BigInt.
+    // The non-BigInt operand will be converted to BigInt during lowering.
+    if ((leftIsBigInt && CheckIfNumeric(right)) || (rightIsBigInt && CheckIfNumeric(left))) {
+        switch (op) {
+            case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+            case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_PLUS:
+            case lexer::TokenType::PUNCTUATOR_MINUS:
+            case lexer::TokenType::PUNCTUATOR_MULTIPLY:
+            case lexer::TokenType::PUNCTUATOR_DIVIDE:
+            case lexer::TokenType::PUNCTUATOR_MOD:
+            case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
+            case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
+            case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
+            case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
+            case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
+                return true;
+            default:
+                break;
+        }
     }
 
-    if (!right->IsETSBigIntType()) {
+    if (!leftIsBigInt || !rightIsBigInt) {
         return false;
     }
 
@@ -1163,6 +1197,8 @@ static std::tuple<Type *, Type *> ResolveCheckBinaryOperatorForBigInt(ETSChecker
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
         case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
             return {checker->GlobalETSBooleanType(), checker->GlobalETSBooleanType()};
         default:
             return {leftType, rightType};

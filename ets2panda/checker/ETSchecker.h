@@ -392,6 +392,7 @@ public:
     checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir::Expression *right,
                                                         lexer::SourcePosition pos);
     bool CheckIfNumeric(Type *type);
+    bool CheckIfFloatingPoint(Type *type);
     bool AdjustNumberLiteralType(ir::NumberLiteral *literal, Type *literalType, Type *otherType);
 
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
