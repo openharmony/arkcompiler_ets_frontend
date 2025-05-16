@@ -143,8 +143,8 @@ export class ObservedDecoratorCheck implements BaseChecker {
                 }
                 const pos = this.getClassPos(target);
                 const description = this.generateIssueDescription(field);
-                const rulFix = this.generateRuleFix(pos, target) ?? undefined;
-                this.addIssueReport(pos, description, rulFix);
+                const ruleFix = this.generateRuleFix(pos, target) ?? undefined;
+                this.addIssueReport(pos, description, ruleFix);
             }
 
             if (!canFindAllTargets) {
@@ -311,9 +311,12 @@ export class ObservedDecoratorCheck implements BaseChecker {
             this.metaData.ruleDocPath,
             true,
             false,
-            false
+            true
         );
         this.issues.push(new IssueReport(defects, ruleFix));
+        if (ruleFix === undefined) {
+            defects.fixable = false;
+        }
     }
 
     private generateRuleFix(warnInfo: WarnInfo, targetClass: ArkClass): RuleFix | null {

@@ -84,7 +84,7 @@ export class FixUtils {
         if (lineNumber === lineStarts.length) {
             endPos = sourceFile.text.length;
         } else {
-            endPos = lineStarts[lineNumber];
+            endPos = lineStarts[lineNumber] - 1;
         }
         return [startPos, endPos];
     }

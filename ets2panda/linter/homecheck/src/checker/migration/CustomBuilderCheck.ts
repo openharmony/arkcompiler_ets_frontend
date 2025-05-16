@@ -192,7 +192,7 @@ export class CustomBuilderCheck implements BaseChecker {
             this.metaData.ruleDocPath,
             true,
             false,
-            false
+            true
         );
         const fixPosition: FixPosition = {
             startLine: warnInfo.line,
@@ -200,8 +200,11 @@ export class CustomBuilderCheck implements BaseChecker {
             endLine: -1,
             endCol: -1,
         };
-        const ruleFix = this.generateRuleFix(fixPosition, stmt);
+        const ruleFix = this.generateRuleFix(fixPosition, stmt) ?? undefined;
         this.issues.push(new IssueReport(defects, ruleFix));
+        if (ruleFix === undefined) {
+            defects.fixable = false;
+        }
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
@@ -219,7 +222,7 @@ export class CustomBuilderCheck implements BaseChecker {
         return { line: -1, startCol: -1, endCol: -1, filePath: '' };
     }
 
-    private generateRuleFix(fixPosition: FixPosition, stmt: Stmt): RuleFix {
+    private generateRuleFix(fixPosition: FixPosition, stmt: Stmt): RuleFix | null {
         let ruleFix: RuleFix = new RuleFix();
         const endPosition = this.getEndPositionOfStmt(stmt);
         if (endPosition) {
@@ -233,6 +236,8 @@ export class CustomBuilderCheck implements BaseChecker {
         const originalText = FixUtils.getSourceWithRange(sourceFile, range);
         if (originalText !== null) {
             ruleFix.text = this.generateReplaceText(sourceFile, originalText, fixPosition);
+        } else {
+            return null;
         }
         return ruleFix;
     }
