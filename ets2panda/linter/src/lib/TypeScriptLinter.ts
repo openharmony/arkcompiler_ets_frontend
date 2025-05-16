@@ -772,14 +772,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!TypeScriptLinter.isFunctionLike(functionDeclaration)) {
       return;
     }
-    if (TypeScriptLinter.containsThrowNonError(functionDeclaration)) {
+    if (this.containsThrowNonError(functionDeclaration)) {
       this.incrementCounters(callExpr, FaultID.InteropTSFunctionInvoke);
     }
   }
 
-  private static containsThrowNonError(
-    node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression
-  ): boolean {
+  private containsThrowNonError(node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression): boolean {
     if (!node.body) {
       return false;
     }
@@ -789,18 +787,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (!ts.isThrowStatement(stmt)) {
         continue;
       }
-      const newExpr = stmt.expression;
-      if (!ts.isNewExpression(newExpr)) {
-        return true;
-      }
-      const ident = newExpr.expression;
-      if (!ts.isIdentifier(ident)) {
-        return true;
-      }
-      if (ident.text === 'Error') {
-        continue;
-      }
-      return true;
+      return this.tsUtils.checkStatementForErrorClass(stmt);
     }
     return false;
   }
@@ -1831,7 +1818,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleTsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
@@ -2143,7 +2130,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.handleDeclarationDestructuring(tsVarDecl);
     }
 
-    this.handleInteropAwaitImport(tsVarDecl);
     // Check variable declaration for duplicate name.
     this.checkVarDeclForDuplicateNames(tsVarDecl.name);
 
@@ -3351,7 +3337,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -3783,6 +3769,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
     this.handleBuiltinCtorCallSignature(tsCallExpr);
+    this.handleInteropAwaitImport(tsCallExpr);
 
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
@@ -5260,7 +5247,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -5692,9 +5679,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }
@@ -5981,7 +5968,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkSendableAndConcurrentDecorator(decorator: ts.Decorator): void {
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
     const decoratorName = TsUtils.getDecoratorName(decorator);
@@ -7231,43 +7218,25 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private handleInteropAwaitImport(variableDecl: ts.VariableDeclaration): void {
+  private handleInteropAwaitImport(callExpr: ts.CallExpression): void {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-    const initializer = variableDecl.initializer;
 
-    if (initializer === undefined) {
-      return;
-    }
-
-    if (!ts.isAwaitExpression(initializer)) {
-      return;
-    }
-    const identifier = variableDecl.name;
-
-    this.checkInteropForDynamicImport(identifier, initializer, variableDecl);
-  }
-
-  private checkInteropForDynamicImport(
-    targetNode: ts.Node,
-    initializer: ts.AwaitExpression,
-    variableDecl: ts.VariableDeclaration
-  ): void {
-    if (!ts.isIdentifier(targetNode)) {
-      return;
-    }
-
-    if (!ts.isCallExpression(initializer.expression)) {
-      return;
-    }
-    const callExpr = initializer.expression;
     if (callExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
       return;
     }
 
-    const currentFile = targetNode.getSourceFile().fileName;
-    const interopType = TsUtils.resolveModuleAndCheckInterop(callExpr, currentFile);
+    if (ts.isAwaitExpression(callExpr.parent) || ts.isPropertyAccessExpression(callExpr.parent)) {
+      this.checkInteropForDynamicImport(callExpr);
+    }
+  }
+
+  private checkInteropForDynamicImport(callExpr: ts.CallExpression): void {
+    const interopType = TsUtils.resolveModuleAndCheckInterop(
+      this.options.wholeProjectPath ?? path.resolve(TsUtils.getCurrentModule(callExpr.getSourceFile().fileName)),
+      callExpr
+    );
 
     if (!interopType) {
       return;
@@ -7275,13 +7244,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     switch (interopType) {
       case InteropType.JS:
-        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImportJs);
+        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImportJs);
         break;
       case InteropType.TS:
-        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImportTs);
+        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImportTs);
         break;
       case InteropType.LEGACY:
-        this.incrementCounters(variableDecl.parent, FaultID.InteropDynamicImport);
+        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImport);
         break;
       default:
         break;

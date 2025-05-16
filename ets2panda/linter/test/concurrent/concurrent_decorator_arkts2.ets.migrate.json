@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 27,
+            "line": 28,
             "column": 24,
-            "endLine": 27,
+            "endLine": 28,
             "endColumn": 28,
             "problem": "LimitedVoidType",
             "suggest": "",

@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+'use static'
 
 import {
  objectLiteralType,
@@ -26,7 +27,7 @@ objectLiteralType.setPropertyByName('name',ESObject.wrap("test"))
 intersectionType.setPropertyByName('name',ESObject.wrap("test"));
 
 try {
-    tsFunction();
+tsFunction();
 } catch (e) {
 }
 

@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 17,
             "column": 1,
-            "endLine": 16,
+            "endLine": 17,
             "endColumn": 12,
             "problem": "LimitedStdLibNoDoncurrentDecorator",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 1,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 12,
             "problem": "LimitedStdLibNoDoncurrentDecorator",
             "suggest": "",
@@ -35,19 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 24,
             "column": 1,
-            "endLine": 23,
-            "endColumn": 12,
-            "problem": "LimitedStdLibNoDoncurrentDecorator",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 1,
-            "endLine": 26,
+            "endLine": 24,
             "endColumn": 12,
             "problem": "LimitedStdLibNoDoncurrentDecorator",
             "suggest": "",
@@ -56,8 +46,18 @@
         },
         {
             "line": 27,
-            "column": 24,
+            "column": 1,
             "endLine": 27,
+            "endColumn": 12,
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 24,
+            "endLine": 28,
             "endColumn": 28,
             "problem": "LimitedVoidType",
             "suggest": "",

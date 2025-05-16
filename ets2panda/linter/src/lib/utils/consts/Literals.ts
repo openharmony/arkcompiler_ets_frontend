@@ -12,14 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
-let arkTsMod = await import('./test_files/dummy_arkts1_file');
-let tsModule  = await import('./test_files/dummy_ts_file');
-let jsModule = await import('./test_files/dummy_js_file');
-
-function main(): void {
-  import('./test_files/dummy_ts_file').then((m) => {
-    console.log(m.Data.name)
-  })
-}
+export const STRING_ERROR_LITERAL = 'ERROR';
