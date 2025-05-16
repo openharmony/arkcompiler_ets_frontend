@@ -1380,6 +1380,8 @@ module Es2pandaLibApi
       es2panda_Options
       es2panda_Path
       es2panda_OverloadInfo
+      es2panda_JsDocRecord
+      es2panda_JsDocInfo
     ]
   end
 

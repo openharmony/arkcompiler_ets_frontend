@@ -200,6 +200,37 @@ __attribute__((unused)) es2panda_OverloadInfo OverloadInfoToE2p(const ir::Overlo
     return es2pandaOverloadInfo;
 }
 
+__attribute__((unused)) ir::JsDocRecord JsDocRecordToE2p(const es2panda_JsDocRecord *jsDocRecord)
+{
+    return ir::JsDocRecord(jsDocRecord->name, jsDocRecord->param, jsDocRecord->comment);
+}
+
+__attribute__((unused)) es2panda_JsDocRecord *JsDocRecordFromE2p(ArenaAllocator *allocator,
+                                                                 const ir::JsDocRecord &jsDocRecord)
+{
+    es2panda_JsDocRecord *res = allocator->New<es2panda_JsDocRecord>();
+    res->name = StringViewToCString(allocator, jsDocRecord.name);
+    res->param = StringViewToCString(allocator, jsDocRecord.param);
+    res->comment = StringViewToCString(allocator, jsDocRecord.comment);
+    return res;
+}
+
+__attribute__((unused)) es2panda_JsDocInfo *JsDocInfoFromE2p(ArenaAllocator *allocator, const ir::JsDocInfo &jsDocInfo)
+{
+    size_t jsDocInfoLen = jsDocInfo.size();
+    es2panda_JsDocInfo *res = allocator->New<es2panda_JsDocInfo>();
+    res->len = jsDocInfoLen;
+    res->strings = allocator->New<char *[]>(jsDocInfoLen);
+    res->jsDocRecords = allocator->New<es2panda_JsDocRecord *[]>(jsDocInfoLen);
+    size_t i = 0;
+    for (const auto &[key, value] : jsDocInfo) {
+        res->strings[i] = StringViewToCString(allocator, key);
+        res->jsDocRecords[i] = JsDocRecordFromE2p(allocator, value);
+        ++i;
+    };
+    return res;
+}
+
 __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
 {
     size_t len = strlen(src);

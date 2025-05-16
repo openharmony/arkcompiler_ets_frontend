@@ -128,6 +128,18 @@ typedef struct es2panda_OverloadInfo {
     bool returnVoid;
 } es2panda_OverloadInfo;
 
+typedef struct es2panda_JsDocRecord {
+    char *name;
+    char *param;
+    char *comment;
+} es2panda_JsDocRecord;
+
+typedef struct es2panda_JsDocInfo {
+    char **strings;
+    es2panda_JsDocRecord **jsDocRecords;
+    size_t len;
+} es2panda_JsDocInfo;
+
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,

@@ -124,6 +124,7 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual void NextToken(NextTokenFlags flags = NextTokenFlags::NONE);
     virtual void ScanAsteriskPunctuator();
+    bool IsEnableParseJsdoc() const;
 
     Token &GetToken();
     const Token &GetToken() const;
