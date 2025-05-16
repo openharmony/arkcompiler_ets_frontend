@@ -1083,6 +1083,7 @@ ark_gen("gen") {
     "${LIB_NAME}_impl.inc.erb",
     "${LIB_NAME}_include.inc.erb",
     "${LIB_NAME}_list.inc.erb",
+    "${LIB_NAME}.idl.erb",
   ]
   sources = "public/"
   destination = "$LIBGEN_DIR/"
@@ -1147,6 +1148,7 @@ ohos_source_set("libes2panda_frontend_static") {
     ":gen_${LIB_NAME}_impl_inc",
     ":gen_${LIB_NAME}_include_inc",
     ":gen_${LIB_NAME}_list_inc",
+    ":gen_${LIB_NAME}_idl",
     ":gen_es2panda_compiler_signatures_h",
     ":gen_es2panda_lexer_keywords_h",
     ":gen_es2panda_lexer_tokenType_h",
