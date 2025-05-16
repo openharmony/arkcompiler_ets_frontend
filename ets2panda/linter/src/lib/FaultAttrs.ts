@@ -191,6 +191,7 @@ faultsAttrs[FaultID.InteropJsObjectExpandStaticInstance] = new FaultAttributes(2
 faultsAttrs[FaultID.InteropDynamicImport] = new FaultAttributes(271);
 faultsAttrs[FaultID.InteropDynamicImportTs] = new FaultAttributes(272);
 faultsAttrs[FaultID.InteropDynamicImportJs] = new FaultAttributes(273);
+faultsAttrs[FaultID.MissingSuperCall] = new FaultAttributes(274);
 faultsAttrs[FaultID.ExplicitFunctionType] = new FaultAttributes(300);
 faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
 faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);

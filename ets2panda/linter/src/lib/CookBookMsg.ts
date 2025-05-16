@@ -276,6 +276,8 @@ cookBookTag[269] =
 cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
 cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
 cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';
+cookBookTag[274] =
+  'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =

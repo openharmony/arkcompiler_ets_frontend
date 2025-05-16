@@ -5973,6 +5973,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.handleSdkDuplicateDeclName(expr);
         }
       });
+
+      this.handleMissingSuperCallInExtendedClass(node);
     }
   }
 
@@ -7213,6 +7215,99 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         }
       }
     }
+  }
+
+  /**
+   * Checks for missing super() call in child classes that extend a parent class
+   * with parameterized constructors. If parent class only has parameterized constructors
+   * and the child class does not call super() in its constructor, report a fault.
+   *
+   * This ensures safe and correct subclassing behavior.
+   *
+   * @param node The HeritageClause node (extends clause) to analyze.
+   */
+  private handleMissingSuperCallInExtendedClass(node: ts.HeritageClause): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    // We are only interested in 'extends' clauses
+    if (node.token !== ts.SyntaxKind.ExtendsKeyword) {
+      return;
+    }
+
+    // Get the parent class declaration (what the child class extends)
+    const parentClass = this.getParentClassDeclaration(node);
+    if (!parentClass) {
+      return;
+    }
+
+    // If parent class has a parameterless constructor (or no constructor at all), child is fine
+    if (TypeScriptLinter.parentHasParameterlessConstructor(parentClass)) {
+      return;
+    }
+
+    // The child class node (the one extending)
+    const childClass = node.parent;
+    if (!ts.isClassDeclaration(childClass)) {
+      return;
+    }
+
+    // Look for child class constructor
+    const childConstructor = childClass.members.find(ts.isConstructorDeclaration);
+
+    /*
+     * If child has no constructor → error (super() cannot be called)
+     * If child constructor exists but does not contain super() → error
+     */
+    if (!childConstructor?.body || !TypeScriptLinter.childHasSuperCall(childConstructor)) {
+      this.incrementCounters(node, FaultID.MissingSuperCall);
+    }
+  }
+
+  /**
+   * Retrieves the parent class declaration node from an extends heritage clause.
+   */
+  private getParentClassDeclaration(node: ts.HeritageClause): ts.ClassDeclaration | undefined {
+    const parentExpr = node.types[0]?.expression;
+    if (!parentExpr) {
+      return undefined;
+    }
+    const parentSymbol = this.tsUtils.trueSymbolAtLocation(parentExpr);
+    return parentSymbol?.declarations?.find(ts.isClassDeclaration);
+  }
+
+  /**
+   * Determines if a parent class has a parameterless constructor.
+   * If it has no constructor at all, that counts as parameterless.
+   */
+  private static parentHasParameterlessConstructor(parentClass: ts.ClassDeclaration): boolean {
+    const constructors = parentClass.members.filter(ts.isConstructorDeclaration);
+    return (
+      constructors.length === 0 ||
+      constructors.some((ctor) => {
+        return ctor.parameters.length === 0;
+      })
+    );
+  }
+
+  private static childHasSuperCall(constructor: ts.ConstructorDeclaration): boolean {
+    let superCalled = false;
+
+    if (!constructor.body) {
+      return false;
+    }
+
+    ts.forEachChild(constructor.body, (stmt) => {
+      if (
+        ts.isExpressionStatement(stmt) &&
+        ts.isCallExpression(stmt.expression) &&
+        stmt.expression.expression.kind === ts.SyntaxKind.SuperKeyword
+      ) {
+        superCalled = true;
+      }
+    });
+    return superCalled;
   }
 
   private handleInterOpImportJs(importDecl: ts.ImportDeclaration): void {

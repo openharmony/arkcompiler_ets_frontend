@@ -204,6 +204,7 @@ export enum FaultID {
   InteropDynamicImport,
   InteropDynamicImportTs,
   InteropDynamicImportJs,
+  MissingSuperCall,
   InteropObjectLiteralAmbiguity,
   InteropObjectLiteralClass,
   UnsupportPropNameFromValue,

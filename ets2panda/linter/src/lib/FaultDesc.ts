@@ -203,6 +203,7 @@ faultDesc[FaultID.LimitedStdLibNoImportConcurrency] = 'Import Concurrency Deprec
 faultDesc[FaultID.InteropDynamicImport] = 'Interop import await is not allowed';
 faultDesc[FaultID.InteropDynamicImportTs] = 'Interop import await is not allowed';
 faultDesc[FaultID.InteropDynamicImportJs] = 'Interop import await is not allowed';
+faultDesc[FaultID.MissingSuperCall] = 'Missing super call with args';
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
 faultDesc[FaultID.InteropObjectLiteralAmbiguity] = 'Interop Object Literal ambiguity';
 faultDesc[FaultID.InteropObjectLiteralClass] = 'Interop Object Literal incompatible with class';
