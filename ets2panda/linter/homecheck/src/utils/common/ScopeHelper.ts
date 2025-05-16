@@ -49,7 +49,7 @@ export class ScopeHelper {
             this.finishBlockSet = new Set();
             this.firstBlock = method.getBody()?.getCfg()?.getStartingBlock();
             if (!this.firstBlock) {
-                logger.debug(`${clazz.getName()}::${method.getName()} has no body.`);
+                logger.trace(`${clazz.getName()}::${method.getName()} has no body.`);
                 continue;
             }
             let curScope = firstScope;

@@ -70,7 +70,7 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
     private collectTargetMethods(targetMethods: Map<MethodSignature, [boolean, ArkAssignStmt][]>, scene: Scene): void {
         scene.getFiles().forEach(file => {
             // 只处理 ArkTS1.2 import JS 函数的情况
-            if (file.getLanguage() != Language.ARKTS1_2) {
+            if (file.getLanguage() !== Language.ARKTS1_2) {
                 return;
             }
             file.getImportInfos().forEach(importInfo => {
@@ -173,7 +173,8 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
                 // 假设有 JS 函数声明： function foo(obj)，其中 obj 为受关注的参数
                 // 只有类似 let obj2 = obj 或者 goo(obj) 这样的语句受到关注
                 if (dstStmt instanceof ArkAssignStmt && dstStmt.getRightOp() === cunrrentStmt.getLeftOp()) {
-                    return worklist.push(dst);
+                    worklist.push(dst);
+                    return;
                 }
                 const invoke = dstStmt.getInvokeExpr();
                 if (!invoke) {

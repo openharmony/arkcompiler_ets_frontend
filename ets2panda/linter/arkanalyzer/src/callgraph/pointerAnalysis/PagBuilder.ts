@@ -275,6 +275,11 @@ export class PagBuilder {
     }
 
     private processExternalScopeValue(value: Value, funcID: FuncID): void {
+        let dummyMainFuncID = this.cg.getDummyMainFuncID();
+        if (dummyMainFuncID && funcID === dummyMainFuncID) {
+            return;
+        }
+
         if (value instanceof Local) {
             this.handleValueFromExternalScope(value, funcID);
         } else if (value instanceof ArkInstanceInvokeExpr) {
@@ -452,6 +457,13 @@ export class PagBuilder {
                 base = invokeExpr.getBase();
             } else if (invokeExpr instanceof ArkPtrInvokeExpr && invokeExpr.getFuncPtrLocal() instanceof Local) {
                 base = invokeExpr.getFuncPtrLocal() as Local;
+            } else if (invokeExpr instanceof ArkPtrInvokeExpr && invokeExpr.getFuncPtrLocal() instanceof AbstractFieldRef) {
+                /**
+                 * TODO: wait for IR change
+                 * throw error in ptrInvoke with field ref
+                 * this.field() // field is lambda expression
+                 */
+                continue;
             }
             // TODO: check base under different cid
             let baseNodeIDs = this.pag.getNodesByValue(base);
@@ -636,7 +648,12 @@ export class PagBuilder {
             let srcBaseNode = this.addThisRefCallEdge(baseClassPTNode, cid, ivkExpr.getBase(), callee!, calleeCid, staticCS.callerFuncID);
             srcNodes.push(srcBaseNode);
         } else if (!dstCGNode.isSdkMethod() && ivkExpr instanceof ArkPtrInvokeExpr) {
-            let thisValue = (ptNode as PagFuncNode).getCS().args![0];
+            let originCS = (ptNode as PagFuncNode).getCS();
+            if (!originCS) {
+                return srcNodes;
+            }
+
+            let thisValue = originCS.args![0];
 
             if (!(thisValue instanceof Local)) {
                 return srcNodes;
