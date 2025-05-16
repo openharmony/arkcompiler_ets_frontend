@@ -14,7 +14,7 @@
  */
 
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
-import { ALERT_LEVEL, Rule } from '../../model/Rule';
+import { Rule } from '../../model/Rule';
 import { Defects, IssueReport } from '../../model/Defects';
 import { FileMatcher, MatcherCallback, MatcherTypes } from '../../matcher/Matchers';
 import {
@@ -47,17 +47,18 @@ const gMetaData: BaseMetaData = {
     description: '',
 };
 
-const s2dRule: Rule = new Rule('@migration/arkts-interop-s2d-boxed-type', ALERT_LEVEL.WARN);
-const d2sRule: Rule = new Rule('@migration/arkts-interop-d2s-boxed-type', ALERT_LEVEL.WARN);
-const ts2sRule: Rule = new Rule('@migration/arkts-interop-ts2s-boxed-type', ALERT_LEVEL.WARN);
-const js2Rule: Rule = new Rule('@migration/arkts-interop-js2s-boxed-type', ALERT_LEVEL.WARN);
+const ruleId: string = '@migration/interop-boxed-type-check';
+const s2dRuleId: string = 'arkts-interop-s2d-boxed-type';
+const d2sRuleId: string = 'arkts-interop-d2s-boxed-type';
+const ts2sRuleId: string = 'arkts-interop-ts2s-boxed-type';
+const js2RuleId: string = 'arkts-interop-js2s-boxed-type';
 
 const BOXED_SET: Set<string> = new Set<string>(['String', 'Boolean', 'Number']);
 
 type CheckedObj = {
-    namespaces: Map<string, boolean | null>,
-    classes: Map<string, boolean | null>,
-    methods: Map<string, boolean | null>
+    namespaces: Map<string, boolean | null>;
+    classes: Map<string, boolean | null>;
+    methods: Map<string, boolean | null>;
 };
 
 export class InteropBoxedTypeCheck implements BaseChecker {
@@ -82,7 +83,8 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         let hasChecked: CheckedObj = {
             namespaces: new Map<string, boolean | null>(),
             classes: new Map<string, boolean | null>(),
-            methods: new Map<string, boolean | null>() };
+            methods: new Map<string, boolean | null>(),
+        };
         const scene = arkFile.getScene();
         // Import对象对应的Export信息的推导在类型推导过程中是懒加载机制，调用getLazyExportInfo接口会自动进行推导
         arkFile.getImportInfos().forEach(importInfo => {
@@ -120,10 +122,15 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         });
     };
 
-    private findBoxedTypeInNamespace(importInfo: ImportInfo, arkNamespace: ArkNamespace, scene: Scene, hasChecked: CheckedObj): boolean | null {
+    private findBoxedTypeInNamespace(
+        importInfo: ImportInfo,
+        arkNamespace: ArkNamespace,
+        scene: Scene,
+        hasChecked: CheckedObj
+    ): boolean | null {
         // 判断namespace是否已查找过，避免陷入死循环
         const existing = hasChecked.namespaces.get(arkNamespace.getSignature().toString());
-        if (existing !== undefined ) {
+        if (existing !== undefined) {
             return existing;
         }
         hasChecked.namespaces.set(arkNamespace.getSignature().toString(), null);
@@ -160,7 +167,7 @@ export class InteropBoxedTypeCheck implements BaseChecker {
     private isClassHasBoxedType(arkClass: ArkClass, scene: Scene, hasChecked: CheckedObj): boolean | null {
         // step0: 判断class是否已查找过，避免陷入死循环
         const existing = hasChecked.classes.get(arkClass.getSignature().toString());
-        if (existing !== undefined ) {
+        if (existing !== undefined) {
             return existing;
         }
         hasChecked.classes.set(arkClass.getSignature().toString(), null);
@@ -200,7 +207,7 @@ export class InteropBoxedTypeCheck implements BaseChecker {
     private isMethodReturnHasBoxedType(arkMethod: ArkMethod, scene: Scene, hasChecked: CheckedObj): boolean | null {
         // 判断method是否已查找过，避免陷入死循环
         const existing = hasChecked.methods.get(arkMethod.getSignature().toString());
-        if (existing !== undefined ) {
+        if (existing !== undefined) {
             return existing;
         }
         hasChecked.methods.set(arkMethod.getSignature().toString(), null);
@@ -253,7 +260,12 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         return false;
     }
 
-    private findBoxedTypeInClass(importInfo: ImportInfo, arkClass: ArkClass, scene: Scene, hasChecked: CheckedObj): boolean {
+    private findBoxedTypeInClass(
+        importInfo: ImportInfo,
+        arkClass: ArkClass,
+        scene: Scene,
+        hasChecked: CheckedObj
+    ): boolean {
         const importOpPosition = importInfo.getOriginTsPosition();
         const warnInfo: WarnInfo = {
             line: importOpPosition.getLineNo(),
@@ -270,7 +282,12 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         return false;
     }
 
-    private findBoxedTypeWithMethodReturn(importInfo: ImportInfo, arkMethod: ArkMethod, scene: Scene, hasChecked: CheckedObj): boolean {
+    private findBoxedTypeWithMethodReturn(
+        importInfo: ImportInfo,
+        arkMethod: ArkMethod,
+        scene: Scene,
+        hasChecked: CheckedObj
+    ): boolean {
         const importOpPostion = importInfo.getOriginTsPosition();
         const warnInfo: WarnInfo = {
             line: importOpPostion.getLineNo(),
@@ -288,7 +305,12 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         return false;
     }
 
-    private findBoxedTypeWithLocal(importInfo: ImportInfo, local: Local, scene: Scene, hasChecked: CheckedObj): boolean {
+    private findBoxedTypeWithLocal(
+        importInfo: ImportInfo,
+        local: Local,
+        scene: Scene,
+        hasChecked: CheckedObj
+    ): boolean {
         const importOpPosition = importInfo.getOriginTsPosition();
         const warnInfo: WarnInfo = {
             line: importOpPosition.getLineNo(),
@@ -319,15 +341,11 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         if (interopRule === null) {
             return;
         }
-        const shortRuleId = interopRule.ruleId.split('/').pop();
-        if (shortRuleId === undefined) {
-            return;
-        }
-        const severity = interopRule.alert ?? this.metaData.severity;
+        const severity = this.metaData.severity;
         const currLanStr = getLanguageStr(currLanguage);
         const targetLanStr = getLanguageStr(targetLanguage);
         const problem = 'Interop';
-        const describe = `Could not import object with boxed type from ${targetLanStr} to ${currLanStr} (${shortRuleId})`;
+        const describe = `Could not import object with boxed type from ${targetLanStr} to ${currLanStr} (${interopRule})`;
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -335,7 +353,7 @@ export class InteropBoxedTypeCheck implements BaseChecker {
             problem,
             describe,
             severity,
-            interopRule.ruleId,
+            ruleId,
             warnInfo.filePath,
             this.metaData.ruleDocPath,
             true,
@@ -345,20 +363,20 @@ export class InteropBoxedTypeCheck implements BaseChecker {
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private getInteropRule(currLanguage: Language, targetLanguage: Language): Rule | null {
+    private getInteropRule(currLanguage: Language, targetLanguage: Language): string | null {
         if (currLanguage === Language.ARKTS1_1) {
             if (targetLanguage === Language.ARKTS1_2) {
-                return s2dRule;
+                return s2dRuleId;
             }
         } else if (currLanguage === Language.ARKTS1_2) {
             if (targetLanguage === Language.TYPESCRIPT) {
-                return ts2sRule;
+                return ts2sRuleId;
             }
             if (targetLanguage === Language.ARKTS1_1) {
-                return d2sRule;
+                return d2sRuleId;
             }
             if (targetLanguage === Language.JAVASCRIPT) {
-                return js2Rule;
+                return js2RuleId;
             }
         }
         return null;
@@ -366,7 +384,12 @@ export class InteropBoxedTypeCheck implements BaseChecker {
 
     // lastStmt为当前需要查找的对象的赋值语句，左值为查找对象，右值为往前继续查找的赋值起点
     // reverseStmtChain为以待查找对象为起点，所有一系列赋值语句的倒序排列
-    private isValueAssignedByBoxed(lastStmt: ArkAssignStmt, previousReverseChain: Stmt[], scene: Scene, hasChecked: CheckedObj): boolean {
+    private isValueAssignedByBoxed(
+        lastStmt: ArkAssignStmt,
+        previousReverseChain: Stmt[],
+        scene: Scene,
+        hasChecked: CheckedObj
+    ): boolean {
         let locals: Set<Local> = new Set();
         const targetLocal = lastStmt.getRightOp();
         const targetLocalType = targetLocal.getType();

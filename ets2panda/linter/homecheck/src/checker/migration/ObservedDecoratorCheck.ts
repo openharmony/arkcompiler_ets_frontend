@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import {
     AbstractInvokeExpr,
     ArkAssignStmt,
@@ -22,6 +23,7 @@ import {
     ArkReturnStmt,
     AstTreeUtils,
     ClassType,
+    fileSignatureCompare,
     Local,
     Scene,
     Type,
@@ -142,14 +144,14 @@ export class ObservedDecoratorCheck implements BaseChecker {
                     continue;
                 }
                 const pos = this.getClassPos(target);
-                const description = this.generateIssueDescription(field);
+                const description = this.generateIssueDescription(field, target);
                 const ruleFix = this.generateRuleFix(pos, target) ?? undefined;
                 this.addIssueReport(pos, description, ruleFix);
             }
 
             if (!canFindAllTargets) {
                 const pos = this.getFieldPos(field);
-                const description = this.generateIssueDescription(field, false);
+                const description = this.generateIssueDescription(field, null, false);
                 this.addIssueReport(pos, description);
             }
         }
@@ -258,19 +260,33 @@ export class ObservedDecoratorCheck implements BaseChecker {
         }
     }
 
-    private generateIssueDescription(field: ArkField, canFindAllTargets: boolean = true): string {
-        if (canFindAllTargets) {
-            const fieldLine = field.getOriginPosition().getLineNo();
-            const fieldColumn = field.getOriginPosition().getColNo();
-            return `The class is used by state property in [${fieldLine}, ${fieldColumn}], but it's not be annotated by @Observed`;
+    private generateIssueDescription(
+        field: ArkField,
+        issueClass: ArkClass | null,
+        canFindAllTargets: boolean = true
+    ): string {
+        if (issueClass === null || !canFindAllTargets) {
+            return `can not find all classes, please check this field manually`;
         }
-        return `can not find all classes, check this field`;
+        const fieldLine = field.getOriginPosition().getLineNo();
+        const fieldColumn = field.getOriginPosition().getColNo();
+
+        const fieldFileSig = field.getDeclaringArkClass().getDeclaringArkFile().getFileSignature();
+        const issueClassSig = issueClass.getDeclaringArkFile().getFileSignature();
+        let res = `but it's not be annotated by @Observed (arkui-data-observation)`;
+        if (fileSignatureCompare(fieldFileSig, issueClassSig)) {
+            res = `The class is used by state property in [${fieldLine}, ${fieldColumn}], ` + res;
+        } else {
+            const filePath = path.normalize(fieldFileSig.getFileName());
+            res = `The class is used by state property in file ${filePath} [${fieldLine}, ${fieldColumn}], ` + res;
+        }
+        return res;
     }
 
     private getClassPos(cls: ArkClass): WarnInfo {
         const arkFile = cls.getDeclaringArkFile();
         if (arkFile) {
-            const originPath = arkFile.getFilePath();
+            const originPath = path.normalize(arkFile.getFilePath());
             const line = cls.getLine();
             const startCol = cls.getColumn();
             const endCol = startCol;

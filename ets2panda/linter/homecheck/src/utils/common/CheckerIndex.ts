@@ -36,8 +36,7 @@ export const fileRules = {
     '@migration/arkui-no-update-in-build': ModifyStateVarCheck,
     '@migration/arkui-custombuilder-passing': CustomBuilderCheck,
     '@migration/no-method-overriding-field-check': NoMethodOverridingFieldCheck,
-    '@migration/interop-typeof-boxed-types': InteropBoxedTypeCheck,
-    '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
+    '@migration/interop-boxed-type-check': InteropBoxedTypeCheck,
 };
 
 export const projectRules = {
@@ -45,6 +44,7 @@ export const projectRules = {
     '@migration/interop-backward-dfa': InteropBackwardDFACheck,
     '@migration/interop-assign': InteropAssignCheck,
     '@migration/interop-js-modify-property': InteropJSModifyPropertyCheck,
+    '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
 };
 
 // 新增文件级的checker，需要在此处注册
