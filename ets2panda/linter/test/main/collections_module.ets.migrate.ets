@@ -13,25 +13,25 @@
  * limitations under the License.
  */
 
-import { collections } from './oh_modules/@arkts.collections';
 
-import { collections as collectionsAlias } from './oh_modules/@arkts.collections';
 
-import { collections as kitCollections } from './oh_modules/@kit.ArkTS';
+
+
+
 
 import { collections as definedCollections } from 'user_defined_worker'; //legal
 
 function tesCollectionsUsage() {
 
-  const collections1: collections.Array<number> = new collections.Array<number>();
+  const collections1: Array<number> = new Array<number>();
 
-  const collections2 = new collectionsAlias.Array<number>();
+  const collections2: number[] = new Array<number>();
 
-  const collections3 = new kitCollections.Array<number>();
+  const collections3: number[] = new Array<number>();
 
-  let collections4: collectionsAlias.Array<number>;
+  let collections4: Array<number>;
 
-  const collections5: collectionsAlias.Array<number> = new collectionsAlias.Array<number>();
+  const collections5: Array<number> = new Array<number>();
 
   let collections6: definedCollections.Array<number>; // legal
 

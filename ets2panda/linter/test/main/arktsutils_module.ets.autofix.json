@@ -21,6 +21,13 @@
             "endColumn": 36,
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
+            "autofix": [
+                {
+                    "start": 981,
+                    "end": 991,
+                    "replacementText": "JSON"
+                }
+            ],
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
@@ -31,6 +38,13 @@
             "endColumn": 38,
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
+            "autofix": [
+                {
+                    "start": 1024,
+                    "end": 1044,
+                    "replacementText": "JSON"
+                }
+            ],
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
@@ -41,6 +55,13 @@
             "endColumn": 36,
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
+             "autofix": [
+                {
+                    "start": 1077,
+                    "end": 1095,
+                    "replacementText": "JSON"
+                }
+            ],
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
@@ -51,6 +72,13 @@
             "endColumn": 46,
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
+            "autofix": [
+                {
+                    "start": 1136,
+                    "end": 1156,
+                    "replacementText": "JSON"
+                }
+            ],
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         }

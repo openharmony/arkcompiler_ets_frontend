@@ -19,9 +19,9 @@
             "column": 10,
             "endLine": 16,
             "endColumn": 21,
-            "problem": "LimitedStdLibApi",
+            "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
         },
         {
@@ -289,9 +289,9 @@
             "column": 23,
             "endLine": 177,
             "endColumn": 34,
-            "problem": "LimitedStdLibApi",
+            "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
         },
         {

@@ -13,6 +13,23 @@
  * limitations under the License.
  */
 
-export const ASON_TEXT = 'ASON';
-export const ASON_MODULES = ['@arkts.utils', '@kit.ArkTS'];
-export const JSON_TEXT = 'JSON';
+import { utils } from './oh_modules/@arkts.utils';
+
+import { utils as ArkTSUtilsAlias } from './oh_modules/@arkts.utils';
+
+import { utils as kitArkTSUtils } from './oh_modules/@kit.ArkTS';
+
+import { utils as definedArkTSUtils } from 'user_defined_worker'; //legal
+
+export { utils } from './oh_modules/@arkts.utils';
+
+function tesCollectionsUsage() {
+
+  const utils1: string = JSON.stringify(1);
+
+  const utils2 = JSON.stringify(1);
+
+  const utils3 = JSON.stringify(1);
+
+  const utils4: string = JSON.stringify(1);
+}

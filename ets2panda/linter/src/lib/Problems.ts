@@ -94,6 +94,8 @@ export enum FaultID {
   ImportAssertion,
   SpreadOperator,
   LimitedStdLibApi,
+  LimitedStdLibNoASON,
+  NoNeedStdLibSendableContainer,
   ErrorSuppression,
   StrictDiagnostic,
   ImportAfterStatement,

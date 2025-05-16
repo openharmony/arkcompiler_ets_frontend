@@ -229,9 +229,11 @@ cookBookTag[187] =
   'function "Math.pow()" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)';
 cookBookTag[189] = 'Numeric semantics is different for integer values (arkts-numeric-semantic)';
 cookBookTag[190] = 'Stricter assignments into variables of function type (arkts-incompatible-function-types)';
+cookBookTag[191] = 'ASON is not supported. (arkts-no-need-stdlib-ason)';
 cookBookTag[192] = 'Type "void" has no instances.(arkts-limited-void-type)';
 cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
 cookBookTag[198] = 'Class TS overloading is not supported(arkts-no-ts-overload)';
+cookBookTag[199] = 'Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)';
 cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
 cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';

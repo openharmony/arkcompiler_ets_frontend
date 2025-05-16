@@ -13,9 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "mode": {
-        "arkts2": "",
-        "autofix": "--arkts-2",
-        "migrate": "--arkts-2"
-    }
+    "result": []
 }

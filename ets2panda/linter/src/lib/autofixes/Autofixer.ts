@@ -2350,6 +2350,11 @@ export class Autofixer {
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: '' }];
   }
 
+  replaceNode(node: ts.Node, replacementText: string): Autofix[] {
+    void this;
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText }];
+  }
+
   fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {
     const initializer = node.initializer;
     if (initializer === undefined) {
@@ -3197,6 +3202,36 @@ export class Autofixer {
     autofix.forEach((fix) => {
       fix.replacementText = newName;
     });
+  }
+
+  removeImport(ident: ts.Identifier, importSpecifier: ts.ImportSpecifier): Autofix[] | undefined {
+    const namedImports = importSpecifier.parent;
+    const importClause = namedImports.parent;
+    const importDeclaration = importClause.parent;
+    if (!importDeclaration || !importClause) {
+      return undefined;
+    }
+
+    if (namedImports.elements.length === 1 && !importClause.name) {
+      return this.removeNode(importDeclaration);
+    }
+
+    if (namedImports.elements.length <= 0) {
+      return undefined;
+    }
+
+    const specifiers = namedImports.elements.filter((specifier) => {
+      return specifier.name.text !== ident.text;
+    });
+
+    const newClause = ts.factory.createImportClause(
+      importClause.isTypeOnly,
+      importClause.name,
+      ts.factory.createNamedImports(specifiers)
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newClause, ident.getSourceFile());
+    return [{ start: importClause.getStart(), end: importClause.getEnd(), replacementText }];
   }
 
   fixInterfaceImport(
