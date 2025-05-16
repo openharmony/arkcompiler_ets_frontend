@@ -97,7 +97,7 @@ function primitive_reference_test(): void {
   let int_: int = 42;
   let Int_ = int_ as Int;
   assertTrue(Int_ instanceof Int)
-  assertEQ(Int_.intValue(), 42)
+  assertEQ(Int_.toInt(), 42)
   assertEQ(Int_.add(1) as int, 43)
 }
 
