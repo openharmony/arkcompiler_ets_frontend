@@ -1474,3 +1474,5 @@ runtime/ets/objectLiteral.ets
 runtime/ets/objectLiteralInterfaceType.ets
 runtime/ets/objectLiteral_abstract_class_object.ets
 runtime/ets/rest_object_literal.ets
+ast/parser/ets/while_with_empty_body.ets
+ast/parser/ets/de_while_with_empty_body.ets
