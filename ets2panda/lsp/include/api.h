@@ -30,6 +30,7 @@
 #include "cancellation_token.h"
 #include "find_references.h"
 #include "find_rename_locations.h"
+#include "class_hierarchy_info.h"
 #include "completions.h"
 #include "todo_comments.h"
 #include "types.h"
@@ -340,6 +341,7 @@ typedef struct LSPAPI {
         const ark::es2panda::SourceFile &srcFile, size_t position);
     DiagnosticReferences (*getSuggestionDiagnostics)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
+    ark::es2panda::lsp::ClassHierarchy (*getClassHierarchyInfo)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
