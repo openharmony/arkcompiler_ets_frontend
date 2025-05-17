@@ -6007,15 +6007,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleTypescriptDecorators(decorator: ts.Decorator): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    if (!ts.isClassDeclaration(decorator.parent)) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
-    const decoratorExpression = decorator.expression;
-    const symbol = this.tsUtils.trueSymbolAtLocation(decoratorExpression);
+    const identifier = TsUtils.extractIdentifierFromDecorator(decorator.expression);
+    if (!identifier) {
+      return;
+    }
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(identifier);
     if (!symbol) {
       return;
     }

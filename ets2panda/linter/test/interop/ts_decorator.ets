@@ -1,3 +1,4 @@
+'use static'
 /*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +14,43 @@
  * limitations under the License.
  */
 
-import {MyClassDecorator, MyClassDecorator2} from "./oh_modules/ts_decorator"
+import { decorator1, decorator2, readonly1 } from "./oh_modules/ts_decorator"
+import { MyNs } from "./oh_modules/ts_decorator"
+import { Lib } from "./oh_modules/ts_decorator"
 import { MyDecorator } from "./oh_modules/ets_decorator";
 
-@MyClassDecorator
-class K {}
+@decorator1
+class K { }
 
-@Entry //legal
-class X {}
+@Entry // legal
+class X { }
 
 @MyDecorator //legal
-class Y {}
-
-@MyClassDecorator2
-class Z {}
+class Y { }
 
 class Example {
-  @MyClassDecorator2  //legal
-  doSomething() {}
+  @decorator2
+  doSomething() { return "hello" }
+}
+
+class Person {
+  private _age: string;
+  @readonly1(true)
+  get age(): string {
+    return this._age;
+  }
+}
+
+@MyNs.myDecorator()
+class C { }
+
+@decorator1
+@MyNs.myDecorator()
+class MyClass {
+  @decorator2
+  @readonly1(true)
+  myMethod() { }
+
+  @Lib.Utils.decorator()
+  myProperty = 'value';
 }

@@ -21,7 +21,7 @@
             "endColumn": 29,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         },
         {
@@ -31,7 +31,7 @@
             "endColumn": 25,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 22,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 18,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 29,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 34,
             "problem": "InteropStaticObjectLiterals",
             "suggest": "",
-            "rule": "It is not allowed to create object literal in interop calls (interop-static-object-literals)",
+            "rule": "It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)",
             "severity": "ERROR"
         }
     ]

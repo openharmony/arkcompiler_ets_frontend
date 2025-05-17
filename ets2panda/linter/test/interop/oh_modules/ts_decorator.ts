@@ -13,5 +13,25 @@
  * limitations under the License.
  */
 
-export function MyClassDecorator(klass: Object) { }
-export function MyClassDecorator2(target: Function) { }
+export function decorator1(klass: Object) { }
+export function decorator2(target: any, propertyKey?: string, descriptor?: PropertyDescriptor): void { }
+
+export function readonly1(isReadonly: boolean) {
+    return function (target: any, desc: string) {
+        if (isReadonly) {
+            desc = "foo"
+        }
+    }
+}
+export namespace MyNs {
+    export function myDecorator(): ClassDecorator {
+        return function (target: Function): void { };
+    }
+}
+export namespace Lib {
+    export namespace Utils {
+        export function decorator(): PropertyDecorator {
+            return function (target: Object, propertyKey: string | symbol): void { };
+        }
+    }
+}
