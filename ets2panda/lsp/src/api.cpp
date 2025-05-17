@@ -275,6 +275,12 @@ ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(es2panda_Context *co
     return result;
 }
 
+ClassHierarchy GetClassHierarchyInfo(es2panda_Context *context, size_t position)
+{
+    auto result = GetClassHierarchyInfoImpl(context, position);
+    return result;
+}
+
 std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Context *context, int position)
 {
     return GetImplementationLocationAtPosition(context, position);
@@ -336,6 +342,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     FindReferencesWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
+                    GetClassHierarchyInfo,
                     GetBraceMatchingAtPositionWrapper,
                     GetImplementationLocationAtPositionWrapper,
                     ToLineColumnOffsetWrapper,
