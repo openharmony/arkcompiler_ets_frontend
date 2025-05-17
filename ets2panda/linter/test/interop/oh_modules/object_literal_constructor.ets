@@ -12,10 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-export class X {
-  name: string
+
+export class User {
+  id: number;
+  constructor(arg: number) {
+    this.id = arg
+  }
+}
+export class Person {
+  name: string;
+  age: number;
+  constructor(arg1: string, arg2: number) {
+    this.name = arg1;
+    this.age = arg2;
+  }
+}
+export class Fruit {
+  name: string;
   constructor(arg: string) {
-    this.name = arg
+    this.name = arg;
+  }
+}
+export class Apple extends Fruit {
+  color: string;
+  constructor(string: string, arg2: string) {
+    super(string)
+    this.color = arg2;
   }
 }

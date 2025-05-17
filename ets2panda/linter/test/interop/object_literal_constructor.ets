@@ -1,3 +1,4 @@
+'use static'
 /*
  * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,12 @@
  * limitations under the License.
  */
 
-import {X} from "./oh_modules/object_literal_constructor"
+import { User, Person, Fruit, Apple } from "./oh_modules/object_literal_constructor"
 
-let x: X = { name: "hello"}
+let user: User = { id: 1 }
 
-let y: X = new X("hello"); // legal
+let fruit: Fruit = new Fruit("fruit"); // legal
+
+let person: Person = { name: "Furkan", age: "25" }
+
+let apple: Apple = { name: "apple", color: "green" }

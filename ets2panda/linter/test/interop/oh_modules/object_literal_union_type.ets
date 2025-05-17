@@ -15,6 +15,12 @@
  
 export class X {
   name: string = ''
+  str: string = ''
 }
 
-export interface Y { name: string, age?: number }
+export class Y { 
+  name: string = ''
+  bool: boolean = false 
+}
+
+export interface Z  {name: string, age: number}
