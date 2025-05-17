@@ -18,7 +18,6 @@ interface I {
 }
 
 /* @@? 17:5 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
-/* @@? 17:7 Error SyntaxError: Identifier expected. */
-/* @@? 17:7 Error SyntaxError: Unexpected token, expected ','. */
-/* @@? 17:7 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
-/* @@? 18:1 Error SyntaxError: Identifier expected. */
+/* @@? 18:1 Error SyntaxError: Interface fields must have type annotation. */
+/* @@? 23:67 Error SyntaxError: Invalid Type. */
+/* @@? 23:67 Error SyntaxError: Unexpected token, expected '}'. */
