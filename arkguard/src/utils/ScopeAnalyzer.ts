@@ -17,6 +17,7 @@ import {
   forEachChild,
   getModifiers,
   getOriginalNode,
+  isAnnotationPropertyDeclaration,
   isCatchClause,
   isClassDeclaration,
   isConstructorDeclaration,
@@ -40,6 +41,7 @@ import {
 } from 'typescript';
 
 import type {
+  AnnotationDeclaration,
   BreakOrContinueStatement,
   CaseBlock,
   CatchClause,
@@ -70,7 +72,7 @@ import type {
   TypeElement
 } from 'typescript';
 
-import { NodeUtils } from './NodeUtils';
+import { hasExportModifier, NodeUtils } from './NodeUtils';
 import { isParameterPropertyModifier, isViewPUBasedClass } from './OhsUtil';
 import { TypeUtils } from './TypeUtils';
 import { endSingleFileEvent, startSingleFileEvent } from '../utils/PrinterUtils';
@@ -284,7 +286,7 @@ namespace secharmony {
      * @param ast ast tree of a source file
      * @param checker
      */
-    analyze(ast: SourceFile, checker: TypeChecker, isEnabledExportObfuscation: boolean): void;
+    analyze(ast: SourceFile, checker: TypeChecker, isEnabledExportObfuscation: boolean, currentFileType: string): void;
 
     /**
      * get root scope of a file
@@ -307,6 +309,7 @@ namespace secharmony {
     let checker: TypeChecker = null;
     let upperLabel: Label | undefined = undefined;
     let exportObfuscation: boolean = false;
+    let fileType: string | undefined = undefined;
 
     return {
       getReservedNames,
@@ -315,9 +318,10 @@ namespace secharmony {
       getScopeOfNode,
     };
 
-    function analyze(ast: SourceFile, typeChecker: TypeChecker, isEnabledExportObfuscation = false): void {
+    function analyze(ast: SourceFile, typeChecker: TypeChecker, isEnabledExportObfuscation = false, currentFileType: string): void {
       checker = typeChecker;
       exportObfuscation = isEnabledExportObfuscation;
+      fileType = currentFileType;
       analyzeScope(ast);
     }
 
@@ -445,7 +449,10 @@ namespace secharmony {
           break;
 
         case SyntaxKind.Identifier:
-          analyzeSymbol(node as Identifier);
+          // skip property in annotationDeclaration
+          if (!isAnnotationPropertyDeclaration(node.parent)) {
+            analyzeSymbol(node as Identifier);
+          }
           break;
 
         case SyntaxKind.TypeAliasDeclaration:
@@ -469,7 +476,11 @@ namespace secharmony {
           break;
 
         case SyntaxKind.ObjectLiteralExpression:
-          analyzeObjectLiteralExpression(node as ObjectLiteralExpression);
+          // skip prop in annotation, e.g. @Anno({a: 0})
+          // here, `a` will not be collected
+          if (!NodeUtils.isObjectLiteralInAnnotation(node as ObjectLiteralExpression, fileType)) {
+            analyzeObjectLiteralExpression(node as ObjectLiteralExpression);
+          }
           break;
 
         case SyntaxKind.ExportSpecifier:
@@ -486,6 +497,11 @@ namespace secharmony {
 
         case SyntaxKind.ImportEqualsDeclaration:
           analyzeImportEqualsDeclaration(node as ImportEqualsDeclaration);
+          break;
+
+        // add symbol of annotationDeclaration into global scope
+        case SyntaxKind.AnnotationDeclaration:
+          analyzeAnnotationDeclaration(node as AnnotationDeclaration);
           break;
 
         default:
@@ -1056,6 +1072,18 @@ namespace secharmony {
         if (sym) {
           current.addDefinition(sym, true);
         }
+      }
+      forEachChild(node, analyzeScope);
+    }
+
+    function analyzeAnnotationDeclaration(node: AnnotationDeclaration): void {
+      if (hasExportModifier(node)) {
+        current.exportNames.add(node.name.text);
+        root.fileExportNames.add(node.name.text);
+      }
+      let sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
+      if (sym) {
+        current.addDefinition(sym, true);
       }
       forEachChild(node, analyzeScope);
     }

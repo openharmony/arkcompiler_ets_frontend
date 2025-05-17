@@ -107,6 +107,7 @@ class ObOptions {
   enableExportObfuscation: boolean = false;
   enableLibObfuscationOptions: boolean = false;
   enableAtKeep: boolean = false;
+  enableEtsAnnotation: boolean = false;
   printKeptNames: boolean = false;
   removeComments: boolean = false;
   compact: boolean = false;

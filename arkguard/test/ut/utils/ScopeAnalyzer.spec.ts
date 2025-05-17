@@ -317,7 +317,7 @@ describe('ScopeAnalyzer ut', function () {
       sourceFile = createSourceFile(newFilePath, fileContent, ScriptTarget.ES2015, true);
       checker = TypeUtils.createChecker(sourceFile);
       scopeManager = createScopeManager();
-      scopeManager.analyze(sourceFile, checker, false);
+      scopeManager.analyze(sourceFile, checker, false, newFilePath);
     }
 
     describe('analyze', function () {
@@ -456,7 +456,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
 
         const functionDeclaration = sourceFile.statements[0] as FunctionDeclaration;
         const parameter = functionDeclaration.parameters[0] as ParameterDeclaration;
@@ -472,7 +472,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
         it('getReservedNames', function () {
           const reservedNames = scopeManager.getReservedNames();
           assert.strictEqual(reservedNames.size === 0, true);
@@ -542,7 +542,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
 
         it('getReservedNames', function () {
           const reservedNames = scopeManager.getReservedNames();
@@ -581,13 +581,13 @@ describe('ScopeAnalyzer ut', function () {
         let scopeManager = createScopeManager();
 
         it('exportObfuscation is false', function () {
-          scopeManager.analyze(sourceFile, checker, false);
+          scopeManager.analyze(sourceFile, checker, false, filePath);
           const rootScope = scopeManager.getRootScope();
           assert.deepEqual(rootScope.defs.size, 0);
         });
 
         it('exportObfuscation is true', function () {
-          scopeManager.analyze(sourceFile, checker, true);
+          scopeManager.analyze(sourceFile, checker, true, filePath);
           const rootScope = scopeManager.getRootScope();
           assert.strictEqual(rootScope.defs.size, 1);
         });
@@ -623,7 +623,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
 
         it('getReservedNames', function () {
           const reservedNames = scopeManager.getReservedNames();
@@ -666,7 +666,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
 
         it('getReservedNames', function () {
           const reservedNames = scopeManager.getReservedNames();
@@ -701,7 +701,7 @@ describe('ScopeAnalyzer ut', function () {
         let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
         let checker = TypeUtils.createChecker(sourceFile);
         let scopeManager = createScopeManager();
-        scopeManager.analyze(sourceFile, checker, false);
+        scopeManager.analyze(sourceFile, checker, false, filePath);
 
         it('getReservedNames', function () {
           const reservedNames = scopeManager.getReservedNames();

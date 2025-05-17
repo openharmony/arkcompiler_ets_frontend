@@ -74,3 +74,6 @@ export interface HvigorErrorInfo {
   solutions: string[];
   moreInfo?: Object;
 }
+
+// Prefix of annotation declaration in intermediate files
+export const annotationPrefix: string = '__$$ETS_ANNOTATION$$__';

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { FileUtils } from './FileUtils';
 import type {
   Expression,
   Identifier,
@@ -24,7 +25,8 @@ import type {
   TransformerFactory,
   StringLiteralLike,
   NumericLiteral,
-  PrivateIdentifier
+  PrivateIdentifier,
+  PropertyAccessExpression,
 } from 'typescript';
 import {
   canHaveModifiers,
@@ -38,6 +40,7 @@ import {
   isClassExpression,
   isComputedPropertyName,
   isConstructorDeclaration,
+  isDecoratorOrAnnotation,
   isElementAccessExpression,
   isEnumMember,
   isGetAccessor,
@@ -59,7 +62,8 @@ import {
   isVariableDeclaration,
   visitEachChild,
   isLiteralTypeNode,
-  isStringLiteralLike
+  isStringLiteralLike,
+  isObjectLiteralExpression
 } from 'typescript';
 import {
   getViewPUClassProperties,
@@ -67,7 +71,7 @@ import {
   isViewPUBasedClass,
   visitEnumInitializer
 } from './OhsUtil';
-import { Extension } from '../common/type';
+import { annotationPrefix, Extension } from '../common/type';
 import { MergedConfig } from '../initialization/ConfigResolver';
 
 export class NodeUtils {
@@ -251,6 +255,36 @@ export class NodeUtils {
 
     const initializer: Expression = node.parent.initializer;
     return initializer && isCallExpression(initializer);
+  }
+
+  public static isObjectLiteralInAnnotation(node: Node, currentFileType: string): boolean {
+    if (!node || !node.parent || !isObjectLiteralExpression(node) || !isCallExpression(node.parent) || !isDecoratorOrAnnotation(node.parent.parent)) {
+      return false;
+    }
+    if (currentFileType === Extension.DETS) {
+      return true;
+    }
+    const expr = node.parent.expression;
+    let name: string | undefined = undefined;
+    switch (expr.kind) {
+      case SyntaxKind.Identifier:
+        // @Anno({a: 0}), get 'Anno'
+        name = (expr as Identifier).text;
+        break;
+      case SyntaxKind.PropertyAccessExpression:
+        // @ns.Anno({a: 0}), get 'Anno'
+        name = (expr as PropertyAccessExpression).name.text;
+        break;
+      default:
+        name = undefined;
+    }
+    if (!name) {
+      return false;
+    }
+    if (currentFileType === Extension.TS && name.startsWith(annotationPrefix)) {
+      return true;
+    }
+    return false;
   }
 
   public static isDeclarationFile(node: SourceFile): boolean {

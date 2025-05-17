@@ -42,12 +42,16 @@ export class TypeUtils {
    * @param {string} sourceFilePath 
    * @param {string} content - The content in sourceFilePath
    */
-  public static createObfSourceFile(sourceFilePath: string, content: string): SourceFile {
+  public static createObfSourceFile(sourceFilePath: string, content: string, compilerOptions?: CompilerOptions): SourceFile {
     const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(sourceFilePath);
     const fileSuffix = pathOrExtension.ext;
 
     if (fileSuffix === Extension.JS) {
       sourceFilePath = pathOrExtension.path + Extension.TS;
+    }
+
+    if (compilerOptions && compilerOptions.etsAnnotationsEnable === true) {
+      return createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true, undefined, compilerOptions, true);
     }
 
     return createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);

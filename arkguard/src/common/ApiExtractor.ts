@@ -40,6 +40,7 @@ import {
   ClassElement,
   forEachChild,
   getLeadingCommentRangesOfNode,
+  isAnnotationDeclaration,
   isBinaryExpression,
   isClassDeclaration,
   isClassExpression,
@@ -110,7 +111,7 @@ import {
   FileWhiteList, KeepInfo,
   projectWhiteListManager
 } from '../utils/ProjectCollections';
-import { AtKeepCollections, BytecodeObfuscationCollections } from '../utils/CommonCollections';
+import { AtKeepCollections, BytecodeObfuscationCollections, PropCollections } from '../utils/CommonCollections';
 import { hasExportModifier } from '../utils/NodeUtils';
 
 export namespace ApiExtractor {
@@ -700,7 +701,9 @@ export namespace ApiExtractor {
 
     projectWhiteListManager?.setCurrentCollector(fileName);
 
-    const sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true);
+    let sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true, undefined, {
+      etsAnnotationsEnable: true
+    }, true);
     mCurrentExportedPropertySet.clear();
 
     collectWhiteListByApiType(sourceFile, apiType, fileName);
