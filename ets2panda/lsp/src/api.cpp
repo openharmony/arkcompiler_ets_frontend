@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include "class_hierarchy.h"
 #include "lsp/include/organize_imports.h"
 #include "compiler/lowering/util.h"
 #include "internal_api.h"
@@ -194,6 +195,12 @@ DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, Cancell
     return result;
 }
 
+TypeHierarchiesInfo GetTypeHierarchies(es2panda_Context *searchContext, es2panda_Context *context, const size_t pos)
+{
+    auto declaration = GetTargetDeclarationNodeByPosition(context, pos);
+    return GetTypeHierarchiesImpl(searchContext, pos, declaration);
+}
+
 DocumentHighlightsReferences GetDocumentHighlights(es2panda_Context *context, size_t position)
 {
     DocumentHighlightsReferences result = {};
@@ -335,6 +342,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetSemanticDiagnostics,
                     GetSyntacticDiagnostics,
                     GetCompilerOptionsDiagnostics,
+                    GetTypeHierarchies,
                     GetDocumentHighlights,
                     FindRenameLocationsWrapper,
                     FindRenameLocationsWithCancellationWrapper,

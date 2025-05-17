@@ -320,6 +320,47 @@ typedef struct DeclInfo {
     std::string fileText;
 } DeclInfo;
 
+enum class HierarchyType { OTHERS, INTERFACE, CLASS };
+
+struct TypeHierarchies {
+    TypeHierarchies() = default;
+    TypeHierarchies(std::string f, std::string n, HierarchyType t, size_t p)
+        : fileName(std::move(f)), name(std::move(n)), type(t), pos(p)
+    {
+    }
+    bool operator==(const TypeHierarchies &other) const
+    {
+        return fileName == other.fileName && name == other.name && type == other.type && pos == other.pos;
+    }
+    bool operator!=(const TypeHierarchies &other) const
+    {
+        return !(*this == other);
+    }
+    bool operator<(const TypeHierarchies &other) const
+    {
+        return std::tie(fileName, name, type, pos) < std::tie(other.fileName, other.name, other.type, other.pos);
+    }
+    std::string fileName;
+    std::string name;
+    HierarchyType type = HierarchyType::OTHERS;
+    size_t pos = 0;
+    std::vector<TypeHierarchies> subOrSuper;
+};
+
+struct TypeHierarchiesInfo {
+    TypeHierarchiesInfo() = default;
+    TypeHierarchiesInfo(std::string f, std::string n, HierarchyType t, size_t p)
+        : fileName(std::move(f)), name(std::move(n)), type(t), pos(p)
+    {
+    }
+    std::string fileName;
+    std::string name;
+    HierarchyType type = HierarchyType::OTHERS;
+    size_t pos = 0;
+    TypeHierarchies superHierarchies;
+    TypeHierarchies subHierarchies;
+};
+
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
@@ -337,6 +378,8 @@ typedef struct LSPAPI {
     DiagnosticReferences (*getSyntacticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
                                                           ark::es2panda::lsp::CancellationToken cancellationToken);
+    TypeHierarchiesInfo (*getTypeHierarchies)(es2panda_Context *searchContext, es2panda_Context *context,
+                                              size_t position);
     DocumentHighlightsReferences (*getDocumentHighlights)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
         const std::vector<ark::es2panda::SourceFile> &files, const ark::es2panda::SourceFile &file, size_t position);

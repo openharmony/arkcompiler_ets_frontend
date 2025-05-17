@@ -26,9 +26,15 @@ std::string GetHierarchyDeclarationFileName(const ir::AstNode *node)
         return "";
     }
     if (node->IsClassDeclaration()) {
+        if (node->AsClassDeclaration()->Definition()->Ident()->Range().start.Program() == nullptr) {
+            return "";
+        }
         return std::string(node->AsClassDeclaration()->Definition()->Ident()->Range().start.Program()->AbsoluteName());
     }
     if (node->IsTSInterfaceDeclaration()) {
+        if (node->AsTSInterfaceDeclaration()->Id()->Range().start.Program() == nullptr) {
+            return "";
+        }
         return std::string(node->AsTSInterfaceDeclaration()->Id()->Range().start.Program()->AbsoluteName());
     }
     return "";
@@ -67,7 +73,13 @@ size_t GetPosition(const ir::AstNode *node)
     if (node == nullptr) {
         return 0;
     }
-    return node->Start().index;
+    if (node->IsClassDeclaration()) {
+        return node->AsClassDeclaration()->Definition()->Ident()->Start().index;
+    }
+    if (node->IsTSInterfaceDeclaration()) {
+        return node->AsTSInterfaceDeclaration()->Id()->Start().index;
+    }
+    return 0;
 }
 
 const ir::AstNode *GetEffectiveBaseTypeNode(const ir::AstNode *node)
@@ -205,11 +217,7 @@ std::vector<ir::AstNode *> GetImplementationReferenceEntries(es2panda_Context *c
         return result;
     }
     auto astNode = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
-    astNode->IterateRecursively([&subLists, node, &result](ir::AstNode *ast) {
-        if (ast == nullptr || !ast->IsIdentifier()) {
-            return;
-        }
-        auto child = compiler::DeclarationFromIdentifier(ast->AsIdentifier());
+    astNode->IterateRecursively([&subLists, node, &result](ir::AstNode *child) {
         if (child == nullptr || (!child->IsClassDeclaration() && !child->IsTSInterfaceDeclaration())) {
             return;
         }
@@ -217,8 +225,11 @@ std::vector<ir::AstNode *> GetImplementationReferenceEntries(es2panda_Context *c
         if (name.empty()) {
             return;
         }
-        TypeHierarchies childTypeHierarchies(GetHierarchyDeclarationFileName(child), name, GetHierarchyType(child),
-                                             GetPosition(child));
+        auto fileName = GetHierarchyDeclarationFileName(child);
+        if (fileName.empty()) {
+            return;
+        }
+        TypeHierarchies childTypeHierarchies(fileName, name, GetHierarchyType(child), GetPosition(child));
         if (subLists.find(childTypeHierarchies) != subLists.end()) {
             return;
         }
@@ -261,8 +272,7 @@ void InitHierarchies(TypeHierarchies &typeHierarchies, std::string &fileName, st
     typeHierarchies.pos = pos;
 }
 
-TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, const ClassHierarchyInfoType &declInfo,
-                                           const ir::AstNode *declaration)
+TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, size_t pos, const ir::AstNode *declaration)
 {
     TypeHierarchiesInfo result;
     if (context == nullptr) {
@@ -273,7 +283,7 @@ TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, const Clas
         return result;
     }
     if (declaration == nullptr) {
-        declaration = GetTargetDeclarationNodeByPosition(context, std::get<0>(declInfo));
+        declaration = GetTargetDeclarationNodeByPosition(context, pos);
     }
     if (declaration == nullptr || (!declaration->IsTSInterfaceDeclaration() && !declaration->IsClassDeclaration())) {
         return result;

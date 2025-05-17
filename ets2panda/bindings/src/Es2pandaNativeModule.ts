@@ -145,6 +145,54 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getTypeHierarchies(searchContext: KNativePointer, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTypeFromTypeHierarchiesInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getPositionFromTypeHierarchiesInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSuperFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSubFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromTypeHierarchies(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromTypeHierarchies(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTypeFromTypeHierarchies(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromTypeHierarchies(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSubOrSuper(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _getFileNameFromDef(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }

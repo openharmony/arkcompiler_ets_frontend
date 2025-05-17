@@ -748,6 +748,97 @@ KInt impl_getChar(KNativePointer locPtr)
 }
 TS_INTEROP_1(getChar, KInt, KNativePointer)
 
+KNativePointer impl_getTypeHierarchies(KNativePointer searchContext, KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *info = new TypeHierarchiesInfo(ctx->getTypeHierarchies(reinterpret_cast<es2panda_Context *>(searchContext),
+                                                                 reinterpret_cast<es2panda_Context *>(context),
+                                                                 static_cast<std::size_t>(position)));
+    return info;
+}
+TS_INTEROP_3(getTypeHierarchies, KNativePointer, KNativePointer, KNativePointer, KInt)
+
+KNativePointer impl_getFileNameFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return new std::string(info->fileName);
+}
+TS_INTEROP_1(getFileNameFromTypeHierarchiesInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNameFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return new std::string(info->name);
+}
+TS_INTEROP_1(getNameFromTypeHierarchiesInfo, KNativePointer, KNativePointer)
+
+KInt impl_getTypeFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return static_cast<size_t>(info->type);
+}
+TS_INTEROP_1(getTypeFromTypeHierarchiesInfo, KInt, KNativePointer)
+
+KInt impl_getPositionFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return static_cast<size_t>(info->pos);
+}
+TS_INTEROP_1(getPositionFromTypeHierarchiesInfo, KInt, KNativePointer)
+
+KNativePointer impl_getSuperFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return new TypeHierarchies(info->superHierarchies);
+}
+TS_INTEROP_1(getSuperFromTypeHierarchiesInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSubFromTypeHierarchiesInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchiesInfo *>(infoPtr);
+    return new TypeHierarchies(info->subHierarchies);
+}
+TS_INTEROP_1(getSubFromTypeHierarchiesInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileNameFromTypeHierarchies(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchies *>(infoPtr);
+    return new std::string(info->fileName);
+}
+TS_INTEROP_1(getFileNameFromTypeHierarchies, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNameFromTypeHierarchies(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchies *>(infoPtr);
+    return new std::string(info->name);
+}
+TS_INTEROP_1(getNameFromTypeHierarchies, KNativePointer, KNativePointer)
+
+KInt impl_getPosFromTypeHierarchies(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchies *>(infoPtr);
+    return static_cast<size_t>(info->pos);
+}
+TS_INTEROP_1(getPosFromTypeHierarchies, KInt, KNativePointer)
+
+KNativePointer impl_getSubOrSuper(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchies *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->subOrSuper) {
+        ptrs.push_back(new TypeHierarchies(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSubOrSuper, KNativePointer, KNativePointer)
+
+KInt impl_getTypeFromTypeHierarchies(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TypeHierarchies *>(infoPtr);
+    return static_cast<size_t>(info->type);
+}
+TS_INTEROP_1(getTypeFromTypeHierarchies, KInt, KNativePointer)
+
 KNativePointer impl_getSpanOfEnclosingComment(KNativePointer context, KInt position, KBoolean onlyMultiLine)
 {
     LSPAPI const *ctx = GetImpl();
