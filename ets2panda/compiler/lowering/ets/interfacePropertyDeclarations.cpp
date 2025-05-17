@@ -86,7 +86,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
 
         auto *const paramExpression = ctx->AllocNode<ir::ETSParameterExpression>(paramIdent, false, ctx->Allocator());
         paramExpression->SetRange(paramIdent->Range());
-        auto [paramVar, node] = paramScope->AddParamDecl(ctx->Allocator(), paramExpression);
+        auto [paramVar, node] = paramScope->AddParamDecl(ctx->Allocator(), varbinder, paramExpression);
         if (node != nullptr) {
             varbinder->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
         }

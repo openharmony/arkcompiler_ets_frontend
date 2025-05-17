@@ -441,7 +441,8 @@ public:
         return params_;
     }
 
-    std::tuple<Variable *, ir::Expression *> AddParamDecl(ArenaAllocator *allocator, ir::Expression *parameter);
+    std::tuple<Variable *, ir::Expression *> AddParamDecl(ArenaAllocator *allocator, varbinder::VarBinder *vb,
+                                                          ir::Expression *parameter);
 
 protected:
     explicit ParamScope(ArenaAllocator *allocator, Scope *parent)
