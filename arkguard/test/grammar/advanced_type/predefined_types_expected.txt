@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+type l1 = Exclude<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>; // 'b' | 'd'
+type m1 = Extract<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>; // 'a' | 'c'
+type n1 = Exclude<string | number | (() => void), Function>; // string | number
+type o1 = Extract<string | number | (() => void), Function>; // () => void
+type q1 = NonNullable<string | number | undefined>; // string | number
+type s1 = NonNullable<(() => string) | string[] | null | undefined>; // (() => string) | string[]
+function j1(g2: string): any {
+    return { a: 1, b: g2 };
+}
+class t1 {
+    x = 0;
+    y = 0;
+}
+type u1 = ReturnType<() => string>; // string
+type v1 = ReturnType<(s: string) => void>; // void
+type w1 = ReturnType<(<T>() => T)>; // {}
+type z1 = ReturnType<(<T extends U, U extends number[]>() => T)>; // number[]
+type a2 = ReturnType<typeof j1>; // { a: number, b: string }
+type b2 = ReturnType<any>; // any
+type c2 = ReturnType<never>; // any
+type d2 = InstanceType<typeof t1>; // C
+type e2 = InstanceType<any>; // any
+type f2 = InstanceType<never>; // any

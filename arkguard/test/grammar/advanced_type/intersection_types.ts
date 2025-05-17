@@ -15,35 +15,36 @@
 
 import assert = require('assert');
 
-function extend<T, U>(first: T, second: U): T & U {
-  let result = <T & U>{};
-  for (let id in first) {
-    (<any>result)[id] = (<any>first)[id];
+function mergeObjects<T, U>(primary: T, secondary: U): T & U {
+  const merged = {} as T & U;
+
+  for (const prop in primary) {
+    merged[prop] = primary[prop] as any;
   }
-  for (let id in second) {
-    if (!result.hasOwnProperty(id)) {
-      (<any>result)[id] = (<any>second)[id];
+
+  for (const prop in secondary) {
+    if (!Object.prototype.hasOwnProperty.call(merged, prop)) {
+      merged[prop] = secondary[prop] as any;
     }
   }
-  return result;
+  return merged;
 }
 
-class Person {
-  constructor(public name: string) {
-  }
+class Human {
+  constructor(public username: string) {}
 }
 
-interface Loggable {
-  log(): void;
+interface LoggingCapability {
+  writeLog(): void;
 }
 
-class ConsoleLogger implements Loggable {
-  log(): void {
+class TerminalLogger implements LoggingCapability {
+  writeLog(): void {
     console.log('Jim');
   }
 }
 
-const jim = extend(new Person('Jim'), new ConsoleLogger());
-const n = jim.name;
+const user = mergeObjects(new Human('Jim'), new TerminalLogger());
+const currentUser = user.username;
 
-assert(n === 'Jim', 'success');
+assert(currentUser === 'Jim', 'success');
