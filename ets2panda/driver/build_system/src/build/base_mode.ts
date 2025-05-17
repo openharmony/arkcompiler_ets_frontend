@@ -495,6 +495,31 @@ export abstract class BaseMode {
     }
   }
 
+  public async generateDeclarationParallell(): Promise<void> {
+    this.generateModuleInfos();
+    this.generateArkTSConfigForModules();
+
+    if (!cluster.isPrimary) {
+      return;
+    }
+
+    try {
+      this.setupCluster(cluster, {
+        clearExitListeners: true,
+        execPath: path.resolve(__dirname, 'declgen_worker.js'),
+      });
+      await this.dispatchTasks();
+      this.logger.printInfo('All declaration generation tasks complete.');
+    } catch (error) {
+        this.logger.printError(LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
+        'Generate declaration files failed.'
+      ));
+    } finally {
+      this.terminateAllWorkers();
+    }
+  }
+
   private async dispatchTasks(): Promise<void> {
     const numCPUs = os.cpus().length;
     const taskQueue = Array.from(this.compileFiles.values());
@@ -516,12 +541,14 @@ export abstract class BaseMode {
     const serializableConfig = this.getSerializableConfig();
     const workerExitPromises: Promise<void>[] = [];
 
+    const moduleInfosArray = Array.from(this.moduleInfos.entries());
+
     for (let i = 0; i < maxWorkers; i++) {
       const taskChunk = taskQueue.slice(i * chunkSize, (i + 1) * chunkSize);
       const worker = cluster.fork();
 
       this.setupWorkerMessageHandler(worker);
-      worker.send({ taskList: taskChunk, buildConfig: serializableConfig });
+      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray});
 
       const exitPromise = new Promise<void>((resolve, reject) => {
         worker.on('exit', (status) => status === 0 ? resolve() : reject());
@@ -551,7 +578,6 @@ export abstract class BaseMode {
     });
   }
 
-
   private getSerializableConfig(): Object {
     const ignoreList = [
       'compileFiles',
@@ -570,6 +596,7 @@ export abstract class BaseMode {
     });
     return JSON.parse(jsonStr);
   }
+
   setupCluster(cluster: Cluster, options: SetupClusterOptions): void {
     const {
       clearExitListeners,
