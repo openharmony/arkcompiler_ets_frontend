@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 11,
-            "endLine": 18,
-            "endColumn": 18,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 19,
             "column": 1,
             "endLine": 19,

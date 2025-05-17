@@ -34,12 +34,20 @@
                 {
                     "start": 619,
                     "end": 687,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 69
                 },
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 69
                 }
             ],
             "suggest": "",
@@ -66,12 +74,20 @@
                 {
                     "start": 688,
                     "end": 741,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 54
                 },
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n"
+                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 54
                 }
             ],
             "suggest": "",
@@ -98,12 +114,20 @@
                 {
                     "start": 742,
                     "end": 796,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 55
                 },
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n"
+                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 55
                 }
             ],
             "suggest": "",
@@ -120,7 +144,11 @@
                 {
                     "start": 798,
                     "end": 812,
-                    "replacementText": "myAaa.invoke().typeOf()"
+                    "replacementText": "myAaa.invoke().typeOf()",
+                    "line": 21,
+                    "column": 1,
+                    "endLine": 21,
+                    "endColumn": 15
                 }
             ],
             "suggest": "",
@@ -177,7 +205,11 @@
                 {
                     "start": 853,
                     "end": 863,
-                    "replacementText": "Dog.typeOf()"
+                    "replacementText": "Dog.typeOf()",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -194,7 +226,11 @@
                 {
                     "start": 873,
                     "end": 891,
-                    "replacementText": "Dog.invoke(ESObject.wrap('doge')).typeOf()"
+                    "replacementText": "Dog.invoke(ESObject.wrap('doge')).typeOf()",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -241,7 +277,11 @@
                 {
                     "start": 901,
                     "end": 920,
-                    "replacementText": "Doge.invoke(ESObject.wrap('doge')).typeOf()"
+                    "replacementText": "Doge.invoke(ESObject.wrap('doge')).typeOf()",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -288,7 +328,11 @@
                 {
                     "start": 930,
                     "end": 941,
-                    "replacementText": "Wiki.typeOf()"
+                    "replacementText": "Wiki.typeOf()",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -305,7 +349,11 @@
                 {
                     "start": 950,
                     "end": 966,
-                    "replacementText": "Wiki.getPropertyByName('name').typeOf()"
+                    "replacementText": "Wiki.getPropertyByName('name').typeOf()",
+                    "line": 28,
+                    "column": 1,
+                    "endLine": 28,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
@@ -322,7 +370,11 @@
                 {
                     "start": 957,
                     "end": 966,
-                    "replacementText": "Wiki.getPropertyByName(\"name\")"
+                    "replacementText": "Wiki.getPropertyByName(\"name\")",
+                    "line": 28,
+                    "column": 8,
+                    "endLine": 28,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
@@ -339,21 +391,15 @@
                 {
                     "replacementText": "Wiki.getPropertyByName('name').toString()",
                     "start": 957,
-                    "end": 966
+                    "end": 966,
+                    "line": 28,
+                    "column": 8,
+                    "endLine": 28,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 8,
-            "endLine": 28,
-            "endColumn": 17,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -366,7 +412,11 @@
                 {
                     "start": 975,
                     "end": 986,
-                    "replacementText": "wiki.typeOf()"
+                    "replacementText": "wiki.typeOf()",
+                    "line": 29,
+                    "column": 1,
+                    "endLine": 29,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -383,7 +433,11 @@
                 {
                     "start": 1005,
                     "end": 1014,
-                    "replacementText": "wiki.getPropertyByName(\"name\")"
+                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "line": 30,
+                    "column": 11,
+                    "endLine": 30,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -400,21 +454,15 @@
                 {
                     "replacementText": "wiki.getPropertyByName('name').toString()",
                     "start": 1005,
-                    "end": 1014
+                    "end": 1014,
+                    "line": 30,
+                    "column": 11,
+                    "endLine": 30,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 11,
-            "endLine": 30,
-            "endColumn": 20,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -427,7 +475,11 @@
                 {
                     "start": 1049,
                     "end": 1061,
-                    "replacementText": "ClassA.instantiate()"
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 32,
+                    "column": 23,
+                    "endLine": 32,
+                    "endColumn": 35
                 }
             ],
             "suggest": "",
@@ -444,7 +496,11 @@
                 {
                     "start": 1062,
                     "end": 1081,
-                    "replacementText": "ClassA.instantiate().typeOf()"
+                    "replacementText": "ClassA.instantiate().typeOf()",
+                    "line": 33,
+                    "column": 1,
+                    "endLine": 33,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -461,7 +517,11 @@
                 {
                     "start": 1069,
                     "end": 1081,
-                    "replacementText": "ClassA.instantiate()"
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 33,
+                    "column": 8,
+                    "endLine": 33,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -478,7 +538,11 @@
                 {
                     "start": 1125,
                     "end": 1137,
-                    "replacementText": "Person.instantiate()"
+                    "replacementText": "Person.instantiate()",
+                    "line": 35,
+                    "column": 21,
+                    "endLine": 35,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
@@ -495,7 +559,11 @@
                 {
                     "start": 1149,
                     "end": 1160,
-                    "replacementText": "person.getPropertyByName(\"name\")"
+                    "replacementText": "person.getPropertyByName(\"name\")",
+                    "line": 36,
+                    "column": 11,
+                    "endLine": 36,
+                    "endColumn": 22
                 }
             ],
             "suggest": "",
@@ -552,7 +620,11 @@
                 {
                     "start": 1352,
                     "end": 1371,
-                    "replacementText": "Person.instantiate().typeOf()"
+                    "replacementText": "Person.instantiate().typeOf()",
+                    "line": 45,
+                    "column": 5,
+                    "endLine": 45,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -569,7 +641,11 @@
                 {
                     "start": 1359,
                     "end": 1371,
-                    "replacementText": "Person.instantiate()"
+                    "replacementText": "Person.instantiate()",
+                    "line": 45,
+                    "column": 12,
+                    "endLine": 45,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -616,7 +692,11 @@
                 {
                     "start": 1729,
                     "end": 1745,
-                    "replacementText": "wiki.getPropertyByName('name').typeOf()"
+                    "replacementText": "wiki.getPropertyByName('name').typeOf()",
+                    "line": 62,
+                    "column": 5,
+                    "endLine": 62,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -633,7 +713,11 @@
                 {
                     "start": 1736,
                     "end": 1745,
-                    "replacementText": "wiki.getPropertyByName(\"name\")"
+                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "line": 62,
+                    "column": 12,
+                    "endLine": 62,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -650,21 +734,15 @@
                 {
                     "replacementText": "wiki.getPropertyByName('name').toString()",
                     "start": 1736,
-                    "end": 1745
+                    "end": 1745,
+                    "line": 62,
+                    "column": 12,
+                    "endLine": 62,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 62,
-            "column": 12,
-            "endLine": 62,
-            "endColumn": 21,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -677,7 +755,11 @@
                 {
                     "start": 1834,
                     "end": 1853,
-                    "replacementText": "ClassA.instantiate().typeOf()"
+                    "replacementText": "ClassA.instantiate().typeOf()",
+                    "line": 66,
+                    "column": 28,
+                    "endLine": 66,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -694,7 +776,11 @@
                 {
                     "start": 1841,
                     "end": 1853,
-                    "replacementText": "ClassA.instantiate()"
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 66,
+                    "column": 35,
+                    "endLine": 66,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -711,7 +797,11 @@
                 {
                     "start": 1874,
                     "end": 1886,
-                    "replacementText": "myAaa.typeOf()"
+                    "replacementText": "myAaa.typeOf()",
+                    "line": 70,
+                    "column": 1,
+                    "endLine": 70,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
@@ -728,7 +818,11 @@
                 {
                     "start": 1896,
                     "end": 1920,
-                    "replacementText": "Person.instantiate().getPropertyByName('name').typeOf()"
+                    "replacementText": "Person.instantiate().getPropertyByName('name').typeOf()",
+                    "line": 71,
+                    "column": 1,
+                    "endLine": 71,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
@@ -745,7 +839,11 @@
                 {
                     "start": 1903,
                     "end": 1920,
-                    "replacementText": "new Person().getPropertyByName(\"name\")"
+                    "replacementText": "new Person().getPropertyByName(\"name\")",
+                    "line": 71,
+                    "column": 8,
+                    "endLine": 71,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
@@ -762,7 +860,11 @@
                 {
                     "replacementText": "new Person().getPropertyByName('name').toString()",
                     "start": 1903,
-                    "end": 1920
+                    "end": 1920,
+                    "line": 71,
+                    "column": 8,
+                    "endLine": 71,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
@@ -779,7 +881,11 @@
                 {
                     "start": 1903,
                     "end": 1915,
-                    "replacementText": "Person.instantiate()"
+                    "replacementText": "Person.instantiate()",
+                    "line": 71,
+                    "column": 8,
+                    "endLine": 71,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -796,7 +902,11 @@
                 {
                     "start": 1930,
                     "end": 1959,
-                    "replacementText": "Person.instantiate().getPropertyByName('getName').invoke().typeOf()"
+                    "replacementText": "Person.instantiate().getPropertyByName('getName').invoke().typeOf()",
+                    "line": 72,
+                    "column": 1,
+                    "endLine": 72,
+                    "endColumn": 30
                 }
             ],
             "suggest": "",
@@ -833,7 +943,11 @@
                 {
                     "start": 1937,
                     "end": 1949,
-                    "replacementText": "Person.instantiate()"
+                    "replacementText": "Person.instantiate()",
+                    "line": 72,
+                    "column": 8,
+                    "endLine": 72,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -850,7 +964,11 @@
                 {
                     "start": 1968,
                     "end": 1998,
-                    "replacementText": "Person.instantiate().getPropertyByName('setAge').invoke(ESObject.wrap(22)).typeOf()"
+                    "replacementText": "Person.instantiate().getPropertyByName('setAge').invoke(ESObject.wrap(22)).typeOf()",
+                    "line": 73,
+                    "column": 1,
+                    "endLine": 73,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
@@ -897,7 +1015,11 @@
                 {
                     "start": 1975,
                     "end": 1987,
-                    "replacementText": "Person.instantiate()"
+                    "replacementText": "Person.instantiate()",
+                    "line": 73,
+                    "column": 8,
+                    "endLine": 73,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",

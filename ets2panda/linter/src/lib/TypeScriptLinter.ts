@@ -1353,13 +1353,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
-    this.handleArkTSPropertyAccess(propertyAccessNode);
   }
 
   propertyAccessExpressionForBuiltin(decl: ts.PropertyAccessExpression): void {
     if (this.options.arkts2) {
       this.handleSymbolIterator(decl);
       this.handleGetOwnPropertyNames(decl);
+      this.handlePropertyDescriptorInScenarios(decl);
     }
   }
 
@@ -2090,6 +2090,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkInterOpImportJsDataCompare(tsBinaryExpr);
     this.checkInteropEqualityJudgment(tsBinaryExpr);
     this.handleNumericBigintCompare(tsBinaryExpr);
+    this.handleArkTSPropertyAccess(tsBinaryExpr);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -2097,34 +2098,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const isJsFileSymbol = (symbol: ts.Symbol | undefined): boolean => {
-      if (!symbol) {
-        return false;
-      }
-
-      const declaration = symbol.declarations?.[0];
-      if (!declaration || !ts.isVariableDeclaration(declaration)) {
-        return false;
-      }
-
-      const initializer = declaration.initializer;
-      if (!initializer) {
-        return false;
-      }
-      return isJsFileExpression(initializer);
-    };
-
-    const isJsFileExpression = (expr: ts.Expression): boolean => {
-      if (ts.isPropertyAccessExpression(expr)) {
-        const initializerSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
-        return initializerSym?.declarations?.[0]?.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
-      }
-      return expr.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
-    };
-
     const processExpression = (expr: ts.Expression): void => {
       const symbol = this.tsUtils.trueSymbolAtLocation(expr);
-      if (isJsFileSymbol(symbol) || isJsFileExpression(expr)) {
+      if (this.isJsFileSymbol(symbol) || this.isJsFileExpression(expr)) {
         this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare);
       }
     };
@@ -2140,6 +2116,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.SyntaxKind.GreaterThanEqualsToken,
       ts.SyntaxKind.LessThanEqualsToken
     ].includes(kind);
+  }
+
+  private isJsFileSymbol(symbol: ts.Symbol | undefined): boolean {
+    if (!symbol) {
+      return false;
+    }
+
+    const declaration = symbol.declarations?.[0];
+    if (!declaration || !ts.isVariableDeclaration(declaration)) {
+      return false;
+    }
+
+    const initializer = declaration.initializer;
+    return initializer ? this.isJsFileExpression(initializer) : false;
+  }
+
+  private isJsFileExpression(expr: ts.Expression): boolean {
+    if (ts.isPropertyAccessExpression(expr)) {
+      const initializerSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
+      return initializerSym?.declarations?.[0]?.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
+    }
+    return expr.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
   }
 
   private checkInteropEqualityJudgment(tsBinaryExpr: ts.BinaryExpression): void {
@@ -7223,15 +7221,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private handleArkTSPropertyAccess(node: ts.PropertyAccessExpression): void {
-    if (this.useStatic && this.options.arkts2) {
-      if (this.isFromJSModule(node.expression)) {
-        this.incrementCounters(node, FaultID.BinaryOperations);
-      }
-    }
-    this.handlePropertyDescriptorInScenarios(node);
-  }
-
   private handleQuotedHyphenPropsDeprecated(node: ts.PropertyAccessExpression | ts.PropertyAssignment): void {
     if (!this.options.arkts2 || !node) {
       return;
@@ -8754,5 +8743,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const autofix = this.autofixer?.fixCustomLayout(node);
     this.incrementCounters(node.name, FaultID.CustomLayoutNeedAddDecorator, autofix);
+  }
+  
+  private handleArkTSPropertyAccess(expr: ts.BinaryExpression): void {
+    if (!this.useStatic || !this.options.arkts2 || !TypeScriptLinter.isBinaryOperations(expr.operatorToken.kind)) {
+      return;
+    }
+
+    const processExpression = (expr: ts.Expression): void => {
+      const symbol = this.tsUtils.trueSymbolAtLocation(expr);
+      if (this.isJsFileSymbol(symbol)) {
+        this.incrementCounters(expr, FaultID.BinaryOperations);
+      }
+    };
+
+    processExpression(expr.left);
+    processExpression(expr.right);
+  }
+
+  private static isBinaryOperations(kind: ts.SyntaxKind): boolean {
+    const binaryOperators: ts.SyntaxKind[] = [
+      ts.SyntaxKind.PlusToken,
+      ts.SyntaxKind.MinusToken,
+      ts.SyntaxKind.AsteriskToken,
+      ts.SyntaxKind.SlashToken,
+      ts.SyntaxKind.PercentToken,
+      ts.SyntaxKind.AsteriskAsteriskToken
+    ];
+    return binaryOperators.includes(kind);
   }
 }

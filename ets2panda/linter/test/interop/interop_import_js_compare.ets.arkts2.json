@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 9,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 9,
             "endLine": 20,
@@ -82,16 +72,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 9,
-            "endLine": 20,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -286,16 +266,6 @@
         },
         {
             "line": 44,
-            "column": 1,
-            "endLine": 44,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
             "column": 9,
             "endLine": 44,
             "endColumn": 14,
@@ -312,16 +282,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 9,
-            "endLine": 44,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]
