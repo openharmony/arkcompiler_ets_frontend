@@ -22,7 +22,7 @@ export class BuildMode extends BaseMode {
   }
 
   public async generateDeclaration(): Promise<void> {
-    super.generateDeclaration();
+    await super.generateDeclarationParallell();
   }
 
   public async run(): Promise<void> {
