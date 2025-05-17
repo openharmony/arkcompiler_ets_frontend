@@ -182,6 +182,7 @@ export enum FaultID {
   InteropNoDecorators,
   InteropDirectAccessToTSTypes,
   InteropTSFunctionInvoke,
+  InteropJSFunctionInvoke,
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
   ProvideAnnotation,

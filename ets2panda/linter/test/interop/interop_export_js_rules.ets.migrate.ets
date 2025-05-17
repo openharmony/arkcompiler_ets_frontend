@@ -14,13 +14,13 @@
  */
 'use static'
 
-let GeneratedImportVar_1 = ESObject.load('./oh_modules/interop_import_js_rules');
+let GeneratedImportVar_1 = ESObject.load('./interop_import_js_rules_js');
 let ff1 = GeneratedImportVar_1.getPropertyByName('ff1');
 
 
 export {ff1} // imported from js. Error is shown
 
-export { ff2 } from "./oh_modules/interop_import_js_rules" // ff1 is imported from js. Error is shown
+export { ff2 } from "./interop_import_js_rules_js" // ff2 is imported from js. Error is shown
 
 export { MyDecorator } from "./oh_modules/ets_decorator" // MyDecorator is imported from arkts1. Error is shown
 
