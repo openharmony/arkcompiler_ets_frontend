@@ -22,8 +22,8 @@ function foo(a:(...args:number[])=>string){
 }
 
 function main(){
-    assertEQ(a(1.0,2.0,3.0), 1.0)
+    arktest.assertEQ(a(1.0,2.0,3.0), 1.0)
     let func:A = (...args:number[]):string=>{ return "abc"}
-    assertEQ(foo(func), "abc")
+    arktest.assertEQ(foo(func), "abc")
 }
 

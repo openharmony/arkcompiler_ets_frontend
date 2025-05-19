@@ -715,9 +715,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 4,
+                                "program": "nullableTuple.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 11,
+                                "program": "nullableTuple.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 12,
+                                "program": "nullableTuple.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 20,
+                                "program": "nullableTuple.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 23,
@@ -726,7 +760,7 @@
                             },
                             "end": {
                               "line": 23,
-                              "column": 12,
+                              "column": 20,
                               "program": "nullableTuple.ets"
                             }
                           }
@@ -741,12 +775,12 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 13,
+                                  "column": 21,
                                   "program": "nullableTuple.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "nullableTuple.ets"
                                 }
                               }
@@ -757,12 +791,12 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 15,
+                                  "column": 23,
                                   "program": "nullableTuple.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 16,
+                                  "column": 24,
                                   "program": "nullableTuple.ets"
                                 }
                               }
@@ -772,12 +806,12 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 13,
+                                "column": 21,
                                 "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 17,
+                                "column": 25,
                                 "program": "nullableTuple.ets"
                               }
                             }
@@ -788,12 +822,12 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 19,
+                                "column": 27,
                                 "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 23,
+                                "column": 31,
                                 "program": "nullableTuple.ets"
                               }
                             }
@@ -808,7 +842,7 @@
                           },
                           "end": {
                             "line": 23,
-                            "column": 24,
+                            "column": 32,
                             "program": "nullableTuple.ets"
                           }
                         }
@@ -821,7 +855,7 @@
                         },
                         "end": {
                           "line": 23,
-                          "column": 25,
+                          "column": 33,
                           "program": "nullableTuple.ets"
                         }
                       }

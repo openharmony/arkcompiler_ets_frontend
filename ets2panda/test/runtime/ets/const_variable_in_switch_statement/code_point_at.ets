@@ -14,9 +14,9 @@
  */
 
 const a = ('X'.codePointAt(0) as Double).toInt()
-assertEQ(a, 88);
+arktest.assertEQ(a, 88);
 const b = ('x'.codePointAt(0) as Double).toInt()
-assertEQ(b, 120);
+arktest.assertEQ(b, 120);
 let c = 88
 let d = 0
 switch (c) {
@@ -30,5 +30,5 @@ switch (c) {
         break;
 }
 
-assertEQ(d, a);
-assertNE(d, b);
+arktest.assertEQ(d, a);
+arktest.assertNE(d, b);

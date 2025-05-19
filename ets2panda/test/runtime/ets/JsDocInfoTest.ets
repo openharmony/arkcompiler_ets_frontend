@@ -189,6 +189,6 @@ function main() {
   * @JsDocRecord3 {} comments
   */
   let val:string = "ssss"
-  assertTrue(true);
-  assertEQ(val, "ssss")
+  arktest.assertTrue(true);
+  arktest.assertEQ(val, "ssss")
 }

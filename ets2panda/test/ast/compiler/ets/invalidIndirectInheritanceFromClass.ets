@@ -31,7 +31,7 @@ class B extends /* @@ label */C {
 
 function main(): void {
     let instance: B = new B();
-    assertEQ(instance.getX(), true);
+    arktest.assertEQ(instance.getX(), true);
 }
 
 /* @@@ label1 Error TypeError: Type 'Boolean' has no call signatures.  */

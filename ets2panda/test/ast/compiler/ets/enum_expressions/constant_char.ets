@@ -18,8 +18,8 @@ const constchar: char = constbyte
 
 function main() {
     enum TestEnum { One = constchar }
-    assertEQ(constchar,101)
-    assertEQ(TestEnum.One.valueOf(),101)
+    arktest.assertEQ(constchar,101)
+    arktest.assertEQ(TestEnum.One.valueOf(),101)
 }
 
 /* @@? 20:27 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

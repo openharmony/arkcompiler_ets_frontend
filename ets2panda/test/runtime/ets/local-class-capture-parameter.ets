@@ -22,7 +22,7 @@ class GlobalClass
         {
             method()
             {
-                assertEQ(param, 1)
+                arktest.assertEQ(param, 1)
             }
         }
 

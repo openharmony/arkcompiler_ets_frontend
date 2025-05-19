@@ -286,9 +286,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 3,
+                                "program": "n_nullableTypeInReturnNotRef.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 10,
+                                "program": "n_nullableTypeInReturnNotRef.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 11,
+                                "program": "n_nullableTypeInReturnNotRef.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 19,
+                                "program": "n_nullableTypeInReturnNotRef.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 18,
@@ -297,7 +331,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 11,
+                              "column": 19,
                               "program": "n_nullableTypeInReturnNotRef.ets"
                             }
                           }
@@ -310,12 +344,12 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 12,
+                                "column": 20,
                                 "program": "n_nullableTypeInReturnNotRef.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 13,
+                                "column": 21,
                                 "program": "n_nullableTypeInReturnNotRef.ets"
                               }
                             }
@@ -326,12 +360,12 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 15,
+                                "column": 23,
                                 "program": "n_nullableTypeInReturnNotRef.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 19,
+                                "column": 27,
                                 "program": "n_nullableTypeInReturnNotRef.ets"
                               }
                             }
@@ -346,7 +380,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 20,
+                            "column": 28,
                             "program": "n_nullableTypeInReturnNotRef.ets"
                           }
                         }
@@ -359,7 +393,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 21,
+                          "column": 29,
                           "program": "n_nullableTypeInReturnNotRef.ets"
                         }
                       }

@@ -2893,9 +2893,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 55,
+                                "column": 5,
+                                "program": "AccessNSieve.ets"
+                              },
+                              "end": {
+                                "line": 55,
+                                "column": 12,
+                                "program": "AccessNSieve.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 55,
+                                "column": 13,
+                                "program": "AccessNSieve.ets"
+                              },
+                              "end": {
+                                "line": 55,
+                                "column": 21,
+                                "program": "AccessNSieve.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 55,
@@ -2904,7 +2938,7 @@
                             },
                             "end": {
                               "line": 55,
-                              "column": 13,
+                              "column": 21,
                               "program": "AccessNSieve.ets"
                             }
                           }
@@ -2917,12 +2951,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 14,
+                                "column": 22,
                                 "program": "AccessNSieve.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 17,
+                                "column": 25,
                                 "program": "AccessNSieve.ets"
                               }
                             }
@@ -2933,12 +2967,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 19,
+                                "column": 27,
                                 "program": "AccessNSieve.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 40,
+                                "column": 48,
                                 "program": "AccessNSieve.ets"
                               }
                             }
@@ -2949,12 +2983,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 43,
+                                "column": 51,
                                 "program": "AccessNSieve.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 59,
+                                "column": 67,
                                 "program": "AccessNSieve.ets"
                               }
                             }
@@ -2969,7 +3003,7 @@
                           },
                           "end": {
                             "line": 55,
-                            "column": 60,
+                            "column": 68,
                             "program": "AccessNSieve.ets"
                           }
                         }
@@ -2982,7 +3016,7 @@
                         },
                         "end": {
                           "line": 55,
-                          "column": 61,
+                          "column": 69,
                           "program": "AccessNSieve.ets"
                         }
                       }

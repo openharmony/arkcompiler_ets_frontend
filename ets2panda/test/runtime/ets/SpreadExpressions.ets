@@ -24,7 +24,7 @@ function compMultiArray<T>(arrayMulti1: T[][], arrayMulti2: T[][]) {
 function compArray<T>(array1: T[], array2: T[]) {
     let i : int = 0
     for (let element1 of array1) {
-        assertEQ(element1, array2[i])
+        arktest.assertEQ(element1, array2[i])
         i++
     }
 }
@@ -77,17 +77,17 @@ function main() {
     let tuple : tupleType = ["first", 2, true]
     let expectedTuple = ["first", 2, true, 100, 200, "first", 2, true]
     let tuple2 = [...tuple, 100, 200, ...tuple]
-    assertEQ(tuple2.length, 8)
-    assertEQ(tuple2[0], "first")
-    assertEQ(tuple2[1], 2)
-    assertEQ(tuple2[2], true)
-    assertEQ(tuple2[5], "first")
-    assertEQ(tuple2[6], 2)
-    assertEQ(tuple2[7], true)
+    arktest.assertEQ(tuple2.length, 8)
+    arktest.assertEQ(tuple2[0], "first")
+    arktest.assertEQ(tuple2[1], 2)
+    arktest.assertEQ(tuple2[2], true)
+    arktest.assertEQ(tuple2[5], "first")
+    arktest.assertEQ(tuple2[6], 2)
+    arktest.assertEQ(tuple2[7], true)
 
     let a : A[] = [A.createInstance(10), A.createInstance(11)]
     let b = [...a]
-    assertEQ(b.length, 2)
+    arktest.assertEQ(b.length, 2)
     b[0].t = 10
     b[1].t = 11
 }

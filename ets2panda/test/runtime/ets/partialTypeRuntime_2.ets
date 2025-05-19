@@ -17,9 +17,9 @@ class Class1 { fld: Number = 2; }
 
 function test_1(): void {
     let class1_partial: Partial<Class1> = {fld: 3};
-    assertEQ(class1_partial.fld, 3)
+    arktest.assertEQ(class1_partial.fld, 3)
     class1_partial.fld = undefined;
-    assertTrue(class1_partial.fld === undefined)
+    arktest.assertTrue(class1_partial.fld === undefined)
 }
 
 // -----------------------------------------------
@@ -34,9 +34,9 @@ class Class2 {
 function test_2(): void {
     let class2_original: Class2 = new Class2();
     let class2_partial: Partial<Class2> = {fld: 3};
-    assertEQ(class2_partial.fld, 3)
+    arktest.assertEQ(class2_partial.fld, 3)
     class2_original.foo(class2_partial);
-    assertTrue(class2_partial.fld === undefined)
+    arktest.assertTrue(class2_partial.fld === undefined)
 }
 
 // -----------------------------------------------
@@ -64,8 +64,8 @@ function test_3(): void {
     let class5_partial: Partial<Class5> = {mmeb: 10};
     class3_original.foo(class5_partial);
     class5_original.foo(class3_partial);
-    assertTrue(class3_partial.mmeb === undefined)
-    assertTrue(class5_partial.mmeb === undefined)
+    arktest.assertTrue(class3_partial.mmeb === undefined)
+    arktest.assertTrue(class5_partial.mmeb === undefined)
 }
 
 // -----------------------------------------------
@@ -108,14 +108,14 @@ class Class10 extends Class9 { memb: Number = 9; }
 function test_5(): void {
     let class10_partial: Partial<Class10> = {memb: 7, fld: 5};
 
-    assertEQ(class10_partial.memb, 7)
-    assertEQ(class10_partial.fld, 5)
+    arktest.assertEQ(class10_partial.memb, 7)
+    arktest.assertEQ(class10_partial.fld, 5)
 
     class10_partial.memb = undefined;
     class10_partial.fld = undefined;
 
-    assertTrue(class10_partial.memb === undefined)
-    assertTrue(class10_partial.fld === undefined)
+    arktest.assertTrue(class10_partial.memb === undefined)
+    arktest.assertTrue(class10_partial.fld === undefined)
 }
 
 //---------------------------------------

@@ -419,9 +419,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 2,
+                                "program": "string_template_2.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 9,
+                                "program": "string_template_2.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 10,
+                                "program": "string_template_2.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 18,
+                                "program": "string_template_2.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -430,7 +464,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 10,
+                              "column": 18,
                               "program": "string_template_2.ets"
                             }
                           }
@@ -442,12 +476,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 11,
+                                "column": 19,
                                 "program": "string_template_2.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 12,
+                                "column": 20,
                                 "program": "string_template_2.ets"
                               }
                             }
@@ -458,12 +492,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 14,
+                                "column": 22,
                                 "program": "string_template_2.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 22,
+                                "column": 30,
                                 "program": "string_template_2.ets"
                               }
                             }
@@ -478,7 +512,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 23,
+                            "column": 31,
                             "program": "string_template_2.ets"
                           }
                         }
@@ -491,7 +525,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 24,
+                          "column": 32,
                           "program": "string_template_2.ets"
                         }
                       }

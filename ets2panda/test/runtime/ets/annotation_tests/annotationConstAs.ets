@@ -24,5 +24,5 @@
 }
 
 function main() {
-    assertTrue(true)
+    arktest.assertTrue(true)
 }

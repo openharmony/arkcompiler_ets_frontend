@@ -4105,9 +4105,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 51,
+                                "column": 5,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 51,
+                                "column": 12,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 51,
+                                "column": 13,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 51,
+                                "column": 21,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 51,
@@ -4116,7 +4150,7 @@
                             },
                             "end": {
                               "line": 51,
-                              "column": 13,
+                              "column": 21,
                               "program": "promiseCasting.ets"
                             }
                           }
@@ -4129,12 +4163,12 @@
                             "loc": {
                               "start": {
                                 "line": 51,
-                                "column": 14,
+                                "column": 22,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
                                 "line": 51,
-                                "column": 17,
+                                "column": 25,
                                 "program": "promiseCasting.ets"
                               }
                             }
@@ -4145,12 +4179,12 @@
                             "loc": {
                               "start": {
                                 "line": 51,
-                                "column": 19,
+                                "column": 27,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
                                 "line": 51,
-                                "column": 21,
+                                "column": 29,
                                 "program": "promiseCasting.ets"
                               }
                             }
@@ -4165,7 +4199,7 @@
                           },
                           "end": {
                             "line": 51,
-                            "column": 22,
+                            "column": 30,
                             "program": "promiseCasting.ets"
                           }
                         }
@@ -4178,7 +4212,7 @@
                         },
                         "end": {
                           "line": 51,
-                          "column": 23,
+                          "column": 31,
                           "program": "promiseCasting.ets"
                         }
                       }

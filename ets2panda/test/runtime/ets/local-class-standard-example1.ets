@@ -23,14 +23,14 @@ function foo (parameter: number) {
         // Local class in a top-level function
         override method () { 
             console.log ("Instance field = " + this.field + " par = " + parameter  + " loc = " +  local )
-            assertEQ(this.field, "`instance field value`")
-            assertEQ(parameter, 42)
-            assertEQ(local, "function local")
+            arktest.assertEQ(this.field, "`instance field value`")
+            arktest.assertEQ(parameter, 42)
+            arktest.assertEQ(local, "function local")
         }
         field: string = "`instance field value`"
         static s_method () { 
             console.log ("Static field = " + LocalClass.s_field) 
-            assertEQ(LocalClass.s_field, "`class/static field value`")
+            arktest.assertEQ(LocalClass.s_field, "`class/static field value`")
 
         }
         static s_field: string = "`class/static field value`"

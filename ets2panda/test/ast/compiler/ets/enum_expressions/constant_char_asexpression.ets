@@ -17,24 +17,24 @@ const constchar: char = c'p'
 
 function main() {
     const constcharToByte = constchar as byte
-    assertEQ(constcharToByte ,112)
+    arktest.assertEQ(constcharToByte ,112)
     enum TestEnum1 { One = constcharToByte }
-    assertEQ(TestEnum1.One.valueOf(),112)
+    arktest.assertEQ(TestEnum1.One.valueOf(),112)
 
     const constcharToShort = constchar as short
-    assertEQ(constcharToShort ,112)
+    arktest.assertEQ(constcharToShort ,112)
     enum TestEnum2 { One = constcharToShort }
-    assertEQ(TestEnum2.One.valueOf(),112)
+    arktest.assertEQ(TestEnum2.One.valueOf(),112)
 
     const constcharToInt = constchar as int
-    assertEQ(constcharToInt ,112)
+    arktest.assertEQ(constcharToInt ,112)
     enum TestEnum3 { One = constcharToInt }
-    assertEQ(TestEnum3.One.valueOf(),112)
+    arktest.assertEQ(TestEnum3.One.valueOf(),112)
 
     const constcharToLong = constchar as long
-    assertEQ(constcharToLong ,112)
+    arktest.assertEQ(constcharToLong ,112)
     enum TestEnum4 { One = constcharToLong }
-    assertEQ(TestEnum4.One.valueOf(),112)
+    arktest.assertEQ(TestEnum4.One.valueOf(),112)
 }
 
 

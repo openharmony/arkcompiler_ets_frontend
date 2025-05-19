@@ -1724,9 +1724,43 @@
                                   "expression": {
                                     "type": "CallExpression",
                                     "callee": {
-                                      "type": "Identifier",
-                                      "name": "assertEQ",
-                                      "decorators": [],
+                                      "type": "MemberExpression",
+                                      "object": {
+                                        "type": "Identifier",
+                                        "name": "arktest",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 41,
+                                            "column": 7,
+                                            "program": "ambient_object_iterable.ets"
+                                          },
+                                          "end": {
+                                            "line": 41,
+                                            "column": 14,
+                                            "program": "ambient_object_iterable.ets"
+                                          }
+                                        }
+                                      },
+                                      "property": {
+                                        "type": "Identifier",
+                                        "name": "assertEQ",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 41,
+                                            "column": 15,
+                                            "program": "ambient_object_iterable.ets"
+                                          },
+                                          "end": {
+                                            "line": 41,
+                                            "column": 23,
+                                            "program": "ambient_object_iterable.ets"
+                                          }
+                                        }
+                                      },
+                                      "computed": false,
+                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 41,
@@ -1735,7 +1769,7 @@
                                         },
                                         "end": {
                                           "line": 41,
-                                          "column": 15,
+                                          "column": 23,
                                           "program": "ambient_object_iterable.ets"
                                         }
                                       }
@@ -1748,12 +1782,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 41,
-                                            "column": 16,
+                                            "column": 24,
                                             "program": "ambient_object_iterable.ets"
                                           },
                                           "end": {
                                             "line": 41,
-                                            "column": 18,
+                                            "column": 26,
                                             "program": "ambient_object_iterable.ets"
                                           }
                                         }
@@ -1764,12 +1798,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 41,
-                                            "column": 20,
+                                            "column": 28,
                                             "program": "ambient_object_iterable.ets"
                                           },
                                           "end": {
                                             "line": 41,
-                                            "column": 34,
+                                            "column": 42,
                                             "program": "ambient_object_iterable.ets"
                                           }
                                         }
@@ -1784,7 +1818,7 @@
                                       },
                                       "end": {
                                         "line": 41,
-                                        "column": 35,
+                                        "column": 43,
                                         "program": "ambient_object_iterable.ets"
                                       }
                                     }
@@ -1797,7 +1831,7 @@
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 36,
+                                      "column": 44,
                                       "program": "ambient_object_iterable.ets"
                                     }
                                   }
@@ -1875,9 +1909,43 @@
                                     "expression": {
                                       "type": "CallExpression",
                                       "callee": {
-                                        "type": "Identifier",
-                                        "name": "assertEQ",
-                                        "decorators": [],
+                                        "type": "MemberExpression",
+                                        "object": {
+                                          "type": "Identifier",
+                                          "name": "arktest",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 43,
+                                              "column": 7,
+                                              "program": "ambient_object_iterable.ets"
+                                            },
+                                            "end": {
+                                              "line": 43,
+                                              "column": 14,
+                                              "program": "ambient_object_iterable.ets"
+                                            }
+                                          }
+                                        },
+                                        "property": {
+                                          "type": "Identifier",
+                                          "name": "assertEQ",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 43,
+                                              "column": 15,
+                                              "program": "ambient_object_iterable.ets"
+                                            },
+                                            "end": {
+                                              "line": 43,
+                                              "column": 23,
+                                              "program": "ambient_object_iterable.ets"
+                                            }
+                                          }
+                                        },
+                                        "computed": false,
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 43,
@@ -1886,7 +1954,7 @@
                                           },
                                           "end": {
                                             "line": 43,
-                                            "column": 15,
+                                            "column": 23,
                                             "program": "ambient_object_iterable.ets"
                                           }
                                         }
@@ -1899,12 +1967,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 43,
-                                              "column": 16,
+                                              "column": 24,
                                               "program": "ambient_object_iterable.ets"
                                             },
                                             "end": {
                                               "line": 43,
-                                              "column": 18,
+                                              "column": 26,
                                               "program": "ambient_object_iterable.ets"
                                             }
                                           }
@@ -1915,12 +1983,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 43,
-                                              "column": 20,
+                                              "column": 28,
                                               "program": "ambient_object_iterable.ets"
                                             },
                                             "end": {
                                               "line": 43,
-                                              "column": 34,
+                                              "column": 42,
                                               "program": "ambient_object_iterable.ets"
                                             }
                                           }
@@ -1935,7 +2003,7 @@
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 35,
+                                          "column": 43,
                                           "program": "ambient_object_iterable.ets"
                                         }
                                       }
@@ -1948,7 +2016,7 @@
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 36,
+                                        "column": 44,
                                         "program": "ambient_object_iterable.ets"
                                       }
                                     }
@@ -2026,9 +2094,43 @@
                                       "expression": {
                                         "type": "CallExpression",
                                         "callee": {
-                                          "type": "Identifier",
-                                          "name": "assertEQ",
-                                          "decorators": [],
+                                          "type": "MemberExpression",
+                                          "object": {
+                                            "type": "Identifier",
+                                            "name": "arktest",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 45,
+                                                "column": 7,
+                                                "program": "ambient_object_iterable.ets"
+                                              },
+                                              "end": {
+                                                "line": 45,
+                                                "column": 14,
+                                                "program": "ambient_object_iterable.ets"
+                                              }
+                                            }
+                                          },
+                                          "property": {
+                                            "type": "Identifier",
+                                            "name": "assertEQ",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 45,
+                                                "column": 15,
+                                                "program": "ambient_object_iterable.ets"
+                                              },
+                                              "end": {
+                                                "line": 45,
+                                                "column": 23,
+                                                "program": "ambient_object_iterable.ets"
+                                              }
+                                            }
+                                          },
+                                          "computed": false,
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 45,
@@ -2037,7 +2139,7 @@
                                             },
                                             "end": {
                                               "line": 45,
-                                              "column": 15,
+                                              "column": 23,
                                               "program": "ambient_object_iterable.ets"
                                             }
                                           }
@@ -2050,12 +2152,12 @@
                                             "loc": {
                                               "start": {
                                                 "line": 45,
-                                                "column": 16,
+                                                "column": 24,
                                                 "program": "ambient_object_iterable.ets"
                                               },
                                               "end": {
                                                 "line": 45,
-                                                "column": 18,
+                                                "column": 26,
                                                 "program": "ambient_object_iterable.ets"
                                               }
                                             }
@@ -2066,12 +2168,12 @@
                                             "loc": {
                                               "start": {
                                                 "line": 45,
-                                                "column": 20,
+                                                "column": 28,
                                                 "program": "ambient_object_iterable.ets"
                                               },
                                               "end": {
                                                 "line": 45,
-                                                "column": 36,
+                                                "column": 44,
                                                 "program": "ambient_object_iterable.ets"
                                               }
                                             }
@@ -2086,7 +2188,7 @@
                                           },
                                           "end": {
                                             "line": 45,
-                                            "column": 37,
+                                            "column": 45,
                                             "program": "ambient_object_iterable.ets"
                                           }
                                         }
@@ -2099,7 +2201,7 @@
                                         },
                                         "end": {
                                           "line": 45,
-                                          "column": 38,
+                                          "column": 46,
                                           "program": "ambient_object_iterable.ets"
                                         }
                                       }
@@ -2126,9 +2228,43 @@
                                       "expression": {
                                         "type": "CallExpression",
                                         "callee": {
-                                          "type": "Identifier",
-                                          "name": "assertTrue",
-                                          "decorators": [],
+                                          "type": "MemberExpression",
+                                          "object": {
+                                            "type": "Identifier",
+                                            "name": "arktest",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 47,
+                                                "column": 7,
+                                                "program": "ambient_object_iterable.ets"
+                                              },
+                                              "end": {
+                                                "line": 47,
+                                                "column": 14,
+                                                "program": "ambient_object_iterable.ets"
+                                              }
+                                            }
+                                          },
+                                          "property": {
+                                            "type": "Identifier",
+                                            "name": "assertTrue",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 47,
+                                                "column": 15,
+                                                "program": "ambient_object_iterable.ets"
+                                              },
+                                              "end": {
+                                                "line": 47,
+                                                "column": 25,
+                                                "program": "ambient_object_iterable.ets"
+                                              }
+                                            }
+                                          },
+                                          "computed": false,
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 47,
@@ -2137,7 +2273,7 @@
                                             },
                                             "end": {
                                               "line": 47,
-                                              "column": 17,
+                                              "column": 25,
                                               "program": "ambient_object_iterable.ets"
                                             }
                                           }
@@ -2149,12 +2285,12 @@
                                             "loc": {
                                               "start": {
                                                 "line": 47,
-                                                "column": 18,
+                                                "column": 26,
                                                 "program": "ambient_object_iterable.ets"
                                               },
                                               "end": {
                                                 "line": 47,
-                                                "column": 23,
+                                                "column": 31,
                                                 "program": "ambient_object_iterable.ets"
                                               }
                                             }
@@ -2169,7 +2305,7 @@
                                           },
                                           "end": {
                                             "line": 47,
-                                            "column": 24,
+                                            "column": 32,
                                             "program": "ambient_object_iterable.ets"
                                           }
                                         }
@@ -2182,7 +2318,7 @@
                                         },
                                         "end": {
                                           "line": 47,
-                                          "column": 25,
+                                          "column": 33,
                                           "program": "ambient_object_iterable.ets"
                                         }
                                       }

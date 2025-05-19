@@ -22,36 +22,36 @@ class A_class{
             field2:int = 200;
             static staticfield = 300;
             method1(){
-                assertEQ(this.field1, 100)
-                assertEQ(this.field2, 200)
-                assertEQ(localfield, "localstring")
+                arktest.assertEQ(this.field1, 100)
+                arktest.assertEQ(this.field2, 200)
+                arktest.assertEQ(localfield, "localstring")
             }
             static method2(){
-                assertEQ(LocalClass.staticfield, 300)
+                arktest.assertEQ(LocalClass.staticfield, 300)
             }
         }
         final class FinalLocalClass{
             field1:int = 100;
             static staticfield = 300;
             method1(){
-                assertEQ(this.field1, 100)
-                assertEQ(localfield, "localstring")
+                arktest.assertEQ(this.field1, 100)
+                arktest.assertEQ(localfield, "localstring")
             }
             static method2(){
-                assertEQ(LocalClass.staticfield, 300)
+                arktest.assertEQ(LocalClass.staticfield, 300)
             }
         }
 
         let x:AbstractLocalClass = new LocalClass();
-        assertEQ(x.field1, 100)
-        assertEQ(x.field2, 200)
-        assertEQ(LocalClass.staticfield, 300)
+        arktest.assertEQ(x.field1, 100)
+        arktest.assertEQ(x.field2, 200)
+        arktest.assertEQ(LocalClass.staticfield, 300)
         x.method1();
         LocalClass.method2();
 
         let x2:FinalLocalClass = new FinalLocalClass();
-        assertEQ(x2.field1, 100)
-        assertEQ(FinalLocalClass.staticfield, 300)
+        arktest.assertEQ(x2.field1, 100)
+        arktest.assertEQ(FinalLocalClass.staticfield, 300)
         x2.method1()
         FinalLocalClass.method2();
     }

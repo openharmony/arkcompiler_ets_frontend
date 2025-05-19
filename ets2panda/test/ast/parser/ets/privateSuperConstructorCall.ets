@@ -28,7 +28,7 @@ class Banana extends Alma {
 
 function main(): void {
   let instance: Banana = new Banana();
-  assertEQ(instance.x, 5);
+  arktest.assertEQ(instance.x, 5);
 }
 
 /* @@? 25:5 Error TypeError: Signature constructor(alma: Int): void is not visible here. */
