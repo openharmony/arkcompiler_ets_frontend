@@ -20,6 +20,7 @@
 #include "class_hierarchy.h"
 #include "lsp/include/organize_imports.h"
 #include "compiler/lowering/util.h"
+#include "get_safe_delete_info.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
 #include "find_safe_delete_location.h"
@@ -97,6 +98,11 @@ DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
     result.fileName = std::get<0>(declInfo);
     result.fileText = std::get<1>(declInfo);
     return result;
+}
+
+bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
+{
+    return GetSafeDeleteInfoImpl(context, position, path);
 }
 
 References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo)
@@ -361,6 +367,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetAliasScriptElementKind,
                     GetFileReferences,
                     GetDeclInfo,
+                    GetSafeDeleteInfo,
                     GetReferencesAtPosition,
                     GetPrecedingToken,
                     GetCurrentTokenValue,

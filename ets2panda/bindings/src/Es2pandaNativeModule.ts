@@ -480,6 +480,10 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getSafeDeleteInfo(context: KNativePointer, position: KInt, path: String): boolean {
+    throw new Error('Not implemented');
+  }
+
   _getInlayHintText(ptr: KPtr): KPtr {
     throw new Error('Not implemented');
   }
@@ -567,6 +571,7 @@ export class Es2pandaNativeModule {
   _getSignatureHelpItems(context: KPtr, position: KInt): KPtr {
     throw new Error('Not implemented');
   }
+  
 }
 
 export function initEs2panda(): Es2pandaNativeModule {

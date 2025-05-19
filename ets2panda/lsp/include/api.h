@@ -460,6 +460,7 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
     References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
+    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position, const char *path);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
