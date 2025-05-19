@@ -48,6 +48,7 @@
 #include "checker/types/ets/etsNullishTypes.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/wildcardType.h"
+#include "checker/types/ets/etsAnyType.h"
 #include "checker/types/ets/etsNeverType.h"
 #include "util/helpers.h"
 
@@ -148,11 +149,13 @@ void GlobalTypesHolder::AddEtsSpecificTypes(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = allocator->New<ETSUndefinedType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::TYPE_ERROR)] = allocator->New<TypeError>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_ANY)] = allocator->New<ETSAnyType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NEVER)] = allocator->New<ETSNeverType>();
 }
 
 void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
 {
+    builtinNameMappings_.emplace("Any", GlobalTypeId::ETS_ANY);
     builtinNameMappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);
     builtinNameMappings_.emplace("Byte", GlobalTypeId::ETS_BYTE_BUILTIN);
     builtinNameMappings_.emplace("Char", GlobalTypeId::ETS_CHAR_BUILTIN);
@@ -403,19 +406,24 @@ Type *GlobalTypesHolder::GlobalETSUndefinedType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED));
 }
 
+Type *GlobalTypesHolder::GlobalETSAnyType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ANY));
+}
+
 Type *GlobalTypesHolder::GlobalETSNeverType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NEVER));
 }
 
-Type *GlobalTypesHolder::GlobalETSNullishObjectType()
+Type *GlobalTypesHolder::GlobalETSUnionUndefinedNullObject()
 {
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT));
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_UNION_UNDEFINED_NULL_OBJECT));
 }
 
-Type *GlobalTypesHolder::GlobalETSNullishType()
+Type *GlobalTypesHolder::GlobalETSUnionUndefinedNull()
 {
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULLISH_TYPE));
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_UNION_UNDEFINED_NULL));
 }
 
 Type *GlobalTypesHolder::GlobalWildcardType()

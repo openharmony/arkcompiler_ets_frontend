@@ -281,7 +281,7 @@ void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhile)
     AnalyzeStat(doWhile->Body());
     status_ = Or(status_, ResolveContinues(doWhile));
     AnalyzeNode(doWhile->Test());
-    ES2PANDA_ASSERT(doWhile->Test()->TsType() && doWhile->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(doWhile->Test()->TsType());
     const auto exprRes = doWhile->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
     status_ = Or(status_, ResolveBreaks(doWhile));
@@ -291,7 +291,7 @@ void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
 {
     SetOldPendingExits(PendingExits());
     AnalyzeNode(whileStmt->Test());
-    ES2PANDA_ASSERT(whileStmt->Test()->TsType() && whileStmt->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(whileStmt->Test()->TsType());
     const auto exprRes = whileStmt->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || std::get<1>(exprRes)));
     AnalyzeStat(whileStmt->Body());
@@ -309,7 +309,7 @@ void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 
     if (forStmt->Test() != nullptr) {
         AnalyzeNode(forStmt->Test());
-        ES2PANDA_ASSERT(forStmt->Test()->TsType() && forStmt->Test()->TsType()->IsConditionalExprType());
+        ES2PANDA_ASSERT(forStmt->Test()->TsType());
         condType = forStmt->Test()->TsType();
         std::tie(resolveType, res) = forStmt->Test()->TsType()->ResolveConditionExpr();
         status_ = From(!resolveType || res);

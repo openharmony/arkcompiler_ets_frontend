@@ -126,6 +126,7 @@ libes2panda_sources = [
   "checker/types/ets/intType.cpp",
   "checker/types/ets/longType.cpp",
   "checker/types/ets/shortType.cpp",
+  "checker/types/ets/etsAnyType.cpp",
   "checker/types/ets/wildcardType.cpp",
   "checker/types/globalTypesHolder.cpp",
   "checker/types/signature.cpp",

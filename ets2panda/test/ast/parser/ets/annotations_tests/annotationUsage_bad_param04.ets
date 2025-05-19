@@ -21,4 +21,4 @@
 @MyAnno({testProperty1: "1", testProperty2: [1, 2, a]})
 class B{}
 
-/* @@? 21:45 Error TypeError: Expected type for array literal should be an array type, got double */
+/* @@? 21:52 Error TypeError: Unresolved reference a */

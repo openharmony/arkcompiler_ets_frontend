@@ -186,11 +186,6 @@ public:
         return reinterpret_cast<const ETSDynamicFunctionType *>(this);
     }
 
-    bool IsConditionalExprType() const
-    {
-        return HasTypeFlag(TypeFlag::CONDITION_EXPRESSION_TYPE);
-    }
-
     bool IsConstantType() const
     {
         return HasTypeFlag(checker::TypeFlag::CONSTANT);

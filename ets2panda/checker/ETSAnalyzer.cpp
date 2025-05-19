@@ -849,6 +849,11 @@ static bool CheckArrayExpressionElements(ETSChecker *checker, ir::ArrayExpressio
     return allElementsAssignable;
 }
 
+static bool IsPossibleArrayExpressionType(Type const *type)
+{
+    return type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType();
+}
+
 void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType) const
 {
     if (originalType == nullptr || !originalType->IsETSUnionType()) {
@@ -856,7 +861,7 @@ void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType
     }
     checker::Type *preferredType = nullptr;
     for (auto &type : originalType->AsETSUnionType()->ConstituentTypes()) {
-        if (type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType()) {
+        if (IsPossibleArrayExpressionType(type)) {
             if (preferredType != nullptr) {
                 preferredType = nullptr;
                 break;
@@ -889,6 +894,10 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
         if (expr->GetPreferredType()->IsETSUnionType()) {
             GetUnionPreferredType(expr, expr->GetPreferredType());
+        }
+
+        if (expr->GetPreferredType() != nullptr && !IsPossibleArrayExpressionType(expr->GetPreferredType())) {
+            expr->SetPreferredType(nullptr);
         }
     }
 
@@ -1564,7 +1573,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
     if (calleeType->IsETSArrowType()) {
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCast(
-            checker->GlobalETSNullishObjectType(), checker->MaybeBoxType(expr->Signature()->ReturnType())));
+            checker->GlobalETSAnyType(), checker->MaybeBoxType(expr->Signature()->ReturnType())));
     } else {
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));
     }
@@ -1826,7 +1835,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     }
     if (!checker->CheckNonNullish(expr->Object())) {
         auto *invalidType = checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)
-                                ? checker->GlobalETSNullishType()
+                                ? checker->GlobalETSUnionUndefinedNull()
                                 : checker->InvalidateType(expr);
         return invalidType;
     }

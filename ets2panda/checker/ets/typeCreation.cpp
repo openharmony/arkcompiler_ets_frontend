@@ -305,8 +305,8 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             auto *objType = setType(GlobalTypeId::ETS_OBJECT_BUILTIN, create())->AsETSObjectType();
             auto null = checker->GlobalETSNullType();
             auto undef = checker->GlobalETSUndefinedType();
-            setType(GlobalTypeId::ETS_NULLISH_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
-            setType(GlobalTypeId::ETS_NULLISH_TYPE, checker->CreateETSUnionType({null, undef}));
+            setType(GlobalTypeId::ETS_UNION_UNDEFINED_NULL_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
+            setType(GlobalTypeId::ETS_UNION_UNDEFINED_NULL, checker->CreateETSUnionType({null, undef}));
             return objType;
         }
         case GlobalTypeId::ETS_STRING_BUILTIN: {

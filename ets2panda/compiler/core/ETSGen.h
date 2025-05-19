@@ -477,6 +477,22 @@ private:
 #endif  // PANDA_WITH_ETS
     }
 
+    void EmitCheckCast(const ir::AstNode *node, util::StringView target)
+    {
+        if (target != Signatures::BUILTIN_OBJECT) {
+            Sa().Emit<Checkcast>(node, target);
+        }
+    }
+
+    void EmitIsInstance(const ir::AstNode *node, util::StringView target)
+    {
+        if (target != Signatures::BUILTIN_OBJECT) {
+            Sa().Emit<Isinstance>(node, target);
+        } else {
+            LoadAccumulatorBoolean(node, true);
+        }
+    }
+
     template <bool IS_SRTICT = false>
     void EmitEtsEquals([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg lhs,
                        [[maybe_unused]] const VReg rhs)

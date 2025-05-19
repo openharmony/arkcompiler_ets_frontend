@@ -209,7 +209,7 @@ ir::Expression *EnumPostCheckLoweringPhase::HandleEnumTypeCasting(checker::Type 
     // Generate fromValue call;
     if (type->IsETSEnumType()) {
         auto exprType = expr->TsType();
-        if (exprType->IsETSEnumType() ||
+        if (exprType->IsETSEnumType() || exprType->IsETSAnyType() ||
             (exprType->IsETSObjectType() && exprType->AsETSObjectType()->IsGlobalETSObjectType())) {
             return expr;
         }

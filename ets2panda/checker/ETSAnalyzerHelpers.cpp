@@ -516,8 +516,7 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
         return;
     }
 
-    if (operandType == nullptr || !operandType->IsConditionalExprType()) {
-        checker->LogError(diagnostic::ASSERT_NOT_LOGICAL, {}, expr->Argument()->Start());
+    if (operandType == nullptr || operandType->IsTypeError()) {
         expr->SetTsType(checker->GlobalTypeError());
         return;
     }

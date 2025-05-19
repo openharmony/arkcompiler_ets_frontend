@@ -235,7 +235,6 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
         etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
-    ES2PANDA_ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
     etsg->ResolveConditionalResultIfFalse(expr, falseLabel);
