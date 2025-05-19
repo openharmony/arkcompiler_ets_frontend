@@ -394,6 +394,17 @@ KNativePointer impl_getNewTextFromTextChange(KNativePointer textChangePtr)
 }
 TS_INTEROP_1(getNewTextFromTextChange, KNativePointer, KNativePointer)
 
+KNativePointer impl_getCompletionEntryDetails(KStringPtr &entrynamePtr, KStringPtr &filenamePtr, KNativePointer context,
+                                              KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *ci = new CompletionEntryDetails(
+        ctx->getCompletionEntryDetails(GetStringCopy(entrynamePtr), GetStringCopy(filenamePtr),
+                                       reinterpret_cast<es2panda_Context *>(context), position));
+    return ci;
+}
+TS_INTEROP_4(getCompletionEntryDetails, KNativePointer, KStringPtr, KStringPtr, KNativePointer, KInt)
+
 KNativePointer impl_getImplementationAtPosition(KNativePointer context, KInt position)
 {
     LSPAPI const *ctx = GetImpl();

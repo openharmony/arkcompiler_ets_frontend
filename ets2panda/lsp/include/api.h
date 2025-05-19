@@ -303,6 +303,79 @@ public:
     }
 };
 
+struct CompletionEntryDetails {
+private:
+    std::string name_;
+    std::string kind_;
+    std::string kindModifiers_;
+    std::vector<SymbolDisplayPart> displayParts_;
+    std::vector<SymbolDisplayPart> document_;
+    std::vector<SymbolDisplayPart> source_;
+    std::vector<SymbolDisplayPart> sourceDisplay_;
+    std::string fileName_;
+
+public:
+    explicit CompletionEntryDetails(std::string name = "", std::string kind = "", std::string kindModifiers = "",
+                                    std::vector<SymbolDisplayPart> displayParts = {},
+                                    std::vector<SymbolDisplayPart> document = {},
+                                    std::vector<SymbolDisplayPart> source = {},
+                                    std::vector<SymbolDisplayPart> sourceDisplay = {}, std::string fileName = "")
+        : name_ {std::move(name)},
+          kind_ {std::move(kind)},
+          kindModifiers_ {std::move(kindModifiers)},
+          displayParts_ {std::move(displayParts)},
+          document_ {std::move(document)},
+          source_ {std::move(source)},
+          sourceDisplay_ {std::move(sourceDisplay)},
+          fileName_ {std::move(fileName)}
+    {
+    }
+
+    std::string GetName() const
+    {
+        return name_;
+    }
+    std::string GetKind() const
+    {
+        return kind_;
+    }
+    std::string GetKindModifiers() const
+    {
+        return kindModifiers_;
+    }
+    std::vector<SymbolDisplayPart> GetDisplayParts() const
+    {
+        return displayParts_;
+    }
+    std::vector<SymbolDisplayPart> GetDocument() const
+    {
+        return document_;
+    }
+    std::vector<SymbolDisplayPart> GetSource() const
+    {
+        return source_;
+    }
+    std::vector<SymbolDisplayPart> GetSourceDisplay() const
+    {
+        return sourceDisplay_;
+    }
+    std::string GetFileName() const
+    {
+        return fileName_;
+    }
+
+    bool operator==(const CompletionEntryDetails &other) const
+    {
+        return name_ == other.name_ && kind_ == other.kind_ && kindModifiers_ == other.kindModifiers_ &&
+               displayParts_ == other.displayParts_ && document_ == other.document_ && source_ == other.source_ &&
+               sourceDisplay_ == other.sourceDisplay_ && fileName_ == other.fileName_;
+    }
+    bool operator!=(const CompletionEntryDetails &other) const
+    {
+        return !(*this == other);
+    }
+};
+
 typedef struct FileDiagnostic {
     es2panda_AstNode *node;
     Diagnostic diagnostic;
@@ -373,6 +446,8 @@ typedef struct LSPAPI {
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
     std::vector<FileTextChanges> (*OrganizeImportsImpl)(es2panda_Context *context, char const *fileName);
     QuickInfo (*getQuickInfoAtPosition)(const char *fileName, es2panda_Context *context, size_t position);
+    CompletionEntryDetails (*getCompletionEntryDetails)(const char *entryName, const char *fileName,
+                                                        es2panda_Context *context, size_t position);
     TextSpan (*getSpanOfEnclosingComment)(es2panda_Context *context, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getSyntacticDiagnostics)(es2panda_Context *context);

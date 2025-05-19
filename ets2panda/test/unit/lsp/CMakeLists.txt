@@ -83,6 +83,10 @@ ets2panda_add_gtest(lsp_quick_info_api_test CPP_SOURCES
     quick_info_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_completions_entry_details_test CPP_SOURCES
+    get_completions_entry_details.cpp
+)
+
 ets2panda_add_gtest(lsp_api_classifier_test CPP_SOURCES
     classifier_test.cpp
 )
