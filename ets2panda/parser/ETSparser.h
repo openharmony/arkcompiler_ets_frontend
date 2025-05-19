@@ -18,6 +18,7 @@
 
 #include "util/arktsconfig.h"
 #include "util/importPathManager.h"
+#include "util/recursiveGuard.h"
 #include "innerSourceParser.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
@@ -433,6 +434,7 @@ private:
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
+    friend ir::Expression *HandleLeftParanthesis(ETSParser *parser, ExpressionParseFlags flags);
 
 private:
     uint32_t namespaceNestedRank_;
@@ -442,6 +444,7 @@ private:
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
     std::unique_ptr<util::ImportPathManager> importPathManager_ {nullptr};
+    RecursiveContext recursiveCtx_;
 };
 
 class ExternalSourceParser {
