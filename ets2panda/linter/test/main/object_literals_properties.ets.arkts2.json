@@ -556,16 +556,6 @@
         },
         {
             "line": 133,
-            "column": 5,
-            "endLine": 138,
-            "endColumn": 2,
-            "problem": "InteropObjectLiteralClass",
-            "suggest": "",
-            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 133,
             "column": 14,
             "endLine": 133,
             "endColumn": 15,
@@ -832,16 +822,6 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 243,
-            "column": 5,
-            "endLine": 245,
-            "endColumn": 2,
-            "problem": "InteropObjectLiteralClass",
-            "suggest": "",
-            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
             "severity": "ERROR"
         },
         {

@@ -15,10 +15,50 @@
     ],
     "result": [
         {
-            "line": 20,
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 63,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 67,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
             "column": 5,
-            "endLine": 20,
-            "endColumn": 33,
+            "endLine": 21,
+            "endColumn": 31,
+            "problem": "InteropObjectLiteralAmbiguity",
+            "suggest": "",
+            "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 5,
+            "endLine": 23,
+            "endColumn": 31,
+            "problem": "InteropObjectLiteralAmbiguity",
+            "suggest": "",
+            "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 37,
             "problem": "InteropObjectLiteralAmbiguity",
             "suggest": "",
             "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",

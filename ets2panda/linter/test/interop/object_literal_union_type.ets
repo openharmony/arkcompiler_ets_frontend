@@ -1,3 +1,4 @@
+'use static'
 /*
  * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +14,15 @@
  * limitations under the License.
  */
 
-import {X, Y} from "./oh_modules/object_literal_union_type"
+import {X, Y, Z} from "./oh_modules/object_literal_union_type"
 
 import {A, B} from "./oh_modules/object_literal_union_type_arkts2"
 
-let x: X | Y = { name: "hello" }
+let xy: X | Y = { name: "xy" }
+
+let yz: Y | Z = { name: "yz" }
+
+let xyz: X | Y | Z = { name: "xyz" }
 
 let ab: A | B = { name: "hello" } // legal
 
