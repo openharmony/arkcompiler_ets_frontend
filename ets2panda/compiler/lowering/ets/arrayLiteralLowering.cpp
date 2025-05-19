@@ -40,7 +40,7 @@ ArenaVector<ir::Statement *> ArrayLiteralLowering::GenerateDefaultCallToConstruc
 {
     std::stringstream ss;
     std::vector<ir::AstNode *> newStmts;
-    if (!eleType->IsETSUnionType()) {
+    if (!eleType->IsETSUnionType() && !eleType->IsETSAnyType()) {
         auto *indexSymbol = Gensym(Allocator());
         auto *lengthSymbol = Gensym(Allocator());
         auto *typeNode = checker_->AllocNode<ir::OpaqueTypeNode>(eleType, Allocator());

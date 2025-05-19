@@ -59,6 +59,10 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return GlobalTypeError();
     }
 
+    if (baseType->IsETSAnyType()) {
+        return baseType;
+    }
+
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return CreatePartialType(baseType);
@@ -114,6 +118,10 @@ static T *CloneNodeIfNotNullptr(T *node, ArenaAllocator *allocator)
 Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 {
     ES2PANDA_ASSERT(typeToBePartial->IsETSReferenceType());
+
+    if (typeToBePartial->IsETSAnyType()) {
+        return typeToBePartial;
+    }
 
     if (typeToBePartial->IsETSTypeParameter()) {
         return CreatePartialTypeParameter(typeToBePartial->AsETSTypeParameter());

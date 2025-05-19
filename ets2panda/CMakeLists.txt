@@ -584,6 +584,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/intType.cpp
   checker/types/ets/longType.cpp
   checker/types/ets/shortType.cpp
+  checker/types/ets/etsAnyType.cpp
   checker/types/ets/etsArrayType.cpp
   checker/types/ets/etsBooleanType.cpp
   checker/types/ets/etsDynamicType.cpp

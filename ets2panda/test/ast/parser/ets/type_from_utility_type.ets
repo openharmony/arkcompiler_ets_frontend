@@ -31,7 +31,6 @@
    let recordarrA  = Type.from<Record<Array<string>,Array<string>>>();
    let recordarrT  = Type.from<Record<Array<T>,Array<T>>>();
  }
-  /* @@? 17:20 Error TypeError: No matching call signature */
   /* @@? 30:19 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
   /* @@? 30:29 Error TypeError: No static $_invoke method and static $_instantiate method in Record. Record() is not allowed. */
   /* @@? 30:29 Error TypeError: Type 'Record<K,V>' has no call signatures. */

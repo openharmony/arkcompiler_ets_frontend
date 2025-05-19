@@ -48,7 +48,6 @@ enum class TypeFlag : uint64_t {
     INTERSECTION = 1ULL << 19ULL,        // x: a & b
     INDEX = 1ULL << 20ULL,               // keyof x
     INDEX_ACCESS = 1ULL << 21ULL,        // x[a]
-    CONDITIONAL = 1ULL << 22ULL,         // x extends a ? b : c
     TEMPLATE_LITERAL = 1ULL << 23ULL,    // x: `hello ${World}`
     ANY = 1ULL << 24ULL,                 // x: any
     ARRAY = 1ULL << 25ULL,               // x: number[]
@@ -88,14 +87,11 @@ enum class TypeFlag : uint64_t {
     ETS_PARTIAL_TYPE_PARAMETER = 1ULL << 59ULL,   // ETS Partial type parameter
     TYPE_ERROR = 1ULL << 60ULL,                   // type error
     ETS_TYPE_ALIAS = 1ULL << 61ULL,               // ETS Type alias
+    ETS_ANY = 1ULL << 22ULL,                      // ETS any, the value was *stolen* from the CONDITIONAL type kind
     ETS_NEVER = 1ULL << 62ULL,                    // ETS never
     ETS_METHOD = 1ULL << 63ULL,                   // ETS method (or function in module) (possibly overloaded)
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
-    ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |
-               FUNCTION | WILDCARD | ETS_TYPE_PARAMETER | ETS_DYNAMIC_TYPE | ETS_UNION | ETS_NULL | ETS_UNDEFINED |
-               ETS_NONNULLISH | ETS_READONLY | ETS_REQUIRED_TYPE_PARAMETER | ETS_PARTIAL_TYPE_PARAMETER | ETS_NEVER |
-               ETS_TUPLE,
     ETS_INTEGRAL_NUMERIC = BYTE | SHORT | INT | LONG,
     ETS_FLOATING_POINT = FLOAT | DOUBLE,
     ETS_NUMERIC = ETS_INTEGRAL_NUMERIC | ETS_FLOATING_POINT,
@@ -123,9 +119,6 @@ enum class TypeFlag : uint64_t {
     VALID_ARITHMETIC_TYPE = ANY | NUMBER_LIKE | BIGINT_LIKE | ENUM,
     UNIT = LITERAL | UNDEFINED | NULL_TYPE,
     GETTER_SETTER = GETTER | SETTER,
-    CONDITION_EXPRESSION_TYPE = ETS_NULL | ETS_UNDEFINED | ETS_OBJECT | ETS_ARRAY | ETS_UNION | CONSTANT | BYTE | CHAR |
-                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM |
-                                FUNCTION | ETS_TUPLE,
 };
 
 }  // namespace ark::es2panda::checker
