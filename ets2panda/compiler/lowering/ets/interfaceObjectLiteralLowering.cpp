@@ -17,6 +17,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "compiler/lowering/util.h"
+#include "generated/signatures.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "util/helpers.h"
 
@@ -194,6 +195,21 @@ static void FillAnonClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode 
     FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr, readonlyFields, interfaceType);
 }
 
+// Annotate synthetic class so we can determite it's origin in a runtime
+// Now implemented for the anon class generated from an interface only
+static void AnnotateGeneratedAnonClass(checker::ETSChecker *checker, ir::ClassDefinition *classDef)
+{
+    auto *annoId = checker->AllocNode<ir::Identifier>(Signatures::INTERFACE_OBJ_LITERAL, checker->Allocator());
+    annoId->SetAnnotationUsage();
+    auto *annoUsage = checker->AllocNode<ir::AnnotationUsage>(annoId, checker->Allocator());
+    annoUsage->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
+    annoUsage->SetParent(classDef);
+    annoId->SetParent(annoUsage);
+    classDef->Annotations().emplace_back(annoUsage);
+    RefineSourceRanges(annoUsage);
+    CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, annoUsage);
+}
+
 static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ctx,
                                                          ir::TSInterfaceDeclaration *ifaceNode,
                                                          ir::ObjectExpression *objExpr)
@@ -221,6 +237,8 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
 
     classDecl->SetRange(ifaceNode->Range());
     classDef->SetRange(ifaceNode->Range());
+
+    AnnotateGeneratedAnonClass(checker, classDef);
 
     // Class type params
     if (ifaceNode->TypeParams() != nullptr) {

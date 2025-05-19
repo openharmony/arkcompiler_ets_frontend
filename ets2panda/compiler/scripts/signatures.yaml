@@ -212,6 +212,9 @@ defines:
     ref: EXPORT_DEFAULT_CONSTANT_ANONYMOUSLY
   - name: 'NamedFunctionObject'
     ref: NAMED_FUNCTION_OBJECT
+  - name: 'InterfaceObjectLiteral'
+    ref: INTERFACE_OBJ_LITERAL
+    comment: ETS annotation type
 
 packages:
   - name: 'std.core'
