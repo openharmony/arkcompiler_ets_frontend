@@ -62,6 +62,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/quick_info.cpp",
     "src/refactors/convert_function.cpp",
     "src/references.cpp",
+    "src/generate_constructor.cpp",
     "src/rename.cpp",
     "src/script_element_kind.cpp",
     "src/services/services.cpp",
