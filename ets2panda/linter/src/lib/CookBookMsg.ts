@@ -344,6 +344,7 @@ cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
 cookBookTag[358] =
   'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
+
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';
 }

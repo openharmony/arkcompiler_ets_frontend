@@ -47,6 +47,7 @@ import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/Strin
 import { InteropType, USE_STATIC } from './consts/InteropAPI';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
 import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
+import { STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -230,6 +231,54 @@ export class TsUtils {
      * (f & ts.TypeFlags.String) != 0 || (f & ts.TypeFlags.StringLiteral) != 0
      */
     );
+  }
+
+  checkStatementForErrorClass(stmt: ts.ThrowStatement): boolean {
+    const newExpr = stmt.expression;
+    if (!ts.isNewExpression(newExpr)) {
+      return true;
+    }
+    const ident = newExpr.expression;
+    if (!ts.isIdentifier(ident)) {
+      return true;
+    }
+
+    if (ident.text === STRING_ERROR_LITERAL) {
+      return false;
+    }
+
+    const declaration = this.getDeclarationNode(ident);
+    if (!declaration) {
+      return true;
+    }
+
+    if (!ts.isClassDeclaration(declaration)) {
+      return true;
+    }
+
+    if (!declaration.heritageClauses) {
+      return true;
+    }
+
+    return !this.includesErrorClass(declaration.heritageClauses);
+  }
+
+  includesErrorClass(hClauses: ts.NodeArray<ts.HeritageClause>): boolean {
+    void this;
+    let includesErrorClass = false;
+
+    for (const hClause of hClauses) {
+      for (const type of hClause.types) {
+        if (!ts.isIdentifier(type.expression)) {
+          continue;
+        }
+        if (type.expression.text === 'Error') {
+          includesErrorClass = true;
+        }
+      }
+    }
+
+    return includesErrorClass;
   }
 
   static isPrimitiveLiteralType(type: ts.Type): boolean {
@@ -3473,7 +3522,8 @@ export class TsUtils {
     importIncludesModule: boolean,
     currentNode: ts.Node,
     importFilePath: string,
-    projectPath: string
+    projectPath: string,
+    extension: string = EXTNAME_ETS
   ): boolean {
     const currentModule = TsUtils.getModuleName(currentNode);
 
@@ -3491,7 +3541,7 @@ export class TsUtils {
       projectPath.concat(PATH_SEPARATOR + currentModule);
     }
 
-    const importedFile = path.resolve(projectPath, importFilePath + EXTNAME_ETS);
+    const importedFile = path.resolve(projectPath, importFilePath + extension);
 
     return fs.existsSync(importedFile);
   }
@@ -3694,16 +3744,20 @@ export class TsUtils {
     return str;
   }
 
-  static resolveModuleAndCheckInterop(callExpr: ts.CallExpression, currentFile: string): InteropType | undefined {
+  static getCurrentModule(currentFileName: string): string {
+    const parts = currentFileName.split(PATH_SEPARATOR);
+    parts.pop();
+    const currentModule = parts.join(PATH_SEPARATOR);
+    return currentModule;
+  }
+
+  static resolveModuleAndCheckInterop(wholeProjectPath: string, callExpr: ts.CallExpression): InteropType | undefined {
     const moduleName = callExpr.arguments[0];
     if (!ts.isStringLiteral(moduleName)) {
       return undefined;
     }
 
-    const modules = currentFile.split('/');
-    modules.pop();
-    const currentModule = modules.join('/');
-    const importedModule = path.resolve(currentModule, moduleName.text);
+    const importedModule = path.resolve(wholeProjectPath, moduleName.text);
 
     const importedFile = TsUtils.resolveImportModule(importedModule);
     if (!importedFile) {

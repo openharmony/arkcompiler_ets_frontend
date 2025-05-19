@@ -15,15 +15,25 @@
     ],
     "result": [
         {
-            "line": 24,
+            "line": 17,
             "column": 1,
-            "endLine": 24,
+            "endLine": 23,
+            "endColumn": 38,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
             "endColumn": 23,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 731,
-                    "end": 762,
+                    "start": 744,
+                    "end": 775,
                     "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))"
                 }
             ],
@@ -32,15 +42,15 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 27,
             "column": 1,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 22,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 764,
-                    "end": 794,
+                    "start": 777,
+                    "end": 807,
                     "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))"
                 }
             ],
@@ -49,19 +59,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
-            "column": 5,
-            "endLine": 29,
-            "endColumn": 17,
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 13,
             "problem": "InteropTSFunctionInvoke",
             "suggest": "",
             "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)",
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 34,
             "column": 1,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 20,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",

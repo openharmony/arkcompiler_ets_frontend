@@ -34,4 +34,4 @@ class testObject {
     }
 };
 
-const result: string = testObject.isConcurrent(); 
+const result: string = testObject.isConcurrent();
