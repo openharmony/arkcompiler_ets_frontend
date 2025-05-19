@@ -1658,10 +1658,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleInteropOperand(tsUnaryArithm: ts.PrefixUnaryExpression): void {
-    if (ts.isPropertyAccessExpression(tsUnaryArithm.operand)) {
-      const exprSym = this.tsUtils.trueSymbolAtLocation(tsUnaryArithm.operand);
-      const declaration = exprSym?.declarations?.[0];
-      this.checkAndProcessDeclaration(declaration, tsUnaryArithm);
+    const processPropertyAccess = (expr: ts.PropertyAccessExpression | ts.ParenthesizedExpression): void => {
+      const propertyAccess = ts.isParenthesizedExpression(expr) ? expr.expression : expr;
+
+      if (ts.isPropertyAccessExpression(propertyAccess)) {
+        const exprSym = this.tsUtils.trueSymbolAtLocation(propertyAccess);
+        const declaration = exprSym?.declarations?.[0];
+        this.checkAndProcessDeclaration(declaration, tsUnaryArithm);
+      }
+    };
+
+    if (ts.isPropertyAccessExpression(tsUnaryArithm.operand) || ts.isParenthesizedExpression(tsUnaryArithm.operand)) {
+      processPropertyAccess(tsUnaryArithm.operand);
     }
   }
 

@@ -3849,25 +3849,41 @@ export class Autofixer {
   }
 
   fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
-    let text = '';
-    if (ts.isPropertyAccessExpression(express.operand)) {
-      const states = ts.factory.createCallExpression(
+    const createConversionExpression = (propertyAccess: ts.PropertyAccessExpression): ts.Expression => {
+      const getPropertyCall = ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(
-          ts.factory.createCallExpression(
-            ts.factory.createPropertyAccessExpression(
-              ts.factory.createIdentifier(express.operand.expression.getText()),
-              ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
-            ),
-            undefined,
-            [ts.factory.createStringLiteral(express.operand.name.getText())]
-          ),
-          ts.factory.createIdentifier(TO_NUMBER)
+          ts.factory.createIdentifier(propertyAccess.expression.getText()),
+          ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
         ),
+        undefined,
+        [ts.factory.createStringLiteral(propertyAccess.name.getText())]
+      );
+
+      return ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(getPropertyCall, ts.factory.createIdentifier(TO_NUMBER)),
         undefined,
         []
       );
-      text = this.printer.printNode(ts.EmitHint.Unspecified, states, express.getSourceFile());
+    };
+
+    let replacementExpression: ts.Expression | undefined;
+    if (ts.isPropertyAccessExpression(express.operand)) {
+      replacementExpression = createConversionExpression(express.operand);
+    } else if (
+      ts.isParenthesizedExpression(express.operand) &&
+      ts.isPropertyAccessExpression(express.operand.expression)
+    ) {
+      replacementExpression = ts.factory.createParenthesizedExpression(
+        createConversionExpression(express.operand.expression)
+      );
     }
+
+    if (!replacementExpression) {
+      return undefined;
+    }
+
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, replacementExpression, express.getSourceFile());
+
     return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
   }
 
