@@ -506,11 +506,15 @@ bool ETSParser::ParseReadonlyInTypeAnnotation()
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *typeAnnotation = nullptr;
-    auto startPos = Lexer()->GetToken().Start();
+    const auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
     if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
-        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        const auto beforeTypeAnnotation = Lexer()->GetToken().Loc();
+        auto typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        if (typeAnnotation == nullptr) {
+            LogError(diagnostic::INVALID_TYPE);
+            return AllocBrokenType(beforeTypeAnnotation);
+        }
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
             !(typeAnnotation->IsETSTypeReference() &&
               typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
@@ -522,10 +526,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
-    } else {
-        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        return typeAnnotation;
     }
-    return typeAnnotation;
+    return ParseTypeAnnotationNoPreferParam(options);
 }
 
 ir::TypeNode *ETSParser::ParseMultilineString()

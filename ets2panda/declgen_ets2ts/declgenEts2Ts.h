@@ -201,6 +201,9 @@ private:
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                  std::unordered_set<std::string> &processedMethods);
 
+    void ProcessMethodsFromInterfaces(const std::unordered_set<std::string> &processedMethods,
+                                      const ir::ClassDefinition *classDef);
+
     void OutDts() {}
 
     template <class F, class... T>
