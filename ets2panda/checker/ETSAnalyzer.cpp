@@ -3014,8 +3014,19 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
         checker->ReportWarning(
             {"Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'."},
             expr->Expr()->Start());
+
+        if (expr->expr_->IsIdentifier()) {
+            ES2PANDA_ASSERT(expr->expr_->AsIdentifier()->Variable() != nullptr);
+            auto originalType = expr->expr_->AsIdentifier()->Variable()->TsType();
+            if (originalType != nullptr) {
+                expr->SetTsType(checker->GetNonNullishType(originalType));
+            }
+        }
     }
-    expr->SetTsType(checker->GetNonNullishType(exprType));
+
+    if (expr->TsType() == nullptr) {
+        expr->SetTsType(checker->GetNonNullishType(exprType));
+    }
     expr->SetOriginalType(expr->TsType());
     return expr->TsType();
 }
