@@ -176,6 +176,10 @@ ets2panda_add_gtest(lsp_api_test_get_def_and_bound_span CPP_SOURCES
     get_definition_and_bound_span_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_formatting_context CPP_SOURCES
+    formatting_context_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_todo_comments CPP_SOURCES
     todo_comments_test.cpp
 )
