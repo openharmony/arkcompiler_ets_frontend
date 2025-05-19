@@ -460,7 +460,7 @@ export class Scene {
     }
 
     private findDependenciesByRule(originPath: string, arkFile: ArkFile): void {
-        const extNameArray = ['.ets', '.ts', '.d.ets', '.d.ts'];
+        const extNameArray = ['.ets', '.ts', '.d.ets', '.d.ts', '.js'];
         if (!this.findFilesByPathArray(originPath, this.indexPathArray, arkFile) && !this.findFilesByExtNameArray(originPath, extNameArray, arkFile)) {
             logger.info(originPath + 'module mapperInfo is not found!');
         }

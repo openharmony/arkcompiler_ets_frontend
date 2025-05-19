@@ -28,6 +28,7 @@ import {
     ArkInstanceFieldRef,
     ArkNamespace,
     Local,
+    ArkArrayRef,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -161,6 +162,11 @@ export class ObjectLiteralCheck implements BaseChecker {
                 res.push(currentStmt);
                 continue;
             }
+            const isArrayField = this.isArrayField(currentStmt, globalVarMap);
+            if (isArrayField[0]) {
+                isArrayField[1].forEach(d => worklist.push(this.dvfg.getOrNewDVFGNode(d)));
+                continue;
+            }
             const gv = this.checkIfIsGlobalVar(currentStmt);
             if (gv) {
                 const globalDefs = globalVarMap.get(gv.getName());
@@ -239,6 +245,43 @@ export class ObjectLiteralCheck implements BaseChecker {
             return true;
         }
         return false;
+    }
+
+    private isArrayField(stmt: Stmt, globalVarMap: Map<string, Stmt[]>): [boolean, Stmt[]] {
+        if (!(stmt instanceof ArkAssignStmt)) {
+            return [false, []];
+        }
+        const arrField = stmt.getRightOp();
+        if (!(arrField instanceof ArkArrayRef)) {
+            return [false, []];
+        }
+        const arr = arrField.getBase();
+        const index = arrField.getIndex();
+        let arrDeclarations: Stmt[] = [];
+        if (arr.getDeclaringStmt()) {
+            arrDeclarations.push(arr.getDeclaringStmt()!);
+        } else if (globalVarMap.has(arr.getName())) {
+            arrDeclarations = globalVarMap.get(arr.getName())!;
+        }
+        const res: Stmt[] = arrDeclarations.flatMap(d => {
+            // arr = %0
+            // %0[0] = ...
+            if (!(d instanceof ArkAssignStmt)) {
+                return [];
+            }
+            const arrVal = d.getRightOp();
+            if (!(arrVal instanceof Local)) {
+                return [];
+            }
+            return arrVal.getUsedStmts().filter(u => {
+                if (!(u instanceof ArkAssignStmt)) {
+                    return false;
+                }
+                const left = u.getLeftOp();
+                return left instanceof ArkArrayRef && left.getBase() === arrVal && left.getIndex() === index;
+            });
+        });
+        return [true, res];
     }
 
     private isFromParameter(stmt: Stmt): ArkParameterRef | undefined {
