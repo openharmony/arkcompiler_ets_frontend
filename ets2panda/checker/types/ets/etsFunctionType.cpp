@@ -332,8 +332,11 @@ void ETSFunctionType::CastTarget(TypeRelation *relation, Type *source)
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
         return;
     }
-
-    relation->Result(relation->InCastingContext());
+    if (relation->InCastingContext() && relation->IsSupertypeOf(source, this)) {
+        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+        return;
+    }
+    relation->Result(false);
 }
 
 void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
