@@ -87,7 +87,13 @@ import {
   skipImportDecoratorName,
   ENTRY_DECORATOR_NAME,
   PROVIDE_DECORATOR_NAME,
-  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
+  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME,
+  ARKUI_PACKAGE_NAME,
+  MAKE_OBSERVED,
+  ARKUI_STATE_MANAGEMENT,
+  deepCopyDecoratorName,
+  deepCopyFunctionName,
+  StorageTypeName
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { InteropType, REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
@@ -988,6 +994,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handlePropertyAccessExpression(node: ts.Node): void {
+    this.handleMakeObserved(node as ts.PropertyAccessExpression);
     this.handleStateStyles(node as ts.PropertyAccessExpression);
     this.handleDoubleDollar(node);
     this.handleQuotedHyphenPropsDeprecated(node as ts.PropertyAccessExpression);
@@ -1012,7 +1019,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
-
     if (
       !this.options.arkts2 &&
       !!exprSym &&
@@ -1235,6 +1241,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
+    this.handlePropertyDeclarationForProp(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -2123,6 +2130,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleVariableDeclaration(node: ts.Node): void {
     const tsVarDecl = node as ts.VariableDeclaration;
+    this.handleVariableDeclarationForProp(tsVarDecl);
     if (
       !this.options.useRtLogic ||
       ts.isVariableDeclarationList(tsVarDecl.parent) && ts.isVariableStatement(tsVarDecl.parent.parent)
@@ -7708,5 +7716,122 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
     }
+  }
+
+  private handleMakeObserved(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const name = node.name;
+    if (name.getText() !== MAKE_OBSERVED) {
+      return;
+    }
+
+    const expr = node.expression;
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(expr);
+    const importSpecifier = TsUtils.getDeclaration(symbol);
+    if (!importSpecifier || !ts.isImportSpecifier(importSpecifier)) {
+      return;
+    }
+
+    const importDecl = ts.findAncestor(importSpecifier, ts.isImportDeclaration);
+    if (!importDecl) {
+      return;
+    }
+
+    const moduleSpecifier = importDecl.moduleSpecifier;
+    if (!ts.isStringLiteral(moduleSpecifier)) {
+      return;
+    }
+    if (moduleSpecifier.text !== ARKUI_PACKAGE_NAME && moduleSpecifier.text !== ARKUI_STATE_MANAGEMENT) {
+      return;
+    }
+
+    this.incrementCounters(node, FaultID.MakeObservedIsNotSupported);
+  }
+
+  private handlePropertyDeclarationForProp(node: ts.PropertyDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const decorators = ts.getDecorators(node);
+    if (!decorators || decorators.length === 0) {
+      return;
+    }
+
+    let decoratorName: string | undefined;
+    if (ts.isIdentifier(decorators[0].expression)) {
+      decoratorName = decorators[0].expression.getText();
+    } else if (ts.isCallExpression(decorators[0].expression) && ts.isIdentifier(decorators[0].expression.expression)) {
+      decoratorName = decorators[0].expression.expression.getText();
+    }
+
+    if (!decoratorName || !deepCopyDecoratorName.has(decoratorName)) {
+      return;
+    }
+
+    this.incrementCounters(node, FaultID.PropDecoratorsAndInterfacesAreNotSupported);
+  }
+
+  private handleVariableDeclarationForProp(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const callExpr = node.initializer;
+    if (!callExpr || !ts.isCallExpression(callExpr)) {
+      return;
+    }
+
+    const propertyAccessExpr = callExpr.expression;
+    if (!ts.isPropertyAccessExpression(propertyAccessExpr)) {
+      return;
+    }
+
+    const storage = propertyAccessExpr.expression;
+    if (
+      !ts.isIdentifier(storage) ||
+      !this.isTargetStorageType(storage, [StorageTypeName.LocalStorage, StorageTypeName.AppStorage])
+    ) {
+      return;
+    }
+
+    const functionName = propertyAccessExpr.name;
+    if (!deepCopyFunctionName.has(functionName.getText())) {
+      return;
+    }
+
+    this.incrementCounters(node, FaultID.PropDecoratorsAndInterfacesAreNotSupported);
+  }
+
+  private isTargetStorageType(storage: ts.Identifier, targetTypes: string[]): boolean {
+    const decl = this.tsUtils.getDeclarationNode(storage);
+    if (!decl) {
+      if (targetTypes.includes(storage.getText())) {
+        return true;
+      }
+      return false;
+    }
+
+    if (!ts.isVariableDeclaration(decl)) {
+      return false;
+    }
+
+    let storageType: ts.Node | undefined;
+    if (decl.initializer) {
+      if (ts.isNewExpression(decl.initializer)) {
+        storageType = decl.initializer.expression;
+      } else if (ts.isCallExpression(decl.initializer) && ts.isPropertyAccessExpression(decl.initializer.expression)) {
+        storageType = decl.initializer.expression.expression;
+      }
+    }
+
+    if (!storageType || !ts.isIdentifier(storageType)) {
+      return false;
+    }
+
+    return targetTypes.includes(storageType.getText());
   }
 }

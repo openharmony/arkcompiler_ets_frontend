@@ -233,3 +233,5 @@ faultDesc[FaultID.LimitedStdLibNoDoncurrentDecorator] = 'Limited stdlib no concu
 faultDesc[FaultID.NoNeedStdlibWorker] = 'No need stdlib worker';
 faultDesc[FaultID.BuiltinGetOwnPropertyNames] = 'No "Object.getOwnPropertyNames" in API';
 faultDesc[FaultID.LocalBuilderDecoratorNotSupported] = '"@LocalBuilder" decorator';
+faultDesc[FaultID.MakeObservedIsNotSupported] = 'MakeObserved is not supported';
+faultDesc[FaultID.PropDecoratorsAndInterfacesAreNotSupported] = 'Prop decorators and interfaces are not supported';

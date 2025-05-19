@@ -264,6 +264,9 @@ cookBookTag[257] =
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
 cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
 cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
+cookBookTag[261] =
+  'The "Prop", "StorageProp", and "LocalStorageProp" decorators, as well as the "prop" and "setAndProp" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)';
+cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =
   'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
 cookBookTag[264] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
