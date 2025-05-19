@@ -310,6 +310,14 @@ LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t pos
     return result;
 }
 
+// Returns type of refactoring and action that can be performed based
+// on the input kind information and cursor position
+ApplicableRefactorInfo GetApplicableRefactors(es2panda_Context *context, const char *kind, size_t position)
+{
+    auto result = GetApplicableRefactorsImpl(context, kind, position);
+    return result;
+}
+
 std::vector<ark::es2panda::lsp::TodoComment> GetTodoComments(
     char const *fileName, std::vector<ark::es2panda::lsp::TodoCommentDescriptor> &descriptors,
     CancellationToken *cancellationToken)
@@ -339,6 +347,7 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
 }
 
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
+                    GetApplicableRefactors,
                     GetImplementationAtPosition,
                     IsPackageModule,
                     GetAliasScriptElementKind,

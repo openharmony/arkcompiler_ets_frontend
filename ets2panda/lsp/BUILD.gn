@@ -41,6 +41,7 @@ config("libes2panda_lsp_config") {
 ohos_source_set("libes2panda_lsp_static") {
   sources = [
     "src/api.cpp",
+    "src/applicable_refactors.cpp",
     "src/brace_matching.cpp",
     "src/cancellation_token.cpp",
     "src/class_hierarchy.cpp",
@@ -59,6 +60,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/line_column_offset.cpp",
     "src/organize_imports.cpp",
     "src/quick_info.cpp",
+    "src/refactors/convert_function.cpp",
     "src/references.cpp",
     "src/rename.cpp",
     "src/script_element_kind.cpp",
