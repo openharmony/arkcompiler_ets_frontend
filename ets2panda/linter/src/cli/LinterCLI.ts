@@ -25,9 +25,8 @@ import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
 import { logStatistics } from '../lib/statistics/StatisticsLogger';
 import { arkts2Rules } from '../lib/utils/consts/ArkTS2Rules';
-import type { ProblemInfo as HomeCheckProblemInfo } from 'homecheck';
 import { MigrationTool } from 'homecheck';
-import { getHomeCheckConfigInfo } from '../lib/HomeCheck';
+import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -54,15 +53,16 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   cmdOptions.followSdkSettings = true;
   cmdOptions.disableStrictDiagnostics = true;
   const compileOptions = compileLintOptions(cmdOptions);
-  const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
-  const mergedProblems = new Map<string, HomeCheckProblemInfo[]>();
+  let homeCheckResult = new Map<string, ProblemInfo[]>();
+  let mergedProblems = new Map<string, ProblemInfo[]>();
 
   if (cmdOptions.homecheck === true) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
     const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
     await migrationTool.buildCheckEntry();
-    const homeCheckResult = await migrationTool.start();
+    const result = await migrationTool.start();
 
+    homeCheckResult = transferIssues2ProblemInfo(result);
     for (const [filePath, problems] of homeCheckResult) {
       if (!mergedProblems.has(filePath)) {
         mergedProblems.set(filePath, []);
@@ -70,6 +70,7 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
       mergedProblems.get(filePath)!.push(...problems);
     }
   }
+  const result = lint(compileOptions, getEtsLoaderPath(compileOptions), homeCheckResult);
 
   for (const [filePath, problems] of result.problemsInfos) {
     if (!mergedProblems.has(filePath)) {

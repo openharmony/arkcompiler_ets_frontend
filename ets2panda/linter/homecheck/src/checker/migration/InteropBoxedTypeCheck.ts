@@ -58,7 +58,7 @@ type CheckedObj = {
     namespaces: Map<string, boolean | null>,
     classes: Map<string, boolean | null>,
     methods: Map<string, boolean | null>
-}
+};
 
 export class InteropBoxedTypeCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;

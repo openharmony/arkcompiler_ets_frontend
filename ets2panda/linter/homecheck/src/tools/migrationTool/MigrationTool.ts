@@ -21,7 +21,7 @@ import { CheckerStorage } from '../../utils/common/CheckerStorage';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { FileUtils } from '../../utils/common/FileUtils';
 import { DefaultMessage } from '../../model/Message';
-import { exportIssues, ProblemInfo } from './ExportIssue';
+import { FileIssues } from "../../model/Defects";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'MigrationTool');
 
@@ -63,11 +63,11 @@ export class MigrationTool {
         return true;
     }
 
-    public async start(): Promise<Map<string, ProblemInfo[]>> {
+    public async start(): Promise<FileIssues[]> {
         logger.info(`MigrationTool run start`);
         await this.checkEntry.runAll();
 
-        let result = await exportIssues(this.checkEntry);
+        let result = this.checkEntry.sortIssues();
         logger.info(`MigrationTool run end`);
         return result;
     }

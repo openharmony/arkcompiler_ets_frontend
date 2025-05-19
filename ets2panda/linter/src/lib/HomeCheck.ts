@@ -12,7 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import * as path from 'node:path';
+import { FileIssues, RuleFix } from 'homecheck';
 import type { CommandLineOptions } from './CommandLineOptions';
+import { ProblemInfo } from './ProblemInfo';
+import { FaultID } from './Problems';
 
 interface RuleConfigInfo {
   ruleSet: string[];
@@ -52,4 +57,42 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
     fileOrFolderToCheck: inputFiles
   };
   return { ruleConfigInfo, projectConfigInfo };
+}
+
+export function transferIssues2ProblemInfo(fileIssuesArray: FileIssues[]): Map<string, ProblemInfo[]> {
+    let result = new Map<string, ProblemInfo[]>();
+    fileIssuesArray.forEach(fileIssues => {
+        fileIssues.issues.forEach(issueReport => {
+            const defect = issueReport.defect;
+            const problemInfo: ProblemInfo = {
+                line: defect.reportLine,
+                column: defect.reportColumn,
+                endLine: defect.reportLine,
+                endColumn: defect.reportColumn,
+                start: 0,
+                end: 0,
+                type: '',
+                severity: defect.severity,
+                faultId: FaultID.LAST_ID,
+                problem: defect.problem,
+                suggest: '',
+                rule: defect.description,
+                ruleTag: -1,
+                autofixable: defect.fixable,
+            };
+            if (problemInfo.autofixable) {
+                const fix = issueReport.fix as RuleFix;
+                const replacementText = fix.text;
+                const start = fix.range[0];
+                const end = fix.range[1];
+                problemInfo.autofix = [{ replacementText, start, end }];
+                problemInfo.autofixTitle = defect.ruleId;
+            }
+            const filePath = path.normalize(defect.mergeKey.split('%')[0]);
+            const problems = result.get(filePath) || [];
+            problems.push(problemInfo);
+            result.set(filePath, problems);
+        });
+    });
+    return result;
 }

@@ -25,7 +25,8 @@ export * from './matcher/Matchers';
 // models
 export { CheckerStorage } from './utils/common/CheckerStorage';
 export { Rule } from './model/Rule';
-export { Defects, IssueReport, FileReports } from './model/Defects';
+export { Defects, IssueReport, FileIssues, FileReports } from './model/Defects';
+export { RuleFix } from './model/Fix';
 export { Message, MessageType } from './model/Message';
 export { ProjectConfig } from './model/ProjectConfig';
 export { RuleConfig } from './model/RuleConfig';
@@ -42,4 +43,3 @@ export { Utils } from './utils/common/Utils';
 // tools
 export { runTool, Tools } from './tools/toolEntry';
 export { MigrationTool } from './tools/migrationTool/MigrationTool';
-export { ProblemInfo, AutoFix } from './tools/migrationTool/ExportIssue';

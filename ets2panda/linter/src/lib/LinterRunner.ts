@@ -71,12 +71,12 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   return inputFiles;
 }
 
-export function lint(config: LinterConfig, etsLoaderPath?: string): LintRunResult {
+export function lint(config: LinterConfig, etsLoaderPath?: string, hcResults?: Map<string, ProblemInfo[]>): LintRunResult {
   if (etsLoaderPath) {
     config.cmdOptions.linterOptions.etsLoaderPath = etsLoaderPath;
   }
   const lintResult = lintImpl(config);
-  return config.cmdOptions.linterOptions.migratorMode ? migrate(config, lintResult) : lintResult;
+  return config.cmdOptions.linterOptions.migratorMode ? migrate(config, lintResult, hcResults) : lintResult;
 }
 
 function lintImpl(config: LinterConfig): LintRunResult {
@@ -139,7 +139,7 @@ function lintFiles(
   };
 }
 
-function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult): LintRunResult {
+function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult, hcResults?: Map<string, ProblemInfo[]>): LintRunResult {
   let linterConfig = initialConfig;
   const { cmdOptions } = initialConfig;
   const updatedSourceTexts: Map<string, string> = new Map();
@@ -147,7 +147,8 @@ function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult):
   const problemsInfosBeforeMigrate = lintResult.problemsInfos;
 
   for (let pass = 0; pass < (cmdOptions.linterOptions.migrationMaxPass ?? qEd.DEFAULT_MAX_AUTOFIX_PASSES); pass++) {
-    const appliedFix = fix(linterConfig, lintResult, updatedSourceTexts);
+    const appliedFix = fix(linterConfig, lintResult, updatedSourceTexts, hcResults);
+    hcResults = undefined;
 
     if (!appliedFix) {
       // No fixes were applied, migration is finished.
@@ -176,11 +177,20 @@ function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult):
   return lintResult;
 }
 
-function fix(linterConfig: LinterConfig, lintResult: LintRunResult, updatedSourceTexts: Map<string, string>): boolean {
+function fix(linterConfig: LinterConfig, lintResult: LintRunResult, updatedSourceTexts: Map<string, string>, hcResults?: Map<string, ProblemInfo[]>): boolean {
   const program = linterConfig.tscCompiledProgram.getProgram();
   let appliedFix = false;
-
-  lintResult.problemsInfos.forEach((problemInfos, fileName) => {
+  let mergedProblems = lintResult.problemsInfos;
+  if (hcResults !== undefined) {
+      for (const [filePath, problems] of hcResults) {
+          if (mergedProblems.has(filePath)) {
+              mergedProblems.get(filePath)!.push(...problems);
+          } else {
+              mergedProblems.set(filePath, problems);
+          }
+      }
+  }
+  mergedProblems.forEach((problemInfos, fileName) => {
     // If nothing to fix, skip file
     if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos)) {
       return;
