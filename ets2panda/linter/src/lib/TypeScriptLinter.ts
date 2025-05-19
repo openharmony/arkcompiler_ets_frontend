@@ -3808,8 +3808,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
-    this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
-    this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
+    this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
     this.handleNoTsLikeFunctionCall(tsCallExpr);
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
     this.handleTaskPoolDeprecatedUsages(tsCallExpr);
@@ -3879,7 +3878,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  handleCallJSFunction(
+  handleInteropForCallJSExpression(
     tsCallExpr: ts.CallExpression,
     sym: ts.Symbol | undefined,
     callSignature: ts.Signature | undefined
@@ -3889,7 +3888,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
       if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(tsCallExpr, FaultID.CallJSFunction);
+        this.incrementCounters(tsCallExpr, ts.isPropertyAccessExpression(tsCallExpr.expression)
+         ? FaultID.InteropCallObjectMethods
+         :FaultID.CallJSFunction);
       }
     }
   }
@@ -3910,21 +3911,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.checkInteropFunctionParameters(callSignature, tsCallExpr);
     this.checkForReflectAPIUse(callSignature, tsCallExpr);
-  }
-
-  private handleInteropForCallObjectMethods(
-    tsCallExpr: ts.CallExpression,
-    sym: ts.Symbol | undefined,
-    callSignature: ts.Signature | undefined
-  ): void {
-    if (!callSignature) {
-      return;
-    }
-    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
-      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectMethods);
-      }
-    }
   }
 
   private isExportedEntityDeclaredInJs(exportDecl: ts.ExportDeclaration): boolean {
