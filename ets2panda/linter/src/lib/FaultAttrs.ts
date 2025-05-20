@@ -213,6 +213,7 @@ faultsAttrs[FaultID.DuplicateDeclNameFromSdk] = new FaultAttributes(315);
 faultsAttrs[FaultID.SdkTypeQuery] = new FaultAttributes(316);
 faultsAttrs[FaultID.UseSharedDeprecated] = new FaultAttributes(317);
 faultsAttrs[FaultID.UseConcurrentDeprecated] = new FaultAttributes(318);
+faultsAttrs[FaultID.MethodInheritRule] = new FaultAttributes(319);
 faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321);
 faultsAttrs[FaultID.IsConcurrentDeprecated] = new FaultAttributes(322);
 faultsAttrs[FaultID.InteropJsObjectExport] = new FaultAttributes(323);
