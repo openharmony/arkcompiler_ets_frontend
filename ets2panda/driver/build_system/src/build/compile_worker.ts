@@ -16,15 +16,20 @@
 import { CompileFileInfo, ModuleInfo } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ensurePathExists } from '../utils';
-import { KOALA_WRAPPER_PATH_FROM_SDK } from '../pre_define';
+import {
+  changeFileExtension,
+  ensurePathExists
+} from '../utils';
+import {
+  DECL_ETS_SUFFIX,
+  KOALA_WRAPPER_PATH_FROM_SDK
+} from '../pre_define';
 import { PluginDriver, PluginHook } from '../plugins/plugins_driver';
 import {
   BuildConfig,
+  BUILD_MODE,
+  OHOS_MODULE_TYPE
 } from '../types';
-import {
-  BUILD_MODE
-} from '../pre_define';
 import {
   LogData,
   LogDataFactory,
@@ -70,13 +75,26 @@ process.on('message', (message: {
 
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
+
+      if (buildConfig.hasMainModule && (buildConfig.byteCodeHar || buildConfig.moduleType === OHOS_MODULE_TYPE.SHARED)) {
+        let filePathFromModuleRoot: string = path.relative(buildConfig.moduleRootPath, fileInfo.filePath);
+        let declEtsOutputPath: string = changeFileExtension(
+          path.join(buildConfig.declgenV2OutPath as string, buildConfig.packageName, filePathFromModuleRoot),
+          DECL_ETS_SUFFIX
+        );
+        ensurePathExists(declEtsOutputPath);
+
+        // Generate 1.2 declaration files(a temporary solution while binary import not pushed)
+        arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
+      }
+
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
     } catch (error) {
       errorStatus = true;
       if (error instanceof Error) {

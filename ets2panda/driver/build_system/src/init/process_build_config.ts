@@ -23,7 +23,6 @@ import {
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
 import {
-  BUILD_MODE,
   KOALA_WRAPPER_PATH_FROM_SDK,
   PANDA_SDK_PATH_FROM_SDK,
   PROJECT_BUILD_CONFIG_FILE
@@ -34,7 +33,10 @@ import {
   Logger
 } from '../logger';
 import { ErrorCode } from '../error_code';
-import { BuildConfig } from '../types';
+import {
+  BuildConfig,
+  BUILD_MODE
+} from '../types';
 
 export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   let buildConfig: BuildConfig = { 

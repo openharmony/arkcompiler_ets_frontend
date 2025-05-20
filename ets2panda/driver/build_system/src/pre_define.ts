@@ -25,12 +25,6 @@ export const ETS_SUFFIX: string = '.ets';
 export const TS_SUFFIX: string = '.ts';
 export const ABC_SUFFIX: string = '.abc';
 
-export const BUILD_TYPE_BUILD: string = 'build';
-export enum BUILD_MODE {
-  DEBUG = 'Debug',
-  RELEASE = 'Release'
-};
-
 export enum LANGUAGE_VERSION {
   ARKTS_1_2 = '1.2',
   ARKTS_1_1 = '1.1',

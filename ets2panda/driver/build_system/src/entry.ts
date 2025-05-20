@@ -18,11 +18,10 @@ import * as path from 'path';
 
 import { processBuildConfig } from './init/process_build_config';
 import { BuildMode } from './build/build_mode';
-import { BUILD_TYPE_BUILD } from './pre_define';
 import { Logger } from './logger';
 import { ArkTSConfigGenerator } from './build/generate_arktsconfig';
 import { PluginDriver } from './plugins/plugins_driver';
-import { BuildConfig } from './types';
+import { BuildConfig, BUILD_TYPE } from './types';
 import { BuildFrameworkMode } from './build/build_framework_mode';
 
 export async function build(projectConfig: BuildConfig): Promise<void> {
@@ -40,7 +39,7 @@ export async function build(projectConfig: BuildConfig): Promise<void> {
   } else if (projectConfig.enableDeclgenEts2Ts === true) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     await buildMode.generateDeclaration();
-  } else if (projectConfig.buildType === BUILD_TYPE_BUILD) {
+  } else if (projectConfig.buildType === BUILD_TYPE.BUILD) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     await buildMode.run();
   }

@@ -17,15 +17,20 @@ import { parentPort, workerData } from 'worker_threads';
 import { CompileFileInfo, JobInfo } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ensurePathExists } from '../utils';
-import { KOALA_WRAPPER_PATH_FROM_SDK } from '../pre_define';
+import {
+  changeFileExtension,
+  ensurePathExists
+} from '../utils';
+import {
+  DECL_ETS_SUFFIX,
+  KOALA_WRAPPER_PATH_FROM_SDK
+} from '../pre_define';
 import { PluginDriver, PluginHook } from '../plugins/plugins_driver';
 import {
   BuildConfig,
+  BUILD_MODE,
+  OHOS_MODULE_TYPE
 } from '../types';
-import {
-  BUILD_MODE
-} from '../pre_define';
 import {
   LogData,
   LogDataFactory,
@@ -71,6 +76,18 @@ function compileAbc(jobInfo: JobInfo): void {
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
     arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, context);
+
+    if (config.hasMainModule && (config.byteCodeHar || config.moduleType === OHOS_MODULE_TYPE.SHARED)) {
+      let filePathFromModuleRoot: string = path.relative(config.moduleRootPath, fileInfo.filePath);
+      let declEtsOutputPath: string = changeFileExtension(
+        path.join(config.declgenV2OutPath as string, config.packageName, filePathFromModuleRoot),
+        DECL_ETS_SUFFIX
+      );
+      ensurePathExists(declEtsOutputPath);
+
+      // Generate 1.2 declaration files(a temporary solution while binary import not pushed)
+      arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
+    }
 
     PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
 

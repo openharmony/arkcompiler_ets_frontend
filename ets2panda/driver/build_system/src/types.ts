@@ -13,14 +13,31 @@
  * limitations under the License.
  */
 
+export enum BUILD_MODE {
+  DEBUG = 'Debug',
+  RELEASE = 'Release'
+};
+
+export enum BUILD_TYPE {
+  BUILD = 'build',
+  PREVIEW = 'preview'
+}
+
+export enum OHOS_MODULE_TYPE {
+  HAP = 'hap',
+  FEATURE = 'feature',
+  SHARED = 'shared',
+  HAR = 'har',
+}
+
 // ProjectConfig begins
 export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
 export interface BuildBaseConfig {
-  buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
-  buildMode: 'Debug' | 'Release';
+  buildType: BUILD_TYPE;
+  buildMode: BUILD_MODE;
   hasMainModule: boolean;
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
@@ -56,6 +73,7 @@ export interface ArkTS {
   };
   proceedToState: Function;
   generateTsDeclarationsFromContext: Function;
+  generateStaticDeclarationsFromContext: Function;
   destroyConfig: Function;
   Es2pandaContextState: typeof Es2pandaContextState;
   MemInitialize: Function;
@@ -75,9 +93,10 @@ export enum Es2pandaContextState {
 
 export interface ModuleConfig {
   packageName: string;
-  moduleType: string;
+  moduleType: OHOS_MODULE_TYPE;
   moduleRootPath: string;
   sourceRoots: string[];
+  byteCodeHar: boolean;
 }
 
 export interface PathConfig {
@@ -115,6 +134,7 @@ export interface FrameworkConfig {
 export interface DeclgenConfig {
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
 }
 
@@ -132,8 +152,11 @@ export interface DependentModuleConfig {
   language: string;
   declFilesPath?: string;
   dependencies?: string[];
+  abcPath?: string;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
+  byteCodeHar: boolean;
 }
 
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
@@ -145,31 +168,34 @@ export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfi
 // ProjectConfig ends
 
 export interface CompileFileInfo {
-  filePath: string,
-  dependentFiles: string[],
-  abcFilePath: string,
-  arktsConfigFile: string,
-  packageName: string,
+  filePath: string;
+  dependentFiles: string[];
+  abcFilePath: string;
+  arktsConfigFile: string;
+  packageName: string;
 };
 
 export interface ModuleInfo {
-  isMainModule: boolean,
-  packageName: string,
-  moduleRootPath: string,
-  moduleType: string,
-  sourceRoots: string[],
-  entryFile: string,
-  arktsConfigFile: string,
-  compileFileInfos: CompileFileInfo[],
-  declgenV1OutPath: string | undefined,
-  declgenBridgeCodePath: string | undefined,
-  dependencies?: string[]
+  isMainModule: boolean;
+  packageName: string;
+  moduleRootPath: string;
+  moduleType: string;
+  sourceRoots: string[];
+  entryFile: string;
+  arktsConfigFile: string;
+  compileFileInfos: CompileFileInfo[];
+  declgenV1OutPath: string | undefined;
+  declgenV2OutPath: string | undefined;
+  declgenBridgeCodePath: string | undefined;
+  dependencies?: string[];
   staticDepModuleInfos: Map<string, ModuleInfo>;
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+  abcPath?: string;
   frameworkMode?: boolean;
   useEmptyPackage?: boolean;
+  byteCodeHar: boolean;
 }
 
 export type SetupClusterOptions = {
