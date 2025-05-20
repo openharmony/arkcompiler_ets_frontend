@@ -15,12 +15,12 @@
 
 function main(): void {
   let a_int : int = 2147;
-  let b_Num : Number = a_int as Number;
+  let b_Num : Number = Int.toDouble(a_int);
 
   assertTrue(b_Num instanceof Number && b_Num.unboxed() == 2147.0)
 
   let a_Short : Short = 215;
-  let b_double : double = a_Short as double;
+  let b_double : double = Short.toDouble(a_Short);
 
   assertTrue(a_Short instanceof Short)
   assertEQ(b_double, 215.0)

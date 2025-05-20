@@ -14,39 +14,37 @@
  */
 
 class A {
-    foo(a: Double | undefined): Int {
+    foo(a: Long): Int {
         return 1;
     }
-    private foo(a: double): Int {
+    private foo(a: Int): Int {
         return 0;
     }
 
-    foo2(a: Int | undefined): Int {
+    foo2(a: Int): Int {
         return 1;
     }
-    private foo2(a: int): Int {
+    private foo2(a: Long): Int {
         return 0;
     }
 
-    foo3(a: Number | undefined): Int {
+    foo3(a: Long): Int {
         return 1;
     }
-    private foo3(a: number): Int {
+    private foo3(a: Int): Int {
         return 0;
     }
-
-    foo4(a: Number | undefined): Int {
+    foo4(a: Int): Int {
         return 1;
     }
-    protected foo4(a: number): Int {
+    protected foo4(a: Long): Int {
         return 0;
     }
-
 }
 
 function main(): void {
-    assertEQ(new A().foo(3.0), 1)
+    assertEQ(new A().foo(3), 1)
     assertEQ(new A().foo2(3), 1)
-    assertEQ(new A().foo3(3.0), 1)
-    assertEQ(new A().foo4(3.0), 1)
+    assertEQ(new A().foo3(3), 1)
+    assertEQ(new A().foo4(3), 1)
 }

@@ -39,9 +39,9 @@ function test_numerics() {
 // NOTE(vpukhov): the same is applied to float?
 // NOTE(vpukhov): char == int overlow?
 function test_numeric_precision() {
-    const maxsafe = Double.MAX_SAFE_INTEGER as long
+    const maxsafe = Double.toLong(Double.MAX_SAFE_INTEGER)
     assertTrue(!eq(maxsafe * 4 + 1, maxsafe * 4))
-    assertTrue(eq(maxsafe * 4 + 1, (maxsafe * 4) as double))
+    assertTrue(eq(maxsafe * 4 + 1, Long.toDouble(maxsafe * 4)))
 }
 
 function main() {

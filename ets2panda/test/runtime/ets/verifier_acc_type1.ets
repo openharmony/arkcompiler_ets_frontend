@@ -31,7 +31,7 @@ class B extends A {
     }
 }
 function foo(a: int, ...p: boolean[]): int {
-    return a + p.length as int
+    return Double.toInt(a + p.length)
 }
 
 function main() {

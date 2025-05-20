@@ -13,9 +13,23 @@
  * limitations under the License.
  */
 
-function main(): void {
-    let c:char = c'X';
-    let s:string = c;
+class A {}
 
-    assertEQ(s, "X")
+function foo(a: Float): Float {
+    return a;
+}
+
+function main(): int {
+    let c: A | Double = new Double(10.0);
+    let b: Int = new Int(9 as int);
+    c = b
+    if (c != 9) {
+        return 1;
+    }
+    let k: Int = new Int(10 as int);
+    let v: Float = foo(k)
+    if (v.isNaN()) {
+        return 1;
+    }
+    return 0;
 }
