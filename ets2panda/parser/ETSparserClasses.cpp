@@ -459,6 +459,31 @@ ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
     return newTypeAnno;
 }
 
+void ETSParser::ValidateFieldModifiers(ir::ModifierFlags modifiers, bool optionalField, ir::Expression *initializer,
+                                       lexer::SourcePosition pos)
+{
+    const bool isDeclare = (modifiers & ir::ModifierFlags::DECLARE) != 0;
+    const bool isDefinite = (modifiers & ir::ModifierFlags::DEFINITE) != 0;
+    const bool isStatic = (modifiers & ir::ModifierFlags::STATIC) != 0;
+
+    if (isDeclare && initializer != nullptr) {
+        LogError(diagnostic::INITIALIZERS_IN_AMBIENT_CONTEXTS);
+        return;
+    }
+
+    if (isDefinite) {
+        if (isStatic) {
+            LogError(diagnostic::STATIC_LATE_INITIALIZATION_FIELD_INVALID_MODIFIER, {}, pos);
+        }
+        if (initializer != nullptr) {
+            LogError(diagnostic::LATE_INITIALIZATION_FIELD_HAS_DEFAULT_VALUE, {}, pos);
+        }
+        if (optionalField) {
+            LogError(diagnostic::CONFLICTING_FIELD_MODIFIERS, {}, pos);
+        }
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                           ArenaVector<ir::AstNode *> *declarations, bool isDefault)
@@ -468,8 +493,15 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     bool optionalField = false;
 
+    auto start = Lexer()->GetToken().Start();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+        modifiers |= ir::ModifierFlags::DEFINITE;
+    }
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
         optionalField = true;
+    }
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+        modifiers |= ir::ModifierFlags::DEFINITE;
     }
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         typeAnnotation = ParseTypeAnnotation(&options);
@@ -490,11 +522,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
         LogError(diagnostic::FIELD_TPYE_ANNOTATION_MISSING);
     }
 
-    bool isDeclare = (modifiers & ir::ModifierFlags::DECLARE) != 0;
-
-    if (isDeclare && initializer != nullptr) {
-        LogError(diagnostic::INITIALIZERS_IN_AMBIENT_CONTEXTS);
-    }
+    ValidateFieldModifiers(modifiers, optionalField, initializer, start);
 
     auto *field = AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, modifiers, Allocator(), false);
     field->SetDefaultAccessModifier(isDefault);
@@ -945,6 +973,47 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
     return ir::ModifierFlags::PRIVATE;
 }
 
+ir::TypeNode *ETSParser::ParseInterfaceTypeAnnotation(ir::Identifier *name)
+{
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON) &&
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
+        Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
+        Lexer()->NextToken();
+    }
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+    auto *type = ParseTypeAnnotation(&options);
+    name->SetTsTypeAnnotation(type);
+    type->SetParent(name);
+    return type;
+}
+
+void ETSParser::ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField)
+{
+    auto processDefinite = [this, &fieldModifiers]() {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+            Lexer()->NextToken();
+            fieldModifiers |= ir::ModifierFlags::DEFINITE;
+            return true;
+        }
+        return false;
+    };
+    auto start = Lexer()->GetToken().Start();
+    processDefinite();
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+        Lexer()->NextToken();
+        optionalField = true;
+    }
+
+    processDefinite();
+
+    if ((fieldModifiers & ir::ModifierFlags::DEFINITE) != 0 && optionalField) {
+        LogError(diagnostic::CONFLICTING_FIELD_MODIFIERS, {}, start);
+    }
+}
+
 ir::AstNode *ETSParser::ParseInterfaceField()
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
@@ -972,24 +1041,8 @@ ir::AstNode *ETSParser::ParseInterfaceField()
     Lexer()->NextToken();
     bool optionalField = false;
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        Lexer()->NextToken();  // eat '?'
-        optionalField = true;
-    }
-
-    ir::TypeNode *typeAnnotation = nullptr;
-    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON) &&
-        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // interfaces3.ets
-        LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
-
-        Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
-        Lexer()->NextToken();  // additional check
-    }
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
-    typeAnnotation = ParseTypeAnnotation(&options);
-    name->SetTsTypeAnnotation(typeAnnotation);
-    typeAnnotation->SetParent(name);
+    ParseInterfaceModifiers(fieldModifiers, optionalField);
+    auto *typeAnnotation = ParseInterfaceTypeAnnotation(name);
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL &&
         Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::INITIALIZERS_INTERFACE_PROPS);

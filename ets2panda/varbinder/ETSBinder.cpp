@@ -509,7 +509,7 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
             if (fieldVar->Declaration()->Node()->IsClassProperty() &&
                 fieldVar->Declaration()->Node()->AsClassProperty()->NeedInitInStaticBlock()) {
                 fieldVar->AddFlag(VariableFlags::INIT_IN_STATIC_BLOCK);
-            } else {
+            } else if (!fieldVar->Declaration()->Node()->IsDefinite()) {
                 fieldVar->AddFlag(VariableFlags::INITIALIZED);
             }
 

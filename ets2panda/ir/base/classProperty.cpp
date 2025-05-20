@@ -232,6 +232,10 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
         dumper->Add("?");
     }
 
+    if (IsDefinite()) {
+        dumper->Add("!");
+    }
+
     if (typeAnnotation_ != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(": ");
         typeAnnotation_->Dump(dumper);

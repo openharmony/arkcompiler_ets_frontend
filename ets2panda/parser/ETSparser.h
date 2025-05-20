@@ -222,6 +222,8 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::AstNode *ParseInterfaceField();
+    ir::TypeNode *ParseInterfaceTypeAnnotation(ir::Identifier *name);
+    void ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField);
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     void ReportAccessModifierError(const lexer::Token &token);
     std::tuple<ir::ModifierFlags, bool, bool> ParseClassMemberAccessModifiers();
@@ -239,6 +241,8 @@ private:
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
     ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation) override;
     ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeAnno);
+    void ValidateFieldModifiers(ir::ModifierFlags modifiers, bool optionalField, ir::Expression *initializer,
+                                lexer::SourcePosition pos);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                    ArenaVector<ir::AstNode *> *declarations, bool isDefault);

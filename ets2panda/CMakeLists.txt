@@ -287,6 +287,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/dynamicImportLowering.cpp
   compiler/lowering/ets/exportAnonymousConst.cpp
+  compiler/lowering/ets/lateInitialization.cpp
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp

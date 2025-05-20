@@ -1450,6 +1450,10 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             // property of an other class
             return;
         }
+
+        if (node->IsDefinite()) {
+            return;
+        }
     }
 
     if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {

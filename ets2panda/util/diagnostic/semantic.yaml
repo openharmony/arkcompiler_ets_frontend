@@ -1474,3 +1474,7 @@ semantic:
 - name: MERGED_DECLS
   id: 370
   message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
+
+- name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
+  id: 371
+  message: "Late-initialized field cannot be nullish types or possibly nullish types."
