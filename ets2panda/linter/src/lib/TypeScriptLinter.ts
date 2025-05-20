@@ -123,6 +123,9 @@ import {
   STDLIB_TASKPOOL_OBJECT_NAME
 } from './utils/consts/TaskpoolAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
+import type { ArrayAccess, UncheckedIdentifier, CheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
+import { CheckResult } from './utils/consts/RuntimeCheckAPI';
+import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -306,6 +309,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.ForStatement, this.handleForStatement],
     [ts.SyntaxKind.ForInStatement, this.handleForInStatement],
     [ts.SyntaxKind.ForOfStatement, this.handleForOfStatement],
+    [ts.SyntaxKind.IfStatement, this.handleIfStatement],
     [ts.SyntaxKind.ImportDeclaration, this.handleImportDeclaration],
     [ts.SyntaxKind.PropertyAccessExpression, this.handlePropertyAccessExpression],
     [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
@@ -824,12 +828,260 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  /*
+   * this should report the point of access to the array
+   * and also should report the identifier type
+   */
+  private checkElementAccessOfArray(statement: ts.Node): ArrayAccess | false {
+    if (ts.isElementAccessExpression(statement)) {
+      return this.isElementAccessOfArray(statement);
+    }
+
+    for (const children of statement.getChildren()) {
+      return this.checkElementAccessOfArray(children);
+    }
+    return false;
+  }
+
+  private isElementAccessOfArray(expr: ts.ElementAccessExpression): false | ArrayAccess {
+    if (!ts.isIdentifier(expr.expression)) {
+      return false;
+    }
+    const type = this.tsTypeChecker.getTypeAtLocation(expr.expression);
+    if (!this.tsUtils.isArray(type)) {
+      return false;
+    }
+    const accessArgument = expr.argumentExpression;
+    if (ts.isNumericLiteral(accessArgument)) {
+      return {
+        pos: expr.getEnd(),
+        accessingIdentifier: NUMBER_LITERAL,
+        arrayIdent: expr.expression
+      };
+    }
+
+    if (ts.isIdentifier(accessArgument)) {
+      return {
+        pos: expr.getEnd(),
+        accessingIdentifier: accessArgument,
+        arrayIdent: expr.expression
+      };
+    }
+    return false;
+  }
+
   private handleForStatement(node: ts.Node): void {
     const tsForStmt = node as ts.ForStatement;
     const tsForInit = tsForStmt.initializer;
     if (tsForInit) {
+      this.checkStaticArrayControl(tsForStmt);
       this.checkForLoopDestructuring(tsForInit);
     }
+  }
+
+  private checkStaticArrayControl(tsForStmt: ts.ForStatement): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    if (!ts.isBlock(tsForStmt.statement)) {
+      return;
+    }
+
+    const loopBody = tsForStmt.statement;
+    const arrayAccessInfo = this.checkBodyHasArrayAccess(loopBody);
+    const loopCondition = tsForStmt.condition;
+
+    if (!arrayAccessInfo) {
+      return;
+    }
+    if (!loopCondition) {
+      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
+    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayAccessInfo.arrayIdent);
+    if (!arraySymbol) {
+      return;
+    }
+
+    const arrayCheckedAgainst = this.checkConditionForArrayAccess(loopCondition, arraySymbol);
+    if (!arrayCheckedAgainst) {
+      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
+
+    this.checkIfAccessAndCheckVariablesMatch(arrayAccessInfo, arrayCheckedAgainst);
+  }
+
+  private checkIfAccessAndCheckVariablesMatch(accessInfo: ArrayAccess, checkedAgainst: CheckedIdentifier): void {
+    const { arrayIdent, accessingIdentifier } = accessInfo;
+
+    if (accessingIdentifier === NUMBER_LITERAL) {
+      if (checkedAgainst === NUMBER_LITERAL) {
+        return;
+      }
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
+
+    if (checkedAgainst === NUMBER_LITERAL) {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
+
+    const checkedAgainstSym = this.tsUtils.trueSymbolAtLocation(checkedAgainst);
+    if (!checkedAgainstSym) {
+      return;
+    }
+
+    const accessingIdentSym = this.tsUtils.trueSymbolAtLocation(accessingIdentifier);
+
+    if (checkedAgainstSym !== accessingIdentSym) {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
+
+    if (this.isChangedAfterCheck(arrayIdent.getSourceFile(), checkedAgainstSym)) {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+    }
+  }
+
+  private checkConditionForArrayAccess(condition: ts.Expression, arraySymbol: ts.Symbol): UncheckedIdentifier {
+    if (!ts.isBinaryExpression(condition)) {
+      return undefined;
+    }
+    const { left, right } = condition;
+
+    if (ts.isBinaryExpression(left)) {
+      return this.checkConditionForArrayAccess(left, arraySymbol);
+    }
+    if (ts.isBinaryExpression(right)) {
+      return this.checkConditionForArrayAccess(right, arraySymbol);
+    }
+
+    if (this.isArrayLengthAccess(left, arraySymbol)) {
+      if (ts.isNumericLiteral(right)) {
+        return NUMBER_LITERAL;
+      }
+      if (!ts.isIdentifier(right)) {
+        return undefined;
+      }
+      return right;
+    }
+
+    if (this.isArrayLengthAccess(right, arraySymbol)) {
+      if (ts.isNumericLiteral(left)) {
+        return NUMBER_LITERAL;
+      }
+      if (!ts.isIdentifier(left)) {
+        return undefined;
+      }
+      return left;
+    }
+
+    return undefined;
+  }
+
+  private isArrayLengthAccess(expr: ts.Expression, arraySymbol: ts.Symbol): boolean {
+    if (!ts.isPropertyAccessExpression(expr)) {
+      return false;
+    }
+    if (this.tsUtils.trueSymbolAtLocation(expr.expression) !== arraySymbol) {
+      return false;
+    }
+    if (expr.name.text !== 'length') {
+      return false;
+    }
+
+    return true;
+  }
+
+  private checkBodyHasArrayAccess(loopBody: ts.Block): ArrayAccess | undefined {
+    let arrayAccessResult: undefined | ArrayAccess;
+    // check if this element access expression is of an array.
+    for (const child of loopBody.statements) {
+      const result = this.checkElementAccessOfArray(child);
+      if (!result) {
+        continue;
+      }
+      arrayAccessResult = result;
+    }
+    return arrayAccessResult;
+  }
+
+  private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    const arrayAccessInfo = this.isElementAccessOfArray(accessExpr);
+    if (!arrayAccessInfo) {
+      return;
+    }
+
+    const { arrayIdent } = arrayAccessInfo;
+    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
+    if (!arraySym) {
+      return;
+    }
+    const sourceFile = arrayIdent.getSourceFile();
+
+    for (const statement of sourceFile.statements) {
+      if (this.checkStatementForArrayAccess(statement, arrayAccessInfo, arraySym) === CheckResult.SKIP) {
+        continue;
+      }
+    }
+  }
+
+  private checkStatementForArrayAccess(
+    statement: ts.Statement,
+    accessInfo: ArrayAccess,
+    arraySym: ts.Symbol
+  ): CheckResult {
+    if (!ts.isIfStatement(statement)) {
+      return CheckResult.SKIP;
+    }
+
+    if (this.checkBodyHasArrayAccess(statement.thenStatement as ts.Block) !== undefined) {
+      return CheckResult.SKIP;
+    }
+
+    const checkedAgainst = this.checkConditionForArrayAccess(statement.expression, arraySym);
+    if (!checkedAgainst) {
+      return CheckResult.SKIP;
+    }
+
+    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
+    return CheckResult.CHECKED;
+  }
+
+  private isChangedAfterCheck(sourceFile: ts.SourceFile, sym: ts.Symbol): boolean {
+    for (const statement of sourceFile.statements) {
+      if (!ts.isExpressionStatement(statement)) {
+        continue;
+      }
+      if (!ts.isBinaryExpression(statement.expression)) {
+        continue;
+      }
+      if (!ts.isIdentifier(statement.expression.left)) {
+        continue;
+      }
+      if (statement.expression.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+        continue;
+      }
+
+      const leftSym = this.tsUtils.trueSymbolAtLocation(statement.expression.left);
+      if (!leftSym) {
+        continue;
+      }
+
+      if (leftSym === sym) {
+        return true;
+      }
+      continue;
+    }
+
+    return false;
   }
 
   private handleForInStatement(node: ts.Node): void {
@@ -843,6 +1095,36 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsForOfStmt = node as ts.ForOfStatement;
     const tsForOfInit = tsForOfStmt.initializer;
     this.checkForLoopDestructuring(tsForOfInit);
+  }
+
+  private handleIfStatement(ifStatement: ts.IfStatement): void {
+    if (this.options.arkts2 && this.useStatic) {
+      this.checkIfStatementForArrayUsage(ifStatement);
+    }
+  }
+
+  private checkIfStatementForArrayUsage(ifStatement: ts.IfStatement): void {
+    if (!ts.isBlock(ifStatement.thenStatement)) {
+      return;
+    }
+
+    const accessInfo = this.checkBodyHasArrayAccess(ifStatement.thenStatement);
+    if (!accessInfo) {
+      return;
+    }
+    const { arrayIdent } = accessInfo;
+
+    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayIdent);
+    if (!arraySymbol) {
+      return;
+    }
+
+    const checkedAgainst = this.checkConditionForArrayAccess(ifStatement.expression, arraySymbol);
+    if (!checkedAgainst) {
+      return;
+    }
+
+    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
   }
 
   private updateDataSdkJsonInfo(importDeclNode: ts.ImportDeclaration, importClause: ts.ImportClause): void {
@@ -2781,6 +3063,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const staticBlockNodes: ts.Node[] = [];
     for (const element of classDecl.members) {
       if (ts.isClassStaticBlockDeclaration(element)) {
+        if (this.options.arkts2 && this.useStatic) {
+          this.incrementCounters(element, FaultID.NoStaticOnClass);
+        }
         staticBlockNodes[staticBlocksCntr] = element;
         staticBlocksCntr++;
       }
@@ -3399,6 +3684,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
       this.handleIndexNegative(node);
     }
+    this.checkArrayUsageWithoutBound(tsElementAccessExpr);
     this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
     this.fixJsImportElementAccessExpression(tsElementAccessExpr);
     this.checkInterOpImportJsIndex(tsElementAccessExpr);
@@ -4377,11 +4663,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
   }
 
+  private checkConstrutorAccess(newExpr: ts.NewExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    if (!ts.isPropertyAccessExpression(newExpr.parent)) {
+      return;
+    }
+
+    if (newExpr.parent.name.text === 'constructor') {
+      this.incrementCounters(newExpr.parent, FaultID.NoConstructorOnClass);
+    }
+  }
+
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
 
     this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkDuplicateDeclName(tsNewExpr);
+    this.checkConstrutorAccess(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;

@@ -244,6 +244,9 @@ cookBookTag[210] =
   'The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)';
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
 cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
+cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
+cookBookTag[214] = 'The Class object does not have a constructor. (arkts-no-arkts-constructor)';
+cookBookTag[215] = 'Array bound not checked. (arkts-runtime-array-check)';
 cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
 cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
 cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';

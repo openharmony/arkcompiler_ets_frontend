@@ -54,7 +54,7 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   cmdOptions.disableStrictDiagnostics = true;
   const compileOptions = compileLintOptions(cmdOptions);
   let homeCheckResult = new Map<string, ProblemInfo[]>();
-  let mergedProblems = new Map<string, ProblemInfo[]>();
+  const mergedProblems = new Map<string, ProblemInfo[]>();
 
   if (cmdOptions.homecheck === true) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
