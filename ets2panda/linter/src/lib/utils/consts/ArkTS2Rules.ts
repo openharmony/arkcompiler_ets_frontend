@@ -120,6 +120,5 @@ export const arkts2Rules: number[] = [
   355,
   356,
   357,
-  358,
-  359
+  371
 ];

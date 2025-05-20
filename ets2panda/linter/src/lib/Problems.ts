@@ -236,6 +236,7 @@ export enum FaultID {
   LocalBuilderDecoratorNotSupported,
   MakeObservedIsNotSupported,
   PropDecoratorsAndInterfacesAreNotSupported,
+  NoEnumPropAsType,
   // this should always be last enum
   LAST_ID
 }
