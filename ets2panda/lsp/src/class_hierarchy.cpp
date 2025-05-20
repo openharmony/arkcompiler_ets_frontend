@@ -14,9 +14,11 @@
  */
 
 #include "class_hierarchy.h"
+#include "class_hierarchies.h"
 #include "compiler/lowering/util.h"
 #include "public/public.h"
 #include "lsp/include/internal_api.h"
+#include "lsp/include/completions.h"
 
 namespace ark::es2panda::lsp {
 
@@ -302,4 +304,578 @@ TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, size_t pos
     GetSubTypeHierarchies(context, declaration, result.subHierarchies, subLists);
     return result;
 }
+
+/**
+ * @brief (查找当前类的父类) Retrieves the direct superclass of a given class declaration node
+ * @param node - AST node representing a class declaration
+ * @return Pointer to the direct superclass node or nullptr if not found
+ */
+ir::AstNode *GetClassDirectSuperClass(ir::AstNode *node)
+{
+    if (node == nullptr) {
+        return nullptr;
+    }
+    if (!node->IsClassDeclaration()) {
+        return nullptr;
+    }
+    auto classNode = node->AsClassDeclaration()->Definition();
+    auto super = classNode->Super();
+    if (super == nullptr || !super->IsETSTypeReference()) {
+        return nullptr;
+    }
+    auto part = super->AsETSTypeReference()->Part();
+    if (part == nullptr || !part->IsETSTypeReferencePart()) {
+        return nullptr;
+    }
+    auto partNode = part->AsETSTypeReferencePart()->Name();
+    if (partNode == nullptr || !partNode->IsIdentifier()) {
+        return nullptr;
+    }
+    auto superClass = compiler::DeclarationFromIdentifier(partNode->AsIdentifier());
+    if (superClass->IsClassDefinition()) {
+        return superClass->Parent();
+    }
+    return nullptr;
+}
+
+/**
+ * @brief (1. 查找当前类的(所有)父类) Collects all ancestor classes in the inheritance hierarchy
+ * @param context - Compiler context (unused)
+ * @param node - Starting class declaration node
+ * @return Vector of superclass nodes in inheritance order
+ */
+std::vector<ir::AstNode *> GetClassSuperClasses([[maybe_unused]] es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> res;
+
+    ir::AstNode *subClass = node;
+    ir::AstNode *superClass = nullptr;
+    do {
+        superClass = GetClassDirectSuperClass(subClass);
+        if (superClass != nullptr) {
+            res.push_back(superClass);
+        }
+        subClass = superClass;
+    } while (superClass != nullptr);
+
+    return res;
+}
+
+/**
+ * @brief (查找当前类的子类) Finds immediate subclasses of a given class
+ * @param program - Pointer to the program AST
+ * @param node - Class declaration node to check
+ * @return Set of direct subclass nodes
+ */
+std::unordered_set<ir::AstNode *> GetClassDirectSubClasses(ark::es2panda::parser::Program *program, ir::AstNode *node)
+{
+    std::unordered_set<ir::AstNode *> res;
+
+    if (node == nullptr) {
+        return res;
+    }
+    if (!node->IsClassDeclaration()) {
+        return res;
+    }
+    auto rootNode = program->Ast();
+    if (rootNode == nullptr) {
+        return res;
+    }
+    auto statements = rootNode->Statements();
+    for (auto statement : statements) {
+        if (!statement->IsClassDeclaration()) {
+            continue;
+        }
+        if (GetClassDirectSuperClass(statement) == node) {
+            res.insert(statement);
+        }
+    }
+
+    return res;
+}
+
+/**
+ * @brief (2. 查找当前类的(所有)子类) Discovers all subclasses in the inheritance hierarchy using BFS
+ * @param context - Compiler context containing program AST
+ * @param node - Root class declaration node
+ * @return Vector of all subclass nodes
+ */
+std::vector<ir::AstNode *> GetClassSubClasses(es2panda_Context *context, ir::AstNode *node)
+{
+    auto pctx = reinterpret_cast<public_lib::Context *>(context);
+    auto program = pctx->parserProgram;
+    std::vector<ir::AstNode *> result;
+    std::unordered_set<ir::AstNode *> resultSet;
+    std::unordered_set<ir::AstNode *> gottenSet;
+    std::unordered_set<ir::AstNode *> superClasses;
+    superClasses.insert(node);
+    std::unordered_set<ir::AstNode *> directSubClasses;
+
+    do {
+        directSubClasses.clear();
+        for (auto superClass : superClasses) {
+            auto it = gottenSet.find(superClass);
+            if (it == gottenSet.end()) {
+                auto subClasses = GetClassDirectSubClasses(program, superClass);
+                directSubClasses.insert(subClasses.begin(), subClasses.end());
+            }
+        }
+        gottenSet.insert(superClasses.begin(), superClasses.end());
+        if (!directSubClasses.empty()) {
+            resultSet.insert(directSubClasses.begin(), directSubClasses.end());
+            superClasses.clear();
+            superClasses.insert(directSubClasses.begin(), directSubClasses.end());
+        }
+    } while (!directSubClasses.empty());
+
+    result.insert(result.end(), resultSet.begin(), resultSet.end());
+    return result;
+}
+
+/**
+ * @brief (查找当前类的父接口) Extracts directly implemented interfaces from class declaration
+ * @param node - Class declaration node
+ * @return Set of directly implemented interface nodes
+ */
+std::unordered_set<ir::AstNode *> GetClassDirectImplementedInterfaces(ir::AstNode *node)
+{
+    std::unordered_set<ir::AstNode *> res;
+    if (node == nullptr) {
+        return res;
+    }
+    if (!node->IsClassDeclaration()) {
+        return res;
+    }
+    auto classDefinition = node->AsClassDeclaration()->Definition();
+    auto implements = classDefinition->Implements();
+    for (auto implement : implements) {
+        auto expression = implement->Expr();
+        if (expression == nullptr || !expression->IsETSTypeReference()) {
+            continue;
+        }
+        auto part = expression->AsETSTypeReference()->Part();
+        if (part == nullptr || !part->IsETSTypeReferencePart()) {
+            continue;
+        }
+        auto partNode = part->AsETSTypeReferencePart()->Name();
+        if (partNode == nullptr || !partNode->IsIdentifier()) {
+            continue;
+        }
+        auto interfaceDecl = compiler::DeclarationFromIdentifier(partNode->AsIdentifier());
+        if (interfaceDecl->IsTSInterfaceDeclaration()) {
+            res.insert(interfaceDecl);
+        }
+    }
+    return res;
+}
+
+/**
+ * @brief (查找当前接口的父接口) Gets directly extended interfaces from interface declaration
+ * @param node - Interface declaration node
+ * @return Set of directly extended interface nodes
+ */
+std::unordered_set<ir::AstNode *> GetInterfaceDirectExtendedInterfaces(ir::AstNode *node)
+{
+    std::unordered_set<ir::AstNode *> res;
+    if (node == nullptr) {
+        return res;
+    }
+    if (!node->IsTSInterfaceDeclaration()) {
+        return res;
+    }
+    auto childInterface = node->AsTSInterfaceDeclaration();
+    auto extends = childInterface->Extends();
+    for (auto extend : extends) {
+        auto expression = extend->Expr();
+        if (expression == nullptr || !expression->IsETSTypeReference()) {
+            continue;
+        }
+        auto part = expression->AsETSTypeReference()->Part();
+        if (part == nullptr || !part->IsETSTypeReferencePart()) {
+            continue;
+        }
+        auto partNode = part->AsETSTypeReferencePart()->Name();
+        if (partNode == nullptr || !partNode->IsIdentifier()) {
+            continue;
+        }
+        auto interfaceDecl = compiler::DeclarationFromIdentifier(partNode->AsIdentifier());
+        if (interfaceDecl->IsTSInterfaceDeclaration()) {
+            res.insert(interfaceDecl);
+        }
+    }
+    return res;
+}
+
+/**
+ * @brief (3. 查找当前类的(所有)父接口) Aggregates all implemented interfaces including inherited ones
+ * @param context - Compiler context (unused)
+ * @param node - Starting class declaration node
+ * @return Vector of implemented interface nodes
+ */
+std::vector<ir::AstNode *> GetClassImplementedInterfaces([[maybe_unused]] es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> result;
+    std::unordered_set<ir::AstNode *> resultSet;
+    std::unordered_set<ir::AstNode *> subClasses {node};
+    std::unordered_set<ir::AstNode *> subInterfaces;
+    std::unordered_set<ir::AstNode *> gottenSet;
+    std::unordered_set<ir::AstNode *> directSuperClasses;
+    std::unordered_set<ir::AstNode *> directSuperInterfaces;
+    do {
+        directSuperInterfaces.clear();
+        directSuperClasses.clear();
+        for (auto subClass : subClasses) {
+            if (gottenSet.find(subClass) != gottenSet.end()) {
+                continue;
+            }
+            auto superInterfaces = GetClassDirectImplementedInterfaces(subClass);
+            directSuperInterfaces.insert(superInterfaces.begin(), superInterfaces.end());
+            auto superClass = GetClassDirectSuperClass(subClass);
+            if (superClass != nullptr) {
+                directSuperClasses.insert(superClass);
+            }
+        }
+        gottenSet.insert(subClasses.begin(), subClasses.end());
+        for (auto subInterface : subInterfaces) {
+            if (gottenSet.find(subInterface) != gottenSet.end()) {
+                continue;
+            }
+            auto superInterfaces = GetInterfaceDirectExtendedInterfaces(subInterface);
+            directSuperInterfaces.insert(superInterfaces.begin(), superInterfaces.end());
+        }
+        gottenSet.insert(subInterfaces.begin(), subInterfaces.end());
+        if (!directSuperInterfaces.empty()) {
+            resultSet.insert(directSuperInterfaces.begin(), directSuperInterfaces.end());
+            subInterfaces.clear();
+            subInterfaces.insert(directSuperInterfaces.begin(), directSuperInterfaces.end());
+        }
+        if (!directSuperClasses.empty()) {
+            subClasses.clear();
+            subClasses.insert(directSuperClasses.begin(), directSuperClasses.end());
+        }
+    } while (!directSuperInterfaces.empty() || !directSuperClasses.empty());
+    result.insert(result.end(), resultSet.begin(), resultSet.end());
+    return result;
+}
+
+/**
+ * @brief (4. 查找当前接口的(所有)父接口) Collects all ancestor interfaces through extension hierarchy
+ * @param context - Compiler context (unused)
+ * @param node - Starting interface node
+ * @return Vector of ancestor interface nodes
+ */
+std::vector<ir::AstNode *> GetInterfaceSuperInterfaces([[maybe_unused]] es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> superInterfaces {};
+    std::unordered_set<ir::AstNode *> visited;
+    std::function<void(ir::AstNode *)> findSuperInterfaces = [&](ir::AstNode *currentNode) {
+        if (currentNode == nullptr) {
+            return;
+        }
+        if (!visited.insert(currentNode).second) {
+            return;
+        }
+        auto extends = node->AsTSInterfaceDeclaration()->Extends();
+        for (auto extend : extends) {
+            auto expression = extend->Expr();
+            if (expression == nullptr || !expression->IsETSTypeReference()) {
+                continue;
+            }
+            auto part = expression->AsETSTypeReference()->Part();
+            if (part == nullptr || !part->IsETSTypeReferencePart()) {
+                continue;
+            }
+            auto partNode = part->AsETSTypeReferencePart()->Name();
+            if (partNode == nullptr || !partNode->IsIdentifier()) {
+                continue;
+            }
+            auto interfaceDecl = compiler::DeclarationFromIdentifier(partNode->AsIdentifier());
+            if (interfaceDecl->IsTSInterfaceDeclaration()) {
+                ir::AstNode *superInterface = interfaceDecl->AsTSInterfaceDeclaration();
+                superInterfaces.push_back(superInterface);
+                findSuperInterfaces(superInterface);
+            }
+        }
+    };
+    findSuperInterfaces(node);
+    return superInterfaces;
+}
+
+/**
+ * @brief Helper function to get directly implemented interfaces
+ * @param node - Class definition node
+ * @return Vector of directly implemented interface nodes
+ */
+std::vector<ir::AstNode *> GetImplements(ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> result {};
+    if (node == nullptr) {
+        return result;
+    }
+    auto classDefinition = node->AsClassDefinition();
+    auto implements = classDefinition->Implements();
+    for (auto implement : implements) {
+        auto partNode = GetIdentifierFromTSInterfaceHeritage(implement->AsTSInterfaceHeritage());
+        if (partNode == nullptr || !partNode->IsIdentifier()) {
+            continue;
+        }
+        auto interfaceDecl = compiler::DeclarationFromIdentifier(partNode->AsIdentifier());
+        if (interfaceDecl->IsTSInterfaceDeclaration()) {
+            result.push_back(interfaceDecl->AsTSInterfaceDeclaration());
+        }
+    }
+    return result;
+}
+
+std::vector<ir::AstNode *> GetInterfaceOrClasses(es2panda_Context *context, ir::AstNode *node, bool isInterfaceMode)
+{
+    std::vector<ir::AstNode *> result;
+    std::unordered_set<ir::AstNode *> parentSet;
+    parentSet.insert(node);
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto rootNode = ctx->parserProgram->Ast();
+    if (rootNode == nullptr) {
+        return result;
+    }
+    for (auto statement : rootNode->Statements()) {
+        if (isInterfaceMode) {
+            // The current interface obtains the interface
+            if (!statement->IsTSInterfaceDeclaration()) {
+                continue;
+            }
+            auto child = statement->AsTSInterfaceDeclaration();
+            auto extends = GetInterfaceDirectExtendedInterfaces(child);
+            bool isSubInterface = std::any_of(extends.begin(), extends.end(),
+                                              [&](ir::AstNode *base) { return parentSet.count(base) > 0; });
+            if (isSubInterface) {
+                result.push_back(child);
+                GetInterfaceOrClasses(context, child, isInterfaceMode);  // 递归处理子接口
+            }
+        } else {
+            // The current interface gets the subclass
+            if (!statement->IsClassDeclaration()) {
+                continue;
+            }
+            auto classDef = statement->AsClassDeclaration()->Definition();
+            auto implements = GetImplements(classDef);
+            bool isImplement = std::any_of(implements.begin(), implements.end(),
+                                           [&](ir::AstNode *base) { return parentSet.count(base) > 0; });
+            if (isImplement) {
+                result.push_back(classDef);
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * @brief (5. 查找当前接口的(所有)子接口) Discovers all descendant interfaces using DFS
+ * @param context - Compiler context containing program AST
+ * @param node - Root interface node
+ * @return Vector of descendant interface nodes
+ */
+std::vector<ir::AstNode *> GetInterfaceSubInterfaces(es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> subInterfaces;
+    std::unordered_set<ir::AstNode *> visited;
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto rootNode = ctx->parserProgram->Ast();
+    if (rootNode == nullptr) {
+        return subInterfaces;
+    }
+    bool isInterfaceMode = true;
+    subInterfaces = GetInterfaceOrClasses(context, node, isInterfaceMode);
+    return subInterfaces;
+}
+
+/**
+ * @brief (6. 查找当前接口的(所有)子类) Finds classes implementing specified interface hierarchy
+ * @param context - Compiler context containing program AST
+ * @param node - Root interface node
+ * @return Vector of implementing class nodes
+ */
+std::vector<ir::AstNode *> GetInterfaceImplementingClasses(es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> implementingClasses;
+    std::unordered_set<ir::AstNode *> visited;
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto rootNode = ctx->parserProgram->Ast();
+    if (rootNode == nullptr) {
+        return implementingClasses;
+    }
+    bool isInterfaceMode = false;
+    implementingClasses = GetInterfaceOrClasses(context, node, isInterfaceMode);
+    std::vector<ir::AstNode *> subInterfaces = GetInterfaceSubInterfaces(context, node);
+    for (auto subInterface : subInterfaces) {
+        implementingClasses = GetInterfaceOrClasses(context, subInterface, isInterfaceMode);
+    }
+    return implementingClasses;
+}
+
+/**
+ * @brief Extracts public, non-static, non-constructor members from a class or interface node.
+ * @param context Unused context pointer.
+ * @param node    AST node (TSInterfaceDeclaration or ClassDeclaration).
+ * @return Vector of AST nodes for class properties and filtered methods.
+ */
+std::vector<ir::AstNode *> GetMembers([[maybe_unused]] es2panda_Context *context, ir::AstNode *node)
+{
+    std::vector<ir::AstNode *> res;
+    std::vector<ir::AstNode *> body;
+    if (node->IsTSInterfaceDeclaration()) {
+        auto interfaceBody = node->AsTSInterfaceDeclaration()->Body()->Body();
+        body.insert(body.end(), interfaceBody.begin(), interfaceBody.end());
+    } else {
+        if (node->IsClassDefinition()) {
+            node = node->Parent();
+        }
+        auto classBody = node->AsClassDeclaration()->Definition()->Body();
+        body.insert(body.end(), classBody.begin(), classBody.end());
+    }
+    for (auto *field : body) {
+        if (field->IsClassProperty()) {
+            res.emplace_back(field);
+        } else if (field->IsMethodDefinition()) {
+            auto *method = field->AsMethodDefinition();
+            if (!method->IsPrivate() && !method->IsStatic() && !method->IsConstructor()) {
+                res.emplace_back(field);
+            }
+        }
+    }
+    return res;
+}
+
+/**
+ * @brief Determines if two method nodes have matching signatures
+ * @param a - First method node
+ * @param b - Second method node
+ * @return True if methods have identical identifier names
+ */
+bool IsMethodMatch(ir::AstNode *a, ir::AstNode *b)
+{
+    if (!a->IsMethodDefinition() || !b->IsMethodDefinition()) {
+        return false;
+    }
+    return GetIdentifierName(a) == GetIdentifierName(b);
+}
+
+/**
+ * @brief Analyzes class hierarchy for implementation relationships
+ * @param currentMembers - Members of current class
+ * @param interfaceMembers - Members of target interface
+ * @param info - Hierarchy information structure to update
+ * @param fileName - Source file name for location tracking
+ */
+void CompareMembersForImplementation(const std::vector<ir::AstNode *> &currentMembers,
+                                     const std::vector<ir::AstNode *> &interfaceMembers, ClassHierarchyItemInfo &info,
+                                     const std::string &fileName)
+{
+    for (auto *interfaceMember : interfaceMembers) {
+        auto kind = interfaceMember->IsMethodDefinition() ? ClassRelationKind::METHOD : ClassRelationKind::PROPERTY;
+        bool isMethodMatch = false;
+        for (auto *currentMember : currentMembers) {
+            if (IsMethodMatch(currentMember, interfaceMember)) {
+                isMethodMatch = true;
+                info.implemented.emplace_back(fileName, currentMember->Start().index, kind);
+                break;
+            }
+        }
+        if (!isMethodMatch) {
+            info.implementing.emplace_back(fileName, interfaceMember->Start().index, kind);
+        }
+    }
+}
+
+/**
+ * @brief Analyzes hierarchy for override relationships
+ * @param currentMembers - Members of current class
+ * @param targetMembers - Members of ancestor class
+ * @param info - Hierarchy information structure to update
+ * @param fileName - Source file name for location tracking
+ */
+void CompareMembersForOverride(const std::vector<ir::AstNode *> &currentMembers,
+                               const std::vector<ir::AstNode *> &targetMembers, ClassHierarchyItemInfo &info,
+                               const std::string &fileName)
+{
+    for (auto *targetMember : targetMembers) {
+        auto kind = targetMember->IsMethodDefinition() ? ClassRelationKind::METHOD : ClassRelationKind::PROPERTY;
+        bool isMethodMatch = false;
+        for (auto *currentMember : currentMembers) {
+            if (IsMethodMatch(currentMember, targetMember)) {
+                isMethodMatch = true;
+                info.overridden.emplace_back(fileName, currentMember->Start().index, kind);
+                break;
+            }
+        }
+        if (!isMethodMatch) {
+            info.overriding.emplace_back(fileName, targetMember->Start().index, kind);
+        }
+    }
+}
+
+struct ProcessItemsParams {
+    const std::vector<ir::AstNode *> &currentMembers;
+    std::vector<ClassHierarchyItemInfo> &result;
+    std::vector<ir::AstNode *> (*getListFunc)(es2panda_Context *, ir::AstNode *);
+    ClassRelationKind kind;
+    bool swapCompareArgs;
+    void (*compareFunc)(const std::vector<ir::AstNode *> &, const std::vector<ir::AstNode *> &,
+                        ClassHierarchyItemInfo &, const std::string &);
+};
+
+void ProcessItems(es2panda_Context *context, ir::AstNode *node, const std::string &fileName,
+                  const ProcessItemsParams &params)
+{
+    auto itemList = params.getListFunc(context, node);
+    for (auto *item : itemList) {
+        std::string name = GetIdentifierName(item);
+        ClassHierarchyItemInfo info(name, params.kind, item->Start().index);
+        auto itemMembers = GetMembers(context, item);
+        if (params.swapCompareArgs) {
+            params.compareFunc(itemMembers, params.currentMembers, info, fileName);
+        } else {
+            params.compareFunc(params.currentMembers, itemMembers, info, fileName);
+        }
+        params.result.emplace_back(info);
+    }
+}
+
+std::vector<ClassHierarchyItemInfo> GetClassHierarchiesImpl(es2panda_Context *context, const std::string &fileName,
+                                                            size_t pos)
+{
+    auto pctx = reinterpret_cast<public_lib::Context *>(context);
+    auto program = pctx->parserProgram;
+    std::vector<ClassHierarchyItemInfo> result;
+    if (program == nullptr) {
+        return result;
+    }
+    auto classNode = GetTargetDeclarationNodeByPosition(context, pos);
+    if (classNode == nullptr) {
+        return result;
+    }
+    std::vector<ir::AstNode *> currentMembers = GetMembers(context, classNode);
+    if (classNode->IsClassDeclaration()) {
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetClassSuperClasses, ClassRelationKind::CLASS, false,
+                                         CompareMembersForOverride});
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetClassImplementedInterfaces,
+                                         ClassRelationKind::INTERFACE, false, CompareMembersForImplementation});
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetClassSubClasses, ClassRelationKind::CLASS, true,
+                                         CompareMembersForOverride});
+    } else if (classNode->IsTSInterfaceDeclaration()) {
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetInterfaceSuperInterfaces,
+                                         ClassRelationKind::INTERFACE, false, CompareMembersForOverride});
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetInterfaceSubInterfaces,
+                                         ClassRelationKind::INTERFACE, true, CompareMembersForOverride});
+        ProcessItems(context, classNode, fileName,
+                     ProcessItemsParams {currentMembers, result, GetInterfaceImplementingClasses,
+                                         ClassRelationKind::CLASS, false, CompareMembersForImplementation});
+    }
+    return result;
+}
+
 }  // namespace ark::es2panda::lsp

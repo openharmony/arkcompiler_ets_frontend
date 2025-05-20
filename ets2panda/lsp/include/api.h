@@ -28,6 +28,7 @@
 #include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "class_hierarchies.h"
 #include "find_references.h"
 #include "find_rename_locations.h"
 #include "class_hierarchy_info.h"
@@ -460,6 +461,9 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
     References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> (*getClassHierarchiesImpl)(es2panda_Context *context,
+                                                                                       const std::string &fileName,
+                                                                                       size_t pos);
     bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position, const char *path);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
