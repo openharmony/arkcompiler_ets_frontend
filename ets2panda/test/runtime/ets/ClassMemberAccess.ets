@@ -43,7 +43,7 @@ class B extends A {
   }
 
   super_name(): char {
-    return super.name;
+    return super.get_name();
   }
 }
 
@@ -60,7 +60,7 @@ final class C extends B {
   }
 
   override super_name(): char {
-    return super.name;
+    return super.get_name();
   }
 }
 

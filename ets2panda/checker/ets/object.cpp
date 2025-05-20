@@ -1416,7 +1416,8 @@ ArenaVector<const ir::Expression *> ETSChecker::CheckMemberOrCallOrObjectExpress
              arg->AsCallExpression()->Callee()->AsMemberExpression()->Object()->IsThisExpression()) &&
             !arg->AsCallExpression()->Callee()->AsMemberExpression()->Property()->IsStatic()) {
             const auto what =
-                (arg->AsCallExpression()->Callee()->AsMemberExpression()->IsSuperExpression() ? "super" : "this");
+                (arg->AsCallExpression()->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ? "super"
+                                                                                                        : "this");
             LogError(diagnostic::THIS_OR_SUPER_IN_CTOR, {what}, arg->Start());
         }
     } else if (arg->IsObjectExpression()) {
@@ -1790,10 +1791,17 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
                                            const ir::Identifier *ident)
 {
     ir::AstNode *parent = nullptr;
-    if (property->TsType() != nullptr && property->TsType()->IsETSMethodType()) {
-        auto funcType = property->TsType()->AsETSFunctionType();
-        property = funcType->CallSignatures()[0]->OwnerVar();
-        ES2PANDA_ASSERT(property != nullptr);
+    if (property->TsType() != nullptr && !property->TsType()->IsTypeError()) {
+        if (property->TsType()->IsETSMethodType()) {
+            auto funcType = property->TsType()->AsETSFunctionType();
+            property = funcType->CallSignatures()[0]->OwnerVar();
+            ES2PANDA_ASSERT(property != nullptr);
+        } else {
+            if (ident->Parent()->IsMemberExpression() &&
+                ident->Parent()->AsMemberExpression()->Object()->IsSuperExpression()) {
+                LogError(diagnostic::SUPER_NOT_ACCESSIBLE, {ident->Name()}, ident->Start());
+            }
+        }
     }
 
     if (property->Declaration() == nullptr) {

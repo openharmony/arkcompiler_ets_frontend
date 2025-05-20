@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,17 +14,13 @@
  */
 
 class A {
-    private _a: int = 1;
-
-    set a(p: int) {
-        this._a = p;
-    }
+    value: string = 'A';
 }
 
 class B extends A {
-    static {
-        /* @@ label */super.a = 13;
+    foo() {
+        console.log(super./* @@ label */value);
     }
 }
 
-/* @@@ label Error TypeError: 'super' cannot be referenced from a static context  */
+/* @@@ label Error TypeError: Class field 'value' defined by the parent class is not accessible in the child class via super.  */
