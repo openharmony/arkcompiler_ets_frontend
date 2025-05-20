@@ -38,8 +38,7 @@ export class File2Check {
     private mtdMatcherMap = new Map();
     private fieldMatcherMap = new Map();
 
-    constructor() {
-    }
+    constructor() {}
 
     public addChecker(ruleId: string, checker: BaseChecker): void {
         this.enabledRuleCheckerMap.set(ruleId, checker);
@@ -92,20 +91,22 @@ export class File2Check {
 
     public collectIssues(): void {
         this.enabledRuleCheckerMap.forEach((v, k) => {
-            this.issues.push(...(v.issues?.reduce((acc, cur) => {
-                if (acc.some((item) => item.defect.mergeKey === cur.defect.mergeKey)) {
-                    logger.debug('Skip the repeated issue, please check. issue.mergeKey = ' + cur.defect.mergeKey);
-                } else {
-                    acc.push(cur);
-                }
-                return acc;
-            }, [] as IssueReport[])));
+            this.issues.push(
+                ...v.issues?.reduce((acc, cur) => {
+                    if (acc.some(item => item.defect.mergeKey === cur.defect.mergeKey)) {
+                        logger.debug('Skip the repeated issue, please check. issue.mergeKey = ' + cur.defect.mergeKey);
+                    } else {
+                        acc.push(cur);
+                    }
+                    return acc;
+                }, [] as IssueReport[])
+            );
         });
     }
 
     public async checkDisable(): Promise<void> {
         const fileLineList = await FileUtils.readLinesFromFile(this.arkFile.getFilePath());
-        this.issues = filterDisableIssue(fileLineList, this.issues);
+        this.issues = await filterDisableIssue(fileLineList, this.issues, this.arkFile.getFilePath());
     }
 
     public async run(): Promise<void> {

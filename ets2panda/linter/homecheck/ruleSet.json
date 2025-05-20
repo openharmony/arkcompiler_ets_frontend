@@ -204,7 +204,6 @@
     "@migration/arkui-custombuilder-passing": 1,
     "@migration/no-method-overriding-field-check": 1,
     "@migration/interop-backward-dfa": 1,
-    "@migration/interop-typeof-boxed-types": 1,
     "@migration/interop-dynamic-object-literals": 1,
     "@migration/interop-assign": 1,
     "@migration/interop-boxed-type-check": 1,

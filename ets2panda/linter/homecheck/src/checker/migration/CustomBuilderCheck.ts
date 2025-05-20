@@ -262,18 +262,18 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private generateReplaceText(sourceFile: ts.SourceFile, originalText: string, fixPosition: FixPosition): string {
-        // 已经是箭头函数的场景，仅需要加上@Memo即可
-        if (originalText.includes('=>') && !originalText.trimStart().startsWith('@Memo')) {
-            return `@Memo ${originalText}`;
+        // 已经是箭头函数的场景，无需任何处理
+        if (originalText.includes('=>')) {
+            return originalText;
         }
 
-        // 非箭头函数包裹的函数调用，需要使用箭头函数包裹，并添加@Memo
+        // 非箭头函数包裹的函数调用，需要使用箭头函数包裹
         const eol = FixUtils.getEolSymbol(sourceFile, fixPosition.startLine);
         const startLineIndent = FixUtils.getIndentOfLine(sourceFile, fixPosition.startLine) ?? 0;
         const increaseSpaces = FixUtils.getIndentWidth(sourceFile, fixPosition.startLine);
         const space = ' ';
 
-        let res = `@Memo () => {${eol}`;
+        let res = `() => {${eol}`;
         const originalLineStrs = originalText.split(eol);
         res += `${space.repeat(startLineIndent + increaseSpaces)}${originalLineStrs[0]}${eol}`;
         for (let index = 1; index < originalLineStrs.length; index++) {

@@ -163,7 +163,7 @@ export class Project2Check {
         for (const issue of this.issues) {
             const filePath = issue.defect.mergeKey.split('%')[0];
             const fileLineList = await FileUtils.readLinesFromFile(filePath);
-            const filtedResult = filterDisableIssue(fileLineList, [issue]);
+            const filtedResult = await filterDisableIssue(fileLineList, [issue], filePath);
             if (filtedResult.length > 0) {
                 filtedIssues = filtedIssues.concat(filtedResult[0]);
             }

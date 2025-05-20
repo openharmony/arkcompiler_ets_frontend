@@ -24,7 +24,6 @@ import {
     ArkInstanceOfExpr,
     ArkNewExpr,
     CallGraph,
-    CallGraphBuilder,
     ArkParameterRef,
     ArkInstanceFieldRef,
     ClassType,
@@ -32,20 +31,22 @@ import {
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
-import { Rule, Defects, MatcherCallback, FileMatcher, MatcherTypes } from '../../Index';
+import { Rule, Defects, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
 import { CALL_DEPTH_LIMIT, getLanguageStr, getLineAndColumn, GlobalCallGraphHelper } from './Utils';
 import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
-import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: '(interop-dynamic-object-literals)',
+    description: '',
 };
+
+const d2sRuleId: string = 'arkts-interop-d2s-object-literal';
+const ts2sRuleId: string = 'arkts-interop-ts2s-object-literal';
 
 export class InteropObjectLiteralCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -235,14 +236,18 @@ export class InteropObjectLiteralCheck implements BaseChecker {
     }
 
     private addIssueReport(stmt: Stmt, operand: Value, result: Stmt[], targetLanguage: Language): void {
-        const severity = this.rule.alert ?? this.metaData.severity;
+        const interopRuleId = this.getInteropRule(targetLanguage);
+        if (interopRuleId === null) {
+            return;
+        }
+        const severity = this.metaData.severity;
         const warnInfo = getLineAndColumn(stmt, operand);
         let targetLan = getLanguageStr(targetLanguage);
 
         const resPos: number[] = [];
         result.forEach(stmt => resPos.push(stmt.getOriginPositionInfo().getLineNo()));
         const problem = 'Interop';
-        const desc = `Operator in instanceof expr is declared by class from ${targetLan} and has been assign by object literal in Lines ${resPos.join(', ')} ${this.metaData.description}`;
+        const desc = `instanceof including object literal with class type from ${targetLan} (${interopRuleId})`;
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -258,5 +263,15 @@ export class InteropObjectLiteralCheck implements BaseChecker {
             false
         );
         this.issues.push(new IssueReport(defects, undefined));
+    }
+
+    private getInteropRule(targetLanguage: Language): string | null {
+        if (targetLanguage === Language.TYPESCRIPT) {
+            return ts2sRuleId;
+        }
+        if (targetLanguage === Language.ARKTS1_1) {
+            return d2sRuleId;
+        }
+        return null;
     }
 }
