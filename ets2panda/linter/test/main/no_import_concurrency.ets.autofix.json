@@ -20,6 +20,13 @@
             "endLine": 17,
             "endColumn": 36,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 629,
+                    "end": 646,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -30,6 +37,13 @@
             "endLine": 20,
             "endColumn": 16,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 783,
+                    "end": 793,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -40,6 +54,13 @@
             "endLine": 20,
             "endColumn": 37,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 795,
+                    "end": 814,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -50,6 +71,13 @@
             "endLine": 21,
             "endColumn": 32,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 853,
+                    "end": 872,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -60,6 +88,13 @@
             "endLine": 21,
             "endColumn": 47,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 870,
+                    "end": 885,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -70,6 +105,13 @@
             "endLine": 22,
             "endColumn": 32,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 921,
+                    "end": 940,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -80,6 +122,13 @@
             "endLine": 24,
             "endColumn": 47,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1008,
+                    "end": 1054,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -90,6 +139,13 @@
             "endLine": 25,
             "endColumn": 37,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1055,
+                    "end": 1091,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
@@ -100,6 +156,13 @@
             "endLine": 26,
             "endColumn": 74,
             "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1092,
+                    "end": 1165,
+                    "replacementText": ""
+                }
+            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"

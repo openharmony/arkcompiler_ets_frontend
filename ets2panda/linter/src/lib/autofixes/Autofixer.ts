@@ -2359,6 +2359,71 @@ export class Autofixer {
     return [{ start: node.getStart(), end: node.getEnd(), replacementText }];
   }
 
+  removeImportSpecifier(
+    specToRemove: ts.ImportSpecifier,
+    importDeclaration: ts.ImportDeclaration
+  ): Autofix[] | undefined {
+    if (!importDeclaration) {
+      return undefined;
+    }
+
+    const importClause = importDeclaration.importClause;
+    if (!importClause?.namedBindings || !ts.isNamedImports(importClause.namedBindings)) {
+      return undefined;
+    }
+
+    const namedBindings = importClause.namedBindings;
+    const allSpecifiers = namedBindings.elements;
+    const remainingSpecifiers = allSpecifiers.filter((spec) => {
+      return spec !== specToRemove;
+    });
+
+    // If none are valid, remove all named imports.
+    if (remainingSpecifiers.length === 0) {
+      if (importClause.name) {
+        const start = importClause.name.end;
+        const end = namedBindings.end;
+        return [{ start, end, replacementText: '' }];
+      }
+      return this.removeNode(importDeclaration);
+    }
+
+    const specIndex = allSpecifiers.findIndex((spec) => {
+      return spec === specToRemove;
+    });
+    const isLast = specIndex === allSpecifiers.length - 1;
+    const isFirst = specIndex === 0;
+
+    let start = specToRemove.getStart();
+    let end = specToRemove.getEnd();
+
+    if (!isLast) {
+      end = allSpecifiers[specIndex + 1].getStart();
+    } else if (!isFirst) {
+      const prev = allSpecifiers[specIndex - 1];
+      start = prev.getEnd();
+    }
+
+    return [{ start, end, replacementText: '' }];
+  }
+
+  removeDefaultImport(importDecl: ts.ImportDeclaration, defaultImport: ts.Identifier): Autofix[] | undefined {
+    const importClause = importDecl.importClause;
+    if (!importClause || !defaultImport) {
+      return undefined;
+    }
+
+    const namedBindings = importClause.namedBindings;
+
+    if (!namedBindings) {
+      return this.removeNode(importDecl);
+    }
+    const start = defaultImport.getStart();
+    const end = namedBindings.getStart();
+
+    return [{ start, end, replacementText: '' }];
+  }
+
   fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {
     const initializer = node.initializer;
     if (initializer === undefined) {

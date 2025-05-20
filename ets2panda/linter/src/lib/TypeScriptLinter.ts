@@ -3904,9 +3904,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
       if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(tsCallExpr, ts.isPropertyAccessExpression(tsCallExpr.expression)
-         ? FaultID.InteropCallObjectMethods
-         :FaultID.CallJSFunction);
+        this.incrementCounters(
+          tsCallExpr,
+          ts.isPropertyAccessExpression(tsCallExpr.expression) ?
+            FaultID.InteropCallObjectMethods :
+            FaultID.CallJSFunction
+        );
       }
     }
   }
@@ -7196,22 +7199,52 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    const defaultImport = importClause.name;
     const namedBindings = importClause.namedBindings;
-    const defaultImportName = importClause.name?.getText();
 
-    if (defaultImportName && expectedImports.includes(defaultImportName)) {
-      this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
+    const namedImports = namedBindings && ts.isNamedImports(namedBindings) ? namedBindings.elements : [];
+
+    const defaultIsForbidden = defaultImport && expectedImports.includes(defaultImport.getText());
+    const forbiddenNamed = namedImports.filter((spec) => {
+      const name = spec.propertyName ? spec.propertyName.getText() : spec.name.getText();
+      return expectedImports.includes(name);
+    });
+
+    if (
+      TypeScriptLinter.shouldRemoveWholeImport(
+        defaultIsForbidden,
+        forbiddenNamed.length,
+        namedImports.length,
+        defaultImport
+      )
+    ) {
+      const autofix = this.autofixer?.removeNode(importDeclaration);
+      this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency, autofix);
+      return;
     }
 
-    if (namedBindings && ts.isNamedImports(namedBindings)) {
-      for (const element of namedBindings.elements) {
-        const originalName = element.propertyName ? element.propertyName.getText() : element.name.getText();
-
-        if (expectedImports.includes(originalName)) {
-          this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
-        }
-      }
+    if (defaultIsForbidden) {
+      const autofix = this.autofixer?.removeDefaultImport(importDeclaration, defaultImport);
+      this.incrementCounters(defaultImport, FaultID.LimitedStdLibNoImportConcurrency, autofix);
     }
+
+    for (const spec of forbiddenNamed) {
+      const autofix = this.autofixer?.removeImportSpecifier(spec, importDeclaration);
+      this.incrementCounters(spec, FaultID.LimitedStdLibNoImportConcurrency, autofix);
+    }
+  }
+
+  private static shouldRemoveWholeImport(
+    defaultIsForbidden: boolean | undefined,
+    forbiddenNamedCount: number,
+    namedImportsCount: number,
+    defaultImport: ts.Identifier | undefined
+  ): boolean {
+    return (
+      defaultIsForbidden && forbiddenNamedCount === namedImportsCount ||
+      defaultIsForbidden && namedImportsCount === 0 ||
+      !defaultImport && forbiddenNamedCount === namedImportsCount && namedImportsCount > 0
+    );
   }
 
   /**
