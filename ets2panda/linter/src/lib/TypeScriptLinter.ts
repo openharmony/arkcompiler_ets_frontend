@@ -3904,9 +3904,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
       if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(tsCallExpr, ts.isPropertyAccessExpression(tsCallExpr.expression)
-         ? FaultID.InteropCallObjectMethods
-         :FaultID.CallJSFunction);
+        this.incrementCounters(
+          tsCallExpr,
+          ts.isPropertyAccessExpression(tsCallExpr.expression) ?
+            FaultID.InteropCallObjectMethods :
+            FaultID.CallJSFunction
+        );
       }
     }
   }

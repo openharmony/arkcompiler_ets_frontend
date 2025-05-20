@@ -24,7 +24,7 @@ import type { ProblemInfo } from '../lib/ProblemInfo';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
 import { logStatistics } from '../lib/statistics/StatisticsLogger';
-import { arkts2Rules } from '../lib/utils/consts/ArkTS2Rules';
+import { arkts2Rules, onlyArkts2SyntaxRules } from '../lib/utils/consts/ArkTS2Rules';
 import { MigrationTool } from 'homecheck';
 import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
 
@@ -54,7 +54,7 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   cmdOptions.disableStrictDiagnostics = true;
   const compileOptions = compileLintOptions(cmdOptions);
   let homeCheckResult = new Map<string, ProblemInfo[]>();
-  let mergedProblems = new Map<string, ProblemInfo[]>();
+  const mergedProblems = new Map<string, ProblemInfo[]>();
 
   if (cmdOptions.homecheck === true) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
@@ -80,6 +80,11 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
     if (cmdOptions.linterOptions.arkts2) {
       filteredProblems = problems.filter((problem) => {
         return arkts2Rules.includes(problem.ruleTag);
+      });
+    }
+    if (cmdOptions.onlySyntax) {
+      filteredProblems = problems.filter((problem) => {
+        return onlyArkts2SyntaxRules.has(problem.ruleTag);
       });
     }
     mergedProblems.get(filePath)!.push(...filteredProblems);

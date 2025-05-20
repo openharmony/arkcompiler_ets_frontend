@@ -71,7 +71,11 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   return inputFiles;
 }
 
-export function lint(config: LinterConfig, etsLoaderPath?: string, hcResults?: Map<string, ProblemInfo[]>): LintRunResult {
+export function lint(
+  config: LinterConfig,
+  etsLoaderPath?: string,
+  hcResults?: Map<string, ProblemInfo[]>
+): LintRunResult {
   if (etsLoaderPath) {
     config.cmdOptions.linterOptions.etsLoaderPath = etsLoaderPath;
   }
@@ -139,7 +143,11 @@ function lintFiles(
   };
 }
 
-function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult, hcResults?: Map<string, ProblemInfo[]>): LintRunResult {
+function migrate(
+  initialConfig: LinterConfig,
+  initialLintResult: LintRunResult,
+  hcResults?: Map<string, ProblemInfo[]>
+): LintRunResult {
   let linterConfig = initialConfig;
   const { cmdOptions } = initialConfig;
   const updatedSourceTexts: Map<string, string> = new Map();
@@ -177,18 +185,23 @@ function migrate(initialConfig: LinterConfig, initialLintResult: LintRunResult, 
   return lintResult;
 }
 
-function fix(linterConfig: LinterConfig, lintResult: LintRunResult, updatedSourceTexts: Map<string, string>, hcResults?: Map<string, ProblemInfo[]>): boolean {
+function fix(
+  linterConfig: LinterConfig,
+  lintResult: LintRunResult,
+  updatedSourceTexts: Map<string, string>,
+  hcResults?: Map<string, ProblemInfo[]>
+): boolean {
   const program = linterConfig.tscCompiledProgram.getProgram();
   let appliedFix = false;
-  let mergedProblems = lintResult.problemsInfos;
+  const mergedProblems = lintResult.problemsInfos;
   if (hcResults !== undefined) {
-      for (const [filePath, problems] of hcResults) {
-          if (mergedProblems.has(filePath)) {
-              mergedProblems.get(filePath)!.push(...problems);
-          } else {
-              mergedProblems.set(filePath, problems);
-          }
+    for (const [filePath, problems] of hcResults) {
+      if (mergedProblems.has(filePath)) {
+        mergedProblems.get(filePath)!.push(...problems);
+      } else {
+        mergedProblems.set(filePath, problems);
       }
+    }
   }
   mergedProblems.forEach((problemInfos, fileName) => {
     // If nothing to fix, skip file

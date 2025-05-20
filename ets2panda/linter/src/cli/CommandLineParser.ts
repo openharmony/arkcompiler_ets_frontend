@@ -124,6 +124,21 @@ function formMigrateOptions(cmdOptions: CommandLineOptions, commanderOpts: Optio
   }
 }
 
+function formIdeInteractive(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.ideInteractive) {
+    cmdOptions.linterOptions.ideInteractive = true;
+  }
+  if (commanderOpts.checkTsAndJs) {
+    cmdOptions.linterOptions.checkTsAndJs = true;
+  }
+  if (commanderOpts.homecheck) {
+    cmdOptions.homecheck = true;
+  }
+  if (commanderOpts.onlyArkts2SyntaxRules) {
+    cmdOptions.onlySyntax = true;
+  }
+}
+
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   const opts: CommandLineOptions = {
     inputFiles: parsedCmd.args.inputFiles,
@@ -160,15 +175,7 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.useRtLogic !== undefined) {
     opts.linterOptions.useRtLogic = options.useRtLogic;
   }
-  if (options.ideInteractive) {
-    opts.linterOptions.ideInteractive = true;
-  }
-  if (options.checkTsAndJs) {
-    opts.linterOptions.checkTsAndJs = true;
-  }
-  if (options.homecheck) {
-    opts.homecheck = true;
-  }
+  formIdeInteractive(opts, options);
   formSdkOptions(opts, options);
   formMigrateOptions(opts, options);
   return opts;
@@ -205,6 +212,10 @@ function createCommand(): Command {
     option('--migration-max-pass <num>', 'Maximum number of migration passes').
     option('--migration-report', 'Generate migration report').
     option('--check-ts-and-js', 'check ts and js files').
+    option(
+      '--only-arkts2-syntax-rules',
+      'only syntax rules, excluding rules such as SDK, Arkui, Interop, Concurrent, etc'
+    ).
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).
