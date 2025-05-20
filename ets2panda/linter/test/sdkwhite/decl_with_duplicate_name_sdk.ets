@@ -15,6 +15,7 @@
 'use static'
 
 import { TextStyle } from './sdk/declarations/styled_string'
+import { HyperlinkAttribute, HyperlinkInterface } from './sdk/declarations/hyperlink'
 
 @Entry
 @Component
@@ -44,4 +45,16 @@ class TextStyleDemo2 extends TextStyle { // Error
   constructor() {
     super();
   }
+}
+
+let hyperlinkAttr1: HyperlinkAttribute = HyperlinkInterface;
+let hyperlinkAttr2: HyperlinkAttribute = HyperlinkInterface.color('');
+class HyperlinkTest {
+  prop1: HyperlinkAttribute = HyperlinkInterface;
+  prop2: HyperlinkAttribute = HyperlinkInterface.color('');
+}
+let hyperlinkAttr3: HyperlinkAttribute;
+hyperlinkAttr3 = HyperlinkInterface;
+function func(x = HyperlinkInterface) {
+
 }

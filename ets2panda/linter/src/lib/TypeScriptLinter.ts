@@ -653,6 +653,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
     this.handleInvalidIdentifier(tsParam);
+    this.handleSdkDuplicateDeclName(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
@@ -1242,6 +1243,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
     this.handlePropertyDeclarationForProp(node);
+    this.handleSdkDuplicateDeclName(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -1756,6 +1758,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkAssignmentMatching(tsBinaryExpr, leftOperandType, tsRhsExpr);
         this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
         this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
+        this.handleSdkDuplicateDeclName(tsBinaryExpr);
         break;
       default:
     }
@@ -2169,6 +2172,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
     this.handleObjectLiteralAssignment(tsVarDecl);
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
+    this.handleSdkDuplicateDeclName(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -3828,6 +3832,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNoTsLikeFunctionCall(tsCallExpr);
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
     this.handleTaskPoolDeprecatedUsages(tsCallExpr);
+    this.handleSdkDuplicateDeclName(tsCallExpr);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -6826,27 +6831,85 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleSdkDuplicateDeclName(
-    node: ts.TypeReferenceNode | ts.NewExpression | ts.ExpressionWithTypeArguments | ts.Identifier
+    node:
+      | ts.TypeReferenceNode
+      | ts.NewExpression
+      | ts.VariableDeclaration
+      | ts.PropertyDeclaration
+      | ts.ParameterDeclaration
+      | ts.CallExpression
+      | ts.BinaryExpression
+      | ts.ExpressionWithTypeArguments
+      | ts.Identifier
   ): void {
     if (!this.options.arkts2) {
       return;
     }
-
-    if (ts.isTypeReferenceNode(node)) {
-      const typeName = node.typeName;
-      if (ts.isIdentifier(typeName)) {
-        this.processApiNodeSdkDuplicateDeclName(typeName.text, node);
-      }
+    switch (node.kind) {
+      case ts.SyntaxKind.TypeReference:
+        this.checkTypeReferenceForSdkDuplicateDeclName(node);
+        break;
+      case ts.SyntaxKind.NewExpression:
+        this.checkNewExpressionForSdkDuplicateDeclName(node);
+        break;
+      case ts.SyntaxKind.Identifier:
+        this.checkHeritageClauseForSdkDuplicateDeclName(node);
+        break;
+      case ts.SyntaxKind.VariableDeclaration:
+      case ts.SyntaxKind.PropertyDeclaration:
+      case ts.SyntaxKind.Parameter:
+        this.checkDeclarationForSdkDuplicateDeclName(node);
+        break;
+      case ts.SyntaxKind.CallExpression:
+        this.checkCallExpressionForSdkDuplicateDeclName(node);
+        break;
+      case ts.SyntaxKind.BinaryExpression:
+        this.checkBinaryExpressionForSdkDuplicateDeclName(node);
+        break;
+      default:
     }
-    if (ts.isNewExpression(node)) {
-      const expression = node.expression;
-      if (ts.isIdentifier(expression)) {
-        this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
-      }
-    }
+  }
 
+  private checkTypeReferenceForSdkDuplicateDeclName(node: ts.TypeReferenceNode): void {
+    const typeName = node.typeName;
+    if (ts.isIdentifier(typeName)) {
+      this.processApiNodeSdkDuplicateDeclName(typeName.text, node);
+    }
+  }
+
+  private checkNewExpressionForSdkDuplicateDeclName(node: ts.NewExpression): void {
+    const expression = node.expression;
+    if (ts.isIdentifier(expression)) {
+      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+    }
+  }
+
+  private checkHeritageClauseForSdkDuplicateDeclName(node: ts.Identifier): void {
     if (ts.isIdentifier(node)) {
       this.processApiNodeSdkDuplicateDeclName(node.text, node);
+    }
+  }
+
+  private checkDeclarationForSdkDuplicateDeclName(
+    node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
+  ): void {
+    const expression = node.initializer;
+    if (expression && ts.isIdentifier(expression)) {
+      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+    }
+  }
+
+  private checkCallExpressionForSdkDuplicateDeclName(node: ts.CallExpression): void {
+    if (ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
+      const expression = node.expression.expression;
+      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+    }
+  }
+
+  private checkBinaryExpressionForSdkDuplicateDeclName(node: ts.BinaryExpression): void {
+    const expression = node.right;
+    if (ts.isIdentifier(expression)) {
+      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
     }
   }
 
