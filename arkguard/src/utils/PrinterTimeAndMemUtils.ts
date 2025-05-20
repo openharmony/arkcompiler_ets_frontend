@@ -17,6 +17,7 @@ import * as fs from 'fs';
 import path from 'path';
 import type { IOptions } from '../configs/IOptions';
 import type { IPrinterOption } from '../configs/INameObfuscationOption';
+import { performance } from 'perf_hooks';
 import { performanceTimeAndMemPrinter } from '../ArkObfuscator';
 import { printerTimeAndMemDataConfig } from '../initialization/Initializer';
 
