@@ -997,6 +997,9 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
             var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(methodName->Start(), Allocator(),
                                                                                methodName->Name(), method));
             var->SetScope(clsScope);
+            if (targetScope->HasFlag(varbinder::ScopeFlags::STATIC)) {
+                var->AddFlag(varbinder::VariableFlags::STATIC);
+            }
             var->AddFlag(varbinder::VariableFlags::METHOD);
             methodName->SetVariable(var);
         }
