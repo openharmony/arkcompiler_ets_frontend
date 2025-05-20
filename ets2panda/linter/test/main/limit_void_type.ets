@@ -199,3 +199,7 @@ let bb = aa === '1' ? foo() : bar(); // Error
 aa === '1' ? foo() : bar(); // No error
 let dd;
 dd = aa === '1' ? foo() : bar(); // Error
+interface testB{
+  u:void;  // Error
+  fooIf():void;
+}

@@ -1013,6 +1013,16 @@
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
             "severity": "ERROR"
+        },
+        {
+            "line": 203,
+            "column": 5,
+            "endLine": 203,
+            "endColumn": 9,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
         }
     ]
 }
