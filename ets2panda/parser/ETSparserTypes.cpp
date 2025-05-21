@@ -309,15 +309,17 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
-    switch (Lexer()->GetToken().Type()) {
-        case lexer::TokenType::LITERAL_IDENT: {
-            auto typeAnnotation = ParseLiteralIdent(options);
-            if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
-                (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
-                return std::make_pair(typeAnnotation, false);
-            }
-            return std::make_pair(typeAnnotation, true);
+    auto tokenType = Lexer()->GetToken().Type();
+    if (IsPrimitiveType(Lexer()->GetToken().KeywordType()) || tokenType == lexer::TokenType::LITERAL_IDENT) {
+        auto typeAnnotation = ParseLiteralIdent(options);
+        if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
+            (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
+            return std::make_pair(typeAnnotation, false);
         }
+        return std::make_pair(typeAnnotation, true);
+    }
+
+    switch (tokenType) {
         case lexer::TokenType::LITERAL_NULL: {
             auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());

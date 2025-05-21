@@ -15,14 +15,15 @@
 
 class A {
     get abc(x: number) {}
-    /* @@ label */set abc(x: number, a: string) {}
-/* @@ label1 */}
+    set abc(x: number, a: string) {}
+}
 
 function fun(this: A) {}
 
-class /* @@ label2 */int {}
+class int {}
 
-/* @@@ label Error SyntaxError: Getter must not have formal parameters. */
-/* @@@ label1 Error SyntaxError: Setter must have exactly one formal parameter. */
-/* @@@ label2 Error SyntaxError: Cannot be used as user-defined type. */
 /* @@? 17:12 Error TypeError: Getter must return a value */
+/* @@? 18:5 Error SyntaxError: Getter must not have formal parameters. */
+/* @@? 19:1 Error SyntaxError: Setter must have exactly one formal parameter. */
+/* @@? 23:7 Error SyntaxError: Cannot be used as user-defined type. */
+/* @@? 23:7 Error SyntaxError: Identifier expected, got 'int'. */

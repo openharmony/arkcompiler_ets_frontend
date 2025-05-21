@@ -72,7 +72,8 @@ keywords:
 
   - name: 'boolean'
     token: KEYW_BOOLEAN
-    keyword_like: [ets, js, ts]
+    keyword: [ets]
+    keyword_like: [js, ts]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Boolean'
@@ -87,7 +88,7 @@ keywords:
 
   - name: 'byte'
     token: KEYW_BYTE
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Byte'
@@ -107,7 +108,7 @@ keywords:
 
   - name: 'char'
     token: KEYW_CHAR
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Char'
@@ -161,7 +162,7 @@ keywords:
 
   - name: 'double'
     token: KEYW_DOUBLE
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Double'
@@ -222,7 +223,7 @@ keywords:
 
   - name: 'float'
     token: KEYW_FLOAT
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Float'
@@ -307,7 +308,7 @@ keywords:
 
   - name: 'int'
     token: KEYW_INT
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Int'
@@ -342,7 +343,7 @@ keywords:
 
   - name: 'long'
     token: KEYW_LONG
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Long'
@@ -461,7 +462,7 @@ keywords:
 
   - name: 'short'
     token: KEYW_SHORT
-    keyword_like: [ets]
+    keyword: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'Short'
@@ -575,8 +576,7 @@ keywords:
 
   - name: 'void'
     token: KEYW_VOID
-    keyword: [as, js, ts]
-    keyword_like: [ets]
+    keyword: [as, ets, js, ts]
     flags: [unary, reserved_type_name, definable_type_name]
 
   - name: 'while'
