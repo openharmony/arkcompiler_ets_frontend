@@ -44,7 +44,7 @@ function foo4 (x: readonly [int, string], x2: [int, string]) {
 function main() : void {
     foo1([1, "ab", true], [1, 2])
     let x2: readonly int[] = []
-    let y2: readonly [string, float] = ["a", 0.1]
+    let y2: readonly [string, float] = ["a", Double.toFloat(0.1)]
     foo2(x2, y2)
 
     let x : readonly int[] = []

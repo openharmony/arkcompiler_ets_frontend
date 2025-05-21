@@ -24,16 +24,12 @@ class A extends Numeric {
         this.value = value;
     }
 
-    public constructor(value: Int) {
-        this.value = value.toInt();
-    }
-
     public override toByte(): byte {
-        return this.value as byte;
+        return Int.toByte(this.value);
     }
 
     public override toShort(): short {
-        return this.value as short;
+        return Int.toShort(this.value);
     }
 
     public override toInt(): int {
@@ -41,15 +37,15 @@ class A extends Numeric {
     }
 
     public override toLong(): long {
-        return this.value as long;
+        return Int.toLong(this.value);
     }
 
     public override toFloat(): float {
-        return this.value as float;
+        return Int.toFloat(this.value);
     }
 
     public override toDouble(): double {
-        return this.value as double;
+        return Int.toDouble(this.value);
     }
 
     public override toString(): String {

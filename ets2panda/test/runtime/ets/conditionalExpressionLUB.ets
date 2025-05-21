@@ -45,6 +45,10 @@ function foo(p: F): int {
   return 6;
 }
 
+function getTrue(): boolean {
+  return true
+}
+
 // #15276 foo(Object|null) and foo(Object) overloads
 function foo7(p: Object | null): int {
     return 7;
@@ -59,30 +63,30 @@ function main(): void {
 function sameTypeLUB(): void {
     let a : A = new A();
     let b : A = new A();
-    let c = true ? a : b;
+    let c = getTrue() ? a : b;
     assertEQ(foo(c), 2)
 }
 
 function objectLUB(): void {
     let a : A = new A();
     let b : Int = 2;
-    let c = true ? a : b;
+    let c = getTrue() ? a : b;
     assertEQ(foo(c), 1)
 
     let arr : Int[] | null = null;
-    let d = true ? a : arr;
+    let d = getTrue() ? a : arr;
     assertEQ(foo7(d), 7)
 }
 
 function forkSubtypeLUB(): void {
     let a : F = new F();
     let b : D = new D();
-    let c = true ? a : b;
+    let c = getTrue() ? a : b;
     assertEQ(foo(c), 2)
     let d : A = new A();
-    let e = true ? a : b;
+    let e = getTrue() ? a : b;
     assertEQ(foo(e), 2)
     let f : B = new B();
-    let g = true ? a : f;
+    let g = getTrue() ? a : f;
     assertEQ(foo(g), 3)
 }

@@ -16,23 +16,18 @@
 type AliasPrimitive<T> = T;
 type AliasAlias<T> = AliasPrimitive<T>;
 
-function fn(p: double)
+function fn(p: Double)
 {
     assertEQ(p, 42)
 }
 
-function fn(p: Double)
-{
-    assertTrue(false)
-}
-
 function main() {
-    let v1 : double = new Int(42);  // unboxing -> widening
-    fn(v1);                
+    let v1 : double = new Int(42);  // widening
+    fn(v1);
 
-    let v2 : AliasPrimitive<double> = new Int(42);  // unboxing -> widening
-    fn(v2);                
+    let v2 : AliasPrimitive<double> = new Int(42);  // widening
+    fn(v2);
 
-    let v3 : AliasAlias<double> = new Int(42);   // unboxing -> widening
-    fn(v3);                
+    let v3 : AliasAlias<double> = new Int(42);   // widening
+    fn(v3);
 }

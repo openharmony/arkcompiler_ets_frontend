@@ -56,7 +56,7 @@ class GlobalClass
         let l_short : short = 3;
         let l_int : int = 4;
         let l_long : long = 5;
-        let l_float : float = 6.0;
+        let l_float : float = 6.0f;
         let l_double : double = 7.0;
         let l_boolean : boolean = false;
         let l_char : char = c'x';
@@ -147,7 +147,7 @@ class GlobalClass
                 l_short = 103;
                 l_int = 104;
                 l_long = 105;
-                l_float = 106.0;
+                l_float = Double.toFloat(106.0);
                 l_double = 107.0;
                 l_boolean = true;
                 l_char = c'y';

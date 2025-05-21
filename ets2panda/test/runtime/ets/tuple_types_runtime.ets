@@ -77,7 +77,7 @@ function main(): void {
 
     let tup_10: [number, int, string, boolean, Object] = [1, 2, "I", false, new Object()];
     let var_float: float = tup_10[1];
-    let var_float_2: float = 2.0;
+    let var_float_2: float = 2.0f;
     assertEQ(var_float, var_float_2);
 
     let tup_11: [int, number, string, boolean, Object] = [6, 7, "J", true, 789];

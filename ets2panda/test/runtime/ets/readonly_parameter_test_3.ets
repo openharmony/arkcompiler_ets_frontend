@@ -46,7 +46,7 @@ function main() : void {
     foo1([1, "ab", true], [1, 2])
 
     let x2: Readonly<int[]> = []
-    let y2: Readonly<[string, float]> = ["a", 0.1]
+    let y2: Readonly<[string, float]> = ["a", Double.toFloat(0.1)]
     foo2(x2, y2)
 
     let x : Readonly<int[]> = []

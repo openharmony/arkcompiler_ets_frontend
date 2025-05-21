@@ -17,7 +17,7 @@ function main(): void {
     let str: String = "hello\nworld\n";
     assertEQ(str.charAt(2), c'l')
     assertEQ(str.length, 12)
-    assertEQ(str.charAt(str.length as int - 1), c'\n')
+    assertEQ(str.charAt(Double.toInt(str.length) - 1), c'\n')
 
     let a: String = "abc";
     let b: String = "ace";
@@ -28,7 +28,7 @@ function main(): void {
 
     let n2: int = 41;
     let n3: long = 42;
-    let n4: float = 43.43;
+    let n4: float = 43.43f;
     let n5: double = 44.44;
     let n6: double = random();
     let n7: double = random() + 42;
