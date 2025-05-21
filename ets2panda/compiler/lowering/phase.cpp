@@ -25,6 +25,7 @@
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
+#include "compiler/lowering/ets/convertPrimitiveCastMethodCall.h"
 #include "compiler/lowering/ets/declareOverloadLowering.h"
 #include "compiler/lowering/ets/cfgBuilderPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
@@ -121,6 +122,7 @@ static TypeFromLowering g_typeFromLowering;
 static ResizableArrayConvert g_resizableArrayConvert;
 static RestArgsLowering g_restArgsLowering;
 static InsertOptionalParametersAnnotation g_insertOptionalParametersAnnotation;
+static ConvertPrimitiveCastMethodCall g_convertPrimitiveCastMethodCall;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -165,6 +167,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_cfgBuilderPhase,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        &g_convertPrimitiveCastMethodCall,
         &g_dynamicImportLowering,
         &g_asyncMethodLowering,
         &g_declareOverloadLowering,

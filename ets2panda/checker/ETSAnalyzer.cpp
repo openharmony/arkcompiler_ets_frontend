@@ -1738,6 +1738,30 @@ checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checke
     if (baseType->IsETSUnionType()) {
         return expr->AdjustType(checker, expr->CheckUnionMember(checker, baseType));
     }
+
+    // NOTE(mshimenkov): temporary workaround to deliver 'primitives refactoring' patch
+    // To be removed after complete refactoring
+    if (baseType->IsETSPrimitiveType()) {
+        static std::array<std::string_view, 7U> castMethods {{
+            "toChar",
+            "toByte",
+            "toShort",
+            "toInt",
+            "toLong",
+            "toFloat",
+            "toDouble",
+        }};
+        auto method = expr->Property()->AsIdentifier()->Name().Utf8();
+        auto res = std::find(castMethods.begin(), castMethods.end(), method);
+        if (res != castMethods.end()) {
+            auto type = checker->MaybeBoxType(baseType);
+            expr->SetAstNodeFlags(ir::AstNodeFlags::TMP_CONVERT_PRIMITIVE_CAST_METHOD_CALL);
+            checker->ETSObjectTypeDeclNode(checker, type->AsETSObjectType());
+            return expr->SetTsType(TransformTypeForMethodReference(
+                checker, expr, expr->SetAndAdjustType(checker, type->AsETSObjectType())));
+        }
+    }
+
     TypeErrorOnMissingProperty(expr, baseType, checker);
     return expr->TsType();
 }

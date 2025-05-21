@@ -34,6 +34,8 @@ enum class AstNodeFlags {
     RECHECK = 1U << 5U,
     NOCLEANUP = 1U << 6U,
     RESIZABLE_REST = 1U << 7U,
+    // TO BE REMOVED AFTER COMPLETE PRIMITIVE TYPES REFACTORING, DO NOT USE!!
+    TMP_CONVERT_PRIMITIVE_CAST_METHOD_CALL = 1U << 8U,
     /* do not introduce new flags. all the existing to be removed */
 };
 
