@@ -21,5 +21,5 @@ let person = GeneratedImportVar_1.getPropertyByName('person');
 
 foo.getPropertyByName("name")
 foo.setPropertyByName("name", ESObject.wrap("456"))
-person.setPropertyByName("age", ESObject.wrap(23))
-person.setPropertyByName("male", ESObject.wrap([2, 3]))
+person.setPropertyByName("age", ESObject.wrap(23.0))
+person.setPropertyByName("male", ESObject.wrap([2.0, 3.0]))

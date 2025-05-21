@@ -15,13 +15,13 @@
 
 // Untyped object literals
 class GeneratedObjectLiteralClass_1 {
-    m() { console.log(1); } // Error, fixable
+    m() { console.log(1.0); } // Error, fixable
 }
 
 let method = new GeneratedObjectLiteralClass_1();
 
 class GeneratedObjectLiteralClass_2 {
-    get property() { return 2; } // Error, fixable
+    get property() { return 2.0; } // Error, fixable
 }
 
 let getMethod = new GeneratedObjectLiteralClass_2();
@@ -34,7 +34,7 @@ class GeneratedObjectLiteralClass_3 {
 
 let setMethod = new GeneratedObjectLiteralClass_3();
 
-let x: number = 1, y = '2', z = true;
+let x: number = 1.0, y = '2', z = true;
 
 let shorthand = {
   x, // Error, fixable
@@ -60,13 +60,13 @@ class GeneratedObjectLiteralClass_4 {
         this.y = init.y;
     }
     method() {
-        console.log(42);
+        console.log(42.0);
     }
     get property() {
-        return 0;
+        return 0.0;
     }
     set property(value: number) {
-        if (value < 0) {
+        if (value < 0.0) {
             throw new Error('Bad value');
         }
     }
@@ -82,16 +82,16 @@ interface GeneratedObjectLiteralInitInterface_4 {
 
 let mixed = new GeneratedObjectLiteralClass_4({
     a: "foo",
-    b: 42,
-    c: [1, 2, 3],
+    b: 42.0,
+    c: [1.0, 2.0, 3.0],
     x: x,
     y: y
 });
 
-let x2: number = 1, y2: number = 2, z2: number = 3;
+let x2: number = 1.0, y2: number = 2.0, z2: number = 3.0;
 let mixedBad = { // Not fixable
-  a: 1,
-  b: 2,
+  a: 1.0,
+  b: 2.0,
   x2, // Error, fixable
   y2, // Error, fixable
   z2, // Error, fixable
@@ -105,7 +105,7 @@ interface I {
 }
 class GeneratedObjectLiteralClass_5 implements I {
     m() {
-        console.log(100);
+        console.log(100.0);
     }
 }
 
@@ -113,12 +113,12 @@ let i: I = new GeneratedObjectLiteralClass_5();
 
 class C {
   m(): void {
-    console.log(200);
+    console.log(200.0);
   }
 }
 class GeneratedObjectLiteralClass_6 extends C {
     m(): void {
-        console.log(300);
+        console.log(300.0);
     }
 }
 
@@ -126,15 +126,15 @@ let c: C = new GeneratedObjectLiteralClass_6();
 
 function foo(c: C) {}
 class GeneratedObjectLiteralClass_7 extends C {
-    m() { console.log(300); } // Fixable
+    m() { console.log(300.0); } // Fixable
 }
 
 foo(new GeneratedObjectLiteralClass_7());
 
 class C2 {
-  x2: number = 10;
-  y2: number = 20;
-  z2: number = 30;
+  x2: number = 10.0;
+  y2: number = 20.0;
+  z2: number = 30.0;
 
   m() {}
 }
@@ -148,7 +148,7 @@ class GeneratedObjectLiteralClass_8 extends C2 {
         this.y2 = init.y2;
         this.z2 = init.z2;
     }
-    m() { console.log(1); } // Fixable
+    m() { console.log(1.0); } // Fixable
 }
 
 interface GeneratedObjectLiteralInitInterface_8 {
@@ -167,14 +167,14 @@ let c22: C2 = {
   x2, // Fixable
   y2, // Fixable
   z2, // Fixable
-  m() { console.log(1); }, // Not fixable, object has spread property
+  m() { console.log(1.0); }, // Not fixable, object has spread property
   ...shorthand // Not fixable
 };
 
 class C3 {
-  x2: number = 10;
-  y2: number = 20;
-  z2: number = 30;
+  x2: number = 10.0;
+  y2: number = 20.0;
+  z2: number = 30.0;
 
   m() {}
 
@@ -184,11 +184,11 @@ let c3: C3 = {
   x2, // Fixable
   y2, // Fixable
   z2, // Fixable
-  m() { console.log(1); } // Not fixable, class type has constructor with parameters
+  m() { console.log(1.0); } // Not fixable, class type has constructor with parameters
 };
 
 function capturesFromLocalScope() {
-  let a: number = 1, b: number = 2;
+  let a: number = 1.0, b: number = 2.0;
   let captureLocalVal = {
     m() { // Not fixable, captures local values 'a' and 'b'
       console.log(a, b);
@@ -205,7 +205,7 @@ function capturesFromLocalScope() {
     a: number;
     b: string;
 }
-  let localTypeVar: LocalType = { a: 1, b: '2' };
+  let localTypeVar: LocalType = { a: 1.0, b: '2' };
   let captureLocalType = {
     m() { // Not fixable, captures value of type `LocalType` declared in local scope
       console.log(localTypeVar);
@@ -217,7 +217,7 @@ function capturesFromLocalScope() {
     }
   };
 
-  class LocalClass { x: number = 1 };
+  class LocalClass { x: number = 1.0 };
   let captureLocalType3 = {
     m() { // Not fixable, references type `LocalClass` declared in local scope
       console.log(new LocalClass());
@@ -227,20 +227,20 @@ function capturesFromLocalScope() {
 
 // Method overriding field
 class C4 {
-  a: number = 0;
+  a: number = 0.0;
   b() {};
 }
 let c4: C4 = { // Not fixable, overrides class method with property of functional type
-  a: 1,
+  a: 1.0,
   b: () => {}
 };
 
 class C5 {
-  a: number = 0;
+  a: number = 0.0;
   b: () => void;
 }
 let c5: C5 = { // Not fixable, overrides class property with method
-  a: 1,
+  a: 1.0,
   b() {}
 };
 
@@ -249,7 +249,7 @@ interface I2 {
   b(): void;
 }
 let i2: I2 = { // Not fixable, implements method as functional-type property
-  a: 1,
+  a: 1.0,
   b: () => {}
 };
 
@@ -258,7 +258,7 @@ interface I3 {
   b: () => void;
 }
 let ii: I3 = { // Not fixable, implements functional-type property as a method
-  a: 1,
+  a: 1.0,
   b() {}
 };
 
@@ -270,7 +270,7 @@ class Derived extends Base {
   m() {}
 }
 class GeneratedObjectLiteralClass_9 extends Derived {
-    m() { console.log(2); }
+    m() { console.log(2.0); }
 }
 
 let b: Derived = new GeneratedObjectLiteralClass_9();
@@ -282,7 +282,7 @@ class Derived2 extends Base2 {
   m() {}
 }
 let b2: Derived2 = { // Not fixable, derived class inherits a constructor with parameters from base class
-  m() { console.log(2); }
+  m() { console.log(2.0); }
 };
 
 class Base3 {
@@ -292,11 +292,11 @@ class Derived3 extends Base3 {
   m() {}
 
   constructor() {
-    super(1);
+    super(1.0);
   }
 }
 class GeneratedObjectLiteralClass_10 extends Derived3 {
-    m() { console.log(2); }
+    m() { console.log(2.0); }
 }
 
 let b3: Derived3 = new GeneratedObjectLiteralClass_10();

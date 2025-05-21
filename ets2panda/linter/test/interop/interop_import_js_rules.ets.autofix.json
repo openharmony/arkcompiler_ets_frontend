@@ -429,6 +429,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 33,
+            "column": 14,
+            "endLine": 33,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1073,
+                    "end": 1075,
+                    "replacementText": "18.0",
+                    "line": 33,
+                    "column": 14,
+                    "endLine": 33,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 37,
             "column": 1,
             "endLine": 37,
@@ -583,6 +604,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 51,
+            "column": 14,
+            "endLine": 51,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1342,
+                    "end": 1343,
+                    "replacementText": "0.0",
+                    "line": 51,
+                    "column": 14,
+                    "endLine": 51,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 52,
             "column": 11,
             "endLine": 52,
@@ -677,6 +719,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 53,
+            "column": 12,
+            "endLine": 53,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1389,
+                    "end": 1390,
+                    "replacementText": "0.0",
+                    "line": 53,
+                    "column": 12,
+                    "endLine": 53,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 63,
             "column": 1,
             "endLine": 63,
@@ -739,6 +802,27 @@
         },
         {
             "line": 66,
+            "column": 13,
+            "endLine": 66,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1532,
+                    "end": 1533,
+                    "replacementText": "1.0",
+                    "line": 66,
+                    "column": 13,
+                    "endLine": 66,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
             "column": 16,
             "endLine": 66,
             "endColumn": 21,
@@ -760,6 +844,27 @@
         },
         {
             "line": 66,
+            "column": 19,
+            "endLine": 66,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1538,
+                    "end": 1539,
+                    "replacementText": "2.0",
+                    "line": 66,
+                    "column": 19,
+                    "endLine": 66,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
             "column": 22,
             "endLine": 66,
             "endColumn": 26,
@@ -771,6 +876,27 @@
                     "replacementText": "c: number = 3;",
                     "line": 66,
                     "column": 22,
+                    "endLine": 66,
+                    "endColumn": 26
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 25,
+            "endLine": 66,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1544,
+                    "end": 1545,
+                    "replacementText": "3.0",
+                    "line": 66,
+                    "column": 25,
                     "endLine": 66,
                     "endColumn": 26
                 }

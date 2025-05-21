@@ -665,6 +665,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 319,
+            "column": 15,
+            "endLine": 319,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 329,
             "column": 10,
             "endLine": 329,
@@ -1285,6 +1295,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 609,
+            "column": 15,
+            "endLine": 609,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 612,
+            "column": 15,
+            "endLine": 612,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 614,
             "column": 16,
             "endLine": 614,
@@ -1542,6 +1572,16 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 691,
+            "column": 10,
+            "endLine": 691,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

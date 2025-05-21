@@ -381,7 +381,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
     [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression],
-    [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral]
+    [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral],
+    [ts.SyntaxKind.NumericLiteral, this.handleNumericLiteral]
   ]);
 
   lint(): void {
@@ -4724,7 +4725,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
-    this.checkTypeArgumentsForGenericCallWithNoTypeArgsNumber(callLikeExpr, callSignature);
   }
 
   private static isInvalidBuiltinGenericConstructorCall(newExpression: ts.CallExpression | ts.NewExpression): boolean {
@@ -4784,53 +4784,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private isNonGenericClass(expression: ts.NewExpression): boolean {
     const declaration = this.tsUtils.getDeclarationNode(expression.expression);
     return !!declaration && ts.isClassDeclaration(declaration) && !declaration.typeParameters;
-  }
-
-  checkTypeArgumentsForGenericCallWithNoTypeArgsNumber(
-    callLikeExpr: ts.CallExpression | ts.NewExpression,
-    callSignature: ts.Signature
-  ): void {
-    if (TypeScriptLinter.isArrayFromCall(callLikeExpr)) {
-      return;
-    }
-
-    const tsSyntaxKind = ts.isNewExpression(callLikeExpr) ?
-      ts.SyntaxKind.Constructor :
-      ts.SyntaxKind.FunctionDeclaration;
-    const signFlags = ts.NodeBuilderFlags.WriteTypeArgumentsOfSignature | ts.NodeBuilderFlags.IgnoreErrors;
-    const signDecl = this.tsTypeChecker.signatureToSignatureDeclaration(
-      callSignature,
-      tsSyntaxKind,
-      undefined,
-      signFlags
-    );
-    if (!signDecl?.typeArguments) {
-      return;
-    }
-    let hasNumberType = false;
-    const resolvedTypeArgs = signDecl.typeArguments;
-    const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
-    for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
-      const typeNode = resolvedTypeArgs[i];
-      if (
-        typeNode.kind === ts.SyntaxKind.NumberKeyword ||
-        ts.isLiteralTypeNode(typeNode) && ts.isNumericLiteral(typeNode.literal)
-      ) {
-        hasNumberType = true;
-        break;
-      }
-    }
-    if (this.options.arkts2 && hasNumberType && ts.isCallExpression(callLikeExpr)) {
-      const resolvedTypeArgs = signDecl.typeArguments.map((typeNode) => {
-        if (ts.isLiteralTypeNode(typeNode) && ts.isNumericLiteral(typeNode.literal)) {
-          return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-        }
-        return typeNode;
-      });
-      const resolvedTypeArgsNodeArray = ts.factory.createNodeArray(resolvedTypeArgs);
-      const autofix = this.autofixer?.fixFunctionDeclarationly(callLikeExpr, resolvedTypeArgsNodeArray);
-      this.incrementCounters(callLikeExpr, FaultID.NumericSemantics, autofix);
-    }
   }
 
   static isArrayFromCall(callLikeExpr: ts.CallExpression | ts.NewExpression): boolean {
@@ -7613,7 +7566,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       node.types.forEach((type) => {
         const expr = type.expression;
         if (ts.isIdentifier(expr)) {
-          this.processApiNodeSdkDuplicateDeclName(expr.text, expr);     
+          this.processApiNodeSdkDuplicateDeclName(expr.text, expr);
         }
       });
     }
@@ -8824,7 +8777,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const autofix = this.autofixer?.fixCustomLayout(node);
     this.incrementCounters(node.name, FaultID.CustomLayoutNeedAddDecorator, autofix);
   }
-  
+
   private handleArkTSPropertyAccess(expr: ts.BinaryExpression): void {
     if (!this.useStatic || !this.options.arkts2 || !TypeScriptLinter.isBinaryOperations(expr.operatorToken.kind)) {
       return;
@@ -8851,5 +8804,34 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.SyntaxKind.AsteriskAsteriskToken
     ];
     return binaryOperators.includes(kind);
+  }
+
+  private handleNumericLiteral(node: ts.Node): void {
+    if (!this.options.arkts2 || !ts.isNumericLiteral(node)) {
+      return;
+    }
+    const isInElementAccessExpression = (node: ts.NumericLiteral): boolean => {
+      for (let parent = node.parent; parent; parent = parent.parent) {
+        if (ts.isElementAccessExpression(parent)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    const isNoNeedFix =
+      isInElementAccessExpression(node) ||
+      ts.isEnumMember(node.parent) ||
+      'name' in node.parent && node.parent.name === node;
+    if (isNoNeedFix) {
+      return;
+    }
+    const value = parseFloat(node.text);
+    const nodeText = node.getText();
+    const hasScientificOrRadixNotation = (/[a-zA-Z]/).test(nodeText);
+    const isIntegerWithoutZero = Number.isInteger(value) && !nodeText.endsWith('.0');
+    if (isIntegerWithoutZero && !hasScientificOrRadixNotation) {
+      const autofix = this.autofixer?.fixNumericLiteralIntToNumber(node);
+      this.incrementCounters(node, FaultID.NumericSemantics, autofix);
+    }
   }
 }

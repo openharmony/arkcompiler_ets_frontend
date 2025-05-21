@@ -4325,4 +4325,9 @@ export class Autofixer {
 
     return decorators[decorators.length - 1].getEnd();
   }
+
+  fixNumericLiteralIntToNumber(node: ts.NumericLiteral): Autofix[] | undefined {
+    void this;
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: `${node.getText()}.0` }];
+  }
 }

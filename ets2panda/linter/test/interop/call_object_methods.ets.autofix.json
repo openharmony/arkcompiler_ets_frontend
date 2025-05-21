@@ -34,12 +34,20 @@
                 {
                     "start": 617,
                     "end": 663,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 47
                 },
                 {
                     "start": 663,
                     "end": 663,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -64,6 +72,27 @@
             "problem": "InteropCallObjectMethods",
             "suggest": "",
             "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 9,
+            "endLine": 18,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 673,
+                    "end": 676,
+                    "replacementText": "123.0",
+                    "line": 18,
+                    "column": 9,
+                    "endLine": 18,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

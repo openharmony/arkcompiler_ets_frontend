@@ -45,6 +45,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 52,
+            "endLine": 17,
+            "endColumn": 53,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 20,
             "endLine": 19,
@@ -62,6 +72,16 @@
             "problem": "SharedArrayBufferDeprecated",
             "suggest": "",
             "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 46,
+            "endLine": 22,
+            "endColumn": 47,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

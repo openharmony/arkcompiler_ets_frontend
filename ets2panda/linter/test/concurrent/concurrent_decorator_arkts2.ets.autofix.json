@@ -24,7 +24,11 @@
                 {
                     "start": 618,
                     "end": 629,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -41,11 +45,36 @@
                 {
                     "start": 659,
                     "end": 670,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
             "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 15,
+            "endLine": 22,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 702,
+                    "end": 704,
+                    "replacementText": "10.0",
+                    "line": 22,
+                    "column": 15,
+                    "endLine": 22,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -58,7 +87,11 @@
                 {
                     "start": 707,
                     "end": 718,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -75,7 +108,11 @@
                 {
                     "start": 748,
                     "end": 759,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",

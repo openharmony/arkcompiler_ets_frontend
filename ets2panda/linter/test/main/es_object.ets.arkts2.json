@@ -375,6 +375,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 61,
+            "column": 16,
+            "endLine": 61,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 64,
             "column": 18,
             "endLine": 64,
@@ -455,6 +465,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 77,
+            "column": 12,
+            "endLine": 77,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 78,
             "column": 5,
             "endLine": 78,
@@ -475,6 +495,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 79,
+            "column": 14,
+            "endLine": 79,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 80,
             "column": 5,
             "endLine": 80,
@@ -482,6 +512,16 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 8,
+            "endLine": 80,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -512,6 +552,26 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 11,
+            "endLine": 85,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 14,
+            "endLine": 85,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -572,6 +632,26 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 26,
+            "endLine": 93,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 29,
+            "endLine": 93,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -725,6 +805,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 127,
+            "column": 6,
+            "endLine": 127,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 6,
+            "endLine": 128,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 136,
             "column": 25,
             "endLine": 136,
@@ -742,6 +842,46 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 144,
+            "column": 7,
+            "endLine": 144,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 144,
+            "column": 10,
+            "endLine": 144,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 145,
+            "column": 7,
+            "endLine": 145,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 145,
+            "column": 10,
+            "endLine": 145,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -865,6 +1005,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 176,
+            "column": 23,
+            "endLine": 176,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 177,
             "column": 5,
             "endLine": 177,
@@ -872,6 +1022,16 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 177,
+            "column": 20,
+            "endLine": 177,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -912,6 +1072,16 @@
             "problem": "EsObjectTypeError",
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 182,
+            "column": 24,
+            "endLine": 182,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

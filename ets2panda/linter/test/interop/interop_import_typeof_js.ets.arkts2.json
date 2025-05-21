@@ -375,6 +375,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 43,
+            "column": 26,
+            "endLine": 43,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 45,
             "column": 5,
             "endLine": 45,
@@ -412,6 +422,16 @@
             "problem": "InteropCallObjectMethods",
             "suggest": "",
             "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 35,
+            "endLine": 48,
+            "endColumn": 38,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -612,6 +632,16 @@
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 28,
+            "endLine": 73,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]
