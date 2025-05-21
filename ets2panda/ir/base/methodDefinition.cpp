@@ -236,6 +236,9 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
     }
 
     if (compiler::HasGlobalClassParent(this) && !dumper->IsDeclgen()) {
+        if (IsExported()) {
+            dumper->Add("export ");
+        }
         dumper->Add("function ");
         return;
     }
@@ -309,7 +312,10 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
     }
 
     for (auto *anno : value_->AsFunctionExpression()->Function()->Annotations()) {
-        anno->Dump(dumper);
+        // NOTE(zhelyapov): workaround, see #26031
+        if (anno->GetBaseName()->Name() != compiler::Signatures::DEFAULT_ANNO_FOR_FUNC) {
+            anno->Dump(dumper);
+        }
     }
     DumpPrefix(dumper);
 

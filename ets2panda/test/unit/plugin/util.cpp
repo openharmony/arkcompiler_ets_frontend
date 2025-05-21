@@ -137,10 +137,11 @@ static bool IsAllowedStage(es2panda_ContextState state)
     }
 }
 
-static void DestroyTest(es2panda_Context *context, es2panda_Config *config)
+static int DestroyTest(es2panda_Context *context, es2panda_Config *config, const int exitCode)
 {
     g_implPtr->DestroyContext(context);
     g_implPtr->DestroyConfig(config);
+    return exitCode;
 }
 
 int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
@@ -169,8 +170,7 @@ int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
 
     for (auto [testStage, _] : data.testFunctions) {
         if (!IsAllowedStage(testStage)) {
-            DestroyTest(context, config);
-            return TEST_ERROR_CODE;
+            return DestroyTest(context, config, TEST_ERROR_CODE);
         }
     }
 
@@ -183,18 +183,16 @@ int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
         CheckForErrors(GetPhaseName(state), context);
         for (const auto &testFunc : data.testFunctions[state]) {
             if (!testFunc(context)) {
-                DestroyTest(context, config);
-                return TEST_ERROR_CODE;
+                return DestroyTest(context, config, TEST_ERROR_CODE);
             }
+        }
+        if (state == data.exitAfterState) {
+            break;
         }
     }
 
-    if (g_implPtr->ContextState(context) == ES2PANDA_STATE_ERROR) {
-        DestroyTest(context, config);
-        return PROCEED_ERROR_CODE;
-    }
-    DestroyTest(context, config);
-    return 0;
+    int result = g_implPtr->ContextState(context) == ES2PANDA_STATE_ERROR ? PROCEED_ERROR_CODE : 0;
+    return DestroyTest(context, config, result);
 }
 
 int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
