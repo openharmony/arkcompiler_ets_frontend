@@ -25,6 +25,7 @@ export interface BuildBaseConfig {
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
   maxWorkers?: number;
+  isBuildConfigModified?: boolean;
 }
 
 export interface ArkTSGlobal {
@@ -81,6 +82,7 @@ export interface PathConfig {
   pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
   externalApiPaths: string[];
   abcLinkerPath?: string;
+  dependencyAnalyzerPath?: string;
 }
 
 /**
@@ -168,3 +170,12 @@ export type SetupClusterOptions = {
   execPath?: string;
   execArgs?: string[];
 };
+
+export interface DependencyFileConfig {
+  dependants: {
+    [filePath: string]: string[];
+  };
+  dependencies: {
+    [filePath: string]: string[];
+  }
+}

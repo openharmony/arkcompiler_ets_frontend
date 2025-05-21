@@ -27,15 +27,18 @@ import {
   BUILD_MODE,
   DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
+  DEPENDENCY_JSON_FILE,
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
   TS_SUFFIX,
+  DEPENDENCY_INPUT_FILE,
+  PROJECT_BUILD_CONFIG_FILE
 } from '../pre_define';
 import {
   changeFileExtension,
   ensurePathExists,
-  isFileExistSync,
+  getFileHash,
   isMac
 } from '../utils';
 import {
@@ -53,6 +56,7 @@ import {
   ArkTSGlobal,
   BuildConfig,
   CompileFileInfo,
+  DependencyFileConfig,
   DependentModuleConfig,
   ModuleInfo
 } from '../types';
@@ -73,7 +77,9 @@ export abstract class BaseMode {
   dependentModuleList: DependentModuleConfig[];
   moduleInfos: Map<string, ModuleInfo>;
   mergedAbcFile: string;
+  dependencyJsonFile: string;
   abcLinkerCmd: string[];
+  dependencyAnalyzerCmd: string[];
   logger: Logger;
   isDebug: boolean;
   enableDeclgenEts2Ts: boolean;
@@ -81,6 +87,11 @@ export abstract class BaseMode {
   declgenBridgeCodePath: string | undefined;
   hasMainModule: boolean;
   abcFiles: Set<string>;
+  hashCache: Record<string, string>;
+  hashCacheFile: string;
+  isCacheFileExists: boolean;
+  dependencyFileMap: DependencyFileConfig | null;
+  isBuildConfigModified: boolean | undefined;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -97,6 +108,11 @@ export abstract class BaseMode {
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
     this.hasMainModule = buildConfig.hasMainModule;
     this.abcFiles = new Set<string>();
+    this.hashCacheFile = path.join(this.cacheDir, 'hash_cache.json');
+    this.hashCache = this.loadHashCache();
+    this.isCacheFileExists = fs.existsSync(this.hashCacheFile);
+    this.dependencyFileMap = null;
+    this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
 
     this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
     this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
@@ -105,7 +121,9 @@ export abstract class BaseMode {
     this.moduleInfos = new Map<string, ModuleInfo>();
     this.compileFiles = new Map<string, CompileFileInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
+    this.dependencyJsonFile = path.resolve(this.cacheDir, DEPENDENCY_JSON_FILE);
     this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
+    this.dependencyAnalyzerCmd = ['"' + this.buildConfig.dependencyAnalyzerPath + '"'];
 
     this.logger = Logger.getInstance();
   }
@@ -310,7 +328,7 @@ export abstract class BaseMode {
     return [dynamicDepModules, staticDepModules];
   }
 
-  private generateArkTSConfigForModules(): void {
+  protected generateArkTSConfigForModules(): void {
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
       ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo);
     });
@@ -324,7 +342,7 @@ export abstract class BaseMode {
     });
   }
 
-  private collectModuleInfos(): void {
+  protected collectModuleInfos(): void {
     if (this.hasMainModule && (!this.packageName || !this.moduleRootPath || !this.sourceRoots)) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL,
@@ -381,18 +399,151 @@ export abstract class BaseMode {
     };
   }
 
+  private loadHashCache(): Record<string, string> {
+    try {
+      if (fs.existsSync(this.hashCacheFile)) {
+        const cacheContent = fs.readFileSync(this.hashCacheFile, 'utf-8');
+        return JSON.parse(cacheContent);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_LOAD_HASH_CACHE_FAIL,
+          'Failed to load hash cache.',
+          error.message
+        );
+        this.logger.printError(logData);
+      }
+    }
+    return {};
+  }
+
+  private saveHashCache(): void {
+    ensurePathExists(this.hashCacheFile);
+    fs.writeFileSync(this.hashCacheFile, JSON.stringify(this.hashCache, null, 2));
+  }
+
   private isFileChanged(etsFilePath: string, abcFilePath: string): boolean {
-    if (isFileExistSync(abcFilePath)) {
+    if (fs.existsSync(abcFilePath)) {
       const etsFileLastModified: number = fs.statSync(etsFilePath).mtimeMs;
       const abcFileLastModified: number = fs.statSync(abcFilePath).mtimeMs;
       if (etsFileLastModified < abcFileLastModified) {
-        return false;
+        const currentHash = getFileHash(etsFilePath);
+        const cachedHash = this.hashCache[etsFilePath];
+        if (cachedHash && currentHash === cachedHash) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  private collectCompileFiles(): void {
+  private collectDependentCompileFiles(): void {
+    if (!this.dependencyFileMap) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_Dependency_Analyze_FAIL,
+        'Analyze files dependency failed.',
+        'Dependency map not initialized.'
+      );
+      this.logger.printError(logData);
+      return;
+    }
+
+    const compileFiles = new Set<string>();
+    const processed = new Set<string>();
+    const queue: string[] = [];
+
+    this.entryFiles.forEach((file: string) => {
+      let hasModule = false;
+      for (const [packageName, moduleInfo] of this.moduleInfos) {
+        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+          continue;
+        }
+
+        hasModule = true;
+        const filePathFromModuleRoot = path.relative(moduleInfo.moduleRootPath, file);
+        const filePathInCache = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
+        const abcFilePath = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+        
+        this.abcFiles.add(abcFilePath);
+        if (this.isBuildConfigModified || this.isFileChanged(file, abcFilePath)) {
+          compileFiles.add(file);
+          queue.push(file);
+        }
+        this.hashCache[file] = getFileHash(file);
+        break;
+      }
+      if (!hasModule) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_FILE_NOT_BELONG_TO_ANY_MODULE_FAIL,
+          'File does not belong to any module in moduleInfos.',
+          '',
+          file
+        );
+        this.logger.printError(logData);
+        return;
+      }
+    });
+
+    while (queue.length > 0) {
+      const currentFile = queue.shift()!;
+      processed.add(currentFile);
+
+      (this.dependencyFileMap?.dependants[currentFile] || []).forEach(dependant => {
+        if (!compileFiles.has(dependant) && !processed.has(dependant)) {
+          queue.push(dependant);
+        }
+        compileFiles.add(dependant);
+      });
+    }
+
+    compileFiles.forEach((file: string) => {
+      let hasModule = false;
+      for (const [packageName, moduleInfo] of this.moduleInfos) {
+        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+          continue;
+        }
+        hasModule = true;
+        const filePathFromModuleRoot = path.relative(moduleInfo.moduleRootPath, file);
+        const filePathInCache = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
+        const abcFilePath = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+
+        const fileInfo: CompileFileInfo = {
+          filePath: file,
+          dependentFiles: this.dependencyFileMap?.dependants[file] || [],
+          abcFilePath,
+          arktsConfigFile: moduleInfo.arktsConfigFile,
+          packageName: moduleInfo.packageName
+        };
+
+        moduleInfo.compileFileInfos.push(fileInfo);
+        this.compileFiles.set(file, fileInfo);
+        break;
+      }
+      if (!hasModule) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_FILE_NOT_BELONG_TO_ANY_MODULE_FAIL,
+          'File does not belong to any module in moduleInfos.',
+          '',
+          file
+        );
+        this.logger.printError(logData);
+      }
+    });
+  }
+  
+  private shouldSkipFile(file: string, moduleInfo: ModuleInfo, filePathFromModuleRoot: string, abcFilePath: string): boolean {
+    const targetPath = this.enableDeclgenEts2Ts
+        ? changeFileExtension(path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot), TS_SUFFIX)
+        : abcFilePath;
+    return !this.isFileChanged(file, targetPath);
+  }
+
+  protected collectCompileFiles(): void {
+    if (!this.isBuildConfigModified && this.isCacheFileExists && !this.enableDeclgenEts2Ts) {
+      this.collectDependentCompileFiles();
+      return;
+    }
     this.entryFiles.forEach((file: string) => {
       for (const [packageName, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
@@ -402,10 +553,10 @@ export abstract class BaseMode {
         let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
         let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
         this.abcFiles.add(abcFilePath);
-        if (!this.isFileChanged(file, abcFilePath)) {
+        if (!this.isBuildConfigModified && this.shouldSkipFile(file, moduleInfo, filePathFromModuleRoot, abcFilePath)) {
           return;
         }
-
+        this.hashCache[file] = getFileHash(file);
         let fileInfo: CompileFileInfo = {
           filePath: file,
           dependentFiles: [],
@@ -427,15 +578,16 @@ export abstract class BaseMode {
     });
   }
 
-  private generateModuleInfos(): void {
+  protected generateModuleInfos(): void {
     this.collectModuleInfos();
+    this.generateArkTSConfigForModules();
+    this.generatedependencyFileMap();
     this.collectCompileFiles();
-    console.log(this.moduleInfos);
+    this.saveHashCache();
   }
 
   public async generateDeclaration(): Promise<void> {
     this.generateModuleInfos();
-    this.generateArkTSConfigForModules();
 
     const compilePromises: Promise<void>[] = [];
     this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
@@ -449,7 +601,6 @@ export abstract class BaseMode {
 
   public async run(): Promise<void> {
     this.generateModuleInfos();
-    this.generateArkTSConfigForModules();
 
     const compilePromises: Promise<void>[] = [];
     this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
@@ -469,9 +620,71 @@ export abstract class BaseMode {
     });
   };
 
+  public generatedependencyFileMap(): void {
+    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts) {
+      return;
+    }
+    let dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);
+    let dependencyInputContent: string = '';
+    this.entryFiles.forEach((entryFile: string) => {
+      dependencyInputContent += entryFile + os.EOL;
+    });
+    fs.writeFileSync(dependencyInputFile, dependencyInputContent);
+
+    this.dependencyAnalyzerCmd.push('@' + '"' + dependencyInputFile + '"');
+    for (const [packageName, module] of this.moduleInfos) {
+      if (module.isMainModule) {
+          this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' +  module.arktsConfigFile + '"');
+          break;
+      }
+    }
+    this.dependencyAnalyzerCmd.push('--output=' + '"' + this.dependencyJsonFile + '"');
+    let dependencyAnalyzerCmdStr: string = this.dependencyAnalyzerCmd.join(' ');
+    if (isMac()) {
+      const loadLibrary = 'DYLD_LIBRARY_PATH=' + '"' + process.env.DYLD_LIBRARY_PATH + '"';
+      dependencyAnalyzerCmdStr = loadLibrary + ' ' + dependencyAnalyzerCmdStr;
+    }
+    this.logger.printInfo(dependencyAnalyzerCmdStr);
+
+    ensurePathExists(this.dependencyJsonFile);
+    try {
+      const output = child_process.execSync(dependencyAnalyzerCmdStr, { 
+        stdio: 'pipe',
+        encoding: 'utf-8'
+      });
+      if (output.trim() !== '') {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_Dependency_Analyze_FAIL,
+          'Analyze files dependency failed.',
+          output
+        );
+        this.logger.printError(logData);
+        return;
+      }
+      const dependencyJsonContent = fs.readFileSync(this.dependencyJsonFile, 'utf-8');
+      this.dependencyFileMap = JSON.parse(dependencyJsonContent);
+    } catch (error) {
+      if (error instanceof Error) {
+        const execError = error as child_process.ExecException;
+        let fullErrorMessage = execError.message;
+        if (execError.stderr) {
+            fullErrorMessage += `\nError output: ${execError.stderr}`;
+        }
+        if (execError.stdout) {
+            fullErrorMessage += `\nOutput: ${execError.stdout}`;
+        }
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_Dependency_Analyze_FAIL,
+          'Analyze files dependency failed.',
+          fullErrorMessage
+        );
+        this.logger.printError(logData);
+      }
+    }
+  }
+
   public async runParallell(): Promise<void> {
     this.generateModuleInfos();
-    this.generateArkTSConfigForModules();
 
     if (!cluster.isPrimary) {
       return;

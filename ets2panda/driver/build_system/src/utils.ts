@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -52,6 +53,7 @@ export function ensurePathExists(filePath: string): void {
   }
 }
 
-export function isFileExistSync(filePath: string): boolean {
-  return fs.existsSync(filePath);
+export function getFileHash(filePath: string): string {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return crypto.createHash('sha256').update(content).digest('hex');
 }
