@@ -93,9 +93,9 @@ void MemberExpression::Compile(compiler::PandaGen *pg, compiler::VReg objReg) co
     compiler::Operand prop = CompileKey(pg);
 
     if (object_->IsSuperExpression()) {
-        pg->LoadSuperProperty(this, objReg, prop);
+        pg->LoadSuperProperty(property_, objReg, prop);
     } else {
-        pg->LoadObjProperty(this, objReg, prop);
+        pg->LoadObjProperty(property_, objReg, prop);
     }
 }
 
