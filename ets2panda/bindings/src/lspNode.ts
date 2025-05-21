@@ -406,6 +406,148 @@ export class LspLineAndCharacter extends LspNode {
   }
 }
 
+export class LspClassConstructorInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.constructorInfoFileTextChanges = new NativePtrDecoder()
+      .decode(global.es2panda._getFileTextChangesFromConstructorInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ConstructorInfoFileTextChanges(elPeer);
+      });
+  }
+  readonly constructorInfoFileTextChanges: ConstructorInfoFileTextChanges[];
+}
+
+export class ConstructorInfoFileTextChanges extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromConstructorInfo(peer));
+    this.constructorInfoTextChanges = new NativePtrDecoder()
+      .decode(global.es2panda._getTextChangeFromConstructorInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ConstructorInfoTextChange(elPeer);
+      });
+  }
+  readonly fileName: String;
+  readonly constructorInfoTextChanges: ConstructorInfoTextChange[];
+}
+
+export class ConstructorInfoTextChange extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.span_ = new LspTextSpan(global.es2panda._getTextSpanFromConstructorInfo(peer));
+    this.newText_ = unpackString(global.es2panda._getNewTextFromConstructorInfo(peer));
+  }
+  readonly span_: LspTextSpan;
+  readonly newText_: String;
+}
+
+export class CompletionEntryDetails extends LspNode {
+  readonly name: String;
+  readonly kind: String;
+  readonly kindModifier: String;
+  readonly fileName: String;
+  readonly displayParts: LspSymbolDisplayPart[];
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getCompletionEntryDetailsEntryName(peer));
+    this.kind = unpackString(global.es2panda._getCompletionEntryDetailsKind(peer));
+    this.kindModifier = unpackString(global.es2panda._getCompletionEntryDetailsKindModifier(peer));
+    this.fileName = unpackString(global.es2panda._getCompletionEntryDetailsFileName(peer));
+    this.displayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getCompletionEntryDetailsSymbolDisplayPart(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer);
+      });
+  }
+}
+
+export class TextChange extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.span = new LspTextSpan(global.es2panda._getTextSpanFromTextChange(peer));
+    this.newText = unpackString(global.es2panda._getNewTextFromTextChange(peer));
+  }
+  readonly span: LspTextSpan;
+  readonly newText: String;
+}
+
+export class FileTextChanges extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromFileTextChanges(peer));
+    this.textChanges = new NativePtrDecoder()
+      .decode(global.es2panda._getTextChangesFromFileTextChanges(peer))
+      .map((elPeer: KNativePointer) => {
+        return new TextChange(elPeer);
+      });
+  }
+  readonly fileName: String;
+  readonly textChanges: TextChange[];
+}
+
+
+export class LspFileTextChanges extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileTextChanges = new NativePtrDecoder()
+      .decode(global.es2panda._getFileTextChanges(peer))
+      .map((elPeer: KNativePointer) => {
+        return new FileTextChanges(elPeer);
+      });
+  }
+  readonly fileTextChanges: FileTextChanges[];
+}
+
+export class LspSafeDeleteLocationInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.uri = unpackString(global.es2panda._getSafeDeleteLocationUri(peer));
+    this.start = global.es2panda._getSafeDeleteLocationStart(peer);
+    this.length = global.es2panda._getSafeDeleteLocationLength(peer);
+  }
+  readonly uri: String;
+  readonly start: KInt;
+  readonly length: KInt;
+}
+
+export class LspSafeDeleteLocation extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.safeDeleteLocationInfos = new NativePtrDecoder()
+      .decode(global.es2panda._getSafeDeleteLocations(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSafeDeleteLocationInfo(elPeer);
+      });
+  }
+  readonly safeDeleteLocationInfos: LspSafeDeleteLocationInfo[];
+}
+
+export class LspRefactorAction extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getRefactorActionName(peer));
+    this.description = unpackString(global.es2panda._getRefactorActionDescription(peer));
+    this.kind = unpackString(global.es2panda._getRefactorActionKind(peer));
+  }
+  readonly name: String;
+  readonly description: String;
+  readonly kind: String;
+}
+
+export class LspApplicableRefactorInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getApplicableRefactorName(peer));
+    this.description = unpackString(global.es2panda._getApplicableRefactorDescription(peer));
+    this.action = new LspRefactorAction(global.es2panda._getRefactorAction(peer));
+  }
+
+  readonly name: String;
+  readonly description: String;
+  readonly action: LspRefactorAction;
+}
+
 export class LspTypeHierarchies extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);

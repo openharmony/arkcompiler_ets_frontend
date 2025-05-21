@@ -228,6 +228,152 @@ KNativePointer impl_getDeclInfo(KNativePointer context, KInt position)
 }
 TS_INTEROP_2(getDeclInfo, KNativePointer, KNativePointer, KInt)
 
+KNativePointer impl_getClassConstructorInfo(KNativePointer context, KInt position, KStringArray strArrayPtr)
+{
+    std::vector<std::string> properties;
+    for (const auto &el : MakeStringVector(strArrayPtr)) {
+        properties.emplace_back(GetStringCopy(const_cast<KStringPtr &>(el)));
+    }
+    LSPAPI const *ctx = GetImpl();
+    auto *info = new RefactorEditInfo(ctx->getClassConstructorInfo(reinterpret_cast<es2panda_Context *>(context),
+                                                                   static_cast<std::size_t>(position), properties));
+    return info;
+}
+TS_INTEROP_3(getClassConstructorInfo, KNativePointer, KNativePointer, KInt, KStringArray)
+
+KNativePointer impl_getFileTextChangesFromConstructorInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<RefactorEditInfo *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->GetFileTextChanges()) {
+        ptrs.push_back(new FileTextChanges(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFileTextChangesFromConstructorInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileNameFromConstructorInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<FileTextChanges *>(infoPtr);
+    return new std::string(info->fileName);
+}
+TS_INTEROP_1(getFileNameFromConstructorInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getTextChangeFromConstructorInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<FileTextChanges *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->textChanges) {
+        ptrs.push_back(new TextChange(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getTextChangeFromConstructorInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNewTextFromConstructorInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TextChange *>(infoPtr);
+    return new std::string(info->newText);
+}
+TS_INTEROP_1(getNewTextFromConstructorInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getTextSpanFromConstructorInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<TextChange *>(infoPtr);
+    return new TextSpan(info->span);
+}
+TS_INTEROP_1(getTextSpanFromConstructorInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionName(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->name);
+}
+TS_INTEROP_1(getRefactorActionName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionDescription(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->description);
+}
+TS_INTEROP_1(getRefactorActionDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionKind(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->kind);
+}
+TS_INTEROP_1(getRefactorActionKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactors(KNativePointer context, KStringPtr &kindPtr, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *applicableRefactorInfo = new ark::es2panda::lsp::ApplicableRefactorInfo(ctx->getApplicableRefactors(
+        reinterpret_cast<es2panda_Context *>(context), GetStringCopy(kindPtr), static_cast<std::size_t>(position)));
+    return applicableRefactorInfo;
+}
+TS_INTEROP_3(getApplicableRefactors, KNativePointer, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getApplicableRefactorName(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->name);
+}
+TS_INTEROP_1(getApplicableRefactorName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorDescription(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->description);
+}
+TS_INTEROP_1(getApplicableRefactorDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorAction(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new ark::es2panda::lsp::RefactorAction(applRefsInfo->action);
+}
+TS_INTEROP_1(getRefactorAction, KNativePointer, KNativePointer)
+
+KNativePointer impl_getCompletionEntryDetailsSymbolDisplayPart(KNativePointer completionEntryDetailsPtr)
+{
+    auto *completionEntryDetails = reinterpret_cast<CompletionEntryDetails *>(completionEntryDetailsPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : completionEntryDetails->GetDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getCompletionEntryDetailsSymbolDisplayPart, KNativePointer, KNativePointer)
+
+KNativePointer impl_getCompletionEntryDetailsKind(KNativePointer completionEntryDetailsPtr)
+{
+    auto *completionEntryDetails = reinterpret_cast<CompletionEntryDetails *>(completionEntryDetailsPtr);
+    return new std::string(completionEntryDetails->GetKind());
+}
+TS_INTEROP_1(getCompletionEntryDetailsKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getCompletionEntryDetailsKindModifier(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<CompletionEntryDetails *>(ref);
+    return new std::string(refPtr->GetKindModifiers());
+}
+TS_INTEROP_1(getCompletionEntryDetailsKindModifier, KNativePointer, KNativePointer)
+
+KNativePointer impl_getCompletionEntryDetailsFileName(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<CompletionEntryDetails *>(ref);
+    return new std::string(refPtr->GetFileName());
+}
+TS_INTEROP_1(getCompletionEntryDetailsFileName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getCompletionEntryDetailsEntryName(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<CompletionEntryDetails *>(ref);
+    return new std::string(refPtr->GetName());
+}
+TS_INTEROP_1(getCompletionEntryDetailsEntryName, KNativePointer, KNativePointer)
+
 KNativePointer impl_findSafeDeleteLocation(KNativePointer context, KNativePointer declInfo)
 {
     LSPAPI const *ctx = GetImpl();

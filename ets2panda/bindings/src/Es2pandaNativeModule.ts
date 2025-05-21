@@ -193,6 +193,126 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _organizeImports(context: KNativePointer, filename: String): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextChangesFromFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextSpanFromTextChange(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNewTextFromTextChange(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _findSafeDeleteLocation(context: KNativePointer, declInfo: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocations(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationUri(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationStart(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationLength(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetails(entryName: String, filename: String, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsEntryName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsKind(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsKindModifier(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsFileName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsSymbolDisplayPart(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionKind(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorAction(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactors(context: KNativePointer, kind: String, position: number): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassConstructorInfo(context: KNativePointer, position: number, strArryPtr: string[] | Uint8Array): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChangesFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextChangeFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNewTextFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextSpanFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _getFileNameFromDef(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
@@ -571,7 +691,7 @@ export class Es2pandaNativeModule {
   _getSignatureHelpItems(context: KPtr, position: KInt): KPtr {
     throw new Error('Not implemented');
   }
-  
+
 }
 
 export function initEs2panda(): Es2pandaNativeModule {
