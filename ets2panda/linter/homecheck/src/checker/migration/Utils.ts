@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ArkMethod, CallGraph, CallGraphBuilder, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
+import { ArkAssignStmt, ArkMethod, CallGraph, CallGraphBuilder, Local, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
 import { WarnInfo } from '../../utils/common/Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
@@ -129,4 +129,24 @@ export function getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
         logger.debug('ArkFile is null.');
     }
     return { line: -1, startCol: -1, endCol: -1, filePath: '' };
+}
+
+export function getGlobalsDefineInDefaultMethod(defaultMethod: ArkMethod): Map<string, Stmt[]> {
+    const globalVarMap: Map<string, Stmt[]> = new Map();
+    const stmts = defaultMethod.getBody()?.getCfg().getStmts() ?? [];
+    for (const stmt of stmts) {
+        if (!(stmt instanceof ArkAssignStmt)) {
+            continue;
+        }
+        const leftOp = stmt.getLeftOp();
+        if (!(leftOp instanceof Local)) {
+            continue;
+        }
+        const name = leftOp.getName();
+        if (name.startsWith('%') || name === 'this') {
+            continue;
+        }
+        globalVarMap.set(name, [...(globalVarMap.get(name) ?? []), stmt]);
+    }
+    return globalVarMap;
 }
