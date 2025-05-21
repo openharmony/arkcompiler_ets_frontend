@@ -48,6 +48,72 @@ KNativePointer impl_getSemanticDiagnostics(KNativePointer context)
 }
 TS_INTEROP_1(getSemanticDiagnostics, KNativePointer, KNativePointer)
 
+KNativePointer impl_getClassPropertyInfo(KNativePointer context, KInt position, KBoolean shouldCollectInherited)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto info = ctx->getClassPropertyInfo(reinterpret_cast<es2panda_Context *>(context),
+                                          static_cast<std::size_t>(position), shouldCollectInherited != 0);
+    return new std::vector<FieldsInfo>(info);
+}
+TS_INTEROP_3(getClassPropertyInfo, KNativePointer, KNativePointer, KInt, KBoolean)
+
+KNativePointer impl_getNameFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldsInfo *>(infoPtr);
+    return new std::string(info->name);
+}
+TS_INTEROP_1(getNameFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFieldListPropertyFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldsInfo *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->properties) {
+        ptrs.push_back(new FieldListProperty(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFieldListPropertyFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getKindFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
+    return new std::string(info->kind);
+}
+TS_INTEROP_1(getKindFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getModifierKindsFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->modifierKinds.value()) {
+        ptrs.push_back(new std::string(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getModifierKindsFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDisplayNameFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
+    return new std::string(info->displayName);
+}
+TS_INTEROP_1(getDisplayNameFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getStartFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
+    return new std::size_t(info->start);
+}
+TS_INTEROP_1(getStartFromPropertyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getEndFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
+    return new std::size_t(info->end);
+}
+TS_INTEROP_1(getEndFromPropertyInfo, KNativePointer, KNativePointer)
+
 KNativePointer impl_getSyntacticDiagnostics(KNativePointer context)
 {
     LSPAPI const *ctx = GetImpl();

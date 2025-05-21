@@ -128,6 +128,10 @@ ets2panda_add_gtest(lsp_api_test_suggestion_diagnostics CPP_SOURCES
     suggestion_diagnostics_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_get_class_property_info CPP_SOURCES
+    get_class_property_info_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_brace_matching CPP_SOURCES
     brace_matching_test.cpp
 )

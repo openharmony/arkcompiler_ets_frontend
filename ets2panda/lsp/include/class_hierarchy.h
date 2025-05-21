@@ -25,7 +25,9 @@
 
 namespace ark::es2panda::lsp {
 ir::AstNode *GetTargetDeclarationNodeByPosition(es2panda_Context *context, size_t pos);
+// NOLINTBEGIN(misc-non-private-member-variables-in-classes)
 const ir::AstNode *GetEffectiveBaseTypeNode(const ir::AstNode *node);
+// NOLINTEND(misc-non-private-member-variables-in-classes)
 void GetSuperTypeHierarchies(const ir::AstNode *node, TypeHierarchies &typeHierarchies,
                              std::set<TypeHierarchies> &superLists);
 TypeHierarchiesInfo GetTypeHierarchiesImpl(es2panda_Context *context, size_t pos,

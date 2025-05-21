@@ -36,6 +36,7 @@
 #include "line_column_offset.h"
 #include "script_element_kind.h"
 #include "services/services.h"
+#include "get_class_property_info.h"
 #include "inlay_hints.h"
 #include "signature_help.h"
 #include "completions_details.h"
@@ -287,6 +288,12 @@ std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWithCancellat
     return res;
 }
 
+std::vector<FieldsInfo> GetClassPropertyInfoWrapper(es2panda_Context *context, size_t position,
+                                                    bool shouldCollectInherited)
+{
+    return GetClassPropertyInfo(context, position, shouldCollectInherited);
+}
+
 DiagnosticReferences GetSuggestionDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences res {};
@@ -391,6 +398,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     FindRenameLocationsWithCancellationWrapper,
                     FindSafeDeleteLocation,
                     FindReferencesWrapper,
+                    GetClassPropertyInfoWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
                     GetClassHierarchyInfo,

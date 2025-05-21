@@ -41,6 +41,7 @@ set(ES2PANDA_LSP_SRC
   ./src/services/utilities.cpp
   ./src/line_column_offset.cpp
   ./src/inlay_hints.cpp
+  ./src/get_class_property_info.cpp
   ./src/create_type_help_items.cpp
   ./src/script_element_kind.cpp
   ./src/signature_help_items.cpp

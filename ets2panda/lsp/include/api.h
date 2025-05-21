@@ -207,6 +207,28 @@ typedef struct DocumentHighlights {
     }
 } DocumentHighlights;
 
+struct FieldListProperty {
+    std::string kind;
+    std::optional<std::vector<std::string>> modifierKinds;
+    std::string displayName;
+    size_t start;
+    size_t end;
+
+    FieldListProperty(std::string k, std::optional<std::vector<std::string>> m, std::string d, size_t s, size_t e)
+        : kind(std::move(k)), modifierKinds(std::move(m)), displayName(std::move(d)), start(s), end(e)
+    {
+    }
+};
+
+struct FieldsInfo {
+    std::string name;
+    std::vector<FieldListProperty> properties;
+    bool operator<(const FieldsInfo &other) const
+    {
+        return name < other.name;
+    }
+};
+
 typedef struct DocumentHighlightsReferences {
     std::vector<DocumentHighlights> documentHighlights_;
 } DocumentHighlightsReferences;
@@ -490,6 +512,7 @@ typedef struct LSPAPI {
     std::vector<ark::es2panda::lsp::ReferencedNode> (*findReferences)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
         const ark::es2panda::SourceFile &srcFile, size_t position);
+    std::vector<FieldsInfo> (*getClassPropertyInfo)(es2panda_Context *context, size_t pos, bool shouldCollectInherited);
     DiagnosticReferences (*getSuggestionDiagnostics)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
     ark::es2panda::lsp::ClassHierarchy (*getClassHierarchyInfo)(es2panda_Context *context, size_t position);

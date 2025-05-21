@@ -72,6 +72,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/services/utilities.cpp",
     "src/signature_help.cpp",
     "src/signature_help_items.cpp",
+    "src/get_class_property_info.cpp",
     "src/string_completions.cpp",
     "src/suggestion_diagnostics.cpp",
     "src/todo_comments.cpp",
