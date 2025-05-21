@@ -199,3 +199,13 @@ function fun1():number{
 function fun2():number|undefined{
   return 1;
 }
+
+import { ArrayList } from "@kit.ArkTS";
+
+let arr = new ArrayList<number>()
+for (let i:number = 0; i < 100; i++) {
+  arr.add(i)
+}
+let cancelIds:ArrayList<number> = arr.subArrayList(6, 86)
+let a: Array<number> = Array.from(cancelIds)
+let arr1: Array<number> = Array.from(new ArrayList<number>())

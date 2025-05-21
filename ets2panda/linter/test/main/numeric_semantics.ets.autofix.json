@@ -24,7 +24,11 @@
                 {
                     "start": 744,
                     "end": 749,
-                    "replacementText": "a: number = 1"
+                    "replacementText": "a: number = 1",
+                    "line": 18,
+                    "column": 5,
+                    "endLine": 18,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -41,7 +45,11 @@
                 {
                     "start": 1377,
                     "end": 1384,
-                    "replacementText": "c: number = 1.5"
+                    "replacementText": "c: number = 1.5",
+                    "line": 39,
+                    "column": 5,
+                    "endLine": 39,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -58,7 +66,11 @@
                 {
                     "start": 1561,
                     "end": 1566,
-                    "replacementText": "d: number = 2"
+                    "replacementText": "d: number = 2",
+                    "line": 45,
+                    "column": 5,
+                    "endLine": 45,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -75,7 +87,11 @@
                 {
                     "start": 1712,
                     "end": 1717,
-                    "replacementText": "n: number = 2"
+                    "replacementText": "n: number = 2",
+                    "line": 51,
+                    "column": 5,
+                    "endLine": 51,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -92,7 +108,11 @@
                 {
                     "start": 1747,
                     "end": 1760,
-                    "replacementText": "g: number[] = [1, 2, 3]"
+                    "replacementText": "g: number[] = [1, 2, 3]",
+                    "line": 55,
+                    "column": 5,
+                    "endLine": 55,
+                    "endColumn": 18
                 }
             ],
             "suggest": "",
@@ -119,7 +139,11 @@
                 {
                     "start": 1786,
                     "end": 1799,
-                    "replacementText": "t8: number = Infinity"
+                    "replacementText": "t8: number = Infinity",
+                    "line": 59,
+                    "column": 5,
+                    "endLine": 59,
+                    "endColumn": 18
                 }
             ],
             "suggest": "",
@@ -136,7 +160,11 @@
                 {
                     "start": 1807,
                     "end": 1821,
-                    "replacementText": "t9: number = -Infinity"
+                    "replacementText": "t9: number = -Infinity",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -153,7 +181,11 @@
                 {
                     "start": 1830,
                     "end": 1839,
-                    "replacementText": "t10: number = NaN"
+                    "replacementText": "t10: number = NaN",
+                    "line": 63,
+                    "column": 5,
+                    "endLine": 63,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -170,7 +202,11 @@
                 {
                     "start": 1848,
                     "end": 1870,
-                    "replacementText": "t11: number = Number.MAX_VALUE"
+                    "replacementText": "t11: number = Number.MAX_VALUE",
+                    "line": 65,
+                    "column": 5,
+                    "endLine": 65,
+                    "endColumn": 27
                 }
             ],
             "suggest": "",
@@ -187,7 +223,11 @@
                 {
                     "start": 1879,
                     "end": 1901,
-                    "replacementText": "t12: number = Number.MIN_VALUE"
+                    "replacementText": "t12: number = Number.MIN_VALUE",
+                    "line": 67,
+                    "column": 5,
+                    "endLine": 67,
+                    "endColumn": 27
                 }
             ],
             "suggest": "",
@@ -204,7 +244,11 @@
                 {
                     "start": 1959,
                     "end": 1965,
-                    "replacementText": "o2: number = o"
+                    "replacementText": "o2: number = o",
+                    "line": 73,
+                    "column": 5,
+                    "endLine": 73,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -221,7 +265,11 @@
                 {
                     "start": 1975,
                     "end": 1982,
-                    "replacementText": "o3: number = oo"
+                    "replacementText": "o3: number = oo",
+                    "line": 75,
+                    "column": 5,
+                    "endLine": 75,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -238,7 +286,11 @@
                 {
                     "start": 2001,
                     "end": 2007,
-                    "replacementText": "a: number = 1;"
+                    "replacementText": "a: number = 1;",
+                    "line": 78,
+                    "column": 4,
+                    "endLine": 78,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -255,7 +307,11 @@
                 {
                     "start": 2043,
                     "end": 2052,
-                    "replacementText": "t2: number = +123"
+                    "replacementText": "t2: number = +123",
+                    "line": 83,
+                    "column": 5,
+                    "endLine": 83,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -272,7 +328,11 @@
                 {
                     "start": 2061,
                     "end": 2070,
-                    "replacementText": "t3: number = -234"
+                    "replacementText": "t3: number = -234",
+                    "line": 85,
+                    "column": 5,
+                    "endLine": 85,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -289,7 +349,11 @@
                 {
                     "start": 2079,
                     "end": 2100,
-                    "replacementText": "num: number = Math.floor(4.8)"
+                    "replacementText": "num: number = Math.floor(4.8)",
+                    "line": 87,
+                    "column": 5,
+                    "endLine": 87,
+                    "endColumn": 26
                 }
             ],
             "suggest": "",
@@ -306,7 +370,11 @@
                 {
                     "start": 2124,
                     "end": 2146,
-                    "replacementText": "value: number = parseInt(\"42\")"
+                    "replacementText": "value: number = parseInt(\"42\")",
+                    "line": 89,
+                    "column": 5,
+                    "endLine": 89,
+                    "endColumn": 27
                 }
             ],
             "suggest": "",
@@ -323,7 +391,11 @@
                 {
                     "start": 2188,
                     "end": 2193,
-                    "replacementText": "x: number = 2"
+                    "replacementText": "x: number = 2",
+                    "line": 92,
+                    "column": 1,
+                    "endLine": 94,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -340,7 +412,11 @@
                 {
                     "start": 2195,
                     "end": 2200,
-                    "replacementText": "y: number = 3"
+                    "replacementText": "y: number = 3",
+                    "line": 92,
+                    "column": 1,
+                    "endLine": 94,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -357,7 +433,11 @@
                 {
                     "start": 2201,
                     "end": 2201,
-                    "replacementText": ": number"
+                    "replacementText": ": number",
+                    "line": 92,
+                    "column": 1,
+                    "endLine": 94,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -374,7 +454,11 @@
                 {
                     "start": 2264,
                     "end": 2264,
-                    "replacementText": ": number"
+                    "replacementText": ": number",
+                    "line": 96,
+                    "column": 1,
+                    "endLine": 98,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -391,7 +475,11 @@
                 {
                     "start": 2347,
                     "end": 2359,
-                    "replacementText": "identity<number>(42)"
+                    "replacementText": "identity<number>(42)",
+                    "line": 103,
+                    "column": 1,
+                    "endLine": 103,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
@@ -408,7 +496,11 @@
                 {
                     "start": 2368,
                     "end": 2386,
-                    "replacementText": "an_array: number[] = [1, 2, 3]"
+                    "replacementText": "an_array: number[] = [1, 2, 3]",
+                    "line": 105,
+                    "column": 5,
+                    "endLine": 105,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -425,7 +517,11 @@
                 {
                     "start": 2394,
                     "end": 2408,
-                    "replacementText": "g: number = an_array[]"
+                    "replacementText": "g: number = an_array[]",
+                    "line": 107,
+                    "column": 5,
+                    "endLine": 107,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -452,7 +548,11 @@
                 {
                     "start": 2418,
                     "end": 2423,
-                    "replacementText": "a: number = 1"
+                    "replacementText": "a: number = 1",
+                    "line": 109,
+                    "column": 7,
+                    "endLine": 109,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -469,7 +569,11 @@
                 {
                     "start": 2493,
                     "end": 2506,
-                    "replacementText": "test: number = Test.A"
+                    "replacementText": "test: number = Test.A",
+                    "line": 115,
+                    "column": 7,
+                    "endLine": 115,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -486,7 +590,11 @@
                 {
                     "start": 2593,
                     "end": 2609,
-                    "replacementText": "readonly c1: number = 1;"
+                    "replacementText": "readonly c1: number = 1;",
+                    "line": 121,
+                    "column": 3,
+                    "endLine": 121,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -503,7 +611,11 @@
                 {
                     "start": 2620,
                     "end": 2638,
-                    "replacementText": "readonly c4: number = 1.7;"
+                    "replacementText": "readonly c4: number = 1.7;",
+                    "line": 122,
+                    "column": 3,
+                    "endLine": 122,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -520,7 +632,11 @@
                 {
                     "start": 2651,
                     "end": 2671,
-                    "replacementText": "readonly c5: number = 0x123;"
+                    "replacementText": "readonly c5: number = 0x123;",
+                    "line": 123,
+                    "column": 3,
+                    "endLine": 123,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -537,7 +653,11 @@
                 {
                     "start": 2683,
                     "end": 2703,
-                    "replacementText": "readonly c6: number = 0o123;"
+                    "replacementText": "readonly c6: number = 0o123;",
+                    "line": 124,
+                    "column": 3,
+                    "endLine": 124,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -554,7 +674,11 @@
                 {
                     "start": 2713,
                     "end": 2733,
-                    "replacementText": "readonly c7: number = 0b101;"
+                    "replacementText": "readonly c7: number = 0b101;",
+                    "line": 125,
+                    "column": 3,
+                    "endLine": 125,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -571,7 +695,11 @@
                 {
                     "start": 2743,
                     "end": 2764,
-                    "replacementText": "readonly c8: number[] = [1, 2, 3];"
+                    "replacementText": "readonly c8: number[] = [1, 2, 3];",
+                    "line": 126,
+                    "column": 3,
+                    "endLine": 126,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -588,7 +716,11 @@
                 {
                     "start": 2893,
                     "end": 2899,
-                    "replacementText": "c1: number = 1"
+                    "replacementText": "c1: number = 1",
+                    "line": 137,
+                    "column": 7,
+                    "endLine": 137,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
@@ -605,7 +737,11 @@
                 {
                     "start": 2923,
                     "end": 2939,
-                    "replacementText": "readonly a5: number = 4;"
+                    "replacementText": "readonly a5: number = 4;",
+                    "line": 140,
+                    "column": 3,
+                    "endLine": 140,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -632,7 +768,11 @@
                 {
                     "replacementText": "fingerprintPositionY: number = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0",
                     "start": 2952,
-                    "end": 3068
+                    "end": 3068,
+                    "line": 143,
+                    "column": 30,
+                    "endLine": 143,
+                    "endColumn": 118
                 }
             ],
             "suggest": "",
@@ -649,7 +789,11 @@
                 {
                     "start": 3117,
                     "end": 3558,
-                    "replacementText": "(() => {\r\n    ({\r\n        openFolderLayout, : .getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight,\r\n        openFolderLayout, : .getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth,\r\n        let, pos = [-1, -1],\r\n        pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder()),\r\n        let, editModeTranslateY = this.getEditModeTranslateY(pos),\r\n        if(pos) { }, : .length > 1\r\n    });\r\n    return undefined;\r\n})()"
+                    "replacementText": "(() => {\r\n    ({\r\n        openFolderLayout, : .getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight,\r\n        openFolderLayout, : .getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth,\r\n        let, pos = [-1, -1],\r\n        pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder()),\r\n        let, editModeTranslateY = this.getEditModeTranslateY(pos),\r\n        if(pos) { }, : .length > 1\r\n    });\r\n    return undefined;\r\n})()",
+                    "line": 145,
+                    "column": 45,
+                    "endLine": 145,
+                    "endColumn": 49
                 }
             ],
             "suggest": "",
@@ -676,7 +820,11 @@
                 {
                     "start": 3129,
                     "end": 3145,
-                    "replacementText": "openFolderLayout: openFolderLayout"
+                    "replacementText": "openFolderLayout: openFolderLayout",
+                    "line": 146,
+                    "column": 5,
+                    "endLine": 146,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -693,7 +841,11 @@
                 {
                     "start": 3237,
                     "end": 3253,
-                    "replacementText": "openFolderLayout: openFolderLayout"
+                    "replacementText": "openFolderLayout: openFolderLayout",
+                    "line": 147,
+                    "column": 5,
+                    "endLine": 147,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -710,7 +862,11 @@
                 {
                     "start": 3345,
                     "end": 3348,
-                    "replacementText": "let: let"
+                    "replacementText": "let: let",
+                    "line": 149,
+                    "column": 5,
+                    "endLine": 149,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",
@@ -727,7 +883,11 @@
                 {
                     "start": 3349,
                     "end": 3363,
-                    "replacementText": "pos: pos"
+                    "replacementText": "pos: pos",
+                    "line": 149,
+                    "column": 9,
+                    "endLine": 149,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -744,7 +904,11 @@
                 {
                     "start": 3370,
                     "end": 3469,
-                    "replacementText": "pos: pos"
+                    "replacementText": "pos: pos",
+                    "line": 150,
+                    "column": 5,
+                    "endLine": 150,
+                    "endColumn": 104
                 }
             ],
             "suggest": "",
@@ -761,7 +925,11 @@
                 {
                     "start": 3476,
                     "end": 3479,
-                    "replacementText": "let: let"
+                    "replacementText": "let: let",
+                    "line": 151,
+                    "column": 5,
+                    "endLine": 151,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",
@@ -778,7 +946,11 @@
                 {
                     "start": 3480,
                     "end": 3532,
-                    "replacementText": "editModeTranslateY: editModeTranslateY"
+                    "replacementText": "editModeTranslateY: editModeTranslateY",
+                    "line": 151,
+                    "column": 9,
+                    "endLine": 151,
+                    "endColumn": 61
                 }
             ],
             "suggest": "",
@@ -835,7 +1007,11 @@
                 {
                     "start": 4388,
                     "end": 4395,
-                    "replacementText": "f: number = 0.0"
+                    "replacementText": "f: number = 0.0",
+                    "line": 166,
+                    "column": 5,
+                    "endLine": 166,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -852,7 +1028,11 @@
                 {
                     "start": 4440,
                     "end": 4447,
-                    "replacementText": "e: number = 0.0"
+                    "replacementText": "e: number = 0.0",
+                    "line": 170,
+                    "column": 5,
+                    "endLine": 170,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -869,7 +1049,11 @@
                 {
                     "start": 4627,
                     "end": 4641,
-                    "replacementText": "arr1: number[] = [1, 2, 3]"
+                    "replacementText": "arr1: number[] = [1, 2, 3]",
+                    "line": 182,
+                    "column": 5,
+                    "endLine": 182,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -886,11 +1070,55 @@
                 {
                     "start": 4670,
                     "end": 4677,
-                    "replacementText": "a: number = 0.0"
+                    "replacementText": "a: number = 0.0",
+                    "line": 185,
+                    "column": 5,
+                    "endLine": 185,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 197,
+            "column": 1,
+            "endLine": 197,
+            "endColumn": 40,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 199,
+            "column": 5,
+            "endLine": 199,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 199,
+            "column": 15,
+            "endLine": 199,
+            "endColumn": 24,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 205,
+            "column": 42,
+            "endLine": 205,
+            "endColumn": 51,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         },
         {
@@ -903,7 +1131,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -920,7 +1152,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -937,7 +1173,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -954,7 +1194,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -971,7 +1215,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -988,7 +1236,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -1005,7 +1257,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -1022,7 +1278,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -1039,7 +1299,11 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n"
+                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "line": 155,
+                    "column": 34,
+                    "endLine": 155,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
