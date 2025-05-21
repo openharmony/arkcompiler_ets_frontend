@@ -107,6 +107,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     if (st->TypeAnnotation() != nullptr) {
         st->TypeAnnotation()->Check(checker);
     }
+
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass(),
                                               checker->Context().ContainingSignature());
@@ -118,7 +119,13 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     checker::Type *propertyType =
         checker->CheckVariableDeclaration(st->Id(), st->TypeAnnotation(), st->Value(), st->Modifiers());
 
-    return st->SetTsType(propertyType != nullptr ? propertyType : checker->GlobalTypeError());
+    propertyType = propertyType != nullptr ? propertyType : checker->GlobalTypeError();
+    st->SetTsType(propertyType);
+    if (st->IsDefinite() && st->TsType()->PossiblyETSNullish()) {
+        checker->LogError(diagnostic::LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE, st->TypeAnnotation()->Start());
+    }
+
+    return propertyType;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const

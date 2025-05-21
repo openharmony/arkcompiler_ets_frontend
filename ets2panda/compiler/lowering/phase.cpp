@@ -54,6 +54,7 @@
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/resizableArrayLowering.h"
+#include "compiler/lowering/ets/lateInitialization.h"
 #include "compiler/lowering/ets/restArgsLowering.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
 #include "compiler/lowering/ets/spreadLowering.h"
@@ -120,6 +121,7 @@ static AsyncMethodLowering g_asyncMethodLowering;
 static TypeFromLowering g_typeFromLowering;
 static ResizableArrayConvert g_resizableArrayConvert;
 static RestArgsLowering g_restArgsLowering;
+static LateInitializationConvert g_lateInitializationConvert;
 static InsertOptionalParametersAnnotation g_insertOptionalParametersAnnotation;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
@@ -174,6 +176,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_arrayLiteralLowering,
         &g_bigintLowering,
         &g_opAssignmentLowering,
+        &g_lateInitializationConvert,
         &g_extensionAccessorPhase,
         &g_constStringToCharLowering,
         &g_boxingForLocals,

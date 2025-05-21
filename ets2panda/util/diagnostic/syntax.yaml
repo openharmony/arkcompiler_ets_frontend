@@ -1219,3 +1219,15 @@ syntax:
 - name: PRIVATE_FIELD_MISMATCH
   id: 302
   message: "Private field '{}' must be declared in an enclosing class"
+
+- name: STATIC_LATE_INITIALIZATION_FIELD_INVALID_MODIFIER
+  id: 303
+  message: "Late-initialized field cannot be defined as static."
+
+- name: LATE_INITIALIZATION_FIELD_HAS_DEFAULT_VALUE
+  id: 304
+  message: "Late-initialized field cannot have default value."
+
+- name: CONFLICTING_FIELD_MODIFIERS
+  id: 305
+  message: "Conflicting modifiers '!' and '?' on field."
