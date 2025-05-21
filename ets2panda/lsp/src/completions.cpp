@@ -424,12 +424,19 @@ std::vector<CompletionEntry> GetCompletionFromClassDefinition(ir::ClassDefinitio
     return res;
 }
 
-ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::TSInterfaceHeritage *extend)
+ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::AstNode *node)
 {
-    if (extend == nullptr) {
+    if (node == nullptr) {
         return nullptr;
     }
-    auto expr = extend->Expr();
+    ir::AstNode *expr = nullptr;
+    if (node->IsTSInterfaceHeritage()) {
+        expr = node->AsTSInterfaceHeritage()->Expr();
+    } else if (node->IsTSClassImplements()) {
+        expr = node->AsTSClassImplements()->Expr();
+    } else {
+        return nullptr;
+    }
     if (expr == nullptr) {
         return nullptr;
     }
