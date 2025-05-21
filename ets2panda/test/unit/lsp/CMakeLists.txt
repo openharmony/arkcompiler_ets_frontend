@@ -95,6 +95,10 @@ ets2panda_add_gtest(lsp_api_classifier_test CPP_SOURCES
     classifier_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_class_hierarchies CPP_SOURCES
+    class_hierarchys_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_diagnostics_test CPP_SOURCES
     get_compiler_options_diagnostics_test.cpp
     get_diagnostics.cpp

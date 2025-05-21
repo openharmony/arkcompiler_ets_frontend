@@ -100,6 +100,12 @@ DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
     return result;
 }
 
+std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *context, const std::string &fileName,
+                                                        size_t pos)
+{
+    return GetClassHierarchiesImpl(context, fileName, pos);
+}
+
 bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
 {
     return GetSafeDeleteInfoImpl(context, position, path);
@@ -367,6 +373,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetAliasScriptElementKind,
                     GetFileReferences,
                     GetDeclInfo,
+                    GetClassHierarchies,
                     GetSafeDeleteInfo,
                     GetReferencesAtPosition,
                     GetPrecedingToken,
