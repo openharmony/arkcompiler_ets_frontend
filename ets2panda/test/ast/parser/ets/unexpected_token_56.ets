@@ -31,3 +31,4 @@ for (let i? : Number = 1;;)  { break; }
 /* @@? 17:23 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 17:49 Error TypeError: Unresolved reference a */
 /* @@? 17:49 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 19:13 Error SyntaxError: Optional variable is deprecated and no longer supported. */

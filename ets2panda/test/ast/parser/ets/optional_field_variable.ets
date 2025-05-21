@@ -13,43 +13,18 @@
  * limitations under the License.
  */
 
-let O = new Object();
-let I = new Int(3);
-
-class C 
-{
-   field? : Object;
-   method(s: string) : int 
-   {
-      return 1;
-   }
-
-   method (s? : string) : int
-   { 
-      return 2;
-   }
-}
-
 function goo()
 {
-   return I;
+   return new Int(3);
 }
 
-function main() : int
+function foo(param? : Object)
 {
-   let c = new C();
    let var1? : Object;
-   let var2? = O;
+   let var2? = new Object();
    let var3? = goo();
-
-   assertEQ(c.method('blablabla'), 1)
-   assertEQ(c.method(undefined), 2)
-   assertEQ(c.method(), 2)
-   assertTrue(c.field === undefined)
-
-   assertTrue(var1 === undefined)
-   assertTrue(var2 === O)
-   assertTrue(var3 === I)
-
-   return 0;
+   for (let i? : Number = 1;;)  { break; }
 }
+
+/* @@? 23:14 Error SyntaxError: Optional variable is deprecated and no longer supported.  */
+/* @@? 26:16 Error SyntaxError: Optional variable is deprecated and no longer supported.  */
