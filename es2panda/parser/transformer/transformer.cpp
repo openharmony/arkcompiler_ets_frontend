@@ -697,15 +697,22 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
 
         ir::MemberExpression *left = nullptr;
         auto *member = GetClassMemberName(it->Key(), it->IsComputed(), it, false);
+        auto thisExpression = AllocNode<ir::ThisExpression>();
+        // Set the range of the 'this' expression to the property key's range
+        // for accurate debug to the original field. (e.g., the "prop" in '"prop" = 1').
+        thisExpression->SetRange(member->Range());
         if (member->IsIdentifier() && !it->IsComputed()) {
-            left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
+            left = AllocNode<ir::MemberExpression>(thisExpression, member,
                                                    ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
                                                    false, false);
         } else {
-            left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
+            left = AllocNode<ir::MemberExpression>(thisExpression, member,
                                                    ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
                                                    true, false);
         }
+        // Set the range of the property access expression (e.g., this["prop"] or this.prop)
+        // to the property key's range for accurate debug.
+        left->SetRange(member->Range());
         auto assignment = AllocNode<ir::AssignmentExpression>(left, it->Value(),
                                                               lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
@@ -1558,20 +1565,33 @@ ir::Expression *Transformer::GetClassMemberName(ir::Expression *key, bool isComp
 {
     if (isComputed) {
         auto name = GetComputedPropertyBinding(node);
-        return AllocNode<ir::Identifier>(name);
+        auto *ident = AllocNode<ir::Identifier>(name);
+        ident->SetRange(key->Range());
+        return ident;
     }
     if (key->IsIdentifier()) {
         if (inDecorator) {
-            return AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
+            auto *strLiteral = AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
+            strLiteral->SetRange(key->AsIdentifier()->Range());
+            return strLiteral;
         } else {
-            return AllocNode<ir::Identifier>(key->AsIdentifier()->Name());
+            auto *ident = AllocNode<ir::Identifier>(key->AsIdentifier()->Name());
+            ident->SetRange(key->AsIdentifier()->Range());
+            return ident;
         }
     } else if (key->IsStringLiteral()) {
-        return AllocNode<ir::StringLiteral>(key->AsStringLiteral()->Str());
+        auto *strLiteral = AllocNode<ir::StringLiteral>(key->AsStringLiteral()->Str());
+        strLiteral->SetRange(key->AsStringLiteral()->Range());
+        return strLiteral;
     } else if (key->IsNumberLiteral()) {
-        return AllocNode<ir::NumberLiteral>(key->AsNumberLiteral()->Number(), key->AsNumberLiteral()->Str());
+        auto *numLiteral = AllocNode<ir::NumberLiteral>(key->AsNumberLiteral()->Number(),
+                                                        key->AsNumberLiteral()->Str());
+        numLiteral->SetRange(key->AsNumberLiteral()->Range());
+        return numLiteral;
     } else if (key->IsBigIntLiteral()) {
-        return AllocNode<ir::BigIntLiteral>(key->AsBigIntLiteral()->Str());
+        auto *bigIntLiteral = AllocNode<ir::BigIntLiteral>(key->AsBigIntLiteral()->Str());
+        bigIntLiteral->SetRange(key->AsBigIntLiteral()->Range());
+        return bigIntLiteral;
     }
     UNREACHABLE();
     return nullptr;

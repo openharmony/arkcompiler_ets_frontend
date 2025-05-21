@@ -63,12 +63,12 @@
                           "type": "ThisExpression",
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 1
+                              "line": 18,
+                              "column": 14
                             },
                             "end": {
-                              "line": 1,
-                              "column": 1
+                              "line": 18,
+                              "column": 20
                             }
                           }
                         },
@@ -77,12 +77,12 @@
                           "name": "###A#auto_accessor_storage#1",
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 1
+                              "line": 18,
+                              "column": 14
                             },
                             "end": {
-                              "line": 1,
-                              "column": 1
+                              "line": 18,
+                              "column": 20
                             }
                           }
                         },
@@ -90,12 +90,12 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 18,
+                            "column": 14
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 18,
+                            "column": 20
                           }
                         }
                       },
