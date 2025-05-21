@@ -790,6 +790,7 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
 
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_UNDEFINED:
+        case checker::TypeFlag::ETS_VOID:
             BranchIfUndefined(node, ifTrue);
             break;
         case checker::TypeFlag::ETS_NULL:
