@@ -56,7 +56,7 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   let homeCheckResult = new Map<string, ProblemInfo[]>();
   const mergedProblems = new Map<string, ProblemInfo[]>();
 
-  if (cmdOptions.homecheck === true) {
+  if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
     const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
     await migrationTool.buildCheckEntry();
@@ -70,27 +70,16 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
       mergedProblems.get(filePath)!.push(...problems);
     }
   }
-  const result = lint(compileOptions, getEtsLoaderPath(compileOptions), homeCheckResult);
 
-  for (const [filePath, problems] of result.problemsInfos) {
-    if (!mergedProblems.has(filePath)) {
-      mergedProblems.set(filePath, []);
+  if (!cmdOptions.skipLinter) {
+    const result = lint(compileOptions, getEtsLoaderPath(compileOptions), homeCheckResult);
+    for (const [filePath, problems] of result.problemsInfos) {
+      mergeLintProblems(filePath, problems, mergedProblems, cmdOptions);
     }
-    let filteredProblems = problems;
-    if (cmdOptions.linterOptions.arkts2) {
-      filteredProblems = problems.filter((problem) => {
-        return arkts2Rules.includes(problem.ruleTag);
-      });
-    }
-    if (cmdOptions.onlySyntax) {
-      filteredProblems = problems.filter((problem) => {
-        return onlyArkts2SyntaxRules.has(problem.ruleTag);
-      });
-    }
-    mergedProblems.get(filePath)!.push(...filteredProblems);
   }
+
   const reportData = Object.fromEntries(mergedProblems);
-  await generateReportFile(reportData);
+  await generateReportFile(reportData, cmdOptions.outputFilePath);
 
   for (const [filePath, problems] of mergedProblems) {
     const reportLine = JSON.stringify({ filePath, problems }) + '\n';
@@ -100,9 +89,31 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   process.exit(0);
 }
 
-async function generateReportFile(reportData): Promise<void> {
-  const reportFilePath = path.join('scan-report.json');
+function mergeLintProblems(filePath: string, problems: ProblemInfo[], mergedProblems: Map<string, ProblemInfo[]>, cmdOptions: CommandLineOptions): void {
+  if (!mergedProblems.has(filePath)) {
+    mergedProblems.set(filePath, []);
+  }
+  let filteredProblems = problems;
+  if (cmdOptions.linterOptions.arkts2) {
+    filteredProblems = problems.filter((problem) => {
+      return arkts2Rules.includes(problem.ruleTag);
+    });
+  }
+  if (cmdOptions.onlySyntax) {
+    filteredProblems = problems.filter((problem) => {
+      return onlyArkts2SyntaxRules.has(problem.ruleTag);
+    });
+  }
+  mergedProblems.get(filePath)!.push(...filteredProblems);
+}
+
+async function generateReportFile(reportData, reportPath?: string): Promise<void> {
+  let reportFilePath = path.join('scan-report.json');
+  if (reportPath !== undefined) {
+    reportFilePath = path.join(path.normalize(reportPath), 'scan-report.json');
+  }
   try {
+    await fs.promises.mkdir(path.dirname(reportFilePath), { recursive: true });
     await fs.promises.writeFile(reportFilePath, JSON.stringify(reportData, null, 2));
   } catch (error) {
     console.error('Error generating report file:', error);
