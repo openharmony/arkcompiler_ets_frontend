@@ -240,6 +240,7 @@ export enum FaultID {
   MakeObservedIsNotSupported,
   PropDecoratorsAndInterfacesAreNotSupported,
   NoEnumPropAsType,
+  NoAwaitJsPromise,
   // this should always be last enum
   LAST_ID
 }

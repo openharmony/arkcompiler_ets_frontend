@@ -376,6 +376,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
+    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
   ]);
 
@@ -8298,5 +8299,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return targetTypes.includes(storageType.getText());
+  }
+  
+  private handleAwaitExpression(node: ts.Node): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return
+    }
+    const awaitExpr = node as ts.AwaitExpression;
+    const checkAndReportJsImportAwait = (targetNode: ts.Node): boolean => {
+      if (ts.isIdentifier(targetNode) && this.tsUtils.isJsImport(targetNode)) {
+        this.incrementCounters(node, FaultID.NoAwaitJsPromise);
+        return true;
+      }
+      return false;
+    };
+    const expr = awaitExpr.expression;
+    checkAndReportJsImportAwait(expr);
+    if (ts.isCallExpression(expr)) {
+      checkAndReportJsImportAwait(expr.expression);
+    }
   }
 }

@@ -239,3 +239,4 @@ faultDesc[FaultID.LocalBuilderDecoratorNotSupported] = '"@LocalBuilder" decorato
 faultDesc[FaultID.MakeObservedIsNotSupported] = 'MakeObserved is not supported';
 faultDesc[FaultID.PropDecoratorsAndInterfacesAreNotSupported] = 'Prop decorators and interfaces are not supported';
 faultDesc[FaultID.NoEnumPropAsType] = 'No enum prop as type';
+faultDesc[FaultID.NoAwaitJsPromise] = 'No await js promise';
