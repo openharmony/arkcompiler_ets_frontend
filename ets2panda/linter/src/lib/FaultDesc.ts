@@ -186,6 +186,7 @@ faultDesc[FaultID.InteropTSFunctionInvoke] = 'TS Function Invoke';
 faultDesc[FaultID.LimitedVoidTypeFromSdk] = 'Limited void type from sdk';
 faultDesc[FaultID.UseSharedDeprecated] = '"use shared" is not supported';
 faultDesc[FaultID.UseConcurrentDeprecated] = '"use concurrent" is not supported';
+faultDesc[FaultID.MethodInheritRule] = 'Method parameters/returns violate inheritance principles';
 faultDesc[FaultID.EntryAnnotation] = '"@Entry" decorator parameter';
 faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
 faultDesc[FaultID.InteropJsObjectUsage] = 'Interop JS object usage';

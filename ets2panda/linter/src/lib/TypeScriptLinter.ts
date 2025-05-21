@@ -3327,6 +3327,122 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.tsUtils.isAbstractMethodInAbstractClass(node)) {
       this.handleTSOverload(tsMethodDecl);
     }
+    this.handleMethodInherit(tsMethodDecl);
+  }
+
+  private handleMethodInherit(node: ts.MethodDeclaration): void {
+    if (!this.options.arkts2 || !node.name || !ts.isIdentifier(node.name)) {
+      return;
+    }
+
+    const classDecl = node.parent;
+    if (!ts.isClassDeclaration(classDecl)) {
+      return;
+    }
+
+    const classType = this.tsTypeChecker.getTypeAtLocation(classDecl);
+    const baseTypes = classType.getBaseTypes();
+    if (!baseTypes || baseTypes.length === 0) {
+      return;
+    }
+
+    const methodName = node.name.text;
+
+    for (const baseType of baseTypes) {
+      const baseMethod = baseType.getProperty(methodName);
+      if (!baseMethod) {
+        continue;
+      }
+
+      const baseMethodDecl = baseMethod.declarations?.find(ts.isMethodDeclaration);
+      if (!baseMethodDecl) {
+        continue;
+      }
+
+      // Check parameter compatibility
+      this.checkMethodParameters(node, baseMethodDecl);
+
+      // Check return type compatibility
+      this.checkMethodReturnType(node, baseMethodDecl);
+
+      break;
+    }
+  }
+
+  /**
+   * Checks if child parameters accept at least as many types as parent parameters.
+   * (Child parameter type should be same or wider than parent.)
+   */
+  private checkMethodParameters(derivedMethod: ts.MethodDeclaration, baseMethod: ts.MethodDeclaration): void {
+    const derivedParams = derivedMethod.parameters;
+    const baseParams = baseMethod.parameters;
+
+    const paramCount = Math.min(derivedParams.length, baseParams.length);
+
+    for (let i = 0; i < paramCount; i++) {
+      const baseParamType = this.tsTypeChecker.getTypeAtLocation(baseParams[i]);
+      const derivedParamType = this.tsTypeChecker.getTypeAtLocation(derivedParams[i]);
+
+      if (!this.isTypeSameOrWider(baseParamType, derivedParamType)) {
+        this.incrementCounters(derivedParams[i], FaultID.MethodInheritRule);
+      }
+    }
+  }
+
+  /**
+   * Checks return type covariance between base and derived methods.
+   * (Derived return type must be assignable to base return type.)
+   */
+  private checkMethodReturnType(derivedMethod: ts.MethodDeclaration, baseMethod: ts.MethodDeclaration): void {
+    if (!baseMethod.type || !derivedMethod.type) {
+      return;
+    }
+
+    const baseReturnType = this.tsTypeChecker.getTypeAtLocation(baseMethod.type);
+    const derivedReturnType = this.tsTypeChecker.getTypeAtLocation(derivedMethod.type);
+
+    if (!this.isTypeAssignable(derivedReturnType, baseReturnType)) {
+      this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
+    }
+  }
+
+  /**
+   * Child type should include all types of parent type (be same or wider).
+   * Returns true if every type in baseType is also included in derivedType.
+   */
+  private isTypeSameOrWider(baseType: ts.Type, derivedType: ts.Type): boolean {
+    const baseTypeSet = new Set(this.flattenUnionTypes(baseType));
+    const derivedTypeSet = new Set(this.flattenUnionTypes(derivedType));
+
+    // Check if every type in baseType is also present in derivedType
+    for (const typeStr of baseTypeSet) {
+      if (!derivedTypeSet.has(typeStr)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Checks structural assignability between two types.
+  private isTypeAssignable(fromType: ts.Type, toType: ts.Type): boolean {
+    const fromTypes = this.flattenUnionTypes(fromType);
+    const toTypes = new Set(this.flattenUnionTypes(toType));
+
+    // All types in `fromTypes` should exist in `toTypes` for assignability.
+    return fromTypes.every((typeStr) => {
+      return toTypes.has(typeStr);
+    });
+  }
+
+  // Converts union types into an array of type strings for easy comparison.
+  private flattenUnionTypes(type: ts.Type): string[] {
+    if (type.isUnion()) {
+      return type.types.map((t) => {
+        return this.tsTypeChecker.typeToString(t);
+      });
+    }
+    return [this.tsTypeChecker.typeToString(type)];
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {

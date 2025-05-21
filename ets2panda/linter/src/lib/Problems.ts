@@ -187,6 +187,7 @@ export enum FaultID {
   ProvideAnnotation,
   UseSharedDeprecated,
   UseConcurrentDeprecated,
+  MethodInheritRule,
   OptionalMethodFromSdk,
   SendablePropTypeFromSdk,
   ConstructorIfaceFromSdk,
