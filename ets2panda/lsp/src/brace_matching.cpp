@@ -17,7 +17,7 @@
 #include <cstddef>
 #include "public/public.h"
 
-namespace {
+namespace ark::es2panda::lsp {
 bool CheckNodeKindForBraceMatching(ark::es2panda::ir::AstNode *node)
 {
     switch (node->Type()) {
@@ -31,9 +31,7 @@ bool CheckNodeKindForBraceMatching(ark::es2panda::ir::AstNode *node)
             return false;
     }
 }
-}  // namespace
 
-namespace ark::es2panda::lsp {
 std::vector<TextSpan> GetBraceMatchingAtPosition(es2panda_Context *context, size_t position)
 {
     auto token = GetTouchingToken(context, position, false);

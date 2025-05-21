@@ -30,6 +30,8 @@ set(ES2PANDA_LSP_SRC
   ./src/find_references.cpp
   ./src/applicable_refactors.cpp
   ./src/refactors/convert_function.cpp
+  ./src/formatting/formatting_context.cpp
+  ./src/formatting/formatting_settings.cpp
   ./src/string_completions.cpp
   ./src/rename.cpp
   ./src/generate_constructor.cpp
