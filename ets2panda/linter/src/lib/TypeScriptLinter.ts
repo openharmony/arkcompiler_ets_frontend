@@ -1134,6 +1134,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const sdkInfo = TypeScriptLinter.pathMap.get(importDeclNode.moduleSpecifier.getText());
     if (sdkInfo && importClause.namedBindings) {
       const namedImports = importClause.namedBindings as ts.NamedImports;
+      if (!namedImports.elements) {
+        return;
+      }
       namedImports.elements.forEach((element) => {
         const elementName = element.name.getText();
         sdkInfo.forEach((info) => {
@@ -1156,13 +1159,15 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.updateDataSdkJsonInfo(importDeclNode, importClause);
       }
     }
-    for (const stmt of importDeclNode.parent.statements) {
-      if (stmt === importDeclNode) {
-        break;
-      }
-      if (!ts.isImportDeclaration(stmt)) {
-        this.incrementCounters(node, FaultID.ImportAfterStatement);
-        break;
+    if (importDeclNode.parent.statements) {
+      for (const stmt of importDeclNode.parent.statements) {
+        if (stmt === importDeclNode) {
+          break;
+        }
+        if (!ts.isImportDeclaration(stmt)) {
+          this.incrementCounters(node, FaultID.ImportAfterStatement);
+          break;
+        }
       }
     }
 
