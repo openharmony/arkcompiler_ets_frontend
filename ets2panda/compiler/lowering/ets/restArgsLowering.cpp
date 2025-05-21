@@ -138,6 +138,7 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
     newCall->SetParent(originalCall->Parent());
     newCall->AddModifier(originalCall->Modifiers());
     newCall->AddBoxingUnboxingFlags(originalCall->GetBoxingUnboxingFlags());
+    newCall->SetTypeParams(originalCall->TypeParams());
     newCall->AddAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
 
     auto *scope = NearestScope(newCall->Parent());
