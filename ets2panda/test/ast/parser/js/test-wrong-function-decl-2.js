@@ -17,5 +17,5 @@
 function f(a,b,c)/* @@ label */;
 
 /* @@@ label Error SyntaxError: Unexpected token, expected '{'. */
-/* @@@ label1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label1 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label1 */

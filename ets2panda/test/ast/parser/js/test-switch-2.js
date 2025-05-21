@@ -19,7 +19,7 @@ switch /* @@ label */{
 }
 
 /* @@@ label Error SyntaxError: Expected '(', got '{'. */
-/* @@@ label1 Error SyntaxError: Expected ')', got 'eos'. */
-/* @@@ label1 Error SyntaxError: Expected '{', got 'eos'. */
-/* @@@ label1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label1 Error SyntaxError: Expected ')', got 'end of stream'. */
+/* @@@ label1 Error SyntaxError: Expected '{', got 'end of stream'. */
+/* @@@ label1 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label1 */

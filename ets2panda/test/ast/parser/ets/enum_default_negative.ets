@@ -34,5 +34,5 @@ enum D {
 /* @@? 21:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 39:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 39:1 Error SyntaxError: Unexpected token 'end of stream'. */
 /* @@? 39:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */

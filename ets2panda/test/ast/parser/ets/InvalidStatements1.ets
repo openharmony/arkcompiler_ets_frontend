@@ -67,4 +67,4 @@ throw
 /* @@? 45:9 Error SyntaxError: Unexpected token '{'. */
 /* @@? 48:5 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 52:1 Error SyntaxError: Illegal newline after throw. */
-/* @@? 71:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 71:1 Error SyntaxError: Expected '}', got 'end of stream'. */

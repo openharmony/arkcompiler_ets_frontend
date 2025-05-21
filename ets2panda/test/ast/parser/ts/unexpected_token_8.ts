@@ -17,6 +17,6 @@
 class B {}
 class A extends B
 
-/* @@@ label Error SyntaxError: Expected '{', got 'eos'. */
-/* @@@ label Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label Error SyntaxError: Expected '{', got 'end of stream'. */
+/* @@@ label Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label */

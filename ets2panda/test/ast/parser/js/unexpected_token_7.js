@@ -22,4 +22,4 @@ class Foo {
 /* @@? 18:12 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@? 19:11 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@? 26:1 Error SyntaxError: Private field has already been declared. */
-/* @@? 26:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 26:1 Error SyntaxError: Expected '}', got 'end of stream'. */

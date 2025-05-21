@@ -23,4 +23,4 @@ do export  Boolean [1] = delete
 /* @@? 16:20 Error SyntaxError: Invalid left-hand side in array destructuring pattern. */
 /* @@? 16:20 Error TypeError: Invalid left-hand side of assignment expression */
 /* @@? 17:4 Error SyntaxError: Expected ')', got 'while'. */
-/* @@? 27:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 27:1 Error SyntaxError: Unexpected token 'end of stream'. */

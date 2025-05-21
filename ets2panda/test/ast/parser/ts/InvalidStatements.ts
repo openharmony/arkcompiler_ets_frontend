@@ -161,4 +161,4 @@ module module2
 /* @@? 105:8 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 106:5 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@? 110:5 Error SyntaxError: Unexpected token, expected '{'. */
-/* @@? 165:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 165:1 Error SyntaxError: Expected '}', got 'end of stream'. */
