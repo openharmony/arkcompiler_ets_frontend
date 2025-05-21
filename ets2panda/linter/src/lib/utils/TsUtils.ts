@@ -3855,16 +3855,4 @@ export class TsUtils {
     forEachNodeInSubtree(targetNode, callback, stopCondition);
     return found;
   }
-
-  static extractIdentifierFromDecorator(expr: ts.Expression): ts.Identifier | undefined {
-    while (ts.isCallExpression(expr) || ts.isParenthesizedExpression(expr) || ts.isPropertyAccessExpression(expr)) {
-      if (ts.isCallExpression(expr) || ts.isParenthesizedExpression(expr)) {
-        expr = expr.expression;
-      } else if (ts.isPropertyAccessExpression(expr)) {
-        expr = expr.name;
-      }
-    }
-
-    return ts.isIdentifier(expr) ? expr : undefined;
-  }
 }

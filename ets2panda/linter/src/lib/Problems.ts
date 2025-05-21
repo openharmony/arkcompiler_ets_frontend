@@ -179,7 +179,6 @@ export enum FaultID {
   DataObservation,
   InteropCallReflect,
   InteropCallObjectParam,
-  InteropNoDecorators,
   InteropDirectAccessToTSTypes,
   InteropTSFunctionInvoke,
   LimitedVoidTypeFromSdk,
