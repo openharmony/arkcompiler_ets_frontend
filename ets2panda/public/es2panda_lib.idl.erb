@@ -247,7 +247,8 @@ interface es2panda_Impl {
 
 namespace ir {
 
-[Entity=Class, c_type=es2panda_AstNode] interface NumberLiteral: Literal {
+% number_literal_ast_node_type = Enums::enums['AstNodeType'].all_flags_with_value['NUMBER_LITERAL']
+[Entity=Class, Es2pandaAstNodeType=<%= number_literal_ast_node_type %>, c_type=es2panda_AstNode] interface NumberLiteral: Literal {
     ir.AstNode Create(es2panda_Context ctx, i32 value);
     ir.AstNode Create1(es2panda_Context ctx, i64 value);
     ir.AstNode Create2(es2panda_Context ctx, f64 value);
@@ -262,6 +263,8 @@ namespace ir {
     boolean SetLong(ir.AstNode node, i64 new_value);
     boolean SetDouble(ir.AstNode node, f64 new_value);
     boolean SetFloat(ir.AstNode node, f32 new_value);
+
+    [get] String StrConst(es2panda_Context context);
 };
 
 };  // namespace ir
