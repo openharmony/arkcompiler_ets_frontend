@@ -198,6 +198,7 @@
   "plugin:@migration/all": {
     "@migration/arkts-obj-literal-generate-class-instance": 1,
     "@migration/arkts-instance-method-bind-this": 1,
+    "@migration/arkts-no-ts-like-as": 1,
     "@migration/arkui-data-observation": 1,
     "@migration/arkui-stateful-appstorage": 1,
     "@migration/arkui-no-update-in-build": 1,

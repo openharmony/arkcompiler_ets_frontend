@@ -26,6 +26,7 @@ import { InteropBoxedTypeCheck } from '../../checker/migration/InteropBoxedTypeC
 import { InteropObjectLiteralCheck } from '../../checker/migration/InteropDynamicObjectLiteralsCheck';
 import { InteropAssignCheck } from '../../checker/migration/InteropAssignCheck';
 import { InteropJSModifyPropertyCheck } from '../../checker/migration/InteropJSModifyPropertyCheck';
+import { NoTSLikeAsCheck } from '../../checker/migration/NoTSLikeAsCheck';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
@@ -45,6 +46,7 @@ export const projectRules = {
     '@migration/interop-assign': InteropAssignCheck,
     '@migration/interop-js-modify-property': InteropJSModifyPropertyCheck,
     '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
+    '@migration/arkts-no-ts-like-as': NoTSLikeAsCheck,
 };
 
 // 新增文件级的checker，需要在此处注册
