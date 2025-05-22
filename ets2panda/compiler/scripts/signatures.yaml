@@ -358,6 +358,12 @@ builtins:
   - name: Array
     package: PKG_ESCOMPAT
     ref: BUILTIN_ARRAY
+  - name: Record
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_RECORD
+  - name: Map
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_MAP
   - name: AssertionError
     package: PKG_STD_CORE
     ref: BUILTIN_ASSERTION_ERROR
