@@ -242,6 +242,14 @@ export enum FaultID {
   PropDecoratorsAndInterfacesAreNotSupported,
   NoEnumPropAsType,
   NoAwaitJsPromise,
+  NosparseArray,
+  NoTsLikeSmartType,
+  ArrayTypeImmutable,
+  CreatingPrimitiveTypes,
+  TsLikeCatchType,
+  NumericBigintCompare,
+  NondecimalBigint,
+  UnsupportOperator,
   // this should always be last enum
   LAST_ID
 }

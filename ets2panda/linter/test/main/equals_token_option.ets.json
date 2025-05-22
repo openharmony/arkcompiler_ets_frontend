@@ -15,23 +15,13 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 17,
-            "endLine": 18,
-            "endColumn": 20,
-            "problem": "NoEnumPropAsType",
-            "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
-            "column": 8,
+            "column": 14,
             "endLine": 20,
-            "endColumn": 11,
-            "problem": "NoEnumPropAsType",
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
             "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
             "severity": "ERROR"
         }
     ]

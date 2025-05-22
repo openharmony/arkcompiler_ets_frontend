@@ -13,26 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 18,
-            "column": 17,
-            "endLine": 18,
-            "endColumn": 20,
-            "problem": "NoEnumPropAsType",
-            "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 8,
-            "endLine": 20,
-            "endColumn": 11,
-            "problem": "NoEnumPropAsType",
-            "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

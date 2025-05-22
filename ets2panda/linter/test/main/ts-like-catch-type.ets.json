@@ -12,26 +12,26 @@
         "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
         "See the License for the specific language governing permissions and",
         "limitations under the License."
-    ],
+      ],
     "result": [
         {
-            "line": 18,
-            "column": 17,
-            "endLine": 18,
-            "endColumn": 20,
-            "problem": "NoEnumPropAsType",
+            "line": 27,
+            "column": 12,
+            "endLine": 27,
+            "endColumn": 18,
+            "problem": "CatchWithUnsupportedType",
             "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
+            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)",
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 8,
-            "endLine": 20,
-            "endColumn": 11,
-            "problem": "NoEnumPropAsType",
+            "line": 27,
+            "column": 15,
+            "endLine": 27,
+            "endColumn": 18,
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Enum prop as type are not supported (arkts-no-enum-prop-as-type)",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]
