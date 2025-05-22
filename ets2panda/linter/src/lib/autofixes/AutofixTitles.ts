@@ -52,6 +52,7 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [259, 'Add UI Interface Import'],
   [260, '"@Entry" annotaion fixed'],
   [263, '"@Provide" annotation fixed'],
+  [275, 'Custom layout need add decorator'],
   [300, 'Replace calling method of the TS-like `Function` type'],
   [330, 'Convert import named objects from JS to ESObject'],
   [332, 'Using the ESObject interface to access properties'],

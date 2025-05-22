@@ -250,6 +250,7 @@ export enum FaultID {
   NumericBigintCompare,
   NondecimalBigint,
   UnsupportOperator,
+  CustomLayoutNeedAddDecorator,
   // this should always be last enum
   LAST_ID
 }

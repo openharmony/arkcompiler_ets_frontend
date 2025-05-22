@@ -32,7 +32,8 @@ export enum CustomDecoratorName {
   Styles = 'Styles',
   AnimatableExtend = 'AnimatableExtend',
   Memo = 'Memo',
-  Observed = 'Observed'
+  Observed = 'Observed',
+  Layoutable = 'Layoutable'
 }
 
 export enum StorageTypeName {
@@ -64,6 +65,8 @@ export const skipImportDecoratorName: Set<string> = new Set([
 export const deepCopyDecoratorName: Set<string> = new Set(['Prop', 'StorageProp', 'LocalStorageProp']);
 
 export const deepCopyFunctionName: Set<string> = new Set(['prop', 'setAndProp']);
+
+export const customLayoutFunctionName: Set<string> = new Set(['onMeasureSize', 'onPlaceChildren']);
 
 export const ENTRY_DECORATOR_NAME = 'Entry';
 export const ENTRY_STORAGE_PROPERITY = 'storage';

@@ -96,7 +96,8 @@ import {
   ARKUI_STATE_MANAGEMENT,
   deepCopyDecoratorName,
   deepCopyFunctionName,
-  StorageTypeName
+  StorageTypeName,
+  customLayoutFunctionName
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { InteropType, REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
@@ -654,6 +655,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+    this.handleStructDeclarationForLayout(node);
     this.handleInvalidIdentifier(node);
   }
 
@@ -8623,5 +8625,46 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if ((/^0[box]/i).test(literalText)) {
       this.incrementCounters(node, FaultID.NondecimalBigint);
     }
+  }
+
+  private handleStructDeclarationForLayout(node: ts.StructDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!node.name) {
+      return;
+    }
+
+    let hasTargetFunc = false;
+
+    const members = node.members;
+    for (const member of members) {
+      if (!ts.isMethodDeclaration(member)) {
+        continue;
+      }
+
+      if (customLayoutFunctionName.has(member.name.getText())) {
+        hasTargetFunc = true;
+        break;
+      }
+    }
+
+    if (!hasTargetFunc) {
+      return;
+    }
+
+    const decorators = ts.getDecorators(node);
+    if (decorators) {
+      for (const decorator of decorators) {
+        const decoratorName = TsUtils.getDecoratorName(decorator);
+        if (decoratorName && decoratorName === CustomDecoratorName.Layoutable) {
+          return;
+        }
+      }
+    }
+
+    const autofix = this.autofixer?.fixCustomLayout(node);
+    this.incrementCounters(node.name, FaultID.CustomLayoutNeedAddDecorator, autofix);
   }
 }
