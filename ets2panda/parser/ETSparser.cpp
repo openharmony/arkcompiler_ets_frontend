@@ -1103,6 +1103,20 @@ void ETSParser::ReportIfVarDeclaration(VariableParsingFlags flags)
     }
 }
 
+ir::Statement *ETSParser::CreateReExportDeclarationNode(ir::ETSImportDeclaration *reExportDeclaration,
+                                                        const lexer::SourcePosition &startLoc,
+                                                        const ir::ModifierFlags &modifiers)
+{
+    if (GetProgram()->AbsoluteName().Is(reExportDeclaration->ResolvedSource())) {
+        LogError(diagnostic::RE_EXPORTING_LOCAL_BINDINGS_IS_NOT_ALLOWED, {}, startLoc);
+        return AllocBrokenStatement(startLoc);
+    }
+    auto reExport = AllocNode<ir::ETSReExportDeclaration>(reExportDeclaration, std::vector<std::string>(),
+                                                          GetProgram()->AbsoluteName(), Allocator());
+    reExport->AddModifier(modifiers);
+    return reExport;
+}
+
 ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers)
 {
     const size_t exportDefaultMaxSize = 1;
@@ -1154,10 +1168,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     }
     // re-export directive
     auto *reExportDeclaration = ParseImportPathBuildImport(std::move(specifiers), true, startLoc, ir::ImportKinds::ALL);
-    auto reExport = AllocNode<ir::ETSReExportDeclaration>(reExportDeclaration, std::vector<std::string>(),
-                                                          GetProgram()->AbsoluteName(), Allocator());
-    reExport->AddModifier(modifiers);
-    return reExport;
+    return CreateReExportDeclarationNode(reExportDeclaration, startLoc, modifiers);
 }
 
 ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
