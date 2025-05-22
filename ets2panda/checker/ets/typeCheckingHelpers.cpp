@@ -1420,7 +1420,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         }
 
         Type *paramType = param->AsETSParameterExpression()->Ident()->TsType();
-        if (paramType->IsETSObjectType() && Relation()->IsSupertypeOf(paramType, GlobalBuiltinFunctionType())) {
+        if (Relation()->IsSupertypeOf(paramType, GlobalBuiltinFunctionType())) {
             lambda->Parent()->Check(this);
             return true;
         }
