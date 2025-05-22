@@ -1013,10 +1013,6 @@ void AssignAnalyzer::AnalyzeId(const ir::Identifier *id)
         return;  // inside ObjectExpression
     }
 
-    if (id->Parent()->IsTypeofExpression() && id->Parent()->AsTypeofExpression()->Argument() == id) {
-        return;  // according to the spec 'typeof' works on uninitialized variables too
-    }
-
     if (id->Parent()->IsBinaryExpression()) {
         const ir::BinaryExpression *binExpr = id->Parent()->AsBinaryExpression();
         if ((binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
