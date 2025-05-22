@@ -160,6 +160,8 @@ public:
                                                         std::uint32_t index);
     static bool IsAsyncMethod(ir::AstNode const *node);
 
+    static bool IsGlobalVar(const ark::es2panda::varbinder::Variable *var);
+
     template <typename T, typename V>
     static ArenaVector<T *> ConvertVector(const ArenaVector<V *> &src)
     {

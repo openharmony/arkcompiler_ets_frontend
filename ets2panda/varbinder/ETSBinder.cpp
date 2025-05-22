@@ -18,6 +18,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "public/public.h"
 #include "compiler/lowering/util.h"
+#include "util/helpers.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -663,13 +664,11 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
     bool const isStdLib = util::Helpers::IsStdLib(Program());
 
     for (const auto [bindingName, var] : globalBindings) {
-        if (bindingName.Is(compiler::Signatures::ETS_GLOBAL)) {
+        if (util::Helpers::IsGlobalVar(var)) {
             const auto *const classDef = var->Declaration()->Node()->AsClassDeclaration()->Definition();
             ImportGlobalProperties(classDef);
             continue;
         }
-        ES2PANDA_ASSERT(bindingName.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
-
         if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported() &&
             (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
              var->AsLocalVariable()->Declaration()->Node()->IsExportedType())) {
@@ -1213,14 +1212,7 @@ void ETSBinder::BuildProgram()
 
     auto &stmts = Program()->Ast()->Statements();
     const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
-        if (stmt->IsClassDeclaration() &&
-            !stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
-            ES2PANDA_ASSERT(stmt->AsClassDeclaration()->Definition()->Ident()->Name().Utf8().find(
-                                // CC-OFFNXT(G.FMT.06-CPP,G.FMT.05-CPP) project code style
-                                compiler::Signatures::ETS_GLOBAL) == std::string::npos);
-        }
-        return stmt->IsClassDeclaration() &&
-               stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
+        return stmt->IsClassDeclaration() && stmt->AsClassDeclaration()->Definition()->IsGlobal();
     });
     if (etsGlobal != stmts.end()) {
         const auto begin = std::find_if(stmts.rbegin(), stmts.rend(), [](const ir::Statement *stmt) {

@@ -178,11 +178,6 @@ checker::VerifiedType Identifier::Check(checker::ETSChecker *checker)
 
 bool Identifier::IsDeclaration(ScriptExtension ext) const
 {
-    // GLOBAL class is not a reference
-    if (Name() == compiler::Signatures::ETS_GLOBAL) {
-        return true;
-    }
-
     // We can determine reference status from parent node
     if (Parent() == nullptr) {
         return false;
@@ -387,6 +382,10 @@ bool Identifier::CheckDeclarationsPart1(const ir::AstNode *parent, [[maybe_unuse
 
     if (parent->IsExportDefaultDeclaration()) {
         return true;
+    }
+
+    if (Parent()->IsClassDefinition()) {
+        return Parent()->AsClassDefinition()->IsGlobal();
     }
 
     return false;

@@ -634,7 +634,7 @@ std::string GetDeclName(const ir::AstNode *decl)
 bool IsGlobalVar(const ir::AstNode *node)
 {
     return node->IsClassProperty() && node->Parent()->IsClassDefinition() &&
-           node->Parent()->AsClassDefinition()->Ident()->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
+           node->Parent()->AsClassDefinition()->IsGlobal();
 }
 
 bool IsVariableOfKind(const ir::Identifier *node, ir::VariableDeclaration::VariableDeclarationKind kind)

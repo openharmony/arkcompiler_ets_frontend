@@ -46,6 +46,7 @@
 #include "varbinder/variableFlags.h"
 #include "generated/signatures.h"
 #include "generated/diagnostic.h"
+#include "util/helpers.h"
 
 namespace ark::es2panda::checker {
 
@@ -2452,10 +2453,9 @@ void ETSChecker::CheckGetterSetterProperties(ETSObjectType *classType)
 void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str)
 {
     for (const auto &[name, var] : VarBinder()->GetScope()->Bindings()) {
-        if (name.Is(str.Mutf8()) || name.Is(compiler::Signatures::ETS_GLOBAL)) {
+        if (name.Is(str.Mutf8()) || util::Helpers::IsGlobalVar(var)) {
             continue;
         }
-        ES2PANDA_ASSERT(name.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
 
         if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
             moduleObj->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
