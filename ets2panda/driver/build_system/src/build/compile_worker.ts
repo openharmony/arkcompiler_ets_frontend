@@ -45,7 +45,7 @@ process.on('message', (message: {
 
   Logger.getInstance(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig);
-  const koalaWrapperPath = path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
+  const koalaWrapperPath = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
   let { arkts, arktsGlobal } = require(koalaWrapperPath);
 
   for (const fileInfo of taskList) {

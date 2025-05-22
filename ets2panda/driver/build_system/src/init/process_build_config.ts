@@ -135,7 +135,7 @@ export function initBuildEnv(buildConfig: BuildConfig): void {
 }
 
 function initKoalaWrapper(buildConfig: BuildConfig): void {
-  let koalaWrapperPath: string = path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
+  let koalaWrapperPath: string = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
   const { arkts, arktsGlobal } = require(koalaWrapperPath);
   buildConfig.arkts = arkts;
   buildConfig.arktsGlobal = arktsGlobal;
