@@ -1478,3 +1478,7 @@ semantic:
 - name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
   id: 371
   message: "Late-initialized field cannot be nullish types or possibly nullish types."
+
+- name: SUPER_NOT_ACCESSIBLE
+  id: 372
+  message: "Class field '{}' defined by the parent class is not accessible in the child class via super."

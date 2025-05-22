@@ -23,4 +23,5 @@ class B extends A {
     }
 }
 
+/* @@@ label Error TypeError: Class field 'a' defined by the parent class is not accessible in the child class via super.  */
 /* @@@ label Error TypeError: Property a is not visible here.  */
