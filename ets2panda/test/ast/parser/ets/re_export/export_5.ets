@@ -13,5 +13,6 @@
  * limitations under the License.
  */
 
-export * as name from './export.ets'
-export {test2} from './export_6'
+import {test2} from './re_export_16'
+
+export class test1 {}
