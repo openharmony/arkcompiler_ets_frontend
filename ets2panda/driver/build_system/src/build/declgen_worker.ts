@@ -78,13 +78,13 @@ process.on('message', (message: {
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       pluginDriver.getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, true);
 
       let ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);
       pluginDriver.runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, true);
 
       ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);

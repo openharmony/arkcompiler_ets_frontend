@@ -49,7 +49,7 @@ interface ArkTSConfigObject {
     baseUrl: string,
     paths: Record<string, string[]>;
     dependencies: string[] | undefined;
-    entry: string;
+    entry?: string;
     dynamicPaths: Record<string, DynamicPathItem>;
     useEmptyPackage?: boolean;
   }
@@ -152,15 +152,38 @@ export class ArkTSConfigGenerator {
     this.generateSystemSdkPathSection(this.pathSection);
 
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, packageName: string) => {
-       if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2) {
-          this.pathSection[moduleInfo.packageName] = [
-            path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
-          ];
-       }
-
+      if (moduleInfo.language !== LANGUAGE_VERSION.ARKTS_1_2 && moduleInfo.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
+        return;
+      }
+      if (!moduleInfo.entryFile) {
+        return;
+      }
+      this.handleEntryFile(moduleInfo);
     });
-
     return this.pathSection;
+  }
+
+  private handleEntryFile(moduleInfo: ModuleInfo): void {
+    try {
+      const stat = fs.statSync(moduleInfo.entryFile);
+      if (!stat.isFile()) {
+        return;
+      }
+      const entryFilePath = moduleInfo.entryFile;
+      const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
+      // If the file is an ArkTS 1.2 implementation, configure the path in pathSection.
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 || moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID && firstLine.includes('use static')) {
+        this.pathSection[moduleInfo.packageName] = [
+          path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
+        ];
+      }
+    } catch (error) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_HANDLE_ENTRY_FILE,
+        `Error handle entry file for module ${moduleInfo.packageName}`
+      );
+      this.logger.printError(logData);
+    }
   }
 
   private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
@@ -203,7 +226,7 @@ export class ArkTSConfigGenerator {
     });
   }
 
-  public writeArkTSConfigFile(moduleInfo: ModuleInfo): void {
+  public writeArkTSConfigFile(moduleInfo: ModuleInfo, enableDeclgenEts2Ts: boolean): void {
     if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
@@ -214,9 +237,11 @@ export class ArkTSConfigGenerator {
     let pathSection = this.getPathSection();
     let dependenciesSection: string[] = [];
     this.getDependenciesSection(moduleInfo, dependenciesSection);
-
     let dynamicPathSection: Record<string, DynamicPathItem> = {};
-    this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+
+    if (!enableDeclgenEts2Ts) {
+      this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+    }
 
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
     let arktsConfig: ArkTSConfigObject = {
@@ -229,6 +254,19 @@ export class ArkTSConfigGenerator {
         dynamicPaths: dynamicPathSection
       }
     };
+
+    if (moduleInfo.entryFile && moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      const entryFilePath = moduleInfo.entryFile;
+      const stat = fs.statSync(entryFilePath);
+      if (fs.existsSync(entryFilePath) && stat.isFile()) {
+        const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
+        // If the entryFile is not an ArkTS 1.2 implementation, remove the entry property field.
+        if (!firstLine.includes('use static')) {
+          delete arktsConfig.compilerOptions.entry;
+        }
+      }
+    }
+
     if (moduleInfo.frameworkMode) {
       arktsConfig.compilerOptions.useEmptyPackage = moduleInfo.useEmptyPackage;
     }
