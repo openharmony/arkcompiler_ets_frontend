@@ -6434,6 +6434,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleHeritageClause(node: ts.HeritageClause): void {
+    this.checkEWTArgumentsForSdkDuplicateDeclName(node);
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
@@ -6452,7 +6453,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.incrementCounters(expr, FaultID.ExtendsExpression);
         } else if (ts.isIdentifier(expr)) {
           this.fixJsImportExtendsClass(node.parent, expr);
-          this.handleSdkDuplicateDeclName(expr);
         }
       });
 
@@ -7298,12 +7298,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (ts.isTypeReferenceNode(errorNode)) {
       errorNode = errorNode.typeName;
     }
+
     const matchedApi = apiNamesArr.some((sdkInfo) => {
       const isSameName = sdkInfo.api_info.api_name === apiName;
-      const decl = this.tsUtils.getDeclarationNode(errorNode);
-      const sourceFileName = path.normalize(decl?.getSourceFile().fileName || '');
-      const isSameFile = sourceFileName.endsWith(path.normalize(sdkInfo.file_path));
-      return isSameName && isSameFile;
+      const isGlobal = sdkInfo.is_global;
+      return isSameName && isGlobal;
     });
 
     if (matchedApi) {
@@ -7391,6 +7390,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const expression = node.right;
     if (ts.isIdentifier(expression)) {
       this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+    }
+  }
+
+  private checkEWTArgumentsForSdkDuplicateDeclName(node: ts.HeritageClause): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (node.token === ts.SyntaxKind.ExtendsKeyword || node.token === ts.SyntaxKind.ImplementsKeyword) {
+      node.types.forEach((type) => {
+        const expr = type.expression;
+        if (ts.isIdentifier(expr)) {
+          this.processApiNodeSdkDuplicateDeclName(expr.text, expr);     
+        }
+      });
     }
   }
 
