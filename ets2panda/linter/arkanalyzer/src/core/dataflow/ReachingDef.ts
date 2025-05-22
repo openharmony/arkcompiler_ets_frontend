@@ -128,7 +128,13 @@ class ReachingDefFlowGraph extends BaseImplicitGraph<RDNode> implements FlowGrap
                 throw new Error('cfg has no terminal');
             }
 
-            bb.getSuccessors().forEach(succBB => {
+            let successors = bb.getSuccessors();
+            // try...catch语句，catch所在的block在CFG表示里是没有前驱block的，需要在这里额外查找并将exceptionalSuccessorBlocks作为try块的后继块之一
+            const exceptionalSuccessorBlocks = bb.getExceptionalSuccessorBlocks();
+            if (exceptionalSuccessorBlocks !== undefined) {
+                successors.push(...exceptionalSuccessorBlocks);
+            }
+            successors.forEach(succBB => {
                 let head = succBB.getHead();
                 if (!head) {
                     return;
