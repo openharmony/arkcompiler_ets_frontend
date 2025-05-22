@@ -20,22 +20,24 @@ import {
     Stmt,
     Scene,
     Value,
-    DVFGBuilder,
+    ArkClass,
+    ArkFile,
     ArkInstanceOfExpr,
     ArkNewExpr,
     CallGraph,
     ArkParameterRef,
     ArkInstanceFieldRef,
-    ArkNamespace,
+    AbstractFieldRef,
     Local,
     ArkArrayRef,
+    ClassSignature,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, MatcherCallback } from '../../Index';
 import { IssueReport } from '../../model/Defects';
-import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
-import { CALL_DEPTH_LIMIT, GlobalCallGraphHelper } from './Utils';
+import { DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
+import { DVFGHelper, CALL_DEPTH_LIMIT, GlobalCallGraphHelper } from './Utils';
 import { WarnInfo } from '../../utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObjectLiteralCheck');
@@ -51,8 +53,6 @@ export class ObjectLiteralCheck implements BaseChecker {
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
     private cg: CallGraph;
-    private dvfg: DVFG;
-    private dvfgBuilder: DVFGBuilder;
     private visited: Set<ArkMethod> = new Set();
 
     public registerMatchers(): MatcherCallback[] {
@@ -66,51 +66,21 @@ export class ObjectLiteralCheck implements BaseChecker {
     public check = (scene: Scene): void => {
         this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
-        this.dvfg = new DVFG(this.cg);
-        this.dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
-
         for (let arkFile of scene.getFiles()) {
-            const defaultMethod = arkFile.getDefaultClass().getDefaultArkMethod();
-            const globalVarMap: Map<string, Stmt[]> = new Map();
-            if (defaultMethod) {
-                this.dvfgBuilder.buildForSingleMethod(defaultMethod);
-                const stmts = defaultMethod.getBody()?.getCfg().getStmts() ?? [];
-                for (const stmt of stmts) {
-                    if (!(stmt instanceof ArkAssignStmt)) {
-                        continue;
-                    }
-                    const leftOp = stmt.getLeftOp();
-                    if (!(leftOp instanceof Local)) {
-                        continue;
-                    }
-                    const name = leftOp.getName();
-                    if (name.startsWith('%') || name === 'this') {
-                        continue;
-                    }
-                    globalVarMap.set(name, [...(globalVarMap.get(name) ?? []), stmt]);
-                }
-            }
+            const topLevelVarMap: Map<string, Stmt[]> = new Map();
+            this.collectImportedVar(topLevelVarMap, arkFile);
+            this.collectTopLevelVar(topLevelVarMap, arkFile, scene);
 
-            for (let clazz of arkFile.getClasses()) {
-                for (let mtd of clazz.getMethods()) {
-                    this.processArkMethod(mtd, globalVarMap, scene);
-                }
-            }
-            for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                this.processNameSpace(namespace, globalVarMap, scene);
-            }
+            const handleClass = (cls: ArkClass): void => {
+                cls.getMethods().forEach(m => this.processArkMethod(m, topLevelVarMap, scene));
+            };
+
+            arkFile.getClasses().forEach(cls => handleClass(cls));
+            arkFile.getAllNamespacesUnderThisFile().forEach(n => n.getClasses().forEach(cls => handleClass(cls)));
         }
     };
 
-    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
-        for (let clazz of namespace.getClasses()) {
-            for (let mtd of clazz.getMethods()) {
-                this.processArkMethod(mtd, globalVarMap, scene);
-            }
-        }
-    }
-
-    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+    public processArkMethod(target: ArkMethod, topLevelVarMap: Map<string, Stmt[]>, scene: Scene): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             if (!(stmt instanceof ArkAssignStmt)) {
@@ -121,14 +91,14 @@ export class ObjectLiteralCheck implements BaseChecker {
                 continue;
             }
             if (!this.visited.has(target)) {
-                this.dvfgBuilder.buildForSingleMethod(target);
+                DVFGHelper.buildSingleDVFG(target, scene);
                 this.visited.add(target);
             }
 
             let result: Stmt[] = [];
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
-            this.checkFromStmt(stmt, scene, result, globalVarMap, checkAll, visited);
+            this.checkFromStmt(stmt, scene, result, topLevelVarMap, checkAll, visited);
             result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
             if (!checkAll.value) {
                 this.addIssueReport(stmt, rightOp);
@@ -136,11 +106,52 @@ export class ObjectLiteralCheck implements BaseChecker {
         }
     }
 
+    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile) {
+        file.getImportInfos().forEach(importInfo => {
+            const exportInfo = importInfo.getLazyExportInfo();
+            if (exportInfo === null) {
+                return;
+            }
+            const arkExport = exportInfo.getArkExport();
+            if (!arkExport || !(arkExport instanceof Local)) {
+                return;
+            }
+            const declaringStmt = arkExport.getDeclaringStmt();
+            if (!declaringStmt) {
+                return;
+            }
+            importVarMap.set(arkExport.getName(), [declaringStmt]);
+        });
+    }
+
+    private collectTopLevelVar(topLevelVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene) {
+        const defaultMethod = file.getDefaultClass().getDefaultArkMethod();
+        if (!defaultMethod) {
+            return;
+        }
+        DVFGHelper.buildSingleDVFG(defaultMethod, scene);
+        const stmts = defaultMethod.getBody()?.getCfg().getStmts() ?? [];
+        for (const stmt of stmts) {
+            if (!(stmt instanceof ArkAssignStmt)) {
+                continue;
+            }
+            const leftOp = stmt.getLeftOp();
+            if (!(leftOp instanceof Local)) {
+                continue;
+            }
+            const name = leftOp.getName();
+            if (name.startsWith('%') || name === 'this') {
+                continue;
+            }
+            topLevelVarMap.set(name, [...(topLevelVarMap.get(name) ?? []), stmt]);
+        }
+    }
+
     private checkFromStmt(
         stmt: Stmt,
         scene: Scene,
         res: Stmt[],
-        globalVarMap: Map<string, Stmt[]>,
+        topLevelVarMap: Map<string, Stmt[]>,
         checkAll: { value: boolean },
         visited: Set<Stmt>,
         depth: number = 0
@@ -149,7 +160,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             checkAll.value = false;
             return;
         }
-        const node = this.dvfg.getOrNewDVFGNode(stmt);
+        const node = DVFGHelper.getOrNewDVFGNode(stmt, scene);
         let worklist: DVFGNode[] = [node];
         while (worklist.length > 0) {
             const current = worklist.shift()!;
@@ -162,16 +173,21 @@ export class ObjectLiteralCheck implements BaseChecker {
                 res.push(currentStmt);
                 continue;
             }
-            const isArrayField = this.isArrayField(currentStmt, globalVarMap);
-            if (isArrayField[0]) {
-                isArrayField[1].forEach(d => worklist.push(this.dvfg.getOrNewDVFGNode(d)));
+            const isClsField = this.isClassField(currentStmt, scene);
+            if (isClsField) {
+                isClsField.forEach(d => worklist.push(DVFGHelper.getOrNewDVFGNode(d, scene)));
                 continue;
             }
-            const gv = this.checkIfIsGlobalVar(currentStmt);
+            const isArrayField = this.isArrayField(currentStmt, topLevelVarMap);
+            if (isArrayField) {
+                isArrayField.forEach(d => worklist.push(DVFGHelper.getOrNewDVFGNode(d, scene)));
+                continue;
+            }
+            const gv = this.checkIfIsTopLevelVar(currentStmt);
             if (gv) {
-                const globalDefs = globalVarMap.get(gv.getName());
+                const globalDefs = topLevelVarMap.get(gv.getName());
                 globalDefs?.forEach(d => {
-                    worklist.push(this.dvfg.getOrNewDVFGNode(d));
+                    worklist.push(DVFGHelper.getOrNewDVFGNode(d, scene));
                 });
                 continue;
             }
@@ -182,12 +198,12 @@ export class ObjectLiteralCheck implements BaseChecker {
                     return;
                 }
                 if (!this.visited.has(declaringMtd)) {
-                    this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                    DVFGHelper.buildSingleDVFG(declaringMtd, scene);
                     this.visited.add(declaringMtd);
                 }
                 declaringMtd
                     .getReturnStmt()
-                    .forEach(r => this.checkFromStmt(r, scene, res, globalVarMap, checkAll, visited, depth + 1));
+                    .forEach(r => this.checkFromStmt(r, scene, res, topLevelVarMap, checkAll, visited, depth + 1));
             });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
@@ -195,16 +211,16 @@ export class ObjectLiteralCheck implements BaseChecker {
                 const callsites = this.cg.getInvokeStmtByMethod(
                     currentStmt.getCfg().getDeclaringMethod().getSignature()
                 );
-                this.processCallsites(callsites);
-                this.collectArgDefs(paramIdx, callsites).forEach(d =>
-                    this.checkFromStmt(d, scene, res, globalVarMap, checkAll, visited, depth + 1)
+                this.processCallsites(callsites, scene);
+                this.collectArgDefs(paramIdx, callsites, scene).forEach(d =>
+                    this.checkFromStmt(d, scene, res, topLevelVarMap, checkAll, visited, depth + 1)
                 );
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
     }
 
-    private checkIfIsGlobalVar(stmt: Stmt): Local | undefined {
+    private checkIfIsTopLevelVar(stmt: Stmt): Local | undefined {
         if (!(stmt instanceof ArkAssignStmt)) {
             return undefined;
         }
@@ -222,11 +238,11 @@ export class ObjectLiteralCheck implements BaseChecker {
         return undefined;
     }
 
-    private processCallsites(callsites: Stmt[]): void {
+    private processCallsites(callsites: Stmt[], scene: Scene): void {
         callsites.forEach(cs => {
             const declaringMtd = cs.getCfg().getDeclaringMethod();
             if (!this.visited.has(declaringMtd)) {
-                this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                DVFGHelper.buildSingleDVFG(declaringMtd, scene);
                 this.visited.add(declaringMtd);
             }
         });
@@ -247,21 +263,55 @@ export class ObjectLiteralCheck implements BaseChecker {
         return false;
     }
 
-    private isArrayField(stmt: Stmt, globalVarMap: Map<string, Stmt[]>): [boolean, Stmt[]] {
+    private isClassField(stmt: Stmt, scene: Scene): Stmt[] | undefined {
         if (!(stmt instanceof ArkAssignStmt)) {
-            return [false, []];
+            return undefined;
+        }
+        const clsField = stmt.getRightOp();
+        if (!(clsField instanceof AbstractFieldRef)) {
+            return undefined;
+        }
+        if (clsField instanceof ArkInstanceFieldRef && clsField.getBase().getName() !== 'this') {
+            return undefined;
+        }
+        const fieldSig = clsField.getFieldSignature();
+        const clsSig = fieldSig.getDeclaringSignature();
+        if (!(clsSig instanceof ClassSignature)) {
+            return undefined;
+        }
+        const cls = scene.getClass(clsSig);
+        if (!cls) {
+            logger.error(`cannot find class based on class sig: ${clsSig.toString()}`);
+            return undefined;
+        }
+        const field = cls.getField(fieldSig);
+        if (!field) {
+            logger.error(`cannot find field based on field sig: ${fieldSig.toString()}`);
+            return undefined;
+        }
+        if (!field.isStatic()) {
+            DVFGHelper.buildSingleDVFG(cls.getInstanceInitMethod(), scene);
+        } else {
+            DVFGHelper.buildSingleDVFG(cls.getStaticInitMethod(), scene);
+        }
+        return field.getInitializer().slice(-1);
+    }
+
+    private isArrayField(stmt: Stmt, topLevelVarMap: Map<string, Stmt[]>): Stmt[] | undefined {
+        if (!(stmt instanceof ArkAssignStmt)) {
+            return undefined;
         }
         const arrField = stmt.getRightOp();
         if (!(arrField instanceof ArkArrayRef)) {
-            return [false, []];
+            return undefined;
         }
         const arr = arrField.getBase();
         const index = arrField.getIndex();
         let arrDeclarations: Stmt[] = [];
         if (arr.getDeclaringStmt()) {
             arrDeclarations.push(arr.getDeclaringStmt()!);
-        } else if (globalVarMap.has(arr.getName())) {
-            arrDeclarations = globalVarMap.get(arr.getName())!;
+        } else if (topLevelVarMap.has(arr.getName())) {
+            arrDeclarations = topLevelVarMap.get(arr.getName())!;
         }
         const res: Stmt[] = arrDeclarations.flatMap(d => {
             // arr = %0
@@ -281,7 +331,7 @@ export class ObjectLiteralCheck implements BaseChecker {
                 return left instanceof ArkArrayRef && left.getBase() === arrVal && left.getIndex() === index;
             });
         });
-        return [true, res];
+        return res;
     }
 
     private isFromParameter(stmt: Stmt): ArkParameterRef | undefined {
@@ -295,13 +345,13 @@ export class ObjectLiteralCheck implements BaseChecker {
         return undefined;
     }
 
-    private collectArgDefs(argIdx: number, callsites: Stmt[]): Stmt[] {
+    private collectArgDefs(argIdx: number, callsites: Stmt[], scene: Scene): Stmt[] {
         const getKey = (v: Value): Value | FieldSignature => {
             return v instanceof ArkInstanceFieldRef ? v.getFieldSignature() : v;
         };
         return callsites.flatMap(callsite => {
             const target: Value | FieldSignature = getKey(callsite.getInvokeExpr()!.getArg(argIdx));
-            return Array.from(this.dvfg.getOrNewDVFGNode(callsite).getIncomingEdge())
+            return Array.from(DVFGHelper.getOrNewDVFGNode(callsite, scene).getIncomingEdge())
                 .map(e => (e.getSrcNode() as DVFGNode).getStmt())
                 .filter(s => {
                     return s instanceof ArkAssignStmt && target === getKey(s.getLeftOp());
