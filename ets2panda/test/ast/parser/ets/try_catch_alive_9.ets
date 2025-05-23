@@ -24,5 +24,5 @@ function foo(): int {
     }
 }
 
-/* @@@ label Error TypeError: Unreachable statement.  */
+/* @@@ label Warning Warning: Unreachable statement.  */
 /* @@@ label1 Warning Warning: Finally clause cannot complete normally  */

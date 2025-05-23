@@ -996,6 +996,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
         var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
             mexpr->Property()->AsIdentifier()->Name(),
             checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD | checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
+                checker::PropertySearchFlags::SEARCH_IN_BASE |
                 checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
         ES2PANDA_ASSERT(var != nullptr);
     }
@@ -1037,7 +1038,7 @@ static bool IsVariableOriginalAccessor(const varbinder::Variable *var)
     return checker::ETSChecker::IsVariableGetterSetter(var) && !(checker::ETSChecker::IsVariableExtensionAccessor(var));
 }
 
-static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
+static bool IsFunctionOrMethodCall(checker::ETSChecker *checker, ir::CallExpression const *node)
 {
     auto const *callee = node->Callee();
     if (callee->TsType() != nullptr && callee->TsType()->IsETSExtensionFuncHelperType()) {
@@ -1048,7 +1049,7 @@ static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
     // Not skip if invoke pattern Union.<field>() where field is of ETSArrowType
     if (callee->IsMemberExpression()) {
         auto me = callee->AsMemberExpression();
-        if (me->Object()->TsType() != nullptr && me->Object()->TsType()->IsETSUnionType() &&
+        if (me->Object()->TsType() != nullptr && checker->GetApparentType(me->Object()->TsType())->IsETSUnionType() &&
             me->TsType()->IsETSMethodType()) {
             return true;
         }
@@ -1165,7 +1166,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
             auto *var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
                 mexpr->Property()->AsIdentifier()->Name(),
                 checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                    checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
+                    checker::PropertySearchFlags::SEARCH_STATIC_METHOD | checker::PropertySearchFlags::SEARCH_IN_BASE |
                     checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
             if (IsValidFunctionDeclVar(var) && !IsInCalleePosition(mexpr)) {
                 return ConvertFunctionReference(ctx, mexpr);
@@ -1214,7 +1215,8 @@ bool LambdaConversionPhase::PerformForModule(public_lib::Context *ctx, parser::P
         [ctx](ir::AstNode *node) { return LowerTypeNodeIfNeeded(ctx, node); }, Name());
 
     auto insertInvokeIfNeeded = [ctx](ir::AstNode *node) {
-        if (node->IsCallExpression() && !IsFunctionOrMethodCall(node->AsCallExpression()) &&
+        if (node->IsCallExpression() &&
+            !IsFunctionOrMethodCall(ctx->checker->AsETSChecker(), node->AsCallExpression()) &&
             !IsRedirectingConstructorCall(node->AsCallExpression())) {
             return InsertInvokeCall(ctx, node->AsCallExpression());
         }

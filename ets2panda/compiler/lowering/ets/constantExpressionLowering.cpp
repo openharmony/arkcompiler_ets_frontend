@@ -765,12 +765,28 @@ ir::AstNode *ConstantExpressionLowering::FoldMultilineString(ir::TemplateLiteral
     return result;
 }
 
+static bool IsEnumMemberInit(ir::AstNode *node)
+{
+    auto parent = node->Parent();
+    if (node->IsMemberExpression()) {
+        return node->AsMemberExpression()->Object()->IsIdentifier();
+    }
+
+    if (node->IsIdentifier()) {
+        if (parent->IsTSEnumMember()) {
+            return parent->AsTSEnumMember()->Init() == node;
+        }
+        return !parent->IsMemberExpression() && !parent->IsTSEnumDeclaration() && !parent->IsETSTypeReferencePart();
+    }
+
+    return false;
+}
+
 ir::AstNode *ConstantExpressionLowering::UnFoldEnumMemberExpression(ir::AstNode *constantNode)
 {
     ir::NodeTransformer handleUnfoldEnumMember = [this, constantNode](ir::AstNode *const node) {
-        if (node->IsMemberExpression() && !node->Parent()->IsMemberExpression()) {
-            auto memExp = node->AsMemberExpression();
-            return FindAndReplaceEnumMember(memExp, constantNode);
+        if (IsEnumMemberInit(node) && constantNode->IsTSEnumDeclaration()) {
+            return FindAndReplaceEnumMember(node, constantNode);
         }
 
         return node;
@@ -788,15 +804,13 @@ ir::AstNode *ConstantExpressionLowering::FindNameInEnumMember(ArenaVector<ir::As
     return (it != members->end()) ? *it : nullptr;
 }
 
-ir::AstNode *ConstantExpressionLowering::FindAndReplaceEnumMember(ir::MemberExpression *expr, ir::AstNode *node)
+ir::AstNode *ConstantExpressionLowering::FindAndReplaceEnumMember(ir::AstNode *const expr, ir::AstNode *constantNode)
 {
-    if (!expr->Object()->IsIdentifier()) {
-        return expr;
-    }
-
-    auto objectName = expr->Object()->AsIdentifier()->Name();
-    auto propertyName = expr->Property()->AsIdentifier()->Name();
-    for (auto curScope = node->Scope(); curScope != nullptr; curScope = curScope->Parent()) {
+    auto objectName = expr->IsMemberExpression() ? expr->AsMemberExpression()->Object()->AsIdentifier()->Name()
+                                                 : constantNode->AsTSEnumDeclaration()->Key()->AsIdentifier()->Name();
+    auto propertyName = expr->IsMemberExpression() ? expr->AsMemberExpression()->Property()->AsIdentifier()->Name()
+                                                   : expr->AsIdentifier()->Name();
+    for (auto curScope = constantNode->Scope(); curScope != nullptr; curScope = curScope->Parent()) {
         auto *foundDecl = curScope->FindDecl(objectName);
         if (foundDecl == nullptr || !foundDecl->Node()->IsTSEnumDeclaration()) {
             continue;
@@ -810,7 +824,7 @@ ir::AstNode *ConstantExpressionLowering::FindAndReplaceEnumMember(ir::MemberExpr
                 return expr;
             }
 
-            auto clonedInit = transformedInit->Clone(context_->allocator, transformedInit->Parent());
+            auto clonedInit = transformedInit->Clone(context_->allocator, expr->Parent());
             clonedInit->SetRange(expr->Range());
             return UnFoldEnumMemberExpression(clonedInit);
         }

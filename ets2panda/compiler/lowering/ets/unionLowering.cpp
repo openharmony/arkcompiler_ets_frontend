@@ -77,7 +77,8 @@ static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, va
 }
 
 static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedAccessMethod(
-    checker::ETSChecker *checker, varbinder::VarBinder *varbinder, ir::MemberExpression *expr)
+    checker::ETSChecker *checker, varbinder::VarBinder *varbinder, ir::MemberExpression *expr,
+    checker::Signature *signature)
 {
     auto allocator = checker->Allocator();
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
@@ -87,14 +88,11 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
     // Create method name for synthetic class
     auto *methodIdent = checker->AllocNode<ir::Identifier>(methodName, allocator);
 
-    // Create the synthetic function node
-    auto *sig = expr->Parent()->AsCallExpression()->Signature();
-
     ArenaVector<ir::Expression *> params {allocator->Adapter()};
-    for (auto param : sig->Function()->Params()) {
+    for (auto param : signature->Function()->Params()) {
         params.emplace_back(param->Clone(allocator, nullptr)->AsETSParameterExpression());
     }
-    auto returnTypeAnno = checker->AllocNode<ir::OpaqueTypeNode>(sig->ReturnType(), allocator);
+    auto returnTypeAnno = checker->AllocNode<ir::OpaqueTypeNode>(signature->ReturnType(), allocator);
 
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         allocator, ir::ScriptFunction::ScriptFunctionData {
@@ -174,14 +172,10 @@ static varbinder::LocalVariable *CreateNamedAccess(checker::ETSChecker *checker,
 
     // arrow type fields should be processed as property access not method invocation
     if (type->IsETSMethodType() && !type->IsETSArrowType()) {
-        if (type->AsETSFunctionType()->CallSignatures().size() != 1) {
-            checker->LogError(diagnostic::UNION_METHOD_SIGNATURE, {}, expr->Start());
-        }
-        auto parent = expr->Parent();
-        ES2PANDA_ASSERT(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
-                        parent->AsCallExpression()->Signature()->HasFunction());
-        auto [var, sig] = CreateNamedAccessMethod(checker, varbinder, expr);
-        ES2PANDA_ASSERT(parent->IsCallExpression());
+        auto parent = expr->Parent()->AsCallExpression();
+        ES2PANDA_ASSERT(parent->Callee() == expr && parent->Signature()->HasFunction());
+
+        auto [var, sig] = CreateNamedAccessMethod(checker, varbinder, expr, parent->Signature());
         parent->AsCallExpression()->SetSignature(sig);
         return var;
     }

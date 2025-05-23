@@ -1123,6 +1123,12 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
     return {sourceType, relationNode};
 }
 
+static bool IsPromiseType(checker::Type *type, ETSChecker *checker)
+{
+    return type->IsETSObjectType() &&
+           type->AsETSObjectType()->GetOriginalBaseType() == checker->GlobalBuiltinPromiseType();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1131,14 +1137,27 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     }
 
     checker::Type *argType = checker->GetApparentType(expr->argument_->Check(checker));
-    // Check the argument type of await expression
-    if (!argType->IsETSObjectType() ||
-        (argType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType())) {
-        return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
+    ArenaVector<Type *> awaitedTypes(checker->Allocator()->Adapter());
+
+    if (argType->IsETSUnionType()) {
+        for (Type *type : argType->AsETSUnionType()->ConstituentTypes()) {
+            if (!IsPromiseType(type, checker)) {
+                return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
+            }
+
+            Type *typeArg = type->AsETSObjectType()->TypeArguments().at(0);
+            awaitedTypes.push_back(UnwrapPromiseType(typeArg));
+        }
+    } else {
+        if (!IsPromiseType(argType, checker)) {
+            return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
+        }
+
+        Type *typeArg = argType->AsETSObjectType()->TypeArguments().at(0);
+        awaitedTypes.push_back(UnwrapPromiseType(typeArg));
     }
 
-    Type *type = argType->AsETSObjectType()->TypeArguments().at(0);
-    expr->SetTsType(UnwrapPromiseType(type));
+    expr->SetTsType(argType->IsETSUnionType() ? checker->CreateETSUnionType(std::move(awaitedTypes)) : awaitedTypes[0]);
     return expr->TsType();
 }
 
@@ -2328,7 +2347,8 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
-    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+    if (st->GetBaseName()->Variable() == nullptr ||
+        !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
         checker->LogError(diagnostic::NOT_AN_ANNOTATION, {st->GetBaseName()->Name()}, st->GetBaseName()->Start());
         return ReturnTypeForStatement(st);
     }
@@ -2829,12 +2849,11 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
         flags |= ir::ModifierFlags::OPTIONAL;
     }
 
-    auto *const variableType = checker->CheckVariableDeclaration(ident, ident->TypeAnnotation(), st->Init(), flags);
-
     // Processing possible parser errors
     if (ident->Variable() == nullptr) {
         ident->Check(checker);
     }
+    auto *const variableType = checker->CheckVariableDeclaration(ident, ident->TypeAnnotation(), st->Init(), flags);
 
     //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
     //  NOTE: T_S and K_o_t_l_i_n don't act in such way, but we can try - why not? :)
