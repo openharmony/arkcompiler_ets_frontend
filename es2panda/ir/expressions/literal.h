@@ -48,6 +48,7 @@ enum class LiteralTag {
     BUILTINTYPEINDEX = 25,
     GETTER = 26,
     SETTER = 27,
+    ETS_IMPLEMENTS = 28,
     NULL_VALUE = 255,
 };
 

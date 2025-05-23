@@ -114,6 +114,12 @@ public:
         return sv_.find(str);
     }
 
+    bool StartsWith(const std::string_view str) const noexcept
+    {
+        auto const length = str.size();
+        return sv_.size() >= length && sv_.substr(0U, length) == str;
+    }
+
     static bool IsHighSurrogate(char32_t cp)
     {
         return (cp >= Constants::SURROGATE_HIGH_MIN && cp < Constants::SURROGATE_HIGH_MAX);

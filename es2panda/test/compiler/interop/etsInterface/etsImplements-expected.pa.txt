@@ -1,0 +1,89 @@
+# ====================
+# LITERALS
+
+_0 
+
+_1 { 6 [ i32:0, i32:0, i32:0, i32:0, i32:0, i32:0, ]}
+
+_2 { 10 [ tag_value:5, string:"foo", tag_value:6, method:.#~A>#foo, tag_value:9, method_affiliate:1, tag_value:2, i32:1, tag_value:28, ets_implements:L<packagename>/src/main/ets/<filepath>/I1;,L<packagename>/src/main/ets/<filepath>/I2;, ]}
+
+
+
+# ====================
+# RECORDS
+
+.language ECMAScript
+.record _ESExpectedPropertyCountAnnotation {
+}
+.record.source_file 
+
+.language ECMAScript
+.record _ESModuleRecord {
+	u32 /mnt/data/z00887425/ohos1/arkcompiler/ets_frontend/es2panda/test/compiler/interop/etsInterface/etsImplements.ts _1
+}
+.record.source_file 
+
+.language ECMAScript
+.record _ESScopeNamesRecord {
+	u32 /mnt/data/z00887425/ohos1/arkcompiler/ets_frontend/es2panda/test/compiler/interop/etsInterface/etsImplements.ts _0
+}
+.record.source_file 
+
+.language ECMAScript
+.record _ESSlotNumberAnnotation {
+}
+.record.source_file 
+
+
+# ====================
+# METHODS
+
+.function_kind FunctionKind::NONE
+ _ESSlotNumberAnnotation
+ SlotNumber 2
+.language ECMAScript
+.function any .#~A=#A(any a0, any a1, any a2, any a3) {
+	label_1:                                 # line: 18           # column: 0
+	label_0:                                 # line: 18           # column: 0
+	lda a3                                   # line: 18           # column: 0
+	stobjbyname 0x0, a, a2                   # line: 18           # column: 0
+	lda a2                                   # line: 18           # column: 0
+	return                                   # line: 18           # column: 0
+	label_2:                                 # line: 18           # column: 0
+}
+
+.function_kind FunctionKind::NONE
+ _ESSlotNumberAnnotation
+ SlotNumber 3
+.language ECMAScript
+.function any .#~A>#foo(any a0, any a1, any a2, any a3) {
+	label_1:                                 # line: 20           # column: 0
+	label_0:                                 # line: 20           # column: 0
+	tryldglobalbyname 0x0, print             # line: 20           # column: 0
+	callarg1 0x1, a3                         # line: 20           # column: 0
+	returnundefined                          # line: 21           # column: 0
+	label_2:                                 # line: 21           # column: 0
+}
+
+.function_kind FunctionKind::FUNCTION
+ _ESSlotNumberAnnotation
+ SlotNumber 3
+.language ECMAScript
+.function any .func_main_0(any a0, any a1, any a2) {
+	label_1:                                 # line: 15           # column: 0
+	label_0:                                 # line: 15           # column: 0
+	ldhole                                   # line: 15           # column: 0
+	sta v0                                   # line: 15           # column: 0
+	defineclasswithbuffer 0x0, .#~A=#A, _2, 0x1, v0 # line: 15           # column: 0
+	ldobjbyname 0x1, prototype               # line: 15           # column: 0
+	returnundefined                          # line: 18446744073709551615           # column: 0
+	label_2:                                 # line: 18446744073709551615           # column: 0
+}
+
+# ====================
+# STRING
+.#~A=#A
+a
+implements static:L<packagename>/src/main/ets/<filepath>/I1;,L<packagename>/src/main/ets/<filepath>/I2;
+print
+prototype
