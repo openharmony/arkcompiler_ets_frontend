@@ -320,6 +320,8 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp
+  compiler/lowering/ets/annotationCopyLowering.cpp
+  compiler/lowering/ets/annotationCopyPostLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp

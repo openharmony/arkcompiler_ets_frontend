@@ -253,6 +253,8 @@ libes2panda_sources = [
   "compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp",
   "compiler/lowering/ets/typeFromLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",
+  "compiler/lowering/ets/annotationCopyLowering.cpp",
+  "compiler/lowering/ets/annotationCopyPostLowering.cpp",
   "compiler/lowering/phase.cpp",
   "compiler/lowering/plugin_phase.cpp",
   "compiler/lowering/resolveIdentifiers.cpp",

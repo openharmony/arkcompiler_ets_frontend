@@ -1109,10 +1109,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
     if (annoDecl->Properties().size() > 1) {
         LogError(diagnostic::ANNOT_MULTIPLE_FIELD, {st->GetBaseName()->Name()}, st->Start());
     }
-    auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto clone = singleField->TypeAnnotation()->Clone(ProgramAllocator(), param);
-    param->SetTypeAnnotation(clone);
+
     ScopeContext scopeCtx(this, st->Scope());
     param->Check(this);
     CheckAnnotationPropertyType(param);
@@ -1126,9 +1123,6 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
             checker->LogError(diagnostic::ANNOT_FIELD_NO_VAL, {entry.first}, st->Start());
             continue;
         }
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *clone = entry.second->Clone(checker->ProgramAllocator(), st);
-        st->AddProperty(clone);
     }
 }
 
@@ -1143,9 +1137,6 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
             continue;
         }
 
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto clone = result->second->TypeAnnotation()->Clone(ProgramAllocator(), param);
-        param->SetTypeAnnotation(clone);
         ScopeContext scopeCtx(this, st->Scope());
         param->Check(this);
         CheckAnnotationPropertyType(param);
