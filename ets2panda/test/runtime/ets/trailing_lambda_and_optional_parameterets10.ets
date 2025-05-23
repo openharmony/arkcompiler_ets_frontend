@@ -93,10 +93,3 @@ function main() {
     assertTrue(Tracker.lambdaCalled, "Boundary Test: Lambda should be executed");
     assertEQ(Tracker.blockExecuted, false)
 }
-
-// Assertion function
-function assertTrue(condition: boolean, message:string =  "Assertion failed") {
-    if (!condition) {
-        throw new Error(message);
-    }
-}
