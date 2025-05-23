@@ -190,6 +190,7 @@ public:
     static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
     static bool IsEnableExpectedPropertyCountApiVersion(int apiVersion);
     static bool IsSupportAnnotationVersion(int apiVersion);
+    static bool IsSupportEtsImplementsVersion(int apiVersion);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;

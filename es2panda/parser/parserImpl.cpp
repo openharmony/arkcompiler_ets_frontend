@@ -120,6 +120,7 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     if (util::Helpers::IsSupportAnnotationVersion(program_.TargetApiVersion())) {
         program_.SetEnableAnnotations(options.enableAnnotations);
     }
+    program_.SetEnableEtsImplements(options.enableEtsImplements);
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
     program_.SetSourceLang(sourceFile.sourceLang);
