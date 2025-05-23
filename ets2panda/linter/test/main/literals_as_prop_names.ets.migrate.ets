@@ -125,3 +125,20 @@ private case11 = Direction11.__x21x21
 build() {
 }
 }
+
+
+class A{
+ public age:number = 1; 
+}
+
+let a:A = { age: 30}  
+
+
+class B{
+  public age: number = 1 // error in arkts2
+}
+
+let obj11: Record<string, number> = {
+['value']: 1, // 误扫
+'value2': 1 // ok
+}
