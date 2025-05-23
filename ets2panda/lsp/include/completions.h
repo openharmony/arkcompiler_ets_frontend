@@ -213,7 +213,7 @@ bool IsDefinedClassOrStruct(ir::AstNode *preNode);
 std::shared_ptr<ArkTsConfig> GetArkTsConfigFromFile(const char *fileName);
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord);
 std::string GetClassPropertyName(ir::AstNode *node);
-ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::TSInterfaceHeritage *extend);
+ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 #endif
