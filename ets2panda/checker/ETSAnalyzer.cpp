@@ -2324,7 +2324,14 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         return st->Local()->TsType();
     }
 
-    auto *importDecl = st->Parent()->AsETSImportDeclaration();
+    ir::ETSImportDeclaration *importDecl = nullptr;
+    if (st->Parent()->IsETSImportDeclaration()) {
+        importDecl = st->Parent()->AsETSImportDeclaration();
+    } else if (st->Parent()->IsETSReExportDeclaration()) {
+        importDecl = st->Parent()->AsETSReExportDeclaration()->GetETSImportDeclarations();
+    } else {
+        ES2PANDA_UNREACHABLE();
+    }
 
     if (importDecl->IsPureDynamic()) {
         auto *type = checker->GlobalBuiltinDynamicType(importDecl->Language());
