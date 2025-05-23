@@ -4291,7 +4291,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
     }
-
     const calleeSym = this.tsUtils.trueSymbolAtLocation(tsCallExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
     this.handleImportCall(tsCallExpr);
@@ -4299,13 +4298,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (calleeSym !== undefined) {
       this.processCalleeSym(calleeSym, tsCallExpr);
     }
-    if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(calleeSym)) {
-      this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
-      this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
+    if (callSignature !== undefined) {
+      if (!this.tsUtils.isLibrarySymbol(calleeSym)) {
+        this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
+        this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
+      } else if (this.options.arkts2) {
+        this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
+      }
     }
     this.handleInteropForCallExpression(tsCallExpr);
     this.handleLibraryTypeCall(tsCallExpr);
-
     if (
       ts.isPropertyAccessExpression(tsCallExpr.expression) &&
       this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)
@@ -4916,9 +4918,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const sym = this.tsUtils.trueSymbolAtLocation(tsNewExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsNewExpr);
-    if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(sym)) {
-      this.handleStructIdentAndUndefinedInArgs(tsNewExpr, callSignature);
-      this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
+    if (callSignature !== undefined) {
+      if (!this.tsUtils.isLibrarySymbol(sym)) {
+        this.handleStructIdentAndUndefinedInArgs(tsNewExpr, callSignature);
+        this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
+      } else if (this.options.arkts2) {
+        this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
+      }
     }
     this.handleSendableGenericTypes(tsNewExpr);
     this.handleInstantiatedJsObject(tsNewExpr, sym);

@@ -24,7 +24,7 @@ import PlainArray from '@ohos.util.PlainArray';
 import Queue from '@ohos.util.Queue';
 import TreeMap from '@ohos.util.TreeMap';
 import TreeSet from '@ohos.util.TreeSet';
-
+import { LinkedList } from '@kit.ArkTS';
 function choose<T>(x: T, y: T): T {
   return Math.random() < 0.5 ? x : y
 }
@@ -131,3 +131,4 @@ let test_queue_e: Queue<String> = new Queue(); //
 let test_treeMap_e: TreeMap<String, Number> = new TreeMap(); //
 let test_treeSet_e: TreeSet<String> = new TreeSet(); //
 let test_treeSet_set_e: TreeSet<TreeSet<String>> = new TreeSet();
+let listenerList: LinkedList<number> = new LinkedList();
