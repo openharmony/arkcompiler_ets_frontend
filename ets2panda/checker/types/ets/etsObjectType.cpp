@@ -229,30 +229,6 @@ static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFla
     }
 }
 
-static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
-                         varbinder::LocalVariable *found)
-{
-    for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-        if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
-            continue;
-        }
-        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) && it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-            continue;
-        }
-        if (std::any_of(signatures.begin(), signatures.end(), [&it, &checker](auto sig) {
-                return checker->AreOverrideCompatible(sig, it) &&
-                       it->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-                       (checker->Relation()->IsSupertypeOf(it->Owner(), sig->Owner()) ||
-                        !sig->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE));
-            })) {
-            continue;
-        }
-        // Issue: #18720
-        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-        signatures.emplace_back(it);
-    }
-}
-
 varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const

@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-#include "everyChildHasValidParent.h"
-#include "ir/base/methodDefinition.h"
+#include "everyChildInParentRange.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 

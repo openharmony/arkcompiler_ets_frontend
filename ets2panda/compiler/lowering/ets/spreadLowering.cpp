@@ -359,23 +359,6 @@ static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context 
     return checker->AllocNode<ir::BlockExpression>(std::move(statements));
 }
 
-/*
- * NOTE: Expand the SpreadExpr to BlockExpr, the rules as follows :
- * let newTuple: typeOfNewTuple = new std.core.TupleN(normalExpr1, ..., normalExprN);
- */
-static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context *ctx, ir::ArrayExpression *array)
-{
-    auto *const checker = ctx->checker->AsETSChecker();
-    auto *const parser = ctx->parser->AsETSParser();
-    auto *const allocator = ctx->allocator;
-
-    ArenaVector<ir::Statement *> statements(allocator->Adapter());
-    ir::Identifier *newTupleId = CreateNewTupleDeclareStatement(ctx, array, statements);
-
-    statements.emplace_back(parser->CreateFormattedStatement("@@I1;", newTupleId->Clone(allocator, nullptr)));
-    return checker->AllocNode<ir::BlockExpression>(std::move(statements));
-}
-
 bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();

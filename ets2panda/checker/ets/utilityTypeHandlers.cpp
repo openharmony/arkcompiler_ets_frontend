@@ -534,7 +534,7 @@ static void SetupFunctionParams(ir::ScriptFunction *function, varbinder::Functio
         }
         auto [paramVar, node] = paramScope->AddParamDecl(checker->Allocator(), checker->VarBinder(), paramExpr);
         if (node != nullptr) {
-            checker->VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+            checker->VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
         }
 
         paramExpr->SetVariable(paramVar);
