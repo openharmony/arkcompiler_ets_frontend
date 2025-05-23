@@ -1121,6 +1121,10 @@ syntax:
   id: 150
   message: "Trailing comma is not allowed in this context."
 
+- name: TS_TYPE_ASSERTION
+  id: 178094
+  message: "Type cast syntax '<type>' is not supported, please use 'as' keyword instead"
+
 - name: TYPEOF_IN_ANNOTATION
   id: 309
   message: "Result of 'typeof' operator is not supported to be used as type annotation."

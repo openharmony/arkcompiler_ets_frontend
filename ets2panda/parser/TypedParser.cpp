@@ -196,6 +196,9 @@ ir::TSTypeAssertion *TypedParser::ParseTypeAssertion()
 
     Lexer()->NextToken();  // eat '>'
     ir::Expression *expression = ParseExpression();
+    if (expression == nullptr || expression->IsBrokenExpression()) {
+        return nullptr;
+    }
     auto *typeAssertion = AllocNode<ir::TSTypeAssertion>(typeAnnotation, expression);
     ES2PANDA_ASSERT(typeAssertion != nullptr);
     typeAssertion->SetRange({start, Lexer()->GetToken().End()});
