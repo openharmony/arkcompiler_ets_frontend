@@ -21,6 +21,7 @@
 
 #include "checker/checker.h"
 
+#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/ets/types.h"
 #include "checker/resolveResult.h"
@@ -112,6 +113,15 @@ public:
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalETSBigIntType() const;
     Type *GlobalWildcardType() const;
+
+    Type *GlobalByteBuiltinType() const;
+    Type *GlobalShortBuiltinType() const;
+    Type *GlobalIntBuiltinType() const;
+    Type *GlobalLongBuiltinType() const;
+    Type *GlobalFloatBuiltinType() const;
+    Type *GlobalDoubleBuiltinType() const;
+    Type *GlobalCharBuiltinType() const;
+    Type *GlobalETSBooleanBuiltinType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
     ETSUnionType *GlobalETSNullishType() const;

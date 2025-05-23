@@ -421,9 +421,19 @@ Type *ETSChecker::GlobalByteType() const
     return GetGlobalTypesHolder()->GlobalByteType();
 }
 
+Type *ETSChecker::GlobalByteBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalByteBuiltinType();
+}
+
 Type *ETSChecker::GlobalShortType() const
 {
     return GetGlobalTypesHolder()->GlobalShortType();
+}
+
+Type *ETSChecker::GlobalShortBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalShortBuiltinType();
 }
 
 Type *ETSChecker::GlobalIntType() const
@@ -431,9 +441,19 @@ Type *ETSChecker::GlobalIntType() const
     return GetGlobalTypesHolder()->GlobalIntType();
 }
 
+Type *ETSChecker::GlobalIntBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
+}
+
 Type *ETSChecker::GlobalLongType() const
 {
     return GetGlobalTypesHolder()->GlobalLongType();
+}
+
+Type *ETSChecker::GlobalLongBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalLongBuiltinType();
 }
 
 Type *ETSChecker::GlobalFloatType() const
@@ -441,19 +461,38 @@ Type *ETSChecker::GlobalFloatType() const
     return GetGlobalTypesHolder()->GlobalFloatType();
 }
 
+Type *ETSChecker::GlobalFloatBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalFloatBuiltinType();
+}
+
 Type *ETSChecker::GlobalDoubleType() const
 {
     return GetGlobalTypesHolder()->GlobalDoubleType();
+}
+
+Type *ETSChecker::GlobalDoubleBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
 }
 
 Type *ETSChecker::GlobalCharType() const
 {
     return GetGlobalTypesHolder()->GlobalCharType();
 }
+Type *ETSChecker::GlobalCharBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalCharBuiltinType();
+}
 
 Type *ETSChecker::GlobalETSBooleanType() const
 {
     return GetGlobalTypesHolder()->GlobalETSBooleanType();
+}
+
+Type *ETSChecker::GlobalETSBooleanBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
 }
 
 Type *ETSChecker::GlobalVoidType() const
