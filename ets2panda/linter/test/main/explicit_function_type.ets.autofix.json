@@ -126,6 +126,36 @@
             "severity": "ERROR"
         },
         {
+            "line": 128,
+            "column": 31,
+            "endLine": 128,
+            "endColumn": 32,
+            "problem": "LimitedLiteralType",
+            "suggest": "",
+            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 33,
+            "endLine": 128,
+            "endColumn": 37,
+            "problem": "LimitedLiteralType",
+            "suggest": "",
+            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 39,
+            "endLine": 128,
+            "endColumn": 44,
+            "problem": "LimitedLiteralType",
+            "suggest": "",
+            "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
             "line": 132,
             "column": 3,
             "endLine": 132,
