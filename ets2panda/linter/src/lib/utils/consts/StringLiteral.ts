@@ -23,3 +23,5 @@ export const STRINGLITERAL_LONG = 'long';
 export const STRINGLITERAL_CHAR = 'char';
 export const STRINGLITERAL_ANY = 'ANY';
 export const STRINGLITERAL_ENUM = 'enum';
+export const STRINGLITERAL_FROM = 'from';
+export const STRINGLITERAL_ARRAY = 'Array';

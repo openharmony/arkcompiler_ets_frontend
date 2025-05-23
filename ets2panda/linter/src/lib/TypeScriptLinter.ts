@@ -33,7 +33,9 @@ import {
   STRINGLITERAL_BYTE,
   STRINGLITERAL_SHORT,
   STRINGLITERAL_CHAR,
-  STRINGLITERAL_LONG
+  STRINGLITERAL_LONG,
+  STRINGLITERAL_FROM,
+  STRINGLITERAL_ARRAY
 } from './utils/consts/StringLiteral';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
@@ -4654,6 +4656,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     callLikeExpr: ts.CallExpression | ts.NewExpression,
     callSignature: ts.Signature
   ): void {
+    if (TypeScriptLinter.isArrayFromCall(callLikeExpr)) {
+      return;
+    }
+
     const tsSyntaxKind = ts.isNewExpression(callLikeExpr) ?
       ts.SyntaxKind.Constructor :
       ts.SyntaxKind.FunctionDeclaration;
@@ -4691,6 +4697,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixFunctionDeclarationly(callLikeExpr, resolvedTypeArgsNodeArray);
       this.incrementCounters(callLikeExpr, FaultID.NumericSemantics, autofix);
     }
+  }
+
+  static isArrayFromCall(callLikeExpr: ts.CallExpression | ts.NewExpression): boolean {
+    return (
+      ts.isCallExpression(callLikeExpr) &&
+      ts.isPropertyAccessExpression(callLikeExpr.expression) &&
+      callLikeExpr.expression.name.text === STRINGLITERAL_FROM &&
+      ts.isIdentifier(callLikeExpr.expression.expression) &&
+      callLikeExpr.expression.expression.text === STRINGLITERAL_ARRAY
+    );
   }
 
   private static readonly listFunctionApplyCallApis = [
