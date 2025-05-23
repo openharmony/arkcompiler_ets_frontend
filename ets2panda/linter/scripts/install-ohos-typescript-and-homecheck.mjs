@@ -86,14 +86,14 @@ function getTypescript(detectedOS) {
         fs.mkdirSync(third_party);
     }
 
-    let branch = process.env.TYPESCRIPT_BRANCH ?? 'master'
+    let branch = process.env.TYPESCRIPT_BRANCH ?? 'OpenHarmony_feature_20250328'
 
     if (detectedOS === 'Linux') {
         let timeToWait = 5000
         const iterations = 4
         if (!fs.existsSync(typescript_dir)) {
             for (let i = 0; i <= iterations; i++) {
-                shell.exec(`git clone --depth=1 https://gitee.com/openharmony/third_party_typescript.git ${typescript_dir}`, { stdio: 'ignore', fatal: true } )
+                shell.exec(`git clone --depth=1 https://gitee.com/openharmony/third_party_typescript.git -b ${branch} ${typescript_dir}`, { stdio: 'ignore', fatal: true } )
                 if (fs.existsSync(typescript_dir) || i === iterations) {
                     break;
                 }
