@@ -16,5 +16,5 @@
 export type {B/* @@ label */]
 
 /* @@? 16:14 Error SyntaxError: Cannot find name 'B' to export. */
-/* @@? 16:29 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 16:29 Error SyntaxError: Unexpected token ']'. */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@@ label Error SyntaxError: Unexpected token ']'. */

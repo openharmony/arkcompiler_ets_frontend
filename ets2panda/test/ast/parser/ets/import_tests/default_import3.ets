@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import {default/* @@ label */} /* @@ label1 */from /* @@ label2 */"./modules/class_default_module.ets";
+import {default/* @@ label */} from /* @@ label1 */"./modules/class_default_module.ets"/* @@ label2 */;
 
 /* @@@ label Error SyntaxError: Unexpected token, expected 'as'. */
 /* @@@ label Error SyntaxError: Unexpected token '}'. */
-/* @@@ label1 Error TypeError: Unresolved reference from */
-/* @@@ label2 Error SyntaxError: Unexpected token './modules/class_default_module.ets'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected 'from'. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected string literal. */

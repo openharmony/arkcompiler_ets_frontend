@@ -18,13 +18,14 @@ for await (/* @@ label1 */;/* @@ label2 */;i < count/* @@ label3 */; ++i/* @@ la
 }
 for (let i? : Number = 1;;)  { break; }
 
-/* @@? 16:27 Error SyntaxError: Unexpected token ';'. */
-/* @@? 16:43 Error SyntaxError: Unexpected token ';'. */
+/* @@@ label1 Error SyntaxError: Unexpected token ';'. */
+/* @@@ label2 Error SyntaxError: Unexpected token ';'. */
 /* @@? 16:44 Error TypeError: Unresolved reference i */
-/* @@? 16:48 Error TypeError: Function name 'count' used in the wrong context */
 /* @@? 16:44 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 16:68 Error SyntaxError: Expected ')', got ';'. */
-/* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
+/* @@? 16:48 Error TypeError: Function name 'count' used in the wrong context */
+/* @@@ label3 Error SyntaxError: Expected ')', got ';'. */
+/* @@@ label Error SyntaxError: Unexpected token ')'. */
+/* @@? 16:89 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:5 Error TypeError: Unresolved reference result */
 /* @@? 17:23 Error TypeError: Unresolved reference p */
 /* @@? 17:23 Error TypeError: Indexed access is not supported for such expression type. */

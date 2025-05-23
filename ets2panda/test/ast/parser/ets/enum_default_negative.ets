@@ -28,11 +28,10 @@ enum D {
 
 /* @@? 17:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 17:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
-/* @@? 21:9 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 18:1 Error SyntaxError: Unexpected token, expected ')'. */
+/* @@? 20:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
-/* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 39:1 Error SyntaxError: Unexpected token 'end of stream'. */
-/* @@? 39:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 38:1 Error SyntaxError: Unexpected token 'end of stream'. */
+/* @@? 38:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */

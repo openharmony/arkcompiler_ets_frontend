@@ -22,7 +22,7 @@ export notInit
 
 /* @@? import_in_package_with_error.ets:20:17 Error TypeError: Cannot find type 'notInit'. */
 /* @@? import_in_package_with_error.ets:20:29 Error SyntaxError: Unexpected token '='. */
-/* @@? import_in_package_with_error.ets:20:30 Error TypeError: Unresolved reference _ */
+/* @@? import_in_package_with_error.ets:20:30 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? import_in_package_with_error.ets:20:32 Error SyntaxError: Unexpected token ')'. */
 
 /* @@? distant_package.ets:22:22 Error SyntaxError: Variable must be initialized or it's type must be declared. */

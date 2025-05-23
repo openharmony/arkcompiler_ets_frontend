@@ -260,8 +260,9 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         return ParsePrimaryExpressionIdent(flags);
     }
 
-    const auto &tokenNow = Lexer()->GetToken();
+    const auto tokenNow = Lexer()->GetToken();
     LogUnexpectedToken(tokenNow);
+    Lexer()->NextToken();  // eat an unexpected token
     return AllocBrokenExpression(tokenNow.Loc());
 }
 

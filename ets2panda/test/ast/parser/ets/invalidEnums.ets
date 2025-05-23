@@ -60,18 +60,14 @@ enum MissingLeftBrace
 
 /* @@? 16:5 Error SyntaxError: Variable declaration expected. */
 /* @@? 22:22 Error SyntaxError: Unexpected token, expected '{'. */
-/* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
 /* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 37:10 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 38:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 43:10 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
-/* @@? 43:10 Error SyntaxError: Only constant expression is expected in the field */
+/* @@? 40:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 43:10 Error SyntaxError: Unexpected token '?'. */
-/* @@? 44:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 44:1 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 46:1 Error SyntaxError: Unexpected token 'enum'. */
-/* @@? 46:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 43:10 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 48:3 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 48:3 Error TypeError: Unresolved reference Member2 */
 /* @@? 49:1 Error SyntaxError: Unexpected token '}'. */

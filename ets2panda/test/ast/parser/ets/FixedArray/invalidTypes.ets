@@ -43,11 +43,14 @@ let var6: [a0: , a1: ];
 /* @@? 24:23 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 24:23 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 24:23 Error SyntaxError: Unexpected token '>'. */
-/* @@? 24:23 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 24:26 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 24:26 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 24:26 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 24:33 Error SyntaxError: Unexpected token ','. */
+/* @@? 24:35 Error SyntaxError: Unexpected token 'FixedArray'. */
 /* @@? 24:35 Error TypeError: Unresolved reference FixedArray */
 /* @@? 24:46 Error SyntaxError: Unexpected token '...'. */
+/* @@? 24:49 Error SyntaxError: Unexpected token 'string'. */
 /* @@? 24:49 Error TypeError: Type name 'string' used in the wrong context */
 /* @@? 24:56 Error SyntaxError: Unexpected token ']'. */
 /* @@? 26:12 Error TypeError: FixedArray<T> must have only one type parameter. */
@@ -55,18 +58,19 @@ let var6: [a0: , a1: ];
 /* @@? 26:23 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 26:23 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 26:23 Error SyntaxError: Unexpected token '>'. */
-/* @@? 26:23 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 26:26 Error SyntaxError: Unexpected token 'number'. */
+/* @@? 26:26 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 26:26 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 26:33 Error SyntaxError: Unexpected token ','. */
+/* @@? 26:35 Error SyntaxError: Unexpected token 'string'. */
 /* @@? 26:35 Error TypeError: Type name 'string' used in the wrong context */
 /* @@? 26:41 Error SyntaxError: Unexpected token ']'. */
 /* @@? 28:18 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 28:18 Error SyntaxError: Unexpected token '?'. */
 /* @@? 28:19 Error SyntaxError: Unexpected token ']'. */
-/* @@? 28:19 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 28:20 Error SyntaxError: Unexpected token ';'. */
 /* @@? 30:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 30:18 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 30:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 30:20 Error SyntaxError: Unexpected token '...'. */
 /* @@? 30:23 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 30:26 Error SyntaxError: Unexpected token ']'. */
@@ -79,5 +83,6 @@ let var6: [a0: , a1: ];
 /* @@? 38:14 Error SyntaxError: Unexpected token ':'. */
 /* @@? 38:14 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 38:16 Error SyntaxError: Unexpected token ','. */
+/* @@? 38:18 Error SyntaxError: Unexpected token 'a1'. */
 /* @@? 38:22 Error SyntaxError: Unexpected token ']'. */
 /* @@? 38:22 Error SyntaxError: Label must be followed by a loop statement. */

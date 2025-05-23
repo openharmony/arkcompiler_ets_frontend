@@ -17,4 +17,5 @@ do {}
    while()
 
 /* @@? 17:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:10 Error SyntaxError: Missing condition in do while statement */
+/* @@? 22:1 Error SyntaxError: Missing condition in do while statement */
+/* @@? 22:1 Error SyntaxError: Expected ')', got 'end of stream'. */
