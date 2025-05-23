@@ -284,6 +284,8 @@ cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dyn
 cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
+cookBookTag[275] =
+  'Custom components with custom layout capability need to add the "@Layoutable" decorator (arkui-custom-layout-need-add-decorator)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =

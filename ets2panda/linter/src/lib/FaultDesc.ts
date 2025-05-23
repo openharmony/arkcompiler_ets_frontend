@@ -249,3 +249,4 @@ faultDesc[FaultID.TsLikeCatchType] = 'TS like catch type';
 faultDesc[FaultID.NumericBigintCompare] = 'No Comparison number between bigint';
 faultDesc[FaultID.NondecimalBigint] = 'No non decimal';
 faultDesc[FaultID.UnsupportOperator] = 'Unsupport operator';
+faultDesc[FaultID.CustomLayoutNeedAddDecorator] = 'Custom layout need add decorator';

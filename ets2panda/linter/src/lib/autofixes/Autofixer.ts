@@ -4308,4 +4308,21 @@ export class Autofixer {
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, decorator.getSourceFile());
     return [{ start: decorator.getStart(), end: decorator.getEnd(), replacementText: text }];
   }
+
+  fixCustomLayout(node: ts.StructDeclaration): Autofix[] {
+    const startPos = Autofixer.getStartPositionWithoutDecorators(node);
+    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Layoutable));
+
+    const text = this.getNewLine() + this.printer.printNode(ts.EmitHint.Unspecified, decorator, node.getSourceFile());
+    return [{ start: startPos, end: startPos, replacementText: text }];
+  }
+
+  private static getStartPositionWithoutDecorators(node: ts.StructDeclaration): number {
+    const decorators = ts.getDecorators(node);
+    if (!decorators || decorators.length === 0) {
+      return node.getStart();
+    }
+
+    return decorators[decorators.length - 1].getEnd();
+  }
 }
