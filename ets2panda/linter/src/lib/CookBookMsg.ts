@@ -313,6 +313,8 @@ cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-
 cookBookTag[322] = 'isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)';
 cookBookTag[323] = 'Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)';
 cookBookTag[324] = 'Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)';
+cookBookTag[325] =
+  'Default parameters must be placed after mandatory parameters (arkts-default-args-behind-required-args)';
 cookBookTag[326] = 'It is not allowed to create object literal in interop calls (arkts-interop-s2d-object-literal)';
 cookBookTag[327] =
   'Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)';

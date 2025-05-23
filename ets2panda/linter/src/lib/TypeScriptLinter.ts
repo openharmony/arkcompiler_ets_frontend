@@ -1800,6 +1800,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.handleMissingReturnType(arrowFunc);
       }
     }
+    this.checkDefaultParamBeforeRequired(arrowFunc);
   }
 
   private handleFunctionDeclaration(node: ts.Node): void {
@@ -1844,6 +1845,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleTSOverload(tsFunctionDeclaration);
     this.checkAssignmentNumericSemanticsFuntion(tsFunctionDeclaration);
     this.handleInvalidIdentifier(tsFunctionDeclaration);
+    this.checkDefaultParamBeforeRequired(tsFunctionDeclaration);
   }
 
   private handleMissingReturnType(
@@ -3385,7 +3387,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.tsUtils.isAbstractMethodInAbstractClass(node)) {
       this.handleTSOverload(tsMethodDecl);
     }
+    this.checkDefaultParamBeforeRequired(tsMethodDecl);
     this.handleMethodInherit(tsMethodDecl);
+  }
+
+  private checkDefaultParamBeforeRequired(node: ts.FunctionLikeDeclarationBase): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const params = node.parameters;
+    let seenRequired = false;
+
+    for (let i = params.length - 1; i >= 0; i--) {
+      const param = params[i];
+
+      const isOptional = !!param.initializer || !!param.questionToken;
+
+      if (!isOptional) {
+        seenRequired = true;
+        continue;
+      }
+
+      if (seenRequired && param.initializer) {
+        this.incrementCounters(param.name, FaultID.DefaultArgsBehindRequiredArgs);
+      }
+    }
   }
 
   private handleMethodInherit(node: ts.MethodDeclaration): void {
