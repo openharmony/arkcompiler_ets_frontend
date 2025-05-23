@@ -17,7 +17,7 @@
 const arr: int[] = [1, 2, 3, 4];
 
 for (let i: number = 0; i < arr.length; i++) {
-    arr[i]; //legal
+    arr[i as int]; //legal
 }
 
 for (let i: number = 0; i < 100; i++) {
@@ -42,7 +42,7 @@ for (let i: number = 0; i < arr4.length; i++) {
 
 const arr5: int[] = [1, 2, 3, 4];
 for (let i: number = 0; i < 10; i++) {
-    arr5[i]; //should report
+    arr5[i as int]; //should report
 }
 
 
@@ -84,7 +84,7 @@ if (arr10.length > newIndex) {
 
 newIndex = 22;
 
-arr10[newIndex];
+arr10[newIndex as int];
 
 
 

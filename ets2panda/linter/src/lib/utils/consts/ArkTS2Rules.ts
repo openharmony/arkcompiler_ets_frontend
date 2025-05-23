@@ -44,6 +44,7 @@ export const arkts2Rules: number[] = [
   210,
   211,
   212,
+  215,
   222,
   232,
   233,

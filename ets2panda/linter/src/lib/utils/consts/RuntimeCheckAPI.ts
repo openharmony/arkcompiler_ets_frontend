@@ -34,5 +34,6 @@ export enum LoopConditionChecked {
 
 export enum CheckResult {
   SKIP,
+  HAS_ARRAY_ACCES,
   CHECKED
 }

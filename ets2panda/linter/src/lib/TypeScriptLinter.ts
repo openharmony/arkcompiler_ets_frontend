@@ -1050,11 +1050,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const sourceFile = arrayIdent.getSourceFile();
+    let boundChecked = true;
 
     for (const statement of sourceFile.statements) {
-      if (this.checkStatementForArrayAccess(statement, arrayAccessInfo, arraySym) === CheckResult.SKIP) {
+      const checkResult = this.checkStatementForArrayAccess(statement, arrayAccessInfo, arraySym);
+      if (checkResult === CheckResult.SKIP) {
+        boundChecked = false;
         continue;
       }
+
+      if (checkResult === CheckResult.HAS_ARRAY_ACCES) {
+        continue;
+      }
+
+      if (checkResult === CheckResult.CHECKED) {
+        boundChecked = true;
+        break;
+      }
+    }
+
+    if (!boundChecked) {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
     }
   }
 
@@ -1063,12 +1079,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     accessInfo: ArrayAccess,
     arraySym: ts.Symbol
   ): CheckResult {
+    if (ts.isForStatement(statement)) {
+      return this.isThisArrayAccess(statement.statement as ts.Block, accessInfo.arrayIdent);
+    }
+
     if (!ts.isIfStatement(statement)) {
       return CheckResult.SKIP;
     }
 
-    if (this.checkBodyHasArrayAccess(statement.thenStatement as ts.Block) !== undefined) {
-      return CheckResult.SKIP;
+    const thisArrayAccess = this.isThisArrayAccess(statement.thenStatement as ts.Block, accessInfo.arrayIdent);
+    if (thisArrayAccess !== CheckResult.SKIP) {
+      return thisArrayAccess;
     }
 
     const checkedAgainst = this.checkConditionForArrayAccess(statement.expression, arraySym);
@@ -1078,6 +1099,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
     return CheckResult.CHECKED;
+  }
+
+  private isThisArrayAccess(block: ts.Block, arrayIdent: ts.Identifier): CheckResult {
+    const info = this.checkBodyHasArrayAccess(block);
+    if (!info) {
+      return CheckResult.SKIP;
+    }
+
+    if (info.arrayIdent === arrayIdent) {
+      return CheckResult.CHECKED;
+    }
+
+    return CheckResult.HAS_ARRAY_ACCES;
   }
 
   private isChangedAfterCheck(sourceFile: ts.SourceFile, sym: ts.Symbol): boolean {
@@ -1146,6 +1180,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const checkedAgainst = this.checkConditionForArrayAccess(ifStatement.expression, arraySymbol);
     if (!checkedAgainst) {
+      this.incrementCounters(arrayIdent, FaultID.RuntimeArrayCheck);
       return;
     }
 
@@ -4105,7 +4140,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private evaluateValueFromDeclaration(argExpr: ts.Expression): number | null {
+  private evaluateValueFromDeclaration(argExpr: ts.Expression): number | null | 'skip' {
     const declaration = this.tsUtils.getDeclarationNode(argExpr);
     if (!declaration) {
       return null;
@@ -4113,6 +4148,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (!ts.isVariableDeclaration(declaration)) {
       return null;
+    }
+
+    if (declaration.type !== undefined) {
+      return 'skip';
     }
 
     const initializer = declaration.initializer;
@@ -4141,23 +4180,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (ts.isBinaryExpression(argExpr)) {
       evaluatedValue = this.evaluateNumericValueFromBinaryExpression(argExpr);
     } else {
-      evaluatedValue = this.evaluateValueFromDeclaration(argExpr);
+      const evalResult = this.evaluateValueFromDeclaration(argExpr);
+      if (evalResult === 'skip') {
+        return false;
+      }
+      evaluatedValue = evalResult;
     }
-    const valueString = String(evaluatedValue);
 
     if (evaluatedValue === null) {
       return false;
     }
 
+    const valueString = String(evaluatedValue);
+
     if (!Number.isInteger(evaluatedValue)) {
       return false;
     }
-    // floating points that can be converted to int should be fine, so as long as no floating point is here, we should be fine.
-    if (valueString.includes('.') && !valueString.endsWith('.0')) {
+    if (valueString.includes('.')) {
       return false;
     }
 
-    return evaluatedValue >= 0 && !valueString.includes('.');
+    return evaluatedValue >= 0;
   }
 
   private handleUndefinedInitializer(argExpr: ts.Expression, declaration: ts.VariableDeclaration): void {

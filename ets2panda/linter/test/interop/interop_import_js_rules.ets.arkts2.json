@@ -339,6 +339,16 @@
             "column": 11,
             "endLine": 52,
             "endColumn": 17,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 11,
+            "endLine": 52,
+            "endColumn": 17,
             "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",

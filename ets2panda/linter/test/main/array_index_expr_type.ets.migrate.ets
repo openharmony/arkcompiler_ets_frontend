@@ -38,11 +38,11 @@ let index_2: number = 1.3;
 let index_3: number = 1;
 array[index_1 as int];
 array[index_2 as int];
-array[index_3];
+array[index_3 as int];
 let index_4: int = 2
 array[index_4];
 const index_5: number = 1.0;
-array[index_5];
+array[index_5 as int];
 
 function getIndex(): number {
   return Math.random() * 10;
@@ -52,7 +52,7 @@ array1[getIndex() as int];
 
 let array2: number[] = [1, 2, 3];
 for (let i: number = 0; i < array2.length; i++) {
-  console.log(array2[i]);
+  console.log(array2[i as int]);
 }
 
 for (let i: int = 0; i < array2.length; i++) {
