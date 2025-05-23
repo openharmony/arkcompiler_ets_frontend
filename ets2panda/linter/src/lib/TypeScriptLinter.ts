@@ -2089,7 +2089,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (!initializer) {
         return false;
       }
-
       return isJsFileExpression(initializer);
     };
 
@@ -2103,7 +2102,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const processExpression = (expr: ts.Expression): void => {
       const symbol = this.tsUtils.trueSymbolAtLocation(expr);
-      if (isJsFileSymbol(symbol)) {
+      if (isJsFileSymbol(symbol) || isJsFileExpression(expr)) {
         this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare);
       }
     };
@@ -2117,8 +2116,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.SyntaxKind.GreaterThanToken,
       ts.SyntaxKind.LessThanToken,
       ts.SyntaxKind.GreaterThanEqualsToken,
-      ts.SyntaxKind.LessThanEqualsToken,
-      ts.SyntaxKind.EqualsToken
+      ts.SyntaxKind.LessThanEqualsToken
     ].includes(kind);
   }
 
