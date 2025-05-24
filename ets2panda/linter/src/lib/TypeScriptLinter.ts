@@ -6679,8 +6679,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return true;
     }
 
-    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
+    const targetPropertyAccess = TypeScriptLinter.findTargetPropertyAccess(identifier.parent);
+    if (targetPropertyAccess) {
+      const expr = targetPropertyAccess.expression;
+      if (this.isDeclarationInSameFile(expr)) {
+        return true;
+      }
+    }
+
     const parent = identifier.parent;
+    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
     if (ts.isCallExpression(parent)) {
       const expr = parent.expression;
       if (wrappedSkipComponents.has(expr.getText()) && name !== CustomDecoratorName.AnimatableExtend) {
@@ -6688,15 +6696,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
 
-    const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
-    if (symbol) {
-      const decl = this.tsUtils.getDeclarationNode(identifier);
-      if (decl?.getSourceFile() === identifier.getSourceFile()) {
-        return true;
-      }
+    if (this.isDeclarationInSameFile(identifier)) {
+      return true;
     }
 
     return this.interfacesAlreadyImported.has(name);
+  }
+
+  private static findTargetPropertyAccess(node: ts.Node): ts.PropertyAccessExpression | undefined {
+    while (ts.isPropertyAccessExpression(node)) {
+      const expr = node.expression;
+      if (!ts.isPropertyAccessExpression(expr)) {
+        return node;
+      }
+      node = expr;
+    }
+    return undefined;
+  }
+
+  private isDeclarationInSameFile(node: ts.Node): boolean {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+      const decl = TsUtils.getDeclaration(symbol);
+      if (decl?.getSourceFile() === node.getSourceFile()) {
+        return true;
+      }
+
+    return false;
   }
 
   private processInterfacesToImport(sourceFile: ts.SourceFile): void {
