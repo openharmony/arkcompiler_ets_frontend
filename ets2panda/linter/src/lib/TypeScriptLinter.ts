@@ -600,6 +600,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     for (const prop of invalidProps) {
+      if (ts.isShorthandPropertyAssignment(prop) && !TsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(prop))) {
+        continue;
+      }
       const autofix = ts.isShorthandPropertyAssignment(prop) ?
         this.autofixer?.fixShorthandPropertyAssignment(prop) :
         objLiteralAutofix;

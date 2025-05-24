@@ -95,36 +95,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 3,
-            "endLine": 34,
-            "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 35,
-            "column": 3,
-            "endLine": 35,
-            "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 3,
-            "endLine": 36,
-            "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
             "line": 39,
             "column": 14,
             "endLine": 39,
@@ -162,26 +132,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 3,
-            "endLine": 47,
-            "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 3,
-            "endLine": 48,
-            "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {
@@ -252,36 +202,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
-            "column": 3,
-            "endLine": 69,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 70,
-            "column": 3,
-            "endLine": 70,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 3,
-            "endLine": 71,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {
@@ -415,36 +335,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 110,
-            "column": 3,
-            "endLine": 110,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 111,
-            "column": 3,
-            "endLine": 111,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 112,
-            "column": 3,
-            "endLine": 112,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
             "line": 113,
             "column": 3,
             "endLine": 113,
@@ -462,36 +352,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 117,
-            "column": 3,
-            "endLine": 117,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 118,
-            "column": 3,
-            "endLine": 118,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 119,
-            "column": 3,
-            "endLine": 119,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {
@@ -562,36 +422,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 134,
-            "column": 3,
-            "endLine": 134,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 135,
-            "column": 3,
-            "endLine": 135,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 136,
-            "column": 3,
-            "endLine": 136,
-            "endColumn": 5,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {
@@ -842,6 +672,16 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 258,
+            "column": 11,
+            "endLine": 258,
+            "endColumn": 12,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
             "severity": "ERROR"
         },
         {

@@ -15,9 +15,19 @@
     ],
     "result": [
         {
-            "line": 50,
+            "line": 39,
+            "column": 17,
+            "endLine": 39,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
             "column": 14,
-            "endLine": 50,
+            "endLine": 45,
             "endColumn": 15,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -25,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 46,
             "column": 3,
-            "endLine": 51,
+            "endLine": 46,
             "endColumn": 15,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -35,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 46,
             "column": 3,
-            "endLine": 51,
+            "endLine": 46,
             "endColumn": 15,
             "problem": "SpreadOperator",
             "suggest": "",
@@ -45,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 97,
+            "line": 92,
             "column": 16,
-            "endLine": 97,
+            "endLine": 92,
             "endColumn": 17,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -55,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 103,
+            "line": 98,
             "column": 3,
-            "endLine": 103,
+            "endLine": 98,
             "endColumn": 9,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -65,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 104,
+            "line": 99,
             "column": 3,
-            "endLine": 104,
+            "endLine": 99,
             "endColumn": 15,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -75,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 104,
+            "line": 99,
             "column": 3,
-            "endLine": 104,
+            "endLine": 99,
             "endColumn": 15,
             "problem": "SpreadOperator",
             "suggest": "",
@@ -85,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 171,
+            "line": 166,
             "column": 15,
-            "endLine": 171,
+            "endLine": 166,
             "endColumn": 16,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -95,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 175,
+            "line": 170,
             "column": 3,
-            "endLine": 175,
+            "endLine": 170,
             "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -105,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 176,
+            "line": 171,
             "column": 3,
-            "endLine": 176,
+            "endLine": 171,
             "endColumn": 15,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -115,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 176,
+            "line": 171,
             "column": 3,
-            "endLine": 176,
+            "endLine": 171,
             "endColumn": 15,
             "problem": "SpreadOperator",
             "suggest": "",
@@ -125,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 188,
+            "line": 183,
             "column": 14,
-            "endLine": 188,
+            "endLine": 183,
             "endColumn": 15,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -135,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 192,
+            "line": 187,
             "column": 3,
-            "endLine": 192,
+            "endLine": 187,
             "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -145,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 197,
+            "line": 192,
             "column": 25,
-            "endLine": 197,
+            "endLine": 192,
             "endColumn": 26,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -155,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 198,
+            "line": 193,
             "column": 5,
-            "endLine": 200,
+            "endLine": 195,
             "endColumn": 6,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -165,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 203,
+            "line": 198,
             "column": 29,
-            "endLine": 203,
+            "endLine": 198,
             "endColumn": 30,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -175,9 +185,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 204,
+            "line": 199,
             "column": 5,
-            "endLine": 206,
+            "endLine": 201,
+            "endColumn": 6,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 26,
+            "endLine": 209,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 210,
+            "column": 5,
+            "endLine": 212,
             "endColumn": 6,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -186,9 +216,9 @@
         },
         {
             "line": 214,
-            "column": 26,
+            "column": 27,
             "endLine": 214,
-            "endColumn": 27,
+            "endColumn": 28,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
@@ -205,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 219,
+            "line": 221,
             "column": 27,
-            "endLine": 219,
+            "endLine": 221,
             "endColumn": 28,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -215,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 220,
+            "line": 222,
             "column": 5,
-            "endLine": 222,
+            "endLine": 224,
             "endColumn": 6,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -225,29 +255,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 226,
-            "column": 27,
-            "endLine": 226,
-            "endColumn": 28,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 227,
-            "column": 5,
-            "endLine": 229,
-            "endColumn": 6,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 238,
+            "line": 233,
             "column": 14,
-            "endLine": 238,
+            "endLine": 233,
             "endColumn": 15,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -255,9 +265,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 249,
+            "line": 244,
             "column": 3,
-            "endLine": 249,
+            "endLine": 244,
             "endColumn": 9,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -265,9 +275,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 256,
+            "line": 251,
             "column": 14,
-            "endLine": 256,
+            "endLine": 251,
             "endColumn": 15,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -275,9 +285,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 267,
+            "line": 262,
             "column": 3,
-            "endLine": 267,
+            "endLine": 262,
             "endColumn": 9,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -285,9 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 289,
+            "line": 284,
             "column": 20,
-            "endLine": 289,
+            "endLine": 284,
             "endColumn": 21,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -295,9 +305,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 290,
+            "line": 285,
             "column": 3,
-            "endLine": 290,
+            "endLine": 285,
             "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -305,9 +315,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 245,
+            "line": 315,
+            "column": 11,
+            "endLine": 315,
+            "endColumn": 12,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 240,
             "column": 3,
-            "endLine": 245,
+            "endLine": 240,
             "endColumn": 4,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'b' has no initializer and is not definitely assigned in the constructor.",

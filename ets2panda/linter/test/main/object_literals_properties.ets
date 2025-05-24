@@ -243,3 +243,16 @@ class Derived3 extends Base3 {
 let b3: Derived3 = { // Fixable
   m() { console.log(2); }
 };
+
+interface A {
+  map: Map<string, string>;
+}
+let map:Map<string,string> = new Map<string,string>();
+let a:A = {map};
+
+class C {
+  map1: Map<string, string> = new Map<string,string>();
+}
+
+let map1:Map<string,string> = new Map<string,string>();
+let c:C = {map1};

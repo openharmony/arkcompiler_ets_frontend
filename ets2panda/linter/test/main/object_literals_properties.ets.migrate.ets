@@ -36,15 +36,10 @@ let setMethod = new GeneratedObjectLiteralClass_3();
 
 let x: number = 1, y = '2', z = true;
 
-interface GeneratedObjectLiteralInterface_1 {
-    x: number;
-    y: string;
-    z: boolean;
-}
-let shorthand: GeneratedObjectLiteralInterface_1 = {
-  x: x, // Error, fixable
-  y: y, // Error, fixable
-  z: z // Error, fixable
+let shorthand = {
+  x, // Error, fixable
+  y, // Error, fixable
+  z // Error, fixable
 };
 
 let spread = {
@@ -97,9 +92,9 @@ let x2: number = 1, y2: number = 2, z2: number = 3;
 let mixedBad = { // Not fixable
   a: 1,
   b: 2,
-  x2: x2, // Error, fixable
-  y2: y2, // Error, fixable
-  z2: z2, // Error, fixable
+  x2, // Error, fixable
+  y2, // Error, fixable
+  z2, // Error, fixable
   m() {},
   ...shorthand // Error, not fixable
 }
@@ -147,7 +142,7 @@ class GeneratedObjectLiteralClass_8 extends C2 {
     x2: number;
     y2: number;
     z2: number;
-    constructor(init: GeneratedObjectLiteralInitInterface_1) {
+    constructor(init: GeneratedObjectLiteralInitInterface_8) {
         super();
         this.x2 = init.x2;
         this.y2 = init.y2;
@@ -156,7 +151,7 @@ class GeneratedObjectLiteralClass_8 extends C2 {
     m() { console.log(1); } // Fixable
 }
 
-interface GeneratedObjectLiteralInitInterface_1 {
+interface GeneratedObjectLiteralInitInterface_8 {
     x2: number;
     y2: number;
     z2: number;
@@ -169,9 +164,9 @@ let c2: C2 = new GeneratedObjectLiteralClass_8({
 });
 
 let c22: C2 = {
-  x2: x2, // Fixable
-  y2: y2, // Fixable
-  z2: z2, // Fixable
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
   m() { console.log(1); }, // Not fixable, object has spread property
   ...shorthand // Not fixable
 };
@@ -186,9 +181,9 @@ class C3 {
   constructor(a: number) {}
 }
 let c3: C3 = {
-  x2: x2, // Fixable
-  y2: y2, // Fixable
-  z2: z2, // Fixable
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
   m() { console.log(1); } // Not fixable, class type has constructor with parameters
 };
 
@@ -305,3 +300,16 @@ class GeneratedObjectLiteralClass_10 extends Derived3 {
 }
 
 let b3: Derived3 = new GeneratedObjectLiteralClass_10();
+
+interface A {
+  map: Map<string, string>;
+}
+let map:Map<string,string> = new Map<string,string>();
+let a:A = {map};
+
+class C {
+  map1: Map<string, string> = new Map<string,string>();
+}
+
+let map1:Map<string,string> = new Map<string,string>();
+let c:C = {map1};
