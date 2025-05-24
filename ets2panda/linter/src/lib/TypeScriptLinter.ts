@@ -1623,6 +1623,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleLiteralAsPropertyName(node);
     this.handleSendableInterfaceProperty(node);
     this.handleInvalidIdentifier(node);
+    const typeNode = node.type;
+    if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    }
   }
 
   private handleInterfaceProperty(node: ts.PropertySignature): void {
