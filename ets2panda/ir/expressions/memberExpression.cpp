@@ -247,9 +247,43 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
     return commonPropType;
 }
 
+static checker::Type *AdjustRecordReturnType(checker::Type *type, checker::Type *objType)
+{
+    auto *recordKeyType = objType->AsETSObjectType()->TypeArguments()[0];
+    auto *recordValueType = objType->AsETSObjectType()->TypeArguments()[1];
+
+    auto const isStringLiteralOrConstantUnion = [](checker::Type *recordKey) {
+        if (recordKey->IsETSStringType() && recordKey->IsConstantType()) {
+            return true;
+        }
+        if (!recordKey->IsETSUnionType()) {
+            return false;
+        }
+        auto constituentTypes = recordKey->AsETSUnionType()->ConstituentTypes();
+        return std::all_of(constituentTypes.begin(), constituentTypes.end(),
+                           [](auto *it) { return it->IsETSStringType() && it->IsConstantType(); });
+    };
+    if (isStringLiteralOrConstantUnion(recordKeyType)) {
+        if (type->IsETSUnionType()) {
+            return recordValueType;
+        }
+
+        if (type->IsETSFunctionType() && type->AsETSFunctionType()->Name().Is(compiler::Signatures::GET_INDEX_METHOD)) {
+            type->AsETSFunctionType()->CallSignatures()[0]->SetReturnType(recordValueType);
+        }
+    }
+
+    return type;
+}
+
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     auto *const objType = checker->GetApparentType(Object()->TsType());
+    if (type != nullptr && objType->IsETSObjectType() &&
+        objType->ToAssemblerName().str() == compiler::Signatures::BUILTIN_RECORD) {
+        type = AdjustRecordReturnType(type, objType);
+    }
+
     if (PropVar() != nullptr) {  // access erased property type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type

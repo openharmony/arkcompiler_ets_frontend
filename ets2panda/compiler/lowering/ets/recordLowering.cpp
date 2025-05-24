@@ -164,7 +164,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     ES2PANDA_ASSERT(expr->TsType() != nullptr);
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
-    if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {
+    if (!(ss.str() == compiler::Signatures::BUILTIN_RECORD || ss.str() == compiler::Signatures::BUILTIN_MAP)) {
         // Only update object expressions for Map/Record types
         return expr;
     }
@@ -217,7 +217,7 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     auto &properties = expr->Properties();
     // currently we only have Map and Record in this if branch
     std::string containerType;
-    if (ss.str() == "escompat.Map") {
+    if (ss.str() == compiler::Signatures::BUILTIN_MAP) {
         containerType = "Map";
     } else {
         containerType = "Record";
