@@ -29,7 +29,9 @@ set(ES2PANDA_LSP_SRC
   ./src/find_rename_locations.cpp
   ./src/find_safe_delete_location.cpp
   ./src/find_references.cpp
+  ./src/refactors/refactor_types.cpp
   ./src/applicable_refactors.cpp
+  ./src/refactor_provider.cpp
   ./src/refactors/convert_function.cpp
   ./src/formatting/formatting_context.cpp
   ./src/formatting/formatting_settings.cpp

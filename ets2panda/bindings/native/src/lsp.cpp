@@ -19,7 +19,7 @@
 #include "common.h"
 #include "panda_types.h"
 #include "public/es2panda_lib.h"
-
+#include "lsp/include/refactors/refactor_types.h"
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -318,15 +318,15 @@ KNativePointer impl_getClassConstructorInfo(KNativePointer context, KInt positio
         properties.emplace_back(GetStringCopy(const_cast<KStringPtr &>(el)));
     }
     LSPAPI const *ctx = GetImpl();
-    auto *info = new RefactorEditInfo(ctx->getClassConstructorInfo(reinterpret_cast<es2panda_Context *>(context),
-                                                                   static_cast<std::size_t>(position), properties));
+    auto *info = new ark::es2panda::lsp::RefactorEditInfo(ctx->getClassConstructorInfo(
+        reinterpret_cast<es2panda_Context *>(context), static_cast<std::size_t>(position), properties));
     return info;
 }
 TS_INTEROP_3(getClassConstructorInfo, KNativePointer, KNativePointer, KInt, KStringArray)
 
 KNativePointer impl_getFileTextChangesFromConstructorInfo(KNativePointer infoPtr)
 {
-    auto *info = reinterpret_cast<RefactorEditInfo *>(infoPtr);
+    auto *info = reinterpret_cast<ark::es2panda::lsp::RefactorEditInfo *>(infoPtr);
     std::vector<void *> ptrs;
     for (auto &el : info->GetFileTextChanges()) {
         ptrs.push_back(new FileTextChanges(el));
@@ -366,57 +366,6 @@ KNativePointer impl_getTextSpanFromConstructorInfo(KNativePointer infoPtr)
     return new TextSpan(info->span);
 }
 TS_INTEROP_1(getTextSpanFromConstructorInfo, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionName(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->name);
-}
-TS_INTEROP_1(getRefactorActionName, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionDescription(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->description);
-}
-TS_INTEROP_1(getRefactorActionDescription, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionKind(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->kind);
-}
-TS_INTEROP_1(getRefactorActionKind, KNativePointer, KNativePointer)
-
-KNativePointer impl_getApplicableRefactors(KNativePointer context, KStringPtr &kindPtr, KInt position)
-{
-    LSPAPI const *ctx = GetImpl();
-    auto *applicableRefactorInfo = new ark::es2panda::lsp::ApplicableRefactorInfo(ctx->getApplicableRefactors(
-        reinterpret_cast<es2panda_Context *>(context), GetStringCopy(kindPtr), static_cast<std::size_t>(position)));
-    return applicableRefactorInfo;
-}
-TS_INTEROP_3(getApplicableRefactors, KNativePointer, KNativePointer, KStringPtr, KInt)
-
-KNativePointer impl_getApplicableRefactorName(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new std::string(applRefsInfo->name);
-}
-TS_INTEROP_1(getApplicableRefactorName, KNativePointer, KNativePointer)
-
-KNativePointer impl_getApplicableRefactorDescription(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new std::string(applRefsInfo->description);
-}
-TS_INTEROP_1(getApplicableRefactorDescription, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorAction(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new ark::es2panda::lsp::RefactorAction(applRefsInfo->action);
-}
-TS_INTEROP_1(getRefactorAction, KNativePointer, KNativePointer)
 
 KNativePointer impl_getCompletionEntryDetailsSymbolDisplayPart(KNativePointer completionEntryDetailsPtr)
 {

@@ -46,11 +46,6 @@ struct ConfigurableEnd {
     std::optional<TrailingTriviaOption> trailingTriviaOption;
 };
 
-struct TextRange {
-    size_t pos;
-    size_t end;
-};
-
 struct ConfigurableStartEnd {
     std::optional<LeadingTriviaOption> leadingTriviaOption;
     std::optional<TrailingTriviaOption> trailingTriviaOption;

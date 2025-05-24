@@ -15,10 +15,6 @@ ets2panda_add_gtest(lsp_get_definition_at_position_test CPP_SOURCES
     get_definition_at_position_test.cpp
 )
 
-ets2panda_add_gtest(lsp_api_test_get_applicable_refactors CPP_SOURCES
-    refactors_convert_function_test.cpp
-)
-
 ets2panda_add_gtest(lsp_get_file_references_test CPP_SOURCES
     get_file_references_test.cpp
 )
@@ -166,6 +162,10 @@ ets2panda_add_gtest(lsp_api_test_auto_completion CPP_SOURCES
 
 ets2panda_add_gtest(lsp_api_test_inlay_hints CPP_SOURCES
     inlay_hints_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_test_refactor_provider_test CPP_SOURCES
+    refactor_provider_test.cpp
 )
 
 ets2panda_add_gtest(lsp_api_test_find_rename_locations CPP_SOURCES
