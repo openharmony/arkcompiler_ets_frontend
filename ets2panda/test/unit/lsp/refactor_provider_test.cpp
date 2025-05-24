@@ -13,17 +13,22 @@
  * limitations under the License.
  */
 
-#include <memory>
-#include <unordered_map>
-#include "refactors/refactor_types.h"
-#include "applicable_refactors.h"
+#include <gtest/gtest.h>
 #include "lsp/include/refactor_provider.h"
-#include "refactors/convert_function.h"
+#include "lsp/include/refactors/convert_function.h"
+#include "lsp/include/types.h"
+#include "lsp_api_test.h"  // LSPAPITests header file
 
-namespace ark::es2panda::lsp {
+namespace {
+class RefactorProviderRegistrationTest : public LSPAPITests {};
 
-std::vector<ApplicableRefactorInfo> GetApplicableRefactorsImpl(const RefactorContext *context)
+TEST(RefactorProviderRegistrationTest, RegistersConvertFunctionRefactor)
 {
-    return RefactorProvider::Instance().GetApplicableRefactors(*context);
+    const auto &provider = ark::es2panda::lsp::RefactorProvider::Instance();
+    const auto &refactors = provider.GetRefactors();
+
+    auto it = refactors.find("ConvertFunctionRefactor");
+
+    ASSERT_NE(it, refactors.end()) << "ConvertFunctionRefactor was not registered in RefactorProvider.";
 }
-}  // namespace ark::es2panda::lsp
+}  // namespace

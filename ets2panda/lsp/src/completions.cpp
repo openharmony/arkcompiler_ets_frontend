@@ -462,6 +462,9 @@ std::vector<CompletionEntry> GetCompletionFromTSInterfaceDeclaration(ir::TSInter
         auto ident = GetIdentifierFromTSInterfaceHeritage(extend);
         if (ident != nullptr && ident->IsIdentifier()) {
             auto extendInterf = compiler::DeclarationFromIdentifier(ident->AsIdentifier());
+            if (extendInterf == nullptr) {
+                continue;
+            }
             auto extendCom =
                 extendInterf->IsTSInterfaceDeclaration()
                     ? GetCompletionFromTSInterfaceDeclaration(extendInterf->AsTSInterfaceDeclaration(), triggerWord)
