@@ -1869,7 +1869,8 @@ void ETSParser::CheckDeclare()
         case lexer::TokenType::KEYW_FINAL:
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_TYPE:
-        case lexer::TokenType::KEYW_ASYNC: {
+        case lexer::TokenType::KEYW_ASYNC:
+        case lexer::TokenType::KEYW_STRUCT: {
             return;
         }
         default: {
