@@ -14,7 +14,6 @@
  */
 
 function main(): void {
-    let s:string = c'X' as string;
-
+    let s:string = new Char(c'X').toString();
     assertEQ(s, "X")
 }

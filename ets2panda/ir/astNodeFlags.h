@@ -27,7 +27,6 @@ using ENUMBITOPS_OPERATORS;
 enum class AstNodeFlags {
     NO_OPTS = 0,
     CHECKCAST = 1U << 0U,
-    CONVERT_TO_STRING = 1U << 1U,
     ALLOW_REQUIRED_INSTANTIATION = 1U << 2U,
     HAS_EXPORT_ALIAS = 1U << 3U,
     GENERATE_VALUE_OF = 1U << 4U,

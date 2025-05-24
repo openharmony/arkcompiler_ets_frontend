@@ -23,7 +23,6 @@
 #include "compiler/lowering/ets/boxedTypeLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
-#include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
 #include "compiler/lowering/ets/convertPrimitiveCastMethodCall.h"
 #include "compiler/lowering/ets/declareOverloadLowering.h"
@@ -84,7 +83,6 @@ static ArrayLiteralLowering g_arrayLiteralLowering {};
 static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
 static ConstantExpressionLowering g_constantExpressionLowering;
-static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
@@ -181,7 +179,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_opAssignmentLowering,
         &g_lateInitializationConvert,
         &g_extensionAccessorPhase,
-        &g_constStringToCharLowering,
         &g_boxingForLocals,
         &g_recordLowering,
         &g_boxedTypeLowering,

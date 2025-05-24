@@ -156,8 +156,6 @@ public:
     template <typename T>
     static void Mutf8Encode(T *str, char32_t cu);
 
-    bool IsConvertibleToChar() const;
-
     class Iterator {
     public:
         static char32_t constexpr INVALID_CP = std::numeric_limits<char32_t>::max();
