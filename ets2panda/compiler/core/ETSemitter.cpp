@@ -176,6 +176,23 @@ void ETSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable 
     variableDebug.signatureType = Signatures::ANY;
 }
 
+void ETSFunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
+{
+    func->sourceFile = std::string {Cg()->VarBinder()->Program()->RelativeFilePath()};
+
+    if (!Cg()->IsDebug()) {
+        return;
+    }
+
+    ES2PANDA_ASSERT(Cg()->RootNode()->IsScriptFunction());
+    auto *fn = Cg()->RootNode()->AsScriptFunction();
+    bool isInitMethod = fn->Id()->Name().Is(compiler::Signatures::INIT_METHOD);
+    // Write source code of whole file into debug-info of init method
+    if (isInitMethod) {
+        func->sourceCode = SourceCode().Utf8();
+    }
+}
+
 void ETSFunctionEmitter::GenFunctionAnnotations([[maybe_unused]] pandasm::Function *func) {}
 
 static pandasm::Function GenExternalFunction(checker::Signature *signature, bool isCtor)
