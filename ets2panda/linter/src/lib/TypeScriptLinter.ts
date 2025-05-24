@@ -82,6 +82,7 @@ import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKe
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
 import { ASON_TEXT, ASON_MODULES, JSON_TEXT } from './utils/consts/ArkTSUtilsAPI';
+import { interanlFunction } from './utils/consts/InternalFunction';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -6061,7 +6062,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const filterDecl = declarations.filter((name) => {
         return ts.isFunctionDeclaration(name) || ts.isMethodDeclaration(name);
       });
-      if (filterDecl.length > 1) {
+      const isInternalFunction = decl.name && ts.isIdentifier(decl.name) && interanlFunction.includes(decl.name.text);
+      if (isInternalFunction && filterDecl.length > 2 || !isInternalFunction && filterDecl.length > 1) {
         this.incrementCounters(decl, FaultID.TsOverload);
       }
     } else if (ts.isConstructorDeclaration(decl)) {
@@ -6571,8 +6573,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const shouldSkipCheck = isOptional || defaultSkipTypeCheck(propDecl.type);
 
     if (isStatic && hasNoInitializer && !shouldSkipCheck) {
-      const autofix = this.autofixer?.fixStaticPropertyInitializer(propDecl);
-      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization, autofix);
+      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization);
     }
   }
 

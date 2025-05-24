@@ -41,7 +41,6 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [193, 'Replace with arrow function'],
   [206, 'Replace with a special library to call'],
   [209, 'Transform "number" to "int"'],
-  [238, 'Replace with explicit static initializer'],
   [251, 'Transform "!!" to "$$()"'],
   [252, 'Transform "$$" to "$$()"'],
   [253, '"$value" transform to "this.value"'],
