@@ -293,7 +293,6 @@ cookBookTag[302] =
 cookBookTag[303] =
   'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
-cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-ts2s-no-ts-decorator)';
 cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)';
 cookBookTag[307] = 'Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)';
 cookBookTag[308] = 'Type "void" has no instances.(sdk-limited-void-type)';

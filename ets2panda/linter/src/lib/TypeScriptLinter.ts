@@ -5802,7 +5802,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const decorator: ts.Decorator = node as ts.Decorator;
     this.checkSendableAndConcurrentDecorator(decorator);
     this.handleStylesDecorator(decorator);
-    this.handleTypescriptDecorators(decorator);
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
       if (!parent || !SENDABLE_DECORATOR_NODES.includes(parent.kind)) {
@@ -6579,32 +6578,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (decoratorName === CONCURRENT_DECORATOR) {
       this.incrementCounters(decorator, FaultID.LimitedStdLibNoDoncurrentDecorator, autofix);
-    }
-  }
-
-  private handleTypescriptDecorators(decorator: ts.Decorator): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    const identifier = TsUtils.extractIdentifierFromDecorator(decorator.expression);
-    if (!identifier) {
-      return;
-    }
-
-    const symbol = this.tsUtils.trueSymbolAtLocation(identifier);
-    if (!symbol) {
-      return;
-    }
-
-    const decl = TsUtils.getDeclaration(symbol);
-    if (!decl) {
-      return;
-    }
-
-    const sourceFile = decl.getSourceFile();
-    if (sourceFile.fileName.endsWith(EXTNAME_TS)) {
-      this.incrementCounters(decorator, FaultID.InteropNoDecorators);
     }
   }
 
