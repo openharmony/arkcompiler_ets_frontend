@@ -53,7 +53,7 @@ namespace ark::es2panda::checker {
 static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbinder::LocalVariable const *parent)
 {
     auto readonlyCheck = [](varbinder::LocalVariable const *var, bool isParent, bool isReadonly) {
-        if (!var->TsType()->IsETSFunctionType() || var->TsType()->IsETSArrowType()) {
+        if (!var->TsType()->IsETSMethodType()) {
             return true;
         }
 
@@ -83,7 +83,7 @@ static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbind
 static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
 {
     ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
-    if (!child->TsType()->IsETSFunctionType()) {
+    if (!child->TsType()->IsETSMethodType()) {
         return true;
     }
 
