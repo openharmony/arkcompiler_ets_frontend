@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import * as fs from 'fs';
 import { ArkFile } from 'arkanalyzer';
 import { BaseChecker } from '../checker/BaseChecker';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
@@ -162,6 +164,9 @@ export class Project2Check {
         let filtedIssues: IssueReport[] = [];
         for (const issue of this.issues) {
             const filePath = issue.defect.mergeKey.split('%')[0];
+            if (!fs.existsSync(filePath)) {
+                continue;
+            }
             const fileLineList = await FileUtils.readLinesFromFile(filePath);
             const filtedResult = await filterDisableIssue(fileLineList, [issue], filePath);
             if (filtedResult.length > 0) {
