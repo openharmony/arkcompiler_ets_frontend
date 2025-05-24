@@ -104,6 +104,9 @@ defines:
   - name: ets/annotation/Module
     ref: ETS_ANNOTATION_MODULE
     comment: Ets record
+  - name: ets/annotation/FunctionalReference
+    ref: ETS_ANNOTATION_FUNCTIONAL_REFERENCE
+    comment: Ets record
   - name: ets/coroutine/Async
     ref: ETS_COROUTINE_ASYNC
   - name: ets/annotation/DynamicCall

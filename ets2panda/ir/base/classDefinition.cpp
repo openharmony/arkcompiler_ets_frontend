@@ -361,6 +361,7 @@ void ClassDefinition::CopyTo(AstNode *other) const
     otherImpl->anonClass_ = anonClass_;
     otherImpl->localIndex_ = localIndex_;
     otherImpl->localPrefix_ = localPrefix_;
+    otherImpl->functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod_;
     otherImpl->exportedClasses_ = exportedClasses_;
 
     JsDocAllowed<AnnotationAllowed<TypedAstNode>>::CopyTo(other);

@@ -115,6 +115,7 @@ private:
     pandasm::AnnotationData GenAnnotationModule(const ir::ClassDefinition *classDef);
     pandasm::AnnotationData GenAnnotationEnclosingClass(std::string_view className);
     pandasm::AnnotationData GenAnnotationEnclosingMethod(const ir::MethodDefinition *methodDef);
+    pandasm::AnnotationData GenAnnotationFunctionalReference(const ir::ClassDefinition *classDef);
     pandasm::AnnotationData GenAnnotationInnerClass(const ir::ClassDefinition *classDef, const ir::AstNode *parent);
     pandasm::AnnotationData GenAnnotationAsync(ir::ScriptFunction *scriptFunc);
     pandasm::AnnotationData GenAnnotationDynamicCall(DynamicCallNamesMap &callNames);

@@ -526,6 +526,10 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenAnnotations(const ir::ClassD
     std::vector<pandasm::AnnotationData> annotations;
     const ir::AstNode *parent = classDef->Parent();
     while (parent != nullptr) {
+        if ((classDef->Modifiers() & ir::ClassDefinitionModifiers::FUNCTIONAL_REFERENCE) != 0U) {
+            annotations.emplace_back(GenAnnotationFunctionalReference(classDef));
+            break;
+        }
         if (parent->IsMethodDefinition()) {
             annotations.emplace_back(GenAnnotationEnclosingMethod(parent->AsMethodDefinition()));
             annotations.emplace_back(GenAnnotationInnerClass(classDef, parent));
@@ -991,6 +995,18 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::Metho
             methodDef->Function()->Scope()->InternalName().Mutf8())));
     enclosingMethod.AddElement(std::move(value));
     return enclosingMethod;
+}
+
+pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::ClassDefinition *classDef)
+{
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
+    pandasm::AnnotationData functionalReference(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
+    pandasm::AnnotationElement value(
+        Signatures::ANNOTATION_KEY_VALUE,
+        std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
+            const_cast<ir::ClassDefinition *>(classDef)->FunctionalReferenceReferencedMethod().Mutf8())));
+    functionalReference.AddElement(std::move(value));
+    return functionalReference;
 }
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingClass(std::string_view className)

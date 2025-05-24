@@ -57,6 +57,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     STRING_ENUM_TRANSFORMED = 1U << 14U,
     INT_ENUM_TRANSFORMED = 1U << 15U,
     FROM_STRUCT = 1U << 16U,
+    FUNCTIONAL_REFERENCE = 1U << 17U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -383,6 +384,16 @@ public:
         return localIndex_;
     }
 
+    [[nodiscard]] util::StringView FunctionalReferenceReferencedMethod() const noexcept
+    {
+        return functionalReferenceReferencedMethod_;
+    }
+
+    void SetFunctionalReferenceReferencedMethod(util::StringView functionalReferenceReferencedMethod)
+    {
+        functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod;
+    }
+
     [[nodiscard]] const std::string &LocalPrefix() const noexcept
     {
         return localPrefix_;
@@ -520,6 +531,7 @@ private:
     static int classCounter_;
     int localIndex_ {};
     std::string localPrefix_ {};
+    util::StringView functionalReferenceReferencedMethod_ {};
     ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir
