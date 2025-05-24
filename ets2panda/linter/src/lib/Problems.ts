@@ -203,6 +203,7 @@ export enum FaultID {
   InteropJsObjectCallStaticFunc,
   InteropJsObjectExport,
   InteropArkTs1ObjectExport,
+  DefaultArgsBehindRequiredArgs,
   LimitedStdLibNoImportConcurrency,
   InteropDynamicImport,
   InteropDynamicImportTs,
