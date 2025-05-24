@@ -17,6 +17,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { DECL_ETS_SUFFIX } from './pre_define';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -38,6 +39,13 @@ export function changeFileExtension(file: string, targetExt: string, originExt =
   let currentExt = originExt.length === 0 ? path.extname(file) : originExt;
   let fileWithoutExt = file.substring(0, file.lastIndexOf(currentExt));
   return fileWithoutExt + targetExt;
+}
+
+export function changeDeclgenFileExtension(file: string, targetExt: string): string {
+  if (file.endsWith(DECL_ETS_SUFFIX)) {
+      return changeFileExtension(file, targetExt, DECL_ETS_SUFFIX);
+  }
+  return changeFileExtension(file, targetExt);
 }
 
 export function ensurePathExists(filePath: string): void {
