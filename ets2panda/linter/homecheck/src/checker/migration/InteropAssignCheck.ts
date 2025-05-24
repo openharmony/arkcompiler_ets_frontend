@@ -27,6 +27,8 @@ import {
     FunctionType,
     ClassType,
     ArkNamespace,
+    PrimitiveType,
+    UnclearReferenceType,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -44,7 +46,7 @@ const gMetaData: BaseMetaData = {
 };
 
 const RULE_ID = 'arkts-interop-s2d-dynamic-args-to-static';
-
+const BOXED_SET: Set<string> = new Set<string>(['String', 'Boolean', 'BigInt', 'Number']);
 export class InteropAssignCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
     public rule: Rule;
@@ -99,6 +101,9 @@ export class InteropAssignCheck implements BaseChecker {
             const csMethod = cs.getCfg()?.getDeclaringMethod();
             invoke.getArgs().forEach(arg => {
                 const argTy = arg.getType();
+                if (argTy instanceof PrimitiveType || this.isBoxedType(argTy)) {
+                    return;
+                }
                 const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? csMethod?.getLanguage() ?? Language.UNKNOWN;
                 if (argTyLang === Language.ARKTS1_1) {
                     hasTargetArg = true;
@@ -114,26 +119,22 @@ export class InteropAssignCheck implements BaseChecker {
             const severity = this.metaData.severity;
             const ruleId = this.rule.ruleId;
             const filePath = csMethod?.getDeclaringArkFile()?.getFilePath() ?? '';
-            const defeats = new Defects(
-                line,
-                column,
-                column,
-                problem,
-                desc,
-                severity,
-                ruleId,
-                filePath,
-                '',
-                true,
-                false,
-                false
-            );
+            const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
             this.issues.push(new IssueReport(defeats, undefined));
         });
     }
 
+    private isBoxedType(checkType: Type): boolean {
+        const unclear = checkType instanceof UnclearReferenceType && BOXED_SET.has(checkType.getName());
+        const cls = checkType instanceof ClassType && BOXED_SET.has(checkType.getClassSignature().getClassName());
+        return unclear || cls;
+    }
+
     private checkAssignToField(target: ArkMethod, scene: Scene) {
         const assigns: Stmt[] = this.collectAssignToObjectField(target, scene);
+        if (assigns.length > 0) {
+            DVFGHelper.buildSingleDVFG(target, scene);
+        }
         assigns.forEach(assign => {
             let result: Stmt[] = [];
             let visited: Set<Stmt> = new Set();
@@ -149,20 +150,7 @@ export class InteropAssignCheck implements BaseChecker {
             const severity = this.metaData.severity;
             const ruleId = this.rule.ruleId;
             const filePath = assign.getCfg()?.getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
-            const defeats = new Defects(
-                line,
-                column,
-                column,
-                problem,
-                desc,
-                severity,
-                ruleId,
-                filePath,
-                '',
-                true,
-                false,
-                false
-            );
+            const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
             this.issues.push(new IssueReport(defeats, undefined));
         });
     }
@@ -185,11 +173,7 @@ export class InteropAssignCheck implements BaseChecker {
             if (baseTy instanceof ClassType) {
                 const klass = scene.getClass(baseTy.getClassSignature());
                 if (!klass) {
-                    logger.warn(
-                        `check field of type 'Object' failed: cannot find arkclass by sig ${baseTy
-                            .getClassSignature()
-                            .toString()}`
-                    );
+                    logger.warn(`check field of type 'Object' failed: cannot find arkclass by sig ${baseTy.getClassSignature().toString()}`);
                 } else if (klass.getLanguage() === Language.ARKTS1_2) {
                     res.push(stmt);
                 }
@@ -232,16 +216,12 @@ export class InteropAssignCheck implements BaseChecker {
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(
-                    currentStmt.getCfg().getDeclaringMethod().getSignature()
-                );
+                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
                 callsites.forEach(cs => {
                     const declaringMtd = cs.getCfg().getDeclaringMethod();
                     DVFGHelper.buildSingleDVFG(declaringMtd, scene);
                 });
-                this.collectArgDefs(paramIdx, callsites, scene).forEach(d =>
-                    this.checkFromStmt(d, scene, res, visited, depth + 1)
-                );
+                this.collectArgDefs(paramIdx, callsites, scene).forEach(d => this.checkFromStmt(d, scene, res, visited, depth + 1));
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
