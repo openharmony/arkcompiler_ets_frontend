@@ -4563,13 +4563,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
 
-    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
-      return false;
+    // For named exports with braces { ... }
+    if (exportDecl.exportClause && ts.isNamedExports(exportDecl.exportClause)) {
+      for (const exportSpecifier of exportDecl.exportClause.elements) {
+        const identifier = exportSpecifier.name;
+        if (this.tsUtils.isImportedFromJS(identifier)) {
+          return true;
+        }
+      }
     }
 
-    for (const exportSpecifier of exportDecl.exportClause.elements) {
-      const identifier = exportSpecifier.name;
-      if (this.tsUtils.isImportedFromJS(identifier)) {
+    // For namespace exports (export * as namespace from ...)
+    if (exportDecl.exportClause && ts.isNamespaceExport(exportDecl.exportClause)) {
+      const namespaceIdentifier = exportDecl.exportClause.name;
+      if (this.tsUtils.isImportedFromJS(namespaceIdentifier)) {
         return true;
       }
     }
@@ -4582,14 +4589,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
 
-    if (!exportDecl.exportClause || !ts.isNamedExports(exportDecl.exportClause)) {
-      return false;
+    // For named exports with braces { ... }
+    if (exportDecl.exportClause && ts.isNamedExports(exportDecl.exportClause)) {
+      for (const exportSpecifier of exportDecl.exportClause.elements) {
+        const identifier = exportSpecifier.name;
+        if (this.tsUtils.isExportImportedFromArkTs1(identifier, exportDecl)) {
+          return true;
+        }
+      }
     }
 
-    for (const exportSpecifier of exportDecl.exportClause.elements) {
-      const identifier = exportSpecifier.name;
-
-      if (this.tsUtils.isExportImportedFromArkTs1(identifier, exportDecl)) {
+    // For namespace exports (export * as namespace from ...)
+    if (exportDecl.exportClause && ts.isNamespaceExport(exportDecl.exportClause)) {
+      const namespaceIdentifier = exportDecl.exportClause.name;
+      if (this.tsUtils.isExportImportedFromArkTs1(namespaceIdentifier, exportDecl)) {
         return true;
       }
     }
