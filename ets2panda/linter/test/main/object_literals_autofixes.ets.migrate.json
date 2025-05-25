@@ -1,0 +1,318 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 29,
+            "column": 14,
+            "endLine": 29,
+            "endColumn": 15,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 7,
+            "endLine": 44,
+            "endColumn": 60,
+            "problem": "DefiniteAssignment",
+            "suggest": "",
+            "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 186,
+            "column": 5,
+            "endLine": 186,
+            "endColumn": 60,
+            "problem": "DefiniteAssignment",
+            "suggest": "",
+            "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 202,
+            "column": 19,
+            "endLine": 202,
+            "endColumn": 42,
+            "problem": "DestructuringParameter",
+            "suggest": "",
+            "rule": "Destructuring parameter declarations are not supported (arkts-no-destruct-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 202,
+            "column": 28,
+            "endLine": 202,
+            "endColumn": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 240,
+            "column": 12,
+            "endLine": 240,
+            "endColumn": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 240,
+            "column": 14,
+            "endLine": 240,
+            "endColumn": 15,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 241,
+            "column": 13,
+            "endLine": 241,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 241,
+            "column": 15,
+            "endLine": 241,
+            "endColumn": 18,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 242,
+            "column": 13,
+            "endLine": 242,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 242,
+            "column": 15,
+            "endLine": 242,
+            "endColumn": 25,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 244,
+            "column": 15,
+            "endLine": 244,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 245,
+            "column": 13,
+            "endLine": 245,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 248,
+            "column": 13,
+            "endLine": 248,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 249,
+            "column": 13,
+            "endLine": 249,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 249,
+            "column": 15,
+            "endLine": 249,
+            "endColumn": 20,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 256,
+            "column": 13,
+            "endLine": 256,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 259,
+            "column": 8,
+            "endLine": 259,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 269,
+            "column": 14,
+            "endLine": 269,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 270,
+            "column": 14,
+            "endLine": 270,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 271,
+            "column": 14,
+            "endLine": 271,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 278,
+            "column": 14,
+            "endLine": 278,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 281,
+            "column": 14,
+            "endLine": 281,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 283,
+            "column": 14,
+            "endLine": 283,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 283,
+            "column": 19,
+            "endLine": 283,
+            "endColumn": 29,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 287,
+            "column": 26,
+            "endLine": 287,
+            "endColumn": 29,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 293,
+            "column": 35,
+            "endLine": 293,
+            "endColumn": 38,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 302,
+            "column": 35,
+            "endLine": 302,
+            "endColumn": 38,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 302,
+            "column": 42,
+            "endLine": 302,
+            "endColumn": 43,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 306,
+            "column": 5,
+            "endLine": 306,
+            "endColumn": 10,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        }
+    ]
+}

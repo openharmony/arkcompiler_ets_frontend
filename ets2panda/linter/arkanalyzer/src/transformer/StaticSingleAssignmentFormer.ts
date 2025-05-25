@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,9 +58,12 @@ export class StaticSingleAssignmentFormer {
         }
     }
 
-    private decideBlockToPhiStmts(body: ArkBody, dominanceFinder: DominanceFinder,
-                                  blockToDefs: Map<BasicBlock, Set<Local>>, localToBlocks: Map<Local, Set<BasicBlock>>):
-        Map<BasicBlock, Set<Stmt>> {
+    private decideBlockToPhiStmts(
+        body: ArkBody,
+        dominanceFinder: DominanceFinder,
+        blockToDefs: Map<BasicBlock, Set<Local>>,
+        localToBlocks: Map<Local, Set<BasicBlock>>
+    ): Map<BasicBlock, Set<Stmt>> {
         let blockToPhiStmts = new Map<BasicBlock, Set<Stmt>>();
         let blockToPhiLocals = new Map<BasicBlock, Set<Local>>();
         let localToPhiBlock = new Map<Local, Set<BasicBlock>>();
@@ -81,11 +84,15 @@ export class StaticSingleAssignmentFormer {
         return blockToPhiStmts;
     }
 
-    private handleDf(blockToPhiStmts: Map<BasicBlock, Set<Stmt>>,
-                     blockToPhiLocals: Map<BasicBlock, Set<Local>>,
-                     phiBlocks: Set<BasicBlock>, df: BasicBlock, local: Local,
-                     blockToDefs: Map<BasicBlock, Set<Local>>,
-                     blocks: BasicBlock[]): void {
+    private handleDf(
+        blockToPhiStmts: Map<BasicBlock, Set<Stmt>>,
+        blockToPhiLocals: Map<BasicBlock, Set<Local>>,
+        phiBlocks: Set<BasicBlock>,
+        df: BasicBlock,
+        local: Local,
+        blockToDefs: Map<BasicBlock, Set<Local>>,
+        blocks: BasicBlock[]
+    ): void {
         if (!phiBlocks.has(df)) {
             phiBlocks.add(df);
 
@@ -109,12 +116,14 @@ export class StaticSingleAssignmentFormer {
         }
     }
 
-    private handleBlockWithSucc(blockToPhiStmts: Map<BasicBlock, Set<Stmt>>,
-                                succ: BasicBlock,
-                                blockToDefs: Map<BasicBlock, Set<Local>>,
-                                block: BasicBlock,
-                                phiArgsNum: Map<Stmt, number>): void {
-        for (const phi of (blockToPhiStmts.get(succ) as Set<Stmt>)) {
+    private handleBlockWithSucc(
+        blockToPhiStmts: Map<BasicBlock, Set<Stmt>>,
+        succ: BasicBlock,
+        blockToDefs: Map<BasicBlock, Set<Local>>,
+        block: BasicBlock,
+        phiArgsNum: Map<Stmt, number>
+    ): void {
+        for (const phi of blockToPhiStmts.get(succ) as Set<Stmt>) {
             let local = phi.getDef() as Local;
             if (blockToDefs.get(block)?.has(local)) {
                 if (phiArgsNum.has(phi)) {
@@ -127,9 +136,7 @@ export class StaticSingleAssignmentFormer {
         }
     }
 
-    private addPhiStmts(blockToPhiStmts: Map<BasicBlock, Set<Stmt>>, cfg: Cfg,
-                        blockToDefs: Map<BasicBlock, Set<Local>>): void {
-
+    private addPhiStmts(blockToPhiStmts: Map<BasicBlock, Set<Stmt>>, cfg: Cfg, blockToDefs: Map<BasicBlock, Set<Local>>): void {
         let phiArgsNum = new Map<Stmt, number>();
         for (const block of cfg.getBlocks()) {
             let succs = Array.from(block.getSuccessors());
@@ -155,8 +162,7 @@ export class StaticSingleAssignmentFormer {
         }
     }
 
-    private renameUseAndDef(stmt: Stmt, localToNameStack: Map<Local, Local[]>, nextFreeIdx: number,
-                            newLocals: Set<Local>, newPhiStmts: Set<Stmt>): number {
+    private renameUseAndDef(stmt: Stmt, localToNameStack: Map<Local, Local[]>, nextFreeIdx: number, newLocals: Set<Local>, newPhiStmts: Set<Stmt>): number {
         let uses = stmt.getUses();
         if (uses.length > 0 && !this.constainsPhiExpr(stmt)) {
             for (const use of uses) {
@@ -185,12 +191,11 @@ export class StaticSingleAssignmentFormer {
         return nextFreeIdx;
     }
 
-    private renameLocals(body: ArkBody, dominanceTree: DominanceTree,
-                         blockToPhiStmts: Map<BasicBlock, Set<Stmt>>): void {
+    private renameLocals(body: ArkBody, dominanceTree: DominanceTree, blockToPhiStmts: Map<BasicBlock, Set<Stmt>>): void {
         let newLocals = new Set(body.getLocals().values());
         let localToNameStack = new Map<Local, Local[]>();
         for (const local of newLocals) {
-            localToNameStack.set(local, new Array<Local>())
+            localToNameStack.set(local, new Array<Local>());
         }
 
         let blockStack = new Array<BasicBlock>();
@@ -231,8 +236,7 @@ export class StaticSingleAssignmentFormer {
         body.setLocals(newLocals);
     }
 
-    private removeVisitedTree(blockStack: BasicBlock[], dominanceTree: DominanceTree,
-                              visited: Set<BasicBlock>, localToNameStack: Map<Local, Local[]>): void {
+    private removeVisitedTree(blockStack: BasicBlock[], dominanceTree: DominanceTree, visited: Set<BasicBlock>, localToNameStack: Map<Local, Local[]>): void {
         let top = blockStack[blockStack.length - 1];
         let children = dominanceTree.getChildren(top);
         while (this.containsAllChildren(visited, children)) {

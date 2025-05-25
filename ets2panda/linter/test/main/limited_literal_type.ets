@@ -34,3 +34,18 @@ class A{
 }
 let x: number;
 let persons : Record<string, OptionalPerson>;
+
+let s = "123";
+let c1 = s.length as number & 1;
+let c2 = s.length & 1
+
+function foo(p: 1) {} // CTE
+
+let arr: 1[]; // CTE
+
+let a = 1 as 1; // CTE
+
+let c1 = s.length as (number & 1);  // error
+let tup: [['arkts' | boolean, 1 | true, false], string[], number] = [['arkts', 1, false], ['arkts1', 'arkts2'], 1.5];
+let a : 1| boolean = 1;
+let b : [1] = [1]

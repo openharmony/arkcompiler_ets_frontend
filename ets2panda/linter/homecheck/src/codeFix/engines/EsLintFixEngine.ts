@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-import { ArkFile } from "arkanalyzer";
-import { FileReports, IssueReport } from "../../model/Defects";
-import { Engine } from "../../model/Engine";
-import { RuleFix } from "../../model/Fix";
-import Logger, { LOG_MODULE_TYPE } from "arkanalyzer/lib/utils/logger";
-import { FixUtils } from "../../utils/common/FixUtils";
+import { ArkFile } from 'arkanalyzer';
+import { FileReports, IssueReport } from '../../model/Defects';
+import { Engine } from '../../model/Engine';
+import { RuleFix } from '../../model/Fix';
+import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
+import { FixUtils } from '../../utils/common/FixUtils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'EsLintFixEngine');
 const BOM = '\uFEFF';
@@ -28,9 +28,10 @@ let eof = '\r\n';
 export class EsLintFixEngine implements Engine {
     applyFix(arkFile: ArkFile, fixIssues: IssueReport[], remainIssues: IssueReport[]): FileReports {
         let sourceText = arkFile.getCode();
-        const bom = sourceText.startsWith(BOM) ? BOM : "",
-            text = bom ? sourceText.slice(1) : sourceText;
-        let lastPos = Number.NEGATIVE_INFINITY, output = bom;
+        const bom = sourceText.startsWith(BOM) ? BOM : '';
+        let text = bom ? sourceText.slice(1) : sourceText;
+        let lastPos = Number.NEGATIVE_INFINITY;
+        let output = bom;
         eof = FixUtils.getTextEof(text) || eof;
         // issue非法数据检查及排序
         const ret = this.checkAndSortIssues(fixIssues, remainIssues);
@@ -53,11 +54,12 @@ export class EsLintFixEngine implements Engine {
             this.updateRemainIssues(text, issue, remainIssues, remainIssuesCopy);
         }
         output += text.slice(Math.max(0, lastPos));
-        return { defects: remainIssues.map((issue => issue.defect)), output: bom + output, filePath: arkFile.getFilePath() }
+        return { defects: remainIssues.map((issue => issue.defect)), output: bom + output, filePath: arkFile.getFilePath() };
     }
 
     private checkAndSortIssues(fixIssues: IssueReport[], remainIssues: IssueReport[]): {
-        fixIssues: IssueReport[], remainIssues: IssueReport[] } {
+        fixIssues: IssueReport[], remainIssues: IssueReport[]
+    } {
         const fixIssuesValid: IssueReport[] = [];
         fixIssues.forEach((issue) => {
             const fix = issue.fix as RuleFix;
@@ -70,7 +72,7 @@ export class EsLintFixEngine implements Engine {
         return { fixIssues: fixIssuesValid.sort(this.compareIssueByRange), remainIssues: remainIssues.sort(this.compareIssueByLocation) };
     }
 
-    private compareIssueByRange(issue1: IssueReport, issue2: IssueReport) {
+    private compareIssueByRange(issue1: IssueReport, issue2: IssueReport): number {
         let fix1 = issue1.fix;
         let fix2 = issue2.fix;
         if (FixUtils.isRuleFix(fix1) && FixUtils.isRuleFix(fix2)) {
@@ -80,7 +82,7 @@ export class EsLintFixEngine implements Engine {
         }
     }
 
-    private compareIssueByLocation(a: IssueReport, b: IssueReport) {
+    private compareIssueByLocation(a: IssueReport, b: IssueReport): number {
         return a.defect.reportLine - b.defect.reportLine || a.defect.reportColumn - b.defect.reportColumn;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -220,7 +220,7 @@ export abstract class ArkBaseModel {
     }
 
     public removeDecorator(kind: string): void {
-        this.decorators?.forEach((value) => {
+        this.decorators?.forEach(value => {
             if (value.getKind() === kind) {
                 this.decorators?.delete(value);
             }
@@ -235,7 +235,7 @@ export abstract class ArkBaseModel {
         if (!this.decorators) {
             return [];
         }
-        return Array.from(this.decorators).filter((item) => {
+        return Array.from(this.decorators).filter(item => {
             return COMPONENT_MEMBER_DECORATORS.has(item.getKind());
         }) as Decorator[];
     }
@@ -255,7 +255,7 @@ export abstract class ArkBaseModel {
     public hasDecorator(kind: string | Set<string>): boolean {
         let decorators = this.getDecorators();
         return (
-            decorators.filter((value) => {
+            decorators.filter(value => {
                 if (kind instanceof Set) {
                     return kind.has(value.getKind());
                 }
@@ -276,7 +276,10 @@ export abstract class ArkBaseModel {
             return { errCode: ArkErrorCode.OK };
         }
         logger.error(`class fields: ${errs.join(',')} is undefined.`);
-        return { errCode: ArkErrorCode.CLASS_INSTANCE_FIELD_UNDEFINDED, errMsg: `${errs.join(',')} is undefined.` };
+        return {
+            errCode: ArkErrorCode.CLASS_INSTANCE_FIELD_UNDEFINDED,
+            errMsg: `${errs.join(',')} is undefined.`,
+        };
     }
 
     public abstract validate(): ArkError;

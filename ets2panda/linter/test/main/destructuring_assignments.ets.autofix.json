@@ -47,7 +47,7 @@
                     "end": 736
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_1.a;b = GeneratedDestructObj_1.b;s = GeneratedDestructObj_1.s;",
+                    "replacementText": "\na = GeneratedDestructObj_1.a;\nb = GeneratedDestructObj_1.b;\ns = GeneratedDestructObj_1.s;\n",
                     "start": 737,
                     "end": 737
                 }
@@ -119,7 +119,7 @@
                     "end": 892
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_2.a;({ c, d: s } = GeneratedDestructObj_2.b);",
+                    "replacementText": "\na = GeneratedDestructObj_2.a;\n({ c, d: s } = GeneratedDestructObj_2.b);\n",
                     "start": 893,
                     "end": 893
                 }
@@ -213,7 +213,7 @@
                     "end": 1047
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_3.a;b = GeneratedDestructObj_3.b;",
+                    "replacementText": "\na = GeneratedDestructObj_3.a;\nb = GeneratedDestructObj_3.b;\n",
                     "start": 1048,
                     "end": 1048
                 }
@@ -235,7 +235,7 @@
                     "end": 1092
                 },
                 {
-                    "replacementText": "a = GeneratedDestructArray_1[0];b = GeneratedDestructArray_1[1];c = GeneratedDestructArray_1[2];",
+                    "replacementText": "\na = GeneratedDestructArray_1[0];\nb = GeneratedDestructArray_1[1];\nc = GeneratedDestructArray_1[2];\n",
                     "start": 1108,
                     "end": 1108
                 }
@@ -267,7 +267,7 @@
                     "end": 1155
                 },
                 {
-                    "replacementText": "[a1, a2] = GeneratedDestructArray_2[0];[b1, b2] = GeneratedDestructArray_2[1];[c1, c2] = GeneratedDestructArray_2[2];",
+                    "replacementText": "\n[a1, a2] = GeneratedDestructArray_2[0];\n[b1, b2] = GeneratedDestructArray_2[1];\n[c1, c2] = GeneratedDestructArray_2[2];\n",
                     "start": 1183,
                     "end": 1183
                 }
@@ -289,7 +289,7 @@
                     "end": 1192
                 },
                 {
-                    "replacementText": "a = GeneratedDestructArray_3[0];b = GeneratedDestructArray_3[1];",
+                    "replacementText": "\na = GeneratedDestructArray_3[0];\nb = GeneratedDestructArray_3[1];\n",
                     "start": 1202,
                     "end": 1202
                 }
@@ -391,7 +391,7 @@
                     "end": 1506
                 },
                 {
-                    "replacementText": "a = GeneratedDestructArray_4[0];b = GeneratedDestructArray_4[1];",
+                    "replacementText": "\na = GeneratedDestructArray_4[0];\nb = GeneratedDestructArray_4[1];\n",
                     "start": 1520,
                     "end": 1520
                 }
@@ -565,7 +565,7 @@
                     "end": 1953
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_4.a;[c, d] = GeneratedDestructObj_4.b;",
+                    "replacementText": "\na = GeneratedDestructObj_4.a;\n[c, d] = GeneratedDestructObj_4.b;\n",
                     "start": 1954,
                     "end": 1954
                 }
@@ -597,7 +597,7 @@
                     "end": 2051
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_5.a;({\n    s,\n    c: [d, f],\n  } = GeneratedDestructObj_5.b);",
+                    "replacementText": "\na = GeneratedDestructObj_5.a;\n({\n    s,\n    c: [d, f],\n  } = GeneratedDestructObj_5.b);\n",
                     "start": 2052,
                     "end": 2052
                 }
@@ -739,7 +739,7 @@
                     "end": 2525
                 },
                 {
-                    "replacementText": "a = GeneratedDestructObj_6.a;b = GeneratedDestructObj_6.b;s = GeneratedDestructObj_6.s;",
+                    "replacementText": "\na = GeneratedDestructObj_6.a;\nb = GeneratedDestructObj_6.b;\ns = GeneratedDestructObj_6.s;\n",
                     "start": 2526,
                     "end": 2526
                 }

@@ -59,7 +59,7 @@ export class ArkIRMethodPrinter extends BasePrinter {
         if (cfg) {
             cfg.getStmts()
                 .reverse()
-                .forEach((stmt) => stmts.push(stmt));
+                .forEach(stmt => stmts.push(stmt));
         }
         for (const stmt of stmts) {
             if (stmt.getOriginPositionInfo().getLineNo() > 0) {
@@ -104,14 +104,14 @@ export class ArkIRMethodPrinter extends BasePrinter {
         const genericTypes = method.getGenericTypes();
         if (genericTypes && genericTypes.length > 0) {
             let typeParameters: string[] = [];
-            genericTypes.forEach((genericType) => {
+            genericTypes.forEach(genericType => {
                 typeParameters.push(genericType.toString());
             });
             code.write(`<${genericTypes.join(', ')}>`);
         }
 
         let parameters: string[] = [];
-        method.getParameters().forEach((parameter) => {
+        method.getParameters().forEach(parameter => {
             let str: string = parameter.getName();
             if (parameter.hasDotDotDotToken()) {
                 str = `...${parameter.getName()}`;
@@ -152,7 +152,7 @@ export class ArkIRMethodPrinter extends BasePrinter {
         this.printer.incIndent();
 
         if (successors.length === 1) {
-            block.getStmts().map((stmt) => {
+            block.getStmts().map(stmt => {
                 this.printer.writeIndent().writeLine(stmt.toString());
             });
             this.printer.writeIndent().writeLine(`goto label${successors[0].getId()}`);
@@ -165,7 +165,7 @@ export class ArkIRMethodPrinter extends BasePrinter {
                 }
             }
         } else {
-            block.getStmts().map((stmt) => {
+            block.getStmts().map(stmt => {
                 this.printer.writeIndent().writeLine(stmt.toString());
             });
         }

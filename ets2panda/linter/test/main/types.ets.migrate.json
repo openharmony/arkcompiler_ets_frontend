@@ -1,0 +1,318 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 22,
+            "column": 15,
+            "endLine": 22,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 15,
+            "endLine": 23,
+            "endColumn": 21,
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 20,
+            "endLine": 24,
+            "endColumn": 27,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 15,
+            "endLine": 42,
+            "endColumn": 25,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 24,
+            "endLine": 44,
+            "endColumn": 31,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 20,
+            "endLine": 45,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 21,
+            "endLine": 51,
+            "endColumn": 24,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 29,
+            "endLine": 51,
+            "endColumn": 40,
+            "problem": "IsOperator",
+            "suggest": "",
+            "rule": "Type guarding is supported with \"instanceof\" and \"as\" (arkts-no-is)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 47,
+            "endLine": 51,
+            "endColumn": 50,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 53,
+            "endLine": 51,
+            "endColumn": 64,
+            "problem": "IsOperator",
+            "suggest": "",
+            "rule": "Type guarding is supported with \"instanceof\" and \"as\" (arkts-no-is)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "endLine": 65,
+            "endColumn": 8,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 5,
+            "endLine": 66,
+            "endColumn": 8,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 5,
+            "endLine": 80,
+            "endColumn": 28,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 20,
+            "endLine": 80,
+            "endColumn": 27,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 32,
+            "endLine": 84,
+            "endColumn": 35,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 11,
+            "endLine": 85,
+            "endColumn": 13,
+            "problem": "InOperator",
+            "suggest": "",
+            "rule": "\"in\" operator is not supported (arkts-no-in)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 86,
+            "column": 5,
+            "endLine": 86,
+            "endColumn": 14,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 22,
+            "endLine": 100,
+            "endColumn": 29,
+            "problem": "IntersectionType",
+            "suggest": "",
+            "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 5,
+            "endLine": 104,
+            "endColumn": 32,
+            "problem": "CallSignature",
+            "suggest": "",
+            "rule": "Use \"class\" instead of a type with call signature (arkts-no-call-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 9,
+            "endLine": 139,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 20,
+            "endLine": 139,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 149,
+            "column": 3,
+            "endLine": 149,
+            "endColumn": 9,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 150,
+            "column": 15,
+            "endLine": 150,
+            "endColumn": 21,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 152,
+            "column": 12,
+            "endLine": 152,
+            "endColumn": 15,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 181,
+            "column": 5,
+            "endLine": 181,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 3,
+            "endLine": 70,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '__2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '__2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 114,
+            "column": 3,
+            "endLine": 114,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'val' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'val' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 172,
+            "column": 3,
+            "endLine": 172,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'string'.",
+            "rule": "Type 'undefined' is not assignable to type 'string'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 18,
+            "endLine": 173,
+            "endColumn": 27,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'undefined' is not assignable to parameter of type 'string'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 17,
+            "endLine": 174,
+            "endColumn": 26,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'number'.",
+            "rule": "Argument of type 'undefined' is not assignable to parameter of type 'number'.",
+            "severity": "ERROR"
+        }
+    ]
+}

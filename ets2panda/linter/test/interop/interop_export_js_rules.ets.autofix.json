@@ -1,0 +1,88 @@
+{
+  "copyright": [
+    "Copyright (c) 2025 Huawei Device Co., Ltd.",
+    "Licensed under the Apache License, Version 2.0 (the 'License');",
+    "you may not use this file except in compliance with the License.",
+    "You may obtain a copy of the License at",
+    "",
+    "http://www.apache.org/licenses/LICENSE-2.0",
+    "",
+    "Unless required by applicable law or agreed to in writing, software",
+    "distributed under the License is distributed on an 'AS IS' BASIS,",
+    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+    "See the License for the specific language governing permissions and",
+    "limitations under the License."
+  ],
+  "result": [
+    {
+      "line": 17,
+      "column": 1,
+      "endLine": 17,
+      "endColumn": 51,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 1,
+      "endLine": 17,
+      "endColumn": 51,
+      "problem": "InterOpImportJs",
+      "autofix": [
+        {
+          "start": 618,
+          "end": 668,
+          "replacementText": "",
+          "line": 17,
+          "column": 1,
+          "endLine": 17,
+          "endColumn": 51
+        },
+        {
+          "start": 668,
+          "end": 668,
+          "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_1.getPropertyByName('ff1');\n",
+          "line": 17,
+          "column": 1,
+          "endLine": 17,
+          "endColumn": 51
+        }
+      ],
+      "suggest": "",
+      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 19,
+      "column": 1,
+      "endLine": 19,
+      "endColumn": 13,
+      "problem": "InteropJsObjectExport",
+      "suggest": "",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 21,
+      "column": 1,
+      "endLine": 21,
+      "endColumn": 51,
+      "problem": "InteropJsObjectExport",
+      "suggest": "",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 23,
+      "column": 1,
+      "endLine": 23,
+      "endColumn": 57,
+      "problem": "InteropArkTs1ObjectExport",
+      "suggest": "",
+      "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
+      "severity": "ERROR"
+    }
+  ]
+}

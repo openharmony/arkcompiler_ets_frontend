@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,6 @@ import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 // Common options interface, additional fields may be used by plugins
 export interface LinterOptions {
   checkTsAsSource?: boolean;
-  ideMode?: boolean;
   ideInteractive?: boolean;
   migratorMode?: boolean;
   warningsAsErrors?: boolean;
@@ -39,4 +38,11 @@ export interface LinterOptions {
   interopCheckMode?: boolean;
   compatibleSdkVersion?: number;
   compatibleSdkVersionStage?: string;
+  etsLoaderPath?: string;
+  migrationMaxPass?: number;
+  migrationFilePathMap?: Map<string, string>;
+  noMigrationBackupFile?: boolean;
+  migrationReport?: boolean;
+  wholeProjectPath?: string;
+  checkTsAndJs?: boolean;
 }

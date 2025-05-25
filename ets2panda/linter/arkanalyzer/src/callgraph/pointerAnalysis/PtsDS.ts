@@ -215,12 +215,15 @@ export class PtsBV<T extends Idx> implements IPtsCollection<T> {
     }
 }
 
-export enum PtsCollectionType { Set, BitVector };
+export enum PtsCollectionType {
+    Set,
+    BitVector,
+}
 export class DiffPTData<K, D extends Idx, DS extends IPtsCollection<D>> {
     private diffPtsMap: Map<K, DS>;
     private propaPtsMap: Map<K, DS>;
 
-    constructor(private DSCreator: (new () => DS)) {
+    constructor(private DSCreator: new () => DS) {
         this.diffPtsMap = new Map();
         this.propaPtsMap = new Map();
     }
@@ -323,7 +326,9 @@ export class DiffPTData<K, D extends Idx, DS extends IPtsCollection<D>> {
     }
 
     flush(v: K): void {
-        if (!this.diffPtsMap.has(v)) return;
+        if (!this.diffPtsMap.has(v)) {
+            return;
+        }
         let diff = this.diffPtsMap.get(v)!;
         let propa = this.getPropaPtsMut(v);
         // do not clear origin propa, only copy the pt and add it to diff
@@ -333,19 +338,27 @@ export class DiffPTData<K, D extends Idx, DS extends IPtsCollection<D>> {
 
     clearPts(v: K): void {
         let diff = this.diffPtsMap.get(v);
-        if (diff) diff.clear();
+        if (diff) {
+            diff.clear();
+        }
         let propa = this.propaPtsMap.get(v);
-        if (propa) propa.clear();
+        if (propa) {
+            propa.clear();
+        }
     }
 
     clearDiffPts(v: K): void {
         let diff = this.diffPtsMap.get(v);
-        if (diff) diff.clear();
+        if (diff) {
+            diff.clear();
+        }
     }
 
     clearPropaPts(v: K): void {
         let propa = this.propaPtsMap.get(v);
-        if (propa) propa.clear();
+        if (propa) {
+            propa.clear();
+        }
     }
 
     calculateDiff(src: K, dst: K): DS {

@@ -16,32 +16,132 @@
     "result": [
         {
             "line": 16,
-            "column": 1,
+            "column": 10,
             "endLine": 16,
-            "endColumn": 52,
-            "problem": "LimitedStdLibApi",
+            "endColumn": 16,
+            "problem": "NoNeedStdlibWorker",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 10,
+            "endLine": 18,
+            "endColumn": 16,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 20,
+            "endLine": 18,
+            "endColumn": 31,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
             "severity": "ERROR"
         },
         {
             "line": 20,
-            "column": 1,
+            "column": 10,
             "endLine": 20,
-            "endColumn": 54,
-            "problem": "LimitedStdLibApi",
+            "endColumn": 16,
+            "problem": "NoNeedStdlibWorker",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
             "severity": "ERROR"
         },
         {
-            "line": 22,
-            "column": 1,
-            "endLine": 22,
-            "endColumn": 50,
-            "problem": "LimitedStdLibApi",
+            "line": 20,
+            "column": 20,
+            "endLine": 20,
+            "endColumn": 29,
+            "problem": "NoNeedStdlibWorker",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 10,
+            "endLine": 24,
+            "endColumn": 16,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 18,
+            "endLine": 28,
+            "endColumn": 24,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 44,
+            "endLine": 28,
+            "endColumn": 50,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 23,
+            "endLine": 30,
+            "endColumn": 34,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 23,
+            "endLine": 32,
+            "endColumn": 32,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 16,
+            "endLine": 34,
+            "endColumn": 27,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 18,
+            "endLine": 36,
+            "endColumn": 29,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 49,
+            "endLine": 36,
+            "endColumn": 60,
+            "problem": "NoNeedStdlibWorker",
+            "suggest": "",
+            "rule": "Worker are not supported(arkts-no-need-stdlib-worker)",
             "severity": "ERROR"
         }
     ]

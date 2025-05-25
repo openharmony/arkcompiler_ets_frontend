@@ -14,14 +14,44 @@
         "limitations under the License."
     ],
     "result": [
-         {
-            "line": 20,
+        {
+            "line": 17,
             "column": 1,
-            "endLine": 20,
-            "endColumn": 13,
-            "problem": "InteropCallObjectParam",
+            "endLine": 17,
+            "endColumn": 49,
+            "problem": "ImportAfterStatement",
             "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-call-object-param)",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 27,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 19,
+            "endLine": 20,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 28,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         }
     ]

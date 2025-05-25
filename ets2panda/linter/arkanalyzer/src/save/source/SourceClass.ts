@@ -61,7 +61,7 @@ export class SourceClass extends SourceBase {
         const commentsMetadata = this.cls.getMetadata(ArkMetadataKind.LEADING_COMMENTS);
         if (commentsMetadata instanceof CommentsMetadata) {
             const comments = commentsMetadata.getComments();
-            comments.forEach((comment) => {
+            comments.forEach(comment => {
                 this.printer.writeIndent().writeLine(comment.content);
             });
         }
@@ -153,10 +153,7 @@ export class SourceClass extends SourceBase {
     protected printMethods(): Dump[] {
         let items: Dump[] = [];
         for (let method of this.cls.getMethods()) {
-            if (
-                method.isGenerated() ||
-                (PrinterUtils.isConstructorMethod(method.getName()) && this.cls.hasViewTree())
-            ) {
+            if (method.isGenerated() || (PrinterUtils.isConstructorMethod(method.getName()) && this.cls.hasViewTree())) {
                 continue;
             }
 

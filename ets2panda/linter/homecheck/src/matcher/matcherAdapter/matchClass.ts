@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 import { ArkClass, ArkFile } from 'arkanalyzer';
 import { ClassMatcher, isMatchedFile, isMatchedNamespace, isMatchedClass } from '../Matchers';
 
-export function matchClass(arkFiles: ArkFile[], matcher: ClassMatcher, callback: Function) {
+export function matchClass(arkFiles: ArkFile[], matcher: ClassMatcher, callback: Function): void {
     for (let arkFile of arkFiles) {
         if (matcher.file && !isMatchedFile(arkFile, matcher.file)) {
             continue;
@@ -31,7 +31,7 @@ export function matchClass(arkFiles: ArkFile[], matcher: ClassMatcher, callback:
     }
 }
 
-function matchClassProcess(matcher: ClassMatcher, classes: ArkClass[], callback: Function) {
+function matchClassProcess(matcher: ClassMatcher, classes: ArkClass[], callback: Function): void {
     for (const arkClass of classes) {
         if (isMatchedClass(arkClass, [matcher])) {
             callback(arkClass);

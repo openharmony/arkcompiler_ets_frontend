@@ -198,10 +198,16 @@
   "plugin:@migration/all": {
     "@migration/arkts-obj-literal-generate-class-instance": 1,
     "@migration/arkts-instance-method-bind-this": 1,
-    "@migration/arkui-data-observation-2": 1,
+    "@migration/arkts-no-ts-like-as": 1,
+    "@migration/arkui-data-observation": 1,
     "@migration/arkui-stateful-appstorage": 1,
-    "@migration/arkui-no-update-in-rending": 1,
-    "@migration/arkui-custombuiler": 1,
-    "@migration/no-method-overriding-field-check": 1
+    "@migration/arkui-no-update-in-build": 1,
+    "@migration/arkui-custombuilder-passing": 1,
+    "@migration/no-method-overriding-field-check": 1,
+    "@migration/interop-backward-dfa": 1,
+    "@migration/interop-dynamic-object-literals": 1,
+    "@migration/interop-assign": 1,
+    "@migration/interop-boxed-type-check": 1,
+    "@migration/interop-js-modify-property": 1
   }
 }

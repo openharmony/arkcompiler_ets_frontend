@@ -31,7 +31,7 @@
             "endColumn": 52,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 7,
             "problem": "InteropEqualityJudgment",
             "suggest": "",
-            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-js-equality-judgment)",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 7,
             "problem": "InteropEqualityJudgment",
             "suggest": "",
-            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-js-equality-judgment)",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 8,
             "problem": "InteropEqualityJudgment",
             "suggest": "",
-            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-js-equality-judgment)",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 8,
             "problem": "InteropEqualityJudgment",
             "suggest": "",
-            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-js-equality-judgment)",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
             "severity": "ERROR"
         }
     ]

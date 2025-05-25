@@ -21,6 +21,7 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [16, 'Combine static block statements into one static block'],
   [25, 'Replace with field declaration'],
   [29, 'Replace with dot notation'],
+  [34, 'Add type annotation'],
   [37, 'Replace with \'new Regexp()\' stdlib API call'],
   [38, 'Add interface definition'],
   [40, 'Replace with interface'],
@@ -39,6 +40,8 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [189, 'Add type annotations to numerical variables'],
   [193, 'Replace with arrow function'],
   [206, 'Replace with a special library to call'],
+  [209, 'Transform "number" to "int"'],
+  [238, 'Replace with explicit static initializer'],
   [251, 'Transform "!!" to "$$()"'],
   [252, 'Transform "$$" to "$$()"'],
   [253, '"$value" transform to "this.value"'],
@@ -49,11 +52,15 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [259, 'Add UI Interface Import'],
   [260, '"@Entry" annotaion fixed'],
   [263, '"@Provide" annotation fixed'],
+  [275, 'Custom layout need add decorator'],
+  [300, 'Replace calling method of the TS-like `Function` type'],
   [330, 'Convert import named objects from JS to ESObject'],
   [332, 'Using the ESObject interface to access properties'],
   [334, 'Call typeOf function'],
   [335, 'Call toNumber function to convert'],
   [338, 'Replace with library function call'],
   [339, 'Using \'ESObject\' interface call'],
-  [341, 'Create JS objects using instantite']
+  [341, 'Create JS objects using instantite'],
+  [358, 'Replace missing attribute'],
+  [359, '"@LocalBuilder" transform to "@Builder"']
 ]);

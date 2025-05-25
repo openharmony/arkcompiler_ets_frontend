@@ -1,5 +1,3 @@
-'use static'
-
 /*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +13,6 @@
  * limitations under the License.
  */
 
-export function foo(prx: Object) {
-    Object.assign({}, prx);
-    Object.entries(prx);
-    Object.keys(prx);
-    Object.values(prx);
-    prx.hasOwnProperty("a");
-}
-
+export class X { a = 1 };
 
 

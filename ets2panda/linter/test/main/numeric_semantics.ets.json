@@ -33,6 +33,56 @@
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
+        },
+        {
+            "line": 145,
+            "column": 50,
+            "endLine": 145,
+            "endColumn": 51,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 152,
+            "column": 5,
+            "endLine": 152,
+            "endColumn": 7,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 152,
+            "column": 9,
+            "endLine": 152,
+            "endColumn": 12,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 197,
+            "column": 1,
+            "endLine": 197,
+            "endColumn": 40,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 199,
+            "column": 5,
+            "endLine": 199,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
         }
     ]
 }

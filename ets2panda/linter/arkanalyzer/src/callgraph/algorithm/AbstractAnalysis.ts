@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { NodeID } from '../../core/graph/BaseExplicitGraph';
 import { CallGraph, FuncID, CallSite, CallGraphNode } from '../model/CallGraph';
 import { CallGraphBuilder } from '../model/builder/CallGraphBuilder';
+import { createPtsCollectionCtor, IPtsCollection, PtsCollectionType } from '../pointerAnalysis/PtsDS';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'CG');
 
@@ -32,7 +33,7 @@ export abstract class AbstractAnalysis {
     protected cg!: CallGraph;
     protected cgBuilder!: CallGraphBuilder;
     protected workList: FuncID[] = [];
-    protected processedMethod!: Set<FuncID>;
+    protected processedMethod!: IPtsCollection<FuncID>;
 
     constructor(s: Scene) {
         this.scene = s;
@@ -54,6 +55,7 @@ export abstract class AbstractAnalysis {
         if (method != null) {
             return method;
         }
+        return undefined;
     }
 
     public getClassHierarchy(arkClass: ArkClass): ArkClass[] {
@@ -78,35 +80,63 @@ export abstract class AbstractAnalysis {
             const method = this.workList.shift() as FuncID;
             const cgNode = this.cg.getNode(method) as CallGraphNode;
 
-            if (this.processedMethod.has(method) || cgNode.isSdkMethod()) {
+            if (this.processedMethod.contains(method) || cgNode.isSdkMethod()) {
                 continue;
             }
 
             // pre process for RTA only
             this.preProcessMethod(method).forEach((cs: CallSite) => {
                 this.workList.push(cs.calleeFuncID);
-            })
+            });
 
             this.processMethod(method).forEach((cs: CallSite) => {
-                let me = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
+                this.processCallSite(method, cs, displayGeneratedMethod);
+            });
+        }
+    }
 
-                this.addCallGraphEdge(method, me, cs, displayGeneratedMethod);
+    public projectStart(displayGeneratedMethod: boolean): void {
+        this.scene.getMethods().forEach((method) => {
+            let cgNode = this.cg.getCallGraphNodeByMethod(method.getSignature()) as CallGraphNode;
 
-                if (!this.processedMethod.has(cs.calleeFuncID)) {
-                    this.workList.push(cs.calleeFuncID);
-                    logger.info(`New workList item ${cs.calleeFuncID}: ${this.cg.getArkMethodByFuncID(cs.calleeFuncID)?.getSignature().toString()}`);
+            if (cgNode.isSdkMethod()) {
+                return;
+            }
 
-                    this.processedMethod.add(cs.callerFuncID);
-                }
-            })
+            this.preProcessMethod(cgNode.getID());
+
+            this.processMethod(cgNode.getID()).forEach((cs: CallSite) => {
+                this.processCallSite(cgNode.getID(), cs, displayGeneratedMethod, true);
+            });
+        });
+    }
+
+    private processCallSite(method: FuncID, cs: CallSite, displayGeneratedMethod: boolean, isProject: boolean = false): void {
+        let me = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
+        let meNode = this.cg.getNode(cs.calleeFuncID) as CallGraphNode;
+        this.addCallGraphEdge(method, me, cs, displayGeneratedMethod);
+
+        if (isProject) {
+            return;
+        }
+
+        this.processedMethod.insert(cs.callerFuncID);
+
+        if (this.processedMethod.contains(cs.calleeFuncID) || meNode.isSdkMethod()) {
+            return;
+        }
+
+        if (displayGeneratedMethod || !me?.isGenerated()) {
+            this.workList.push(cs.calleeFuncID);
+            logger.info(`New workList item ${cs.calleeFuncID}: ${this.cg.getArkMethodByFuncID(cs.calleeFuncID)?.getSignature().toString()}`);
         }
     }
 
     protected init(): void {
-        this.processedMethod = new Set();
-        this.cg.getEntries().forEach((entryFunc) => {
+        this.processedMethod = new (createPtsCollectionCtor(PtsCollectionType.BitVector))();
+        this.cg.getEntries().forEach(entryFunc => {
             this.workList.push(entryFunc);
-        })
+        });
     }
 
     protected processMethod(methodID: FuncID): CallSite[] {
@@ -115,22 +145,22 @@ export abstract class AbstractAnalysis {
         let calleeMethods: CallSite[] = [];
 
         if (!arkMethod) {
-            throw new Error("can not find method");
+            throw new Error('can not find method');
         }
 
         const cfg = arkMethod.getCfg();
         if (!cfg) {
             return [];
         }
-        cfg.getStmts().forEach((stmt) => {
+        cfg.getStmts().forEach(stmt => {
             if (stmt.containsInvokeExpr()) {
-                this.resolveCall(cgNode.getID(), stmt).forEach((callSite) => {
+                this.resolveCall(cgNode.getID(), stmt).forEach(callSite => {
                     calleeMethods.push(callSite);
                     this.cg.addStmtToCallSiteMap(stmt, callSite);
                     this.cg.addMethodToCallSiteMap(callSite.calleeFuncID, callSite);
                 });
             }
-        })
+        });
 
         return calleeMethods;
     }
@@ -138,7 +168,7 @@ export abstract class AbstractAnalysis {
     protected getParamAnonymousMethod(invokeExpr: AbstractInvokeExpr): MethodSignature[] {
         let paramMethod: MethodSignature[] = [];
 
-        invokeExpr.getArgs().forEach((args) => {
+        invokeExpr.getArgs().forEach(args => {
             let argsType = args.getType();
             if (argsType instanceof FunctionType) {
                 paramMethod.push(argsType.getMethodSignature());
@@ -153,7 +183,7 @@ export abstract class AbstractAnalysis {
         if (!callee) {
             logger.error(`FuncID has no method ${cs.calleeFuncID}`);
         } else {
-            if (displayGeneratedMethod || !(callee?.isGenerated())) {
+            if (displayGeneratedMethod || !callee?.isGenerated()) {
                 this.cg.addDynamicCallEdge(caller, cs.calleeFuncID, cs.callStmt);
             }
         }

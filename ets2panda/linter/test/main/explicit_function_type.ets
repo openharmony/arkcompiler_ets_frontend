@@ -162,3 +162,14 @@ function compose45(...fns: Function[]): Function {
 
 export let add: (a: number, b: number) => number;
 export let add1: (a: string) => object;
+
+f1();
+
+class AB3 {
+  fn3: Function = () => {};
+}
+let ab3 = new AB3();
+ab3.fn3();
+
+const fn29: Function[] = [];
+fn29[1]();

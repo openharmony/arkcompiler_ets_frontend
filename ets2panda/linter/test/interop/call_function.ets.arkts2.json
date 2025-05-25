@@ -31,7 +31,7 @@
             "endColumn": 43,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -39,9 +39,9 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 6,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -51,17 +51,7 @@
             "endColumn": 6,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 6,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +59,9 @@
             "column": 1,
             "endLine": 19,
             "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -81,17 +71,7 @@
             "endColumn": 9,
             "problem": "CallJSFunction",
             "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         }
     ]

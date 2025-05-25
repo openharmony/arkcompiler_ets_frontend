@@ -14,5 +14,253 @@
         "limitations under the License."
     ],
     "result": [
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 52,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 52,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 617,
+                    "end": 668,
+                    "replacementText": ""
+                },
+                {
+                    "start": 668,
+                    "end": 668,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 14,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 12,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 690,
+                    "end": 697,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 12,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 690,
+                    "end": 697
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 12,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 7,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 706,
+                    "end": 713,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 7,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 706,
+                    "end": 713
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 7,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 14,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 718,
+                    "end": 725,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 718,
+                    "end": 725
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 5,
+            "endLine": 21,
+            "endColumn": 14,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "endLine": 21,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 734,
+                    "end": 741,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "endLine": 21,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 734,
+                    "end": 741
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "endLine": 21,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        }
     ]
 }

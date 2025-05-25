@@ -42,14 +42,14 @@ export abstract class BasePrinter extends Printer implements Dump {
     abstract getLine(): number;
 
     protected printDecorator(docorator: Decorator[]): void {
-        docorator.forEach((value) => {
+        docorator.forEach(value => {
             this.printer.writeIndent().writeLine(value.toString());
         });
     }
 
     protected printComments(commentsMetadata: CommentsMetadata): void {
         const comments = commentsMetadata.getComments();
-        comments.forEach((comment) => {
+        comments.forEach(comment => {
             this.printer.writeIndent().writeLine(comment.content);
         });
     }

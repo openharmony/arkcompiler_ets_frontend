@@ -35,11 +35,10 @@ export class ExportPrinter extends BasePrinter {
         if (commentsMetadata instanceof CommentsMetadata) {
             this.printComments(commentsMetadata);
         }
-        
+
         if (
-            !this.info.getFrom() && (this.info.isExport() ||
-                this.info.getExportClauseType() === ExportType.LOCAL ||
-                this.info.getExportClauseType() === ExportType.TYPE)
+            !this.info.getFrom() &&
+            (this.info.isExport() || this.info.getExportClauseType() === ExportType.LOCAL || this.info.getExportClauseType() === ExportType.TYPE)
         ) {
             return this.printer.toString();
         }
@@ -47,9 +46,7 @@ export class ExportPrinter extends BasePrinter {
         if (this.info.getExportClauseName() === '*') {
             // just like: export * as xx from './yy'
             if (this.info.getNameBeforeAs() && this.info.getNameBeforeAs() !== '*') {
-                this.printer
-                    .writeIndent()
-                    .write(`export ${this.info.getNameBeforeAs()} as ${this.info.getExportClauseName()}`);
+                this.printer.writeIndent().write(`export ${this.info.getNameBeforeAs()} as ${this.info.getExportClauseName()}`);
             } else {
                 this.printer.writeIndent().write(`export ${this.info.getExportClauseName()}`);
             }

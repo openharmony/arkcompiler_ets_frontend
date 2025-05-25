@@ -85,8 +85,19 @@ export class DVFG extends BaseExplicitGraph {
 }
 
 export enum DVFGNodeKind {
-    assign, copy, write, load, addr, if, actualParm, formalParm, actualRet,
-    formalRet, unary, binary, normal
+    assign,
+    copy,
+    write,
+    load,
+    addr,
+    if,
+    actualParm,
+    formalParm,
+    actualRet,
+    formalRet,
+    unary,
+    binary,
+    normal,
 }
 
 export class DVFGNode extends BaseNode {

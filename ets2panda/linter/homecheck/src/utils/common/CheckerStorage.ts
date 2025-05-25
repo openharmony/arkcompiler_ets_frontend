@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Scope } from "../../model/Scope";
+import { Scope } from '../../model/Scope';
 
 export class CheckerStorage {
     private static instance: CheckerStorage;
@@ -45,7 +45,7 @@ export class CheckerStorage {
      * 设置Scope映射
      * @param scopeMap - Scope映射，类型为 Map<string, Scope>
      */
-    public setScopeMap(scopeMap: Map<string, Scope>) {
+    public setScopeMap(scopeMap: Map<string, Scope>): void {
         this.scopeMap = scopeMap;
     }
 

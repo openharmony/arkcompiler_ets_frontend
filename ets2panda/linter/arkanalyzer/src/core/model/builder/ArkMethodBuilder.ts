@@ -39,14 +39,7 @@ import { BasicBlock } from '../../graph/BasicBlock';
 import { Local } from '../../base/Local';
 import { Value } from '../../base/Value';
 import { CONSTRUCTOR_NAME, SUPER_NAME, THIS_NAME } from '../../common/TSConst';
-import {
-    ANONYMOUS_METHOD_PREFIX,
-    CALL_SIGNATURE_NAME,
-    DEFAULT_ARK_CLASS_NAME,
-    DEFAULT_ARK_METHOD_NAME,
-    NAME_DELIMITER,
-    NAME_PREFIX,
-} from '../../common/Const';
+import { ANONYMOUS_METHOD_PREFIX, CALL_SIGNATURE_NAME, DEFAULT_ARK_CLASS_NAME, DEFAULT_ARK_METHOD_NAME, NAME_DELIMITER, NAME_PREFIX } from '../../common/Const';
 import { ArkSignatureBuilder } from './ArkSignatureBuilder';
 import { IRUtils } from '../../common/IRUtils';
 import { ArkErrorCode } from '../../common/ArkError';
@@ -54,19 +47,18 @@ import { ArkErrorCode } from '../../common/ArkError';
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'ArkMethodBuilder');
 
 export type MethodLikeNode =
-    ts.FunctionDeclaration |
-    ts.MethodDeclaration |
-    ts.ConstructorDeclaration |
-    ts.ArrowFunction |
-    ts.AccessorDeclaration |
-    ts.FunctionExpression |
-    ts.MethodSignature |
-    ts.ConstructSignatureDeclaration |
-    ts.CallSignatureDeclaration |
-    ts.FunctionTypeNode;
+    | ts.FunctionDeclaration
+    | ts.MethodDeclaration
+    | ts.ConstructorDeclaration
+    | ts.ArrowFunction
+    | ts.AccessorDeclaration
+    | ts.FunctionExpression
+    | ts.MethodSignature
+    | ts.ConstructSignatureDeclaration
+    | ts.CallSignatureDeclaration
+    | ts.FunctionTypeNode;
 
-export function buildDefaultArkMethodFromArkClass(declaringClass: ArkClass, mtd: ArkMethod,
-                                                  sourceFile: ts.SourceFile, node?: ts.ModuleDeclaration) {
+export function buildDefaultArkMethodFromArkClass(declaringClass: ArkClass, mtd: ArkMethod, sourceFile: ts.SourceFile, node?: ts.ModuleDeclaration): void {
     mtd.setDeclaringArkClass(declaringClass);
 
     const methodSubSignature = ArkSignatureBuilder.buildMethodSubSignatureFromMethodName(DEFAULT_ARK_METHOD_NAME, true);
@@ -80,7 +72,13 @@ export function buildDefaultArkMethodFromArkClass(declaringClass: ArkClass, mtd:
     mtd.setBodyBuilder(bodyBuilder);
 }
 
-export function buildArkMethodFromArkClass(methodNode: MethodLikeNode, declaringClass: ArkClass, mtd: ArkMethod, sourceFile: ts.SourceFile, declaringMethod?: ArkMethod) {
+export function buildArkMethodFromArkClass(
+    methodNode: MethodLikeNode,
+    declaringClass: ArkClass,
+    mtd: ArkMethod,
+    sourceFile: ts.SourceFile,
+    declaringMethod?: ArkMethod
+): void {
     mtd.setDeclaringArkClass(declaringClass);
     declaringMethod !== undefined && mtd.setOuterMethod(declaringMethod);
 
@@ -100,7 +98,7 @@ export function buildArkMethodFromArkClass(methodNode: MethodLikeNode, declaring
     // build methodDeclareSignatures and methodSignature as well as corresponding positions
     const methodName = buildMethodName(methodNode, declaringClass, sourceFile, declaringMethod);
     const methodParameters: MethodParameter[] = [];
-    buildParameters(methodNode.parameters, mtd, sourceFile).forEach((parameter) => {
+    buildParameters(methodNode.parameters, mtd, sourceFile).forEach(parameter => {
         buildGenericType(parameter.getType(), mtd);
         methodParameters.push(parameter);
     });
@@ -176,7 +174,7 @@ function buildMethodName(node: MethodLikeNode, declaringClass: ArkClass, sourceF
     return name;
 }
 
-function buildAnonymousMethodName(node: MethodLikeNode, declaringClass: ArkClass) {
+function buildAnonymousMethodName(node: MethodLikeNode, declaringClass: ArkClass): string {
     return `${ANONYMOUS_METHOD_PREFIX}${declaringClass.getAnonymousMethodNumber()}`;
 }
 
@@ -192,30 +190,29 @@ export class ObjectBindingPatternParameter {
     private name: string = '';
     private optional: boolean = false;
 
-    constructor() {
-    }
+    constructor() {}
 
-    public getName() {
+    public getName(): string {
         return this.name;
     }
 
-    public setName(name: string) {
+    public setName(name: string): void {
         this.name = name;
     }
 
-    public getPropertyName() {
+    public getPropertyName(): string {
         return this.propertyName;
     }
 
-    public setPropertyName(propertyName: string) {
+    public setPropertyName(propertyName: string): void {
         this.propertyName = propertyName;
     }
 
-    public isOptional() {
+    public isOptional(): boolean {
         return this.optional;
     }
 
-    public setOptional(optional: boolean) {
+    public setOptional(optional: boolean): void {
         this.optional = optional;
     }
 }
@@ -225,30 +222,29 @@ export class ArrayBindingPatternParameter {
     private name: string = '';
     private optional: boolean = false;
 
-    constructor() {
-    }
+    constructor() {}
 
-    public getName() {
+    public getName(): string {
         return this.name;
     }
 
-    public setName(name: string) {
+    public setName(name: string): void {
         this.name = name;
     }
 
-    public getPropertyName() {
+    public getPropertyName(): string {
         return this.propertyName;
     }
 
-    public setPropertyName(propertyName: string) {
+    public setPropertyName(propertyName: string): void {
         this.propertyName = propertyName;
     }
 
-    public isOptional() {
+    public isOptional(): boolean {
         return this.optional;
     }
 
-    public setOptional(optional: boolean) {
+    public setOptional(optional: boolean): void {
         this.optional = optional;
     }
 }
@@ -261,62 +257,61 @@ export class MethodParameter implements Value {
     private objElements: ObjectBindingPatternParameter[] = [];
     private arrayElements: ArrayBindingPatternParameter[] = [];
 
-    constructor() {
-    }
+    constructor() {}
 
-    public getName() {
+    public getName(): string {
         return this.name;
     }
 
-    public setName(name: string) {
+    public setName(name: string): void {
         this.name = name;
     }
 
-    public getType() {
+    public getType(): Type {
         return this.type;
     }
 
-    public setType(type: Type) {
+    public setType(type: Type): void {
         this.type = type;
     }
 
-    public isOptional() {
+    public isOptional(): boolean {
         return this.optional;
     }
 
-    public setOptional(optional: boolean) {
+    public setOptional(optional: boolean): void {
         this.optional = optional;
     }
 
-    public hasDotDotDotToken() {
+    public hasDotDotDotToken(): boolean {
         return this.dotDotDotToken;
     }
 
-    public setDotDotDotToken(dotDotDotToken: boolean) {
+    public setDotDotDotToken(dotDotDotToken: boolean): void {
         this.dotDotDotToken = dotDotDotToken;
     }
 
-    public addObjElement(element: ObjectBindingPatternParameter) {
+    public addObjElement(element: ObjectBindingPatternParameter): void {
         this.objElements.push(element);
     }
 
-    public getObjElements() {
+    public getObjElements(): ObjectBindingPatternParameter[] {
         return this.objElements;
     }
 
-    public setObjElements(objElements: ObjectBindingPatternParameter[]) {
+    public setObjElements(objElements: ObjectBindingPatternParameter[]): void {
         this.objElements = objElements;
     }
 
-    public addArrayElement(element: ArrayBindingPatternParameter) {
+    public addArrayElement(element: ArrayBindingPatternParameter): void {
         this.arrayElements.push(element);
     }
 
-    public getArrayElements() {
+    public getArrayElements(): ArrayBindingPatternParameter[] {
         return this.arrayElements;
     }
 
-    public setArrayElements(arrayElements: ArrayBindingPatternParameter[]) {
+    public setArrayElements(arrayElements: ArrayBindingPatternParameter[]): void {
         this.arrayElements = arrayElements;
     }
 
@@ -327,10 +322,12 @@ export class MethodParameter implements Value {
 
 function needDefaultConstructorInClass(arkClass: ArkClass): boolean {
     const originClassType = arkClass.getCategory();
-    return arkClass.getMethodWithName(CONSTRUCTOR_NAME) === null &&
+    return (
+        arkClass.getMethodWithName(CONSTRUCTOR_NAME) === null &&
         (originClassType === ClassCategory.CLASS || originClassType === ClassCategory.OBJECT) &&
         arkClass.getName() !== DEFAULT_ARK_CLASS_NAME &&
-        !arkClass.isDeclare();
+        !arkClass.isDeclare()
+    );
 }
 
 function recursivelyCheckAndBuildSuperConstructor(arkClass: ArkClass): void {
@@ -455,18 +452,21 @@ export function addInitInConstructor(constructor: ArkMethod): void {
         break;
     }
     const initInvokeStmt = new ArkInvokeStmt(
-        new ArkInstanceInvokeExpr(thisLocal, constructor.getDeclaringArkClass().getInstanceInitMethod().getSignature(), []));
+        new ArkInstanceInvokeExpr(thisLocal, constructor.getDeclaringArkClass().getInstanceInitMethod().getSignature(), [])
+    );
     firstBlockStmts.splice(index, 0, initInvokeStmt);
 }
 
 export function isMethodImplementation(node: MethodLikeNode): boolean {
-    if (ts.isFunctionDeclaration(node) ||
+    if (
+        ts.isFunctionDeclaration(node) ||
         ts.isMethodDeclaration(node) ||
         ts.isConstructorDeclaration(node) ||
         ts.isGetAccessorDeclaration(node) ||
         ts.isSetAccessorDeclaration(node) ||
         ts.isFunctionExpression(node) ||
-        ts.isArrowFunction(node)) {
+        ts.isArrowFunction(node)
+    ) {
         if (node.body !== undefined) {
             return true;
         }
@@ -498,7 +498,7 @@ export function checkAndUpdateMethod(method: ArkMethod, cls: ArkClass): void {
     if (presentDeclareSignatures !== null && presentImplSignature === null) {
         if (newDeclareSignature === null || presentMethod.getDeclareSignatureIndex(newDeclareSignature[0]) >= 0) {
             method.setDeclareSignatures(presentDeclareSignatures);
-            method.setDeclareLineCols((presentDeclareLineCols as number[]));
+            method.setDeclareLineCols(presentDeclareLineCols as number[]);
         } else {
             method.setDeclareSignatures(presentDeclareSignatures.concat(newDeclareSignature));
             method.setDeclareLineCols((presentDeclareLineCols as number[]).concat(newDeclareLineCols as number[]));
@@ -513,4 +513,3 @@ export function checkAndUpdateMethod(method: ArkMethod, cls: ArkClass): void {
         return;
     }
 }
-
