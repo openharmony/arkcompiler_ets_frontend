@@ -2172,9 +2172,7 @@ export class TsUtils {
       }
     }
     // We allow computed property names if expression is string literal or string Enum member
-    return (
-      !this.options.arkts2 && (ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression))
-    );
+    return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
   }
 
   skipPropertyInferredTypeCheck(

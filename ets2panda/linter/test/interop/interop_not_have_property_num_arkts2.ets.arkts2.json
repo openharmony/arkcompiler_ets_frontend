@@ -65,16 +65,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 2,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 1,
             "endLine": 20,
@@ -102,16 +92,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 2,
-            "endLine": 20,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -145,16 +125,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 2,
-            "endLine": 21,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 1,
             "endLine": 22,
@@ -182,16 +152,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 2,
-            "endLine": 22,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -225,16 +185,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 3,
-            "endLine": 23,
-            "endColumn": 10,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 24,
             "column": 1,
             "endLine": 24,
@@ -262,16 +212,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 3,
-            "endLine": 24,
-            "endColumn": 10,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -305,16 +245,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
-            "column": 3,
-            "endLine": 25,
-            "endColumn": 10,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 26,
             "column": 1,
             "endLine": 26,
@@ -342,16 +272,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 3,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

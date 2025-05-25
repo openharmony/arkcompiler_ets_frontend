@@ -23,3 +23,7 @@ export { ff2 } from "./interop_import_js_rules_js" // ff2 is imported from js. E
 export { MyDecorator } from "./oh_modules/ets_decorator" // MyDecorator is imported from arkts1. Error is shown
 
 export { foo as bar } from "./oh_modules/reflect_export" // foo is imported from arkts1.2. No error.
+
+export * as namespace1 from "./oh_modules/ets_decorator"
+
+export * as namespace2 from "./oh_modules/interop_import_js_rules"

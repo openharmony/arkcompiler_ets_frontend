@@ -73,6 +73,16 @@
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
         }
     ]
 }

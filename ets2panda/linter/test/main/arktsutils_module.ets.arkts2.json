@@ -25,6 +25,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 28,
+            "column": 47,
+            "endLine": 28,
+            "endColumn": 48,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 30,
             "column": 34,
             "endLine": 30,
@@ -32,6 +42,16 @@
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 49,
+            "endLine": 30,
+            "endColumn": 50,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -45,6 +65,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 32,
+            "column": 47,
+            "endLine": 32,
+            "endColumn": 48,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 34,
             "column": 42,
             "endLine": 34,
@@ -52,6 +82,16 @@
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 57,
+            "endLine": 34,
+            "endColumn": 58,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

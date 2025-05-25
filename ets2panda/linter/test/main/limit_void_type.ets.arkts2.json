@@ -155,6 +155,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 41,
+            "column": 28,
+            "endLine": 41,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 42,
             "column": 8,
             "endLine": 42,
@@ -162,6 +172,16 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 36,
+            "endLine": 42,
+            "endColumn": 40,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -412,6 +432,36 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 19,
+            "endLine": 83,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 22,
+            "endLine": 83,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 25,
+            "endLine": 83,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

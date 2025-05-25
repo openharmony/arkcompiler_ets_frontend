@@ -13,5 +13,46 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 23,
+            "column": 27,
+            "endLine": 23,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 22,
+            "endLine": 24,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 12,
+            "endLine": 26,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 12,
+            "endLine": 27,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        }
+    ]
 }

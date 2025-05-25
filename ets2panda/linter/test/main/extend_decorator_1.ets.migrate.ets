@@ -33,17 +33,17 @@ function cardStyle(this: ColumnAttribute): this {
     this.backgroundColor("#ff00ff");
     this.backgroundColor(mycolor);
     this.backgroundColor(Color.Red);
-    this.borderRadius(8);
-    this.padding(8);
+    this.borderRadius(8.0);
+    this.padding(8.0);
     this.backgroundImagePosition({
-        x: 0,
-        y: 0
+        x: 0.0,
+        y: 0.0
     });
     return this;
 }
 
 function superCard(this: ColumnAttribute, padding: number): this {
     this.cardStyle();
-    this.padding(10);
+    this.padding(10.0);
     return this;
 }

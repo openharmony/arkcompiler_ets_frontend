@@ -25,13 +25,13 @@ function foo(x: any): void {
   console.log(x.pi);
 }
 
-specialAutofixLib.globalThis.set("abc", 200);
+specialAutofixLib.globalThis.set("abc", 200.0);
 
 const value = specialAutofixLib.globalThis.get("obj").prop;
 
 delete specialAutofixLib.globalThis.get("property");
 
-globalThisprop = 100;
+globalThisprop = 100.0;
 
 specialAutofixLib.globalThis.get("pi");
 

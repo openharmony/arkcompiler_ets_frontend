@@ -1,18 +1,4 @@
 {
-    "copyright": [
-        "Copyright (c) 2025 Huawei Device Co., Ltd.",
-        "Licensed under the Apache License, Version 2.0 (the 'License');",
-        "you may not use this file except in compliance with the License.",
-        "You may obtain a copy of the License at",
-        "",
-        "http://www.apache.org/licenses/LICENSE-2.0",
-        "",
-        "Unless required by applicable law or agreed to in writing, software",
-        "distributed under the License is distributed on an 'AS IS' BASIS,",
-        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-        "See the License for the specific language governing permissions and",
-        "limitations under the License."
-    ],
     "result": [
         {
             "line": 17,
@@ -55,13 +41,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 11,
-            "endLine": 18,
-            "endColumn": 18,
-            "problem": "BinaryOperations",
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -82,6 +68,16 @@
             "problem": "InterOpImportJsIndex",
             "suggest": "",
             "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -102,6 +98,16 @@
             "problem": "InterOpImportJsIndex",
             "suggest": "",
             "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 10,
+            "endLine": 20,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

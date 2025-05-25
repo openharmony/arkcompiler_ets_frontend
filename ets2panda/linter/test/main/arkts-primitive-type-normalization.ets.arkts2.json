@@ -25,6 +25,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 16,
+            "column": 19,
+            "endLine": 16,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 17,
             "column": 1,
             "endLine": 17,
@@ -36,12 +46,32 @@
         },
         {
             "line": 17,
+            "column": 12,
+            "endLine": 17,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
             "column": 18,
             "endLine": 17,
             "endColumn": 31,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
             "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 29,
+            "endLine": 17,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

@@ -19,18 +19,18 @@ let Foo = GeneratedImportVar_1.getPropertyByName('Foo');
 let Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');
 
 class A {
-    num: number = 1;
+    num: number = 1.0;
     constructor() {
     }
 }
-Foo.instantiate(ESObject.wrap(123))
+Foo.instantiate(ESObject.wrap(123.0))
 Foo.instantiate(ESObject.wrap('hello'))
 Foo.instantiate(ESObject.wrap(new A()))
 let a: A = new A();
 Foo.instantiate(ESObject.wrap(a.num))
 Foo.instantiate(ESObject.wrap(a))
 function test(): number {
-  return 1;
+  return 1.0;
 }
 Foo.instantiate(ESObject.wrap(test()))
-Foo1.instantiate(ESObject.wrap(123), ESObject.wrap('hello'))
+Foo1.instantiate(ESObject.wrap(123.0), ESObject.wrap('hello'))

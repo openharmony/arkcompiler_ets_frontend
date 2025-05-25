@@ -16,7 +16,7 @@
 let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
-let a: number =0
+let a: number =0.0
 a = foo.getPropertyByName("num")++
 a = ++foo.getPropertyByName("num")
 a = foo.getPropertyByName("num")--

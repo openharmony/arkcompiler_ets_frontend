@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
-            "column": 9,
-            "endLine": 17,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 18,
             "column": 9,
             "endLine": 18,
@@ -85,10 +75,120 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 9,
-            "endLine": 18,
-            "endColumn": 14,
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 1,
+            "endLine": 21,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 5,
+            "endLine": 21,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 5,
+            "endLine": 22,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 5,
+            "endLine": 23,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 2,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 6,
+            "endLine": 24,
+            "endColumn": 7,
             "problem": "BinaryOperations",
             "suggest": "",
             "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",

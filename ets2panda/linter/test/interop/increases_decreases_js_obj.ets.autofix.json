@@ -34,16 +34,45 @@
                 {
                     "start": 617,
                     "end": 668,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 52
                 },
                 {
                     "start": 668,
                     "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 52
                 }
             ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 16,
+            "endLine": 17,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 684,
+                    "end": 685,
+                    "replacementText": "0.0",
+                    "line": 17,
+                    "column": 16,
+                    "endLine": 17,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -66,7 +95,11 @@
                 {
                     "start": 690,
                     "end": 697,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 18,
+                    "column": 5,
+                    "endLine": 18,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -83,21 +116,15 @@
                 {
                     "replacementText": "foo.getPropertyByName('num').toNumber()",
                     "start": 690,
-                    "end": 697
+                    "end": 697,
+                    "line": 18,
+                    "column": 5,
+                    "endLine": 18,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 5,
-            "endLine": 18,
-            "endColumn": 12,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -120,7 +147,11 @@
                 {
                     "start": 706,
                     "end": 713,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 19,
+                    "column": 7,
+                    "endLine": 19,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -137,21 +168,15 @@
                 {
                     "replacementText": "foo.getPropertyByName('num').toNumber()",
                     "start": 706,
-                    "end": 713
+                    "end": 713,
+                    "line": 19,
+                    "column": 7,
+                    "endLine": 19,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 7,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -174,7 +199,11 @@
                 {
                     "start": 718,
                     "end": 725,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -191,21 +220,15 @@
                 {
                     "replacementText": "foo.getPropertyByName('num').toNumber()",
                     "start": 718,
-                    "end": 725
+                    "end": 725,
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 12,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -228,7 +251,11 @@
                 {
                     "start": 734,
                     "end": 741,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 21,
+                    "column": 7,
+                    "endLine": 21,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -245,21 +272,15 @@
                 {
                     "replacementText": "foo.getPropertyByName('num').toNumber()",
                     "start": 734,
-                    "end": 741
+                    "end": 741,
+                    "line": 21,
+                    "column": 7,
+                    "endLine": 21,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 7,
-            "endLine": 21,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

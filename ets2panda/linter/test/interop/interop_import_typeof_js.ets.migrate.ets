@@ -50,12 +50,12 @@ function getPersonInfo(){
     typeof person.getName();
     typeof name2;
     typeof name;
-    typeof person.setAge(111);
+    typeof person.setAge(111.0);
     typeof person;
     Person.instantiate().typeOf(); //error
 }
 
-const  age = typeof person.setAge(111); 
+const  age = typeof person.setAge(111.0); 
 let person2 = typeof person
 class Object {
   code: string = "www"
@@ -80,4 +80,4 @@ class Object {
 myAaa.typeOf(); //error
 Person.instantiate().getPropertyByName('name').typeOf()  //error
 Person.instantiate().getPropertyByName('getName').invoke().typeOf() //error
-Person.instantiate().getPropertyByName('setAge').invoke(ESObject.wrap(22)).typeOf() //error
+Person.instantiate().getPropertyByName('setAge').invoke(ESObject.wrap(22.0)).typeOf() //error

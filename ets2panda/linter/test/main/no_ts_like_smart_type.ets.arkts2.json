@@ -35,6 +35,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 20,
+            "column": 20,
+            "endLine": 20,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 32,
             "column": 9,
             "endLine": 32,
@@ -42,6 +52,16 @@
             "problem": "NoTsLikeSmartType",
             "suggest": "",
             "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 20,
+            "endLine": 30,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

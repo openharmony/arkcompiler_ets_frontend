@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 9,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 9,
             "endLine": 20,
@@ -85,16 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 9,
-            "endLine": 20,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 21,
             "column": 1,
             "endLine": 21,
@@ -175,6 +155,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 6,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 27,
             "column": 1,
             "endLine": 27,
@@ -192,11 +182,31 @@
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
             "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 5,
+            "endLine": 28,
+            "endColumn": 6,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
             "line": 30,
             "column": 5,
+            "endLine": 30,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 9,
             "endLine": 30,
             "endColumn": 10,
             "problem": "NumericSemantics",
@@ -215,6 +225,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 30,
+            "column": 16,
+            "endLine": 30,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 36,
             "column": 11,
             "endLine": 36,
@@ -222,6 +242,26 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 16,
+            "endLine": 36,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 22,
+            "endLine": 36,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -286,16 +326,6 @@
         },
         {
             "line": 44,
-            "column": 1,
-            "endLine": 44,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
             "column": 9,
             "endLine": 44,
             "endColumn": 14,
@@ -312,16 +342,6 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 9,
-            "endLine": 44,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

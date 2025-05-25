@@ -15,6 +15,27 @@
     ],
     "result": [
         {
+            "line": 18,
+            "column": 26,
+            "endLine": 18,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 662,
+                    "end": 663,
+                    "replacementText": "0.0",
+                    "line": 18,
+                    "column": 26,
+                    "endLine": 18,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 16,
             "endLine": 23,
@@ -24,7 +45,11 @@
                 {
                     "start": 719,
                     "end": 731,
-                    "replacementText": "$$(this.value)"
+                    "replacementText": "$$(this.value)",
+                    "line": 23,
+                    "column": 16,
+                    "endLine": 23,
+                    "endColumn": 28
                 }
             ],
             "suggest": "",
@@ -41,7 +66,11 @@
                 {
                     "start": 862,
                     "end": 876,
-                    "replacementText": "$$(this.checked)"
+                    "replacementText": "$$(this.checked)",
+                    "line": 35,
+                    "column": 25,
+                    "endLine": 35,
+                    "endColumn": 39
                 }
             ],
             "suggest": "",
@@ -58,7 +87,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -75,7 +108,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -92,7 +129,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -109,7 +150,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -126,7 +171,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -143,7 +192,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -160,7 +213,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -177,7 +234,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -194,7 +255,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -211,7 +276,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kit.ArkUI';",
+                    "line": 37,
+                    "column": 7,
+                    "endLine": 37,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",

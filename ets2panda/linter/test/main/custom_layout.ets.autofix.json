@@ -15,6 +15,195 @@
     ],
     "result": [
         {
+            "line": 29,
+            "column": 12,
+            "endLine": 29,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 824,
+                    "end": 825,
+                    "replacementText": "1.0",
+                    "line": 29,
+                    "column": 12,
+                    "endLine": 29,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 15,
+            "endLine": 29,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 827,
+                    "end": 828,
+                    "replacementText": "2.0",
+                    "line": 29,
+                    "column": 15,
+                    "endLine": 29,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 18,
+            "endLine": 29,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 830,
+                    "end": 831,
+                    "replacementText": "3.0",
+                    "line": 29,
+                    "column": 18,
+                    "endLine": 29,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 17,
+            "endLine": 31,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 914,
+                    "end": 916,
+                    "replacementText": "30.0",
+                    "line": 31,
+                    "column": 17,
+                    "endLine": 31,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 14,
+            "endLine": 32,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 931,
+                    "end": 934,
+                    "replacementText": "100.0",
+                    "line": 32,
+                    "column": 14,
+                    "endLine": 32,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 15,
+            "endLine": 33,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 950,
+                    "end": 953,
+                    "replacementText": "100.0",
+                    "line": 33,
+                    "column": 15,
+                    "endLine": 33,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 20,
+            "endLine": 34,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 974,
+                    "end": 975,
+                    "replacementText": "2.0",
+                    "line": 34,
+                    "column": 20,
+                    "endLine": 34,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 20,
+            "endLine": 35,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 996,
+                    "end": 998,
+                    "replacementText": "10.0",
+                    "line": 35,
+                    "column": 20,
+                    "endLine": 35,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 27,
+            "endLine": 35,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1003,
+                    "end": 1005,
+                    "replacementText": "20.0",
+                    "line": 35,
+                    "column": 27,
+                    "endLine": 35,
+                    "endColumn": 29
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 40,
             "column": 8,
             "endLine": 40,
@@ -24,11 +213,78 @@
                 {
                     "start": 1027,
                     "end": 1027,
-                    "replacementText": "\n@Layoutable"
+                    "replacementText": "\n@Layoutable",
+                    "line": 40,
+                    "column": 8,
+                    "endLine": 40,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
             "rule": "Custom components with custom layout capability need to add the \"@Layoutable\" decorator (arkui-custom-layout-need-add-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 30,
+            "endLine": 46,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1181,
+                    "end": 1184,
+                    "replacementText": "100.0",
+                    "line": 46,
+                    "column": 30,
+                    "endLine": 46,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 12,
+            "endLine": 48,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1222,
+                    "end": 1223,
+                    "replacementText": "0.0",
+                    "line": 48,
+                    "column": 12,
+                    "endLine": 48,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 13,
+            "endLine": 49,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1237,
+                    "end": 1238,
+                    "replacementText": "0.0",
+                    "line": 49,
+                    "column": 13,
+                    "endLine": 49,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +297,32 @@
                 {
                     "start": 1367,
                     "end": 1381,
-                    "replacementText": "startPos: number = 300"
+                    "replacementText": "startPos: number = 300",
+                    "line": 53,
+                    "column": 9,
+                    "endLine": 53,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 20,
+            "endLine": 53,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1378,
+                    "end": 1381,
+                    "replacementText": "300.0",
+                    "line": 53,
+                    "column": 20,
+                    "endLine": 53,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -58,7 +339,11 @@
                 {
                     "start": 1427,
                     "end": 1470,
-                    "replacementText": "pos: number = startPos - child.measureResult.height"
+                    "replacementText": "pos: number = startPos - child.measureResult.height",
+                    "line": 55,
+                    "column": 11,
+                    "endLine": 55,
+                    "endColumn": 54
                 }
             ],
             "suggest": "",
@@ -75,11 +360,78 @@
                 {
                     "start": 1571,
                     "end": 1571,
-                    "replacementText": "\n@Layoutable"
+                    "replacementText": "\n@Layoutable",
+                    "line": 66,
+                    "column": 8,
+                    "endLine": 66,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
             "rule": "Custom components with custom layout capability need to add the \"@Layoutable\" decorator (arkui-custom-layout-need-add-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 30,
+            "endLine": 72,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1725,
+                    "end": 1728,
+                    "replacementText": "100.0",
+                    "line": 72,
+                    "column": 30,
+                    "endLine": 72,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 12,
+            "endLine": 74,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1766,
+                    "end": 1767,
+                    "replacementText": "0.0",
+                    "line": 74,
+                    "column": 12,
+                    "endLine": 74,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 13,
+            "endLine": 75,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1781,
+                    "end": 1782,
+                    "replacementText": "0.0",
+                    "line": 75,
+                    "column": 13,
+                    "endLine": 75,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -92,7 +444,95 @@
                 {
                     "start": 1909,
                     "end": 1919,
-                    "replacementText": "size: number = 100"
+                    "replacementText": "size: number = 100",
+                    "line": 79,
+                    "column": 9,
+                    "endLine": 79,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 16,
+            "endLine": 79,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1916,
+                    "end": 1919,
+                    "replacementText": "100.0",
+                    "line": 79,
+                    "column": 16,
+                    "endLine": 79,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 30,
+            "endLine": 82,
+            "endColumn": 31,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2102,
+                    "end": 2103,
+                    "replacementText": "2.0",
+                    "line": 82,
+                    "column": 30,
+                    "endLine": 82,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 25,
+            "endLine": 85,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2143,
+                    "end": 2146,
+                    "replacementText": "100.0",
+                    "line": 85,
+                    "column": 25,
+                    "endLine": 85,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 86,
+            "column": 26,
+            "endLine": 86,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2173,
+                    "end": 2176,
+                    "replacementText": "400.0",
+                    "line": 86,
+                    "column": 26,
+                    "endLine": 86,
+                    "endColumn": 29
                 }
             ],
             "suggest": "",
@@ -119,7 +559,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -136,7 +580,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -153,7 +601,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -170,7 +622,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -187,7 +643,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -204,7 +664,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -221,7 +685,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -238,7 +706,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -255,7 +727,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -272,7 +748,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -289,7 +769,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -306,7 +790,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -323,7 +811,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -340,7 +832,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -357,7 +853,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -374,7 +874,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -391,7 +895,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -408,7 +916,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -425,7 +937,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -442,7 +958,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -459,7 +979,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -476,7 +1000,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -493,7 +1021,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -510,7 +1042,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "line": 95,
+                    "column": 2,
+                    "endLine": 95,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",

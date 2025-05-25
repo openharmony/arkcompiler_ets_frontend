@@ -32,7 +32,7 @@ class LiteralAsPropertyName {
 const litAsPropName: LiteralAsPropertyName = {
   one: "1",
   __2: 'two',
-  Two: 2,
+  Two: 2.0,
 };
 
 console.log(litAsPropName.one);
@@ -48,7 +48,7 @@ class LiteralAsPropertyName_fix {
 const litAsPropName_fix: LiteralAsPropertyName_fix = {
   one: "1111111111",
   _2: 'two',
-  Two: 2,
+  Two: 2.0,
 };
 
 console.log("Fixed listAsPropName:");
@@ -56,7 +56,7 @@ console.log(litAsPropName_fix.one);
 console.log(litAsPropName_fix._2);
 console.log(litAsPropName_fix.Two);
 
-let x = {"name": 20, 2: 30}
+let x = {"name": 20.0, 2: 30.0}
 
 console.log(x["name"]);
 console.log(x[2]);
@@ -70,7 +70,7 @@ interface GeneratedObjectLiteralInterface_1 {
     name: number;
     _2: number;
 }
-let x_fix: GeneratedObjectLiteralInterface_1 = {name: 20, _2: 20};
+let x_fix: GeneratedObjectLiteralInterface_1 = {name: 20.0, _2: 20.0};
 
 console.log("Fixed x object literal:");
 console.log(x_fix.name);
@@ -84,10 +84,10 @@ interface litAsPropNameIface {
 const int: litAsPropNameIface = {
   one: '12321',
   ___2: 'weqwewq',
-  __2: 123
+  __2: 123.0
 };
 
-const imp: ExportLitAsPropName = { 1: 234 };
+const imp: ExportLitAsPropName = { 1: 234.0 };
 
 LiteralAsPropertyNameEnum['One']
 
@@ -124,4 +124,21 @@ struct Index {
 private case11 = Direction11.__x21x21
 build() {
 }
+}
+
+
+class A{
+ public age:number = 1.0; 
+}
+
+let a:A = { age: 30.0}  
+
+
+class B{
+  public age: number = 1.0 // error in arkts2
+}
+
+let obj11: Record<string, number> = {
+['value']: 1.0, // 误扫
+'value2': 1.0 // ok
 }

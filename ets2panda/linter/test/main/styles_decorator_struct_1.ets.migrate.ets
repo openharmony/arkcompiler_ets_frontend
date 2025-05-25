@@ -19,7 +19,7 @@ import { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Bu
 struct MyCard1 {
   cardStyle1 = (instance: CommonMethod): void => {
     instance.backgroundColor('#ffffff');
-    instance.borderRadius(8);
+    instance.borderRadius(8.0);
   };
 
   build() {
@@ -46,7 +46,7 @@ struct MyCard2 {
   }
   
   private getWidth(): number {
-    return 10
+    return 10.0
   }
 
   build() {

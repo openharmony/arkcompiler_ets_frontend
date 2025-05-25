@@ -17,5 +17,5 @@ let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
 
-foo.bar(123)
+foo.bar(123.0)
 

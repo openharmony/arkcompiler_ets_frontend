@@ -13,5 +13,90 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 23,
+            "column": 27,
+            "endLine": 23,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 901,
+                    "end": 902,
+                    "replacementText": "8.0",
+                    "line": 23,
+                    "column": 27,
+                    "endLine": 23,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 22,
+            "endLine": 24,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 926,
+                    "end": 927,
+                    "replacementText": "8.0",
+                    "line": 24,
+                    "column": 22,
+                    "endLine": 24,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 12,
+            "endLine": 26,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 980,
+                    "end": 981,
+                    "replacementText": "0.0",
+                    "line": 26,
+                    "column": 12,
+                    "endLine": 26,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 12,
+            "endLine": 27,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 994,
+                    "end": 995,
+                    "replacementText": "0.0",
+                    "line": 27,
+                    "column": 12,
+                    "endLine": 27,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        }
+    ]
 }
