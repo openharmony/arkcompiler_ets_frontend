@@ -181,6 +181,7 @@ export enum FaultID {
   InteropCallObjectParam,
   InteropDirectAccessToTSTypes,
   InteropTSFunctionInvoke,
+  InteropJSFunctionInvoke,
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
   ProvideAnnotation,

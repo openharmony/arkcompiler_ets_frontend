@@ -279,6 +279,7 @@ cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts
 cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)';
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
+cookBookTag[270] = 'Trying to catch JS errors is not permitted (arkts-interop-js2s-js-exception)';
 cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
 cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
 cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';

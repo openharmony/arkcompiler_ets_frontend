@@ -773,10 +773,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.handleTsInterop(ident, () => {
         this.tsFunctionInteropHandler(callExpr);
       });
+
+      this.handleJsInterop(ident, () => {
+        this.jsFunctionInteropHandler(callExpr);
+      });
     }
   }
 
   private tsFunctionInteropHandler(callExpr: ts.CallExpression): void {
+    this.checkInteropFunctionThrows(callExpr, FaultID.InteropTSFunctionInvoke);
+  }
+
+  private jsFunctionInteropHandler(callExpr: ts.CallExpression): void {
+    this.checkInteropFunctionThrows(callExpr, FaultID.InteropJSFunctionInvoke);
+  }
+
+  private checkInteropFunctionThrows(callExpr: ts.CallExpression, faultId: FaultID): void {
     const signature = this.tsTypeChecker.getResolvedSignature(callExpr);
     if (!signature) {
       return;
@@ -796,7 +808,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (this.containsThrowNonError(functionDeclaration)) {
-      this.incrementCounters(callExpr, FaultID.InteropTSFunctionInvoke);
+      this.incrementCounters(callExpr, faultId);
     }
   }
 
@@ -2162,6 +2174,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (!fileName.endsWith(EXTNAME_TS)) {
+      return;
+    }
+
+    if (fileName.endsWith(EXTNAME_D_TS)) {
+      return;
+    }
+
+    handler();
+  }
+
+  private handleJsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    const declarationNode = this.tsUtils.getDeclarationNode(nodeToCheck);
+    if (!declarationNode) {
+      return;
+    }
+
+    const fileName = declarationNode.getSourceFile().fileName;
+    if (fileName.includes(ARKTS_IGNORE_DIRS_OH_MODULES)) {
+      return;
+    }
+    if (!fileName.endsWith(EXTNAME_JS)) {
       return;
     }
 
