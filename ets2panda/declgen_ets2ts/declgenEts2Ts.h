@@ -97,6 +97,7 @@ private:
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
     void ProcessFunctionReturnType(const checker::Signature *sig);
+    bool ProcessTSQualifiedName(const ir::ETSTypeReference *typeReference);
     void ProcessETSTypeReferenceType(const ir::ETSTypeReference *typeReference,
                                      const checker::Type *checkerType = nullptr);
     bool ProcessTypeAnnotationSpecificTypes(const checker::Type *checkerType);
@@ -160,6 +161,7 @@ private:
     void HandleClassInherit(const ir::Expression *expr);
     void ProcessClassBody(const ir::ClassDefinition *classDef);
     void ProcessParamDefaultToMap(const ir::Statement *stmt);
+    void ProcessParameterName(varbinder::LocalVariable *param);
     void ProcessFuncParameter(varbinder::LocalVariable *param);
     void ProcessFuncParameters(const checker::Signature *sig);
     void ProcessClassPropertyType(const ir::ClassProperty *classProp);
@@ -175,8 +177,9 @@ private:
     void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
     void ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnotation);
     void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
-    void ProcessClassPropDependencies(const ir::AstNode *prop);
+    void ProcessClassPropDependencies(const ir::ClassDefinition *classDef);
     void ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef);
+    void ProcessETSTypeReferenceDependencies(const ir::ETSTypeReference *typeReference);
     void AddSuperType(const ir::Expression *super);
     void AddSuperType(const checker::Type *tsType);
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
@@ -184,6 +187,8 @@ private:
     void GenDeclarations();
     void CloseClassBlock(const bool isDts);
 
+    void EmitDeclarationPrefix(const ir::ClassDefinition *classDef, const std::string &typeName,
+                               const std::string_view &className);
     void EmitClassDeclaration(const ir::ClassDefinition *classDef, const std::string_view &className);
     void EmitClassGlueCode(const ir::ClassDefinition *classDef, const std::string &className);
     void EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier);
@@ -247,10 +252,12 @@ private:
         const ir::Expression *super {nullptr};
         bool inInterface {false};
         bool inGlobalClass {false};
+        bool inClass {false};
         bool inNamespace {false};
         bool inEnum {false};
         bool isClassInNamespace {false};
         bool isInterfaceInNamespace {false};
+        bool isDeclareNamespace {false};
         std::string currentClassDescriptor {};
         std::stack<bool> inUnionBodyStack {};
         std::string currentTypeAliasName;
