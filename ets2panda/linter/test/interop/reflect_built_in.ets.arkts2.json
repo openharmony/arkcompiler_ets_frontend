@@ -28,30 +28,10 @@
             "line": 29,
             "column": 1,
             "endLine": 29,
-            "endColumn": 13,
-            "problem": "InteropCallObjectParam",
-            "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 1,
-            "endLine": 29,
             "endColumn": 14,
             "problem": "InteropCallReflect",
             "suggest": "",
             "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
-            "column": 1,
-            "endLine": 31,
-            "endColumn": 13,
-            "problem": "InteropCallObjectParam",
-            "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)",
             "severity": "ERROR"
         },
         {

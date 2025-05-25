@@ -34,6 +34,30 @@ export const REFLECT_PROPERTIES = [
   'isExtensible',
   'preventExtensions'
 ];
+export const OBJECT_PROPERTIES = [
+  'get',
+  'set',
+  'has',
+  'hasOwn',
+  'ownKeys',
+  'keys',
+  'getOwnPropertyDescriptor',
+  'getOwnPropertyDescriptors',
+  'getOwnPropertyName',
+  'defineProperty',
+  'deleteProperty',
+  'apply',
+  'construct',
+  'getPrototypeOf',
+  'setPrototypeOf',
+  'isExtensible',
+  'isFrozen',
+  'isSealed'
+];
+export const OBJECT_LITERAL = 'Object';
+export const REFLECT_LITERAL = 'Reflect';
+export const NONE = 'none';
+export type ForbidenAPICheckResult = 'Object' | 'Reflect' | 'none';
 export const LOAD = 'load';
 export const GET_PROPERTY_BY_NAME = 'getPropertyByName';
 export const SET_PROPERTY_BY_NAME = 'setPropertyByName';
