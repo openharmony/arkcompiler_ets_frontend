@@ -108,6 +108,7 @@ private:
     void ProcessETSTuple(const ir::ETSTuple *etsTuple);
     void ProcessETSUnionType(const ir::ETSUnionType *etsUnionType);
     void ProcessTSArrayType(const ir::TSArrayType *tsArrayType);
+    void ProcessETSFunctionType(const ir::ETSFunctionType *etsFunction);
 
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenUnionType(const checker::ETSUnionType *unionType);
@@ -187,6 +188,7 @@ private:
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
     void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
     void GenDeclarations();
+    void GenOtherDeclarations();
     void CloseClassBlock(const bool isDts);
 
     void EmitDeclarationPrefix(const ir::ClassDefinition *classDef, const std::string &typeName,
@@ -208,8 +210,8 @@ private:
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                  std::unordered_set<std::string> &processedMethods);
 
-    void ProcessMethodsFromInterfaces(const std::unordered_set<std::string> &processedMethods,
-                                      const ir::ClassDefinition *classDef);
+    void ProcessMethodsFromInterfaces(std::unordered_set<std::string> &processedMethods,
+                                      const ArenaVector<checker::ETSObjectType *> &interfaces);
 
     void OutDts() {}
 
