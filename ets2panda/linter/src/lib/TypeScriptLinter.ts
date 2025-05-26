@@ -103,7 +103,16 @@ import {
   customLayoutFunctionName
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
-import { InteropType, REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
+import type { ForbidenAPICheckResult } from './utils/consts/InteropAPI';
+import {
+  InteropType,
+  NONE,
+  OBJECT_LITERAL,
+  OBJECT_PROPERTIES,
+  REFLECT_LITERAL,
+  REFLECT_PROPERTIES,
+  USE_STATIC
+} from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
@@ -1482,19 +1491,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkInteropForPropertyAccess(pan: ts.PropertyAccessExpression): void {
-    if (!this.options.arkts2) {
-      return;
+    if (ts.isBinaryExpression(pan.parent)) {
+      this.checkAssignmentOfPan(pan.parent, pan);
+    } else {
+      const type = this.tsTypeChecker.getTypeAtLocation(pan.expression);
+      this.checkUsageOfTsTypes(type, pan.expression);
     }
+  }
 
-    if (!ts.isBinaryExpression(pan.parent)) {
-      return;
-    }
-
-    const binaryExpr = pan.parent;
+  private checkAssignmentOfPan(binaryExpr: ts.BinaryExpression, pan: ts.PropertyAccessExpression): void {
     if (binaryExpr.left !== pan) {
       return;
     }
+
     if (binaryExpr.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+      this.incrementCounters(pan, FaultID.InteropDirectAccessToTSTypes);
       return;
     }
 
@@ -1502,14 +1513,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const lhs = binaryExpr.left as ts.PropertyAccessExpression;
 
     const autofix = this.autofixer?.fixInteropTsType(binaryExpr, lhs, rhs);
-
     this.incrementCounters(pan, FaultID.InteropDirectAccessToTSTypes, autofix);
   }
 
-  private checkInteropEqualsBinaryExpression(baseType: ts.Type, binaryExpr: ts.BinaryExpression): void {
-    if (this.tsUtils.isArray(baseType)) {
-      return;
-    }
+  private checkUsageOfTsTypes(baseType: ts.Type, node: ts.Node): void {
     if (this.tsUtils.isStringType(baseType)) {
       return;
     }
@@ -1520,7 +1527,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    this.incrementCounters(binaryExpr, FaultID.InteropDirectAccessToTSTypes);
+    this.incrementCounters(node, FaultID.InteropDirectAccessToTSTypes);
   }
 
   checkUnionTypes(propertyAccessNode: ts.PropertyAccessExpression): void {
@@ -2110,7 +2117,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         break;
       case ts.SyntaxKind.EqualsToken:
         this.handleTsInterop(tsLhsExpr, () => {
-          this.checkInteropEqualsBinaryExpression(leftOperandType, tsBinaryExpr);
+          this.checkUsageOfTsTypes(leftOperandType, tsBinaryExpr);
         });
         this.checkAssignmentMatching(tsBinaryExpr, leftOperandType, tsRhsExpr);
         this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
@@ -3714,6 +3721,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.handleInterfaceImport(node);
     const tsIdentifier = node;
+    this.handleTsInterop(tsIdentifier, () => {
+      const parent = tsIdentifier.parent;
+      if (ts.isPropertyAccessExpression(parent) || ts.isImportSpecifier(parent)) {
+        return;
+      }
+
+      const type = this.tsTypeChecker.getTypeAtLocation(tsIdentifier);
+      this.checkUsageOfTsTypes(type, tsIdentifier);
+    });
+
     const tsIdentSym = this.tsUtils.trueSymbolAtLocation(tsIdentifier);
     if (!tsIdentSym) {
       return;
@@ -4556,8 +4573,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    this.checkInteropFunctionParameters(callSignature, tsCallExpr);
-    this.checkForReflectAPIUse(callSignature, tsCallExpr);
+    this.checkForForbiddenAPIs(callSignature, tsCallExpr);
   }
 
   private isExportedEntityDeclaredInJs(exportDecl: ts.ExportDeclaration): boolean {
@@ -4627,27 +4643,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private checkInteropFunctionParameters(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
-    // checking if the we are invoking the function with the type Object from ArkTS 1.2 with the type Class from ArkTS 1.0
-    for (const [index, param] of callSignature.parameters.entries()) {
-      const paramType = this.tsTypeChecker.getTypeOfSymbolAtLocation(param, tsCallExpr);
-      if (!this.tsUtils.isObject(paramType)) {
-        return;
-      }
-
-      const argument = tsCallExpr.arguments[index];
-      if (!argument) {
-        return;
-      }
-
-      if (this.tsTypeChecker.getTypeAtLocation(argument).isClass()) {
-        this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectParam);
-        return;
-      }
-    }
-  }
-
-  private checkForReflectAPIUse(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
+  private checkForForbiddenAPIs(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
     if (!callSignature.declaration) {
       return;
     }
@@ -4658,11 +4654,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (
-      TypeScriptLinter.isFunctionLike(functionDeclaration) &&
-      TypeScriptLinter.containsReflectAPI(functionDeclaration)
-    ) {
-      this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
+    if (!TypeScriptLinter.isFunctionLike(functionDeclaration)) {
+      return;
+    }
+    switch (TypeScriptLinter.containsForbiddenAPI(functionDeclaration)) {
+      case REFLECT_LITERAL:
+        this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
+        break;
+      case OBJECT_LITERAL:
+        this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallObjectParam);
+        break;
+      default:
+        break;
     }
   }
 
@@ -7166,7 +7169,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (
       TypeScriptLinter.isFunctionLike(functionDeclaration) &&
-      TypeScriptLinter.containsReflectAPI(functionDeclaration)
+      TypeScriptLinter.containsForbiddenAPI(functionDeclaration)
     ) {
       this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
     }
@@ -7193,30 +7196,50 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private static containsReflectAPI(
+  private static containsForbiddenAPI(
     node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression
-  ): boolean {
+  ): ForbidenAPICheckResult {
     if (!node.body) {
-      return false;
+      return NONE;
+    }
+    return TypeScriptLinter.isForbiddenUsed(node.body);
+  }
+
+  private static isForbiddenUsed(currentNode: ts.Node): ForbidenAPICheckResult {
+    if (!ts.isCallExpression(currentNode)) {
+      let found: ForbidenAPICheckResult = NONE;
+      ts.forEachChild(currentNode, (child) => {
+        if (found === NONE) {
+          found = TypeScriptLinter.isForbiddenUsed(child);
+        }
+      });
+
+      return found;
     }
 
-    const checkForReflect = (currentNode: ts.Node): boolean => {
-      if (ts.isCallExpression(currentNode)) {
-        const expr = currentNode.expression;
-        if (ts.isPropertyAccessExpression(expr)) {
-          const obj = expr.expression;
-          const method = expr.name;
-          return ts.isIdentifier(obj) && obj.text === 'Reflect' && REFLECT_PROPERTIES.includes(method.text);
-        }
-      }
-      let found = false;
-      ts.forEachChild(currentNode, (child) => {
-        found = found || checkForReflect(child);
-      });
-      return found;
-    };
+    const expr = currentNode.expression;
+    if (!ts.isPropertyAccessExpression(expr)) {
+      return NONE;
+    }
 
-    return checkForReflect(node.body);
+    const obj = expr.expression;
+    const method = expr.name;
+    if (!ts.isIdentifier(obj)) {
+      return NONE;
+    }
+
+    if (obj.text === REFLECT_LITERAL) {
+      if (REFLECT_PROPERTIES.includes(method.text)) {
+        return REFLECT_LITERAL;
+      }
+    }
+
+    if (obj.text === OBJECT_LITERAL) {
+      if (OBJECT_PROPERTIES.includes(method.text)) {
+        return OBJECT_LITERAL;
+      }
+    }
+    return NONE;
   }
 
   private getFunctionSymbol(declaration: ts.Declaration): ts.Symbol | undefined {

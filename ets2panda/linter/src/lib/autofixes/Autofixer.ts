@@ -3552,7 +3552,7 @@ export class Autofixer {
     void this;
     const base = lhs.expression.getText();
     const prop = lhs.name.text;
-    const replacementText = `${base}.setPropertyByName('${prop}',ESObject.wrap(${rhs.getText()}))`;
+    const replacementText = `${base}.setPropertyByName('${prop}',ESValue.wrap(${rhs.getText()}))`;
 
     return [{ start: binaryExpr.getStart(), end: binaryExpr.getEnd(), replacementText }];
   }

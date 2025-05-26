@@ -34,7 +34,7 @@
                 {
                     "start": 744,
                     "end": 775,
-                    "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "replacementText": "objectLiteralType.setPropertyByName('name',ESValue.wrap(\"test\"))",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -55,7 +55,7 @@
                 {
                     "start": 777,
                     "end": 807,
-                    "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "replacementText": "intersectionType.setPropertyByName('name',ESValue.wrap(\"test\"))",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -77,6 +77,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 11,
+            "problem": "InteropDirectAccessToTSTypes",
+            "suggest": "",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 31,
             "column": 3,
             "endLine": 32,
@@ -91,6 +101,16 @@
             "column": 1,
             "endLine": 34,
             "endColumn": 20,
+            "problem": "InteropDirectAccessToTSTypes",
+            "suggest": "",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 1,
+            "endLine": 34,
+            "endColumn": 11,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
             "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
