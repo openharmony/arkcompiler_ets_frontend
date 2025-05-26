@@ -14,6 +14,7 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/globalClassHandler.h"
+#include <algorithm>
 #include "compiler/lowering/util.h"
 
 #include "ir/statements/classDeclaration.h"
@@ -59,13 +60,69 @@ std::string AddToNamespaceChain(std::string chain, std::string name)
     return chain + "." + name;
 }
 
-void GlobalClassHandler::CollectNamespaceExportedClasses(ir::ClassDefinition *classDef)
+void GlobalClassHandler::CollectNamespaceExportedClasses(parser::Program *program, ir::ClassDefinition *classDef)
 {
-    CollectExportedClasses(classDef, classDef->Body());
+    CollectExportedClasses(program, classDef, classDef->Body());
+}
+
+void GlobalClassHandler::CollectReExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                                  const ir::ETSReExportDeclaration *reExport)
+{
+    auto importDecl = reExport->GetETSImportDeclarations();
+    const auto importPath = reExport->GetETSImportDeclarations()->ImportMetadata().resolvedSource;
+    parser::Program *extProg = nullptr;
+    // Search Correct external program by comparing importPath and absolutePath
+    for (auto &[_, progs] : program->DirectExternalSources()) {
+        auto it = std::find_if(progs.begin(), progs.end(),
+                               [&](const auto *prog) { return prog->AbsoluteName() == importPath; });
+        if (it != progs.end()) {
+            extProg = *it;
+            break;
+        }
+    }
+    if (extProg == nullptr) {
+        return;
+    }
+    auto &externalExportedClasses = extProg->GlobalClass()->ExportedClasses();
+    const auto &specifiers = importDecl->Specifiers();
+    bool needAddETSGlobal = false;
+    for (const auto *specifier : specifiers) {
+        if (specifier->IsImportNamespaceSpecifier()) {
+            classDef->BatchAddToExportedClasses(externalExportedClasses);
+            break;
+        }
+        auto found = std::find_if(externalExportedClasses.begin(), externalExportedClasses.end(),
+                                  [&specifier](const ir::ClassDeclaration *classDecl) {
+                                      return specifier->IsImportSpecifier() &&
+                                             specifier->AsImportSpecifier()->Imported()->Name() ==
+                                                 // CC-OFFNXT(G.FMT.02-CPP) solid logic
+                                                 classDecl->Definition()->Ident()->Name();
+                                      // CC-OFFNXT(G.FMT.02-CPP) solid logic
+                                  });
+        if (found == externalExportedClasses.end()) {
+            needAddETSGlobal = true;
+            continue;
+        }
+        classDef->AddToExportedClasses(*found);
+    }
+
+    /*
+     *        a.ets:                                 b.ets:
+     * export let ident = 10             export {ident, A, B} from './a'
+     * export class A {}
+     * export class B {}
+     *              Note: (`a.ets` exported classes: A, B and ETSGLOBAL)
+     *
+     * In this re-export declaration, we need manually add ETSGLOBAL to exportedClasses.
+     */
+    if (needAddETSGlobal) {
+        classDef->AddToExportedClasses(extProg->GlobalClass()->Parent()->AsClassDeclaration());
+    }
 }
 
 template <class Node>
-void GlobalClassHandler::CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements)
+void GlobalClassHandler::CollectExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                                const ArenaVector<Node *> &statements)
 {
     for (const auto *statement : statements) {
         if (!statement->IsExported()) {
@@ -73,7 +130,26 @@ void GlobalClassHandler::CollectExportedClasses(ir::ClassDefinition *classDef, c
         }
         if (statement->IsClassDeclaration()) {
             classDef->AddToExportedClasses(statement->AsClassDeclaration());
+            continue;
         }
+        if (statement->IsETSReExportDeclaration()) {
+            CollectReExportedClasses(program, classDef, statement->AsETSReExportDeclaration());
+        }
+    }
+    auto globalClass = program->GlobalClass();
+    bool foundExport = false;
+    // Add ETSGLOBAL to Module in case of export let a = 10
+    std::function<void(ir::AstNode *)> findExportInGlobal = [&findExportInGlobal, &foundExport](ir::AstNode *node) {
+        if (node->IsExported()) {
+            foundExport = true;
+            return;
+        }
+        node->Iterate(findExportInGlobal);
+    };
+    globalClass->Iterate(findExportInGlobal);
+    if (foundExport) {
+        auto globalClassDecl = globalClass->Parent()->AsClassDeclaration();
+        classDef->AddToExportedClasses(globalClassDecl);
     }
 }
 
@@ -243,7 +319,7 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     for (auto *cls : globalClasses) {
         globalClass->Body().emplace_back(cls);
         cls->SetParent(globalClass);
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(program, cls->AsClassDeclaration()->Definition());
     }
 
     // Add rest statement, such as type declaration
@@ -261,7 +337,7 @@ void GlobalClassHandler::CollectProgramGlobalClasses(parser::Program *program, A
     for (auto cls : classDecls) {
         program->Ast()->Statements().push_back(cls);
         cls->SetParent(program->Ast());
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(program, cls->Definition());
     }
 }
 
@@ -329,7 +405,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     CollectProgramGlobalClasses(globalProgram, namespaces);
     auto initializerBlockStmts =
         FormInitStaticBlockMethodStatements(globalProgram, moduleDependencies, std::move(initializerBlock));
-    CollectExportedClasses(globalClass, globalProgram->Ast()->Statements());
+    CollectExportedClasses(globalProgram, globalClass, globalProgram->Ast()->Statements());
 
     // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
     if (globalProgram->Kind() != parser::ScriptKind::STDLIB) {
