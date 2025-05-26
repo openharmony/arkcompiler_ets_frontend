@@ -767,9 +767,7 @@ export abstract class BaseMode {
 
   private getSerializableConfig(): Object {
     const ignoreList = [
-      'compileFiles',
       'arkts',
-      'dependentModuleList',
     ];
     const jsonStr = JSON.stringify(this.buildConfig, (key, value) => {
       if (typeof value === 'bigint') {
