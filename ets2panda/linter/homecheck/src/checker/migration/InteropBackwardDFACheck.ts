@@ -70,6 +70,7 @@ const OBJECT_API: Map<string, number> = new Map([
     ['getOwnPropertyDescriptor', 0],
     ['getOwnPropertyDescriptors', 0],
     ['getOwnPropertyNames', 0],
+    ['hasOwn', 0],
     ['isExtensible', 0],
     ['isFrozen', 0],
     ['isSealed', 0],
