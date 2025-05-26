@@ -131,11 +131,26 @@ function formIdeInteractive(cmdOptions: CommandLineOptions, commanderOpts: Optio
   if (commanderOpts.checkTsAndJs) {
     cmdOptions.linterOptions.checkTsAndJs = true;
   }
+  if (commanderOpts.onlyArkts2SyntaxRules) {
+    cmdOptions.onlySyntax = true;
+  }
+}
+
+function formArkts2Options(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.arkts2) {
+    cmdOptions.linterOptions.arkts2 = true;
+  }
+  if (commanderOpts.skipLinter) {
+    cmdOptions.skipLinter = true;
+  }
   if (commanderOpts.homecheck) {
     cmdOptions.homecheck = true;
   }
-  if (commanderOpts.onlyArkts2SyntaxRules) {
-    cmdOptions.onlySyntax = true;
+  if (commanderOpts.outputFilePath) {
+    cmdOptions.outputFilePath = path.normalize(commanderOpts.outputFilePath);
+  }
+  if (commanderOpts.verbose) {
+    cmdOptions.verbose = true;
   }
 }
 
@@ -166,9 +181,6 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.autofix) {
     opts.linterOptions.enableAutofix = true;
   }
-  if (options.arkts2) {
-    opts.linterOptions.arkts2 = true;
-  }
   if (options.warningsAsErrors) {
     opts.linterOptions.warningsAsErrors = true;
   }
@@ -178,6 +190,7 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   formIdeInteractive(opts, options);
   formSdkOptions(opts, options);
   formMigrateOptions(opts, options);
+  formArkts2Options(opts, options);
   return opts;
 }
 
@@ -207,6 +220,7 @@ function createCommand(): Command {
     option('--ide-interactive', 'Migration Helper IDE interactive mode').
     option('-w, --arkts-whole-project-path <path>', 'path to whole project').
     option('--migrate', 'run as ArkTS migrator').
+    option('--skip-linter', 'skip linter rule validation and autofix').
     option('--homecheck', 'added homecheck rule validation').
     option('--no-migration-backup-file', 'Disable the backup files in migration mode').
     option('--migration-max-pass <num>', 'Maximum number of migration passes').
@@ -216,6 +230,8 @@ function createCommand(): Command {
       '--only-arkts2-syntax-rules',
       'only syntax rules, excluding rules such as SDK, Arkui, Interop, Concurrent, etc'
     ).
+    option('-o, --output-file-path <path>', 'path to store all log and result files').
+    option('--verbose', 'set log level to see debug messages').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).

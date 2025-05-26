@@ -48,13 +48,15 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
   const projectConfigInfo = {
     projectName: cmdOptions.arktsWholeProjectPath,
     projectPath: cmdOptions.arktsWholeProjectPath,
-    logPath: './HomeCheck.log',
+    logPath: cmdOptions.outputFilePath ? path.join(cmdOptions.outputFilePath, 'HomeCheck.log') : './HomeCheck.log',
     arkCheckPath: './node_modules/homecheck',
     ohosSdkPath: cmdOptions.sdkDefaultApiPath ? cmdOptions.sdkDefaultApiPath : '',
     hmsSdkPath: cmdOptions.sdkExternalApiPath ? cmdOptions.sdkExternalApiPath[0] : '',
     reportDir: './',
     languageTags: languageTags,
-    fileOrFolderToCheck: inputFiles
+    fileOrFolderToCheck: inputFiles,
+    logLevel: cmdOptions.verbose ? 'DEBUG' : 'INFO',
+    arkAnalyzerLogLevel: cmdOptions.verbose ? 'DEBUG' : 'ERROR',
   };
   return { ruleConfigInfo, projectConfigInfo };
 }

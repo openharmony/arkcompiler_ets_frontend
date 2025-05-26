@@ -25,9 +25,12 @@ export interface CommandLineOptions {
   sdkDefaultApiPath?: string;
   sdkExternalApiPath?: string[];
   arktsWholeProjectPath?: string;
+  skipLinter?: boolean;
   homecheck?: boolean;
   onlySyntax?: boolean;
   followSdkSettings?: boolean;
   devecoPluginModeDeprecated?: boolean;
   disableStrictDiagnostics?: boolean;
+  outputFilePath?: string;
+  verbose?: boolean;
 }

@@ -14,6 +14,7 @@
  */
 
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type * as ts from 'typescript';
 import { Logger } from '../Logger';
 import type { ProblemInfo } from '../ProblemInfo';
@@ -29,7 +30,8 @@ export class QuasiEditor {
     readonly srcFileName: string,
     readonly sourceText: string,
     readonly linterOpts: LinterOptions,
-    readonly cancellationToken?: ts.CancellationToken
+    readonly cancellationToken?: ts.CancellationToken,
+    readonly reportPath?: string
   ) {}
 
   private static getBackupFileName(filePath: string): string {
@@ -64,11 +66,14 @@ export class QuasiEditor {
       })
     };
 
-    const reportPath = './autofix-report.html';
-    const getOldJsonArray = (reportPath: string): Set<any> => {
+    let reportFilePath = './autofix-report.html';
+    if (this.reportPath !== undefined) {
+      reportFilePath = path.join(path.normalize(this.reportPath), 'autofix-report.html');
+    }
+    const getOldJsonArray = (reportFilePath: string): Set<any> => {
       try {
         const RegexCaptureBraketFirst = 1;
-        const rawData = fs.readFileSync(reportPath, 'utf-8');
+        const rawData = fs.readFileSync(reportFilePath, 'utf-8');
         const rawContent = rawData.match(/`([\s\S]*?)`/)?.[RegexCaptureBraketFirst] ?? '';
         return new Set(JSON.parse(rawContent) || []);
       } catch {
@@ -77,11 +82,14 @@ export class QuasiEditor {
     };
 
     try {
-      const existingReports = getOldJsonArray(reportPath);
+      const existingReports = getOldJsonArray(reportFilePath);
       existingReports.add(report);
       const str = JSON.stringify([...existingReports], null, 2);
       const HtmlContent = AutofixHtmlTemplate.replace(AUTOFIX_HTML_TEMPLATE_TEXT, str);
-      fs.writeFileSync(reportPath, HtmlContent, { encoding: 'utf-8' });
+      if (!fs.existsSync(path.dirname(reportFilePath))) {
+        fs.mkdirSync(path.dirname(reportFilePath), { recursive: true });
+      }
+      fs.writeFileSync(reportFilePath, HtmlContent, { encoding: 'utf-8' });
     } catch (error) {
       Logger.error(`Failed to update autofix report: ${(error as Error).message}`);
     }
