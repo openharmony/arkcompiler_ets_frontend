@@ -5192,7 +5192,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const srcFileName = decl.getSourceFile().fileName;
       return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
     });
-    if (!isSharedMemoryEsLib) {
+    if (!isSharedMemoryEsLib || this.hasLocalSharedArrayBufferClass()) {
       return;
     }
     if (ts.isNewExpression(node)) {
@@ -5202,6 +5202,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixSharedArrayBufferTypeReference(node);
       this.incrementCounters(node, FaultID.SharedArrayBufferDeprecated, autofix);
     }
+  }
+
+  private hasLocalSharedArrayBufferClass(): boolean {
+    return this.sourceFile.statements.some((stmt) => {
+      return ts.isClassDeclaration(stmt) && stmt.name?.text === ESLIB_SHAREDARRAYBUFFER;
+    });
   }
 
   private handleTypeReference(node: ts.Node): void {

@@ -73,6 +73,16 @@
       "suggest": "",
       "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
       "severity": "ERROR"
+    },
+    {
+      "line": 29,
+      "column": 1,
+      "endLine": 29,
+      "endColumn": 59,
+      "problem": "InteropJsObjectExport",
+      "suggest": "",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
+      "severity": "ERROR"
     }
   ]
 }

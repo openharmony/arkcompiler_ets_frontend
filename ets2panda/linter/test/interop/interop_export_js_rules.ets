@@ -26,4 +26,4 @@ export { foo as bar } from "./oh_modules/reflect_export" // foo is imported from
 
 export * as namespace1 from "./oh_modules/ets_decorator"
 
-export * as namespace2 from "./oh_modules/interop_import_js_rules"
+export * as namespace2 from "./interop_import_js_rules_js"
