@@ -43,6 +43,7 @@ set(ES2PANDA_LSP_SRC
   ./src/services/services.cpp
   ./src/services/utilities.cpp
   ./src/line_column_offset.cpp
+  ./src/text_change/change_tracker.cpp
   ./src/inlay_hints.cpp
   ./src/get_class_property_info.cpp
   ./src/create_type_help_items.cpp
