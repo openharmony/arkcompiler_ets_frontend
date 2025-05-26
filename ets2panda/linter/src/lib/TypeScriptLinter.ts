@@ -656,6 +656,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (emptyContextTypeForArrayLiteral) {
       this.incrementCounters(node, FaultID.ArrayLiteralNoContextType);
     }
+    this.handleObjectLiteralAssignmentToClass(arrayLitNode);
   }
 
   private handleStructDeclaration(node: ts.StructDeclaration): void {
@@ -1595,6 +1596,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleStructPropertyDecl(node);
     this.handlePropertyDeclarationForProp(node);
     this.handleSdkDuplicateDeclName(node);
+    this.handleObjectLiteralAssignmentToClass(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -2131,6 +2133,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkInteropEqualityJudgment(tsBinaryExpr);
     this.handleNumericBigintCompare(tsBinaryExpr);
     this.handleArkTSPropertyAccess(tsBinaryExpr);
+    this.handleObjectLiteralAssignmentToClass(tsBinaryExpr);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -4448,7 +4451,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     ) {
       this.handleLimitedVoidWithCall(tsCallExpr);
     }
-
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
@@ -4456,6 +4458,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
     this.handleTaskPoolDeprecatedUsages(tsCallExpr);
     this.handleSdkDuplicateDeclName(tsCallExpr);
+    this.handleObjectLiteralAssignmentToClass(tsCallExpr);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -5129,6 +5132,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.handleAsExpressionImport(tsAsExpr);
     this.handleNoTuplesArrays(node, targetType, exprType);
+    this.handleObjectLiteralAssignmentToClass(tsAsExpr);
   }
 
   private handleAsExpressionImport(tsAsExpr: ts.AsExpression): void {
@@ -5856,6 +5860,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.checkAssignmentMatching(node, lhsType, expr, true);
     this.handleObjectLiteralInReturn(returnStat);
+    this.handleObjectLiteralAssignmentToClass(returnStat);
   }
 
   /**
@@ -8233,25 +8238,53 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private handleObjectLiteralAssignmentToClass(node: ts.VariableDeclaration): void {
+  private handleObjectLiteralAssignmentToClass(
+    node:
+      | ts.VariableDeclaration
+      | ts.CallExpression
+      | ts.ReturnStatement
+      | ts.ArrayLiteralExpression
+      | ts.PropertyDeclaration
+      | ts.AsExpression
+      | ts.BinaryExpression
+  ): void {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-    if (!node.initializer || node.initializer.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
-      return;
-    }
-    if (!node.type) {
-      return;
-    }
 
-    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+    switch (node.kind) {
+      case ts.SyntaxKind.VariableDeclaration:
+        this.checkVariableDeclarationForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.CallExpression:
+        this.checkCallExpressionForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.ReturnStatement:
+        this.checkReturnStatementForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.ArrayLiteralExpression:
+        this.checkArrayLiteralExpressionForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.PropertyDeclaration:
+        this.checkPropertyDeclarationForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.AsExpression:
+        this.checkAsExpressionForObjectLiteral(node);
+        break;
+      case ts.SyntaxKind.BinaryExpression:
+        this.checkBinaryExpressionForObjectLiteral(node);
+        break;
+      default:
+    }
+  }
+
+  private reportIfAssignedToNonArkts2Class(type: ts.Type, expr: ts.ObjectLiteralExpression): void {
     const symbol = type.getSymbol();
     if (!symbol) {
       return;
     }
 
     const declarations = symbol.declarations ?? [];
-
     const isClass = declarations.some(ts.isClassDeclaration);
     if (!isClass) {
       return;
@@ -8270,8 +8303,113 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
 
     if (hasConstructor) {
-      this.incrementCounters(node, FaultID.InteropObjectLiteralClass);
+      this.incrementCounters(expr, FaultID.InteropObjectLiteralClass);
     }
+  }
+
+  private checkVariableDeclarationForObjectLiteral(node: ts.VariableDeclaration): void {
+    if (!node.initializer || !node.type) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+
+    const checkObjectLiteral = (expr: ts.Expression): void => {
+      if (ts.isObjectLiteralExpression(expr)) {
+        this.reportIfAssignedToNonArkts2Class(type, expr);
+      }
+    };
+
+    if (ts.isObjectLiteralExpression(node.initializer)) {
+      checkObjectLiteral(node.initializer);
+    } else if (ts.isConditionalExpression(node.initializer)) {
+      checkObjectLiteral(node.initializer.whenTrue);
+      checkObjectLiteral(node.initializer.whenFalse);
+    }
+  }
+
+  private checkCallExpressionForObjectLiteral(node: ts.CallExpression): void {
+    for (const arg of node.arguments) {
+      if (ts.isObjectLiteralExpression(arg)) {
+        const signature = this.tsTypeChecker.getResolvedSignature(node);
+        const params = signature?.getParameters() ?? [];
+        const index = node.arguments.indexOf(arg);
+        const paramSymbol = params[index];
+        if (!paramSymbol) {
+          continue;
+        }
+
+        const paramDecl = paramSymbol.declarations?.[0];
+        if (!paramDecl || !ts.isParameter(paramDecl) || !paramDecl.type) {
+          continue;
+        }
+
+        const type = this.tsTypeChecker.getTypeAtLocation(paramDecl.type);
+        this.reportIfAssignedToNonArkts2Class(type, arg);
+      }
+    }
+  }
+
+  private checkReturnStatementForObjectLiteral(node: ts.ReturnStatement): void {
+    if (!node.expression || !ts.isObjectLiteralExpression(node.expression)) {
+      return;
+    }
+    const func = ts.findAncestor(node, ts.isFunctionLike);
+    if (!func?.type) {
+      return;
+    }
+
+    const returnType = this.tsTypeChecker.getTypeAtLocation(func.type);
+    this.reportIfAssignedToNonArkts2Class(returnType, node.expression);
+  }
+
+  private checkArrayLiteralExpressionForObjectLiteral(node: ts.ArrayLiteralExpression): void {
+    for (const element of node.elements) {
+      if (ts.isObjectLiteralExpression(element)) {
+        const contextualType = this.tsTypeChecker.getContextualType(node);
+        if (!contextualType) {
+          continue;
+        }
+
+        const typeArgs = (contextualType as ts.TypeReference).typeArguments;
+        const elementType = typeArgs?.[0];
+        if (!elementType) {
+          continue;
+        }
+
+        this.reportIfAssignedToNonArkts2Class(elementType, element);
+      }
+    }
+  }
+
+  private checkPropertyDeclarationForObjectLiteral(node: ts.PropertyDeclaration): void {
+    if (!node.initializer || !ts.isObjectLiteralExpression(node.initializer) || !node.type) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+    this.reportIfAssignedToNonArkts2Class(type, node.initializer);
+  }
+
+  private checkAsExpressionForObjectLiteral(node: ts.AsExpression): void {
+    if (!ts.isObjectLiteralExpression(node.expression)) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.type);
+    this.reportIfAssignedToNonArkts2Class(type, node.expression);
+  }
+
+  private checkBinaryExpressionForObjectLiteral(node: ts.BinaryExpression): void {
+    if (node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+      return;
+    }
+    if (!ts.isObjectLiteralExpression(node.right)) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.left);
+    this.reportIfAssignedToNonArkts2Class(type, node.right);
   }
 
   private isObjectLiteralAssignedToArkts12Type(node: ts.Expression, expectedTypeNode?: ts.TypeNode): boolean {
