@@ -1263,3 +1263,7 @@ syntax:
 - name: ERROR_ARKTS_NO_IMPORT_ASSERTIONS
   id: 313
   message: "Import assertion is not supported, please use the ordinary import syntax instead!"
+
+- name: GENERATOR_FUNCTION
+  id: 314
+  message: "Generator functions are not supported, please use async/await mechanism for multitasking"

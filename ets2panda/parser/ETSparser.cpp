@@ -2121,6 +2121,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     }
 
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_MULTIPLY)) {
+        LogError(diagnostic::GENERATOR_FUNCTION);
         newStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 
