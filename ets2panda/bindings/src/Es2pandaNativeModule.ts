@@ -193,6 +193,74 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getClassHierarchyInfo(context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _castToClassHierarchyInfos(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassNameFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getMethodListFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDetailFromClassMethodItem(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSetterStyleFromClassMethodItem(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getAccessModifierStyleFromClassMethodItem(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getAliasScriptElementKind(ptr: KNativePointer, position: KInt): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getClassPropertyInfo(context: KNativePointer, position: KInt, shouldCollectInherited: boolean): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFieldsInfoFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFieldListPropertyFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getModifierKindsFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDisplayNameFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getStartFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getEndFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
   _organizeImports(context: KNativePointer, filename: String): KPtr {
     throw new Error('Not implemented');
   }
@@ -310,6 +378,54 @@ export class Es2pandaNativeModule {
   }
 
   _getTextSpanFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassHierarchies(context: KNativePointer, fileName: String, position: number): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassHierarchyList(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromClassHierarchyItemInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromClassHierarchyItemInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getDescriptionFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getOverriddenFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getOverridingFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getImplementedFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getImplementingFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromClassRelationDetails(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromClassRelationDetails(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromClassRelationDetails(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 

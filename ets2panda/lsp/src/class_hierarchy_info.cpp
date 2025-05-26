@@ -261,29 +261,31 @@ void ProcessClassHierarchy(const ir::AstNode *token, const ClassHierarchyInfo &b
     ProcessClassHierarchy(superClass, baseInfo, result);
 }
 
-ClassHierarchyInfo GetCurrentTokenClassHierarchyInfo(const ir::AstNode *token)
+ir::AstNode *GetTargetClassDeclarationByPosition(es2panda_Context *context, size_t position)
 {
-    ClassHierarchyInfo currentInfo;
-    auto classDefinition = GetClassDefinitionFromIdentifierNode(token);
-    if (classDefinition == nullptr) {
-        return currentInfo;
+    if (context == nullptr) {
+        return nullptr;
     }
-    auto className = GetNameFromIdentifierNode(token);
-    return CreateClassHierarchyInfoFromBody(classDefinition, className, true);
+    auto token = GetTouchingToken(context, position, false);
+    auto tmp = token;
+    while (tmp != nullptr) {
+        if (tmp->IsClassDeclaration()) {
+            return tmp;
+        }
+        tmp = tmp->Parent();
+    }
+    return nullptr;
 }
 
 ClassHierarchy GetClassHierarchyInfoImpl(es2panda_Context *context, size_t position)
 {
     ClassHierarchy result;
-    if (context == nullptr) {
+    auto classDeclaration = GetTargetClassDeclarationByPosition(context, position);
+    if (classDeclaration == nullptr) {
         return result;
     }
-    auto token = GetTouchingToken(context, position, false);
-    if (token == nullptr || !token->IsIdentifier()) {
-        return result;
-    }
-    auto currentInfo = GetCurrentTokenClassHierarchyInfo(token);
-    auto classDefinition = GetClassDefinitionFromIdentifierNode(token);
+    auto classDefinition = classDeclaration->AsClassDeclaration()->Definition();
+    auto currentInfo = CreateClassHierarchyInfoFromBody(classDefinition, "", true);
     auto superClass = GetSuperClassNode(classDefinition);
     if (superClass == nullptr) {
         return result;

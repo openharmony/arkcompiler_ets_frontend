@@ -25,6 +25,12 @@
 #include <string>
 #include <variant>
 
+namespace {
+using ark::es2panda::lsp::ClassHierarchy;
+using ark::es2panda::lsp::ClassHierarchyInfo;
+using ark::es2panda::lsp::ClassMethodItem;
+}  // namespace
+
 char *GetStringCopy(KStringPtr &ptr)
 {
     return strdup(ptr.c_str());
@@ -56,6 +62,17 @@ KNativePointer impl_getClassPropertyInfo(KNativePointer context, KInt position, 
     return new std::vector<FieldsInfo>(info);
 }
 TS_INTEROP_3(getClassPropertyInfo, KNativePointer, KNativePointer, KInt, KBoolean)
+
+KNativePointer impl_getFieldsInfoFromPropertyInfo(KNativePointer infoPtr)
+{
+    auto info = reinterpret_cast<std::vector<FieldsInfo> *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : *info) {
+        ptrs.push_back(new FieldsInfo(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFieldsInfoFromPropertyInfo, KNativePointer, KNativePointer)
 
 KNativePointer impl_getNameFromPropertyInfo(KNativePointer infoPtr)
 {
@@ -719,6 +736,228 @@ KNativePointer impl_getQuickInfoFileName(KNativePointer ref)
     return new std::string(refPtr->GetFileName());
 }
 TS_INTEROP_1(getQuickInfoFileName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getClassHierarchyInfo(KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    if (ctx == nullptr) {
+        return nullptr;
+    }
+    auto *classHierarchyPtr =
+        new ClassHierarchy(ctx->getClassHierarchyInfo(reinterpret_cast<es2panda_Context *>(context), position));
+    return classHierarchyPtr;
+}
+TS_INTEROP_2(getClassHierarchyInfo, KNativePointer, KNativePointer, KInt)
+
+KNativePointer impl_castToClassHierarchyInfos(KNativePointer infos)
+{
+    auto *infosPtr = reinterpret_cast<ClassHierarchy *>(infos);
+    if (infosPtr == nullptr) {
+        return nullptr;
+    }
+    std::vector<void *> ptrs;
+    for (const auto &element : *infosPtr) {
+        ptrs.push_back(new ClassHierarchyInfo(element));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(castToClassHierarchyInfos, KNativePointer, KNativePointer)
+
+KNativePointer impl_getClassNameFromClassHierarchyInfo(KNativePointer info)
+{
+    auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
+    if (infoPtr == nullptr) {
+        return nullptr;
+    }
+    return new std::string(infoPtr->GetClassName());
+}
+TS_INTEROP_1(getClassNameFromClassHierarchyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getMethodListFromClassHierarchyInfo(KNativePointer info)
+{
+    auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
+    if (infoPtr == nullptr) {
+        return nullptr;
+    }
+    std::vector<void *> ptrs;
+    for (const auto &element : infoPtr->GetMethodList()) {
+        if (element.second == nullptr) {
+            continue;
+        }
+        ptrs.push_back(new ClassMethodItem(*(element.second)));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getMethodListFromClassHierarchyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDetailFromClassMethodItem(KNativePointer item)
+{
+    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    if (itemPtr == nullptr) {
+        return nullptr;
+    }
+    return new std::string(itemPtr->GetFunctionDetail());
+}
+TS_INTEROP_1(getDetailFromClassMethodItem, KNativePointer, KNativePointer)
+
+KInt impl_getSetterStyleFromClassMethodItem(KNativePointer item)
+{
+    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    if (itemPtr == nullptr) {
+        return 0;
+    }
+    return static_cast<size_t>(itemPtr->GetSetterStyle());
+}
+TS_INTEROP_1(getSetterStyleFromClassMethodItem, KInt, KNativePointer)
+
+KInt impl_getAccessModifierStyleFromClassMethodItem(KNativePointer item)
+{
+    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    if (itemPtr == nullptr) {
+        return 0;
+    }
+    return static_cast<size_t>(itemPtr->GetAccessModifierStyle());
+}
+TS_INTEROP_1(getAccessModifierStyleFromClassMethodItem, KInt, KNativePointer)
+
+KInt impl_getAliasScriptElementKind(KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    if (ctx == nullptr) {
+        return 1;
+    }
+    auto kind =
+        static_cast<KInt>(ctx->getAliasScriptElementKind(reinterpret_cast<es2panda_Context *>(context), position));
+    return kind;
+}
+TS_INTEROP_2(getAliasScriptElementKind, KInt, KNativePointer, KInt)
+
+KNativePointer impl_getClassHierarchies(KNativePointer context, KStringPtr &fileNamePtr, KInt pos)
+{
+    LSPAPI const *ctx = GetImpl();
+    if (ctx == nullptr) {
+        return nullptr;
+    }
+    auto infos =
+        ctx->getClassHierarchiesImpl(reinterpret_cast<es2panda_Context *>(context), GetStringCopy(fileNamePtr), pos);
+    std::vector<void *> ptrs;
+    ptrs.reserve(infos.size());
+    for (auto &info : infos) {
+        ptrs.push_back(new ark::es2panda::lsp::ClassHierarchyItemInfo(info));
+    }
+    return new std::vector<void *>(std::move(ptrs));
+}
+TS_INTEROP_3(getClassHierarchies, KNativePointer, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getClassHierarchyList(KNativePointer infosPtr)
+{
+    auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> *>(infosPtr);
+    std::vector<void *> infoPtrList;
+    for (auto &info : *infos) {
+        infoPtrList.push_back(new ark::es2panda::lsp::ClassHierarchyItemInfo(info));
+    }
+    return new std::vector<void *>(infoPtrList);
+}
+TS_INTEROP_1(getClassHierarchyList, KNativePointer, KNativePointer)
+
+KInt impl_getPosFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    return static_cast<KInt>(info->pos);
+}
+TS_INTEROP_1(getPosFromClassHierarchyItemInfo, KInt, KNativePointer)
+
+KInt impl_getKindFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    return static_cast<KInt>(info->kind);
+}
+TS_INTEROP_1(getKindFromClassHierarchyItemInfo, KInt, KNativePointer)
+
+KNativePointer impl_getDescriptionFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    auto description = info->description;
+    return new std::string(description);
+}
+TS_INTEROP_1(getDescriptionFromClassHierarchyItemInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getOverriddenFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    auto &overridden = info->overridden;
+    std::vector<void *> overriddenPtrList;
+    overriddenPtrList.reserve(overridden.size());
+    size_t idx = 0;
+    for (auto &details : overridden) {
+        overriddenPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+    }
+    return new std::vector<void *>(std::move(overriddenPtrList));
+}
+TS_INTEROP_1(getOverriddenFromClassHierarchyItemInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getOverridingFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    auto &overriding = info->overriding;
+    std::vector<void *> overridingPtrList;
+    overridingPtrList.reserve(overriding.size());
+    size_t idx = 0;
+    for (auto &details : overriding) {
+        overridingPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+    }
+    return new std::vector<void *>(std::move(overridingPtrList));
+}
+TS_INTEROP_1(getOverridingFromClassHierarchyItemInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getImplementedFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    auto implemented = info->implemented;
+    std::vector<void *> implementedPtrList;
+    implementedPtrList.reserve(implemented.size());
+    size_t idx = 0;
+    for (auto &details : implemented) {
+        implementedPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+    }
+    return new std::vector<void *>(std::move(implementedPtrList));
+}
+TS_INTEROP_1(getImplementedFromClassHierarchyItemInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getImplementingFromClassHierarchyItemInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<ark::es2panda::lsp::ClassHierarchyItemInfo *>(infoPtr);
+    auto implementing = info->implementing;
+    std::vector<void *> implementingPtrList;
+    implementingPtrList.reserve(implementing.size());
+    size_t idx = 0;
+    for (auto &details : implementing) {
+        implementingPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+    }
+    return new std::vector<void *>(std::move(implementingPtrList));
+}
+TS_INTEROP_1(getImplementingFromClassHierarchyItemInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileNameFromClassRelationDetails(KNativePointer detailsPtr)
+{
+    auto *details = reinterpret_cast<ark::es2panda::lsp::ClassRelationDetails *>(detailsPtr);
+    return new std::string(details->fileName);
+}
+TS_INTEROP_1(getFileNameFromClassRelationDetails, KNativePointer, KNativePointer)
+
+KInt impl_getPosFromClassRelationDetails(KNativePointer detailsPtr)
+{
+    auto *details = reinterpret_cast<ark::es2panda::lsp::ClassRelationDetails *>(detailsPtr);
+    return static_cast<KInt>(details->pos);
+}
+TS_INTEROP_1(getPosFromClassRelationDetails, KInt, KNativePointer)
+
+KInt impl_getKindFromClassRelationDetails(KNativePointer detailsPtr)
+{
+    auto *details = reinterpret_cast<ark::es2panda::lsp::ClassRelationDetails *>(detailsPtr);
+    return static_cast<KInt>(details->kind);
+}
+TS_INTEROP_1(getKindFromClassRelationDetails, KInt, KNativePointer)
 
 KNativePointer impl_getSymbolDisplayPart(KNativePointer quickInfoPtr)
 {

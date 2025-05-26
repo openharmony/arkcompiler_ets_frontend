@@ -22,6 +22,20 @@ import { NativePtrDecoder } from './Platform';
 
 enum HierarchyType { OTHERS, INTERFACE, CLASS };
 
+export enum SetterStyle {
+  METHOD = 0,
+  SETTER,
+  GETTER
+}
+
+export enum AccessModifierStyle {
+  PUBLIC = 0,
+  PROTECTED,
+  PRIVATE
+}
+
+enum ClassRelationKind { UNKNOWN, INTERFACE, CLASS, FIELD, METHOD, PROPERTY };
+
 export abstract class LspNode {
   readonly peer: KNativePointer;
 
@@ -212,6 +226,150 @@ export class LspSymbolDisplayPart extends LspNode {
   }
   readonly text: String;
   readonly kind: String;
+}
+
+export class LspClassMethodItem extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.functionDetail = unpackString(global.es2panda._getDetailFromClassMethodItem(this.peer));
+    this.setter = global.es2panda._getSetterStyleFromClassMethodItem(this.peer);
+    this.accessModifier = global.es2panda._getAccessModifierStyleFromClassMethodItem(this.peer);
+  }
+  readonly functionDetail: string;
+  readonly setter: SetterStyle;
+  readonly accessModifier: AccessModifierStyle;
+}
+
+export class LspClassHierarchyInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.className = unpackString(global.es2panda._getClassNameFromClassHierarchyInfo(this.peer));
+    this.items = new NativePtrDecoder()
+      .decode(global.es2panda._getMethodListFromClassHierarchyInfo(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspClassMethodItem(elPeer);
+      });
+  }
+  readonly className: string;
+  readonly items: LspClassMethodItem[];
+}
+
+export class LspClassHierarchy extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.infos = new NativePtrDecoder()
+      .decode(global.es2panda._castToClassHierarchyInfos(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspClassHierarchyInfo(elPeer);
+      });
+  }
+  readonly infos: LspClassHierarchyInfo[];
+}
+
+export class LspClassPropertyInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fieldsInfo = new NativePtrDecoder()
+      .decode(global.es2panda._getFieldsInfoFromPropertyInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new FieldsInfo(elPeer);
+      });
+  }
+  readonly fieldsInfo: FieldsInfo[];
+}
+
+export class FieldsInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getNameFromPropertyInfo(peer));
+    this.properties = new NativePtrDecoder()
+      .decode(global.es2panda._getFieldListPropertyFromPropertyInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new FieldListProperty(elPeer);
+      });
+  }
+  readonly name: String;
+  readonly properties: FieldListProperty[];
+}
+
+export class FieldListProperty extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.kind = unpackString(global.es2panda._getKindFromPropertyInfo(peer));
+    this.modifierKinds = new NativePtrDecoder()
+      .decode(global.es2panda._getModifierKindsFromPropertyInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new String(elPeer);
+      });
+    this.displayName = unpackString(global.es2panda._getDisplayNameFromPropertyInfo(peer));
+    this.start = global.es2panda._getStartFromPropertyInfo(peer);
+    this.end = global.es2panda._getEndFromPropertyInfo(peer);
+  }
+  readonly kind: String;
+  readonly modifierKinds: String[];
+  readonly displayName: String;
+  readonly start: number;
+  readonly end: number;
+}
+
+export class LspClassHierarchies extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.classHierarchies = new NativePtrDecoder()
+      .decode(global.es2panda._getClassHierarchyList(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ClassHierarchyItemInfo(elPeer);
+      });
+  }
+  readonly classHierarchies: ClassHierarchyItemInfo[];
+}
+
+export class ClassHierarchyItemInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.pos = global.es2panda._getPosFromClassHierarchyItemInfo(peer);
+    this.kind = global.es2panda._getKindFromClassHierarchyItemInfo(peer);
+    this.description = unpackString(global.es2panda._getDescriptionFromClassHierarchyItemInfo(peer));
+    this.overridden = new NativePtrDecoder()
+      .decode(global.es2panda._getOverriddenFromClassHierarchyItemInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ClassRelationDetails(elPeer);
+      });
+    this.overriding = new NativePtrDecoder()
+      .decode(global.es2panda._getOverridingFromClassHierarchyItemInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ClassRelationDetails(elPeer);
+      });
+    this.implemented = new NativePtrDecoder()
+      .decode(global.es2panda._getImplementedFromClassHierarchyItemInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ClassRelationDetails(elPeer);
+      });
+    this.implementing = new NativePtrDecoder()
+      .decode(global.es2panda._getImplementingFromClassHierarchyItemInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ClassRelationDetails(elPeer);
+      });
+  }
+  readonly pos: number;
+  readonly kind: ClassRelationKind;
+  readonly description: String;
+  readonly overridden: ClassRelationDetails[];
+  readonly overriding: ClassRelationDetails[];
+  readonly implemented: ClassRelationDetails[];
+  readonly implementing: ClassRelationDetails[];
+}
+
+export class ClassRelationDetails extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromClassRelationDetails(peer));
+    this.pos = global.es2panda._getPosFromClassRelationDetails(peer);
+    this.kind = global.es2panda._getKindFromClassRelationDetails(peer);
+  }
+  readonly fileName: String;
+  readonly pos: number;
+  readonly kind: ClassRelationKind;
 }
 
 export class LspQuickInfo extends LspNode {

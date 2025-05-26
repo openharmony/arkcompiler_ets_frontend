@@ -101,10 +101,9 @@ DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
     return result;
 }
 
-std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *context, const std::string &fileName,
-                                                        size_t pos)
+std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *context, const char *fileName, size_t pos)
 {
-    return GetClassHierarchiesImpl(context, fileName, pos);
+    return GetClassHierarchiesImpl(context, std::string(fileName), pos);
 }
 
 bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
