@@ -14,9 +14,9 @@
  */
  
 'use static'
-let GeneratedImportVar_1 = ESObject.load('./interop_import_js_index_js');
+let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
 let arr = foo.getPropertyByName("arr")
 arr.getPropertyByIndex(1.0).toNumber()
-arr.setPropertyByIndex(3.0, ESObject.wrap(4.0))
+arr.setPropertyByIndex(3.0, ESValue.wrap(4.0))

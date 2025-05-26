@@ -43,11 +43,7 @@
                 {
                     "start": 676,
                     "end": 676,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 59
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n"
                 }
             ],
             "suggest": "",
@@ -106,11 +102,7 @@
                 {
                     "start": 687,
                     "end": 703,
-                    "replacementText": "foo.setPropertyByName(\"name\", ESObject.wrap(\"456\"))",
-                    "line": 20,
-                    "column": 1,
-                    "endLine": 20,
-                    "endColumn": 17
+                    "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))"
                 }
             ],
             "suggest": "",
@@ -148,11 +140,7 @@
                 {
                     "start": 704,
                     "end": 719,
-                    "replacementText": "person.setPropertyByName(\"age\", ESObject.wrap(23))",
-                    "line": 21,
-                    "column": 1,
-                    "endLine": 21,
-                    "endColumn": 16
+                    "replacementText": "person.setPropertyByName(\"age\", ESValue.wrap(23))"
                 }
             ],
             "suggest": "",
@@ -211,11 +199,7 @@
                 {
                     "start": 720,
                     "end": 740,
-                    "replacementText": "person.setPropertyByName(\"male\", ESObject.wrap([2, 3]))",
-                    "line": 22,
-                    "column": 1,
-                    "endLine": 22,
-                    "endColumn": 21
+                    "replacementText": "person.setPropertyByName(\"male\", ESValue.wrap([2, 3]))"
                 }
             ],
             "suggest": "",

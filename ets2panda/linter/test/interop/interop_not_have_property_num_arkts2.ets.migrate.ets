@@ -14,7 +14,7 @@
  */
 'use static'
 
-let GeneratedImportVar_1 = ESObject.load('./interop_property_num_js');
+let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
 

@@ -14,12 +14,12 @@
  */
 'use static'
 
-let GeneratedImportVar_1 = ESObject.load('./interop_not_have_property_js');
+let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 let person = GeneratedImportVar_1.getPropertyByName('person');
 
 
 foo.getPropertyByName("name")
-foo.setPropertyByName("name", ESObject.wrap("456"))
-person.setPropertyByName("age", ESObject.wrap(23.0))
-person.setPropertyByName("male", ESObject.wrap([2.0, 3.0]))
+foo.setPropertyByName("name", ESValue.wrap("456"))
+person.setPropertyByName("age", ESValue.wrap(23.0))
+person.setPropertyByName("male", ESValue.wrap([2.0, 3.0]))

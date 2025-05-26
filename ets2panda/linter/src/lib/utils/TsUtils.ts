@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_DIRS_OH_MODULES, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
-import { ES_OBJECT } from './consts/ESObject';
+import { ES_VALUE } from './consts/ESObject';
 import { EXTENDED_BASE_TYPES } from './consts/ExtendedBaseTypes';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import { USE_SHARED } from './consts/SharedModuleAPI';
@@ -1856,12 +1856,12 @@ export class TsUtils {
     return false;
   }
 
-  static isEsObjectType(typeNode: ts.TypeNode | undefined): boolean {
+  static isEsValueType(typeNode: ts.TypeNode | undefined): boolean {
     return (
       !!typeNode &&
       ts.isTypeReferenceNode(typeNode) &&
       ts.isIdentifier(typeNode.typeName) &&
-      typeNode.typeName.text === ES_OBJECT
+      typeNode.typeName.text === ES_VALUE
     );
   }
 
@@ -1876,11 +1876,11 @@ export class TsUtils {
     return false;
   }
 
-  static isEsObjectPossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
+  static isEsValuePossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
     return ts.isVariableDeclaration(typeRef.parent);
   }
 
-  isValueAssignableToESObject(node: ts.Node): boolean {
+  isValueAssignableToESValue(node: ts.Node): boolean {
     if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) {
       return false;
     }
@@ -1922,12 +1922,12 @@ export class TsUtils {
 
   hasEsObjectType(node: ts.Node): boolean {
     const typeNode = this.getVariableDeclarationTypeNode(node);
-    return typeNode !== undefined && TsUtils.isEsObjectType(typeNode);
+    return typeNode !== undefined && TsUtils.isEsValueType(typeNode);
   }
 
   static symbolHasEsObjectType(sym: ts.Symbol): boolean {
     const typeNode = TsUtils.getVariableSymbolDeclarationTypeNode(sym);
-    return typeNode !== undefined && TsUtils.isEsObjectType(typeNode);
+    return typeNode !== undefined && TsUtils.isEsValueType(typeNode);
   }
 
   static isEsObjectSymbol(sym: ts.Symbol): boolean {
@@ -1935,7 +1935,7 @@ export class TsUtils {
     return (
       !!decl &&
       ts.isTypeAliasDeclaration(decl) &&
-      decl.name.escapedText === ES_OBJECT &&
+      decl.name.escapedText === ES_VALUE &&
       decl.type.kind === ts.SyntaxKind.AnyKeyword
     );
   }

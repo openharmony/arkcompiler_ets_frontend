@@ -43,7 +43,7 @@
                 {
                     "start": 668,
                     "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
