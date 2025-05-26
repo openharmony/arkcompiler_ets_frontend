@@ -120,12 +120,11 @@ std::optional<AstNode *> HandleTSImportType(AstNode *node, AstNode *parent,
     if (!node->IsTSImportType()) {
         return std::nullopt;
     }
-    if ((parent->Modifiers() & ModifierFlags::EXPORT_TYPE) != 0U) {
-        if (auto location = GetAdjustedLocationForDeclaration(parent->Parent(), forRename, parentChildren, allocator)) {
-            return location;
-        }
+    if (auto location = GetAdjustedLocationForDeclaration(parent->Parent(), forRename, parentChildren, allocator)) {
+        return location;
     }
-    if (parent->IsExportAllDeclaration() && ((parent->Modifiers() & ModifierFlags::EXPORT_TYPE) != 0U)) {
+
+    if (parent->IsExportAllDeclaration()) {
         if (auto location = GetAdjustedLocationForExportDeclaration(parent, forRename, parentChildren)) {
             return location;
         }

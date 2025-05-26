@@ -641,7 +641,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
-        if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
+        if (!(node->IsExported() || node->IsDefaultExported())) {
             return Scope::InsertResult {Bindings().end(), false};
         }
     }
