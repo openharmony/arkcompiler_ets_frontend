@@ -430,6 +430,10 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
 ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
 {
+    if (typeAnno == nullptr) {
+        return nullptr;
+    }
+
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     if (!typeAnno->IsETSUnionType()) {
         ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
