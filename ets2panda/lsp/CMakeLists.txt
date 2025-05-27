@@ -17,6 +17,7 @@ set(ES2PANDA_LSP_SRC
   ./src/class_hierarchy_info.cpp
   ./src/classifier.cpp
   ./src/internal_api.cpp
+  ./src/isolated_declaration.cpp
   ./src/cancellation_token.cpp
   ./src/completions.cpp
   ./src/organize_imports.cpp

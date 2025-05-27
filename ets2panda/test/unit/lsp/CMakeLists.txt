@@ -39,6 +39,10 @@ ets2panda_add_gtest(lsp_diagnostic_test CPP_SOURCES
     diagnostic_test.cpp
 )
 
+ets2panda_add_gtest(lsp_isolated_declaration_test CPP_SOURCES
+    isolated_declaration.cpp
+)
+
 ets2panda_add_gtest(lsp_cancellation_token_test CPP_SOURCES
     cancellation_token_test.cpp
 )
