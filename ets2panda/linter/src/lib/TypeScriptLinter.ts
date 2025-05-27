@@ -3953,12 +3953,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
 
+    this.handleIllegalSymbolUsage(tsIdentifier, tsIdentSym)
+  }
+
+  private handleIllegalSymbolUsage(tsIdentifier: ts.Identifier, tsIdentSym: ts.Symbol): void {
     if (tsIdentSym.flags & ts.SymbolFlags.ValueModule) {
       this.incrementCounters(tsIdentifier, FaultID.NamespaceAsObject);
     } else {
-      // missing EnumAsObject
-      const faultId = this.options.arkts2 ? FaultID.ClassAsObjectError : FaultID.ClassAsObject;
-      this.incrementCounters(tsIdentifier, faultId);
+      const typeName = tsIdentifier.getText();
+      const isWrapperObject = typeName === 'Number' || typeName === 'String' || typeName === 'Boolean';
+
+      if (!isWrapperObject) {
+        const faultId = this.options.arkts2 ? FaultID.ClassAsObjectError : FaultID.ClassAsObject;
+        this.incrementCounters(tsIdentifier, faultId);
+      }
     }
   }
 

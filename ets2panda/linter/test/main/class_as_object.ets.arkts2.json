@@ -395,36 +395,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 129,
-            "column": 15,
-            "endLine": 129,
-            "endColumn": 21,
-            "problem": "ClassAsObjectError",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 130,
-            "column": 15,
-            "endLine": 130,
-            "endColumn": 22,
-            "problem": "ClassAsObjectError",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 131,
-            "column": 15,
-            "endLine": 131,
-            "endColumn": 21,
-            "problem": "ClassAsObjectError",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "ERROR"
-        },
-        {
             "line": 132,
             "column": 15,
             "endLine": 132,
@@ -905,13 +875,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 205,
-            "column": 87,
-            "endLine": 205,
-            "endColumn": 93,
-            "problem": "ClassAsObjectError",
+            "line": 209,
+            "column": 5,
+            "endLine": 209,
+            "endColumn": 40,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]
