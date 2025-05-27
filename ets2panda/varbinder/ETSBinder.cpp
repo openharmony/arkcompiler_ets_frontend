@@ -670,8 +670,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             continue;
         }
         if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported() &&
-            (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-             var->AsLocalVariable()->Declaration()->Node()->IsExportedType())) {
+            (var->AsLocalVariable()->Declaration()->Node()->IsExported())) {
             auto variable = Program()->GlobalClassScope()->FindLocal(bindingName, ResolveBindingOptions::ALL);
             if (variable == nullptr || var == variable) {
                 InsertForeignBinding(specifier, import, bindingName, var);
@@ -783,8 +782,7 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
 static bool IsExportedVariable(varbinder::Variable *const var)
 {
     return var != nullptr &&
-           (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsExportedType() ||
-            var->Declaration()->Node()->IsDefaultExported());
+           (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsDefaultExported());
 }
 
 ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
@@ -832,7 +830,7 @@ void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::Stri
 {
     if (node->IsDefaultExported()) {
         ThrowError(importPath->Start(), diagnostic::DEFAULT_EXPORT_DIRECT_IMPORTED);
-    } else if (!node->IsExported() && !node->IsExportedType() && !node->IsDefaultExported()) {
+    } else if (!node->IsExported() && !node->IsDefaultExported()) {
         ThrowError(importPath->Start(), diagnostic::IMPORTED_NOT_EXPORTED, {imported});
     }
 }

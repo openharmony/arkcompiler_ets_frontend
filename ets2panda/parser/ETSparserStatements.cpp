@@ -151,8 +151,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         }
         stmt->AddModifier(memberModifiers);
     } else {
-        if ((memberModifiers &
-             (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT | ir::ModifierFlags::EXPORT_TYPE)) != 0U) {
+        if ((memberModifiers & (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT)) != 0U) {
             parser->LogError(diagnostic::EXPORT_NON_DECLARATION, {}, pos);
         }
     }

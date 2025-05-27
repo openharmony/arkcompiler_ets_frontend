@@ -209,7 +209,7 @@ bool ClassProperty::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
         return false;
     }
 
-    if (key_->Parent()->IsExported() || key_->Parent()->IsDefaultExported() || key_->Parent()->IsExportedType()) {
+    if (key_->Parent()->IsExported() || key_->Parent()->IsDefaultExported()) {
         return false;
     }
 

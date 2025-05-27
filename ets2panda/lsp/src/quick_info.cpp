@@ -264,7 +264,6 @@ std::string ModifiersToString(ir::ModifierFlags flags)
     addModifier(ir::ModifierFlags::GETTER, "getter");
     addModifier(ir::ModifierFlags::SETTER, "setter");
     addModifier(ir::ModifierFlags::DEFAULT_EXPORT, "default_export");
-    addModifier(ir::ModifierFlags::EXPORT_TYPE, "export_type");
     addModifier(ir::ModifierFlags::SUPER_OWNER, "super_owner");
     addModifier(ir::ModifierFlags::ANNOTATION_DECLARATION, "annotation_declaration");
     addModifier(ir::ModifierFlags::ANNOTATION_USAGE, "annotation_usage");

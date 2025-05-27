@@ -104,7 +104,7 @@ bool TSTypeAliasDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper)
         return false;
     }
 
-    if (id_->Parent()->IsExported() || id_->Parent()->IsDefaultExported() || id_->Parent()->IsExportedType()) {
+    if (id_->Parent()->IsExported() || id_->Parent()->IsDefaultExported()) {
         return false;
     }
 
@@ -122,7 +122,7 @@ void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    if (id_->Parent()->IsExportedType()) {
+    if (id_->Parent()->IsExported()) {
         dumper->Add("export ");
     }
     dumper->Add("type ");

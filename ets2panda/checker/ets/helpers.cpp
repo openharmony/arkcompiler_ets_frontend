@@ -1656,9 +1656,7 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
     for (auto [_, var] : bindings) {
         (void)_;
         auto [found, aliasedName] = FindSpecifierForModuleObject(importDecl, var->AsLocalVariable()->Name());
-        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-             var->AsLocalVariable()->Declaration()->Node()->IsExportedType()) &&
-            found) {
+        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported()) && found) {
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }

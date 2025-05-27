@@ -90,7 +90,7 @@ void TSDeclGen::ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *t
     const auto *aliasedType = typeAliasDecl->TypeAnnotation()->GetType(checker_);
     const auto typeFlag = checker::ETSChecker::ETSType(aliasedType);
     const auto *parent = typeAliasDecl->Id()->Parent();
-    if (!parent->IsExported() && !parent->IsExportedType() && !parent->IsDefaultExported()) {
+    if (!parent->IsExported() && !parent->IsDefaultExported()) {
         return;
     }
     if (typeFlag == checker::TypeFlag::ETS_OBJECT || typeFlag == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
@@ -148,7 +148,7 @@ void TSDeclGen::ProcessClassDependencies(const ir::ClassDeclaration *classDecl)
         return;
     }
 
-    if (!classDef->IsExported() && !classDef->IsExportedType() && !classDef->IsDefaultExported()) {
+    if (!classDef->IsExported() && !classDef->IsDefaultExported()) {
         return;
     }
     state_.super = classDef->Super();
@@ -898,7 +898,7 @@ bool TSDeclGen::ShouldEmitDeclarationSymbol(const ir::Identifier *symbol)
     if (declgenOptions_.exportAll) {
         return true;
     }
-    if (symbol->Parent()->IsExported() || symbol->Parent()->IsExportedType() || symbol->Parent()->IsDefaultExported()) {
+    if (symbol->Parent()->IsExported() || symbol->Parent()->IsDefaultExported()) {
         return true;
     }
     if (state_.isDeclareNamespace) {
