@@ -17,7 +17,7 @@
 // NOLINTBEGIN
 
 #include <stddef.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 #include "public/es2panda_lib.h"
 
@@ -30,13 +30,11 @@ void e2p_test_plugin_recheck_Initialize()
 
 void e2p_test_plugin_recheck_AfterCheck(es2panda_Context *ctx)
 {
-    puts("Before recheck: ");
-    if (impl->ContextState(ctx) == ES2PANDA_STATE_ERROR) {
-        return;
+    if (impl->IsAnyError(ctx)) {
+        exit(0);
     }
     es2panda_AstNode *ast = impl->ProgramAst(ctx, impl->ContextProgram(ctx));
     impl->AstNodeRecheck(ctx, ast);
-    puts("After recheck: ");
 }
 
 // NOLINTEND
