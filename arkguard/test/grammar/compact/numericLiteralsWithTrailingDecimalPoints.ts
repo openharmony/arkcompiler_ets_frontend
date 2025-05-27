@@ -18,33 +18,33 @@
 1. + 2.0 + 3.;
 
 var i: number = 1;
-var test1 = i.toString();
-var test3 = 3 .toString();
-var test4 = 3    .toString();
-var test5 = 3	.toString();
-var test6 = 3.['toString']();
-var test7 = 3
+var compactTest1 = i.toString();
+var compactTest3 = 3 .toString();
+var compactTest4 = 3    .toString();
+var compactTest5 = 3	.toString();
+var compactTest6 = 3.['toString']();
+var compactTest7 = 3
   .toString();
-var test8 = new Number(4).toString();
-var test9 = 3. + 3.;
-var test10 = 0 /* comment */.toString();
-var test11 = 3. /* comment */.toString();
-var test12 = 3
+var compactTest8 = new Number(4).toString();
+var compactTest9 = 3. + 3.;
+var compactTest10 = 0 /* comment */.toString();
+var compactTest11 = 3. /* comment */.toString();
+var compactTest12 = 3
   /* comment */ .toString();
 var test122 = 3
 /* comment */.toString();
 var test1222 = 3
 
   .toString();
-var test13 = 3.
+var compactTest13 = 3.
   /* comment */.toString();
-var test14 = 3
+var compactTest14 = 3
   // comment
   .toString();
-var test15 = 3.
+var compactTest15 = 3.
   // comment
   .toString();
-var test16 = 3  // comment time
+var compactTest16 = 3  // comment time
   .toString();
-var test17 = 3. // comment time again
+var compactTest17 = 3. // comment time again
   .toString();

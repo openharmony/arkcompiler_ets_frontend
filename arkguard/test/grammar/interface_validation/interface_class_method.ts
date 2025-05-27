@@ -15,27 +15,27 @@
 
 import assert = require('assert');
 
-interface ClockInterface {
-  currentTime: Date;
+interface TimepieceInterface {
+  currentDateTime: Date;
 
-  setTime(d: Date);
+  updateTime(newTime: Date);
 }
 
-class Clock implements ClockInterface {
-  currentTime: Date;
+class WallClock implements TimepieceInterface {
+  currentDateTime: Date;
 
-  setTime(d: Date) {
-    this.currentTime = d;
+  updateTime(newTime: Date) {
+    this.currentDateTime = newTime;
   }
 
-  constructor(h: number, m: number) {
+  constructor(hour: number, minute: number) {
   }
 }
 
-let nowClock = new Clock(3, 20);
+let nowClock = new WallClock(3, 20);
 
 let now = Date.prototype;
 
-nowClock.setTime(now);
+nowClock.updateTime(now);
 
-assert(nowClock.currentTime === now, 'success');
+assert(nowClock.currentDateTime === now, 'success');
