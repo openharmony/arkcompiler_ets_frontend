@@ -30,7 +30,7 @@ bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Pr
         stmt->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
     }
     auto checkerResult = ctx->checker->StartChecker(ctx->parserProgram->VarBinder(), *ctx->config->options);
-    return checkerResult;
+    return program->Extension() == ScriptExtension::ETS ? true : checkerResult;
 }
 
 }  // namespace ark::es2panda::compiler
