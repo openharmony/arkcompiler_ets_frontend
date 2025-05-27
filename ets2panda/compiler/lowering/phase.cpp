@@ -191,11 +191,11 @@ std::vector<Phase *> GetETSPhaseList()
         &g_unionLowering,
         &g_expandBracketsPhase,
         &g_localClassLowering,
-        &g_interfaceObjectLiteralLowering,
+        &g_partialExportClassGen,
+        &g_interfaceObjectLiteralLowering, // this lowering should be put after all classs generated.
         &g_objectLiteralLowering,
         &g_stringConstructorLowering,
         &g_stringComparisonLowering,
-        &g_partialExportClassGen,
         &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
         &g_genericBridgesLowering,
         &g_typeFromLowering,

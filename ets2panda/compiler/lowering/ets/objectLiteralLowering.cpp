@@ -314,7 +314,7 @@ bool ObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::
 {
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() &&
+        return ast->IsObjectExpression() && ast->AsObjectExpression()->TsType()->IsETSObjectType() &&
                !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
     });
 }

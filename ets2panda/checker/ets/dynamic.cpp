@@ -368,7 +368,11 @@ ir::ClassDeclaration *ETSChecker::BuildClass(util::StringView name, const ClassB
     VarBinder()->Program()->Ast()->Statements().push_back(classDecl);
     classDecl->SetParent(VarBinder()->Program()->Ast());
 
-    varbinder::BoundContext boundCtx(VarBinder()->AsETSBinder()->GetGlobalRecordTable(), classDef);
+    auto varBinder = VarBinder()->AsETSBinder();
+    bool isExternal = VarBinder()->Program() != varBinder->GetGlobalRecordTable()->Program();
+    auto recordTable = isExternal ? varBinder->GetExternalRecordTable().at(varBinder->Program())
+                                  : VarBinder()->AsETSBinder()->GetGlobalRecordTable();
+    varbinder::BoundContext boundCtx(recordTable, classDef);
 
     ArenaVector<ir::AstNode *> classBody(ProgramAllocator()->Adapter());
 
