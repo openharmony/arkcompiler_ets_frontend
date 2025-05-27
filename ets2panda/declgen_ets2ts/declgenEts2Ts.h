@@ -123,7 +123,8 @@ private:
     void GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
                          const ArenaVector<ir::AstNode *> &specifiers, const std::string &source,
                          const std::string &typeStr);
-    void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration);
+    void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
+                              bool isGlueCode = false);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::ClassProperty *enumMember);
@@ -155,7 +156,8 @@ private:
     bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
-    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false);
+    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false,
+                      bool isDtsExport = true);
 
     void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
     bool ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef);
