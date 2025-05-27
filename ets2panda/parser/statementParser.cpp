@@ -711,6 +711,10 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
     }
 
     ir::Expression *exprNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    if (exprNode == nullptr) {  // Error processing.
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
+    }
+
     context_.Status() = savedStatus;
     lexer::SourcePosition endPos = exprNode->End();
 

@@ -484,7 +484,7 @@ Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *alloca
                                          [[maybe_unused]] Variable *currentVariable, [[maybe_unused]] Decl *newDecl,
                                          [[maybe_unused]] ScriptExtension extension)
 {
-    ES2PANDA_UNREACHABLE();
+    return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
 Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
