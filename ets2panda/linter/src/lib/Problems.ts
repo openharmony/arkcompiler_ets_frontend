@@ -240,7 +240,6 @@ export enum FaultID {
   BuiltinGetOwnPropertyNames,
   LocalBuilderDecoratorNotSupported,
   MakeObservedIsNotSupported,
-  PropDecoratorsAndInterfacesAreNotSupported,
   NoEnumPropAsType,
   NoAwaitJsPromise,
   NosparseArray,
@@ -252,6 +251,11 @@ export enum FaultID {
   NondecimalBigint,
   UnsupportOperator,
   CustomLayoutNeedAddDecorator,
+  PropDecoratorNotSupported,
+  StoragePropDecoratorNotSupported,
+  LocalStoragePropDecoratorNotSupported,
+  PropFunctionNotSupported,
+  SetAndPropFunctionNotSupported,
   // this should always be last enum
   LAST_ID
 }

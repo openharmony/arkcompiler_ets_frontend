@@ -97,8 +97,8 @@ import {
   ARKUI_PACKAGE_NAME,
   MAKE_OBSERVED,
   ARKUI_STATE_MANAGEMENT,
-  deepCopyDecoratorName,
-  deepCopyFunctionName,
+  PropDecoratorName,
+  PropFunctionName,
   StorageTypeName,
   customLayoutFunctionName
 } from './utils/consts/ArkuiConstants';
@@ -8552,11 +8552,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       decoratorName = decorators[0].expression.expression.getText();
     }
 
-    if (!decoratorName || !deepCopyDecoratorName.has(decoratorName)) {
+    if (!decoratorName) {
       return;
     }
 
-    this.incrementCounters(node, FaultID.PropDecoratorsAndInterfacesAreNotSupported);
+    switch (decoratorName) {
+      case PropDecoratorName.Prop:
+        this.incrementCounters(node, FaultID.PropDecoratorNotSupported);
+        break;
+      case PropDecoratorName.StorageProp:
+        this.incrementCounters(node, FaultID.StoragePropDecoratorNotSupported);
+        break;
+      case PropDecoratorName.LocalStorageProp:
+        this.incrementCounters(node, FaultID.LocalStoragePropDecoratorNotSupported);
+        break;
+      default:
+    }
   }
 
   private handleVariableDeclarationForProp(node: ts.VariableDeclaration): void {
@@ -8582,12 +8593,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const functionName = propertyAccessExpr.name;
-    if (!deepCopyFunctionName.has(functionName.getText())) {
-      return;
+    const functionName = propertyAccessExpr.name.getText();
+    switch (functionName) {
+      case PropFunctionName.Prop:
+        this.incrementCounters(node, FaultID.PropFunctionNotSupported);
+        break;
+      case PropFunctionName.SetAndProp:
+        this.incrementCounters(node, FaultID.SetAndPropFunctionNotSupported);
+        break;
+      default:
     }
-
-    this.incrementCounters(node, FaultID.PropDecoratorsAndInterfacesAreNotSupported);
   }
 
   private isTargetStorageType(storage: ts.Identifier, targetTypes: string[]): boolean {

@@ -29,9 +29,9 @@
             "column": 3,
             "endLine": 24,
             "endColumn": 33,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "PropDecoratorNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"@Prop\" decorator is not supported (arkui-no-prop-decorator)",
             "severity": "ERROR"
         },
         {
@@ -39,9 +39,9 @@
             "column": 3,
             "endLine": 34,
             "endColumn": 49,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "StoragePropDecoratorNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"@StorageProp\" decorator is not supported (arkui-no-storageprop-decorator)",
             "severity": "ERROR"
         },
         {
@@ -49,9 +49,9 @@
             "column": 3,
             "endLine": 35,
             "endColumn": 54,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "LocalStoragePropDecoratorNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"@LocalStorageProp\" decorator is not supported (arkui-no-localstorageprop-decorator)",
             "severity": "ERROR"
         },
         {
