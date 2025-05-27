@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 import { ArkInstanceInvokeExpr } from '../../core/base/Expr';
 import { Local } from '../../core/base/Local';
@@ -31,7 +30,7 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'Dummy Call');
 export class DummyCallCreator {
     private scene: Scene;
     private pageMap;
-    // TODO: classSig -> str ? 
+    // TODO: classSig -> str ?
     private componentMap: Map<ClassSignature, Set<Stmt>>;
 
     constructor(scene: Scene) {
@@ -86,7 +85,9 @@ export class DummyCallCreator {
 
         let callStmts: Stmt[] = [];
         // filter callback method
-        componentClass.getMethods().filter(method => COMPONENT_LIFECYCLE_METHOD_NAME.includes(method.getName()))
+        componentClass
+            .getMethods()
+            .filter(method => COMPONENT_LIFECYCLE_METHOD_NAME.includes(method.getName()))
             .forEach((method: ArkMethod) => {
                 // TODO: args pointer ?
                 if (method.getParameters().length === 0) {

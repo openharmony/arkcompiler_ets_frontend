@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +13,19 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, Stmt } from "../../core/base/Stmt";
-import { UnknownType } from "../../core/base/Type";
-import { CallGraphNode, CallGraphNodeKind } from "../model/CallGraph";
-import { PointerAnalysis } from "../pointerAnalysis/PointerAnalysis";
-import Logger, { LOG_MODULE_TYPE } from "../../utils/logger";
+import { ArkAssignStmt, Stmt } from '../../core/base/Stmt';
+import { UnknownType } from '../../core/base/Type';
+import { CallGraphNode, CallGraphNodeKind } from '../model/CallGraph';
+import { PointerAnalysis } from '../pointerAnalysis/PointerAnalysis';
+import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'PTA');
 
 abstract class StatTraits {
+    TotalTime: number = 0;
+    startTime: number = 0;
+    endTime: number = 0;
+
     public getStat(): string {
         return '';
     }
@@ -31,7 +35,7 @@ abstract class StatTraits {
     }
 }
 
-export class PTAStat implements StatTraits {
+export class PTAStat extends StatTraits {
     pta: PointerAnalysis;
     numProcessedAddr: number = 0;
     numProcessedCopy: number = 0;
@@ -56,10 +60,6 @@ export class PTAStat implements StatTraits {
     numUnhandledFunc: number = 0;
 
     iterTimes: number = 0;
-    TotalTime: number = 0;
-
-    startTime: number = 0;
-    endTime: number = 0;
 
     startMemUsage: any;
     endMemUsage: any;
@@ -67,6 +67,7 @@ export class PTAStat implements StatTraits {
     heapUsed: number = 0;
 
     constructor(pta: PointerAnalysis) {
+        super();
         this.pta = pta;
     }
 
@@ -121,7 +122,10 @@ export class PTAStat implements StatTraits {
         let cg = this.pta.getCallGraph();
         this.pta.getHandledFuncs().forEach(funcID => {
             let f = cg.getArkMethodByFuncID(funcID);
-            f?.getCfg()?.getStmts().forEach(s => stmtStat(s));
+            f
+                ?.getCfg()
+                ?.getStmts()
+                .forEach(s => stmtStat(s));
         });
     }
 
@@ -143,23 +147,22 @@ export class PTAStat implements StatTraits {
     public getStat(): string {
         // TODO: get PAG stat and CG stat
         let output: string;
-        output = '==== Pointer analysis Statictics: ====\n'
-        output = output + `Processed address\t${this.numProcessedAddr}\n`
-        output = output + `Processed copy\t\t${this.numProcessedCopy}\n`
-        output = output + `Processed load\t\t${this.numProcessedLoad}\n`
-        output = output + `Processed write\t\t${this.numProcessedWrite}\n`
-        output = output + `Real write\t\t${this.numRealWrite}\n`
-        output = output + `Real load\t\t${this.numRealLoad}\n`
-        output = output + `Processed This\t\t${this.numProcessedThis}\n\n`
-        output = output + `Unhandled function\t${this.numUnhandledFun}\n`
-        output = output + `Total values in visited function\t${this.totalValuesInVisitedFunc}\n`
-        output = output + `Infered Value unknown+different type\t${this.numInferedUnknownValue}+${this.numInferedDiffTypeValue}\n\n`
-        output = output + `Total Time\t\t${this.TotalTime} S\n`
-        output = output + `Total iterator Times\t${this.iterTimes}\n`
-        output = output + `RSS used\t\t${this.rssUsed.toFixed(3)} Mb\n`
-        output = output + `Heap used\t\t${this.heapUsed.toFixed(3)} Mb\n`
+        output = '==== Pointer analysis Statictics: ====\n';
+        output = output + `Processed address\t${this.numProcessedAddr}\n`;
+        output = output + `Processed copy\t\t${this.numProcessedCopy}\n`;
+        output = output + `Processed load\t\t${this.numProcessedLoad}\n`;
+        output = output + `Processed write\t\t${this.numProcessedWrite}\n`;
+        output = output + `Real write\t\t${this.numRealWrite}\n`;
+        output = output + `Real load\t\t${this.numRealLoad}\n`;
+        output = output + `Processed This\t\t${this.numProcessedThis}\n\n`;
+        output = output + `Unhandled function\t${this.numUnhandledFun}\n`;
+        output = output + `Total values in visited function\t${this.totalValuesInVisitedFunc}\n`;
+        output = output + `Infered Value unknown+different type\t${this.numInferedUnknownValue}+${this.numInferedDiffTypeValue}\n\n`;
+        output = output + `Total Time\t\t${this.TotalTime} S\n`;
+        output = output + `Total iterator Times\t${this.iterTimes}\n`;
+        output = output + `RSS used\t\t${this.rssUsed.toFixed(3)} Mb\n`;
+        output = output + `Heap used\t\t${this.heapUsed.toFixed(3)} Mb\n`;
         return output;
-
     }
 
     public printStat(): void {
@@ -167,17 +170,17 @@ export class PTAStat implements StatTraits {
     }
 }
 
-export class PAGStat implements StatTraits {
+export class PAGStat extends StatTraits {
     numDynamicCall: number = 0;
     numTotalFunction: number = 0;
     numTotalNode: number = 0;
 
     public getStat(): string {
         let output: string;
-        output = '==== PAG Statictics: ====\n'
-        output = output + `Dynamic call\t\t${this.numDynamicCall}\n`
-        output = output + `Total function handled\t${this.numTotalFunction}\n`
-        output = output + `Total PAG Nodes\t\t${this.numTotalNode}\n`
+        output = '==== PAG Statictics: ====\n';
+        output = output + `Dynamic call\t\t${this.numDynamicCall}\n`;
+        output = output + `Total function handled\t${this.numTotalFunction}\n`;
+        output = output + `Total PAG Nodes\t\t${this.numTotalNode}\n`;
         return output;
     }
 
@@ -194,8 +197,17 @@ export class CGStat extends StatTraits {
     numIntrinsic: number = 0;
     numConstructor: number = 0;
 
+    public startStat(): void {
+        this.startTime = new Date().getTime();
+    }
+
+    public endStat(): void {
+        this.endTime = new Date().getTime();
+        this.TotalTime = (this.endTime - this.startTime) / 1000;
+    }
+
     public addNodeStat(kind: CallGraphNodeKind): void {
-        switch(kind) {
+        switch (kind) {
             case CallGraphNodeKind.real:
                 this.numReal++;
                 break;
@@ -215,12 +227,13 @@ export class CGStat extends StatTraits {
 
     public getStat(): string {
         let output: string;
-        output = '==== CG Statictics: ====\n'
-        output = output + `Real function\t\t${this.numReal}\n`
-        output = output + `Intrinsic function\t${this.numIntrinsic}\n`
-        output = output + `Constructor function\t${this.numConstructor}\n`
-        output = output + `Blank function\t\t${this.numVirtual}\n`
-        output = output + `Total\t\t\t${this.numTotalNode}\n`
+        output = '==== CG Statictics: ====\n';
+        output = output + `CG construction Total Time\t\t${this.TotalTime} S\n`;
+        output = output + `Real function\t\t${this.numReal}\n`;
+        output = output + `Intrinsic function\t${this.numIntrinsic}\n`;
+        output = output + `Constructor function\t${this.numConstructor}\n`;
+        output = output + `Blank function\t\t${this.numVirtual}\n`;
+        output = output + `Total\t\t\t${this.numTotalNode}\n`;
         return output;
     }
 }

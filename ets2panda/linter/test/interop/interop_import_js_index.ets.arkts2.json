@@ -31,7 +31,7 @@
             "endColumn": 49,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 18,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 18,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +69,9 @@
             "column": 1,
             "endLine": 19,
             "endColumn": 7,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 7,
             "problem": "InterOpImportJsIndex",
             "suggest": "",
-            "rule": "Interop objects can't be indexed directly (arkts-no-js-index-import)",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
             "severity": "ERROR"
         },
         {
@@ -89,9 +89,9 @@
             "column": 1,
             "endLine": 20,
             "endColumn": 7,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 11,
             "problem": "InterOpImportJsIndex",
             "suggest": "",
-            "rule": "Interop objects can't be indexed directly (arkts-no-js-index-import)",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
             "severity": "ERROR"
         }
     ]

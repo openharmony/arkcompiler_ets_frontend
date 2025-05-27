@@ -27,7 +27,7 @@
                     "end": 644
                 },
                 {
-                    "replacementText": "let a = GeneratedDestructObj_1.a;let b = GeneratedDestructObj_1.b;let c = GeneratedDestructObj_1.c;",
+                    "replacementText": "\nlet a = GeneratedDestructObj_1.a;\nlet b = GeneratedDestructObj_1.b;\nlet c = GeneratedDestructObj_1.c;\n",
                     "start": 676,
                     "end": 676
                 }
@@ -79,7 +79,7 @@
                     "end": 768
                 },
                 {
-                    "replacementText": "let a3 = GeneratedDestructObj_2.a3;let { c3, d3: e3 } = GeneratedDestructObj_2.b3;",
+                    "replacementText": "\nlet a3 = GeneratedDestructObj_2.a3;\nlet { c3, d3: e3 } = GeneratedDestructObj_2.b3;\n",
                     "start": 806,
                     "end": 806
                 }
@@ -193,7 +193,7 @@
                     "end": 1007
                 },
                 {
-                    "replacementText": "let a5 = GeneratedDestructObj_3.a5;let b5 = GeneratedDestructObj_3.b5;",
+                    "replacementText": "\nlet a5 = GeneratedDestructObj_3.a5;\nlet b5 = GeneratedDestructObj_3.b5;\n",
                     "start": 1022,
                     "end": 1022
                 }
@@ -215,7 +215,7 @@
                     "end": 1075
                 },
                 {
-                    "replacementText": "const a6 = GeneratedDestructArray_1[0];const b6 = GeneratedDestructArray_1[1];const c6 = GeneratedDestructArray_1[2];",
+                    "replacementText": "\nconst a6 = GeneratedDestructArray_1[0];\nconst b6 = GeneratedDestructArray_1[1];\nconst c6 = GeneratedDestructArray_1[2];\n",
                     "start": 1091,
                     "end": 1091
                 }
@@ -267,7 +267,7 @@
                     "end": 1308
                 },
                 {
-                    "replacementText": "const [a1, a2] = GeneratedDestructArray_2[0];const [b1, b2] = GeneratedDestructArray_2[1];const [c1, c2] = GeneratedDestructArray_2[2];",
+                    "replacementText": "\nconst [a1, a2] = GeneratedDestructArray_2[0];\nconst [b1, b2] = GeneratedDestructArray_2[1];\nconst [c1, c2] = GeneratedDestructArray_2[2];\n",
                     "start": 1336,
                     "end": 1336
                 }
@@ -289,7 +289,7 @@
                     "end": 1387
                 },
                 {
-                    "replacementText": "const [a1, a2, a3] = GeneratedDestructArray_3[0];const [b1, b2, b3] = GeneratedDestructArray_3[1];const [c1, c2, c3] = GeneratedDestructArray_3[2];",
+                    "replacementText": "\nconst [a1, a2, a3] = GeneratedDestructArray_3[0];\nconst [b1, b2, b3] = GeneratedDestructArray_3[1];\nconst [c1, c2, c3] = GeneratedDestructArray_3[2];\n",
                     "start": 1424,
                     "end": 1424
                 }
@@ -331,7 +331,7 @@
                     "end": 1603
                 },
                 {
-                    "replacementText": "let a12 = GeneratedDestructArray_4[0];let b12 = GeneratedDestructArray_4[1];",
+                    "replacementText": "\nlet a12 = GeneratedDestructArray_4[0];\nlet b12 = GeneratedDestructArray_4[1];\n",
                     "start": 1617,
                     "end": 1617
                 }
@@ -443,7 +443,7 @@
                     "end": 2055
                 },
                 {
-                    "replacementText": "let a18 = GeneratedDestructObj_4.a18;let [c18, d18] = GeneratedDestructObj_4.b18;",
+                    "replacementText": "\nlet a18 = GeneratedDestructObj_4.a18;\nlet [c18, d18] = GeneratedDestructObj_4.b18;\n",
                     "start": 2082,
                     "end": 2082
                 }
@@ -475,7 +475,7 @@
                     "end": 2151
                 },
                 {
-                    "replacementText": "let a19 = GeneratedDestructObj_5.a19;let {\n    c19,\n    d19: [e19, f19],\n  } = GeneratedDestructObj_5.b19;",
+                    "replacementText": "\nlet a19 = GeneratedDestructObj_5.a19;\nlet {\n    c19,\n    d19: [e19, f19],\n  } = GeneratedDestructObj_5.b19;\n",
                     "start": 2202,
                     "end": 2202
                 }
@@ -627,7 +627,7 @@
                     "end": 2760
                 },
                 {
-                    "replacementText": "let a = GeneratedDestructObj_6.a;let b = GeneratedDestructObj_6.b;let s = GeneratedDestructObj_6.s;",
+                    "replacementText": "\nlet a = GeneratedDestructObj_6.a;\nlet b = GeneratedDestructObj_6.b;\nlet s = GeneratedDestructObj_6.s;\n",
                     "start": 2771,
                     "end": 2771
                 }

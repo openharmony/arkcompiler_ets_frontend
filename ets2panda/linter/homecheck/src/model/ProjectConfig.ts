@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { LOG_LEVEL } from 'arkanalyzer';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 
 export class ProjectConfig {
@@ -31,6 +32,9 @@ export class ProjectConfig {
     sdksThirdParty: string[];
     arkCheckPath: string;
     product: string;
+    logLevel: LOG_LEVEL;
+    arkAnalyzerLogLevel: LOG_LEVEL;
+
 
     // [filePath, languageTag] or [folderPath, languageTag]
     languageTags: Map<string, Language>;
@@ -55,6 +59,8 @@ export class ProjectConfig {
         this.product = config.product ?? '';
         this.languageTags = config.languageTags ?? new Map();
         this.fileOrFolderToCheck = config.fileOrFolderToCheck ?? [];
+        this.logLevel = config.logLevel ?? LOG_LEVEL.INFO;
+        this.arkAnalyzerLogLevel = config.arkAnalyzerLogLevel ?? LOG_LEVEL.ERROR;
     }
 }
 

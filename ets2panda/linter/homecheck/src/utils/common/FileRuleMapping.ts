@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
-import { ArkFile } from "arkanalyzer";
-import { CheckEntry } from "./CheckEntry";
-import { ConfigUtils } from "./ConfigUtils";
-import { CheckerUtils } from "../checker/CheckerUtils";
-import { file2CheckRuleMap, project2CheckRuleMap } from "./CheckerIndex";
-import { Rule } from "../../model/Rule";
-import { RuleConfig } from "../../model/RuleConfig";
-import { fileCheckBuilder, projectCheckBuilder } from "./CheckBuilder";
+import { ArkFile } from 'arkanalyzer';
+import { CheckEntry } from './CheckEntry';
+import { ConfigUtils } from './ConfigUtils';
+import { CheckerUtils } from '../checker/CheckerUtils';
+import { file2CheckRuleMap, project2CheckRuleMap } from './CheckerIndex';
+import { Rule } from '../../model/Rule';
+import { RuleConfig } from '../../model/RuleConfig';
+import { fileCheckBuilder, projectCheckBuilder } from './CheckBuilder';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { FileUtils } from "./FileUtils";
+import { FileUtils } from './FileUtils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'fileRuleMapping');
 
@@ -30,7 +30,7 @@ export async function fileRuleMapping(checkFileList: string[], checkEntry: Check
     // 获取规则配置文件的规则，除了override
     const allRulesMap = ConfigUtils.getRuleMap(checkEntry.ruleConfig, checkEntry.projectConfig, checkEntry.message);
     if (allRulesMap.size === 0) {
-        checkEntry.message?.progressNotify(1, "No rule to check");
+        checkEntry.message?.progressNotify(1, 'No rule to check');
         return false;
     }
 

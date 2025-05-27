@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 10,
+            "endLine": 16,
+            "endColumn": 21,
+            "problem": "NoNeedStdLibSendableContainer",
+            "suggest": "",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
             "line": 22,
             "column": 3,
             "endLine": 22,
@@ -135,6 +145,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 107,
+            "column": 24,
+            "endLine": 107,
+            "endColumn": 39,
+            "problem": "BuiltinSymbolIterator",
+            "suggest": "",
+            "rule": "Using \"Symbol.iterator\" is not allowed in this API (arkts-builtin-symbol-iterator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 108,
             "column": 5,
             "endLine": 108,
@@ -175,6 +195,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 117,
+            "column": 20,
+            "endLine": 117,
+            "endColumn": 35,
+            "problem": "BuiltinSymbolIterator",
+            "suggest": "",
+            "rule": "Using \"Symbol.iterator\" is not allowed in this API (arkts-builtin-symbol-iterator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 118,
             "column": 5,
             "endLine": 118,
@@ -202,6 +232,16 @@
             "problem": "AvoidUnionTypes",
             "suggest": "",
             "rule": "Avoid using union types (arkts-common-union-member-access)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 12,
+            "endLine": 139,
+            "endColumn": 31,
+            "problem": "CreatingPrimitiveTypes",
+            "suggest": "",
+            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {
@@ -245,13 +285,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 176,
-            "column": 1,
-            "endLine": 176,
-            "endColumn": 10,
-            "problem": "LimitedStdLibApi",
+            "line": 177,
+            "column": 23,
+            "endLine": 177,
+            "endColumn": 34,
+            "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
         },
         {

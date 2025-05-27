@@ -88,7 +88,6 @@ export abstract class BaseImplicitGraph<Node> implements GraphTraits<Node> {
         }
 
         return this.nodeToIdMap.get(s)!;
-
     }
 
     /**

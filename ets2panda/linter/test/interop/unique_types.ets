@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+'use static'
 
 import {
  objectLiteralType,
@@ -25,7 +26,10 @@ objectLiteralType.name = "test"
 
 intersectionType.name = "test";
 
+try {
 tsFunction();
+} catch (e) {
+}
 
 stringType = "test" //should pass
 

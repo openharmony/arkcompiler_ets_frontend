@@ -16,11 +16,15 @@
 @Component
 struct MyComponent {
   @State count: number = 0
+  @State $$: number = 0
 
   build() {
     Column() {
       MyCounter({
         count: $count
+      })
+      MyCounter({
+        count: $$$
       })
     }
   }

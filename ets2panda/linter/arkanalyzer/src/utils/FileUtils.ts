@@ -25,8 +25,8 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'FileUtils');
 export class FileUtils {
     public static readonly FILE_FILTER = {
         ignores: ['.git', '.preview', '.hvigor', '.idea', 'test', 'ohosTest'],
-        include: /(?<!\.d)\.(ets|ts|json5)$/
-    }
+        include: /(?<!\.d)\.(ets|ts|json5)$/,
+    };
 
     public static getIndexFileName(srcPath: string): string {
         for (const fileInDir of fs.readdirSync(srcPath, { withFileTypes: true })) {
@@ -40,9 +40,7 @@ export class FileUtils {
     public static isDirectory(srcPath: string): boolean {
         try {
             return fs.statSync(srcPath).isDirectory();
-        } catch (e) {
-
-        }
+        } catch (e) {}
         return false;
     }
 
@@ -56,10 +54,9 @@ export class FileUtils {
             const moduleName = content.name as string;
             if (moduleName && moduleName.startsWith('@')) {
                 const modulePath = path.dirname(filePath);
-                moduleMap.set(moduleName, new ModulePath(modulePath, content.main ?
-                    path.resolve(modulePath, content.main as string) : ''));
+                moduleMap.set(moduleName, new ModulePath(modulePath, content.main ? path.resolve(modulePath, content.main as string) : ''));
             }
-        })
+        });
         ohPkgContentMap.forEach((content, filePath) => {
             if (!content.dependencies) {
                 return;
@@ -72,11 +69,10 @@ export class FileUtils {
                 const key = path.resolve(modulePath, OH_PACKAGE_JSON5);
                 const target = ohPkgContentMap.get(key);
                 if (target) {
-                    moduleMap.set(name, new ModulePath(modulePath, target.main ?
-                        path.resolve(modulePath, target.main as string) : ''));
+                    moduleMap.set(name, new ModulePath(modulePath, target.main ? path.resolve(modulePath, target.main as string) : ''));
                 }
             });
-        })
+        });
         return moduleMap;
     }
 
@@ -90,6 +86,8 @@ export class FileUtils {
                 return Language.TYPESCRIPT;
             case '.ets':
                 return Language.ARKTS1_1;
+            case '.js':
+                return Language.JAVASCRIPT;
             default:
                 return Language.UNKNOWN;
         }
@@ -114,7 +112,7 @@ export function getFileRecursively(srcDir: string, fileName: string, visited: Se
     }
 
     const filesUnderThisDir = fs.readdirSync(srcDir, { withFileTypes: true });
-    const realSrc = fs.realpathSync(srcDir)
+    const realSrc = fs.realpathSync(srcDir);
     if (visited.has(realSrc)) {
         return res;
     }
@@ -130,6 +128,7 @@ export function getFileRecursively(srcDir: string, fileName: string, visited: Se
         }
         const tmpDir = path.resolve(srcDir, '../');
         res = getFileRecursively(tmpDir, fileName, visited);
+        return res;
     });
     return res;
 }

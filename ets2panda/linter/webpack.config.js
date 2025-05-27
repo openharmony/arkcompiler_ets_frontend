@@ -25,5 +25,10 @@ module.exports = {
 	},
 	output: {
 		filename: 'tslinter.js'
-	}
+	},
+    resolve: {
+        alias: {
+            json5: require.resolve('json5/dist/index.js'),
+        }
+    }
 };

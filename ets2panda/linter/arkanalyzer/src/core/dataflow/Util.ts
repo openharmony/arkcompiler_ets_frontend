@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,24 +13,21 @@
  * limitations under the License.
  */
 
-import { ArkInvokeStmt } from "../base/Stmt";
-import { FunctionType } from "../base/Type";
-import { ArkMethod } from "../model/ArkMethod";
-import { Local } from "../base/Local";
-import { AbstractRef, ArkStaticFieldRef, ArkInstanceFieldRef } from "../base/Ref";
+import { ArkInvokeStmt } from '../base/Stmt';
+import { FunctionType } from '../base/Type';
+import { ArkMethod } from '../model/ArkMethod';
+import { Local } from '../base/Local';
+import { AbstractRef, ArkStaticFieldRef, ArkInstanceFieldRef } from '../base/Ref';
 
-
-export const INTERNAL_PARAMETER_SOURCE: string[] = [
-    '@ohos.app.ability.Want.d.ts: Want'
-]
+export const INTERNAL_PARAMETER_SOURCE: string[] = ['@ohos.app.ability.Want.d.ts: Want'];
 
 export const INTERNAL_SINK_METHOD: string[] = [
     'console.<@%unk/%unk: .log()>',
     'console.<@%unk/%unk: .error()>',
     'console.<@%unk/%unk: .info()>',
     'console.<@%unk/%unk: .warn()>',
-    'console.<@%unk/%unk: .assert()>'
-]
+    'console.<@%unk/%unk: .assert()>',
+];
 
 export function getRecallMethodInParam(stmt: ArkInvokeStmt): ArkMethod | null {
     for (const param of stmt.getInvokeExpr().getArgs()) {
@@ -44,7 +41,6 @@ export function getRecallMethodInParam(stmt: ArkInvokeStmt): ArkMethod | null {
     }
     return null;
 }
-
 
 export function LocalEqual(local1: Local, local2: Local): boolean {
     if (local1.getName() === 'this' && local2.getName() === 'this') {

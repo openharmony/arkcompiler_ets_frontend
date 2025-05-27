@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,6 @@ it have several improvments:
 type CallToReturnCacheEdge<D> = PathEdge<D>;
 
 export abstract class DataflowSolver<D> {
-
     protected problem: DataflowProblem<D>;
     protected workList: Array<PathEdge<D>>;
     protected pathEdgeSet: Set<PathEdge<D>>;
@@ -63,7 +62,7 @@ export abstract class DataflowSolver<D> {
         this.stmtNexts = new Map();
     }
 
-    public solve() {
+    public solve(): void {
         this.init();
         this.doSolve();
     }
@@ -81,21 +80,21 @@ export abstract class DataflowSolver<D> {
         return Array.from(this.stmtNexts.get(stmt) || []);
     }
 
-    protected init() {
+    protected init(): void {
         let edgePoint: PathEdgePoint<D> = new PathEdgePoint<D>(this.problem.getEntryPoint(), this.zeroFact);
         let edge: PathEdge<D> = new PathEdge<D>(edgePoint, edgePoint);
         this.workList.push(edge);
         this.pathEdgeSet.add(edge);
 
         // build CHA
-        let cg = new CallGraph(this.scene)
-        this.CHA = new ClassHierarchyAnalysis(this.scene, cg)
+        let cg = new CallGraph(this.scene);
+        this.CHA = new ClassHierarchyAnalysis(this.scene, cg);
         this.buildStmtMapInClass();
         this.setCfg4AllStmt();
         return;
     }
 
-    protected buildStmtMapInClass() {
+    protected buildStmtMapInClass(): void {
         const methods = this.scene.getMethods();
         methods.push(this.problem.getEntryMethod());
         for (const method of methods) {
@@ -126,7 +125,7 @@ export abstract class DataflowSolver<D> {
         }
     }
 
-    protected setCfg4AllStmt() {
+    protected setCfg4AllStmt(): void {
         for (const cls of this.scene.getClasses()) {
             for (const mtd of cls.getMethods(true)) {
                 addCfg2Stmt(mtd);
@@ -136,7 +135,9 @@ export abstract class DataflowSolver<D> {
 
     protected getAllCalleeMethods(callNode: ArkInvokeStmt): Set<ArkMethod> {
         const callSites = this.CHA.resolveCall(
-            this.CHA.getCallGraph().getCallGraphNodeByMethod(this.problem.getEntryMethod().getSignature()).getID(), callNode);
+            this.CHA.getCallGraph().getCallGraphNodeByMethod(this.problem.getEntryMethod().getSignature()).getID(),
+            callNode
+        );
         const methods: Set<ArkMethod> = new Set();
         for (const callSite of callSites) {
             const method = this.scene.getMethod(this.CHA.getCallGraph().getMethodByFuncID(callSite.calleeFuncID)!);
@@ -157,18 +158,22 @@ export abstract class DataflowSolver<D> {
         return [...cfg.getBlocks()][0].getStmts()[paraNum];
     }
 
-    protected pathEdgeSetHasEdge(edge: PathEdge<D>) {
+    protected pathEdgeSetHasEdge(edge: PathEdge<D>): boolean {
         for (const path of this.pathEdgeSet) {
             this.problem.factEqual(path.edgeEnd.fact, edge.edgeEnd.fact);
-            if (path.edgeEnd.node === edge.edgeEnd.node && this.problem.factEqual(path.edgeEnd.fact, edge.edgeEnd.fact) &&
-                path.edgeStart.node === edge.edgeStart.node && this.problem.factEqual(path.edgeStart.fact, edge.edgeStart.fact)) {
+            if (
+                path.edgeEnd.node === edge.edgeEnd.node &&
+                this.problem.factEqual(path.edgeEnd.fact, edge.edgeEnd.fact) &&
+                path.edgeStart.node === edge.edgeStart.node &&
+                this.problem.factEqual(path.edgeStart.fact, edge.edgeStart.fact)
+            ) {
                 return true;
             }
         }
         return false;
     }
 
-    protected propagate(edge: PathEdge<D>) {
+    protected propagate(edge: PathEdge<D>): void {
         if (!this.pathEdgeSetHasEdge(edge)) {
             let index = this.workList.length;
             for (let i = 0; i < this.workList.length; i++) {
@@ -182,7 +187,7 @@ export abstract class DataflowSolver<D> {
         }
     }
 
-    protected processExitNode(edge: PathEdge<D>) {
+    protected processExitNode(edge: PathEdge<D>): void {
         let startEdgePoint: PathEdgePoint<D> = edge.edgeStart;
         let exitEdgePoint: PathEdgePoint<D> = edge.edgeEnd;
         const summary = this.endSummary.get(startEdgePoint);
@@ -205,8 +210,7 @@ export abstract class DataflowSolver<D> {
         }
     }
 
-    private handleFacts(returnFlowFunc: FlowFunction<D>, returnSite: Stmt,
-                        exitEdgePoint: PathEdgePoint<D>, callEdgePoint: PathEdgePoint<D>): void {
+    private handleFacts(returnFlowFunc: FlowFunction<D>, returnSite: Stmt, exitEdgePoint: PathEdgePoint<D>, callEdgePoint: PathEdgePoint<D>): void {
         for (let fact of returnFlowFunc.getDataFacts(exitEdgePoint.fact)) {
             let returnSitePoint: PathEdgePoint<D> = new PathEdgePoint<D>(returnSite, fact);
             let cacheEdge: CallToReturnCacheEdge<D> = new PathEdge<D>(callEdgePoint, returnSitePoint);
@@ -230,7 +234,7 @@ export abstract class DataflowSolver<D> {
         }
     }
 
-    protected processNormalNode(edge: PathEdge<D>) {
+    protected processNormalNode(edge: PathEdge<D>): void {
         let start: PathEdgePoint<D> = edge.edgeStart;
         let end: PathEdgePoint<D> = edge.edgeEnd;
         let stmts: Stmt[] = [...this.getChildren(end.node)].reverse();
@@ -239,14 +243,14 @@ export abstract class DataflowSolver<D> {
             let set: Set<D> = flowFunction.getDataFacts(end.fact);
             for (let fact of set) {
                 let edgePoint: PathEdgePoint<D> = new PathEdgePoint<D>(stmt, fact);
-                const edge = new PathEdge<D>(start, edgePoint)
+                const edge = new PathEdge<D>(start, edgePoint);
                 this.propagate(edge);
                 this.laterEdges.add(edge);
             }
         }
     }
 
-    protected processCallNode(edge: PathEdge<D>) {
+    protected processCallNode(edge: PathEdge<D>): void {
         let start: PathEdgePoint<D> = edge.edgeStart;
         let callEdgePoint: PathEdgePoint<D> = edge.edgeEnd;
         const invokeStmt = callEdgePoint.node as ArkInvokeStmt;
@@ -312,7 +316,7 @@ export abstract class DataflowSolver<D> {
         }
     }
 
-    protected doSolve() {
+    protected doSolve(): void {
         while (this.workList.length !== 0) {
             let pathEdge: PathEdge<D> = this.workList.shift()!;
             if (this.laterEdges.has(pathEdge)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,9 @@ import Logger, { LOG_MODULE_TYPE } from './logger';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'json5parser');
 
-export function fetchDependenciesFromFile(filePath: string): { [k: string]: unknown } {
+export function fetchDependenciesFromFile(filePath: string): {
+    [k: string]: unknown;
+} {
     if (!fs.existsSync(filePath)) {
         return {};
     }
@@ -62,7 +64,7 @@ function getRootObjectLiteral(file: ts.JsonSourceFile): ts.ObjectLiteralExpressi
     }
     const rootObjectLiteralExpression = (expressionStatement as ts.ExpressionStatement).expression;
     if (!rootObjectLiteralExpression) {
-        logger.error('The JSON5 file format is incorrect, the first child node is empty.')
+        logger.error('The JSON5 file format is incorrect, the first child node is empty.');
         return undefined;
     }
 
@@ -100,11 +102,11 @@ function parsePropertyInitializer(node: ts.Expression, file: ts.JsonSourceFile):
     return undefined;
 }
 
-function parseArrayLiteral(node: ts.Expression, file: ts.JsonSourceFile) {
+function parseArrayLiteral(node: ts.Expression, file: ts.JsonSourceFile): unknown[] {
     const res: unknown[] = [];
     (node as ts.ArrayLiteralExpression).elements.forEach(n => {
         res.push(parsePropertyInitializer(n, file));
-    })
+    });
     return res;
 }
 
@@ -115,7 +117,6 @@ function parseObjectLiteralExpression(ObjectLiteralExpression: ts.ObjectLiteralE
         const key = (propNode.name as ts.Identifier).text;
         const value = parsePropertyInitializer(propNode.initializer, file);
         res[key] = value;
-    })
+    });
     return res;
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,21 +15,14 @@
 import * as fs from 'fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
-import { cookBookTag } from './CookBookMsg';
-import { faultsAttrs } from './FaultAttrs';
-import { faultDesc } from './FaultDesc';
-import { Logger } from './Logger';
-import type { ProblemInfo } from './ProblemInfo';
-import { ProblemSeverity } from './ProblemSeverity';
 import { FaultID } from './Problems';
-import { LinterConfig } from './TypeScriptLinterConfig';
-import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
-import type { Autofix } from './autofixes/Autofixer';
+import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
 import { TsUtils } from './utils/TsUtils';
 import { ARKTS_COLLECTIONS_D_ETS, ARKTS_LANG_D_ETS } from './utils/consts/SupportedDetsIndexableTypes';
 import { D_ETS, D_TS, ETS, KIT } from './utils/consts/TsSuffix';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import type { LinterOptions } from './LinterOptions';
+import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 export interface KitSymbol {
   source: string;
@@ -42,24 +35,7 @@ export interface KitInfo {
   symbols?: KitSymbols;
 }
 
-export class InteropTypescriptLinter {
-  totalVisitedNodes: number = 0;
-  nodeCounters: number[] = [];
-  lineCounters: number[] = [];
-
-  totalErrorLines: number = 0;
-  errorLineNumbersString: string = '';
-  totalWarningLines: number = 0;
-  warningLineNumbersString: string = '';
-
-  problemsInfos: ProblemInfo[] = [];
-
-  tsUtils: TsUtils;
-
-  currentErrorLine: number;
-  currentWarningLine: number;
-
-  private sourceFile?: ts.SourceFile;
+export class InteropTypescriptLinter extends BaseTypeScriptLinter {
   private isInSdk?: boolean;
   static kitInfos = new Map<string, KitInfo>();
   private static etsLoaderPath?: string;
@@ -69,25 +45,15 @@ export class InteropTypescriptLinter {
     InteropTypescriptLinter.kitInfos = new Map<string, KitInfo>();
   }
 
-  private initCounters(): void {
-    for (let i = 0; i < FaultID.LAST_ID; i++) {
-      this.nodeCounters[i] = 0;
-      this.lineCounters[i] = 0;
-    }
-  }
-
   constructor(
-    private readonly tsTypeChecker: ts.TypeChecker,
-    private readonly compileOptions: ts.CompilerOptions,
-    readonly options: LinterOptions,
-    etsLoaderPath: string | undefined
+    tsTypeChecker: ts.TypeChecker,
+    readonly compileOptions: ts.CompilerOptions,
+    options: LinterOptions,
+    sourceFile: ts.SourceFile
   ) {
-    this.tsUtils = new TsUtils(this.tsTypeChecker, options);
-    this.currentErrorLine = 0;
-    this.currentWarningLine = 0;
-    InteropTypescriptLinter.etsLoaderPath = etsLoaderPath;
-    InteropTypescriptLinter.sdkPath = etsLoaderPath ? path.resolve(etsLoaderPath, '../..') : undefined;
-    this.initCounters();
+    super(tsTypeChecker, options, sourceFile);
+    InteropTypescriptLinter.etsLoaderPath = options.etsLoaderPath;
+    InteropTypescriptLinter.sdkPath = options.etsLoaderPath ? path.resolve(options.etsLoaderPath, '../..') : undefined;
   }
 
   readonly handlersMap = new Map([
@@ -102,84 +68,9 @@ export class InteropTypescriptLinter {
     [ts.SyntaxKind.ExportAssignment, this.handleExportAssignment]
   ]);
 
-  private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
-    const startPos = TsUtils.getStartPos(node);
-    const { line, character } = this.sourceFile!.getLineAndCharacterOfPosition(startPos);
-    // TSC counts lines and columns from zero
-    return { line: line + 1, character: character + 1 };
-  }
-
-  incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
-    this.nodeCounters[faultId]++;
-    const { line, character } = this.getLineAndCharacterOfNode(node);
-    if (this.options.ideMode) {
-      this.incrementCountersIdeMode(node, faultId, autofix);
-    } else {
-      const faultDescr = faultDesc[faultId];
-      const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-      Logger.info(
-        `Warning: ${this.sourceFile!.fileName} (${line}, ${character}): ${faultDescr ? faultDescr : faultType}`
-      );
-    }
-    this.lineCounters[faultId]++;
-    switch (faultsAttrs[faultId].severity) {
-      case ProblemSeverity.ERROR: {
-        this.currentErrorLine = line;
-        ++this.totalErrorLines;
-        this.errorLineNumbersString += line + ', ';
-        break;
-      }
-      case ProblemSeverity.WARNING: {
-        if (line === this.currentWarningLine) {
-          break;
-        }
-        this.currentWarningLine = line;
-        ++this.totalWarningLines;
-        this.warningLineNumbersString += line + ', ';
-        break;
-      }
-      default:
-    }
-  }
-
-  private incrementCountersIdeMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
-    if (!this.options.ideMode) {
-      return;
-    }
-    const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
-    const startPos = this.sourceFile!.getLineAndCharacterOfPosition(startOffset);
-    const endPos = this.sourceFile!.getLineAndCharacterOfPosition(endOffset);
-
-    const faultDescr = faultDesc[faultId];
-    const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-
-    const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    const cookBookTg = cookBookTag[cookBookMsgNum];
-    const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
-    const isMsgNumValid = cookBookMsgNum > 0;
-    const badNodeInfo: ProblemInfo = {
-      line: startPos.line + 1,
-      column: startPos.character + 1,
-      endLine: endPos.line + 1,
-      endColumn: endPos.character + 1,
-      start: startOffset,
-      end: endOffset,
-      type: faultType,
-      severity: severity,
-      problem: FaultID[faultId],
-      suggest: '',
-      // eslint-disable-next-line no-nested-ternary
-      rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
-      ruleTag: cookBookMsgNum,
-      autofix: autofix,
-      autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
-    };
-    this.problemsInfos.push(badNodeInfo);
-  }
-
   private visitSourceFile(sf: ts.SourceFile): void {
     const callback = (node: ts.Node): void => {
-      this.totalVisitedNodes++;
+      this.fileStats.visitedNodes++;
       const handler = this.handlersMap.get(node.kind);
       if (handler !== undefined) {
 
@@ -194,7 +85,7 @@ export class InteropTypescriptLinter {
       if (!node) {
         return true;
       }
-      if (LinterConfig.terminalTokens.has(node.kind)) {
+      if (TypeScriptLinterConfig.terminalTokens.has(node.kind)) {
         return true;
       }
       return false;
@@ -545,8 +436,7 @@ export class InteropTypescriptLinter {
       kitInfo.symbols[element.name.text].source;
   }
 
-  lint(sourceFile: ts.SourceFile): void {
-    this.sourceFile = sourceFile;
+  lint(): void {
     this.isInSdk = InteropTypescriptLinter.sdkPath ?
       path.normalize(this.sourceFile.fileName).indexOf(InteropTypescriptLinter.sdkPath) === 0 :
       false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,24 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ArkFile } from "arkanalyzer";
-import { BaseChecker } from "../checker/BaseChecker";
-import { MatcherTypes } from "../matcher/Matchers";
-import { matchFiles } from "../matcher/matcherAdapter/matchFiles";
-import { matchNameSpaces } from "../matcher/matcherAdapter/matchNameSpaces";
-import { matchClass } from "../matcher/matcherAdapter/matchClass";
-import { matchMethods } from "../matcher/matcherAdapter/matchMethods";
-import { matchFields } from "../matcher/matcherAdapter/matchFields";
-import { FileUtils } from "../utils/common/FileUtils";
-import { filterDisableIssue } from "../utils/common/Disable";
-import Logger, { LOG_MODULE_TYPE } from "arkanalyzer/lib/utils/logger";
-import { IssueReport } from "./Defects";
+import { ArkFile } from 'arkanalyzer';
+import { BaseChecker } from '../checker/BaseChecker';
+import { MatcherTypes } from '../matcher/Matchers';
+import { matchFiles } from '../matcher/matcherAdapter/matchFiles';
+import { matchNameSpaces } from '../matcher/matcherAdapter/matchNameSpaces';
+import { matchClass } from '../matcher/matcherAdapter/matchClass';
+import { matchMethods } from '../matcher/matcherAdapter/matchMethods';
+import { matchFields } from '../matcher/matcherAdapter/matchFields';
+import { FileUtils } from '../utils/common/FileUtils';
+import { filterDisableIssue } from '../utils/common/Disable';
+import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
+import { IssueReport } from './Defects';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'File2Check');
 
 export class File2Check {
     public arkFile: ArkFile;
-    public enabledRuleCheckerMap: Map<string, BaseChecker> = new Map();  // TODO: key改为枚举
+    public enabledRuleCheckerMap: Map<string, BaseChecker> = new Map(); // TODO: key改为枚举
     public issues: IssueReport[] = [];
 
     private flMatcherMap = new Map();
@@ -38,14 +38,13 @@ export class File2Check {
     private mtdMatcherMap = new Map();
     private fieldMatcherMap = new Map();
 
-    constructor() {
-    }
+    constructor() {}
 
-    public addChecker(ruleId: string, checker: BaseChecker) {
+    public addChecker(ruleId: string, checker: BaseChecker): void {
         this.enabledRuleCheckerMap.set(ruleId, checker);
     }
 
-    public collectMatcherCallbacks() {
+    public collectMatcherCallbacks(): void {
         this.enabledRuleCheckerMap.forEach(checker => {
             const matcherCallbacks = checker.registerMatchers();
             matcherCallbacks.forEach(obj => {
@@ -68,47 +67,49 @@ export class File2Check {
                         this.fieldMatcherMap.set(matcher, callback);
                         break;
                 }
-            })
+            });
         });
     }
 
-    public async emitCheck() {
+    public async emitCheck(): Promise<void> {
         this.flMatcherMap.forEach((callback, matcher) => {
-            matchFiles([this.arkFile], matcher, callback)
+            matchFiles([this.arkFile], matcher, callback);
         });
         this.nsMatcherMap.forEach((callback, matcher) => {
-            matchNameSpaces([this.arkFile], matcher, callback)
+            matchNameSpaces([this.arkFile], matcher, callback);
         });
         this.clsMatcherMap.forEach((callback, matcher) => {
-            matchClass([this.arkFile], matcher, callback)
+            matchClass([this.arkFile], matcher, callback);
         });
         this.mtdMatcherMap.forEach((callback, matcher) => {
-            matchMethods([this.arkFile], matcher, callback)
+            matchMethods([this.arkFile], matcher, callback);
         });
         this.fieldMatcherMap.forEach((callback, matcher) => {
-            matchFields([this.arkFile], matcher, callback)
+            matchFields([this.arkFile], matcher, callback);
         });
     }
 
-    public collectIssues() {
+    public collectIssues(): void {
         this.enabledRuleCheckerMap.forEach((v, k) => {
-            this.issues.push(...(v.issues?.reduce((acc, cur) => {
-                if (acc.some((item) => item.defect.mergeKey === cur.defect.mergeKey)) {
-                    logger.debug('Skip the repeated issue, please check. issue.mergeKey = ' + cur.defect.mergeKey);
-                } else {
-                    acc.push(cur);
-                }
-                return acc;
-            }, [] as IssueReport[])));
+            this.issues.push(
+                ...v.issues?.reduce((acc, cur) => {
+                    if (acc.some(item => item.defect.mergeKey === cur.defect.mergeKey)) {
+                        logger.debug('Skip the repeated issue, please check. issue.mergeKey = ' + cur.defect.mergeKey);
+                    } else {
+                        acc.push(cur);
+                    }
+                    return acc;
+                }, [] as IssueReport[])
+            );
         });
     }
 
-    public async checkDisable() {
+    public async checkDisable(): Promise<void> {
         const fileLineList = await FileUtils.readLinesFromFile(this.arkFile.getFilePath());
-        this.issues = filterDisableIssue(fileLineList, this.issues);
+        this.issues = await filterDisableIssue(fileLineList, this.issues, this.arkFile.getFilePath());
     }
 
-    public async run() {
+    public async run(): Promise<void> {
         this.collectMatcherCallbacks();
         await this.emitCheck();
         this.collectIssues();

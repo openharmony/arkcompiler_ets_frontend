@@ -1,0 +1,631 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 17,
+            "column": 7,
+            "endLine": 17,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 639,
+                    "end": 657,
+                    "replacementText": "an_array: number[] = [1, 2, 3]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 7,
+            "endLine": 18,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 664,
+                    "end": 683,
+                    "replacementText": "a: number = an_array[index]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 20,
+            "endLine": 18,
+            "endColumn": 25,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 677,
+                    "end": 682,
+                    "replacementText": "index as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 7,
+            "endLine": 19,
+            "endColumn": 31,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 690,
+                    "end": 714,
+                    "replacementText": "a1: number = an_array[index + 1]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 21,
+            "endLine": 19,
+            "endColumn": 30,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 704,
+                    "end": 713,
+                    "replacementText": "(index + 1) as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 7,
+            "endLine": 20,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 721,
+                    "end": 747,
+                    "replacementText": "a2: number = an_array[index + 1.1]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 21,
+            "endLine": 20,
+            "endColumn": 32,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 735,
+                    "end": 746,
+                    "replacementText": "(index + 1.1) as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "endLine": 21,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 754,
+                    "end": 772,
+                    "replacementText": "b: number = an_array[1.23]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 20,
+            "endLine": 21,
+            "endColumn": 24,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 767,
+                    "end": 771,
+                    "replacementText": "1.23 as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 7,
+            "endLine": 22,
+            "endColumn": 25,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 20,
+            "endLine": 22,
+            "endColumn": 24,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 7,
+            "endLine": 23,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 20,
+            "endLine": 23,
+            "endColumn": 27,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 7,
+            "endLine": 24,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 20,
+            "endLine": 24,
+            "endColumn": 29,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 7,
+            "endLine": 25,
+            "endColumn": 25,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 20,
+            "endLine": 25,
+            "endColumn": 24,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 7,
+            "endLine": 26,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 887,
+                    "end": 901,
+                    "replacementText": "g: number = an_array[]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 20,
+            "endLine": 26,
+            "endColumn": 20,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 7,
+            "endLine": 27,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 908,
+                    "end": 925,
+                    "replacementText": "h: number = an_array[12.]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 20,
+            "endLine": 27,
+            "endColumn": 23,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 921,
+                    "end": 924,
+                    "replacementText": "12. as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 7,
+            "endLine": 28,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 932,
+                    "end": 950,
+                    "replacementText": "i: number = an_array[12.0]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 20,
+            "endLine": 28,
+            "endColumn": 24,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 945,
+                    "end": 949,
+                    "replacementText": "12.0 as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 7,
+            "endLine": 29,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 957,
+                    "end": 972,
+                    "replacementText": "j: number = an_array[0]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 7,
+            "endLine": 30,
+            "endColumn": 37,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 979,
+                    "end": 1009,
+                    "replacementText": "k: number = an_array[Number.MAX_VALUE]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 20,
+            "endLine": 30,
+            "endColumn": 36,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 992,
+                    "end": 1008,
+                    "replacementText": "Number.MAX_VALUE as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 7,
+            "endLine": 31,
+            "endColumn": 37,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1016,
+                    "end": 1046,
+                    "replacementText": "l: number = an_array[Number.MIN_VALUE]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 20,
+            "endLine": 31,
+            "endColumn": 36,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1029,
+                    "end": 1045,
+                    "replacementText": "Number.MIN_VALUE as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 7,
+            "endLine": 32,
+            "endColumn": 44,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1053,
+                    "end": 1090,
+                    "replacementText": "m: number = an_array[Number.MAX_SAFE_INTEGER]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 20,
+            "endLine": 32,
+            "endColumn": 43,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1066,
+                    "end": 1089,
+                    "replacementText": "Number.MAX_SAFE_INTEGER as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 5,
+            "endLine": 35,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1098,
+                    "end": 1113,
+                    "replacementText": "array: number[] = [1, 2, 3]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 7,
+            "endLine": 39,
+            "endColumn": 14,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1201,
+                    "end": 1208,
+                    "replacementText": "index_1 as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 7,
+            "endLine": 40,
+            "endColumn": 14,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1217,
+                    "end": 1224,
+                    "replacementText": "index_2 as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1391,
+                    "end": 1409,
+                    "replacementText": "array1: number[] = [1, 2, 3]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 8,
+            "endLine": 51,
+            "endColumn": 18,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1418,
+                    "end": 1428,
+                    "replacementText": "getIndex() as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 5,
+            "endLine": 53,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1436,
+                    "end": 1454,
+                    "replacementText": "array2: number[] = [1, 2, 3]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 3,
+            "endLine": 64,
+            "endColumn": 12,
+            "problem": "EnumMemberNonConstInit",
+            "suggest": "",
+            "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 6,
+            "endLine": 67,
+            "endColumn": 11,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1678,
+                    "end": 1683,
+                    "replacementText": "TE.AA as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 1,
+            "endLine": 72,
+            "endColumn": 9,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 6,
+            "endLine": 73,
+            "endColumn": 9,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1744,
+                    "end": 1757,
+                    "replacementText": "1.1 as int"
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 5,
+            "endLine": 81,
+            "endColumn": 17,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        }
+    ]
+}

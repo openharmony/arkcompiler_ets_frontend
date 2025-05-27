@@ -20,29 +20,38 @@ import { GLOBAL_THIS_NAME, THIS_NAME } from './TSConst';
 import { TEMP_LOCAL_PREFIX } from './Const';
 import { ArkClass, ClassCategory } from '../model/ArkClass';
 import { LocalSignature } from '../model/ArkSignature';
-import { ModelUtils, sdkImportMap } from './ModelUtils';
+import { ModelUtils } from './ModelUtils';
 import { Local } from '../base/Local';
 import { ArkMethod } from '../model/ArkMethod';
 import path from 'path';
-import { IRInference } from './IRInference';
 import { ClassType } from '../base/Type';
 import { AbstractFieldRef } from '../base/Ref';
 import { ArkNamespace } from '../model/ArkNamespace';
+import { TypeInference } from './TypeInference';
 
 export class SdkUtils {
 
-    public static buildGlobalMap(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+    private static sdkImportMap: Map<string, ArkFile> = new Map<string, ArkFile>();
+
+    public static buildSdkImportMap(file: ArkFile): void {
         const fileName = path.basename(file.getName());
         if (fileName.startsWith('@')) {
-            sdkImportMap.set(fileName.replace(/\.d\.e?ts$/, ''), file);
+            this.sdkImportMap.set(fileName.replace(/\.d\.e?ts$/, ''), file);
         }
+    }
 
-        const isGlobalPath = file.getScene().getOptions().sdkGlobalFolders
-            ?.find(x => file.getFilePath().includes(path.sep + x + path.sep));
+    public static getImportSdkFile(from: string): ArkFile | undefined {
+        return this.sdkImportMap.get(from);
+    }
+
+    public static buildGlobalMap(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+        const isGlobalPath = file
+            .getScene()
+            .getOptions()
+            .sdkGlobalFolders?.find(x => file.getFilePath().includes(path.sep + x + path.sep));
         if (!isGlobalPath) {
             return;
         }
-        IRInference.inferFile(file);
         ModelUtils.getAllClassesInFile(file).forEach(cls => {
             if (!cls.isAnonymousClass() && !cls.isDefaultArkClass()) {
                 SdkUtils.loadClass(globalMap, cls);
@@ -54,13 +63,22 @@ export class SdkUtils {
             }
         });
         const defaultArkMethod = file.getDefaultClass().getDefaultArkMethod();
-        defaultArkMethod?.getBody()?.getLocals().forEach(local => {
-            const name = local.getName();
-            if (name !== THIS_NAME && !name.startsWith(TEMP_LOCAL_PREFIX)) {
-                this.loadGlobalLocal(local, defaultArkMethod, globalMap);
-            }
-        });
-        defaultArkMethod?.getBody()?.getAliasTypeMap()?.forEach(a => globalMap.set(a[0].getName(), a[0]));
+        if (defaultArkMethod) {
+            TypeInference.inferTypeInMethod(defaultArkMethod);
+        }
+        defaultArkMethod
+            ?.getBody()
+            ?.getLocals()
+            .forEach(local => {
+                const name = local.getName();
+                if (name !== THIS_NAME && !name.startsWith(TEMP_LOCAL_PREFIX)) {
+                    this.loadGlobalLocal(local, defaultArkMethod, globalMap);
+                }
+            });
+        defaultArkMethod
+            ?.getBody()
+            ?.getAliasTypeMap()
+            ?.forEach(a => globalMap.set(a[0].getName(), a[0]));
         ModelUtils.getAllNamespacesInFile(file).forEach(ns => globalMap.set(ns.getName(), ns));
     }
 
@@ -87,11 +105,13 @@ export class SdkUtils {
             const instance = globalMap.get(name + 'Interface');
             const attr = globalMap.get(name + COMPONENT_ATTRIBUTE);
             if (attr instanceof ArkClass && instance instanceof ArkClass) {
-                instance.getMethods().filter(m => !attr.getMethodWithName(m.getName())).forEach(m => attr.addMethod(m));
+                instance
+                    .getMethods()
+                    .filter(m => !attr.getMethodWithName(m.getName()))
+                    .forEach(m => attr.addMethod(m));
                 globalMap.set(name, attr);
                 return;
             }
-
         }
         const old = globalMap.get(name);
         if (!old) {
@@ -99,7 +119,10 @@ export class SdkUtils {
         } else if (old instanceof ArkClass && local.getType() instanceof ClassType) {
             const localConstructor = scene.getClass((local.getType() as ClassType).getClassSignature());
             if (localConstructor) {
-                localConstructor.getMethods().filter(m => !old.getMethodWithName(m.getName())).forEach(m => old.addMethod(m));
+                localConstructor
+                    .getMethods()
+                    .filter(m => !old.getMethodWithName(m.getName()))
+                    .forEach(m => old.addMethod(m));
             }
         }
     }
@@ -119,8 +142,10 @@ export class SdkUtils {
     public static computeGlobalThis(leftOp: AbstractFieldRef, arkMethod: ArkMethod): void {
         const globalThis = arkMethod.getDeclaringArkFile().getScene().getSdkGlobal(GLOBAL_THIS_NAME);
         if (globalThis instanceof ArkNamespace) {
-            const exportInfo = new ExportInfo.Builder().exportClauseName(leftOp.getFieldName())
-                .arkExport(new Local(leftOp.getFieldName(), leftOp.getType())).build();
+            const exportInfo = new ExportInfo.Builder()
+                .exportClauseName(leftOp.getFieldName())
+                .arkExport(new Local(leftOp.getFieldName(), leftOp.getType()))
+                .build();
             globalThis.addExportInfo(exportInfo);
         }
     }

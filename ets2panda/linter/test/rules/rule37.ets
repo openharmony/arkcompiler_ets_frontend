@@ -65,3 +65,11 @@
  let regex12: RegExp = RegExp("ab*c")
 
  let regex13: RegExp = RegExp("ab*c","i")
+
+ let a27: RegExp = RegExp('dawfgr'+'12345')
+
+ let a25: RegExp = RegExp('.∗?(?:(?:元宵|三八|妇女|母亲|父亲|七夕|重阳|情人|儿童|六一'+'|愚人|复活|青年|护士|建军|教师|建党|万圣|感恩|秘书|七一|五四|八一|腊八|光棍|植树|中元)节|除夕|大年三十|大年30|七夕'+'|平安夜|六一|七一|五四|八一|三八|腊八|双十一|双十二).∗');
+
+ let regex20: RegExp = RegExp('dawfgr'.concat('12345')) 
+
+  let a28: RegExp = RegExp('dawfgr'+'12345' + '789') 

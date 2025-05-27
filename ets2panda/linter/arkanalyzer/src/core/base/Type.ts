@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { AliasTypeSignature, ClassSignature, MethodSignature, NamespaceSignature, } from '../model/ArkSignature';
+import { AliasTypeSignature, ClassSignature, FieldSignature, MethodSignature, NamespaceSignature } from '../model/ArkSignature';
 import { ArkExport, ExportType } from '../model/ArkExport';
 import { MODIFIER_TYPE_MASK, ModifierType } from '../model/ArkBaseModel';
 import {
@@ -29,6 +29,7 @@ import {
     VOID_KEYWORD,
 } from '../common/TSConst';
 import { Local } from './Local';
+import { Constant } from './Constant';
 
 /**
  * @category core/base/type
@@ -95,7 +96,7 @@ export class UnclearReferenceType extends Type {
         this.genericTypes = genericTypes;
     }
 
-    public getName() {
+    public getName(): string {
         return this.name;
     }
 
@@ -124,7 +125,7 @@ export abstract class PrimitiveType extends Type {
         this.name = name;
     }
 
-    public getName() {
+    public getName(): string {
         return this.name;
     }
 
@@ -140,7 +141,7 @@ export class BooleanType extends PrimitiveType {
         super(BOOLEAN_KEYWORD);
     }
 
-    public static getInstance() {
+    public static getInstance(): BooleanType {
         return this.INSTANCE;
     }
 }
@@ -152,7 +153,7 @@ export class NumberType extends PrimitiveType {
         super(NUMBER_KEYWORD);
     }
 
-    public static getInstance() {
+    public static getInstance(): NumberType {
         return this.INSTANCE;
     }
 }
@@ -168,7 +169,7 @@ export class BigIntType extends PrimitiveType {
         super(BIGINT_KEYWORD);
     }
 
-    public static getInstance() {
+    public static getInstance(): BigIntType {
         return this.INSTANCE;
     }
 }
@@ -180,7 +181,7 @@ export class StringType extends PrimitiveType {
         super(STRING_KEYWORD);
     }
 
-    public static getInstance() {
+    public static getInstance(): StringType {
         return this.INSTANCE;
     }
 }
@@ -247,7 +248,7 @@ export class LiteralType extends PrimitiveType {
  */
 export class UnionType extends Type {
     private types: Type[];
-    private currType: Type;  // The true type of the value at this time  
+    private currType: Type; // The true type of the value at this time
     constructor(types: Type[], currType: Type = UnknownType.getInstance()) {
         super();
         this.types = [...types];
@@ -268,7 +269,7 @@ export class UnionType extends Type {
 
     public getTypeString(): string {
         let typesString: string[] = [];
-        this.getTypes().forEach((t) => {
+        this.getTypes().forEach(t => {
             if (t instanceof UnionType || t instanceof IntersectionType) {
                 typesString.push(`(${t.toString()})`);
             } else {
@@ -310,7 +311,7 @@ export class IntersectionType extends Type {
 
     public getTypeString(): string {
         let typesString: string[] = [];
-        this.getTypes().forEach((t) => {
+        this.getTypes().forEach(t => {
             if (t instanceof UnionType || t instanceof IntersectionType) {
                 typesString.push(`(${t.toString()})`);
             } else {
@@ -697,7 +698,7 @@ export class GenericType extends Type {
         this.constraint = type;
     }
 
-    public setIndex(index: number) {
+    public setIndex(index: number): void {
         this.index = index;
     }
 
@@ -790,5 +791,28 @@ export class LexicalEnvType extends Type {
 
     public getTypeString(): string {
         return `[${this.getClosures().join(', ')}]`;
+    }
+}
+
+export class EnumValueType extends Type {
+    private signature: FieldSignature;
+    private constant?: Constant;
+
+    constructor(signature: FieldSignature, constant?: Constant) {
+        super();
+        this.signature = signature;
+        this.constant = constant;
+    }
+
+    public getFieldSignature(): FieldSignature {
+        return this.signature;
+    }
+
+    public getConstant(): Constant | undefined {
+        return this.constant;
+    }
+
+    public getTypeString(): string {
+        return this.signature.toString();
     }
 }

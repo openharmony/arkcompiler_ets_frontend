@@ -13,19 +13,16 @@
  * limitations under the License.
  */
 
+import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type * as ts from 'typescript';
+import * as ts from 'typescript';
 import type { CommandLineOptions } from './CommandLineOptions';
-import { faultsAttrs } from './FaultAttrs';
-import { faultDesc } from './FaultDesc';
 import { InteropTypescriptLinter } from './InteropTypescriptLinter';
 import type { LinterConfig } from './LinterConfig';
 import type { LinterOptions } from './LinterOptions';
 import type { LintRunResult } from './LintRunResult';
 import { Logger } from './Logger';
 import type { ProblemInfo } from './ProblemInfo';
-import { ProblemSeverity } from './ProblemSeverity';
-import { FaultID } from './Problems';
 import { TypeScriptLinter } from './TypeScriptLinter';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
@@ -34,22 +31,15 @@ import {
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { EXTNAME_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
-import { compileLintOptions } from '../cli/Compiler';
+import type { createProgramCallback } from './ts-compiler/Compiler';
+import { compileLintOptions } from './ts-compiler/Compiler';
 import * as qEd from './autofixes/QuasiEditor';
-
-export function consoleLog(linterOptions: LinterOptions, ...args: unknown[]): void {
-  if (linterOptions.ideMode || linterOptions.ideInteractive) {
-    return;
-  }
-  let outLine = '';
-  for (let k = 0; k < args.length; k++) {
-    outLine += `${args[k]} `;
-  }
-  Logger.info(outLine);
-}
+import { ProjectStatistics } from './statistics/ProjectStatistics';
+import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles;
@@ -81,28 +71,19 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   return inputFiles;
 }
 
-function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [number, number] {
-  let errorNodesTotal = 0;
-  let warningNodes = 0;
-  for (let i = 0; i < FaultID.LAST_ID; i++) {
-    switch (faultsAttrs[i].severity) {
-      case ProblemSeverity.ERROR:
-        errorNodesTotal += linter.nodeCounters[i];
-        break;
-      case ProblemSeverity.WARNING:
-        warningNodes += linter.nodeCounters[i];
-        break;
-      default:
-    }
+export function lint(
+  config: LinterConfig,
+  etsLoaderPath?: string,
+  hcResults?: Map<string, ProblemInfo[]>
+): LintRunResult {
+  if (etsLoaderPath) {
+    config.cmdOptions.linterOptions.etsLoaderPath = etsLoaderPath;
   }
-
-  return [errorNodesTotal, warningNodes];
+  const lintResult = lintImpl(config);
+  return config.cmdOptions.linterOptions.migratorMode ? migrate(config, lintResult, hcResults) : lintResult;
 }
 
-let linterConfig: LinterConfig;
-
-export function lint(config: LinterConfig, etsLoaderPath: string | undefined): LintRunResult {
-  linterConfig = config;
+function lintImpl(config: LinterConfig): LintRunResult {
   const { cmdOptions, tscCompiledProgram } = config;
   const tsProgram = tscCompiledProgram.getProgram();
   const options = cmdOptions.linterOptions;
@@ -122,178 +103,144 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
 
   const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
   LibraryTypeCallDiagnosticChecker.instance.rebuildTscDiagnostics(tscStrictDiagnostics);
-  const linter = !options.interopCheckMode ?
-    new TypeScriptLinter(tsProgram.getTypeChecker(), options, tscStrictDiagnostics) :
-    new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), options, etsLoaderPath);
-  const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
+  const lintResult = lintFiles(tsProgram, srcFiles, options, tscStrictDiagnostics);
   LibraryTypeCallDiagnosticChecker.instance.clear();
-  consoleLog(options, '\n\n\nFiles scanned: ', srcFiles.length);
-  consoleLog(options, '\nFiles with problems: ', errorNodes);
 
-  const [errorNodesTotal, warningNodes] = countProblems(linter);
-  logTotalProblemsInfo(errorNodesTotal, warningNodes, linter);
-  logProblemsPercentageByFeatures(linter);
+  if (!options.ideInteractive) {
+    lintResult.problemsInfos = mergeArrayMaps(lintResult.problemsInfos, transformTscDiagnostics(tscStrictDiagnostics));
+  }
 
   freeMemory();
-  let problemsInfosValues = problemsInfos;
-  if (!options.ideInteractive) {
-    problemsInfosValues = mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics));
-  }
-
-  return {
-    errorNodes: errorNodesTotal,
-    problemsInfos: problemsInfosValues
-  };
+  return lintResult;
 }
 
-function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTypescriptLinter): void {
-  for (let pass = 0; pass < qEd.MAX_AUTOFIX_PASSES; pass++) {
-    const qe: qEd.QuasiEditor = new qEd.QuasiEditor(srcFile);
-    if (pass === 0) {
-      qe.backupSrcFile();
-    }
-    qe.fix(linter.problemsInfos);
-    if (qe.wasError) {
-      Logger.error(`Error: fix-all converged for (${srcFile.fileName}) on pass #${pass}`);
-      break;
-    }
-    const tmpLinterConfig = compileLintOptions(linterConfig.cmdOptions);
-    const recompiledFile = tmpLinterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
-
-    if (!recompiledFile) {
-      Logger.error(`Error: recompilation failed for (${srcFile.fileName}) on pass #${pass}`);
-      break;
-    }
-    linter.problemsInfos = [];
-    linter.lint(recompiledFile);
-  }
-}
-
-function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | InteropTypescriptLinter): LintRunResult {
-  let problemFiles = 0;
+function lintFiles(
+  tsProgram: ts.Program,
+  srcFiles: ts.SourceFile[],
+  options: LinterOptions,
+  tscStrictDiagnostics: Map<string, ts.Diagnostic[]>
+): LintRunResult {
+  const projectStats: ProjectStatistics = new ProjectStatistics();
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
 
-  for (const srcFile of srcFiles) {
-    if (linter instanceof TypeScriptLinter) {
-      linter.initSdkInfo();
-    }
-    const prevVisitedNodes = linter.totalVisitedNodes;
-    const prevErrorLines = linter.totalErrorLines;
-    const prevWarningLines = linter.totalWarningLines;
-    linter.errorLineNumbersString = '';
-    linter.warningLineNumbersString = '';
-    const nodeCounters: number[] = [];
+  TypeScriptLinter.initGlobals();
+  InteropTypescriptLinter.initGlobals();
 
-    for (let i = 0; i < FaultID.LAST_ID; i++) {
-      nodeCounters[i] = linter.nodeCounters[i];
-    }
-    linter.lint(srcFile);
-    const problemsInfosBeforeMigrate = linter.problemsInfos;
-    if (linter.options.migratorMode) {
-      applyFixes(srcFile, linter);
-    }
-    if (linter.options.ideInteractive) {
-      problemsInfos.set(path.normalize(srcFile.fileName), [...problemsInfosBeforeMigrate]);
-    } else {
-      problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
-    }
-    linter.problemsInfos.length = 0;
-    problemFiles = countProblemFiles(
-      nodeCounters,
-      problemFiles,
-      srcFile,
-      linter.totalVisitedNodes - prevVisitedNodes,
-      linter.totalErrorLines - prevErrorLines,
-      linter.totalWarningLines - prevWarningLines,
-      linter
-    );
+  for (const srcFile of srcFiles) {
+    const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
+      new TypeScriptLinter(tsProgram.getTypeChecker(), options, srcFile, tscStrictDiagnostics) :
+      new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), options, srcFile);
+    linter.lint();
+    const problems = linter.problemsInfos;
+    problemsInfos.set(path.normalize(srcFile.fileName), [...problems]);
+    projectStats.fileStats.push(linter.fileStats);
   }
+
   return {
-    errorNodes: problemFiles,
-    problemsInfos: problemsInfos
+    hasErrors: projectStats.hasError(),
+    problemsInfos,
+    projectStats
   };
 }
 
-// eslint-disable-next-line max-lines-per-function, max-params
-function countProblemFiles(
-  nodeCounters: number[],
-  filesNumber: number,
-  tsSrcFile: ts.SourceFile,
-  fileNodes: number,
-  fileErrorLines: number,
-  fileWarningLines: number,
-  linter: TypeScriptLinter | InteropTypescriptLinter
-): number {
-  let errorNodes = 0;
-  let warningNodes = 0;
-  for (let i = 0; i < FaultID.LAST_ID; i++) {
-    const nodeCounterDiff = linter.nodeCounters[i] - nodeCounters[i];
-    switch (faultsAttrs[i].severity) {
-      case ProblemSeverity.ERROR:
-        errorNodes += nodeCounterDiff;
-        break;
-      case ProblemSeverity.WARNING:
-        warningNodes += nodeCounterDiff;
-        break;
-      default:
+function migrate(
+  initialConfig: LinterConfig,
+  initialLintResult: LintRunResult,
+  hcResults?: Map<string, ProblemInfo[]>
+): LintRunResult {
+  let linterConfig = initialConfig;
+  const { cmdOptions } = initialConfig;
+  const updatedSourceTexts: Map<string, string> = new Map();
+  let lintResult: LintRunResult = initialLintResult;
+  const problemsInfosBeforeMigrate = lintResult.problemsInfos;
+
+  for (let pass = 0; pass < (cmdOptions.linterOptions.migrationMaxPass ?? qEd.DEFAULT_MAX_AUTOFIX_PASSES); pass++) {
+    const appliedFix = fix(linterConfig, lintResult, updatedSourceTexts, hcResults);
+    hcResults = undefined;
+
+    if (!appliedFix) {
+      // No fixes were applied, migration is finished.
+      break;
+    }
+
+    // Re-compile and re-lint project after applying the fixes.
+    linterConfig = compileLintOptions(cmdOptions, getMigrationCreateProgramCallback(updatedSourceTexts));
+    lintResult = lintImpl(linterConfig);
+  }
+
+  // Write new text for updated source files.
+  updatedSourceTexts.forEach((newText, fileName) => {
+    if (!cmdOptions.linterOptions.noMigrationBackupFile) {
+      qEd.QuasiEditor.backupSrcFile(fileName);
+    }
+    const filePathMap = cmdOptions.linterOptions.migrationFilePathMap;
+    const writeFileName = filePathMap?.get(fileName) ?? fileName;
+    fs.writeFileSync(writeFileName, newText);
+  });
+
+  if (cmdOptions.linterOptions.ideInteractive) {
+    lintResult.problemsInfos = problemsInfosBeforeMigrate;
+  }
+
+  return lintResult;
+}
+
+function fix(
+  linterConfig: LinterConfig,
+  lintResult: LintRunResult,
+  updatedSourceTexts: Map<string, string>,
+  hcResults?: Map<string, ProblemInfo[]>
+): boolean {
+  const program = linterConfig.tscCompiledProgram.getProgram();
+  let appliedFix = false;
+  const mergedProblems = lintResult.problemsInfos;
+  if (hcResults !== undefined) {
+    for (const [filePath, problems] of hcResults) {
+      if (mergedProblems.has(filePath)) {
+        mergedProblems.get(filePath)!.push(...problems);
+      } else {
+        mergedProblems.set(filePath, problems);
+      }
     }
   }
-  if (errorNodes > 0) {
-    // eslint-disable-next-line no-param-reassign
-    filesNumber++;
-    const errorRate = (errorNodes / fileNodes * 100).toFixed(2);
-    const warningRate = (warningNodes / fileNodes * 100).toFixed(2);
-    consoleLog(linter.options, tsSrcFile.fileName, ': ', '\n\tError lines: ', linter.errorLineNumbersString);
-    consoleLog(linter.options, tsSrcFile.fileName, ': ', '\n\tWarning lines: ', linter.warningLineNumbersString);
-    consoleLog(
-      linter.options,
-      '\n\tError constructs (%): ',
-      errorRate,
-      '\t[ of ',
-      fileNodes,
-      ' constructs ], \t',
-      fileErrorLines,
-      ' lines'
-    );
-    consoleLog(
-      linter.options,
-      '\n\tWarning constructs (%): ',
-      warningRate,
-      '\t[ of ',
-      fileNodes,
-      ' constructs ], \t',
-      fileWarningLines,
-      ' lines'
-    );
-  }
-  return filesNumber;
+  mergedProblems.forEach((problemInfos, fileName) => {
+    // If nothing to fix, skip file
+    if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos)) {
+      return;
+    }
+
+    const srcFile = program.getSourceFile(fileName);
+    if (!srcFile) {
+      Logger.error(`Failed to retrieve source file: ${fileName}`);
+      return;
+    }
+
+    const qe: qEd.QuasiEditor = new qEd.QuasiEditor(fileName, srcFile.text, linterConfig.cmdOptions.linterOptions);
+    updatedSourceTexts.set(fileName, qe.fix(problemInfos));
+    appliedFix = true;
+  });
+
+  return appliedFix;
 }
 
-function logTotalProblemsInfo(
-  errorNodes: number,
-  warningNodes: number,
-  linter: TypeScriptLinter | InteropTypescriptLinter
-): void {
-  const errorRate = (errorNodes / linter.totalVisitedNodes * 100).toFixed(2);
-  const warningRate = (warningNodes / linter.totalVisitedNodes * 100).toFixed(2);
-  consoleLog(linter.options, '\nTotal error constructs (%): ', errorRate);
-  consoleLog(linter.options, '\nTotal warning constructs (%): ', warningRate);
-  consoleLog(linter.options, '\nTotal error lines:', linter.totalErrorLines, ' lines\n');
-  consoleLog(linter.options, '\nTotal warning lines:', linter.totalWarningLines, ' lines\n');
-}
-
-function logProblemsPercentageByFeatures(linter: TypeScriptLinter | InteropTypescriptLinter): void {
-  consoleLog(linter.options, '\nPercent by features: ');
-  for (let i = 0; i < FaultID.LAST_ID; i++) {
-    const nodes = linter.nodeCounters[i];
-    const lines = linter.lineCounters[i];
-    const pecentage = (nodes / linter.totalVisitedNodes * 100).toFixed(2).padEnd(7, ' ');
-
-    consoleLog(linter.options, faultDesc[i].padEnd(55, ' '), pecentage, '[', nodes, ' constructs / ', lines, ' lines]');
-  }
+function getMigrationCreateProgramCallback(updatedSourceTexts: Map<string, string>): createProgramCallback {
+  return (createProgramOptions: ts.CreateProgramOptions): ts.Program => {
+    const compilerHost = createProgramOptions.host || ts.createCompilerHost(createProgramOptions.options, true);
+    const originalReadFile = compilerHost.readFile;
+    compilerHost.readFile = (fileName: string): string | undefined => {
+      const newText = updatedSourceTexts.get(path.normalize(fileName));
+      return newText || originalReadFile(fileName);
+    };
+    createProgramOptions.host = compilerHost;
+    return ts.createProgram(createProgramOptions);
+  };
 }
 
 function shouldProcessFile(options: LinterOptions, fileFsPath: string): boolean {
+  if (!options.checkTsAndJs && (path.extname(fileFsPath) === EXTNAME_TS || path.extname(fileFsPath) === EXTNAME_JS)) {
+    return false;
+  }
+
   if (
     ARKTS_IGNORE_FILES.some((ignore) => {
       return path.basename(fileFsPath) === ignore;

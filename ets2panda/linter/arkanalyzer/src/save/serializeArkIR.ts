@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,11 +62,7 @@ export function serializeArkFile(arkFile: ArkFile, output?: string): void {
     fs.closeSync(fd);
 }
 
-export function serializeScene(
-    scene: Scene,
-    outDir: string,
-    verbose: boolean = false,
-): void {
+export function serializeScene(scene: Scene, outDir: string, verbose: boolean = false): void {
     let files = scene.getFiles();
     console.log(`Serializing Scene with ${files.length} files to '${outDir}'...`);
     for (let f of files) {
@@ -161,11 +157,7 @@ function serializeFile(arkFile: ArkFile, output: string, options: any, scene: Sc
     }
 }
 
-function serializeMultipleTsFiles(
-    inputDir: string,
-    outDir: string,
-    options: any,
-): void {
+function serializeMultipleTsFiles(inputDir: string, outDir: string, options: any): void {
     console.log(`Serializing multiple TS files to JSON: '${inputDir}' -> '${outDir}'`);
     if (fs.existsSync(outDir) && !fs.statSync(outDir).isDirectory()) {
         console.error(`ERROR: Output path must be a directory.`);
@@ -183,7 +175,7 @@ function serializeMultipleTsFiles(
     let files = scene.getFiles();
     if (options.verbose) {
         console.log(`Scene contains ${files.length} files`);
-        files.forEach((f) => console.log(`- '${f.getName()}'`));
+        files.forEach(f => console.log(`- '${f.getName()}'`));
     }
 
     if (options.inferTypes) {
@@ -220,11 +212,7 @@ function serializeMultipleTsFiles(
     console.log('All done!');
 }
 
-function serializeTsProject(
-    inputDir: string,
-    outDir: string,
-    options: any,
-): void {
+function serializeTsProject(inputDir: string, outDir: string, options: any): void {
     console.log(`Serializing TS project to JSON: '${inputDir}' -> '${outDir}'`);
 
     if (fs.existsSync(outDir) && !fs.statSync(outDir).isDirectory()) {
@@ -283,7 +271,6 @@ export const program = new Command()
     .option('-e, --entrypoint', 'Generate entrypoint for the files', false)
     .option('-v, --verbose', 'Verbose output', false)
     .action((input: any, output: any, options: any) => {
-
         // Check for invalid combinations of flags
         if (options.multi && options.project) {
             console.error(`ERROR: You cannot provide both the '-m' and '-p' flags.`);

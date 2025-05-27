@@ -12,32 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use static'
 
-import { foo, bar, safe } from "./oh_modules/reflect_export"
-import { safeVersion } from "./oh_modules/reflect_export_safe"
+import { X } from "./oh_modules/reflect_export"
 
-class X {
-    a: string = 'hello'
-    getName() { return this.a }
+export function foo(prx: Object) {
+ Reflect.get(prx, 'a')  // 'hello'
+ Reflect.set(prx, 'a', 'world')  // true
+ Reflect.ownKeys(prx)  // ['a']
 }
 
-foo(new X());
-
-class Y {
-    prop = 42;
+export function bar(obj: Object) {
+    return Reflect.has(obj, 'prop');
 }
 
-bar(new Y());
+foo(new X()); //illegal
 
-class Z {
-    a: string = 'hello';
-    getName() { return this.a; }
-}
-
-safe(new Z()); //legal
-
-class A {
-    prop = 34;
-}
-
-safeVersion(new A()) //legal
+bar(new X()); //illegal

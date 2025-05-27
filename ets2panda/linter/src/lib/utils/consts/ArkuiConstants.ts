@@ -23,13 +23,22 @@ export const STATE_STYLES = 'stateStyles';
 export const ARKUI_PACKAGE_NAME = '@kit.ArkUI';
 export const VALUE_IDENTIFIER = 'value';
 export const INDENT_STEP = 2;
+export const MAKE_OBSERVED = 'makeObserved';
+export const ARKUI_STATE_MANAGEMENT = '@ohos.arkui.StateManagement';
 
 export enum CustomDecoratorName {
   Extend = 'Extend',
+  LocalBuilder = 'LocalBuilder',
   Styles = 'Styles',
   AnimatableExtend = 'AnimatableExtend',
   Memo = 'Memo',
-  Observed = 'Observed'
+  Observed = 'Observed',
+  Layoutable = 'Layoutable'
+}
+
+export enum StorageTypeName {
+  LocalStorage = 'LocalStorage',
+  AppStorage = 'AppStorage'
 }
 
 export const observedDecoratorName: Set<string> = new Set([
@@ -45,7 +54,19 @@ export const observedDecoratorName: Set<string> = new Set([
   'Track'
 ]);
 
-export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent']);
+export const skipImportDecoratorName: Set<string> = new Set([
+  'Extend',
+  'Styles',
+  'Sendable',
+  'Concurrent',
+  'LocalBuilder'
+]);
+
+export const deepCopyDecoratorName: Set<string> = new Set(['Prop', 'StorageProp', 'LocalStorageProp']);
+
+export const deepCopyFunctionName: Set<string> = new Set(['prop', 'setAndProp']);
+
+export const customLayoutFunctionName: Set<string> = new Set(['onMeasureSize', 'onPlaceChildren']);
 
 export const ENTRY_DECORATOR_NAME = 'Entry';
 export const ENTRY_STORAGE_PROPERITY = 'storage';

@@ -23,10 +23,7 @@ import { TransformerContext } from './SourceTransformer';
 import { ArkNamespace } from '../../core/model/ArkNamespace';
 import { BasePrinter } from '../base/BasePrinter';
 
-export abstract class SourceBase
-    extends BasePrinter
-    implements TransformerContext
-{
+export abstract class SourceBase extends BasePrinter implements TransformerContext {
     protected arkFile: ArkFile;
     protected inBuilder: boolean = false;
 
@@ -36,7 +33,7 @@ export abstract class SourceBase
     }
 
     public getDeclaringArkNamespace(): ArkNamespace | undefined {
-        return undefined
+        return undefined;
     }
 
     public getArkFile(): ArkFile {
@@ -72,14 +69,11 @@ export abstract class SourceBase
                 continue;
             }
             if (keyword.endsWith('Keyword')) {
-                keyword = keyword
-                    .substring(0, keyword.length - 'Keyword'.length)
-                    .toLowerCase();
+                keyword = keyword.substring(0, keyword.length - 'Keyword'.length).toLowerCase();
             }
             types.push(keyword);
         }
 
         return types.join(' | ');
     }
-
 }

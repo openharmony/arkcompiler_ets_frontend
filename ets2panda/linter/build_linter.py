@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import time
 
 
 def copy_files(source_path, dest_path, is_file=False):
@@ -43,6 +44,19 @@ def run_cmd(cmd, execution_path=None):
     if proc.returncode != 0:
         raise Exception(stderr.decode())
     return stdout
+
+
+def run_cmd_with_retry(max_retries, wait_time, cmd, execution_path=None):
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            run_cmd(cmd, execution_path)
+            break
+        except Exception:
+            retry_count += 1
+            time.sleep(wait_time)
+    if retry_count >= max_retries:
+        raise Exception("Failed to run cmd: " + cmd)
 
 
 def is_npm_newer_than_6(options):
@@ -115,6 +129,54 @@ def clean_old_packages(directory, prefix, suffix):
     return res
 
 
+def backup_package_files(source_path):
+    package_name = 'package.json'
+    package_back_name = 'package.json.bak'
+    aa_path = os.path.join(source_path, 'arkanalyzer')
+    hc_path = os.path.join(source_path, 'homecheck')
+    linter_path = source_path
+    copy_files(os.path.join(aa_path, package_name), os.path.join(aa_path, package_back_name), True)
+    copy_files(os.path.join(hc_path, package_name), os.path.join(hc_path, package_back_name), True)
+    copy_files(os.path.join(linter_path, package_name), os.path.join(linter_path, package_back_name), True)
+
+
+def clean_env(source_path):
+    package_name = 'package.json'
+    package_back_name = 'package.json.bak'
+    package_lock_name = 'package-lock.json'
+    aa_path = os.path.join(source_path, 'arkanalyzer')
+    hc_path = os.path.join(source_path, 'homecheck')
+    linter_path = source_path
+    try:
+        copy_files(os.path.join(aa_path, package_back_name), os.path.join(aa_path, package_name), True)
+        copy_files(os.path.join(hc_path, package_back_name), os.path.join(hc_path, package_name), True)
+        copy_files(os.path.join(linter_path, package_back_name), os.path.join(linter_path, package_name), True)
+        os.remove(os.path.join(hc_path, package_lock_name))
+        os.remove(os.path.join(linter_path, package_lock_name))
+        os.remove(os.path.join(aa_path, package_back_name))
+        os.remove(os.path.join(hc_path, package_back_name))
+        os.remove(os.path.join(linter_path, package_back_name))
+    except Exception:
+        return False
+    return True
+
+
+def aa_copy_lib_files(options):
+    aa_path = os.path.join(options.source_path, 'arkanalyzer')
+    source_file_1 = os.path.join(aa_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es5.d.ts')
+    dest_path = os.path.join(aa_path, 'builtIn', 'typescript', 'api', '@internal')
+    copy_files(source_file_1, dest_path, True)
+    source_file_2 = os.path.join(aa_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es2015.collection.d.ts')
+    copy_files(source_file_2, dest_path, True)
+
+
+def hc_copy_lib_files(options):
+    hc_path = os.path.join(options.source_path, 'homecheck')
+    source_file = os.path.join(hc_path, 'node_modules', 'ohos-typescript', 'lib', 'lib.es5.d.ts')
+    dest_path = os.path.join(hc_path, 'resources', 'internalSdk', '@internal')
+    copy_files(source_file, dest_path, True)
+
+
 def pack_arkanalyzer(options, new_npm):
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
     tsc_file = 'file:' + options.typescript
@@ -123,17 +185,18 @@ def pack_arkanalyzer(options, new_npm):
     clean_old_packages(aa_path, pack_prefix, pack_suffix)
 
     if new_npm:
-        ts_install_cmd = [options.npm, 'install', tsc_file, '--legacy-peer-deps', '--offline']
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file, '--legacy-peer-deps', '--offline']
     else:
-        ts_install_cmd = [options.npm, 'install', tsc_file]
+        ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file]
     compile_cmd = [options.npm, 'run', 'compile']
     pack_cmd = [options.npm, 'pack']
     run_cmd(ts_install_cmd, aa_path)
+    aa_copy_lib_files(options)
     run_cmd(compile_cmd, aa_path)
     run_cmd(pack_cmd, aa_path)
 
 
-def install_homecheck(options):
+def install_homecheck(options, max_retries, wait_time):
     new_npm = is_npm_newer_than_6(options)
     pack_arkanalyzer(options, new_npm)
     aa_path = os.path.join(options.source_path, 'arkanalyzer')
@@ -148,7 +211,7 @@ def install_homecheck(options):
             aa_install_cmd = [options.npm, 'install', aa_file, '--legacy-peer-deps', '--offline']
         else:
             aa_install_cmd = [options.npm, 'install', aa_file]
-        run_cmd(aa_install_cmd, hc_path)
+        run_cmd_with_retry(max_retries, wait_time, aa_install_cmd, hc_path)
     else:
         raise Exception('Failed to find arkanalyzer npm package')
 
@@ -160,7 +223,8 @@ def install_homecheck(options):
         ts_install_cmd = [options.npm, 'install', '--no-save', tsc_file]
     pack_cmd = [options.npm, 'pack']
     compile_cmd = [options.npm, 'run', 'compile']
-    run_cmd(ts_install_cmd, hc_path)
+    run_cmd_with_retry(max_retries, wait_time, ts_install_cmd, hc_path)
+    hc_copy_lib_files(options)
     run_cmd(compile_cmd, hc_path)
     run_cmd(pack_cmd, hc_path)
     exist_hc_packs = find_files_by_prefix_suffix(hc_path, hc_pack_prefix, pack_suffix)
@@ -170,7 +234,7 @@ def install_homecheck(options):
             hc_install_cmd = [options.npm, 'install', hc_file, '--legacy-peer-deps', '--offline']
         else:
             hc_install_cmd = [options.npm, 'install', hc_file]
-        run_cmd(hc_install_cmd, options.source_path)
+        run_cmd_with_retry(max_retries, wait_time, hc_install_cmd, options.source_path)
     else:
         raise Exception('Failed to find homecheck npm package')
 
@@ -201,15 +265,15 @@ def parse_args():
 
 def main():
     options = parse_args()
-    install_homecheck(options)
+    backup_package_files(options.source_path)
+    install_homecheck(options, 5, 3)
     install_typescript(options)
     node_modules_path = os.path.join(options.source_path, "node_modules")
     extract(options.typescript, node_modules_path, "typescript")
     build(options)
     copy_output(options)
+    clean_env(options.source_path)
 
 
 if __name__ == '__main__':
     sys.exit(main())
-
-

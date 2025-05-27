@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -76,18 +76,17 @@ export function runArkTSLinter(
   timePrinterInstance.appendTime(TimePhase.GET_TSC_DIAGNOSTICS);
   const etsLoaderPath = program.getCompilerOptions().etsLoaderPath;
   const tsImportSendableEnable = program.getCompilerOptions().tsImportSendableEnable;
-  const typeScriptLinter = createTypeScriptLinter(program, tscStrictDiagnostics, sdkOptions);
   LibraryTypeCallDiagnosticChecker.instance.rebuildTscDiagnostics(tscStrictDiagnostics);
-  const interopTypescriptLinter = createInteropTypescriptLinter(program, !!sdkOptions?.isUseRtLogic);
-  processFiles(srcFiles, {
+  const lintParam: LintParameter = {
     incrementalLinterState,
-    typeScriptLinter,
-    interopTypescriptLinter,
     tscStrictDiagnostics,
     diagnostics,
     etsLoaderPath,
-    tsImportSendableEnable
-  });
+    tsImportSendableEnable,
+    program,
+    sdkOptions
+  };
+  processFiles(srcFiles, lintParam, tscStrictDiagnostics);
   timePrinterInstance.appendTime(TimePhase.LINT);
   if (buildInfoWriteFile) {
     IncrementalLinterState.emitBuildInfo(buildInfoWriteFile, tscDiagnosticsLinter.getBuilderProgram());
@@ -97,14 +96,18 @@ export function runArkTSLinter(
   return diagnostics;
 }
 
-function processFiles(srcFiles: ts.SourceFile[], lintParameter: LintParameter): void {
+function processFiles(
+  srcFiles: ts.SourceFile[],
+  lintParameter: LintParameter,
+  tscStrictDiagnostics: Map<string, ts.Diagnostic[]>
+): void {
   for (const fileToLint of srcFiles) {
     const scriptKind = getScriptKind(fileToLint);
     if (scriptKind !== ts.ScriptKind.ETS && scriptKind !== ts.ScriptKind.TS) {
       continue;
     }
 
-    const currentDiagnostics = getDiagnostic(fileToLint, scriptKind, lintParameter);
+    const currentDiagnostics = getDiagnostic(fileToLint, scriptKind, lintParameter, tscStrictDiagnostics);
     lintParameter.diagnostics.push(...currentDiagnostics);
     lintParameter.incrementalLinterState.updateDiagnostics(fileToLint, currentDiagnostics);
   }
@@ -113,19 +116,20 @@ function processFiles(srcFiles: ts.SourceFile[], lintParameter: LintParameter): 
 function getDiagnostic(
   fileToLint: ts.SourceFile,
   scriptKind: ts.ScriptKind,
-  lintParameter: LintParameter
+  lintParameter: LintParameter,
+  tscStrictDiagnostics: Map<string, ts.Diagnostic[]>
 ): ts.Diagnostic[] {
   let currentDiagnostics: ts.Diagnostic[] = [];
   if (lintParameter.incrementalLinterState.isFileChanged(fileToLint)) {
     if (scriptKind === ts.ScriptKind.ETS) {
-      lintParameter.typeScriptLinter.lint(fileToLint);
+      const typeScriptLinter = createTypeScriptLinter(fileToLint, lintParameter, tscStrictDiagnostics);
+      typeScriptLinter.lint();
 
       // Get list of bad nodes from the current run.
       currentDiagnostics = lintParameter.tscStrictDiagnostics.get(path.normalize(fileToLint.fileName)) ?? [];
-      lintParameter.typeScriptLinter.problemsInfos.forEach((x) => {
+      typeScriptLinter.problemsInfos.forEach((x) => {
         return currentDiagnostics.push(translateDiag(fileToLint, x));
       });
-      lintParameter.typeScriptLinter.problemsInfos.length = 0;
     } else {
       if (
         path.basename(fileToLint.fileName).toLowerCase().
@@ -145,11 +149,11 @@ function getDiagnostic(
         return currentDiagnostics;
       }
 
-      lintParameter.interopTypescriptLinter.lint(fileToLint);
-      lintParameter.interopTypescriptLinter.problemsInfos.forEach((x) => {
+      const interopTypescriptLinter = createInteropTypescriptLinter(lintParameter.program, fileToLint, lintParameter);
+      interopTypescriptLinter.lint();
+      interopTypescriptLinter.problemsInfos.forEach((x) => {
         return currentDiagnostics.push(translateDiag(fileToLint, x));
       });
-      lintParameter.interopTypescriptLinter.problemsInfos.length = 0;
     }
   } else {
     // Get diagnostics from old run.
@@ -169,34 +173,38 @@ function getSrcFiles(program: ts.Program, srcFile?: ts.SourceFile): ts.SourceFil
 }
 
 function createTypeScriptLinter(
-  program: ts.Program,
-  tscStrictDiagnostics: Map<string, ts.Diagnostic[]>,
-  sdkOptions?: SdkOptions
+  sourceFile: ts.SourceFile,
+  lintParameter: LintParameter,
+  tscStrictDiagnostics: Map<string, ts.Diagnostic[]>
 ): TypeScriptLinter {
   TypeScriptLinter.initGlobals();
   return new TypeScriptLinter(
-    program.getLinterTypeChecker(),
+    lintParameter.program.getLinterTypeChecker(),
     {
-      ideMode: true,
-      enableAutofix: sdkOptions?.needAutoFix,
-      useRtLogic: sdkOptions?.isUseRtLogic,
-      compatibleSdkVersion: program.getCompilerOptions().compatibleSdkVersion,
-      compatibleSdkVersionStage: program.getCompilerOptions().compatibleSdkVersionStage
+      enableAutofix: lintParameter.sdkOptions?.needAutoFix,
+      useRtLogic: lintParameter.sdkOptions?.isUseRtLogic,
+      compatibleSdkVersion: lintParameter.program.getCompilerOptions().compatibleSdkVersion,
+      compatibleSdkVersionStage: lintParameter.program.getCompilerOptions().compatibleSdkVersionStage
     },
+    sourceFile,
     tscStrictDiagnostics
   );
 }
 
-function createInteropTypescriptLinter(program: ts.Program, useRtLogic: boolean): InteropTypescriptLinter {
+function createInteropTypescriptLinter(
+  program: ts.Program,
+  sourceFile: ts.SourceFile,
+  lintParameter: LintParameter
+): InteropTypescriptLinter {
   InteropTypescriptLinter.initGlobals();
   return new InteropTypescriptLinter(
     program.getLinterTypeChecker(),
     program.getCompilerOptions(),
     {
-      ideMode: true,
-      useRtLogic: useRtLogic
+      etsLoaderPath: lintParameter.etsLoaderPath,
+      useRtLogic: lintParameter.sdkOptions?.isUseRtLogic
     },
-    program.getCompilerOptions().etsLoaderPath
+    sourceFile
   );
 }
 

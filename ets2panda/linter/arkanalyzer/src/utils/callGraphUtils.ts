@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,25 +48,17 @@ export class MethodSignatureManager {
 
     public findInProcessedList(signature: MethodSignature): boolean {
         let result = this.processedList.find(item => item.toString() === signature.toString());
-        return typeof result !== "undefined";
+        return typeof result !== 'undefined';
     }
 
     public addToWorkList(signature: MethodSignature): void {
-        if (!isItemRegistered<MethodSignature>(
-            signature, this.workList,
-            (a, b) =>
-                a.toString() === b.toString()
-        )) {
+        if (!isItemRegistered<MethodSignature>(signature, this.workList, (a, b) => a.toString() === b.toString())) {
             this.workList.push(signature);
         }
     }
 
     public addToProcessedList(signature: MethodSignature): void {
-        if (!isItemRegistered<MethodSignature>(
-            signature, this.processedList,
-            (a, b) =>
-                a === b
-        )) {
+        if (!isItemRegistered<MethodSignature>(signature, this.processedList, (a, b) => a === b)) {
             this.processedList.push(signature);
         }
     }
@@ -110,9 +102,10 @@ export class SceneManager {
     }
 
     public getClass(arkClass: ClassSignature): ArkClass | null {
-        if (typeof arkClass.getClassName() === "undefined")
-            return null
-        let classInstance = this._scene.getClass(arkClass)
+        if (typeof arkClass.getClassName() === 'undefined') {
+            return null;
+        }
+        let classInstance = this._scene.getClass(arkClass);
         if (classInstance != null) {
             return classInstance;
         }
@@ -121,22 +114,23 @@ export class SceneManager {
         if (sdkOrTargetProjectFile != null) {
             for (let classUnderFile of ModelUtils.getAllClassesInFile(sdkOrTargetProjectFile)) {
                 if (classUnderFile.getSignature().toString() === arkClass.toString()) {
-                    return classUnderFile
+                    return classUnderFile;
                 }
             }
         }
-        return classInstance
+        return classInstance;
     }
 
     public getExtendedClasses(arkClass: ClassSignature): ArkClass[] {
-        let sourceClass = this.getClass(arkClass)
-        let classList = [sourceClass]   // 待处理类
-        let extendedClasses: ArkClass[] = []      // 已经处理的类
+        let sourceClass = this.getClass(arkClass);
+        let classList = [sourceClass]; // 待处理类
+        let extendedClasses: ArkClass[] = []; // 已经处理的类
 
         while (classList.length > 0) {
-            let tempClass = classList.shift()
-            if (tempClass == null)
-                continue
+            let tempClass = classList.shift();
+            if (tempClass == null) {
+                continue;
+            }
             let firstLevelSubclasses: ArkClass[] = Array.from(tempClass.getExtendedClasses().values());
 
             if (!firstLevelSubclasses) {
@@ -144,26 +138,18 @@ export class SceneManager {
             }
 
             for (let subclass of firstLevelSubclasses) {
-                if (!isItemRegistered<ArkClass>(
-                    subclass, extendedClasses,
-                    (a, b) =>
-                        a.getSignature().toString() === b.getSignature().toString()
-                )) {
+                if (!isItemRegistered<ArkClass>(subclass, extendedClasses, (a, b) => a.getSignature().toString() === b.getSignature().toString())) {
                     // 子类未处理，加入到classList
-                    classList.push(subclass)
+                    classList.push(subclass);
                 }
             }
 
             // 当前类处理完毕，标记为已处理
-            if (!isItemRegistered<ArkClass>(
-                tempClass, extendedClasses,
-                (a, b) =>
-                    a.getSignature().toString() === b.getSignature().toString()
-            )) {
-                extendedClasses.push(tempClass)
+            if (!isItemRegistered<ArkClass>(tempClass, extendedClasses, (a, b) => a.getSignature().toString() === b.getSignature().toString())) {
+                extendedClasses.push(tempClass);
             }
         }
-        return extendedClasses
+        return extendedClasses;
     }
 }
 
@@ -192,7 +178,7 @@ export function splitStringWithRegex(input: string): string[] {
 
 export function printCallGraphDetails(methods: Set<MethodSignature>, calls: Map<MethodSignature, MethodSignature[]>, rootDir: string): void {
     // 打印 Methods
-    logger.info("Call Graph:\n")
+    logger.info('Call Graph:\n');
     logger.info('\tMethods:');
     methods.forEach(method => {
         logger.info(`\t\t${method}`);
@@ -210,7 +196,7 @@ export function printCallGraphDetails(methods: Set<MethodSignature>, calls: Map<
             const modifiedCalledMethod = `\t\t<${calledMethods[i]}`;
             logger.info(`\t\t${modifiedCalledMethod}`);
         }
-        logger.info("\n")
+        logger.info('\n');
     });
 }
 
@@ -220,5 +206,5 @@ export function extractLastBracketContent(input: string): string {
     if (match && match[1]) {
         return match[1].trim();
     }
-    return "";
+    return '';
 }

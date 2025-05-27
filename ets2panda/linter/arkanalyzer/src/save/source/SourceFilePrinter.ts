@@ -59,9 +59,7 @@ export class SourceFilePrinter extends Printer {
         for (let method of cls.getMethods()) {
             if (method.isDefaultArkMethod()) {
                 this.items.push(...new SourceMethod(method, this.printer.getIndent()).dumpDefaultMethod());
-            } else if (
-                !PrinterUtils.isAnonymousMethod(method.getName())
-            ) {
+            } else if (!PrinterUtils.isAnonymousMethod(method.getName())) {
                 this.items.push(new SourceMethod(method));
             }
         }

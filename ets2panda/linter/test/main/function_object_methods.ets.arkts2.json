@@ -15,26 +15,6 @@
     ],
     "result": [
         {
-            "line": 19,
-            "column": 16,
-            "endLine": 19,
-            "endColumn": 24,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 14,
-            "endLine": 20,
-            "endColumn": 22,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
             "line": 29,
             "column": 5,
             "endLine": 29,
@@ -136,16 +116,6 @@
         },
         {
             "line": 75,
-            "column": 15,
-            "endLine": 75,
-            "endColumn": 23,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
             "column": 48,
             "endLine": 75,
             "endColumn": 52,
@@ -155,13 +125,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 78,
-            "column": 15,
-            "endLine": 78,
-            "endColumn": 23,
+            "line": 76,
+            "column": 9,
+            "endLine": 76,
+            "endColumn": 13,
             "problem": "ExplicitFunctionType",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         },
         {
@@ -172,6 +142,16 @@
             "problem": "FunctionBindError",
             "suggest": "",
             "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 9,
+            "endLine": 79,
+            "endColumn": 13,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         },
         {
@@ -246,16 +226,6 @@
         },
         {
             "line": 101,
-            "column": 14,
-            "endLine": 101,
-            "endColumn": 22,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 101,
             "column": 42,
             "endLine": 101,
             "endColumn": 46,
@@ -265,13 +235,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 104,
-            "column": 14,
-            "endLine": 104,
-            "endColumn": 22,
+            "line": 102,
+            "column": 3,
+            "endLine": 102,
+            "endColumn": 6,
             "problem": "ExplicitFunctionType",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         },
         {
@@ -282,6 +252,16 @@
             "problem": "FunctionBindError",
             "suggest": "",
             "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 3,
+            "endLine": 105,
+            "endColumn": 6,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         },
         {
