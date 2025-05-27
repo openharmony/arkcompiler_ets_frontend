@@ -405,6 +405,16 @@ std::string GetNameForUnionType(const ir::TypeNode *unionType)
 
 std::string GetNameForTypeReference(const ir::TypeNode *typeReference)
 {
+    auto type = typeReference->AsETSTypeReference()->Part();
+    if (type != nullptr && type->IsETSTypeReferencePart()) {
+        auto tmp = type->AsETSTypeReferencePart()->Name();
+        if (tmp != nullptr && tmp->IsTSQualifiedName()) {
+            auto leftStr = tmp->AsTSQualifiedName()->Left()->AsIdentifier()->Name().Mutf8();
+            auto rightStr = tmp->AsTSQualifiedName()->Right()->AsIdentifier()->Name().Mutf8();
+            return leftStr + "." + rightStr;
+        }
+    }
+
     std::string typeParamNames;
     auto typeParam = typeReference->AsETSTypeReference()->Part()->TypeParams();
     if (typeParam != nullptr && typeParam->IsTSTypeParameterInstantiation()) {
