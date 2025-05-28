@@ -81,6 +81,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/suggestion_diagnostics.cpp",
     "src/todo_comments.cpp",
     "src/types.cpp",
+    "src/navigate_to.cpp",
   ]
   configs = [
     "$ark_root/assembler:arkassembler_public_config",
