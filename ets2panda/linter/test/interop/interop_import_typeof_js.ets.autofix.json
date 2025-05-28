@@ -43,7 +43,11 @@
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 69
                 }
             ],
             "suggest": "",
@@ -79,7 +83,11 @@
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n"
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 54
                 }
             ],
             "suggest": "",
@@ -115,7 +123,11 @@
                 {
                     "start": 796,
                     "end": 796,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n"
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 55
                 }
             ],
             "suggest": "",
@@ -194,7 +206,11 @@
                 {
                     "start": 873,
                     "end": 891,
-                    "replacementText": "Dog.invoke(ESValue.wrap('doge')).typeOf()"
+                    "replacementText": "Dog.invoke(ESValue.wrap('doge')).typeOf()",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -231,7 +247,11 @@
                 {
                     "start": 901,
                     "end": 920,
-                    "replacementText": "Doge.invoke(ESValue.wrap('doge')).typeOf()"
+                    "replacementText": "Doge.invoke(ESValue.wrap('doge')).typeOf()",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
@@ -487,27 +507,6 @@
             ],
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 11,
-            "endLine": 36,
-            "endColumn": 22,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 1149,
-                    "end": 1160,
-                    "replacementText": "person.getPropertyByName(\"name\")",
-                    "line": 36,
-                    "column": 11,
-                    "endLine": 36,
-                    "endColumn": 22
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -816,27 +815,6 @@
             "column": 8,
             "endLine": 71,
             "endColumn": 25,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 1903,
-                    "end": 1920,
-                    "replacementText": "new Person().getPropertyByName(\"name\")",
-                    "line": 71,
-                    "column": 8,
-                    "endLine": 71,
-                    "endColumn": 25
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 8,
-            "endLine": 71,
-            "endColumn": 25,
             "problem": "InteropJsObjectUsage",
             "autofix": [
                 {
@@ -936,7 +914,11 @@
                 {
                     "start": 1968,
                     "end": 1998,
-                    "replacementText": "Person.instantiate().getPropertyByName('setAge').invoke(ESValue.wrap(22)).typeOf()"
+                    "replacementText": "Person.instantiate().getPropertyByName('setAge').invoke(ESValue.wrap(22)).typeOf()",
+                    "line": 73,
+                    "column": 1,
+                    "endLine": 73,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",

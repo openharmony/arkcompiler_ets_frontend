@@ -20,3 +20,4 @@ foo.name
 foo.name = "456"
 person.age = 23
 person.male = [2, 3]
+foo.age = 12

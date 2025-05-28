@@ -43,7 +43,11 @@
                 {
                     "start": 676,
                     "end": 676,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n"
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 59
                 }
             ],
             "suggest": "",
@@ -102,7 +106,11 @@
                 {
                     "start": 687,
                     "end": 703,
-                    "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))"
+                    "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
@@ -140,7 +148,11 @@
                 {
                     "start": 704,
                     "end": 719,
-                    "replacementText": "person.setPropertyByName(\"age\", ESValue.wrap(23))"
+                    "replacementText": "person.setPropertyByName(\"age\", ESValue.wrap(23))",
+                    "line": 21,
+                    "column": 1,
+                    "endLine": 21,
+                    "endColumn": 16
                 }
             ],
             "suggest": "",
@@ -199,7 +211,11 @@
                 {
                     "start": 720,
                     "end": 740,
-                    "replacementText": "person.setPropertyByName(\"male\", ESValue.wrap([2, 3]))"
+                    "replacementText": "person.setPropertyByName(\"male\", ESValue.wrap([2, 3]))",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -263,6 +279,69 @@
                     "column": 19,
                     "endLine": 22,
                     "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 13,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 741,
+                    "end": 753,
+                    "replacementText": "foo.setPropertyByName(\"age\", ESValue.wrap(12))",
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 8,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('age')",
+                    "start": 741,
+                    "end": 748,
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 11,
+            "endLine": 23,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 751,
+                    "end": 753,
+                    "replacementText": "12.0",
+                    "line": 23,
+                    "column": 11,
+                    "endLine": 23,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",

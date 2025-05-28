@@ -1376,7 +1376,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleTsInterop(propertyAccessNode, () => {
       this.checkInteropForPropertyAccess(propertyAccessNode);
     });
-    this.propertyAccessExpressionForInterop(exprSym, propertyAccessNode);
+     this.propertyAccessExpressionForInterop(propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -1412,25 +1412,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  propertyAccessExpressionForInterop(
-    exprSym: ts.Symbol | undefined,
-    propertyAccessNode: ts.PropertyAccessExpression
-  ): void {
-    if (this.useStatic && this.options.arkts2) {
-      const declaration = exprSym?.declarations?.[0];
-      if (declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        if (
-          ts.isBinaryExpression(propertyAccessNode.parent) &&
-          propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken
-        ) {
-          const autofix = this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent);
-          this.incrementCounters(propertyAccessNode.parent, FaultID.InteropObjectProperty, autofix);
-        } else {
-          const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
-          this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
-        }
-      }
+  propertyAccessExpressionForInterop(propertyAccessNode: ts.PropertyAccessExpression): void {
+    if (!this.useStatic || !this.options.arkts2) {
+      return;
     }
+
+    const getFirstObjectNode = (propertyAccessNode: ts.PropertyAccessExpression): ts.Expression => {
+      let current: ts.Expression = propertyAccessNode.expression;
+      while (ts.isPropertyAccessExpression(current)) {
+        current = current.expression;
+      }
+      
+      return current;
+    }
+
+    const firstObjNode = getFirstObjectNode(propertyAccessNode);
+    const isFromJs = this.tsUtils.isJsImport(firstObjNode);
+    
+    if(isFromJs) {
+      if (ts.isBinaryExpression(propertyAccessNode.parent) &&
+          propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+        const autofix = this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent);
+        this.incrementCounters(propertyAccessNode.parent, FaultID.InteropObjectProperty, autofix);
+      } else {
+        const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
+        this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
+      }
+    }   
   }
 
   private checkDepricatedIsConcurrent(node: ts.PropertyAccessExpression): void {

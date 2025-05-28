@@ -49,6 +49,16 @@
             "column": 18,
             "endLine": 19,
             "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 18,
+            "endLine": 19,
+            "endColumn": 25,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",

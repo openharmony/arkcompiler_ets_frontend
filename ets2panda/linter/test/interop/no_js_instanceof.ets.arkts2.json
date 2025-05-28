@@ -169,6 +169,16 @@
             "column": 36,
             "endLine": 73,
             "endColumn": 51,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 36,
+            "endLine": 73,
+            "endColumn": 51,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
@@ -182,6 +192,16 @@
             "problem": "InteropJsInstanceof",
             "suggest": "",
             "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 22,
+            "endLine": 75,
+            "endColumn": 37,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
