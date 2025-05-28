@@ -123,7 +123,7 @@ public:
     }
     bool Parse(std::unordered_set<std::string> &parsedConfigPath);
 
-    std::optional<std::string> ResolvePath(std::string_view path) const;
+    std::optional<std::string> ResolvePath(std::string_view path, bool isDynamic = false) const;
 
     void ResolveAllDependenciesInArkTsConfig();
 
@@ -201,7 +201,11 @@ private:
                                             std::unordered_set<std::string> &parsedConfigPath);
     bool ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap &pathsMap, const std::string &baseUrl);
     bool ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
-                           std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap);
+                           std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap,
+                           const std::string &baseUrl);
+    bool ParseSingleDynamicPath(const std::string &key, const JsonObject::JsonObjPointer *data,
+                                std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap,
+                                const std::string &baseUrl);
     template <class Collection, class Function>
     bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target, Function &&constructor);
     void ResolveConfigDependencies(std::unordered_map<std::string, std::shared_ptr<ArkTsConfig>> &dependencies,

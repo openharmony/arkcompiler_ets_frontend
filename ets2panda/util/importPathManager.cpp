@@ -66,8 +66,8 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
     // NOTE(dkofanov): The code below expresses the idea of 'dynamicPaths' defining separated, virtual file system.
     // Probably, paths of common imports should be isolated from the host fs as well, being resolved by 'ModuleInfo'
     // instead of 'AbsoluteName'.
-    auto curModulePath = program->ModuleInfo().isDeclForDynamicStaticInterop ? program->ModuleInfo().moduleName
-                                                                             : program->AbsoluteName();
+    isDynamic_ = program->ModuleInfo().isDeclForDynamicStaticInterop;
+    auto curModulePath = isDynamic_ ? program->ModuleInfo().moduleName : program->AbsoluteName();
     auto [resolvedImportPath, resolvedIsDynamic] = ResolvePath(curModulePath.Utf8(), importPath);
     if (resolvedImportPath.empty()) {
         ES2PANDA_ASSERT(diagnosticEngine_.IsAnyError());
@@ -172,7 +172,7 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolveAbsolutePath(const 
     }
 
     ES2PANDA_ASSERT(arktsConfig_ != nullptr);
-    auto resolvedPath = arktsConfig_->ResolvePath(importPath);
+    auto resolvedPath = arktsConfig_->ResolvePath(importPath, isDynamic_);
     if (!resolvedPath) {
         diagnosticEngine_.LogDiagnostic(
             diagnostic::IMPORT_CANT_FIND_PREFIX,
