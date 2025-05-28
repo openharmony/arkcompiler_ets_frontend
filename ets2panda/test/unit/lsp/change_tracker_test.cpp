@@ -24,7 +24,7 @@
 #include "lsp_api_test.h"
 #include "lsp/include/class_hierarchy.h"
 #include "lsp/include/internal_api.h"
-#include "lsp/include/text_change/change_tracker.h"
+#include "lsp/include/services/text_change/change_tracker.h"
 #include "public/es2panda_lib.h"
 #include <variant>
 
@@ -44,7 +44,7 @@ ark::es2panda::lsp::ChangeTracker GetTracker()
     const std::string defaultNewLine = "\n";
     ark::es2panda::lsp::FormatCodeSettings settings;
     auto formatContext = ark::es2panda::lsp::GetFormatContext(settings);
-    ark::es2panda::lsp::TextChangesContext changeText {{}, formatContext, {}};
+    TextChangesContext changeText {{}, formatContext, {}};
     auto tracker = ark::es2panda::lsp::ChangeTracker::FromContext(changeText);
     return tracker;
 }
@@ -69,12 +69,9 @@ function add(a: number, b: number) {
     auto spanStart = returnNode->Start().index;
     auto spanLength = strlen("return a + b;");
     TextSpan span = {spanStart, spanLength};
-    ark::es2panda::lsp::FileTextChanges fileChange;
-    fileChange.fileName = "pushRaw_AddsChangeCorrectly.ets";
-    fileChange.isNewFile = false;
     std::string retStr = "return a - b;";
     TextChange change = {span, retStr};
-    fileChange.textChanges.push_back(change);
+    FileTextChanges fileChange = {"pushRaw_AddsChangeCorrectly.ets", {change}};
     auto tracker = GetTracker();
     tracker.PushRaw(sourceFile, fileChange);
 
@@ -82,14 +79,14 @@ function add(a: number, b: number) {
     EXPECT_FALSE(list.empty());
     EXPECT_EQ(list.size(), 1);
 
-    const auto &variant = list[0];
-    const auto *changeText = std::get_if<ark::es2panda::lsp::ChangeText>(&variant);
-    ASSERT_NE(changeText, nullptr);
+    const auto variant = list[0];
+    const auto changeText = variant.textChanges;
+    ASSERT_EQ(changeText[0].newText, retStr);
 
-    EXPECT_EQ(changeText->sourceFile->filePath, fileChange.fileName);
+    EXPECT_EQ(variant.fileName, fileChange.fileName);
 
-    const auto &textChange = changeText->range;
-    EXPECT_EQ(textChange.pos, spanStart);
+    const auto &textChange = changeText;
+    EXPECT_EQ(textChange[0].span.start, spanStart);
 }
 
 TEST_F(LspClassChangeTracker, DeleteMethods_BasicTest1)

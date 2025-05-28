@@ -372,6 +372,26 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
     auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
     return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
 }
+std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(const char *fileName, size_t startPosition, size_t endPosition,
+                                                      std::vector<int> &errorCodes, CodeFixOptions &codeFixOptions)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result =
+        ark::es2panda::lsp::GetCodeFixesAtPositionImpl(context, startPosition, endPosition, errorCodes, codeFixOptions);
+    initializer.DestroyContext(context);
+    return result;
+}
+
+CombinedCodeActionsInfo GetCombinedCodeFix(const char *fileName, const std::string &fixId,
+                                           CodeFixOptions &codeFixOptions)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = ark::es2panda::lsp::GetCombinedCodeFixImpl(context, fixId, codeFixOptions);
+    initializer.DestroyContext(context);
+    return result;
+}
 
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetApplicableRefactors,
@@ -408,7 +428,9 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     ToLineColumnOffsetWrapper,
                     GetTodoComments,
                     ProvideInlayHints,
-                    GetSignatureHelpItems};
+                    GetSignatureHelpItems,
+                    GetCodeFixesAtPosition,
+                    GetCombinedCodeFix};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()

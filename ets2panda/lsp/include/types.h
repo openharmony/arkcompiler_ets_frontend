@@ -19,6 +19,8 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include "formatting/formatting.h"
+#include "user_preferences.h"
 
 // NOLINTBEGIN
 
@@ -76,6 +78,19 @@ public:
     {
         return !(*this == other);
     }
+};
+
+struct TextChange {
+    TextSpan span;
+    std::string newText;
+    TextChange(TextSpan s, const std::string &t) : span(s), newText(t) {}
+};
+
+struct FileTextChanges {
+    std::string fileName;
+    std::vector<TextChange> textChanges;
+    FileTextChanges(const std::string &f, const std::vector<TextChange> &t) : fileName(f), textChanges(t) {}
+    FileTextChanges() = default;
 };
 
 enum class InlayHintKind {
@@ -205,6 +220,16 @@ public:
         parameters_.clear();
         documentation_.clear();
     }
+};
+
+struct LanguageServiceHost {
+    std::string name = "lsp";
+};
+
+struct TextChangesContext {
+    LanguageServiceHost host = {};
+    ark::es2panda::lsp::FormatContext formatContext;
+    ark::es2panda::lsp::UserPreferences preferences;
 };
 
 struct SignatureHelpItems {

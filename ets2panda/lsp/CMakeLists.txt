@@ -44,7 +44,8 @@ set(ES2PANDA_LSP_SRC
   ./src/services/services.cpp
   ./src/services/utilities.cpp
   ./src/line_column_offset.cpp
-  ./src/text_change/change_tracker.cpp
+  ./src/services/text_change/change_tracker.cpp
+  ./src/code_fix_provider.cpp
   ./src/inlay_hints.cpp
   ./src/get_class_property_info.cpp
   ./src/create_type_help_items.cpp
@@ -55,6 +56,12 @@ set(ES2PANDA_LSP_SRC
   ./src/get_definition_and_bound_span.cpp
   ./src/types.cpp
   ./src/navigate_to.cpp
+  ./src/code_fix_provider.cpp
+  ./src/register_code_fix/add_missing_declare_property.cpp
+  ./src/register_code_fix/fix_missing_call_parantheses.cpp
+  ./src/register_code_fix/fix_nan_equality.cpp
+  ./src/register_code_fix/forgetten_this_property_access.cpp
+  ./src/register_code_fix/import_fixes.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
