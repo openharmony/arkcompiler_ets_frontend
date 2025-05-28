@@ -15,40 +15,29 @@
     ],
     "result": [
         {
-            "line": 28,
-            "column": 32,
-            "endLine": 28,
-            "endColumn": 36,
+            "line": 27,
+            "column": 26,
+            "endLine": 27,
+            "endColumn": 31,
             "problem": "LimitedStdLibNoASON",
-            "autofix": [
-                {
-                    "start": 981,
-                    "end": 991,
-                    "replacementText": "JSON",
-                    "line": 28,
-                    "column": 32,
-                    "endLine": 28,
-                    "endColumn": 36
-                }
-            ],
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
+            "line": 27,
             "column": 47,
-            "endLine": 28,
+            "endLine": 27,
             "endColumn": 48,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1002,
-                    "end": 1003,
+                    "start": 1001,
+                    "end": 1002,
                     "replacementText": "1.0",
-                    "line": 28,
+                    "line": 27,
                     "column": 47,
-                    "endLine": 28,
+                    "endLine": 27,
                     "endColumn": 48
                 }
             ],
@@ -57,40 +46,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
-            "column": 34,
-            "endLine": 30,
-            "endColumn": 38,
+            "line": 29,
+            "column": 18,
+            "endLine": 29,
+            "endColumn": 33,
             "problem": "LimitedStdLibNoASON",
-            "autofix": [
-                {
-                    "start": 1024,
-                    "end": 1044,
-                    "replacementText": "JSON",
-                    "line": 30,
-                    "column": 34,
-                    "endLine": 30,
-                    "endColumn": 38
-                }
-            ],
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 49,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 50,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1055,
-                    "end": 1056,
+                    "start": 1054,
+                    "end": 1055,
                     "replacementText": "1.0",
-                    "line": 30,
+                    "line": 29,
                     "column": 49,
-                    "endLine": 30,
+                    "endLine": 29,
                     "endColumn": 50
                 }
             ],
@@ -99,40 +77,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
-            "column": 32,
-            "endLine": 32,
-            "endColumn": 36,
+            "line": 31,
+            "column": 18,
+            "endLine": 31,
+            "endColumn": 31,
             "problem": "LimitedStdLibNoASON",
-            "autofix": [
-                {
-                    "start": 1077,
-                    "end": 1095,
-                    "replacementText": "JSON",
-                    "line": 32,
-                    "column": 32,
-                    "endLine": 32,
-                    "endColumn": 36
-                }
-            ],
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 31,
             "column": 47,
-            "endLine": 32,
+            "endLine": 31,
             "endColumn": 48,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1106,
-                    "end": 1107,
+                    "start": 1105,
+                    "end": 1106,
                     "replacementText": "1.0",
-                    "line": 32,
+                    "line": 31,
                     "column": 47,
-                    "endLine": 32,
+                    "endLine": 31,
                     "endColumn": 48
                 }
             ],
@@ -141,45 +108,54 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 42,
-            "endLine": 34,
-            "endColumn": 46,
+            "line": 33,
+            "column": 26,
+            "endLine": 33,
+            "endColumn": 41,
             "problem": "LimitedStdLibNoASON",
-            "autofix": [
-                {
-                    "start": 1136,
-                    "end": 1156,
-                    "replacementText": "JSON",
-                    "line": 34,
-                    "column": 42,
-                    "endLine": 34,
-                    "endColumn": 46
-                }
-            ],
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 33,
             "column": 57,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 58,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1167,
-                    "end": 1168,
+                    "start": 1166,
+                    "end": 1167,
                     "replacementText": "1.0",
-                    "line": 34,
+                    "line": 33,
                     "column": 57,
-                    "endLine": 34,
+                    "endLine": 33,
                     "endColumn": 58
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 22,
+            "endLine": 35,
+            "endColumn": 32,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 33,
+            "endLine": 37,
+            "endColumn": 43,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
         }
     ]

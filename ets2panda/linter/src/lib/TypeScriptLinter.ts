@@ -81,7 +81,7 @@ import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhi
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
-import { ASON_TEXT, ASON_MODULES, JSON_TEXT } from './utils/consts/ArkTSUtilsAPI';
+import { ASON_TEXT, ASON_MODULES, ARKTS_UTILS_TEXT } from './utils/consts/ArkTSUtilsAPI';
 import { interanlFunction } from './utils/consts/InternalFunction';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
@@ -3730,6 +3730,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     this.handleInterfaceImport(node);
+    this.checkAsonSymbol(node);
     const tsIdentifier = node;
     this.handleTsInterop(tsIdentifier, () => {
       const parent = tsIdentifier.parent;
@@ -3769,7 +3770,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
       this.checkCollectionsSymbol(tsIdentSym, node);
-      this.checkAsonSymbol(tsIdentSym, node);
     }
   }
 
@@ -5026,7 +5026,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const type = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
     if (type.isClassOrInterface()) {
-      this.incrementCounters(calleeExpr, FaultID.ConstructorIface);
+      this.incrementCounters(calleeExpr, FaultID.ConstructorIfaceFromSdk);
     }
   }
 
@@ -6735,19 +6735,65 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkAsonSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    const cb = (): void => {
-      let autofix: Autofix[] | undefined;
-      const parent = node.parent;
-      autofix = this.autofixer?.replaceNode(parent ? parent : node, JSON_TEXT);
+  private checkAsonSymbol(node: ts.Identifier): void {
+    if (!this.options.arkts2) {
+      return;
+    }
 
-      if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
-        autofix = this.autofixer?.removeImport(node, parent);
-      }
+    if (node.text !== ASON_TEXT) {
+      return;
+    }
 
-      this.incrementCounters(node, FaultID.LimitedStdLibNoASON, autofix);
-    };
-    this.checkSymbolAndExecute(symbol, ASON_TEXT, ASON_MODULES, cb);
+    const parent = node.parent;
+    switch (parent.kind) {
+      case ts.SyntaxKind.QualifiedName:
+        if (!ts.isQualifiedName(parent)) {
+          return;
+        }
+        if (parent.right.text !== node.text) {
+          return;
+        }
+        this.checkAsonUsage(parent.left);
+
+        break;
+      case ts.SyntaxKind.PropertyAccessExpression:
+        if (!ts.isPropertyAccessExpression(parent)) {
+          return;
+        }
+        if (parent.name.text !== node.text) {
+          return;
+        }
+        this.checkAsonUsage(parent.expression);
+
+        break;
+      default:
+    }
+  }
+
+  private checkAsonUsage(nodeToCheck: ts.Node): void {
+    if (!ts.isIdentifier(nodeToCheck)) {
+      return;
+    }
+    const declaration = this.tsUtils.getDeclarationNode(nodeToCheck);
+    if (!declaration && nodeToCheck.text === ARKTS_UTILS_TEXT) {
+      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON);
+      return;
+    }
+
+    if (!declaration) {
+      return;
+    }
+
+    const sourceFile = declaration.getSourceFile();
+    const fileName = path.basename(sourceFile.fileName);
+
+    if (
+      ASON_MODULES.some((moduleName) => {
+        return fileName.startsWith(moduleName);
+      })
+    ) {
+      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON);
+    }
   }
 
   private checkCollectionsSymbol(symbol: ts.Symbol, node: ts.Node): void {
