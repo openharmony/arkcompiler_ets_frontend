@@ -57,3 +57,20 @@ export function getFileHash(filePath: string): string {
   const content = fs.readFileSync(filePath, 'utf8');
   return crypto.createHash('sha256').update(content).digest('hex');
 }
+
+export function toUnixPath(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
+export function readFirstLineSync(filePath: string): string | null {
+
+  const fd = fs.openSync(filePath, 'r');
+  const buffer = Buffer.alloc(256);
+  const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
+  fs.closeSync(fd);
+
+  const content = buffer.toString('utf-8', 0, bytesRead);
+  const firstLine = content.split(/\r?\n/, 1)[0].trim();
+
+  return firstLine;
+}
