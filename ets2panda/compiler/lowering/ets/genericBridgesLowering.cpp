@@ -164,14 +164,19 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
             return;
         }
 
+        if (overrides(signature, baseSignature1) && overrides(baseSignature1, baseSignature2)) {
+            // This derived overload already handles the base union signature.
+            return;
+        }
+
         if (derivedFunction == nullptr && overrides(signature, baseSignature2)) {
-            //  NOTE: we don't care the possible case of mapping several derived function to the same bridge signature.
-            //  Probably sometimes we will process it correctly or issue warning notification here...
+            //  NOTE: we don't care the possible case of mapping several derived function to the same bridge
+            //  signature. Probably sometimes we will process it correctly or issue warning notification here...
             derivedFunction = signature->Function();
         }
     }
 
-    if (derivedFunction != nullptr) {
+    if (derivedFunction != nullptr && derivedFunction != baseFunction) {
         AddGenericBridge(classDefinition, derivedMethod, baseSignature1, derivedFunction);
     }
 }
