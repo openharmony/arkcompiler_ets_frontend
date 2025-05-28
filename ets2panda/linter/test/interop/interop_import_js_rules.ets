@@ -65,3 +65,13 @@ handle(lambda)
 
 class X{a = 1; b= 2; c= 3}
 expand(new X()) // ERROR expand-static
+class Y {
+  str: string = 'str';
+  bool: boolean = false;
+}
+let testY: Y = {
+  str: "hello",
+  bool: false,
+}
+expand(testY);
+expand({x: '1', y: "hello", z: false});

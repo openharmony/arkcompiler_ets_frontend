@@ -7845,16 +7845,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    // check if any argument is a `new` expression
-    const hasNewExpressionArg = callExpr.arguments.some((arg) => {
-      return ts.isNewExpression(arg);
+    callExpr.arguments.forEach((arg) => {
+      const type = this.tsTypeChecker.getTypeAtLocation(arg);
+      if (ts.isArrowFunction(arg)) {
+        this.incrementCounters(arg, FaultID.InteropJsObjectCallStaticFunc);
+      } else if (ts.isIdentifier(arg)) {
+        const sym = this.tsTypeChecker.getSymbolAtLocation(arg);
+        const decl = sym?.declarations?.[0];
+        if (
+          decl &&
+          (ts.isFunctionDeclaration(decl) ||
+            ts.isVariableDeclaration(decl) && decl.initializer && ts.isArrowFunction(decl.initializer))
+        ) {
+          this.incrementCounters(arg, FaultID.InteropJsObjectCallStaticFunc);
+        }
+        if (type?.isClassOrInterface()) {
+          this.incrementCounters(arg, FaultID.InteropJsObjectExpandStaticInstance);
+        }
+      } else if (ts.isObjectLiteralExpression(arg) || type?.isClassOrInterface()) {
+        this.incrementCounters(arg, FaultID.InteropJsObjectExpandStaticInstance);
+      }
     });
-
-    const faultId = hasNewExpressionArg ?
-      FaultID.InteropJsObjectExpandStaticInstance :
-      FaultID.InteropJsObjectCallStaticFunc;
-
-    this.incrementCounters(callExpr, faultId);
   }
 
   private fixJsImportExtendsClass(

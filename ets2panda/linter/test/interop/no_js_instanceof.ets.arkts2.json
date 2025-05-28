@@ -69,16 +69,6 @@
             "column": 28,
             "endLine": 39,
             "endColumn": 50,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 39,
-            "column": 28,
-            "endLine": 39,
-            "endColumn": 50,
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
@@ -152,16 +142,6 @@
             "problem": "InteropJsInstanceof",
             "suggest": "",
             "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
-            "column": 4,
-            "endLine": 69,
-            "endColumn": 7,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {

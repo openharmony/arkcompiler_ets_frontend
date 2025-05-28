@@ -39,16 +39,6 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 13,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 13,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
             "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
