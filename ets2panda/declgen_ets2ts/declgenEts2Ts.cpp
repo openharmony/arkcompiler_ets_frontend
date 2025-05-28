@@ -686,11 +686,12 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
 {
     const bool isConstructor = methodDef != nullptr ? methodDef->IsConstructor() : false;
     const bool isSetter = methodDef != nullptr ? methodDef->Kind() == ir::MethodDefinitionKind::SET : false;
+    const bool isStatic = methodDef != nullptr ? methodDef->IsStatic() : false;
     // CC-OFFNXT(G.FMT.14-CPP) project code style
     const auto *sig = GetFuncSignature(etsFunctionType, methodDef);
     ES2PANDA_ASSERT(sig != nullptr);
     if (sig->HasFunction()) {
-        GenTypeParameters(sig->Function()->TypeParams());
+        GenTypeParameters(sig->Function()->TypeParams(), isStatic, sig->Owner()->AsETSObjectType());
         const auto *funcBody = sig->Function()->Body();
         if (funcBody != nullptr && funcBody->IsBlockStatement() &&
             !funcBody->AsBlockStatement()->Statements().empty()) {
@@ -871,7 +872,8 @@ void TSDeclGen::HandleTypeArgument(checker::Type *arg, const std::string &typeSt
     if (typeStr == "Promise" && arg != nullptr && arg->HasTypeFlag(checker::TypeFlag::ETS_UNDEFINED)) {
         OutDts("void");
     } else if (arg != nullptr) {
-        if (!state_.currentTypeAliasName.empty() && !arg->HasTypeFlag(checker::TypeFlag::ETS_TYPE_PARAMETER)) {
+        if (!state_.currentTypeAliasName.empty() && !arg->HasTypeFlag(checker::TypeFlag::ETS_TYPE_PARAMETER) &&
+            (arg->IsETSObjectType() && !arg->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_TYPE))) {
             OutDts(state_.currentTypeAliasName);
             if (state_.currentTypeParams != nullptr) {
                 importSet_.insert(state_.currentTypeParams->Params()[0]->Name()->Name().Mutf8());
@@ -916,7 +918,8 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
     OutDts(">");
 }
 
-void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams)
+void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams, bool isStatic,
+                                  const checker::ETSObjectType *ownerObj)
 {
     if (typeParams != nullptr) {
         OutDts("<");
@@ -934,6 +937,21 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typePara
                                                   : GenType(defaultType->TsType());
             }
         });
+        OutDts(">");
+        return;
+    }
+    if (ownerObj == nullptr || !isStatic) {
+        return;
+    }
+    auto typeArguments = ownerObj->TypeArguments();
+    if (!typeArguments.empty()) {
+        OutDts("<");
+        for (auto arg : typeArguments) {
+            OutDts(arg->ToString());
+            if (arg != typeArguments.back()) {
+                OutDts(",");
+            }
+        }
         OutDts(">");
     }
 }
@@ -2166,7 +2184,7 @@ bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDe
                                    methodName == compiler::Signatures::INITIALIZER_BLOCK_INIT))) {
         return true;
     }
-    if (methodDef->IsPrivate() && !methodDef->IsConstructor()) {
+    if (methodDef->IsPrivate() && (methodDef->IsConstructor() || state_.inInterface)) {
         return true;
     }
     if (methodName == compiler::Signatures::INIT_METHOD) {
@@ -2208,7 +2226,10 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
         return;
     }
     const auto methodIdent = GetKeyIdent(methodDef->Key());
-    const auto methodName = methodIdent->Name().Mutf8();
+    auto methodName = methodIdent->Name().Mutf8();
+    if (methodName.compare("$_iterator") == 0) {
+        methodName = "[Symbol.iterator]";
+    }
     if (GenMethodDeclarationPrefix(methodDef, methodIdent, methodName)) {
         return;
     }
