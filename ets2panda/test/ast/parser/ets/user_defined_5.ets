@@ -19,3 +19,4 @@ enum /* @@ label */double {
 
 /* @@@ label Error SyntaxError: Cannot be used as user-defined type. */
 /* @@@ label Error SyntaxError: Identifier expected, got 'double'. */
+/* @@@ label Error SyntaxError: Hard keyword 'double' cannot be used as identifier */

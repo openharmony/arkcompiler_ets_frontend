@@ -26,4 +26,5 @@ class int {}
 /* @@? 18:5 Error SyntaxError: Getter must not have formal parameters. */
 /* @@? 19:1 Error SyntaxError: Setter must have exactly one formal parameter. */
 /* @@? 23:7 Error SyntaxError: Cannot be used as user-defined type. */
+/* @@? 23:7 Error SyntaxError: Hard keyword 'int' cannot be used as identifier */
 /* @@? 23:7 Error SyntaxError: Identifier expected, got 'int'. */
