@@ -124,6 +124,7 @@ struct CompilerOptions {
     std::string targetApiSubVersion;
     std::string moduleRecordFieldName;
     bool enableAnnotations;
+    bool enableEtsImplements {false};
     // Ability to modify package names using bytecode
     std::string modifiedPkgName {};
 };
