@@ -287,7 +287,9 @@ void InterfacePropertyDeclarationsPhase::UpdateClassProperties(public_lib::Conte
 
     GetPropCollector().InitVisitedInterfaces();
     for (const auto &implement : klass->Implements()) {
-        std::string interId = implement->Expr()->AsETSTypeReference()->Part()->Name()->ToString();
+        std::string interId = implement->Expr()->IsOpaqueTypeNode()
+                                  ? implement->Expr()->TsType()->AsETSObjectType()->Name().Mutf8()
+                                  : implement->Expr()->AsETSTypeReference()->Part()->Name()->ToString();
         CollectSuperInterfaceProperties(implInterfaceProperties, interId);
     }
 

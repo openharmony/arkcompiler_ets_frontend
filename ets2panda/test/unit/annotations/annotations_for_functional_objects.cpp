@@ -45,7 +45,7 @@ public:
 
     void CheckClassAnnotations(pandasm::Program *program)
     {
-        const std::string recordName = "gensym%%_55";
+        const std::string recordName = "Iface$ObjectLiteral";
         const AnnotationMap expectedClassAnnotations = {
             {"std.annotations.InterfaceObjectLiteral", {}},
         };
