@@ -31,6 +31,12 @@ config("libes2panda_public_config") {
   ]
 }
 
+action("check_build_system_consistency") {
+  script = "./scripts/check_build_system_consistency.py"
+  args = [ rebase_path(".", root_build_dir) ]
+  outputs = [ "$target_gen_dir/consistency_check.stamp" ]
+}
+
 libes2panda_sources = [
   "ast_verifier/ASTVerifier.cpp",
   "ast_verifier/helpers.cpp",
@@ -769,6 +775,8 @@ HEADERS_TO_BE_PARSED = [
   "es2panda.h",
   "ast_verifier/ASTVerifier.h",
   "util/importPathManager.h",
+  "util/path.h",
+  "util/arktsconfig.h"
 ]
 
 ES2PANDA_API_GENERATED = [
@@ -1034,6 +1042,8 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/parser/program/program.yaml",
   "$LIBGEN_DIR/gen/headers/ast_verifier/ASTVerifier.yaml",
   "$LIBGEN_DIR/gen/headers/util/importPathManager.yaml",
+  "$LIBGEN_DIR/gen/headers/util/path.yaml",
+  "$LIBGEN_DIR/gen/headers/util/arktsconfig.yaml"
 ]
 
 ES2PANDA_API = [
@@ -1053,6 +1063,7 @@ action("libes2panda_public_parse_headers") {
   deps = [
     ":es2panda_options_gen_options_h",
     ":gen_es2panda_lexer_tokenType_h",
+    ":check_build_system_consistency",
   ]
 
   generated_headers = [
