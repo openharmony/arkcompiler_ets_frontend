@@ -21,7 +21,7 @@ if (!ark_standalone_build) {
   toolchain_ohos = "$build_root/toolchain/ohos:ohos_clang_arm64"
   import("$build_root/ohos.gni")
 } else {
-  ark_third_party_root = "//arkcompiler/toolchain/build/third_party_gn"
+  ark_third_party_root = "//build/third_party_gn"
   import("$build_root/ark.gni")
 }
 import("$build_root/test.gni")
