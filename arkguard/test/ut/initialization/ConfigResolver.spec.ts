@@ -2253,6 +2253,7 @@ describe('test for ConfigResolve', function() {
       AtKeepCollections.clear();
       const obConfigResolver = new ObConfigResolver(projectConfig, printObfLogger);
       obConfigResolver.resolveObfuscationConfigs();
+      obConfigResolver.emitConsumerConfigFiles();
       const atKeepContent = fs.readFileSync(sourceObConfig.exportRulePath, 'utf-8');  
       expect(atKeepContent).to.include('-enable-property-obfuscation');
       expect(atKeepContent).to.include('-keep-global-name');

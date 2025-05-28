@@ -301,8 +301,8 @@ export class ObConfigResolver {
       }
     }
 
-    // when atKeep is enabled, we can not emit here since we need to collect names marked with atKeep
-    if (!mergedConfigs.options.enableAtKeep) {
+    // when obfuscation is enabled, we need to emit consumerConfig files after collecting whitelist.
+    if (!enableObfuscation) {
       this.emitConsumerConfigFiles();
     }
     return mergedConfigs;
@@ -944,6 +944,7 @@ export class ObConfigResolver {
       selfConsumerConfig.mergeAllRules(dependencyConfigs);
     }
     this.addKeepConsumer(selfConsumerConfig, AtKeepCollections.keepAsConsumer);
+    this.addIntentCollections(selfConsumerConfig, AtIntentCollections);
     selfConsumerConfig.sortAndDeduplicate();
     this.writeConsumerConfigFile(selfConsumerConfig, sourceObConfig.exportRulePath);
   }
@@ -953,6 +954,15 @@ export class ObConfigResolver {
       selfConsumerConfig.reservedPropertyNames.push(propertyName);
     });
     keepAsConsumer.globalNames.forEach((globalName) =>{
+      selfConsumerConfig.reservedGlobalNames.push(globalName);
+    });
+  }
+
+  private addIntentCollections(selfConsumerConfig: MergedConfig, intentCollections: KeepInfo): void {
+    intentCollections.propertyNames.forEach((propertyName) => {
+      selfConsumerConfig.reservedPropertyNames.push(propertyName);
+    });
+    intentCollections.globalNames.forEach((globalName) =>{
       selfConsumerConfig.reservedGlobalNames.push(globalName);
     });
   }
