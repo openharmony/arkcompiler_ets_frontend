@@ -1231,3 +1231,7 @@ syntax:
 - name: CONFLICTING_FIELD_MODIFIERS
   id: 305
   message: "Conflicting modifiers '!' and '?' on field."
+
+- name: DEEP_NESTING
+  id: 306
+  message: "Maximum allowed nesting level exceeded."
