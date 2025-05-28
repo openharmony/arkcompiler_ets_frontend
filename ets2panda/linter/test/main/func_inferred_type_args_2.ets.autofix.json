@@ -1,17 +1,17 @@
 {
     "copyright": [
-      "Copyright (c) 2025 Huawei Device Co., Ltd.",
-      "Licensed under the Apache License, Version 2.0 (the 'License');",
-      "you may not use this file except in compliance with the License.",
-      "You may obtain a copy of the License at",
-      "",
-      "http://www.apache.org/licenses/LICENSE-2.0",
-      "",
-      "Unless required by applicable law or agreed to in writing, software",
-      "distributed under the License is distributed on an 'AS IS' BASIS,",
-      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-      "See the License for the specific language governing permissions and",
-      "limitations under the License."
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
     ],
     "result": [
         {
@@ -44,7 +44,11 @@
                 {
                     "start": 676,
                     "end": 687,
-                    "replacementText": "new Array<number>()"
+                    "replacementText": "new Array<number>()",
+                    "line": 17,
+                    "column": 36,
+                    "endLine": 17,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -61,7 +65,11 @@
                 {
                     "start": 705,
                     "end": 716,
-                    "replacementText": "new Array<number>()"
+                    "replacementText": "new Array<number>()",
+                    "line": 18,
+                    "column": 17,
+                    "endLine": 18,
+                    "endColumn": 28
                 }
             ],
             "suggest": "",
@@ -108,7 +116,11 @@
                 {
                     "start": 796,
                     "end": 805,
-                    "replacementText": "new Map<string, number>()"
+                    "replacementText": "new Map<string, number>()",
+                    "line": 21,
+                    "column": 44,
+                    "endLine": 21,
+                    "endColumn": 53
                 }
             ],
             "suggest": "",
@@ -125,7 +137,11 @@
                 {
                     "start": 823,
                     "end": 832,
-                    "replacementText": "new Map<string, number>()"
+                    "replacementText": "new Map<string, number>()",
+                    "line": 22,
+                    "column": 17,
+                    "endLine": 22,
+                    "endColumn": 26
                 }
             ],
             "suggest": "",
@@ -192,7 +208,11 @@
                 {
                     "start": 994,
                     "end": 1003,
-                    "replacementText": "new Map<string, () => string[]>()"
+                    "replacementText": "new Map<string, () => string[]>()",
+                    "line": 27,
+                    "column": 55,
+                    "endLine": 27,
+                    "endColumn": 64
                 }
             ],
             "suggest": "",
@@ -209,7 +229,11 @@
                 {
                     "start": 1065,
                     "end": 1074,
-                    "replacementText": "new Map<string, () => string[]>()"
+                    "replacementText": "new Map<string, () => string[]>()",
+                    "line": 28,
+                    "column": 61,
+                    "endLine": 28,
+                    "endColumn": 70
                 }
             ],
             "suggest": "",
@@ -246,7 +270,11 @@
                 {
                     "start": 1215,
                     "end": 1228,
-                    "replacementText": "new MyClass<number>()"
+                    "replacementText": "new MyClass<number>()",
+                    "line": 34,
+                    "column": 38,
+                    "endLine": 34,
+                    "endColumn": 51
                 }
             ],
             "suggest": "",
@@ -273,7 +301,11 @@
                 {
                     "start": 1298,
                     "end": 1307,
-                    "replacementText": "new Set<string>()"
+                    "replacementText": "new Set<string>()",
+                    "line": 36,
+                    "column": 29,
+                    "endLine": 36,
+                    "endColumn": 38
                 }
             ],
             "suggest": "",
@@ -290,7 +322,11 @@
                 {
                     "start": 1337,
                     "end": 1346,
-                    "replacementText": "new Map<string, () => string[]>()"
+                    "replacementText": "new Map<string, () => string[]>()",
+                    "line": 37,
+                    "column": 29,
+                    "endLine": 37,
+                    "endColumn": 38
                 }
             ],
             "suggest": "",
@@ -307,7 +343,11 @@
                 {
                     "start": 1378,
                     "end": 1387,
-                    "replacementText": "new Map<string, () => string[]>()"
+                    "replacementText": "new Map<string, () => string[]>()",
+                    "line": 38,
+                    "column": 31,
+                    "endLine": 38,
+                    "endColumn": 40
                 }
             ],
             "suggest": "",
@@ -324,11 +364,25 @@
                 {
                     "start": 1423,
                     "end": 1452,
-                    "replacementText": "new Promise<String>(() => { return ''; })"
+                    "replacementText": "new Promise<String>(() => { return ''; })",
+                    "line": 40,
+                    "column": 34,
+                    "endLine": 40,
+                    "endColumn": 63
                 }
             ],
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 14,
+            "endLine": 43,
+            "endColumn": 17,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -341,11 +395,25 @@
                 {
                     "start": 1504,
                     "end": 1513,
-                    "replacementText": "new Map<string, string>()"
+                    "replacementText": "new Map<string, string>()",
+                    "line": 43,
+                    "column": 10,
+                    "endLine": 43,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 14,
+            "endLine": 47,
+            "endColumn": 17,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -358,7 +426,11 @@
                 {
                     "start": 1582,
                     "end": 1591,
-                    "replacementText": "new Map<string, string>()"
+                    "replacementText": "new Map<string, string>()",
+                    "line": 47,
+                    "column": 10,
+                    "endLine": 47,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -373,6 +445,16 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 14,
+            "endLine": 51,
+            "endColumn": 17,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -393,6 +475,16 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 14,
+            "endLine": 55,
+            "endColumn": 17,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -407,6 +499,16 @@
         },
         {
             "line": 60,
+            "column": 16,
+            "endLine": 60,
+            "endColumn": 19,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
             "column": 12,
             "endLine": 60,
             "endColumn": 21,
@@ -415,11 +517,25 @@
                 {
                     "start": 1798,
                     "end": 1807,
-                    "replacementText": "new Map<string, string>()"
+                    "replacementText": "new Map<string, string>()",
+                    "line": 60,
+                    "column": 12,
+                    "endLine": 60,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 16,
+            "endLine": 64,
+            "endColumn": 19,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -432,7 +548,11 @@
                 {
                     "start": 1873,
                     "end": 1882,
-                    "replacementText": "new Map<string, string>()"
+                    "replacementText": "new Map<string, string>()",
+                    "line": 64,
+                    "column": 12,
+                    "endLine": 64,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -447,6 +567,16 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 16,
+            "endLine": 68,
+            "endColumn": 19,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -467,6 +597,16 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 16,
+            "endLine": 72,
+            "endColumn": 19,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-'use static'
 import {Foo, Foo1} from "./instantiated_js_obj_js"
 class A {
     num: number = 1;

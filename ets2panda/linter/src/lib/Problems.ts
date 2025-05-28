@@ -198,7 +198,6 @@ export enum FaultID {
   SdkTypeQuery,
   IsConcurrentDeprecated,
   InteropStaticObjectLiterals,
-  InteropJsObjectUsage,
   InteropJsObjectInheritance,
   InteropJsObjectTraverseJsInstance,
   InteropJsObjectCallStaticFunc,

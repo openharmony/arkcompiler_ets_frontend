@@ -15,38 +15,28 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 1,
-            "endLine": 16,
-            "endColumn": 49,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 49,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 617,
-                    "end": 665,
+                    "start": 604,
+                    "end": 652,
                     "replacementText": "",
-                    "line": 16,
+                    "line": 15,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 15,
                     "endColumn": 49
                 },
                 {
-                    "start": 665,
-                    "end": 665,
+                    "start": 652,
+                    "end": 652,
                     "replacementText": "let GeneratedImportVar_1 = ESValue.load('./binary_operation_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
-                    "line": 16,
+                    "line": 15,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 15,
                     "endColumn": 49
                 }
             ],
@@ -55,19 +45,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 16,
             "column": 9,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 674,
-                    "end": 679,
+                    "start": 661,
+                    "end": 666,
                     "replacementText": "foo.getPropertyByName(\"a\")",
-                    "line": 17,
+                    "line": 16,
                     "column": 9,
-                    "endLine": 17,
+                    "endLine": 16,
                     "endColumn": 14
                 }
             ],
@@ -80,36 +70,15 @@
             "column": 9,
             "endLine": 17,
             "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('a').toNumber()",
-                    "start": 674,
-                    "end": 679,
-                    "line": 17,
-                    "column": 9,
-                    "endLine": 17,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 9,
-            "endLine": 18,
-            "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 688,
-                    "end": 693,
+                    "start": 675,
+                    "end": 680,
                     "replacementText": "foo.getPropertyByName(\"b\")",
-                    "line": 18,
+                    "line": 17,
                     "column": 9,
-                    "endLine": 18,
+                    "endLine": 17,
                     "endColumn": 14
                 }
             ],
@@ -119,23 +88,22 @@
         },
         {
             "line": 18,
-            "column": 9,
+            "column": 1,
             "endLine": 18,
-            "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('b').toNumber()",
-                    "start": 688,
-                    "end": 693,
-                    "line": 18,
-                    "column": 9,
-                    "endLine": 18,
-                    "endColumn": 14
-                }
-            ],
+            "endColumn": 2,
+            "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -230,28 +198,8 @@
         },
         {
             "line": 23,
-            "column": 5,
-            "endLine": 23,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 1,
-            "endLine": 24,
-            "endColumn": 2,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
             "column": 6,
-            "endLine": 24,
+            "endLine": 23,
             "endColumn": 7,
             "problem": "BinaryOperations",
             "suggest": "",
@@ -259,19 +207,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 23,
             "column": 3,
-            "endLine": 24,
+            "endLine": 23,
             "endColumn": 5,
             "problem": "ExponentOp",
             "autofix": [
                 {
                     "replacementText": "Math.pow(a, b)",
-                    "start": 724,
-                    "end": 730,
-                    "line": 24,
+                    "start": 711,
+                    "end": 717,
+                    "line": 23,
                     "column": 3,
-                    "endLine": 24,
+                    "endLine": 23,
                     "endColumn": 5
                 }
             ],

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-'use static'
 import {foo} from "./interop_import_js_index_js"
 let arr = foo.arr
 arr[1]

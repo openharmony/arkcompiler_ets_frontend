@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');

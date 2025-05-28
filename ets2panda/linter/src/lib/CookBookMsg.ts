@@ -270,14 +270,13 @@ cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters 
 cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =
   'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
-cookBookTag[264] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)';
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';
 cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)';
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
-cookBookTag[270] = 'Trying to catch JS errors is not permitted (arkts-interop-js2s-js-exception)';
+cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =

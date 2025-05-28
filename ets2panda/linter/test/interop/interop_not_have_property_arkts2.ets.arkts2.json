@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 59,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 59,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -35,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 1,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 9,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -48,16 +38,6 @@
             "line": 19,
             "column": 1,
             "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
             "endColumn": 17,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -68,16 +48,6 @@
             "line": 20,
             "column": 1,
             "endLine": 20,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 1,
-            "endLine": 21,
             "endColumn": 16,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -85,19 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 1,
-            "endLine": 21,
-            "endColumn": 11,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
+            "line": 20,
             "column": 14,
-            "endLine": 21,
+            "endLine": 20,
             "endColumn": 16,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -105,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 21,
             "column": 1,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 21,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -115,19 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
-            "column": 1,
-            "endLine": 22,
-            "endColumn": 12,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
+            "line": 21,
             "column": 16,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 17,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -135,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 21,
             "column": 19,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -145,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 22,
             "column": 1,
-            "endLine": 23,
+            "endLine": 22,
             "endColumn": 13,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -155,19 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 1,
-            "endLine": 23,
-            "endColumn": 8,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
+            "line": 22,
             "column": 11,
-            "endLine": 23,
+            "endLine": 22,
             "endColumn": 13,
             "problem": "NumericSemantics",
             "suggest": "",

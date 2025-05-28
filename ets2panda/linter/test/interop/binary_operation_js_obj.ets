@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 import {foo} from "./binary_operation_js_obj_js"
 let a = foo.a
 let b = foo.b

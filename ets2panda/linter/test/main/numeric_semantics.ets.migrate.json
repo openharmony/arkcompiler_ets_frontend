@@ -26,6 +26,16 @@
         },
         {
             "line": 110,
+            "column": 17,
+            "endLine": 110,
+            "endColumn": 27,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
             "column": 26,
             "endLine": 110,
             "endColumn": 26,
@@ -72,6 +82,16 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 189,
+            "column": 6,
+            "endLine": 189,
+            "endColumn": 13,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

@@ -45,4 +45,5 @@ export interface LinterOptions {
   migrationReport?: boolean;
   wholeProjectPath?: string;
   checkTsAndJs?: boolean;
+  inputFiles?: string[];
 }

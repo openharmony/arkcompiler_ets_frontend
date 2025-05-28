@@ -31,6 +31,7 @@ import {
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
@@ -93,6 +94,7 @@ function lintImpl(config: LinterConfig): LintRunResult {
   inputFiles = inputFiles.filter((input) => {
     return shouldProcessFile(options, input);
   });
+  options.inputFiles = inputFiles;
   const srcFiles: ts.SourceFile[] = [];
   for (const inputFile of inputFiles) {
     const srcFile = tsProgram.getSourceFile(inputFile);
@@ -185,6 +187,18 @@ function migrate(
   return lintResult;
 }
 
+function hasUseStaticDirective(srcFile: ts.SourceFile): boolean {
+  if (!srcFile?.statements.length) {
+    return false;
+  }
+  const statements = srcFile.statements;
+  return (
+    ts.isExpressionStatement(statements[0]) &&
+    ts.isStringLiteral(statements[0].expression) &&
+    statements[0].expression.getText() === USE_STATIC
+  );
+}
+
 function fix(
   linterConfig: LinterConfig,
   lintResult: LintRunResult,
@@ -204,17 +218,22 @@ function fix(
     }
   }
   mergedProblems.forEach((problemInfos, fileName) => {
-    // If nothing to fix, skip file
-    if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos)) {
-      return;
-    }
-
     const srcFile = program.getSourceFile(fileName);
     if (!srcFile) {
-      Logger.error(`Failed to retrieve source file: ${fileName}`);
+      if (!linterConfig.cmdOptions.homecheck) {
+        Logger.error(`Failed to retrieve source file: ${fileName}`);
+      }
       return;
     }
-
+    const needToAddUseStatic =
+      linterConfig.cmdOptions.linterOptions.arkts2 &&
+      linterConfig.cmdOptions.inputFiles.includes(fileName) &&
+      !hasUseStaticDirective(srcFile) &&
+      linterConfig.cmdOptions.linterOptions.ideInteractive;
+    // If nothing to fix or don't need to add 'use static', then skip file
+    if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos) && !needToAddUseStatic) {
+      return;
+    }
     const qe: qEd.QuasiEditor = new qEd.QuasiEditor(
       fileName,
       srcFile.text,
@@ -222,7 +241,7 @@ function fix(
       undefined,
       linterConfig.cmdOptions.outputFilePath
     );
-    updatedSourceTexts.set(fileName, qe.fix(problemInfos));
+    updatedSourceTexts.set(fileName, qe.fix(problemInfos, needToAddUseStatic));
     appliedFix = true;
   });
 
@@ -242,7 +261,7 @@ function getMigrationCreateProgramCallback(updatedSourceTexts: Map<string, strin
   };
 }
 
-function shouldProcessFile(options: LinterOptions, fileFsPath: string): boolean {
+export function shouldProcessFile(options: LinterOptions, fileFsPath: string): boolean {
   if (!options.checkTsAndJs && (path.extname(fileFsPath) === EXTNAME_TS || path.extname(fileFsPath) === EXTNAME_JS)) {
     return false;
   }

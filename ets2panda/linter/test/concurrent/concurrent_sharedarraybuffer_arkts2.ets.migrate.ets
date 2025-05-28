@@ -22,3 +22,9 @@ let newTypeName: NewTypeName
 let ntn: NewTypeName = new ArrayBuffer(0.0) // ERROR
 
 function foo(atmo: Atomics) {} // NOT ERROR
+
+class A extends ArrayBuffer {
+    constructor() {
+        supper(1.0)
+    }
+}

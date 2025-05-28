@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-'use static'
 let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
