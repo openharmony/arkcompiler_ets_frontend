@@ -7,7 +7,7 @@ class A {
   
   public foo() {
     if (true) {
-      (this).x = 2;
+      this.x = 2;
     }
   }
   
