@@ -548,8 +548,11 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
             if (ast->IsTSEnumDeclaration()) {
                 auto *enumDecl = ast->AsTSEnumDeclaration();
                 auto const flags = GetDeclFlags(enumDecl);
-                if (!flags.IsValid() || enumDecl->Members().empty()) {
+                if (!flags.IsValid()) {
                     return ast;
+                }
+                if (enumDecl->Members().empty()) {
+                    return CreateEnumIntClassFromEnumDeclaration<ir::PrimitiveType::INT>(enumDecl, flags);
                 }
 
                 bool hasLoggedError = false;
