@@ -286,6 +286,8 @@ cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storagep
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
 cookBookTag[284] = '"prop" function is not supported (arkui-no-prop-function)';
 cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-function)';
+cookBookTag[286] =
+  'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =

@@ -252,6 +252,7 @@ export enum FaultID {
   LocalStoragePropDecoratorNotSupported,
   PropFunctionNotSupported,
   SetAndPropFunctionNotSupported,
+  PropNeedCallMethodForDeepCopy,
   // this should always be last enum
   LAST_ID
 }
