@@ -52,7 +52,9 @@ import {
   ARE_STRICTLY_EQUAL,
   WRAP,
   INSTANTIATE,
-  TO_NUMBER
+  TO_NUMBER,
+  INVOKE,
+  INVOKE_METHOD
 } from '../utils/consts/InteropAPI';
 import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
 
@@ -3113,6 +3115,41 @@ export class Autofixer {
         replacementText: replacementText
       }
     ];
+  }
+
+  /**
+   * Transforms a call expression invoking an imported function or method into its interop equivalent.
+   * - For direct calls like foo() or bar(123), transforms to foo.invoke() or bar.invoke(ESValue.wrap(123))
+   * - For property access calls like foo.bar(123), transforms to foo.invokeMethod('bar', ESValue.wrap(123))
+   * @param expression The call expression node to transform.
+   * @returns Autofix array or undefined.
+   */
+  fixInteropInvokeExpression(expression: ts.CallExpression): Autofix[] | undefined {
+    const callee = expression.expression;
+    const args = this.createArgs(expression.arguments);
+
+    let replacement: ts.CallExpression;
+
+    if (ts.isPropertyAccessExpression(callee)) {
+      // For expressions like foo.bar(123) => foo.invokeMethod('bar', ...)
+      replacement = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(callee.expression, ts.factory.createIdentifier(INVOKE_METHOD)),
+        undefined,
+        [ts.factory.createStringLiteral(callee.name.getText()), ...args || []]
+      );
+    } else if (ts.isIdentifier(callee)) {
+      // For expressions like foo() or bar(123) => foo.invoke(...) or bar.invoke(...)
+      replacement = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(callee, ts.factory.createIdentifier(INVOKE)),
+        undefined,
+        args
+      );
+    } else {
+      return undefined;
+    }
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, expression.getSourceFile());
+    return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
   fixInteropInstantiateExpression(

@@ -18,6 +18,8 @@ export const ARE_EQUAL = 'areEqual';
 export const ARE_STRICTLY_EQUAL = 'areStrictlyEqual';
 export const WRAP = 'wrap';
 export const INSTANTIATE = 'instantiate';
+export const INVOKE = 'invoke';
+export const INVOKE_METHOD = 'invokeMethod';
 
 export const REFLECT_PROPERTIES = [
   'get',
