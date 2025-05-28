@@ -111,7 +111,3 @@ fatal:
 - name: MISSING_OUTPUT_FILE
   id: 25
   message: "Output file path must be specified."
-
-- name: DEEP_NESTING
-  id: 26
-  message: "Maximum allowed nesting level exceeded."
