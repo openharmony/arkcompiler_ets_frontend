@@ -9,3 +9,6 @@ hamcrest_test
 
 #19247
 jsDiff_test
+
+#23235
+pdfview_test
