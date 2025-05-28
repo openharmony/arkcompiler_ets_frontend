@@ -43,7 +43,7 @@ public:
         return tabSize_;
     }
 
-    const std::string &GetNewLineCharacter() const
+    std::string GetNewLineCharacter() const
     {
         return newLineCharacter_;
     }
