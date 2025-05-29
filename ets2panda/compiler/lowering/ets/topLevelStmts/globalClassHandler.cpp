@@ -431,26 +431,11 @@ ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(parser
     return statements;
 }
 
-void GlobalClassHandler::FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
-                                                   const ModuleDependencies *moduleDependencies)
+void GlobalClassHandler::FormDependentInitTriggers([[maybe_unused]] ArenaVector<ir::Statement *> &statements,
+                                                   [[maybe_unused]] const ModuleDependencies *moduleDependencies)
 {
-    auto const sequence = [&statements](ir::Statement *stmt) { statements.push_back(stmt); };
-
-    auto triggerInitOf = [this, sequence, initialized = false](parser::Program *prog) mutable {
-        if (!initialized) {
-            initialized = true;
-            sequence(parser_->CreateFormattedStatement("const __linker = Class.ofCaller().getLinker();"));
-        }
-        auto name = std::string(prog->ModulePrefix()).append(Signatures::ETS_GLOBAL);
-        sequence(parser_->CreateFormattedStatement("__linker.loadClass(\"" + name + "\", true);"));
-    };
-
-    for (auto depProg : *moduleDependencies) {
-        if (util::Helpers::IsStdLib(depProg)) {
-            continue;
-        }
-        triggerInitOf(depProg);
-    }
+    // NOTE(dslynko, #26183): leaving this function for later reuse in `import "path"` feature,
+    // which would initialize the dependency.
 }
 
 ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition *classDef)
