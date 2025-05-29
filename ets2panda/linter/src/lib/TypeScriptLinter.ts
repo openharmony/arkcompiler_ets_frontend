@@ -8913,11 +8913,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
 
-      if (className && isStaticPropertyAccess(returnStmt.expression, className)) {
+      const returnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression); 
+      if (className && isStaticPropertyAccess(returnStmt.expression, className) && returnType.isUnion()) {
         this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
       }
 
-      if (isInstancePropertyAccess(returnStmt.expression)) {
+      if (isInstancePropertyAccess(returnStmt.expression) && returnType.isUnion()) {
         this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
       }
     });
