@@ -32,7 +32,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x4
+slotNum = 0x6
 .language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
@@ -46,7 +46,8 @@ label_0:
 	stmodulevar 0x0
 	ldhole
 	sta v0
-	callruntime.definesendableclass 0x3, .B, _3, 0x0, v0
+	defineclasswithbuffer 0x3, .B, _2, 0x0, v0
+	ldobjbyname 0x4, prototype
 	returnundefined
 label_2: 
 }
