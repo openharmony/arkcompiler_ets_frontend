@@ -41,8 +41,8 @@
                     "endColumn": 51
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
                     "line": 17,
                     "column": 1,
@@ -81,8 +81,8 @@
                     "endColumn": 56
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getPropertyByName('ff1');\nlet ff2 = GeneratedImportVar_2.getPropertyByName('ff2');\n",
                     "line": 18,
                     "column": 1,
@@ -121,8 +121,8 @@
                     "endColumn": 49
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getPropertyByName('A');\n",
                     "line": 20,
                     "column": 1,
@@ -161,8 +161,8 @@
                     "endColumn": 49
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getPropertyByName('C');\n",
                     "line": 21,
                     "column": 1,
@@ -201,8 +201,8 @@
                     "endColumn": 51
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getPropertyByName('ff3');\n",
                     "line": 23,
                     "column": 1,
@@ -241,8 +241,8 @@
                     "endColumn": 51
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getPropertyByName('ff4');\n",
                     "line": 25,
                     "column": 1,
@@ -281,8 +281,8 @@
                     "endColumn": 54
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getPropertyByName('handle');\n",
                     "line": 27,
                     "column": 1,
@@ -321,12 +321,52 @@
                     "endColumn": 54
                 },
                 {
-                    "start": 1038,
-                    "end": 1038,
+                    "start": 1092,
+                    "end": 1092,
                     "replacementText": "let GeneratedImportVar_8 = ESValue.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getPropertyByName('expand');\n",
                     "line": 29,
                     "column": 1,
                     "endLine": 29,
+                    "endColumn": 54
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 54,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 54,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 1039,
+                    "end": 1092,
+                    "replacementText": "",
+                    "line": 30,
+                    "column": 1,
+                    "endLine": 30,
+                    "endColumn": 54
+                },
+                {
+                    "start": 1092,
+                    "end": 1092,
+                    "replacementText": "let GeneratedImportVar_9 = ESValue.load('./interop_import_js_rules_js');\nlet orange = GeneratedImportVar_9.getPropertyByName('orange');\n",
+                    "line": 30,
+                    "column": 1,
+                    "endLine": 30,
                     "endColumn": 54
                 }
             ],
@@ -342,8 +382,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 1044,
-                    "end": 1054,
+                    "start": 1097,
+                    "end": 1107,
                     "replacementText": "foo.getPropertyByName(\"isGood\")",
                     "line": 31,
                     "column": 5,
@@ -364,8 +404,8 @@
             "autofix": [
                 {
                     "replacementText": "foo.getPropertyByName('isGood').toBoolean()",
-                    "start": 1044,
-                    "end": 1054,
+                    "start": 1097,
+                    "end": 1107,
                     "line": 31,
                     "column": 5,
                     "endLine": 31,
@@ -394,8 +434,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 1064,
-                    "end": 1070,
+                    "start": 1117,
+                    "end": 1123,
                     "replacementText": "ff1.getPropertyByName(\"f1\")",
                     "line": 33,
                     "column": 5,
@@ -416,8 +456,8 @@
             "autofix": [
                 {
                     "replacementText": "ff1.getPropertyByName('f1').toNumber()",
-                    "start": 1064,
-                    "end": 1070,
+                    "start": 1117,
+                    "end": 1123,
                     "line": 33,
                     "column": 5,
                     "endLine": 33,
@@ -436,8 +476,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1073,
-                    "end": 1075,
+                    "start": 1126,
+                    "end": 1128,
                     "replacementText": "18.0",
                     "line": 33,
                     "column": 14,
@@ -484,16 +524,6 @@
             "column": 3,
             "endLine": 44,
             "endColumn": 8,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 3,
-            "endLine": 44,
-            "endColumn": 8,
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
@@ -517,8 +547,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 1290,
-                    "end": 1297,
+                    "start": 1343,
+                    "end": 1350,
                     "replacementText": "ff3.getPropertyByName(\"arr\")",
                     "line": 49,
                     "column": 11,
@@ -539,8 +569,8 @@
             "autofix": [
                 {
                     "replacementText": "ff3.getPropertyByName('arr')",
-                    "start": 1290,
-                    "end": 1297,
+                    "start": 1343,
+                    "end": 1350,
                     "line": 49,
                     "column": 11,
                     "endLine": 49,
@@ -560,8 +590,8 @@
             "autofix": [
                 {
                     "replacementText": "arr.getPropertyByName('length').toNumber()",
-                    "start": 1308,
-                    "end": 1328,
+                    "start": 1361,
+                    "end": 1381,
                     "line": 50,
                     "column": 11,
                     "endLine": 50,
@@ -590,8 +620,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1338,
-                    "end": 1343,
+                    "start": 1391,
+                    "end": 1396,
                     "replacementText": "i: number = 0",
                     "line": 51,
                     "column": 10,
@@ -611,8 +641,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1342,
-                    "end": 1343,
+                    "start": 1395,
+                    "end": 1396,
                     "replacementText": "0.0",
                     "line": 51,
                     "column": 14,
@@ -643,8 +673,8 @@
             "autofix": [
                 {
                     "replacementText": "arr.getPropertyByIndex(i).toNumber()",
-                    "start": 1371,
-                    "end": 1377,
+                    "start": 1424,
+                    "end": 1430,
                     "line": 52,
                     "column": 11,
                     "endLine": 52,
@@ -663,8 +693,8 @@
             "problem": "InterOpImportJsIndex",
             "autofix": [
                 {
-                    "start": 1371,
-                    "end": 1377,
+                    "start": 1424,
+                    "end": 1430,
                     "replacementText": "arr.getPropertyByIndex(i)",
                     "line": 52,
                     "column": 11,
@@ -685,8 +715,8 @@
             "autofix": [
                 {
                     "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
-                    "start": 1380,
-                    "end": 1390,
+                    "start": 1433,
+                    "end": 1443,
                     "line": 53,
                     "column": 3,
                     "endLine": 53,
@@ -705,8 +735,8 @@
             "problem": "InterOpImportJsIndex",
             "autofix": [
                 {
-                    "start": 1380,
-                    "end": 1390,
+                    "start": 1433,
+                    "end": 1443,
                     "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
                     "line": 53,
                     "column": 3,
@@ -726,8 +756,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1389,
-                    "end": 1390,
+                    "start": 1442,
+                    "end": 1443,
                     "replacementText": "0.0",
                     "line": 53,
                     "column": 12,
@@ -741,9 +771,9 @@
         },
         {
             "line": 63,
-            "column": 1,
+            "column": 8,
             "endLine": 63,
-            "endColumn": 13,
+            "endColumn": 12,
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
@@ -761,9 +791,9 @@
         },
         {
             "line": 64,
-            "column": 1,
+            "column": 8,
             "endLine": 64,
-            "endColumn": 15,
+            "endColumn": 14,
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
@@ -787,8 +817,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1528,
-                    "end": 1534,
+                    "start": 1581,
+                    "end": 1587,
                     "replacementText": "a: number = 1;",
                     "line": 66,
                     "column": 9,
@@ -808,8 +838,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1532,
-                    "end": 1533,
+                    "start": 1585,
+                    "end": 1586,
                     "replacementText": "1.0",
                     "line": 66,
                     "column": 13,
@@ -829,8 +859,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1535,
-                    "end": 1540,
+                    "start": 1588,
+                    "end": 1593,
                     "replacementText": "b: number = 2;",
                     "line": 66,
                     "column": 16,
@@ -850,8 +880,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1538,
-                    "end": 1539,
+                    "start": 1591,
+                    "end": 1592,
                     "replacementText": "2.0",
                     "line": 66,
                     "column": 19,
@@ -871,8 +901,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1541,
-                    "end": 1545,
+                    "start": 1594,
+                    "end": 1598,
                     "replacementText": "c: number = 3;",
                     "line": 66,
                     "column": 22,
@@ -892,8 +922,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1544,
-                    "end": 1545,
+                    "start": 1597,
+                    "end": 1598,
                     "replacementText": "3.0",
                     "line": 66,
                     "column": 25,
@@ -907,9 +937,9 @@
         },
         {
             "line": 67,
-            "column": 1,
+            "column": 8,
             "endLine": 67,
-            "endColumn": 16,
+            "endColumn": 15,
             "problem": "InteropJsObjectExpandStaticInstance",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)",
@@ -923,6 +953,130 @@
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 8,
+            "endLine": 76,
+            "endColumn": 13,
+            "problem": "InteropJsObjectExpandStaticInstance",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 1,
+            "endLine": 76,
+            "endColumn": 14,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 8,
+            "endLine": 77,
+            "endColumn": 38,
+            "problem": "InteropJsObjectExpandStaticInstance",
+            "suggest": "",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 1,
+            "endLine": 77,
+            "endColumn": 39,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "endLine": 79,
+            "endColumn": 32,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1826,
+                    "end": 1853,
+                    "replacementText": "orange.isVegetable1.areStrictlyEqual(123)",
+                    "line": 79,
+                    "column": 5,
+                    "endLine": 79,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "endLine": 79,
+            "endColumn": 24,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1826,
+                    "end": 1845,
+                    "replacementText": "orange.getPropertyByName(\"isVegetable1\")",
+                    "line": 79,
+                    "column": 5,
+                    "endLine": 79,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "endLine": 79,
+            "endColumn": 24,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "orange.getPropertyByName('isVegetable1').toNumber()",
+                    "start": 1826,
+                    "end": 1845,
+                    "line": 79,
+                    "column": 5,
+                    "endLine": 79,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 29,
+            "endLine": 79,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1850,
+                    "end": 1853,
+                    "replacementText": "123.0",
+                    "line": 79,
+                    "column": 29,
+                    "endLine": 79,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

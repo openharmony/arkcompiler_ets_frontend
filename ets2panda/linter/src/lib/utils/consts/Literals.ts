@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-export const STRING_ERROR_LITERAL = 'ERROR';
+export const STRING_ERROR_LITERAL = 'Error';

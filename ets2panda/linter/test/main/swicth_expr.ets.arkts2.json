@@ -621,7 +621,7 @@
             "endColumn": 32,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {

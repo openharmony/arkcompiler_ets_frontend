@@ -89,7 +89,12 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   process.exit(0);
 }
 
-function mergeLintProblems(filePath: string, problems: ProblemInfo[], mergedProblems: Map<string, ProblemInfo[]>, cmdOptions: CommandLineOptions): void {
+function mergeLintProblems(
+  filePath: string,
+  problems: ProblemInfo[],
+  mergedProblems: Map<string, ProblemInfo[]>,
+  cmdOptions: CommandLineOptions
+): void {
   if (!mergedProblems.has(filePath)) {
     mergedProblems.set(filePath, []);
   }

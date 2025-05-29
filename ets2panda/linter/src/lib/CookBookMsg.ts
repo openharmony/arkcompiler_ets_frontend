@@ -278,9 +278,6 @@ cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
 cookBookTag[270] = 'Trying to catch JS errors is not permitted (arkts-interop-js2s-js-exception)';
-cookBookTag[271] = 'No support for static dynamic import (arkts-interop-d2s-dynamic-import)';
-cookBookTag[272] = 'No support for static dynamic import (arkts-interop-ts2s-dynamic-import-ts)';
-cookBookTag[273] = 'No support for static dynamic import (arkts-interop-js2s-dynamic-import-js)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
@@ -360,11 +357,11 @@ cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
 cookBookTag[358] =
   'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
-cookBookTag[370] = 'Sparse array are not supported (arkts-no-sparse-array)';
-cookBookTag[371] = 'Enum prop as type are not supported (arkts-no-enum-prop-as-type)';
+cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
+cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';
-cookBookTag[373] = 'Array types follow the principle of invariance (arkts-array-type-immutable)';
-cookBookTag[374] = 'ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)';
+cookBookTag[373] = 'Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)';
+cookBookTag[374] = 'Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)';
 cookBookTag[375] = 'TS catch type are not supported (arkts-no-ts-like-catch-type)';
 cookBookTag[376] = 'Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)';
 cookBookTag[377] =

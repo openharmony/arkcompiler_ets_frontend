@@ -17,3 +17,6 @@ export let foo = {name: 123}
 export let foo2 = {bool: true}
 export let foo3 = {str: '123'}
 export let foo4 = {big:  123n}
+export let array_val = [1, 2, 3];
+export let null_val = null;
+export let undefined_val = undefined;

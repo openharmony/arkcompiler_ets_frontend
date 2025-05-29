@@ -16,3 +16,4 @@
 export const ASON_TEXT = 'ASON';
 export const ASON_MODULES = ['@arkts.utils', '@kit.ArkTS'];
 export const JSON_TEXT = 'JSON';
+export const ARKTS_UTILS_TEXT = 'ArkTSUtils';

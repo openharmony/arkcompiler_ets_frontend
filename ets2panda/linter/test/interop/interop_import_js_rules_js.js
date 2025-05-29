@@ -35,3 +35,9 @@ export function expand(obj) {
   let x = obj;
   let {a, b, c} = obj;
 }
+
+export let orange = {
+  isFruit: true,
+  isVegetable: false,
+  isVegetable1: 123
+}

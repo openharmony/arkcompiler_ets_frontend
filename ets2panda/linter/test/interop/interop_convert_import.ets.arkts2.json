@@ -18,7 +18,7 @@
             "line": 17,
             "column": 2,
             "endLine": 17,
-            "endColumn": 70,
+            "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
@@ -28,7 +28,7 @@
             "line": 17,
             "column": 2,
             "endLine": 17,
-            "endColumn": 70,
+            "endColumn": 106,
             "problem": "InterOpImportJs",
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
@@ -42,6 +42,16 @@
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 18,
+            "endLine": 19,
+            "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -142,6 +152,116 @@
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 9,
+            "endLine": 25,
+            "endColumn": 27,
+            "problem": "InterOpConvertImport",
+            "suggest": "",
+            "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 44,
+            "endLine": 25,
+            "endColumn": 62,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 54,
+            "endLine": 25,
+            "endColumn": 55,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 57,
+            "endLine": 25,
+            "endColumn": 58,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 60,
+            "endLine": 25,
+            "endColumn": 61,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 9,
+            "endLine": 30,
+            "endColumn": 30,
+            "problem": "InterOpConvertImport",
+            "suggest": "",
+            "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 48,
+            "endLine": 30,
+            "endColumn": 49,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 50,
+            "endLine": 30,
+            "endColumn": 51,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 52,
+            "endLine": 30,
+            "endColumn": 53,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 8,
+            "endLine": 35,
+            "endColumn": 24,
+            "problem": "InterOpConvertImport",
+            "suggest": "",
+            "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 8,
+            "endLine": 40,
+            "endColumn": 34,
+            "problem": "InterOpConvertImport",
+            "suggest": "",
+            "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
             "severity": "ERROR"
         }
     ]

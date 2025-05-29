@@ -32,3 +32,9 @@ class AA2 {
         return this.instance;   // Error
     }
 }
+class A {
+    private static instance:A = new A();
+        static get():A {
+        return A.instance;
+    }
+}

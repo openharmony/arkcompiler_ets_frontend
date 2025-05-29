@@ -89,29 +89,9 @@
             "column": 8,
             "endLine": 21,
             "endColumn": 15,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 8,
-            "endLine": 21,
-            "endColumn": 15,
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 11,
-            "endLine": 22,
-            "endColumn": 18,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -159,16 +139,6 @@
             "column": 8,
             "endLine": 25,
             "endColumn": 19,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 8,
-            "endLine": 25,
-            "endColumn": 19,
             "problem": "CallJSFunction",
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
@@ -192,16 +162,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 8,
-            "endLine": 26,
-            "endColumn": 20,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -322,16 +282,6 @@
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 11,
-            "endLine": 36,
-            "endColumn": 22,
-            "problem": "InteropObjectProperty",
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -519,16 +469,6 @@
             "column": 8,
             "endLine": 71,
             "endColumn": 25,
-            "problem": "InteropObjectProperty",
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 8,
-            "endLine": 71,
-            "endColumn": 25,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
@@ -552,16 +492,6 @@
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
             "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 8,
-            "endLine": 72,
-            "endColumn": 30,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -602,16 +532,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 8,
-            "endLine": 73,
-            "endColumn": 31,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {

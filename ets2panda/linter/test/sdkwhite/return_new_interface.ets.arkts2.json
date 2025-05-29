@@ -49,9 +49,9 @@
             "column": 14,
             "endLine": 26,
             "endColumn": 15,
-            "problem": "ConstructorIface",
+            "problem": "ConstructorIfaceFromSdk",
             "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -79,9 +79,9 @@
             "column": 14,
             "endLine": 30,
             "endColumn": 15,
-            "problem": "ConstructorIface",
+            "problem": "ConstructorIfaceFromSdk",
             "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {

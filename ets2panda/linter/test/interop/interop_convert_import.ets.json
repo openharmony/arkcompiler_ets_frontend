@@ -18,7 +18,7 @@
             "line": 17,
             "column": 2,
             "endLine": 17,
-            "endColumn": 70,
+            "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",

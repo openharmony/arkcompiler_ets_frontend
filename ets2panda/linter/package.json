@@ -24,6 +24,7 @@
     "test_main": "npm run testrunner -- -d test/main",
     "test_ohmurl": "npm run testrunner -- -d test/ohmurl",
     "test_interop": "npm run testrunner -- -d test/interop",
+    "test_sdk": "npm run testrunner -- -d test/sdkwhite",
     "test_concurrent": "npm run testrunner -- -d test/concurrent",
     "test_rules": "npm run testrunner -- -d test/rules",
     "test_regression": "npm run testrunner -- -d test/regression",

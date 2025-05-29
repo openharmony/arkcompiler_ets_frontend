@@ -138,7 +138,7 @@
             "line": 46,
             "column": 5,
             "endLine": 46,
-            "endColumn": 43,
+            "endColumn": 22,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",

@@ -56,7 +56,7 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
     languageTags: languageTags,
     fileOrFolderToCheck: inputFiles,
     logLevel: cmdOptions.verbose ? 'DEBUG' : 'INFO',
-    arkAnalyzerLogLevel: cmdOptions.verbose ? 'DEBUG' : 'ERROR',
+    arkAnalyzerLogLevel: cmdOptions.verbose ? 'DEBUG' : 'ERROR'
   };
   return { ruleConfigInfo, projectConfigInfo };
 }
