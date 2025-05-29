@@ -31,7 +31,7 @@
             "endColumn": 31,
             "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 7,
             "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 9,
             "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 54,
             "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 8,
             "problem": "ArrayTypeImmutable",
             "suggest": "",
-            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         }
     ]

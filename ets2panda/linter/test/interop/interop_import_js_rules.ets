@@ -27,7 +27,7 @@ import { ff4 } from "./interop_import_js_rules_js"
 import { handle } from "./interop_import_js_rules_js"
 
 import { expand } from "./interop_import_js_rules_js"
-
+import { orange } from "./interop_import_js_rules_js"
 if (foo.isGood) {}
 
 if (ff1.f1 > 18) {
@@ -75,3 +75,7 @@ let testY: Y = {
 }
 expand(testY);
 expand({x: '1', y: "hello", z: false});
+let flag = false;
+if (orange.isVegetable1 === 123) {
+flag = true
+}

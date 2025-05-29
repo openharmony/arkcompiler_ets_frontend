@@ -3648,6 +3648,13 @@ export class TsUtils {
     let current: ts.Node | undefined = node;
     while (current) {
       if (ts.isIfStatement(current)) {
+        if (
+          ts.isBinaryExpression(node.parent) &&
+          node.parent.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken
+        ) {
+          return false;
+        }
+        
         return true;
       }
       current = current.parent;
