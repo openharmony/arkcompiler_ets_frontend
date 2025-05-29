@@ -15,3 +15,4 @@
 
 let a = [1, , , 3];
 let b = [];
+let c:number[] = [];
