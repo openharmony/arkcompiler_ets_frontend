@@ -36,6 +36,7 @@ import {
   PROJECT_BUILD_CONFIG_FILE
 } from '../pre_define';
 import {
+  changeDeclgenFileExtension,
   changeFileExtension,
   ensurePathExists,
   getFileHash,
@@ -132,11 +133,11 @@ export abstract class BaseMode {
     const source = fs.readFileSync(fileInfo.filePath, 'utf8');
     let moduleInfo: ModuleInfo = this.moduleInfos.get(fileInfo.packageName)!;
     let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, fileInfo.filePath);
-    let declEtsOutputPath: string = changeFileExtension(
+    let declEtsOutputPath: string = changeDeclgenFileExtension(
       path.join(moduleInfo.declgenV1OutPath as string, moduleInfo.packageName, filePathFromModuleRoot),
       DECL_ETS_SUFFIX
     );
-    let etsOutputPath: string = changeFileExtension(
+    let etsOutputPath: string = changeDeclgenFileExtension(
       path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot),
       TS_SUFFIX
     );
@@ -634,7 +635,7 @@ export abstract class BaseMode {
     this.dependencyAnalyzerCmd.push('@' + '"' + dependencyInputFile + '"');
     for (const [packageName, module] of this.moduleInfos) {
       if (module.isMainModule) {
-          this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' +  module.arktsConfigFile + '"');
+          this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
           break;
       }
     }
