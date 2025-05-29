@@ -293,22 +293,23 @@ bool Type::PossiblyETSString() const
 
 static bool IsValueTypedObjectType(ETSObjectType const *t)
 {
-    return t->IsGlobalETSObjectType() || t->HasObjectFlag(ETSObjectFlags::VALUE_TYPED) ||
-           t->HasObjectFlag(ETSObjectFlags::ENUM_OBJECT);
+    ETSObjectFlags flags = ETSObjectFlags::FUNCTIONAL_REFERENCE | ETSObjectFlags::VALUE_TYPED |
+                           ETSObjectFlags::ENUM_OBJECT | ETSObjectFlags::FUNCTIONAL;
+    return t->IsGlobalETSObjectType() || t->HasObjectFlag(flags);
 }
 
 bool Type::PossiblyETSValueTyped() const
 {
-    return MatchConstituentOrConstraint(this, [](const Type *t) {
-        return t->IsETSNullType() || t->IsETSUndefinedType() ||
-               (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
-    });
+    return MatchConstituentOrConstraint(this,
+                                        [](const Type *t) { return t->IsETSNullType() || t->IsETSUndefinedType(); }) ||
+           PossiblyETSValueTypedExceptNullish();
 }
 
 bool Type::PossiblyETSValueTypedExceptNullish() const
 {
-    return MatchConstituentOrConstraint(
-        this, [](const Type *t) { return t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()); });
+    return MatchConstituentOrConstraint(this, [](const Type *t) {
+        return t->IsETSFunctionType() || (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
+    });
 }
 
 bool Type::IsETSArrowType() const

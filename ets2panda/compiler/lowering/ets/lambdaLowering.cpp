@@ -30,6 +30,7 @@ struct LambdaInfo {
     util::StringView originalFuncName = "";
     ArenaSet<varbinder::Variable *> *capturedVars = nullptr;
     ir::Expression *callReceiver = nullptr;
+    bool isFunctionReference = false;
 };
 
 struct CalleeMethodInfo {
@@ -854,6 +855,11 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     auto classDeclaration =
         CreateEmptyLambdaClassDeclaration(ctx, info, newTypeParams, fnInterface, lambdaProviderClass);
     auto classDefinition = classDeclaration->Definition();
+    if (info->isFunctionReference) {
+        classDefinition->SetFunctionalReferenceReferencedMethod(callee->Function()->Scope()->InternalName());
+        classDefinition->SetModifiers(classDefinition->Modifiers() |
+                                      ir::ClassDefinitionModifiers::FUNCTIONAL_REFERENCE);
+    }
 
     CreateLambdaClassFields(ctx, classDefinition, info, substitution);
     CreateLambdaClassConstructor(ctx, classDefinition, info, substitution);
@@ -946,6 +952,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     auto capturedVars = FindCaptured(allocator, lambda);
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
+    info.isFunctionReference = false;
 
     auto *callee = CreateCallee(ctx, lambda, &info);
     auto *lambdaType = lambda->TsType()->AsETSFunctionType();
@@ -1067,6 +1074,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     info.originalFuncName = method->Id()->Name();
     auto emptySet = ArenaSet<varbinder::Variable *>(allocator->Adapter());
     info.capturedVars = &emptySet;
+    info.isFunctionReference = true;
     if (method->IsStatic()) {
         info.callReceiver = nullptr;
     } else {
@@ -1077,6 +1085,8 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     ES2PANDA_ASSERT(funcRef->TsType()->IsETSArrowType());
     auto *lambdaClass = CreateLambdaClass(ctx, funcRef->TsType()->AsETSFunctionType(), method, &info);
     auto *constructorCall = CreateConstructorCall(ctx, funcRef, lambdaClass, &info);
+    constructorCall->TsType()->AsETSObjectType()->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_REFERENCE);
+
     return constructorCall;
 }
 

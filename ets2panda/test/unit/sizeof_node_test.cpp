@@ -138,6 +138,7 @@ size_t SizeOfNodeTest::SizeOf<ClassDefinition>()
         sizeof(node->anonClass_) +
         Align(sizeof(node->localIndex_)) +
         sizeof(node->localPrefix_) +
+        sizeof(node->functionalReferenceReferencedMethod_) +
         sizeof(node->exportedClasses_);
     // clang-format on
 }
