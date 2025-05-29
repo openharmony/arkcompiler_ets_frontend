@@ -52,7 +52,7 @@ enum class AccessModifierStyle { PUBLIC = 0, PROTECTED, PRIVATE };
 class ClassMethodItem {
 public:
     ClassMethodItem(std::string detail, SetterStyle setter, AccessModifierStyle access)
-        : detail_(std::move(detail)), setter_(setter), accessMoodifier_(access)
+        : detail_(std::move(detail)), setter_(setter), accessModifier_(access)
     {
     }
 
@@ -88,14 +88,14 @@ public:
 
     AccessModifierStyle GetAccessModifierStyle() const
     {
-        return accessMoodifier_;
+        return accessModifier_;
     }
 
 private:
     std::string funcName_;
     std::string detail_;
     SetterStyle setter_;
-    AccessModifierStyle accessMoodifier_;
+    AccessModifierStyle accessModifier_;
 };
 
 class ClassHierarchyInfo {

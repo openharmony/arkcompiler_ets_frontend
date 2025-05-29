@@ -217,6 +217,13 @@ struct FieldsInfo {
     {
         return name < other.name;
     }
+    FieldsInfo() = default;
+    FieldsInfo(const FieldsInfo &fi) : name(fi.name), properties(fi.properties) {}
+};
+
+struct LspClassPropertyInfo {
+    FieldsInfo fieldsInfo;
+    LspClassPropertyInfo(FieldsInfo f) : fieldsInfo(std::move(f)) {}
 };
 
 typedef struct DocumentHighlightsReferences {
@@ -503,7 +510,7 @@ typedef struct LSPAPI {
     References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> (*getClassHierarchiesImpl)(es2panda_Context *context,
-                                                                                       const std::string &fileName,
+                                                                                       const char *fileName,
                                                                                        size_t pos);
     bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position, const char *path);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);

@@ -32,7 +32,7 @@ TEST_F(LSPAPITests, GetAliasScriptElementKind_1)
 
     Initializer initializer = Initializer();
     es2panda_Context *context = initializer.CreateContext(
-        "script_element_kind.ets", ES2PANDA_STATE_CHECKED,
+        "script_element_kind_1.ets", ES2PANDA_STATE_CHECKED,
         "let number_literal: number = 1234;\nlet string_literal: string = \"hello\";\nconst str_property = "
         "\"foo\";\n");
 
@@ -52,7 +52,7 @@ TEST_F(LSPAPITests, GetAliasScriptElementKind_2)
     LSPAPI const *lspApi = GetImpl();
     Initializer initializer = Initializer();
     es2panda_Context *context =
-        initializer.CreateContext("script_element_kind.ets", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("script_element_kind_2.ets", ES2PANDA_STATE_CHECKED,
                                   "    \nfunction f() {\n    let a = 123;\n}\nconst s = \"hello\";\n");
 
     size_t const startOfFile = 0;            // 0: position of start of file, first space
@@ -74,7 +74,8 @@ TEST_F(LSPAPITests, GetAliasScriptElementKind_3)
 
     const char *statement = R"(let empty: null = null;
 let notAssigned: undefined = undefined;)";
-    es2panda_Context *context = initializer.CreateContext("script_element_kind.ets", ES2PANDA_STATE_CHECKED, statement);
+    es2panda_Context *context =
+        initializer.CreateContext("script_element_kind_3.ets", ES2PANDA_STATE_CHECKED, statement);
 
     size_t const nullLiteral = 19;       // 19：position of the second null.
     size_t const etsNullType = 25;       // 25: position of the second let.
