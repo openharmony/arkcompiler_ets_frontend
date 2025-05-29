@@ -210,3 +210,7 @@ ets2panda_add_gtest(lsp_api_test_navigate_to CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_code_fix_registration CPP_SOURCES
     code_fix_registration_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_test_get_name_or_dotted_name_span CPP_SOURCES
+    get_name_or_dotted_name_span_test.cpp
+)

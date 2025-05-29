@@ -40,6 +40,7 @@
 #include "inlay_hints.h"
 #include "signature_help.h"
 #include "completions_details.h"
+#include "get_name_or_dotted_name_span.h"
 
 using ark::es2panda::lsp::details::GetCompletionEntryDetailsImpl;
 
@@ -397,6 +398,12 @@ CombinedCodeActionsInfo GetCombinedCodeFix(const char *fileName, const std::stri
     return result;
 }
 
+TextSpan *GetNameOrDottedNameSpan(es2panda_Context *context, int startPos)
+{
+    auto result = ark::es2panda::lsp::GetNameOrDottedNameSpanImpl(context, startPos);
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetApplicableRefactors,
                     GetImplementationAtPosition,
@@ -434,7 +441,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     ProvideInlayHints,
                     GetSignatureHelpItems,
                     GetCodeFixesAtPosition,
-                    GetCombinedCodeFix};
+                    GetCombinedCodeFix,
+                    GetNameOrDottedNameSpan};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()
