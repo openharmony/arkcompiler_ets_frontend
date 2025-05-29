@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "lsp/include/text_change/change_tracker.h"
+#include "lsp/include/services/text_change/change_tracker.h"
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -30,7 +30,8 @@ ChangeTracker ChangeTracker::FromContext(TextChangesContext &context)
     return ChangeTracker(context.formatContext, context.formatContext.GetFormatCodeSettings().GetNewLineCharacter());
 }
 
-std::vector<Change> ChangeTracker::With(TextChangesContext &context, const std::function<void(ChangeTracker &)> &cb)
+std::vector<FileTextChanges> ChangeTracker::With(TextChangesContext &context,
+                                                 const std::function<void(ChangeTracker &)> &cb)
 {
     auto tracker = FromContext(context);
     cb(tracker);
@@ -290,7 +291,7 @@ void ChangeTracker::FinishDeleteDeclarations()
 {
     // its about delete declarations
     // will develop next version
-    std::cout << deletedNodes_.size() << std::endl;
+    // its about delete declarations
 }
 /* createTextrangeFromSpan did not developed. it will develop next version.it should be gotten from utılıtıes
  * createTextTangeFromSpan method. pls check it from ts side*/
@@ -790,6 +791,33 @@ std::vector<FileTextChanges> GetTextChangesFromChanges(
 
     return {};
 }
+std::vector<FileTextChanges> ChangeTracker::GetTextChangesFromChanges(std::vector<Change> &changes,
+                                                                      std::string &newLineCharacter,
+                                                                      const FormatCodeSettings &formatCodeSettings)
+{
+    (void)newLineCharacter;
+    (void)formatCodeSettings;
+
+    std::unordered_map<std::string, FileTextChanges> fileChangesMap;
+    for (const auto &change : changes) {
+        if (const auto *textChange = std::get_if<ark::es2panda::lsp::ChangeText>(&change)) {
+            TextChange c = {{textChange->range.pos, textChange->range.end - textChange->range.pos}, textChange->text};
+            const std::string &filePath = std::string(textChange->sourceFile->filePath);
+            if (fileChangesMap.find(filePath) == fileChangesMap.end()) {
+                fileChangesMap[filePath].fileName = filePath;
+            }
+            fileChangesMap[filePath].textChanges.push_back(c);
+        }
+    }
+
+    std::vector<FileTextChanges> fileTextChanges;
+    fileTextChanges.reserve(fileChangesMap.size());
+    for (auto &pair : fileChangesMap) {
+        fileTextChanges.push_back(std::move(pair.second));
+    }
+
+    return fileTextChanges;
+}
 
 /**
  * Note: after calling this, the TextChanges object must be discarded!
@@ -798,11 +826,14 @@ std::vector<FileTextChanges> GetTextChangesFromChanges(
  * `getNonFormattedText` changes the node's positions, so we can only call this
  * once and can't get the non-formatted text separately.
  */
-std::vector<Change> ChangeTracker::GetChanges()  // should add ValidateNonFormattedText
+std::vector<FileTextChanges> ChangeTracker::GetChanges()  // should add ValidateNonFormattedText
 {
+    FinishDeleteDeclarations();
     FinishClassesWithNodesInsertedAtStart();
+    auto textChangesList =
+        GetTextChangesFromChanges(changes_, newLineCharacter_, formatContext_.GetFormatCodeSettings());
 
-    return changes_;
+    return textChangesList;
 }
 
 void ChangeTracker::CreateNewFile(SourceFile *oldFile, const std::string &fileName,

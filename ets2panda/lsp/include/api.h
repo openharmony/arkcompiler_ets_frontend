@@ -36,6 +36,8 @@
 #include "applicable_refactors.h"
 #include "todo_comments.h"
 #include "types.h"
+#include "formatting/formatting_settings.h"
+#include "user_preferences.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,18 +68,6 @@ typedef struct ReferenceInfo {
 typedef struct References {
     std::vector<ReferenceInfo> referenceInfos;
 } References;
-
-struct TextChange {
-    TextSpan span;
-    std::string newText;
-    TextChange(TextSpan s, const std::string &t) : span(s), newText(t) {}
-};
-
-struct FileTextChanges {
-    std::string fileName;
-    std::vector<TextChange> textChanges;
-    FileTextChanges(const std::string &f, const std::vector<TextChange> &t) : fileName(f), textChanges(t) {}
-};
 
 typedef struct Position {
     size_t line_;       // Line number
@@ -474,6 +464,35 @@ struct TypeHierarchiesInfo {
     TypeHierarchies subHierarchies;
 };
 
+struct InstallPackageActionInfo {
+    std::string type_;
+    std::optional<std::string> file;
+    std::optional<std::string> packageName;
+};
+
+struct CodeActionInfo {
+    std::string description_;
+    std::vector<FileTextChanges> changes_;
+    std::vector<InstallPackageActionInfo> commands_;
+};
+
+struct CombinedCodeActionsInfo {
+    std::vector<FileTextChanges> changes_;
+    std::vector<InstallPackageActionInfo> commands_;
+};
+
+struct CodeFixActionInfo : CodeActionInfo {
+    std::string fixName_;
+    std::string fixId_ = {};
+    std::string fixAllDescription_ = {};
+};
+
+struct CodeFixOptions {
+    ark::es2panda::lsp::CancellationToken token;
+    ark::es2panda::lsp::FormatCodeSettings options;
+    ark::es2panda::lsp::UserPreferences preferences;
+};
+
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
     ark::es2panda::lsp::ApplicableRefactorInfo (*getApplicableRefactors)(es2panda_Context *context, const char *kind,
@@ -526,14 +545,15 @@ typedef struct LSPAPI {
         ark::es2panda::lsp::CancellationToken *cancellationToken);
     InlayHintList (*provideInlayHints)(es2panda_Context *context, const TextSpan *span);
     SignatureHelpItems (*getSignatureHelpItems)(es2panda_Context *context, size_t position);
+    std::vector<CodeFixActionInfo> (*getCodeFixesAtPosition)(const char *fileName, size_t start_position,
+                                                             size_t end_position, std::vector<int> &errorCodes,
+                                                             CodeFixOptions &codeFixOptions);
+    CombinedCodeActionsInfo (*getCombinedCodeFix)(const char *fileName, const std::string &fixId,
+                                                  CodeFixOptions &codeFixOptions);
 } LSPAPI;
-
 CAPI_EXPORT LSPAPI const *GetImpl();
-
 // NOLINTEND
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif

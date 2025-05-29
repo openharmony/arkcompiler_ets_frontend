@@ -88,6 +88,11 @@ std::string GetOwnerId(ir::AstNode *node);
 std::string GetIdentifierName(ir::AstNode *node);
 bool NodeHasTokens(const ir::AstNode *node);
 void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results);
+std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *context, size_t startPosition,
+                                                          size_t endPosition, std::vector<int> &errorCodes,
+                                                          CodeFixOptions &codeFixOptions);
+CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
+                                               CodeFixOptions &codeFixOptions);
 
 }  // namespace ark::es2panda::lsp
 

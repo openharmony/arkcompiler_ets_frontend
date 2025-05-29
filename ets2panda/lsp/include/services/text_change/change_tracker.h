@@ -34,12 +34,10 @@
 
 namespace ark::es2panda::lsp {
 
-// Trivia Options
-enum class LeadingTriviaOption { EXCLUDE, INCLUDEALL, JSDOC, STARTLINE };
+enum class LeadingTriviaOption { EXCLUDE, INCLUDEALL, STARTLINE };
 
 enum class TrailingTriviaOption { EXCLUDE, EXCLUDEWHITESPACE, INCLUDE };
 
-// Configurable Trivia Options
 struct ConfigurableStart {
     std::optional<LeadingTriviaOption> leadingTriviaOption;
 };
@@ -58,7 +56,6 @@ struct ConfigurableStartEnd {
     std::optional<TrailingTriviaOption> trailingTriviaOption;
 };
 
-// InsertNodeOptions & Extensions
 struct InsertNodeOptions {
     std::optional<std::string> prefix;
     std::optional<std::string> suffix;
@@ -75,7 +72,6 @@ struct ChangeNodeOptions {
     std::optional<InsertNodeOptions> insertNodeOptions;
 };
 
-// ChangeKind Enum
 enum class ChangeKind { REMOVE, REPLACEWITHSINGLENODE, REPLACEWITHMULTIPLENODES, TEXT };
 
 struct ChangeText {
@@ -85,7 +81,6 @@ struct ChangeText {
     std::string text;
 };
 
-// Change Variants
 struct ReplaceWithSingleNode {
     const SourceFile *sourceFile;
     TextRange range;
@@ -105,31 +100,16 @@ struct RemoveNode {
     const SourceFile *sourceFile;
     TextRange range;
     ChangeKind kind = ChangeKind::REMOVE;
-    // node and options are "never", so not present
 };
-
-struct FileTextChanges {
-    std::string fileName;
-    std::vector<TextChange> textChanges;
-    bool isNewFile = false;
-};
-
-// Union Type: Change
 
 struct NewFile {
     std::optional<SourceFile *> oldFile;
     std::string fileName;
-    std::vector<const ir::Statement *> statements;  // int for NewLineTrivia
+    std::vector<const ir::Statement *> statements;
 };
 
 using Change = std::variant<ReplaceWithSingleNode, ReplaceWithMultipleNodes, RemoveNode, ChangeText>;
-// Public constructor
-struct LanguageServiceHost {};
-struct TextChangesContext {
-    LanguageServiceHost host = {};
-    FormatContext formatContext;
-    UserPreferences preferences;
-};
+
 struct DeletedNode {
     const SourceFile *sourceFile;
     const std::variant<const ir::AstNode *, const std::vector<const ir::AstNode *>> &node;
@@ -138,13 +118,13 @@ struct DeletedNode {
 struct NewFileStruct {
     std::optional<SourceFile *> oldFile;
     std::string fileName;
-    std::vector<std::variant<ir::Statement *, int>> statements;  // int for NewLineTrivia
+    std::vector<std::variant<ir::Statement *, int>> statements;
 };
 
 using ValidateNonFormattedText = std::function<void(ir::AstNode *node, const std::string &text)>;
 
 struct ClassInsertInfo {
-    ir::AstNode *node;  // Could be ClassLikeDeclaration, InterfaceDeclaration, or ObjectLiteralExpression
+    ir::AstNode *node;
     SourceFile *sourceFile;
 };
 
@@ -177,6 +157,8 @@ private:
     InsertNodeOptions GetInsertNodeAfterOptionsWorker(const ir::AstNode *node);
     void InsertNodeInListAfterMultiLine(bool multilineList, es2panda_Context *context, const SourceFile *sourceFile,
                                         size_t end, const ir::AstNode *newNode);
+    std::vector<FileTextChanges> GetTextChangesFromChanges(std::vector<Change> &changes, std::string &newLineCharacter,
+                                                           const FormatCodeSettings &formatCodeSettings);
     std::vector<DeletedNode> deletedNodes_;
     std::vector<Change> changes_;
     std::vector<NewFile> newFiles_;
@@ -201,11 +183,12 @@ public:
     }
 
     static ChangeTracker FromContext(TextChangesContext &context);
-    static std::vector<Change> With(TextChangesContext &context, const std::function<void(ChangeTracker &)> &cb);
+    static std::vector<FileTextChanges> With(TextChangesContext &context,
+                                             const std::function<void(ChangeTracker &)> &cb);
 
     void PushRaw(const SourceFile *sourceFile, const FileTextChanges &change);
     void DeleteRange(const SourceFile *sourceFile, TextRange range);
-    std::vector<Change> GetChanges();
+    std::vector<FileTextChanges> GetChanges();
     void Delete(const SourceFile *sourceFile,
                 std::variant<const ir::AstNode *, const std::vector<const ir::AstNode *>> &node);
     TextRange GetAdjustedRange(es2panda_Context *context, ir::AstNode *startNode, ir::AstNode *endNode);

@@ -28,15 +28,16 @@
 #include "api.h"
 #include "internal_api.h"
 #include "public/public.h"
+#include "types.h"
 
 namespace ark::es2panda::lsp {
 // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
 struct InstallPackageAction {
-    const std::string type_;
+    std::string type;
     std::optional<std::string> file;
     std::optional<std::string> packageName;
 
-    InstallPackageAction() : type_("install package") {}
+    InstallPackageAction() : type("install package") {}
 };
 
 using CodeActionCommand = InstallPackageAction;
