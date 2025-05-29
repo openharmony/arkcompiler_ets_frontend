@@ -40,3 +40,14 @@ export class Apple extends Fruit {
     this.color = arg2;
   }
 }
+
+export class X {
+    name: string = "";
+    constructor(arg: string) {
+      this.name = arg;
+    }
+}
+
+export interface Y {data: number} 
+export function foo(arg: X){}
+export function bar(arg: Y){}

@@ -18,16 +18,16 @@
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 85,
+            "endColumn": 101,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
+            "line": 20,
+            "column": 18,
+            "endLine": 20,
             "endColumn": 27,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 24,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 25,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 5,
-            "endLine": 23,
+            "line": 24,
+            "column": 22,
+            "endLine": 24,
             "endColumn": 51,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -55,13 +55,153 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
-            "column": 5,
-            "endLine": 25,
-            "endColumn": 53,
+            "line": 26,
+            "column": 14,
+            "endLine": 26,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 14,
+            "endLine": 27,
+            "endColumn": 25,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
             "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 16,
+            "endLine": 27,
+            "endColumn": 23,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 16,
+            "endLine": 27,
+            "endColumn": 23,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 5,
+            "endLine": 30,
+            "endColumn": 18,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 12,
+            "endLine": 36,
+            "endColumn": 29,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 15,
+            "endLine": 49,
+            "endColumn": 35,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 11,
+            "endLine": 57,
+            "endColumn": 29,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 30,
+            "endLine": 63,
+            "endColumn": 48,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 5,
+            "endLine": 73,
+            "endColumn": 2,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 6,
+            "endLine": 72,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "endLine": 79,
+            "endColumn": 24,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 5,
+            "endLine": 80,
+            "endColumn": 23,
+            "problem": "InteropObjectLiteralClass",
+            "suggest": "",
+            "rule": "Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 21,
+            "endLine": 79,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 20,
+            "endLine": 80,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]
