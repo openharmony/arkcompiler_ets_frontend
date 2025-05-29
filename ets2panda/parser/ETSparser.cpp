@@ -1191,6 +1191,10 @@ ir::ETSImportDeclaration *ETSParser::ParseImportPathBuildImport(ArenaVector<ir::
         BuildImportDeclaration(importKind, std::move(specifiers), importPathStringLiteral,
                                const_cast<parser::Program *>(GetContext().GetProgram()), importFlags);
     importDeclaration->SetRange({startLoc, importPathStringLiteral->End()});
+    if (Lexer()->GetToken().Ident().Is("assert")) {
+        LogError(diagnostic::ERROR_ARKTS_NO_IMPORT_ASSERTIONS);
+        return importDeclaration;
+    }
     ConsumeSemicolon(importDeclaration);
     return importDeclaration;
 }
@@ -1494,6 +1498,10 @@ ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *
         }
     }
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        LogError(diagnostic::ERROR_ARKTS_NO_REQUIRE);
+        return nullptr;
+    }
     if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
         LogExpectedToken(lexer::TokenType::KEYW_FROM);
         Lexer()->NextToken();  // eat 'from'

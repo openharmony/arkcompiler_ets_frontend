@@ -1255,3 +1255,11 @@ syntax:
 - name: AS_CONST_USAGE
   id: 311
   message: "'as const' assertion is not supported."
+
+- name: ERROR_ARKTS_NO_REQUIRE
+  id: 312
+  message: "Importing by 'require' and 'import' assignment is not supported, use 'import * as ... from ...' form instead!"
+
+- name: ERROR_ARKTS_NO_IMPORT_ASSERTIONS
+  id: 313
+  message: "Import assertion is not supported, please use the ordinary import syntax instead!"

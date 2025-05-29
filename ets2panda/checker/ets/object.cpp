@@ -188,6 +188,10 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
                                               std::unordered_set<Type *> *extendsSet, const lexer::SourcePosition &pos)
 {
+    if (interface->IsETSObjectType() && interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
+        LogError(diagnostic::INTERFACE_EXTENDS_CLASS, {}, pos);
+        return;
+    }
     if (!interface->IsETSObjectType() || !interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         LogError(diagnostic::NOT_INTERFACE, {}, pos);
         return;
