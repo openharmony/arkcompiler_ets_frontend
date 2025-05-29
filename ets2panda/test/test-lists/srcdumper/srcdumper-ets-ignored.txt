@@ -63,8 +63,6 @@ ast/parser/ets/re_export/re_export_15.ets
 ast/parser/ets/re_export/re_export_16.ets
 parser/ets/ambient_indexer_1.ets
 parser/ets/ambient_indexer_6.ets
-parser/ets/class_init.ets
-parser/ets/class_static_initializer.ets
 parser/ets/conversions.ets
 parser/ets/declare_namespace.ets
 runtime/ets/namespace_tests/namespace_import_type_test/namespace_export.ets
@@ -100,7 +98,6 @@ parser/ets/labeledSwitchStatement.ets
 parser/ets/labeledWhileStatement.ets
 parser/ets/lambda_import_alias_1-2.ets
 parser/ets/lambda_import_alias_1.ets
-parser/ets/localClassIsPermitted.ets
 parser/ets/promiseCasting.ets
 parser/ets/re_export/diamond/B.ets
 parser/ets/re_export/diamond/B2.ets
@@ -156,8 +153,6 @@ parser/ets/array_creation_expression.ets
 runtime/ets/re_export/export/reexport_elements1.ets
 runtime/ets/re_export/export/reexport_elements2.ets
 runtime/ets/re_export/import.ets
-ast/compiler/ets/package_static_block_multi_files/P1/P1_0.ets
-ast/compiler/ets/package_static_block_multi_files/P1/P1_1.ets
 ast/compiler/ets/package_initializer_warning/P3/P3.ets
 ast/compiler/ets/package_initializer_warning/main_test.ets
 runtime/ets/import_declare_type_alias.ets
@@ -193,7 +188,6 @@ runtime/ets/exportDefault_1.ets
 runtime/ets/exportDefault_2.ets
 runtime/ets/declareExport.ets
 runtime/ets/implicit_stringliteral_init.ets
-runtime/ets/mypackage/implicit_package_import_1.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets
