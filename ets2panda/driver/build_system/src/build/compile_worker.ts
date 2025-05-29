@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { CompileFileInfo } from '../types';
+import { CompileFileInfo, ModuleInfo } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ensurePathExists } from '../utils';
@@ -32,15 +32,15 @@ import {
 } from '../logger';
 import { ErrorCode } from '../error_code';
 
-
 process.on('message', (message: {
   taskList: CompileFileInfo[];
   buildConfig: BuildConfig;
+  moduleInfos: Array<[string, ModuleInfo]>;
 }) => {
   if (!process.send) {
     throw new Error('process.send is undefined. This worker must be run as a forked process.');
   }
-  const { taskList, buildConfig } = message;
+  const { taskList, buildConfig, moduleInfos } = message;
   const isDebug = buildConfig.buildMode === BUILD_MODE.DEBUG;
 
   Logger.getInstance(buildConfig);
