@@ -267,8 +267,6 @@ cookBookTag[257] =
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
 cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
 cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
-cookBookTag[261] =
-  'The "Prop", "StorageProp", and "LocalStorageProp" decorators, as well as the "prop" and "setAndProp" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)';
 cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =
   'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
@@ -287,6 +285,11 @@ cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
   'Custom components with custom layout capability need to add the "@Layoutable" decorator (arkui-custom-layout-need-add-decorator)';
+cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
+cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
+cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
+cookBookTag[284] = '"prop" function is not supported (arkui-no-prop-function)';
+cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-function)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =

@@ -41,6 +41,17 @@ export enum StorageTypeName {
   AppStorage = 'AppStorage'
 }
 
+export enum PropDecoratorName {
+  Prop = 'Prop',
+  StorageProp = 'StorageProp',
+  LocalStorageProp = 'LocalStorageProp'
+}
+
+export enum PropFunctionName {
+  Prop = 'prop',
+  SetAndProp = 'setAndProp'
+}
+
 export const observedDecoratorName: Set<string> = new Set([
   'State',
   'Prop',
@@ -61,10 +72,6 @@ export const skipImportDecoratorName: Set<string> = new Set([
   'Concurrent',
   'LocalBuilder'
 ]);
-
-export const deepCopyDecoratorName: Set<string> = new Set(['Prop', 'StorageProp', 'LocalStorageProp']);
-
-export const deepCopyFunctionName: Set<string> = new Set(['prop', 'setAndProp']);
 
 export const customLayoutFunctionName: Set<string> = new Set(['onMeasureSize', 'onPlaceChildren']);
 

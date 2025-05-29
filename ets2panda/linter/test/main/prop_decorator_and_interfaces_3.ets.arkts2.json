@@ -99,9 +99,9 @@
             "column": 5,
             "endLine": 44,
             "endColumn": 53,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -119,9 +119,9 @@
             "column": 5,
             "endLine": 45,
             "endColumn": 53,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -139,9 +139,9 @@
             "column": 5,
             "endLine": 46,
             "endColumn": 64,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -169,9 +169,9 @@
             "column": 5,
             "endLine": 47,
             "endColumn": 65,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -219,9 +219,9 @@
             "column": 5,
             "endLine": 48,
             "endColumn": 73,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -259,9 +259,9 @@
             "column": 5,
             "endLine": 49,
             "endColumn": 56,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -279,9 +279,9 @@
             "column": 5,
             "endLine": 50,
             "endColumn": 43,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -309,9 +309,9 @@
             "column": 5,
             "endLine": 51,
             "endColumn": 48,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
@@ -329,9 +329,9 @@
             "column": 5,
             "endLine": 52,
             "endColumn": 46,
-            "problem": "PropDecoratorsAndInterfacesAreNotSupported",
+            "problem": "SetAndPropFunctionNotSupported",
             "suggest": "",
-            "rule": "The \"Prop\", \"StorageProp\", and \"LocalStorageProp\" decorators, as well as the \"prop\" and \"setAndProp\" interfaces, are not supported (arkui-no-specific-prop-decorators-and-interfaces)",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
             "severity": "ERROR"
         },
         {
