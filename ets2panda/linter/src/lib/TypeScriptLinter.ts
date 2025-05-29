@@ -5135,9 +5135,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.options.arkts2 &&
       this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, tsAsExpr.expression, true)
     ) {
-      if (this.isExemptedAsExpression(tsAsExpr)) {
-        return;
-      }
       if (!this.tsUtils.isObject(exprType)) {
         this.incrementCounters(node, FaultID.StructuralIdentity);
       }
@@ -5147,61 +5144,55 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
   }
 
-  private isExemptedAsExpression(node: ts.AsExpression): boolean {
-    if (!ts.isElementAccessExpression(node.expression)) {
-      return false;
-    }
-
-    const sourceType = this.tsTypeChecker.getTypeAtLocation(node.expression);
-    const targetType = this.tsTypeChecker.getTypeAtLocation(node.type);
-    const isRecordIndexAccess = (): boolean => {
-      const exprType = this.tsTypeChecker.getTypeAtLocation(node.expression);
-      const hasNumberIndex = !!exprType.getNumberIndexType();
-      const hasStringIndex = !!exprType.getStringIndexType();
-      const hasBooleanIndex = !!exprType.getProperty('true') || !!exprType.getProperty('false');
-
-      return hasNumberIndex || hasStringIndex || hasBooleanIndex;
-    };
-
-    if (isRecordIndexAccess()) {
-      const targetSymbol = targetType.getSymbol();
-      if (targetSymbol && targetSymbol.getName() === 'Array') {
-        return true;
-      }
-    }
-    const primitiveFlags = ts.TypeFlags.Number | ts.TypeFlags.String | ts.TypeFlags.Boolean;
-    const objectFlag = ts.TypeFlags.Object;
-    return (
-      sourceType.isUnion() &&
-      sourceType.types.some((t) => {
-        return t.flags & primitiveFlags;
-      }) &&
-      sourceType.types.some((t) => {
-        return t.flags & objectFlag;
-      })
-    );
-  }
-
   private handleAsExpressionImport(tsAsExpr: ts.AsExpression): void {
+    if (!this.useStatic || !this.options.arkts2) {
+      return;
+    }
+
     const type = tsAsExpr.type;
-    const restrictedTypes = [
+    const expression = tsAsExpr.expression;
+    const restrictedPrimitiveTypes = [
       ts.SyntaxKind.NumberKeyword,
       ts.SyntaxKind.BooleanKeyword,
       ts.SyntaxKind.StringKeyword,
-      ts.SyntaxKind.BigIntKeyword
+      ts.SyntaxKind.BigIntKeyword,
+      ts.SyntaxKind.UndefinedKeyword
     ];
-    if (this.useStatic && this.options.arkts2 && restrictedTypes.includes(type.kind)) {
-      const expr = ts.isPropertyAccessExpression(tsAsExpr.expression) ?
-        tsAsExpr.expression.expression :
-        tsAsExpr.expression;
+    this.handleAsExpressionImportNull(tsAsExpr);
+    const isRestrictedPrimitive = restrictedPrimitiveTypes.includes(type.kind);
+    const isRestrictedArrayType =
+      type.kind === ts.SyntaxKind.ArrayType ||
+      ts.isTypeReferenceNode(type) && ts.isIdentifier(type.typeName) && type.typeName.text === 'Array';
 
-      if (ts.isIdentifier(expr)) {
-        const sym = this.tsUtils.trueSymbolAtLocation(expr);
-        const decl = TsUtils.getDeclaration(sym);
-        if (decl?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-          this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
-        }
+    if (!isRestrictedPrimitive && !isRestrictedArrayType) {
+      return;
+    }
+
+    let identifier: ts.Identifier | undefined;
+    if (ts.isIdentifier(expression)) {
+      identifier = expression;
+    } else if (ts.isPropertyAccessExpression(expression)) {
+      identifier = ts.isIdentifier(expression.expression) ? expression.expression : undefined;
+    }
+
+    if (identifier) {
+      const sym = this.tsUtils.trueSymbolAtLocation(identifier);
+      const decl = TsUtils.getDeclaration(sym);
+      if (decl?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
       }
+    }
+  }
+
+  private handleAsExpressionImportNull(tsAsExpr: ts.AsExpression): void {
+    const type = tsAsExpr.type;
+    const isNullAssertion =
+      type.kind === ts.SyntaxKind.NullKeyword ||
+      ts.isLiteralTypeNode(type) && type.literal.kind === ts.SyntaxKind.NullKeyword ||
+      type.getText() === 'null';
+    if (isNullAssertion) {
+      this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
+
     }
   }
 
@@ -5939,9 +5930,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (this.tsUtils.needToDeduceStructuralIdentity(lhsType, rhsType, rhsExpr, isStrict)) {
-      if (ts.isNewExpression(rhsExpr) && ts.isIdentifier(rhsExpr.expression) && rhsExpr.expression.text === 'Promise') {
-        return;
-      }
       this.incrementCounters(field, FaultID.StructuralIdentity);
     }
   }
