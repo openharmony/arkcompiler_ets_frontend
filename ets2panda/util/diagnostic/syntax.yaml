@@ -1251,3 +1251,7 @@ syntax:
 - name: WRONG_LEFT_OF_INSTANCEOF
   id: 310
   message: "The left operand of 'instanceof' operator cannot be a type."
+
+- name: AS_CONST_USAGE
+  id: 311
+  message: "'as const' assertion is not supported."
