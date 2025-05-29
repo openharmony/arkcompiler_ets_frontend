@@ -6127,12 +6127,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (isInternalFunction && filterDecl.length > 2 || !isInternalFunction && filterDecl.length > 1) {
         this.incrementCounters(decl, FaultID.TsOverload);
       }
-    } else if (ts.isConstructorDeclaration(decl)) {
-      const parent = decl.parent;
-      const constructors = parent.members.filter(ts.isConstructorDeclaration);
-      if (constructors.length > 1) {
-        this.incrementCounters(decl, FaultID.TsOverload);
-      }
+    } else if (ts.isConstructorDeclaration(decl) && decl.getText()) {
+      this.handleTSOverloadUnderConstructorDeclaration(decl);
+    }
+  }
+
+  private handleTSOverloadUnderConstructorDeclaration(decl: ts.ConstructorDeclaration): void {
+    const parent = decl.parent;
+    const constructors = parent.members.filter(ts.isConstructorDeclaration);
+    const isStruct = decl.getText() && ts.isStructDeclaration(parent);
+    if ((isStruct ? --constructors.length : constructors.length) > 1) {
+      this.incrementCounters(decl, FaultID.TsOverload);
     }
   }
 
