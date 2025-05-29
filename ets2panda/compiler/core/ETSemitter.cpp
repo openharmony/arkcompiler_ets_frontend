@@ -436,12 +436,12 @@ void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &c
     field.name = prop->Id()->Name().Mutf8();
     field.type = PandasmTypeWithRank(prop->TsType());
     field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
-    field.metadata->SetAnnotations(GenCustomAnnotations(prop->Annotations(), field.name));
 
     if (external || prop->IsDeclare()) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
     } else if (prop->TsType()->IsETSPrimitiveType() || prop->TsType()->IsETSStringType()) {
         EmitDefaultFieldValue(field, prop->Value());
+        field.metadata->SetAnnotations(GenCustomAnnotations(prop->Annotations(), field.name));
     }
 
     classRecord.fieldList.emplace_back(std::move(field));
