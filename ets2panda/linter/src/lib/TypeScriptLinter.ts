@@ -105,7 +105,6 @@ import {
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import type { ForbidenAPICheckResult } from './utils/consts/InteropAPI';
 import {
-  InteropType,
   NONE,
   OBJECT_LITERAL,
   OBJECT_PROPERTIES,
@@ -4431,7 +4430,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
     this.handleBuiltinCtorCallSignature(tsCallExpr);
-    this.handleInteropAwaitImport(tsCallExpr);
 
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
@@ -6833,10 +6831,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private isDeclarationInSameFile(node: ts.Node): boolean {
     const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
-      const decl = TsUtils.getDeclaration(symbol);
-      if (decl?.getSourceFile() === node.getSourceFile()) {
-        return true;
-      }
+    const decl = TsUtils.getDeclaration(symbol);
+    if (decl?.getSourceFile() === node.getSourceFile()) {
+      return true;
+    }
 
     return false;
   }
@@ -8187,45 +8185,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return sourceFile.fileName.endsWith(EXTNAME_JS);
     }
     return false;
-  }
-
-  private handleInteropAwaitImport(callExpr: ts.CallExpression): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    if (callExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
-      return;
-    }
-
-    if (ts.isAwaitExpression(callExpr.parent) || ts.isPropertyAccessExpression(callExpr.parent)) {
-      this.checkInteropForDynamicImport(callExpr);
-    }
-  }
-
-  private checkInteropForDynamicImport(callExpr: ts.CallExpression): void {
-    const interopType = TsUtils.resolveModuleAndCheckInterop(
-      this.options.wholeProjectPath ?? path.resolve(TsUtils.getCurrentModule(callExpr.getSourceFile().fileName)),
-      callExpr
-    );
-
-    if (!interopType) {
-      return;
-    }
-
-    switch (interopType) {
-      case InteropType.JS:
-        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImportJs);
-        break;
-      case InteropType.TS:
-        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImportTs);
-        break;
-      case InteropType.LEGACY:
-        this.incrementCounters(callExpr.parent, FaultID.InteropDynamicImport);
-        break;
-      default:
-        break;
-    }
   }
 
   handleInstanceOfExpression(node: ts.BinaryExpression): void {

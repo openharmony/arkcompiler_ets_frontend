@@ -44,9 +44,9 @@ import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
-import { InteropType, USE_STATIC } from './consts/InteropAPI';
+import { USE_STATIC } from './consts/InteropAPI';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
+import { EXTNAME_ETS, EXTNAME_JS } from './consts/ExtensionName';
 import { STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const SYMBOL = 'Symbol';
@@ -248,7 +248,11 @@ export class TsUtils {
     }
 
     const declaration = this.getDeclarationNode(ident);
-    if (!declaration) {
+    if (!declaration || ident.text.includes(STRING_ERROR_LITERAL)) {
+      return false;
+    }
+
+    if (!declaration || !ident.text.includes(STRING_ERROR_LITERAL)) {
       return true;
     }
 
@@ -3740,62 +3744,6 @@ export class TsUtils {
       return str.slice(1, -1);
     }
     return str;
-  }
-
-  static getCurrentModule(currentFileName: string): string {
-    const parts = currentFileName.split(PATH_SEPARATOR);
-    parts.pop();
-    const currentModule = parts.join(PATH_SEPARATOR);
-    return currentModule;
-  }
-
-  static resolveModuleAndCheckInterop(wholeProjectPath: string, callExpr: ts.CallExpression): InteropType | undefined {
-    const moduleName = callExpr.arguments[0];
-    if (!ts.isStringLiteral(moduleName)) {
-      return undefined;
-    }
-
-    const importedModule = path.resolve(wholeProjectPath, moduleName.text);
-
-    const importedFile = TsUtils.resolveImportModule(importedModule);
-    if (!importedFile) {
-      return undefined;
-    }
-
-    const importSource = ts.sys.readFile(importedFile);
-    if (!importSource) {
-      return undefined;
-    }
-
-    return TsUtils.checkFileForInterop(importedFile, importSource);
-  }
-
-  static resolveImportModule(importedModule: string): string | undefined {
-    const extensions = ['.ts', '.js', '.ets'];
-    for (const ext of extensions) {
-      const tryPath = path.resolve(importedModule + ext);
-      if (fs.existsSync(tryPath)) {
-        return tryPath;
-      }
-    }
-
-    return undefined;
-  }
-
-  static checkFileForInterop(fileName: string, importSource: string): InteropType {
-    if (fileName.endsWith(EXTNAME_JS)) {
-      return InteropType.JS;
-    }
-
-    if (fileName.endsWith(EXTNAME_TS) && !fileName.endsWith(EXTNAME_D_TS)) {
-      return InteropType.TS;
-    }
-
-    if (fileName.endsWith(EXTNAME_ETS) && !importSource.includes('\'use static\'')) {
-      return InteropType.LEGACY;
-    }
-
-    return InteropType.NONE;
   }
 
   isJsImport(node: ts.Node): boolean {

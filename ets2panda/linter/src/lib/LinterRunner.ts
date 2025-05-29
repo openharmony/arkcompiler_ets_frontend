@@ -216,7 +216,12 @@ function fix(
     }
 
     const qe: qEd.QuasiEditor = new qEd.QuasiEditor(
-        fileName, srcFile.text, linterConfig.cmdOptions.linterOptions, undefined, linterConfig.cmdOptions.outputFilePath);
+      fileName,
+      srcFile.text,
+      linterConfig.cmdOptions.linterOptions,
+      undefined,
+      linterConfig.cmdOptions.outputFilePath
+    );
     updatedSourceTexts.set(fileName, qe.fix(problemInfos));
     appliedFix = true;
   });
