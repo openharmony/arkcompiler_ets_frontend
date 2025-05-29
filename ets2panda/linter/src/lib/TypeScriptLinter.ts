@@ -6833,10 +6833,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private isDeclarationInSameFile(node: ts.Node): boolean {
     const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
-      const decl = TsUtils.getDeclaration(symbol);
-      if (decl?.getSourceFile() === node.getSourceFile()) {
-        return true;
-      }
+    const decl = TsUtils.getDeclaration(symbol);
+    if (decl?.getSourceFile() === node.getSourceFile()) {
+      return true;
+    }
 
     return false;
   }
@@ -8903,33 +8903,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    switch (node.operatorToken.kind) {
-      case ts.SyntaxKind.LessThanEqualsToken:
-      case ts.SyntaxKind.EqualsEqualsToken:
-      case ts.SyntaxKind.GreaterThanEqualsToken:
-      case ts.SyntaxKind.ExclamationEqualsToken:
-      case ts.SyntaxKind.ExclamationEqualsEqualsToken:
-      case ts.SyntaxKind.EqualsEqualsEqualsToken:
-      case ts.SyntaxKind.GreaterThanToken:
-      case ts.SyntaxKind.LessThanToken:
-        this.reportNumericBigintCompare(node);
-        break;
-      default:
-    }
-  }
-
-  private reportNumericBigintCompare(node: ts.BinaryExpression): void {
     const leftType = this.tsTypeChecker.getTypeAtLocation(node.left);
     const rightType = this.tsTypeChecker.getTypeAtLocation(node.right);
 
-    const isLeftNumber = (leftType.flags & ts.TypeFlags.Number) !== 0;
-    const isLeftBigInt = (leftType.flags & ts.TypeFlags.BigInt) !== 0;
+    const isBigInt = (type: ts.Type): boolean => {
+      return (type.flags & ts.TypeFlags.BigInt) !== 0 || (type.flags & ts.TypeFlags.BigIntLiteral) !== 0;
+    };
+    const isNumber = (type: ts.Type): boolean => {
+      return (type.flags & ts.TypeFlags.Number) !== 0 || (type.flags & ts.TypeFlags.NumberLiteral) !== 0;
+    };
 
-    const isRightNumber = (rightType.flags & ts.TypeFlags.Number) !== 0;
-    const isRightBigInt = (rightType.flags & ts.TypeFlags.BigInt) !== 0;
-
-    const valid = isLeftNumber && isRightBigInt || isLeftBigInt && isRightNumber;
-    if (valid) {
+    const isBigIntAndNumberOperand = isNumber(leftType) && isBigInt(rightType) || isBigInt(leftType) && isNumber(rightType);
+    if (isBigIntAndNumberOperand) {
       this.incrementCounters(node, FaultID.NumericBigintCompare);
     }
   }
