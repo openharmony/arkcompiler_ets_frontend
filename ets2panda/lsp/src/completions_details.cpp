@@ -109,6 +109,9 @@ CompletionEntryDetails GetCompletionEntryDetailsImpl(es2panda_Context *context, 
     auto ast = ctx->parserProgram->Ast();
     auto leIdentifier =
         ast->FindChild([entryName](ir::AstNode *node) { return HasPropertyAccessExpressionWithName(node, entryName); });
+    if (leIdentifier == nullptr || !leIdentifier->IsIdentifier()) {
+        return CompletionEntryDetails();
+    }
     auto targetNode = compiler::DeclarationFromIdentifier(leIdentifier->AsIdentifier());
     if (targetNode == nullptr) {
         return CompletionEntryDetails();
