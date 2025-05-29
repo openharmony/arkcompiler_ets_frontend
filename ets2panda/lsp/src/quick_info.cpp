@@ -681,6 +681,10 @@ std::vector<SymbolDisplayPart> CreateDisplayOfReturnType(ark::es2panda::ir::Type
     std::vector<SymbolDisplayPart> displayParts;
     displayParts.emplace_back(CreatePunctuation(":"));
     displayParts.emplace_back(CreateSpace());
+    if (returnType == nullptr) {
+        displayParts.emplace_back(CreateReturnType("void"));
+        return displayParts;
+    }
     if (returnType->Type() == ir::AstNodeType::ETS_TYPE_REFERENCE) {
         auto part = returnType->AsETSTypeReference()->Part()->AsETSTypeReferencePart();
         auto typeName = part->Name()->AsIdentifier()->Name();
@@ -947,9 +951,17 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
     if (node->Parent() != nullptr && node->Parent()->Type() == ir::AstNodeType::TS_INTERFACE_BODY) {
         return CreateDisplayForMethodDefinitionOfInterfaceBody(node);
     }
+    if (node->Parent() != nullptr && node->Parent()->IsClassDefinition()) {
+        auto className = node->Parent()->AsClassDefinition()->Ident()->Name();
+        if (className != "ETSGLOBAL") {
+            displayParts.emplace_back(CreateClassName(std::string(className)));
+            displayParts.emplace_back(CreatePunctuation("."));
+        } else {
+            displayParts.emplace_back(CreateKeyword("function"));
+            displayParts.emplace_back(CreateSpace());
+        }
+    }
 
-    displayParts.emplace_back(CreateKeyword("function"));
-    displayParts.emplace_back(CreateSpace());
     auto functionName = node->AsMethodDefinition()->Key()->AsIdentifier()->Name();
     displayParts.emplace_back(CreateFunctionName(std::string(functionName)));
 
@@ -979,6 +991,12 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
     return displayParts;
 }
 
+bool IsKindModifierInSet(const std::string &target)
+{
+    static std::set<std::string> kindModifierSet = {"const", "static public declare const"};
+    return kindModifierSet.find(target) != kindModifierSet.end();
+}
+
 std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, const std::string &kindModifier)
 {
     std::vector<SymbolDisplayPart> displayParts;
@@ -991,7 +1009,7 @@ std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, 
         if (className != "ETSGLOBAL") {
             displayParts.emplace_back(CreateClassName(std::string(className)));
             displayParts.emplace_back(CreatePunctuation("."));
-        } else if (kindModifier == "const") {
+        } else if (IsKindModifierInSet(kindModifier)) {
             displayParts.emplace_back(CreateKeyword("const"));
             displayParts.emplace_back(CreateSpace());
         } else {
@@ -1006,6 +1024,11 @@ std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, 
         auto typeAnnotation = node->AsClassProperty()->TypeAnnotation();
         std::string type;
         if (typeAnnotation == nullptr) {
+            if (node->AsClassProperty()->Value() == nullptr ||
+                !node->AsClassProperty()->Value()->IsETSNewClassInstanceExpression()) {
+                displayParts.emplace_back(CreateTypeName("undefined"));
+                return displayParts;
+            }
             auto newClassExpr = node->AsClassProperty()->Value()->AsETSNewClassInstanceExpression();
             if (newClassExpr != nullptr) {
                 type = std::string(newClassExpr->GetTypeRef()->AsETSTypeReference()->Part()->GetIdent()->Name());
