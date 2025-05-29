@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 'use static'
-let GeneratedImportVar_1 = ESObject.load('./binary_operation_js_obj_js');
+let GeneratedImportVar_1 = ESValue.load('./binary_operation_js_obj_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
 let a = foo.getPropertyByName("a")

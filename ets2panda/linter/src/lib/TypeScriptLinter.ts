@@ -1394,7 +1394,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (!!baseExprSym && TsUtils.symbolHasEsObjectType(baseExprSym)) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(propertyAccessNode, faultId);
     }
     if (TsUtils.isSendableFunction(baseExprType) || this.tsUtils.hasSendableTypeAlias(baseExprType)) {
@@ -2557,7 +2557,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       );
       this.checkFunctionTypeCompatible(tsVarDecl.type, tsVarDecl.initializer);
     }
-    this.handleEsObjectDelaration(tsVarDecl);
+    this.handleEsValueDeclaration(tsVarDecl);
     this.handleDeclarationInferredType(tsVarDecl);
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
     this.handleLimitedVoidType(tsVarDecl);
@@ -2863,13 +2863,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private handleEsObjectDelaration(node: ts.VariableDeclaration): void {
-    const isDeclaredESObject = !!node.type && TsUtils.isEsObjectType(node.type);
+  private handleEsValueDeclaration(node: ts.VariableDeclaration): void {
+    const isDeclaredESValue = !!node.type && TsUtils.isEsValueType(node.type);
     const initalizerTypeNode = node.initializer && this.tsUtils.getVariableDeclarationTypeNode(node.initializer);
-    const isInitializedWithESObject = !!initalizerTypeNode && TsUtils.isEsObjectType(initalizerTypeNode);
+    const isInitializedWithESValue = !!initalizerTypeNode && TsUtils.isEsValueType(initalizerTypeNode);
     const isLocal = TsUtils.isInsideBlock(node);
-    if ((isDeclaredESObject || isInitializedWithESObject) && !isLocal) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+    if ((isDeclaredESValue || isInitializedWithESValue) && !isLocal) {
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
       return;
     }
@@ -2881,17 +2881,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleEsObjectAssignment(node: ts.Node, nodeDeclType: ts.TypeNode | undefined, initializer: ts.Node): void {
     const isTypeAnnotated = !!nodeDeclType;
-    const isDeclaredESObject = isTypeAnnotated && TsUtils.isEsObjectType(nodeDeclType);
+    const isDeclaredESValue = isTypeAnnotated && TsUtils.isEsValueType(nodeDeclType);
     const initalizerTypeNode = this.tsUtils.getVariableDeclarationTypeNode(initializer);
-    const isInitializedWithESObject = !!initalizerTypeNode && TsUtils.isEsObjectType(initalizerTypeNode);
-    if (isTypeAnnotated && !isDeclaredESObject && isInitializedWithESObject) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+    const isInitializedWithESValue = !!initalizerTypeNode && TsUtils.isEsValueType(initalizerTypeNode);
+    if (isTypeAnnotated && !isDeclaredESValue && isInitializedWithESValue) {
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
       return;
     }
 
-    if (isDeclaredESObject && !this.tsUtils.isValueAssignableToESObject(initializer)) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+    if (isDeclaredESValue && !this.tsUtils.isValueAssignableToESValue(initializer)) {
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
     }
   }
@@ -3992,7 +3992,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
-      TsUtils.isEsObjectType(typeNode)
+      TsUtils.isEsValueType(typeNode)
     );
   }
 
@@ -4029,7 +4029,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
     }
     if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
@@ -4341,7 +4341,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.handleBuiltinThisArgs(tsCallExpr, calleeSym, name, parName);
     }
     if (TsUtils.symbolHasEsObjectType(calleeSym)) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(tsCallExpr, faultId);
     }
     // Need to process Symbol call separately in order to not report two times when using Symbol API
@@ -4457,7 +4457,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.isPropertyAccessExpression(tsCallExpr.expression) &&
       this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)
     ) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
     }
     if (
@@ -5226,10 +5226,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.handleSdkConstructorIface(typeRef);
 
-    const isESObject = TsUtils.isEsObjectType(typeRef);
-    const isPossiblyValidContext = TsUtils.isEsObjectPossiblyAllowed(typeRef);
-    if (isESObject && !isPossiblyValidContext) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+    const isESValue = TsUtils.isEsValueType(typeRef);
+    const isPossiblyValidContext = TsUtils.isEsValuePossiblyAllowed(typeRef);
+    if (isESValue && !isPossiblyValidContext) {
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
       return;
     }
@@ -5352,7 +5352,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const symbol = this.tsUtils.trueSymbolAtLocation(tsTypeExpr.expression);
 
     if (!!symbol && TsUtils.isEsObjectSymbol(symbol)) {
-      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(tsTypeExpr, faultId);
     }
     this.handleSdkDuplicateDeclName(tsTypeExpr);

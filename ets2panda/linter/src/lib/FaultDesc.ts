@@ -101,7 +101,7 @@ faultDesc[FaultID.NoNeedStdLibSendableContainer] = 'Sendable Containers not supp
 faultDesc[FaultID.ErrorSuppression] = 'Error suppression annotation';
 faultDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
 faultDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
-faultDesc[FaultID.EsObjectType] = faultDesc[FaultID.EsObjectTypeError] = 'Restricted "ESObject" type';
+faultDesc[FaultID.EsValueType] = faultDesc[FaultID.EsValueTypeError] = 'Restricted "ESValue" type';
 faultDesc[FaultID.SendableClassInheritance] = 'Sendable class inheritance';
 faultDesc[FaultID.SendablePropType] = 'Sendable class property';
 faultDesc[FaultID.SendableDefiniteAssignment] = 'Use of definite assignment assertion in "Sendable" class';

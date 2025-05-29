@@ -1,18 +1,18 @@
 {
-    "copyright": [
-        "Copyright (c) 2025 Huawei Device Co., Ltd.",
-        "Licensed under the Apache License, Version 2.0 (the 'License');",
-        "you may not use this file except in compliance with the License.",
-        "You may obtain a copy of the License at",
-        "",
-        "http://www.apache.org/licenses/LICENSE-2.0",
-        "",
-        "Unless required by applicable law or agreed to in writing, software",
-        "distributed under the License is distributed on an 'AS IS' BASIS,",
-        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-        "See the License for the specific language governing permissions and",
-        "limitations under the License."
-    ],
+  "copyright": [
+      "Copyright (c) 2025 Huawei Device Co., Ltd.",
+      "Licensed under the Apache License, Version 2.0 (the 'License');",
+      "you may not use this file except in compliance with the License.",
+      "You may obtain a copy of the License at",
+      "",
+      "http://www.apache.org/licenses/LICENSE-2.0",
+      "",
+      "Unless required by applicable law or agreed to in writing, software",
+      "distributed under the License is distributed on an 'AS IS' BASIS,",
+      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+      "See the License for the specific language governing permissions and",
+      "limitations under the License."
+  ],
     "result": [
         {
             "line": 17,
@@ -43,7 +43,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -83,7 +83,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getPropertyByName('ff1');\nlet ff2 = GeneratedImportVar_2.getPropertyByName('ff2');\n",
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getPropertyByName('ff1');\nlet ff2 = GeneratedImportVar_2.getPropertyByName('ff2');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -123,7 +123,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getPropertyByName('A');\n",
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getPropertyByName('A');\n",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -163,7 +163,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_4 = ESObject.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getPropertyByName('C');\n",
+                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getPropertyByName('C');\n",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -203,7 +203,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_5 = ESObject.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getPropertyByName('ff3');\n",
+                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getPropertyByName('ff3');\n",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -243,7 +243,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_6 = ESObject.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getPropertyByName('ff4');\n",
+                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getPropertyByName('ff4');\n",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -283,7 +283,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_7 = ESObject.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getPropertyByName('handle');\n",
+                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getPropertyByName('handle');\n",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -323,7 +323,7 @@
                 {
                     "start": 1038,
                     "end": 1038,
-                    "replacementText": "let GeneratedImportVar_8 = ESObject.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getPropertyByName('expand');\n",
+                    "replacementText": "let GeneratedImportVar_8 = ESValue.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getPropertyByName('expand');\n",
                     "line": 29,
                     "column": 1,
                     "endLine": 29,
@@ -684,7 +684,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr.setPropertyByIndex(i, ESObject.wrap(0))",
+                    "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
                     "start": 1380,
                     "end": 1390,
                     "line": 53,
@@ -707,7 +707,7 @@
                 {
                     "start": 1380,
                     "end": 1390,
-                    "replacementText": "arr.setPropertyByIndex(i, ESObject.wrap(0))",
+                    "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
                     "line": 53,
                     "column": 3,
                     "endLine": 53,

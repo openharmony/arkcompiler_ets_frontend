@@ -43,11 +43,7 @@
                 {
                     "start": 667,
                     "end": 667,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 49
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
                 }
             ],
             "suggest": "",
@@ -166,7 +162,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr.setPropertyByIndex(3, ESObject.wrap(4))",
+                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
                     "start": 693,
                     "end": 703,
                     "line": 20,
@@ -189,11 +185,7 @@
                 {
                     "start": 693,
                     "end": 703,
-                    "replacementText": "arr.setPropertyByIndex(3, ESObject.wrap(4))",
-                    "line": 20,
-                    "column": 1,
-                    "endLine": 20,
-                    "endColumn": 11
+                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))"
                 }
             ],
             "suggest": "",

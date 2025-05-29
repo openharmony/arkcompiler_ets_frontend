@@ -43,7 +43,7 @@
                 {
                     "start": 668,
                     "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -85,7 +85,7 @@
                 {
                     "start": 728,
                     "end": 740,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(123))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap(123))",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -127,7 +127,7 @@
                 {
                     "start": 741,
                     "end": 757,
-                    "replacementText": "Foo.instantiate(ESObject.wrap('hello'))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap('hello'))",
                     "line": 24,
                     "column": 1,
                     "endLine": 24,
@@ -148,7 +148,7 @@
                 {
                     "start": 758,
                     "end": 774,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(new A()))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap(new A()))",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -169,7 +169,7 @@
                 {
                     "start": 795,
                     "end": 809,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(a.num))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap(a.num))",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -190,7 +190,7 @@
                 {
                     "start": 810,
                     "end": 820,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(a))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap(a))",
                     "line": 28,
                     "column": 1,
                     "endLine": 28,
@@ -232,7 +232,7 @@
                 {
                     "start": 861,
                     "end": 876,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(test()))",
+                    "replacementText": "Foo.instantiate(ESValue.wrap(test()))",
                     "line": 32,
                     "column": 1,
                     "endLine": 32,
@@ -253,11 +253,7 @@
                 {
                     "start": 877,
                     "end": 899,
-                    "replacementText": "Foo1.instantiate(ESObject.wrap(123), ESObject.wrap('hello'))",
-                    "line": 33,
-                    "column": 1,
-                    "endLine": 33,
-                    "endColumn": 23
+                    "replacementText": "Foo1.instantiate(ESValue.wrap(123), ESValue.wrap('hello'))"
                 }
             ],
             "suggest": "",

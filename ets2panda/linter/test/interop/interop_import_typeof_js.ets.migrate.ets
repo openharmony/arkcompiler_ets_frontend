@@ -16,11 +16,11 @@
 'use static'
 
 
-let GeneratedImportVar_3 = ESObject.load('./interop_import_js_js');
+let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');
 let wiki = GeneratedImportVar_3.getPropertyByName('Wiki');
-let GeneratedImportVar_2 = ESObject.load('./interop_import_js_js');
+let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');
 let Doge = GeneratedImportVar_2.getPropertyByName('Dog');
-let GeneratedImportVar_1 = ESObject.load('./interop_import_js_js');
+let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');
 let myAaa = GeneratedImportVar_1.getPropertyByName('aaa');
 let ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');
 let Dog = GeneratedImportVar_1.getPropertyByName('Dog');
@@ -32,8 +32,8 @@ myAaa.invoke().typeOf(); //error
 let fun = myAaa();
 typeof fun;
 Dog.typeOf(); //error
-Dog.invoke(ESObject.wrap('doge')).typeOf(); //error
-Doge.invoke(ESObject.wrap('doge')).typeOf(); //error
+Dog.invoke(ESValue.wrap('doge')).typeOf(); //error
+Doge.invoke(ESValue.wrap('doge')).typeOf(); //error
 Wiki.typeOf() //error
 Wiki.getPropertyByName('name').typeOf() //error
 wiki.typeOf() //error
@@ -80,4 +80,4 @@ class Object {
 myAaa.typeOf(); //error
 Person.instantiate().getPropertyByName('name').typeOf()  //error
 Person.instantiate().getPropertyByName('getName').invoke().typeOf() //error
-Person.instantiate().getPropertyByName('setAge').invoke(ESObject.wrap(22.0)).typeOf() //error
+Person.instantiate().getPropertyByName('setAge').invoke(ESValue.wrap(22.0)).typeOf() //error

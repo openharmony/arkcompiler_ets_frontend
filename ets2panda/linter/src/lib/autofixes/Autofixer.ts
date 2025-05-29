@@ -41,7 +41,7 @@ import {
   PROVIDE_ALIAS_PROPERTY_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
-import { ES_OBJECT } from '../utils/consts/ESObject';
+import { ES_VALUE } from '../utils/consts/ESObject';
 import {
   LOAD,
   GET_PROPERTY_BY_NAME,
@@ -3137,7 +3137,7 @@ export class Autofixer {
       return args.map((arg) => {
         return ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(ES_VALUE),
             ts.factory.createIdentifier(WRAP)
           ),
           undefined,
@@ -3602,7 +3602,7 @@ export class Autofixer {
     const replacementText =
       isParentBinaryExp && elementAccessExpr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken ?
         `${identifier.text}.setPropertyByIndex(${exprText},` +
-          ` ESObject.wrap(${elementAccessExpr.parent.right.getText()}))` :
+          ` ESValue.wrap(${elementAccessExpr.parent.right.getText()}))` :
         `${identifier.text}.getPropertyByIndex(${exprText})` +
           this.utils.findTypeOfNodeForConversion(elementAccessExpr);
     return [{ replacementText, start, end }];
@@ -3723,7 +3723,7 @@ export class Autofixer {
   private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
     return args.
       map((arg) => {
-        return `ESObject.wrap(${arg.getText()})`;
+        return `ESValue.wrap(${arg.getText()})`;
       }).
       join(', ');
   }
@@ -3802,7 +3802,7 @@ export class Autofixer {
     }
     const propertyName = originalName || symbolName;
     const constructDeclInfo: string[] = isLoad ?
-      [this.modVarName, ES_OBJECT, LOAD] :
+      [this.modVarName, ES_VALUE, LOAD] :
       [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
     const newVarDecl = Autofixer.createVariableForInteropImport(
       constructDeclInfo[0],
@@ -3857,7 +3857,7 @@ export class Autofixer {
         ts.factory.createStringLiteral(propertyName),
         ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(ES_VALUE),
             ts.factory.createIdentifier(WRAP)
           ),
           undefined,
@@ -3892,7 +3892,7 @@ export class Autofixer {
         left.argumentExpression,
         ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(ES_VALUE),
             ts.factory.createIdentifier(WRAP)
           ),
           undefined,
