@@ -5042,9 +5042,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const type = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
-    if (type.isClassOrInterface()) {
-      this.incrementCounters(calleeExpr, FaultID.ConstructorIfaceFromSdk);
+    if (!type.symbol) {
+      return;
     }
+    const typeDeclarations = type.symbol.declarations;
+    if (!typeDeclarations || typeDeclarations.length === 0) {
+      return;
+    }
+
+    if (!ts.isInterfaceDeclaration(typeDeclarations[0])) {
+      return;
+    }
+
+    this.incrementCounters(calleeExpr, FaultID.ConstructorIfaceFromSdk);
   }
 
   private handleNewExpression(node: ts.Node): void {
