@@ -125,6 +125,12 @@ public:
     {
         return tryEndFlag;
     }
+    /**
+     * Handle for update direct return context
+     * If the lexical environment context is in for update statement, pop the lexical environment
+     */
+    void HandleForUpdateDirectReturnContext();
+
 private:
     VariableEnvScope *envScope_;
     CatchTable *catchTable_ {};

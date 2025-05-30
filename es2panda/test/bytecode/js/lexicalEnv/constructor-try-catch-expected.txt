@@ -1,0 +1,162 @@
+slotNum = 0x0
+.language ECMAScript
+.function any .#~@0=#C34(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+slotNum = 0xb
+.language ECMAScript
+.function any .#~@1=#C35(any a0, any a1, any a2, any a3, any a4, any a5) {
+	nop
+label_17: 
+label_0: 
+	newlexenv 0x1
+label_11: 
+label_13: 
+	ldai 0x19
+	sta v1
+	ldai 0x7
+	sta v2
+label_7: 
+	lda v1
+	less 0x0, v2
+	jeqz label_8
+label_9: 
+label_2: 
+	definefunc 0x1, .#~@1=@1*#f43, 0x0
+	stlexvar 0x0, 0x0
+	definefunc 0x2, .#~@1=@1*#f46, 0x2
+	ldundefined
+	sta v3
+	ldundefined
+	stricteq 0x3, v3
+	jeqz label_5
+label_4: 
+	lda a2
+	throw.ifsupernotcorrectcall 0x0
+	poplexenv
+	mov v3, a2
+label_5: 
+	lda v3
+	return
+label_10: 
+end_label_10: 
+label_19: 
+label_15: 
+	lda.str 123
+	sta v3
+	tryldglobalbyname 0x4, print
+	callarg1 0x5, v3
+	ldlexvar 0x0, 0x0
+	sta v3
+	poplexenv
+	newlexenv 0x1
+	lda v3
+	stlexvar 0x0, 0x0
+	lda v2
+	tonumeric 0x7
+	inc 0x8
+	sta v2
+label_12: 
+end_label_12: 
+	jmp label_7
+label_20: 
+	sta v0
+label_16: 
+	poplexenv
+	lda v0
+	throw
+label_8: 
+	poplexenv
+	ldundefined
+	sta v0
+	mov v4, v0
+	supercallthisrange 0x9, 0x0, v4
+	sta v0
+	lda a2
+	throw.ifsupernotcorrectcall 0x1
+	lda v0
+	throw.ifsupernotcorrectcall 0x0
+	lda v0
+	return
+label_18: 
+}
+
+.catchall label_9, end_label_10, label_19
+
+.catchall label_11, end_label_12, label_20
+
+slotNum = 0x0
+.language ECMAScript
+.function any .#~@1=@1*#f43(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	return
+label_2: 
+}
+
+slotNum = 0x0
+.language ECMAScript
+.function any .#~@1=@1*#f46(any a0, any a1, any a2, any a3, any a4) {
+label_1: 
+label_0: 
+	ldlexvar 0x1, 0x0
+	sta v0
+	throw.undefinedifholewithname C35
+	lda v0
+	return
+label_2: 
+}
+
+slotNum = 0xc
+.language ECMAScript
+.function any .func_main_0(any a0, any a1, any a2) {
+	nop
+label_7: 
+label_0: 
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x0, .#~@0=#C34, _1, 0x0, v0
+	sta v0
+	ldobjbyname 0x1, prototype
+	lda v0
+	sttoglobalrecord 0x3, C34
+	newlexenv 0x1
+label_2: 
+label_4: 
+	tryldglobalbyname 0x4, C34
+	sta v1
+	defineclasswithbuffer 0x5, .#~@1=#C35, _2, 0x3, v1
+	sta v1
+	stlexvar 0x0, 0x0
+	lda v1
+	ldobjbyname 0x6, prototype
+label_3: 
+end_label_3: 
+	jmp label_1
+label_9: 
+	sta v0
+label_6: 
+	poplexenv
+	lda v0
+	throw
+label_1: 
+	poplexenv
+	lda v1
+	sttoglobalrecord 0x8, C35
+	tryldglobalbyname 0x9, C35
+	sta v0
+	mov v2, v0
+	newobjrange 0xa, 0x1, v2
+	returnundefined
+label_8: 
+}
+
+.catchall label_2, end_label_3, label_9
+
+

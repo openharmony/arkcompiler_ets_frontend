@@ -1268,6 +1268,15 @@ void PandaGen::ValidateClassDirectReturn(const ir::AstNode *node)
     BranchIfStrictNotUndefined(node, notUndefined);
     GetThis(func);
     ThrowIfSuperNotCorrectCall(func, 0);
+
+    auto *iter = dynamicContext_;
+    while (iter) {
+        if (iter->Type() == DynamicContextType::LEX_ENV) {
+            auto *envContext = static_cast<LexEnvContext *>(iter);
+            envContext->HandleForUpdateDirectReturnContext();
+        }
+        iter = iter->Prev();
+    }
     Branch(node, condEnd);
 
     SetLabel(node, notUndefined);
