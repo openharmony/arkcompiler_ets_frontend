@@ -974,7 +974,6 @@ class CompilerProjectTest(Test):
                 mod_files_info.append(abc_line)
                 final_file_info_f.writelines(abc_line)
 
-
     def gen_files_info(self, runner):
         # After collect_record_mapping, self.file_record_mapping stores {'source file name' : 'source file record name'}
         self.collect_record_mapping()
