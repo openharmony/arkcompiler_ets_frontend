@@ -294,8 +294,7 @@ void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
         return;
     }
 
-    auto typeStr = dumper->IsIsolatedDeclgen() ? GetIsolatedDeclgenReturnType() : Signature()->ReturnType()->ToString();
-
+    auto typeStr = Signature()->ReturnType()->ToString();
     dumper->Add(": ");
     dumper->Add(typeStr);
 
@@ -409,8 +408,8 @@ void ScriptFunction::CopyTo(AstNode *other) const
     otherImpl->preferredReturnType_ = preferredReturnType_;
     otherImpl->lang_ = lang_;
     otherImpl->returnStatements_ = returnStatements_;
-    otherImpl->isolatedDeclGenInferType_ = isolatedDeclGenInferType_;
 
     JsDocAllowed<AnnotationAllowed<AstNode>>::CopyTo(other);
 }
+
 }  // namespace ark::es2panda::ir

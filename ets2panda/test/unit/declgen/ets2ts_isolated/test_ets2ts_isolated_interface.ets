@@ -13,24 +13,14 @@
  * limitations under the License.
  */
 
-export declare interface User {
-  set id(id: number): void;
-
-  get id(): double;
-  set name(name: string): void;
-
-  get name(): String;
-  set age(age: number | undefined): void;
-
-  get age(): Double|undefined;
-  get apiUrl(): String;
-
+export interface User {
+  id: number;
+  name: string;
+  age?: number;
+  readonly apiUrl: string;
 }
 
-export declare interface Animal {
-  set name(name: string): void;
-
-  get name(): String;
+export interface Animal {
+  name: string;
   makeSound(): void;
-
 }

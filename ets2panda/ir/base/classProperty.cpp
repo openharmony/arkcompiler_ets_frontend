@@ -14,7 +14,6 @@
  */
 
 #include "classProperty.h"
-#include <string>
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
@@ -199,10 +198,6 @@ void ClassProperty::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
     }
 
     auto typeStr = TsType()->ToString();
-    if (TsType()->IsTypeError() && dumper->IsIsolatedDeclgen() && typeAnnotation_ != nullptr) {
-        typeStr = typeAnnotation_->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
-    }
-
     dumper->Add(": ");
     dumper->Add(typeStr);
 

@@ -624,6 +624,7 @@ add_custom_target(gen_yamls DEPENDS es2panda_options_gen es2panda_keywords ${ES2
 set(ES2PANDA_PUBLIC_SOURCES
     ${LIB_NAME}.cpp
     ../declgen_ets2ts/declgenEts2Ts.cpp
+    ../declgen_ets2ts/isolatedDeclgenChecker.cpp
     ../util/generateBin.cpp
     ../util/options.cpp
     ../util/plugin.cpp

@@ -144,8 +144,8 @@ panda_gen(
         ${DIAGNOSTIC_DIR}/fatal.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/isolated_declgen.yaml
         ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
-        ${DIAGNOSTIC_DIR}/isolated_declgen.yaml
     TARGET_NAME es2panda_diagnostic_gen
     TEMPLATES diagnostic.h.erb
     SOURCE ${DIAGNOSTIC_DIR}
@@ -542,7 +542,6 @@ set(ES2PANDA_LIB_SRC
   checker/TSAnalyzer.cpp
   checker/TSAnalyzerUnreachable.cpp
   checker/JSchecker.cpp
-  checker/IsolatedDeclgenChecker.cpp
   checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
   checker/ets/etsWarningAnalyzer.cpp
@@ -685,6 +684,13 @@ panda_target_include_directories(es2panda-lib
 panda_target_compile_options(es2panda-lib
   PRIVATE -fexceptions -Werror=shadow
 )
+
+if (EN_ISOLATED_DECLGEN)
+  message(STATUS "Isolated declgen enabled")
+  panda_target_compile_definitions(es2panda-lib
+    PRIVATE -DENABLE_ISOLATED_DECLGEN
+  )
+endif()
 
 panda_target_link_libraries(es2panda-lib
   PUBLIC arkbase hmicuuc.z

@@ -344,16 +344,6 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
-    void SetIsolatedDeclgenReturnType(std::string type) noexcept
-    {
-        isolatedDeclGenInferType_ = std::move(type);
-    }
-
-    [[nodiscard]] std::string GetIsolatedDeclgenReturnType() const noexcept
-    {
-        return isolatedDeclGenInferType_;
-    }
-
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
@@ -391,7 +381,6 @@ private:
     checker::Type *preferredReturnType_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
-    std::string isolatedDeclGenInferType_;
 };
 }  // namespace ark::es2panda::ir
 

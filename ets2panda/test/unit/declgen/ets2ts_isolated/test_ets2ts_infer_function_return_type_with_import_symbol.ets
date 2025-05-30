@@ -13,4 +13,34 @@
  * limitations under the License.
  */
  
- export declare function foo(a: int): Int|Boolean|String;
+import A from "./test_ets2ts_isolated_enum.ets"
+import B from "./test_ets2ts_isolated_enum.ets"
+import C from "./test_ets2ts_isolated_enum.ets"
+
+export let b: A = new A
+
+export default let d: int = 1
+
+export function foo(a: int, c: C) 
+{
+    if (a < 0) {
+        return 1;
+    }
+    if (a == 0) {
+        return b;
+    }
+    if (a == 1) {
+        return new B;
+    }
+    if (a == 2) {
+        return ["hello", "arkts"];
+    }
+    if (a == 3) {
+        return [0, 1, 2];
+    }
+    if (a == 4) {
+        return [true, false, false, true];
+    }
+    
+    return "hello";
+}

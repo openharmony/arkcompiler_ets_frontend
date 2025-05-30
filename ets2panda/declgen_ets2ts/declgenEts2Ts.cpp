@@ -14,8 +14,8 @@
  */
 
 #include "declgenEts2Ts.h"
-#include <cctype>
 
+#include "isolatedDeclgenChecker.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "generated/diagnostic.h"
 #include "ir/base/classProperty.h"
@@ -700,8 +700,8 @@ void TSDeclGen::ProcessFunctionReturnType(const checker::Signature *sig)
     }
 
     std::string typeStr = sig->ReturnType()->ToString();
-    if (declgenOptions_.isIsolatedDeclgen && typeStr.find(ERROR_TYPE) != std::string::npos) {
-        typeStr = sig->Function()->GetIsolatedDeclgenReturnType();
+    if (declgenOptions_.isolated && typeStr.find(ERROR_TYPE) != std::string::npos) {
+        typeStr = isolatedDeclgenChecker_->Check(const_cast<ir::ScriptFunction *>(sig->Function()));
         OutDts(typeStr);
         SplitUnionTypes(typeStr);
         return;
@@ -2062,7 +2062,12 @@ bool WriteToFile(const std::string &path, const std::string &content, checker::E
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const DeclgenOptions &declgenOptions)
 {
-    TSDeclGen declBuilder(checker, program);
+    declgen::IsolatedDeclgenChecker isolatedDeclgenChecker(checker->DiagnosticEngine(), *program);
+    if (declgenOptions.isolated) {
+        isolatedDeclgenChecker.Check();
+    }
+
+    TSDeclGen declBuilder(checker, &isolatedDeclgenChecker, program);
     declBuilder.SetDeclgenOptions(declgenOptions);
 
     if ((declBuilder.GetDeclgenOptions().outputDeclEts.empty() && !declBuilder.GetDeclgenOptions().outputEts.empty()) ||

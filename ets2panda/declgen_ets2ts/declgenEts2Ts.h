@@ -22,12 +22,13 @@
 #include "libpandabase/utils/arena_containers.h"
 #include "util/options.h"
 #include "util/diagnosticEngine.h"
+#include "isolatedDeclgenChecker.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
 struct DeclgenOptions {
     bool exportAll = false;
-    bool isIsolatedDeclgen = false;
+    bool isolated = false;
     std::string outputDeclEts;
     std::string outputEts;
 };
@@ -38,8 +39,10 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
 class TSDeclGen {
 public:
-    TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
+    TSDeclGen(checker::ETSChecker *checker, declgen::IsolatedDeclgenChecker *isolatedDeclgenChecker,
+              const ark::es2panda::parser::Program *program)
         : checker_(checker),
+          isolatedDeclgenChecker_(isolatedDeclgenChecker),
           program_(program),
           diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
@@ -95,9 +98,9 @@ private:
     const checker::Signature *GetFuncSignature(const checker::ETSFunctionType *etsFunctionType,
                                                const ir::MethodDefinition *methodDef);
 
-    void SplitUnionTypes(std::string &unionTypeString);
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
+    void SplitUnionTypes(std::string &unionTypeString);
     void ProcessFunctionReturnType(const checker::Signature *sig);
     bool ProcessTSQualifiedName(const ir::ETSTypeReference *typeReference);
     void ProcessETSTypeReferenceType(const ir::ETSTypeReference *typeReference,
@@ -289,6 +292,7 @@ private:
     std::stringstream outputDts_;
     std::stringstream outputTs_;
     checker::ETSChecker *checker_ {};
+    declgen::IsolatedDeclgenChecker *isolatedDeclgenChecker_ {};
     const ark::es2panda::parser::Program *program_ {};
     util::DiagnosticEngine &diagnosticEngine_;
     ArenaAllocator allocator_;

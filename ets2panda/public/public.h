@@ -25,7 +25,6 @@
 #include "compiler/core/compileQueue.h"
 #include "parser/ETSparser.h"
 #include "checker/ETSchecker.h"
-#include "checker/IsolatedDeclgenChecker.h"
 #include "compiler/core/emitter.h"
 
 namespace ark::es2panda::util {
@@ -212,7 +211,6 @@ struct Context {
 
     parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;
-
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
     util::DiagnosticEngine *diagnosticEngine = nullptr;
@@ -226,7 +224,6 @@ struct Context {
     TransitionMemory *transitionMemory {nullptr};
     bool isExternal = false;
     bool compiledByCapi = false;
-    checker::IsolatedDeclgenChecker *isolatedDeclgenChecker {nullptr};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:

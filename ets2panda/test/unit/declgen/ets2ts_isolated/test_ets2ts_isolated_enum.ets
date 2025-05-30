@@ -12,18 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-export function foo(a: int) 
-{
-    if (a < 0) {
-        return 1;
-    }
-    if (a == 0) {
-        return "hello";
-    }
-    if (a > 0) {
-        return true;
-    }
-    
-    return 0;
+export enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+export enum Message {
+  Success = "SUCCESS",
+  Failure = "FAILURE",
+  Pending = "PENDING"
 }
