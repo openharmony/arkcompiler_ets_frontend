@@ -1543,7 +1543,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
-    if (!baseExprType.isUnion()) {
+    if (!baseExprType.isUnion() || this.tsTypeChecker.typeToString(baseExprType) === 'ArrayBufferLike') {
       return;
     }
     const allType = baseExprType.types;
