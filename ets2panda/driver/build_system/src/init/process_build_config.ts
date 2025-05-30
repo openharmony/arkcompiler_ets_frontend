@@ -103,7 +103,7 @@ function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
     buildConfig.dependencyAnalyzerPath = path.join(pandaSdkPath, 'bin', 'dependency_analyzer');
   }
 
-  if (!fs.existsSync(buildConfig.abcLinkerPath as string)) {
+  if (!buildConfig.enableDeclgenEts2Ts && !fs.existsSync(buildConfig.abcLinkerPath as string)) {
     const logData: LogData = LogDataFactory.newInstance(
       ErrorCode.BUILDSYSTEM_ARK_LINK_NOT_FOUND_FAIL,
       'Ark_link not found in path.',
@@ -113,7 +113,7 @@ function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
     logger.printError(logData);
   }
 
-  if (!buildConfig.frameworkMode && !fs.existsSync(buildConfig.dependencyAnalyzerPath as string)) {
+  if (!buildConfig.frameworkMode && !buildConfig.enableDeclgenEts2Ts && !fs.existsSync(buildConfig.dependencyAnalyzerPath as string)) {
     const logData: LogData = LogDataFactory.newInstance(
       ErrorCode.BUILDSYSTEM_Dependency_Analyzer_NOT_FOUND_FAIL,
       'Dependency_analyzer not found in path.',
