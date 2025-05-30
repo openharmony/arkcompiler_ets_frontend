@@ -3869,6 +3869,46 @@ export class Autofixer {
     return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
   }
 
+  fixInteropAsExpression(expression: ts.AsExpression): Autofix[] | undefined {
+    const castMap: Partial<Record<ts.SyntaxKind, string>> = {
+      [ts.SyntaxKind.StringKeyword]: 'toString',
+      [ts.SyntaxKind.NumberKeyword]: 'toNumber',
+      [ts.SyntaxKind.BooleanKeyword]: 'toBoolean',
+      [ts.SyntaxKind.BigIntKeyword]: 'toBigInt'
+    };
+
+    const castMethod = castMap[expression.type.kind];
+    if (!castMethod) {
+      return undefined;
+    }
+    const express = expression.expression;
+    if (!ts.isPropertyAccessExpression(express)) {
+      return undefined;
+    }
+
+    const propertyAccess = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)),
+      undefined,
+      [ts.factory.createStringLiteral(express.name.getText())]
+    );
+
+    const finalCall = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(propertyAccess, ts.factory.createIdentifier(castMethod)),
+      undefined,
+      []
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, finalCall, expression.getSourceFile());
+
+    return [
+      {
+        start: expression.getStart(),
+        end: expression.getEnd(),
+        replacementText
+      }
+    ];
+  }
+
   fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
     const statements = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),

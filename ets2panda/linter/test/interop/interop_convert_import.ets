@@ -17,9 +17,9 @@
  import {foo, foo2, foo3, foo4, array_val, null_val, undefined_val} from "./interop_convert_import_js.js"
 
  let a: number = foo.num as number
- let a: boolean = foo2.bool  as boolean
- let a: string = foo3.str  as string
- let a: bigint = foo4.big  as bigint"
+ let a1: boolean = foo2.bool  as boolean
+ let a2: string = foo3.str  as string
+ let a3: bigint = foo4.big  as bigint
 
 test_helper.test(() => {
 return (array_val as Array).toString() === new Array(1, 2, 3).toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass

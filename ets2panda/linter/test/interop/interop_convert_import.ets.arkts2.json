@@ -13,7 +13,7 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
+"result": [
         {
             "line": 17,
             "column": 2,
@@ -66,9 +66,9 @@
         },
         {
             "line": 20,
-            "column": 19,
+            "column": 20,
             "endLine": 20,
-            "endColumn": 40,
+            "endColumn": 41,
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
@@ -76,9 +76,9 @@
         },
         {
             "line": 20,
-            "column": 19,
+            "column": 20,
             "endLine": 20,
-            "endColumn": 28,
+            "endColumn": 29,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
@@ -86,9 +86,9 @@
         },
         {
             "line": 20,
-            "column": 19,
+            "column": 20,
             "endLine": 20,
-            "endColumn": 28,
+            "endColumn": 29,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
@@ -96,9 +96,9 @@
         },
         {
             "line": 21,
-            "column": 18,
+            "column": 19,
             "endLine": 21,
-            "endColumn": 37,
+            "endColumn": 38,
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
@@ -106,9 +106,9 @@
         },
         {
             "line": 21,
-            "column": 18,
+            "column": 19,
             "endLine": 21,
-            "endColumn": 26,
+            "endColumn": 27,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
@@ -116,9 +116,9 @@
         },
         {
             "line": 21,
-            "column": 18,
+            "column": 19,
             "endLine": 21,
-            "endColumn": 26,
+            "endColumn": 27,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
@@ -126,9 +126,9 @@
         },
         {
             "line": 22,
-            "column": 18,
+            "column": 19,
             "endLine": 22,
-            "endColumn": 37,
+            "endColumn": 38,
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
@@ -136,9 +136,9 @@
         },
         {
             "line": 22,
-            "column": 18,
+            "column": 19,
             "endLine": 22,
-            "endColumn": 26,
+            "endColumn": 27,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
@@ -146,9 +146,9 @@
         },
         {
             "line": 22,
-            "column": 18,
+            "column": 19,
             "endLine": 22,
-            "endColumn": 26,
+            "endColumn": 27,
             "problem": "InteropJsObjectUsage",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
