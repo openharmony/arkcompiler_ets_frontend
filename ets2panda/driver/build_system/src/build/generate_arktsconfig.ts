@@ -26,7 +26,8 @@ import {
 } from '../error_code';
 import {
   changeFileExtension,
-  ensurePathExists
+  ensurePathExists,
+  safeRealpath
 } from '../utils';
 import {
   BuildConfig,
@@ -68,17 +69,17 @@ export class ArkTSConfigGenerator {
   private logger: Logger;
 
   private constructor(buildConfig: BuildConfig, moduleInfos: Map<string, ModuleInfo>) {
-    let pandaStdlibPath: string = buildConfig.pandaStdlibPath ??
-                                  path.resolve(buildConfig.pandaSdkPath!!, 'lib', 'stdlib');
-    this.stdlibStdPath = path.resolve(pandaStdlibPath, 'std');
-    this.stdlibEscompatPath = path.resolve(pandaStdlibPath, 'escompat');
-    this.systemSdkPath = path.resolve(buildConfig.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
+    this.logger = Logger.getInstance();
+    const realPandaSdkPath = safeRealpath(buildConfig.pandaSdkPath!!, this.logger);
+    const realBuildSdkPath = safeRealpath(buildConfig.buildSdkPath, this.logger);
+    const realPandaStdlibPath = buildConfig.pandaStdlibPath ?? path.resolve(realPandaSdkPath, 'lib', 'stdlib');
+    this.stdlibStdPath = path.resolve(realPandaStdlibPath, 'std');
+    this.stdlibEscompatPath = path.resolve(realPandaStdlibPath, 'escompat');
+    this.systemSdkPath = path.resolve(realBuildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
     this.externalApiPaths = buildConfig.externalApiPaths;
 
     this.moduleInfos = moduleInfos;
     this.pathSection = {};
-
-    this.logger = Logger.getInstance();
   }
 
   public static getInstance(buildConfig?: BuildConfig, moduleInfos?: Map<string, ModuleInfo>): ArkTSConfigGenerator {
