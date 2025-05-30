@@ -1323,6 +1323,15 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     return st->TsType();
 }
 
+static bool LambdaIsField(ir::CallExpression *expr)
+{
+    if (!expr->Callee()->IsMemberExpression()) {
+        return false;
+    }
+    auto *me = expr->Callee()->AsMemberExpression();
+    return me->PropVar() != nullptr;
+}
+
 checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
                                                   checker::Type *calleeType) const
 {
@@ -1343,7 +1352,9 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
         return signature;
     }
 
-    if (checker->IsExtensionETSFunctionType(calleeType)) {
+    // when a lambda with receiver is a class field or interface property,
+    // then it can only be called like a lambda without receiver.
+    if (checker->IsExtensionETSFunctionType(calleeType) && !LambdaIsField(expr)) {
         auto *signature = ResolveCallExtensionFunction(calleeType, checker, expr);
         if (signature != nullptr && signature->IsExtensionAccessor() &&
             !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
