@@ -1117,12 +1117,6 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
     const bool hasUnboxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U;
     if (hasBoxingflags && !hasUnboxingflags) {
         ApplyBoxingConversion(node);
-
-        if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
-            CastToString(node);
-            node->RemoveAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
-        }
-
         return;
     }
 
@@ -1769,15 +1763,9 @@ void ETSGen::CastToString(const ir::AstNode *const node)
     if (sourceType->IsETSStringType()) {
         return;
     }
-    if (sourceType->IsETSCharType()) {
-        Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
-        return;
-    }
-    if (sourceType->IsETSPrimitiveType()) {
-        EmitBoxingConversion(node);
-    } else {
-        ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
-    }
+
+    ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
+
     // caller must ensure parameter is not null
     Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
     SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
