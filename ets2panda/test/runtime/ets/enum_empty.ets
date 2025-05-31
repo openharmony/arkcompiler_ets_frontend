@@ -13,6 +13,19 @@
  * limitations under the License.
  */
 
-enum EmptyEnum {
+enum Empty { }
 
+class TestClass { }
+
+function main() {
+    let a: Empty | undefined = undefined;
+    let c: Empty | string | TestClass = "123"
+    foo(a);
+    foo2(c)
+}
+
+function foo(a?: Empty) { }
+
+function foo2(a?: Empty | string | TestClass) {
+    assertEQ(a, "123")
 }

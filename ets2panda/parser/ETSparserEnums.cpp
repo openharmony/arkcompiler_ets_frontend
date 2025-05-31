@@ -160,11 +160,6 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        LogError(diagnostic::ENUM_MUST_HAVE_ONE_CONST);
-        return nullptr;  // Error processing.
-    }
-
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
 
     lexer::SourcePosition enumEnd = ParseEnumMember(members);

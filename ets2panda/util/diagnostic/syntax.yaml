@@ -516,9 +516,9 @@ syntax:
   id: 126
   message: "Variable declaration expected."
 
-- name: ENUM_MUST_HAVE_ONE_CONST
+- name: CONFLICTING_FIELD_MODIFIERS
   id: 127
-  message: "An enum must have at least one enum constant."
+  message: "Conflicting modifiers '!' and '?' on field."
 
 - name: VALUE_IS_NOT_SET
   id: 128
@@ -1228,10 +1228,6 @@ syntax:
   id: 304
   message: "Late-initialized field cannot have default value."
 
-- name: CONFLICTING_FIELD_MODIFIERS
-  id: 305
-  message: "Conflicting modifiers '!' and '?' on field."
-
 - name: DEEP_NESTING
-  id: 306
+  id: 305
   message: "Maximum allowed nesting level exceeded."
