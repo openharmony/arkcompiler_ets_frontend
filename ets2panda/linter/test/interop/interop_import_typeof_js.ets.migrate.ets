@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 'use static'
 
 
@@ -29,7 +29,7 @@ let Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');
 
 
 myAaa.invoke().typeOf(); //error
-let fun = myAaa();
+let fun = myAaa.invoke();
 typeof fun;
 Dog.typeOf(); //error
 Dog.invoke(ESValue.wrap('doge')).typeOf(); //error
@@ -44,18 +44,18 @@ ClassA.instantiate().typeOf() //error
 typeof aClass;
 let person:Person = Person.instantiate();
 let name =person.name
-let name2 =person.getName()
+let name2 =person.invokeMethod("getName")
 function getPersonInfo(){
-    typeof person;
-    typeof person.getName();
-    typeof name2;
-    typeof name;
-    typeof person.setAge(111.0);
-    typeof person;
-    Person.instantiate().typeOf(); //error
+  typeof person;
+  typeof person.getName();
+  typeof name2;
+  typeof name;
+  typeof person.setAge(111.0);
+  typeof person;
+  Person.instantiate().typeOf(); //error
 }
 
-const  age = typeof person.setAge(111.0); 
+const  age = typeof person.setAge(111.0);
 let person2 = typeof person
 class Object {
   code: string = "www"

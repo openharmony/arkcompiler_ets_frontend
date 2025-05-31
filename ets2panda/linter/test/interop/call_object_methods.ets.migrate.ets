@@ -17,5 +17,5 @@ let GeneratedImportVar_1 = ESValue.load('./call_object_methods_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
 
-foo.bar(123.0)
+foo.invokeMethod("bar", ESValue.wrap(123.0))
 

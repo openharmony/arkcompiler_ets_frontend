@@ -4553,19 +4553,30 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     sym: ts.Symbol | undefined,
     callSignature: ts.Signature | undefined
   ): void {
-    if (!callSignature) {
+    if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-    if (!TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
-      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(
-          tsCallExpr,
-          ts.isPropertyAccessExpression(tsCallExpr.expression) ?
-            FaultID.InteropCallObjectMethods :
-            FaultID.CallJSFunction
-        );
-      }
+
+    // Typeof expressions is handled by a different rule, early return if parent is a typeof expression
+    if (ts.isTypeOfExpression(tsCallExpr.parent)) {
+      return;
     }
+
+    if (!callSignature || TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
+      return;
+    }
+
+    if (!sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixInteropInvokeExpression(tsCallExpr);
+
+    this.incrementCounters(
+      tsCallExpr,
+      ts.isPropertyAccessExpression(tsCallExpr.expression) ? FaultID.InteropCallObjectMethods : FaultID.CallJSFunction,
+      autofix
+    );
   }
 
   private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
