@@ -159,6 +159,7 @@ runtime/ets/import_declare_type_alias.ets
 ast/compiler/ets/import_type_without_export.ets
 ast/compiler/ets/type_binding_01.ets
 ast/compiler/ets/type_binding_02.ets
+ast/compiler/ets/external_local_interface.ets
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.ets
