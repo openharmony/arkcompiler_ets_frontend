@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,8 +21,12 @@
 namespace ark::es2panda::ir {
 class TSNamedTupleMember : public TypeNode {
 public:
-    explicit TSNamedTupleMember(Expression *label, TypeNode *elementType, bool optional)
-        : TypeNode(AstNodeType::TS_NAMED_TUPLE_MEMBER), label_(label), elementType_(elementType), optional_(optional)
+    explicit TSNamedTupleMember(Expression *label, TypeNode *elementType, bool optional,
+                                ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_NAMED_TUPLE_MEMBER, allocator),
+          label_(label),
+          elementType_(elementType),
+          optional_(optional)
     {
     }
 
@@ -53,7 +57,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

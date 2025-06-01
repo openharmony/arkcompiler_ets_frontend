@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -21,13 +21,16 @@ set(RB_LIST "")
 
 set(ES2PANDA_API
     ${CMAKE_CURRENT_SOURCE_DIR}/cppToCTypes.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/ignoredAllowed.yaml
 )
 
 set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/varbinder/variableFlags.h
+    ${GENERATED_DIR}/options.h
+    ${ES2PANDA_ROOT}/util/options.h
     ${ES2PANDA_ROOT}/lexer/regexp/regexp.h
     ${ES2PANDA_ROOT}/util/language.h
-    ${ES2PANDA_ROOT}/lexer/token/tokenType.h
+    ${GENERATED_DIR}/tokenType.h
     ${ES2PANDA_ROOT}/ir/astNodeFlags.h
     ${ES2PANDA_ROOT}/ir/astNodeMapping.h
     ${ES2PANDA_ROOT}/ir/module/exportDefaultDeclaration.h
@@ -99,6 +102,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/typed.h
     ${ES2PANDA_ROOT}/ir/statements/ifStatement.h
     ${ES2PANDA_ROOT}/ir/ets/etsTuple.h
+    ${ES2PANDA_ROOT}/ir/ets/etsStringLiteralType.h
     ${ES2PANDA_ROOT}/ir/module/exportSpecifier.h
     ${ES2PANDA_ROOT}/ir/ts/tsNamedTupleMember.h
     ${ES2PANDA_ROOT}/ir/statements/returnStatement.h
@@ -112,6 +116,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ets/etsBigIntType.h
     ${ES2PANDA_ROOT}/ir/expressions/arrayExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsUnionType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsKeyofType.h
     ${ES2PANDA_ROOT}/ir/ts/tsTypeParameter.h
     ${ES2PANDA_ROOT}/ir/ts/tsConstructorType.h
     ${ES2PANDA_ROOT}/ir/ts/tsTypeParameterDeclaration.h
@@ -150,7 +155,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/type.h
     ${ES2PANDA_ROOT}/checker/types/ts/booleanLiteralType.h
     ${ES2PANDA_ROOT}/checker/types/ts/anyType.h
-    ${ES2PANDA_ROOT}/ir/ets/etsScript.h
+    ${ES2PANDA_ROOT}/ir/ets/etsModule.h
     ${ES2PANDA_ROOT}/ir/ts/tsInferType.h
     ${ES2PANDA_ROOT}/ir/ts/tsMappedType.h
     ${ES2PANDA_ROOT}/ir/statements/debuggerStatement.h
@@ -192,7 +197,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ets/intType.h
     ${ES2PANDA_ROOT}/ir/statements/forUpdateStatement.h
     ${ES2PANDA_ROOT}/checker/types/ets/floatType.h
-    ${ES2PANDA_ROOT}/ir/ets/etsImportSource.h
     ${ES2PANDA_ROOT}/ir/ets/etsTypeReferencePart.h
     ${ES2PANDA_ROOT}/ir/ts/tsUnknownKeyword.h
     ${ES2PANDA_ROOT}/ir/ets/etsStructDeclaration.h
@@ -226,6 +230,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/ts/tsTypeLiteral.h
     ${ES2PANDA_ROOT}/ir/ts/tsNumberKeyword.h
     ${ES2PANDA_ROOT}/ir/opaqueTypeNode.h
+    ${ES2PANDA_ROOT}/ir/brokenTypeNode.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunction.h
     ${ES2PANDA_ROOT}/ir/expressions/literal.h
     ${ES2PANDA_ROOT}/ir/ts/tsInterfaceDeclaration.h
@@ -259,6 +264,9 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/expressions/typeofExpression.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsAsyncFuncReturnType.h
     ${ES2PANDA_ROOT}/ir/statements/loopStatement.h
+    ${ES2PANDA_ROOT}/ir/statements/annotationDeclaration.h
+    ${ES2PANDA_ROOT}/ir/statements/annotationUsage.h
+    ${ES2PANDA_ROOT}/ir/annotationAllowed.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunctionSignature.h
     ${ES2PANDA_ROOT}/ir/expressions/yieldExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsNewMultiDimArrayInstanceExpression.h
@@ -277,13 +285,23 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/resolveResult.h
     ${ES2PANDA_ROOT}/parser/ETSparser.h
     ${ES2PANDA_ROOT}/parser/parserFlags.h
+    ${ES2PANDA_ROOT}/parser/parserImpl.h
+    ${ES2PANDA_ROOT}/parser/program/program.h
     ${ES2PANDA_ROOT}/es2panda.h
+    ${ES2PANDA_ROOT}/ast_verifier/ASTVerifier.h
+    ${ES2PANDA_ROOT}/util/importPathManager.h
+    ${ES2PANDA_ROOT}/util/path.h
+    ${ES2PANDA_ROOT}/util/arktsconfig.h
 )
 
 set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/typeMapping.yaml
+    ${LIBGEN_DIR}/gen/headers/options.yaml
+    ${LIBGEN_DIR}/gen/headers/util/options.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/es2panda.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml
@@ -316,7 +334,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/tupleType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeReference.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/functionType.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/ets/etsImportSource.yaml
     ${LIBGEN_DIR}/gen/headers/ir/as/namedType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/numberLiteral.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsFunctionType.yaml
@@ -336,6 +353,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsObjectKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unionType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsUnionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsKeyofType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/tsPropertySignature.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectDescriptor.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsConditionalType.yaml
@@ -361,6 +379,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsUndefinedKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/signature.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsTuple.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsStringLiteralType.yaml
     ${LIBGEN_DIR}/gen/headers/util/language.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/tryStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsBigIntType.yaml
@@ -368,7 +387,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/globalTypesHolder.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/longType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNode.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/unaryExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/forInStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/thisExpression.yaml
@@ -383,7 +401,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/voidType.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/doubleType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/expressionStatement.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/ets/etsScript.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsModule.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/metaProperty.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsArrayType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/tsSignatureDeclaration.yaml
@@ -414,6 +432,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsModuleBlock.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewArrayInstanceExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/loopStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/annotationDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/annotationUsage.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/emptyStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsLaunchExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/whileStatement.yaml
@@ -512,7 +532,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsObjectType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/omittedExpression.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/arrayType.yaml
-    ${LIBGEN_DIR}/gen/headers/lexer/token/tokenType.yaml
+    ${LIBGEN_DIR}/gen/headers/tokenType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewClassInstanceExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsAsExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/forUpdateStatement.yaml
@@ -537,6 +557,11 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/resolveResult.yaml
     ${LIBGEN_DIR}/gen/headers/parser/parserFlags.yaml
     ${LIBGEN_DIR}/gen/headers/parser/ETSparser.yaml
+    ${LIBGEN_DIR}/gen/headers/parser/program/program.yaml
+    ${LIBGEN_DIR}/gen/headers/ast_verifier/ASTVerifier.yaml
+    ${LIBGEN_DIR}/gen/headers/util/importPathManager.yaml
+    ${LIBGEN_DIR}/gen/headers/util/path.yaml
+    ${LIBGEN_DIR}/gen/headers/util/arktsconfig.yaml
     )
 
 
@@ -551,6 +576,7 @@ set (ES2PANDA_INC
     ${LIB_NAME}_enums.inc.erb
     ${LIB_NAME}_impl.inc.erb
     ${LIB_NAME}_list.inc.erb
+    ${LIB_NAME}.idl.erb
 )
 
 panda_gen(
@@ -560,7 +586,7 @@ panda_gen(
     API ${RB_LIST}
     DESTINATION ${LIBGEN_DIR}
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
-    EXTRA_DEPENDENCIES gen_yamls
+    EXTRA_DEPENDENCIES gen_yamls ${CMAKE_CURRENT_SOURCE_DIR}/enums.rb
 )
 
 set(HEADERS_PARSER_SOURCES
@@ -591,11 +617,12 @@ add_custom_command(
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 
-add_custom_target(gen_yamls DEPENDS ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
+add_custom_target(gen_yamls DEPENDS es2panda_options_gen es2panda_keywords ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
 
 set(ES2PANDA_PUBLIC_SOURCES
     ${LIB_NAME}.cpp
+    ../declgen_ets2ts/declgenEts2Ts.cpp
     ../util/generateBin.cpp
     ../util/options.cpp
     ../util/plugin.cpp

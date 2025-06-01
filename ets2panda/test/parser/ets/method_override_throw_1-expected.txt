@@ -15,11 +15,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -39,11 +41,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -56,11 +60,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 13
+                      "column": 13,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 17
+                      "column": 17,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -68,22 +74,26 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 17
+                    "column": 17,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -92,11 +102,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 17,
-                "column": 25
+                "column": 25,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -109,11 +121,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -133,11 +147,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -158,11 +174,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 23
+                              "column": 23,
+                              "program": "method_override_throw_1.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 27
+                              "column": 27,
+                              "program": "method_override_throw_1.ets"
                             }
                           }
                         },
@@ -170,11 +188,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 17
+                            "column": 17,
+                            "program": "method_override_throw_1.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 27
+                            "column": 27,
+                            "program": "method_override_throw_1.ets"
                           }
                         }
                       },
@@ -182,22 +202,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 10
+                          "column": 10,
+                          "program": "method_override_throw_1.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 27
+                          "column": 27,
+                          "program": "method_override_throw_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 10
+                        "column": 10,
+                        "program": "method_override_throw_1.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 27
+                        "column": 27,
+                        "program": "method_override_throw_1.ets"
                       }
                     }
                   }
@@ -207,11 +231,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 37
+                      "column": 37,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 41
+                      "column": 41,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -219,22 +245,26 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 41
+                    "column": 41,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 41
+                  "column": 41,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -243,11 +273,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 18,
-                "column": 51
+                "column": 51,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -260,11 +292,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -284,11 +318,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -301,33 +337,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 13
+                      "column": 13,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 17
+                      "column": 17,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 17
+                    "column": 17,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 17
+                  "column": 17,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -336,11 +378,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 19,
-                "column": 18
+                "column": 18,
+                "program": "method_override_throw_1.ets"
               }
             }
           }
@@ -348,11 +392,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 13
+            "column": 13,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
@@ -363,11 +409,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 11
+            "column": 11,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
             "line": 16,
-            "column": 12
+            "column": 12,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
@@ -375,11 +423,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         },
         "end": {
           "line": 22,
-          "column": 6
+          "column": 6,
+          "program": "method_override_throw_1.ets"
         }
       }
     },
@@ -393,11 +443,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 7
+              "column": 7,
+              "program": "method_override_throw_1.ets"
             },
             "end": {
               "line": 22,
-              "column": 13
+              "column": 13,
+              "program": "method_override_throw_1.ets"
             }
           }
         },
@@ -416,44 +468,52 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 25
+                      "column": 25,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 26
+                      "column": 26,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 25
+                    "column": 25,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 22,
-                    "column": 28
+                    "column": 28,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 25
+                  "column": 25,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 28
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 25
+                "column": 25,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 22,
-                "column": 28
+                "column": 28,
+                "program": "method_override_throw_1.ets"
               }
             }
           }
@@ -468,11 +528,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -492,11 +554,13 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -509,11 +573,13 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 22
+                      "column": 22,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 26
+                      "column": 26,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -523,11 +589,13 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 34
+                      "column": 34,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 36
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -535,22 +603,26 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 23,
-                    "column": 36
+                    "column": 36,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 36
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -559,11 +631,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 23,
-                "column": 36
+                "column": 36,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -576,11 +650,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -600,11 +676,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -625,11 +703,13 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 32
+                              "column": 32,
+                              "program": "method_override_throw_1.ets"
                             },
                             "end": {
                               "line": 24,
-                              "column": 36
+                              "column": 36,
+                              "program": "method_override_throw_1.ets"
                             }
                           }
                         },
@@ -637,11 +717,13 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 26
+                            "column": 26,
+                            "program": "method_override_throw_1.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 36
+                            "column": 36,
+                            "program": "method_override_throw_1.ets"
                           }
                         }
                       },
@@ -649,22 +731,26 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 19
+                          "column": 19,
+                          "program": "method_override_throw_1.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 36
+                          "column": 36,
+                          "program": "method_override_throw_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 19
+                        "column": 19,
+                        "program": "method_override_throw_1.ets"
                       },
                       "end": {
                         "line": 24,
-                        "column": 36
+                        "column": 36,
+                        "program": "method_override_throw_1.ets"
                       }
                     }
                   }
@@ -674,11 +760,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 46
+                      "column": 46,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 50
+                      "column": 50,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -688,11 +776,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 60
+                      "column": 60,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 62
+                      "column": 62,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -700,22 +790,26 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 62
+                    "column": 62,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 62
+                  "column": 62,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -724,11 +818,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 24,
-                "column": 62
+                "column": 62,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -741,11 +837,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -765,11 +863,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -782,11 +882,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 22
+                      "column": 22,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 26
+                      "column": 26,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -796,33 +898,39 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 27
+                      "column": 27,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 29
+                      "column": 29,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 25,
-                    "column": 29
+                    "column": 29,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 29
+                  "column": 29,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -831,11 +939,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 25,
-                "column": 29
+                "column": 29,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -847,12 +957,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -870,12 +982,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 28,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 28,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -888,34 +1002,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 28,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 28,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 22,
+                    "column": 28,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 22,
+                    "column": 28,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -923,12 +1043,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 26,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 26,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -936,22 +1058,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 27
+            "column": 27,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
-            "line": 26,
-            "column": 2
+            "line": 28,
+            "column": 6,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         },
         "end": {
-          "line": 26,
-          "column": 2
+          "line": 28,
+          "column": 6,
+          "program": "method_override_throw_1.ets"
         }
       }
     },
@@ -965,11 +1091,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 7
+              "column": 7,
+              "program": "method_override_throw_1.ets"
             },
             "end": {
               "line": 28,
-              "column": 13
+              "column": 13,
+              "program": "method_override_throw_1.ets"
             }
           }
         },
@@ -985,11 +1113,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1009,11 +1139,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 29,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1026,11 +1158,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 13
+                      "column": 13,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 29,
-                      "column": 17
+                      "column": 17,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1040,11 +1174,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 25
+                      "column": 25,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 29,
-                      "column": 27
+                      "column": 27,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1052,22 +1188,26 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 29,
-                    "column": 27
+                    "column": 27,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 27
+                  "column": 27,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1076,11 +1216,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 29,
-                "column": 27
+                "column": 27,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1093,11 +1235,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1117,11 +1261,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1142,11 +1288,13 @@
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 23
+                              "column": 23,
+                              "program": "method_override_throw_1.ets"
                             },
                             "end": {
                               "line": 30,
-                              "column": 27
+                              "column": 27,
+                              "program": "method_override_throw_1.ets"
                             }
                           }
                         },
@@ -1154,11 +1302,13 @@
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 17
+                            "column": 17,
+                            "program": "method_override_throw_1.ets"
                           },
                           "end": {
                             "line": 30,
-                            "column": 27
+                            "column": 27,
+                            "program": "method_override_throw_1.ets"
                           }
                         }
                       },
@@ -1166,22 +1316,26 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 10
+                          "column": 10,
+                          "program": "method_override_throw_1.ets"
                         },
                         "end": {
                           "line": 30,
-                          "column": 27
+                          "column": 27,
+                          "program": "method_override_throw_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 10
+                        "column": 10,
+                        "program": "method_override_throw_1.ets"
                       },
                       "end": {
                         "line": 30,
-                        "column": 27
+                        "column": 27,
+                        "program": "method_override_throw_1.ets"
                       }
                     }
                   }
@@ -1191,11 +1345,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 37
+                      "column": 37,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 41
+                      "column": 41,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1205,11 +1361,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 51
+                      "column": 51,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 53
+                      "column": 53,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1217,22 +1375,26 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 30,
-                    "column": 53
+                    "column": 53,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 53
+                  "column": 53,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1241,11 +1403,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 30,
-                "column": 53
+                "column": 53,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1258,11 +1422,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 5
+                  "column": 5,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1282,11 +1448,13 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 5
+                      "column": 5,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 31,
-                      "column": 9
+                      "column": 9,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1299,11 +1467,13 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 13
+                      "column": 13,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 31,
-                      "column": 17
+                      "column": 17,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1313,33 +1483,39 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 31,
-                      "column": 20
+                      "column": 20,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 9
+                    "column": 9,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 31,
-                    "column": 20
+                    "column": 20,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 9
+                  "column": 9,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 20
+                  "column": 20,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1348,11 +1524,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 31,
-                "column": 20
+                "column": 20,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1364,12 +1542,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 28,
+                  "column": 15,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 28,
+                  "column": 15,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1387,12 +1567,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 28,
+                      "column": 15,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 28,
+                      "column": 15,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1405,34 +1587,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 28,
+                      "column": 15,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 28,
+                      "column": 15,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 28,
+                    "column": 15,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 28,
+                    "column": 15,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 28,
+                  "column": 15,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 28,
+                  "column": 15,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1440,12 +1628,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 32,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 32,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1453,22 +1643,26 @@
         "loc": {
           "start": {
             "line": 28,
-            "column": 14
+            "column": 14,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
-            "line": 32,
-            "column": 2
+            "line": 34,
+            "column": 6,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         },
         "end": {
-          "line": 32,
-          "column": 2
+          "line": 34,
+          "column": 6,
+          "program": "method_override_throw_1.ets"
         }
       }
     },
@@ -1482,11 +1676,13 @@
           "loc": {
             "start": {
               "line": 34,
-              "column": 13
+              "column": 13,
+              "program": "method_override_throw_1.ets"
             },
             "end": {
               "line": 34,
-              "column": 19
+              "column": 19,
+              "program": "method_override_throw_1.ets"
             }
           }
         },
@@ -1501,33 +1697,39 @@
               "loc": {
                 "start": {
                   "line": 34,
-                  "column": 28
+                  "column": 28,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 34,
-                  "column": 34
+                  "column": 34,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 34,
-                "column": 28
+                "column": 28,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 34,
-                "column": 36
+                "column": 36,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 34,
-              "column": 28
+              "column": 28,
+              "program": "method_override_throw_1.ets"
             },
             "end": {
               "line": 34,
-              "column": 36
+              "column": 36,
+              "program": "method_override_throw_1.ets"
             }
           }
         },
@@ -1542,11 +1744,13 @@
               "loc": {
                 "start": {
                   "line": 35,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 35,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1566,11 +1770,13 @@
                   "loc": {
                     "start": {
                       "line": 35,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 35,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1583,11 +1789,13 @@
                   "loc": {
                     "start": {
                       "line": 35,
-                      "column": 22
+                      "column": 22,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 35,
-                      "column": 26
+                      "column": 26,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1597,11 +1805,13 @@
                   "loc": {
                     "start": {
                       "line": 35,
-                      "column": 34
+                      "column": 34,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 35,
-                      "column": 36
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1609,22 +1819,26 @@
                 "loc": {
                   "start": {
                     "line": 35,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 35,
-                    "column": 36
+                    "column": 36,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 35,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 35,
-                  "column": 36
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1633,11 +1847,13 @@
             "loc": {
               "start": {
                 "line": 35,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 35,
-                "column": 36
+                "column": 36,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1650,11 +1866,13 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 36,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1674,11 +1892,13 @@
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 36,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1699,11 +1919,13 @@
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 32
+                              "column": 32,
+                              "program": "method_override_throw_1.ets"
                             },
                             "end": {
                               "line": 36,
-                              "column": 36
+                              "column": 36,
+                              "program": "method_override_throw_1.ets"
                             }
                           }
                         },
@@ -1711,11 +1933,13 @@
                         "loc": {
                           "start": {
                             "line": 36,
-                            "column": 26
+                            "column": 26,
+                            "program": "method_override_throw_1.ets"
                           },
                           "end": {
                             "line": 36,
-                            "column": 36
+                            "column": 36,
+                            "program": "method_override_throw_1.ets"
                           }
                         }
                       },
@@ -1723,22 +1947,26 @@
                       "loc": {
                         "start": {
                           "line": 36,
-                          "column": 19
+                          "column": 19,
+                          "program": "method_override_throw_1.ets"
                         },
                         "end": {
                           "line": 36,
-                          "column": 36
+                          "column": 36,
+                          "program": "method_override_throw_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 36,
-                        "column": 19
+                        "column": 19,
+                        "program": "method_override_throw_1.ets"
                       },
                       "end": {
                         "line": 36,
-                        "column": 36
+                        "column": 36,
+                        "program": "method_override_throw_1.ets"
                       }
                     }
                   }
@@ -1748,11 +1976,13 @@
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 46
+                      "column": 46,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 36,
-                      "column": 50
+                      "column": 50,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1762,11 +1992,13 @@
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 60
+                      "column": 60,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 36,
-                      "column": 62
+                      "column": 62,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1774,22 +2006,26 @@
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 36,
-                    "column": 62
+                    "column": 62,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 36,
-                  "column": 62
+                  "column": 62,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1798,11 +2034,13 @@
             "loc": {
               "start": {
                 "line": 36,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 36,
-                "column": 62
+                "column": 62,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1815,11 +2053,13 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 14
+                  "column": 14,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 37,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1839,11 +2079,13 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 14
+                      "column": 14,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 37,
-                      "column": 18
+                      "column": 18,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1856,11 +2098,13 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 22
+                      "column": 22,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 37,
-                      "column": 26
+                      "column": 26,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1870,33 +2114,39 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 27
+                      "column": 27,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
                       "line": 37,
-                      "column": 29
+                      "column": 29,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 37,
-                    "column": 18
+                    "column": 18,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
                     "line": 37,
-                    "column": 29
+                    "column": 29,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 18
+                  "column": 18,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
                   "line": 37,
-                  "column": 29
+                  "column": 29,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1905,11 +2155,13 @@
             "loc": {
               "start": {
                 "line": 37,
-                "column": 5
+                "column": 5,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 37,
-                "column": 29
+                "column": 29,
+                "program": "method_override_throw_1.ets"
               }
             }
           },
@@ -1921,12 +2173,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 34,
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 34,
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1944,12 +2198,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 34,
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 34,
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
@@ -1962,34 +2218,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 34,
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 34,
+                      "column": 36,
+                      "program": "method_override_throw_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 34,
+                    "column": 36,
+                    "program": "method_override_throw_1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 34,
+                    "column": 36,
+                    "program": "method_override_throw_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 34,
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 34,
+                  "column": 36,
+                  "program": "method_override_throw_1.ets"
                 }
               }
             },
@@ -1997,12 +2259,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 38,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 38,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -2010,22 +2274,26 @@
         "loc": {
           "start": {
             "line": 34,
-            "column": 35
+            "column": 35,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
-            "line": 38,
-            "column": 2
+            "line": 39,
+            "column": 1,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 34,
-          "column": 7
+          "column": 7,
+          "program": "method_override_throw_1.ets"
         },
         "end": {
-          "line": 38,
-          "column": 2
+          "line": 39,
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         }
       }
     },
@@ -2039,11 +2307,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "method_override_throw_1.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "method_override_throw_1.ets"
             }
           }
         },
@@ -2054,16 +2324,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "method_override_throw_1.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "method_override_throw_1.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -2083,11 +2461,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -2101,33 +2481,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -2136,11 +2522,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "method_override_throw_1.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "method_override_throw_1.ets"
               }
             }
           }
@@ -2148,22 +2536,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "method_override_throw_1.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "method_override_throw_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "method_override_throw_1.ets"
         }
       }
     }
@@ -2171,11 +2563,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "method_override_throw_1.ets"
     },
     "end": {
       "line": 39,
-      "column": 1
+      "column": 1,
+      "program": "method_override_throw_1.ets"
     }
   }
 }

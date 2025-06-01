@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 28
+            "column": 28,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 16,
-            "column": 30
+            "column": 30,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
@@ -24,11 +26,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 11
+            "column": 11,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 16,
-            "column": 21
+            "column": 21,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
@@ -45,22 +49,26 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 22
+                  "column": 22,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 23
+                  "column": 23,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 22
+                "column": 22,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 16,
-                "column": 24
+                "column": 24,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
@@ -73,22 +81,26 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 25
+                  "column": 25,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 26
+                  "column": 26,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 25
+                "column": 25,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 16,
-                "column": 27
+                "column": 27,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           }
@@ -96,22 +108,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 21
+            "column": 21,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 16,
-            "column": 27
+            "column": 27,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "InferTypeParamFromParam3.ets"
         },
         "end": {
           "line": 17,
-          "column": 10
+          "column": 10,
+          "program": "InferTypeParamFromParam3.ets"
         }
       }
     },
@@ -123,11 +139,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 53
+            "column": 53,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 17,
-            "column": 55
+            "column": 55,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
@@ -138,11 +156,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 17,
-            "column": 21
+            "column": 21,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
@@ -160,11 +180,13 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 36
+                    "column": 36,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 46
+                    "column": 46,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
@@ -182,33 +204,39 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 47
+                            "column": 47,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 48
+                            "column": 48,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 47
+                          "column": 47,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 49
+                          "column": 49,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 47
+                        "column": 47,
+                        "program": "InferTypeParamFromParam3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 49
+                        "column": 49,
+                        "program": "InferTypeParamFromParam3.ets"
                       }
                     }
                   },
@@ -223,33 +251,39 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 50
+                            "column": 50,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 51
+                            "column": 51,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 50
+                          "column": 50,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 52
+                          "column": 52,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 50
+                        "column": 50,
+                        "program": "InferTypeParamFromParam3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 52
+                        "column": 52,
+                        "program": "InferTypeParamFromParam3.ets"
                       }
                     }
                   }
@@ -257,44 +291,52 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 46
+                    "column": 46,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 52
+                    "column": 52,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 36
+                  "column": 36,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 54
+                  "column": 54,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 36
+                "column": 36,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 54
+                "column": 54,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 36
+              "column": 36,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 17,
-              "column": 54
+              "column": 54,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         }
@@ -311,22 +353,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 22
+                  "column": 22,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 23
+                  "column": 23,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 22
+                "column": 22,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 24
+                "column": 24,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
@@ -339,22 +385,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 25
+                  "column": 25,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 26
+                  "column": 26,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 25
+                "column": 25,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 27
+                "column": 27,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           }
@@ -362,22 +412,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 21
+            "column": 21,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 17,
-            "column": 27
+            "column": 27,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "InferTypeParamFromParam3.ets"
         },
         "end": {
           "line": 18,
-          "column": 6
+          "column": 6,
+          "program": "InferTypeParamFromParam3.ets"
         }
       }
     },
@@ -391,11 +445,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 13
+              "column": 13,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 18,
-              "column": 14
+              "column": 14,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         },
@@ -411,22 +467,26 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 15
+                    "column": 15,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 16
+                    "column": 16,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 15
+                  "column": 15,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -439,22 +499,26 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 18
+                    "column": 18,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 19
+                    "column": 19,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 18
+                  "column": 18,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 20
+                  "column": 20,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             }
@@ -462,11 +526,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 14
+              "column": 14,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 18,
-              "column": 20
+              "column": 20,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         },
@@ -485,11 +551,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 32
+                      "column": 32,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 42
+                      "column": 42,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -507,33 +575,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 43
+                              "column": 43,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 44
+                              "column": 44,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 43
+                            "column": 43,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 45
+                            "column": 45,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 43
+                          "column": 43,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 45
+                          "column": 45,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
@@ -548,33 +622,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 46
+                              "column": 46,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 47
+                              "column": 47,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 46
+                            "column": 46,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 48
+                            "column": 48,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 46
+                          "column": 46,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 48
+                          "column": 48,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -582,44 +662,52 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 42
+                      "column": 42,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 48
+                      "column": 48,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 32
+                    "column": 32,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 49
+                    "column": 49,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 32
+                  "column": 32,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 49
+                  "column": 49,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 32
+                "column": 32,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 18,
-                "column": 49
+                "column": 49,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           }
@@ -633,12 +721,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 49,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 49,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -656,12 +746,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 49,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 49,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -674,34 +766,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 49,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 49,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 49,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 49,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 49,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 49,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -709,12 +807,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 50
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 50
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -722,22 +822,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 48
+            "column": 48,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
-            "line": 18,
-            "column": 50
+            "line": 20,
+            "column": 6,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 7
+          "column": 7,
+          "program": "InferTypeParamFromParam3.ets"
         },
         "end": {
-          "line": 18,
-          "column": 50
+          "line": 20,
+          "column": 6,
+          "program": "InferTypeParamFromParam3.ets"
         }
       }
     },
@@ -751,11 +855,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 13
+              "column": 13,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 20,
-              "column": 24
+              "column": 24,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         },
@@ -771,22 +877,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 25
+                    "column": 25,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 26
+                    "column": 26,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 25
+                  "column": 25,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 27
+                  "column": 27,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -799,22 +909,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 28
+                    "column": 28,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 29
+                    "column": 29,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 28
+                  "column": 28,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 30
+                  "column": 30,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             }
@@ -822,11 +936,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 24
+              "column": 24,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 20,
-              "column": 30
+              "column": 30,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         },
@@ -845,11 +961,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 42
+                      "column": 42,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 52
+                      "column": 52,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -867,33 +985,39 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 53
+                              "column": 53,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 54
+                              "column": 54,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 53
+                            "column": 53,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 55
+                            "column": 55,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 53
+                          "column": 53,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 55
+                          "column": 55,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
@@ -908,33 +1032,39 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 56
+                              "column": 56,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 57
+                              "column": 57,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 56
+                            "column": 56,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 58
+                            "column": 58,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 56
+                          "column": 56,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 58
+                          "column": 58,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -942,44 +1072,52 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 52
+                      "column": 52,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 58
+                      "column": 58,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 42
+                    "column": 42,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 59
+                    "column": 59,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 42
+                  "column": 42,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 59
+                  "column": 59,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 42
+                "column": 42,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 20,
-                "column": 59
+                "column": 59,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           }
@@ -994,11 +1132,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 19
+                  "column": 19,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 33
+                  "column": 33,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -1018,11 +1158,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 19
+                      "column": 19,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 33
+                      "column": 33,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -1046,11 +1188,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 54
+                                "column": 54,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 64
+                                "column": 64,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
@@ -1068,33 +1212,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 65
+                                        "column": 65,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 66
+                                        "column": 66,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 65
+                                      "column": 65,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 67
+                                      "column": 67,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 65
+                                    "column": 65,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 67
+                                    "column": 67,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   }
                                 }
                               },
@@ -1109,33 +1259,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 68
+                                        "column": 68,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 69
+                                        "column": 69,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 68
+                                      "column": 68,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 70
+                                      "column": 70,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 68
+                                    "column": 68,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 70
+                                    "column": 70,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   }
                                 }
                               }
@@ -1143,33 +1299,39 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 64
+                                "column": 64,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 70
+                                "column": 70,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 54
+                              "column": 54,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 71
+                              "column": 71,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 54
+                            "column": 54,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 71
+                            "column": 71,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
@@ -1177,22 +1339,26 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 49
+                          "column": 49,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 71
+                          "column": 71,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 49
+                        "column": 49,
+                        "program": "InferTypeParamFromParam3.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 71
+                        "column": 71,
+                        "program": "InferTypeParamFromParam3.ets"
                       }
                     }
                   }
@@ -1208,11 +1374,13 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 74
+                          "column": 74,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 85
+                          "column": 85,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
@@ -1230,33 +1398,39 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 86
+                                  "column": 86,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 87
+                                  "column": 87,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 86
+                                "column": 86,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 88
+                                "column": 88,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 86
+                              "column": 86,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 88
+                              "column": 88,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
@@ -1271,33 +1445,39 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 89
+                                  "column": 89,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 90
+                                  "column": 90,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 89
+                                "column": 89,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 91
+                                "column": 91,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 89
+                              "column": 89,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 91
+                              "column": 91,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         }
@@ -1305,33 +1485,39 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 85
+                          "column": 85,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 91
+                          "column": 91,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 74
+                        "column": 74,
+                        "program": "InferTypeParamFromParam3.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 93
+                        "column": 93,
+                        "program": "InferTypeParamFromParam3.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 74
+                      "column": 74,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 93
+                      "column": 93,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -1347,22 +1533,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 34
+                            "column": 34,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 35
+                            "column": 35,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 34
+                          "column": 34,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 36
+                          "column": 36,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
@@ -1375,11 +1565,13 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 37
+                            "column": 37,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 38
+                            "column": 38,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
@@ -1394,44 +1586,52 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 41
+                                "column": 41,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 47
+                                "column": 47,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 41
+                              "column": 41,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 48
+                              "column": 48,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 41
+                            "column": 41,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 48
+                            "column": 48,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 37
+                          "column": 37,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 48
+                          "column": 48,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -1439,11 +1639,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 33
+                      "column": 33,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 48
+                      "column": 48,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -1465,11 +1667,13 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 }
                               }
                             },
@@ -1487,33 +1691,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 32
+                                          "column": 32,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 33
+                                          "column": 33,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 32
+                                        "column": 32,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 34
+                                        "column": 34,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 32
+                                      "column": 32,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
@@ -1528,33 +1738,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 35
+                                          "column": 35,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 36
+                                          "column": 36,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 35
+                                        "column": 35,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 37
+                                        "column": 37,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 35
+                                      "column": 35,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 37
+                                      "column": 37,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 }
@@ -1562,33 +1778,39 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 37
+                                  "column": 37,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 20
+                                "column": 20,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 38
+                                "column": 38,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 20
+                              "column": 20,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 38
+                              "column": 38,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
@@ -1596,22 +1818,26 @@
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 16
+                            "column": 16,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 40
+                            "column": 40,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 9
+                          "column": 9,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 22,
-                          "column": 40
+                          "column": 40,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -1619,33 +1845,39 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 92
+                      "column": 92,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 6
+                      "column": 6,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 33
+                    "column": 33,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 23,
-                    "column": 6
+                    "column": 6,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 33
+                  "column": 33,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 6
+                  "column": 6,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -1654,11 +1886,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 23,
-                "column": 6
+                "column": 6,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
@@ -1670,12 +1904,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 59,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 59,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -1693,12 +1929,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 59,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 59,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -1711,34 +1949,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 59,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 59,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 59,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 59,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 59,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 59,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -1746,12 +1990,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1759,22 +2005,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 58
+            "column": 58,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
-            "line": 24,
-            "column": 2
+            "line": 26,
+            "column": 9,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 7
+          "column": 7,
+          "program": "InferTypeParamFromParam3.ets"
         },
         "end": {
-          "line": 24,
-          "column": 2
+          "line": 26,
+          "column": 9,
+          "program": "InferTypeParamFromParam3.ets"
         }
       }
     },
@@ -1788,11 +2038,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "InferTypeParamFromParam3.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "InferTypeParamFromParam3.ets"
             }
           }
         },
@@ -1808,11 +2060,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1832,11 +2086,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1850,33 +2106,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1885,11 +2147,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
@@ -1902,11 +2166,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 10
+                  "column": 10,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 26,
-                  "column": 14
+                  "column": 14,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -1926,11 +2192,13 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 10
+                      "column": 10,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 26,
-                      "column": 14
+                      "column": 14,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -1954,11 +2222,13 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 21
+                                "column": 21,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 22
+                                "column": 22,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
@@ -1976,33 +2246,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 23
+                                        "column": 23,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 26,
-                                      "column": 23
+                                      "column": 23,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 26,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   }
                                 }
                               },
@@ -2017,33 +2293,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 31
+                                        "column": 31,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 37
+                                        "column": 37,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 26,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 26,
-                                      "column": 38
+                                      "column": 38,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   }
                                 }
                               }
@@ -2051,33 +2333,39 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 22
+                                "column": 22,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 38
+                                "column": 38,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 21
+                              "column": 21,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 26,
-                              "column": 39
+                              "column": 39,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 21
+                            "column": 21,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 39
+                            "column": 39,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
@@ -2085,22 +2373,26 @@
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 16
+                          "column": 16,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 39
+                          "column": 39,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 16
+                        "column": 16,
+                        "program": "InferTypeParamFromParam3.ets"
                       },
                       "end": {
                         "line": 26,
-                        "column": 39
+                        "column": 39,
+                        "program": "InferTypeParamFromParam3.ets"
                       }
                     }
                   }
@@ -2121,11 +2413,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 12
+                                "column": 12,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 23
+                                "column": 23,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
@@ -2136,11 +2430,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 24
+                                "column": 24,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 38
+                                "column": 38,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
@@ -2149,11 +2445,13 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 12
+                              "column": 12,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 38
+                              "column": 38,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         },
@@ -2165,11 +2463,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 39
+                                "column": 39,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 42
+                                "column": 42,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           }
@@ -2178,22 +2478,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 12
+                            "column": 12,
+                            "program": "InferTypeParamFromParam3.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 43
+                            "column": 43,
+                            "program": "InferTypeParamFromParam3.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 5
+                          "column": 5,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 44
+                          "column": 44,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -2201,33 +2505,39 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 40
+                      "column": 40,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 28,
-                      "column": 2
+                      "column": 2,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 10
+                    "column": 10,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 28,
-                    "column": 2
+                    "column": 2,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 10
+                  "column": 10,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 28,
-                  "column": 2
+                  "column": 2,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -2236,11 +2546,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 1
+                "column": 1,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 28,
-                "column": 2
+                "column": 2,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           },
@@ -2253,11 +2565,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 10
+                  "column": 10,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 14
+                  "column": 14,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -2277,11 +2591,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 10
+                      "column": 10,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 14
+                      "column": 14,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -2304,11 +2620,13 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 9
+                                "column": 9,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 10
+                                "column": 10,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
@@ -2321,11 +2639,13 @@
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "InferTypeParamFromParam3.ets"
                                 }
                               }
                             },
@@ -2343,11 +2663,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 31,
-                                          "column": 22
+                                          "column": 22,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         },
                                         "end": {
                                           "line": 31,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         }
                                       }
                                     },
@@ -2365,33 +2687,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 31,
-                                                  "column": 24
+                                                  "column": 24,
+                                                  "program": "InferTypeParamFromParam3.ets"
                                                 },
                                                 "end": {
                                                   "line": 31,
-                                                  "column": 30
+                                                  "column": 30,
+                                                  "program": "InferTypeParamFromParam3.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 31,
-                                                "column": 24
+                                                "column": 24,
+                                                "program": "InferTypeParamFromParam3.ets"
                                               },
                                               "end": {
                                                 "line": 31,
-                                                "column": 31
+                                                "column": 31,
+                                                "program": "InferTypeParamFromParam3.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 31,
-                                              "column": 24
+                                              "column": 24,
+                                              "program": "InferTypeParamFromParam3.ets"
                                             },
                                             "end": {
                                               "line": 31,
-                                              "column": 31
+                                              "column": 31,
+                                              "program": "InferTypeParamFromParam3.ets"
                                             }
                                           }
                                         },
@@ -2406,33 +2734,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 31,
-                                                  "column": 32
+                                                  "column": 32,
+                                                  "program": "InferTypeParamFromParam3.ets"
                                                 },
                                                 "end": {
                                                   "line": 31,
-                                                  "column": 38
+                                                  "column": 38,
+                                                  "program": "InferTypeParamFromParam3.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 31,
-                                                "column": 32
+                                                "column": 32,
+                                                "program": "InferTypeParamFromParam3.ets"
                                               },
                                               "end": {
                                                 "line": 31,
-                                                "column": 39
+                                                "column": 39,
+                                                "program": "InferTypeParamFromParam3.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 31,
-                                              "column": 32
+                                              "column": 32,
+                                              "program": "InferTypeParamFromParam3.ets"
                                             },
                                             "end": {
                                               "line": 31,
-                                              "column": 39
+                                              "column": 39,
+                                              "program": "InferTypeParamFromParam3.ets"
                                             }
                                           }
                                         }
@@ -2440,33 +2774,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 31,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         },
                                         "end": {
                                           "line": 31,
-                                          "column": 39
+                                          "column": 39,
+                                          "program": "InferTypeParamFromParam3.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 22
+                                        "column": 22,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 40
+                                        "column": 40,
+                                        "program": "InferTypeParamFromParam3.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 22
+                                      "column": 22,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 40
+                                      "column": 40,
+                                      "program": "InferTypeParamFromParam3.ets"
                                     }
                                   }
                                 },
@@ -2474,11 +2814,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 31,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 42
+                                    "column": 42,
+                                    "program": "InferTypeParamFromParam3.ets"
                                   }
                                 }
                               }
@@ -2487,22 +2829,26 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 13
+                                "column": 13,
+                                "program": "InferTypeParamFromParam3.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 42
+                                "column": 42,
+                                "program": "InferTypeParamFromParam3.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 31,
-                              "column": 9
+                              "column": 9,
+                              "program": "InferTypeParamFromParam3.ets"
                             },
                             "end": {
                               "line": 31,
-                              "column": 42
+                              "column": 42,
+                              "program": "InferTypeParamFromParam3.ets"
                             }
                           }
                         }
@@ -2511,11 +2857,13 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 5
+                          "column": 5,
+                          "program": "InferTypeParamFromParam3.ets"
                         },
                         "end": {
                           "line": 31,
-                          "column": 43
+                          "column": 43,
+                          "program": "InferTypeParamFromParam3.ets"
                         }
                       }
                     }
@@ -2523,33 +2871,39 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 17
+                      "column": 17,
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 32,
-                      "column": 2
+                      "column": 2,
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 10
+                    "column": 10,
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 32,
-                    "column": 2
+                    "column": 2,
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 10
+                  "column": 10,
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 32,
-                  "column": 2
+                  "column": 2,
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },
@@ -2558,11 +2912,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 1
+                "column": 1,
+                "program": "InferTypeParamFromParam3.ets"
               },
               "end": {
                 "line": 32,
-                "column": 2
+                "column": 2,
+                "program": "InferTypeParamFromParam3.ets"
               }
             }
           }
@@ -2570,22 +2926,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "InferTypeParamFromParam3.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "InferTypeParamFromParam3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "InferTypeParamFromParam3.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "InferTypeParamFromParam3.ets"
         }
       }
     }
@@ -2593,11 +2953,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "InferTypeParamFromParam3.ets"
     },
     "end": {
       "line": 33,
-      "column": 1
+      "column": 1,
+      "program": "InferTypeParamFromParam3.ets"
     }
   }
 }

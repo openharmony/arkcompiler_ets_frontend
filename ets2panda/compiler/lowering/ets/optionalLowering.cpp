@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -77,7 +77,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
 static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::MemberExpression *const expr,
                                     ir::ChainExpression *chain)
 {
-    ASSERT(expr->IsOptional());
+    ES2PANDA_ASSERT(expr->IsOptional());
     expr->ClearOptional();
     return LowerOptionalExpr<ir::MemberExpression>([](auto *e) { return e->Object(); },
                                                    [](auto *e, auto *obj) { e->SetObject(obj); }, ctx, expr, chain);
@@ -86,7 +86,7 @@ static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::MemberExpressi
 static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::CallExpression *const expr,
                                     ir::ChainExpression *chain)
 {
-    ASSERT(expr->IsOptional());
+    ES2PANDA_ASSERT(expr->IsOptional());
     expr->ClearOptional();
     return LowerOptionalExpr<ir::CallExpression>([](auto *e) { return e->Callee(); },
                                                  [](auto *e, auto *callee) { e->SetCallee(callee); }, ctx, expr, chain);
@@ -105,7 +105,7 @@ static ir::Expression *FindOptionalInChain(ir::Expression *expr)
     if (expr->IsTSNonNullExpression()) {
         return FindOptionalInChain(expr->AsTSNonNullExpression()->Expr());
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static ir::AstNode *LowerChain(public_lib::Context *ctx, ir::ChainExpression *const chain)
@@ -117,18 +117,11 @@ static ir::AstNode *LowerChain(public_lib::Context *ctx, ir::ChainExpression *co
     if (optional->IsCallExpression()) {
         return LowerExpression(ctx, optional->AsCallExpression(), chain);
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-bool OptionalLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool OptionalLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *const node) -> ir::AstNode * {
@@ -142,17 +135,8 @@ bool OptionalLowering::Perform(public_lib::Context *ctx, parser::Program *progra
     return true;
 }
 
-bool OptionalLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool OptionalLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx, const parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *node) {
         return node->IsChainExpression() || (node->IsMemberExpression() && node->AsMemberExpression()->IsOptional()) ||
                (node->IsCallExpression() && node->AsCallExpression()->IsOptional());

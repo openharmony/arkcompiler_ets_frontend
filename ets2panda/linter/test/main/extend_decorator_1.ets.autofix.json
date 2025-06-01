@@ -1,0 +1,120 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 28,
+            "column": 1,
+            "endLine": 42,
+            "endColumn": 2,
+            "problem": "ExtendDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 743,
+                    "end": 1018,
+                    "replacementText": "function cardStyle(this: ColumnAttribute): this {\n    this.backgroundColor(\"#ffff00\");\n    this.backgroundColor(\"#00ffff\");\n    this.backgroundColor(\"#ff00ff\");\n    this.backgroundColor(mycolor);\n    this.backgroundColor(Color.Red);\n    this.borderRadius(8);\n    this.padding(8);\n    this.backgroundImagePosition({\n        x: 0,\n        y: 0\n    });\n    return this;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "\"@Extend\" decorator is not supported (arkui-no-extend-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 49,
+            "endColumn": 2,
+            "problem": "ExtendDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 1020,
+                    "end": 1105,
+                    "replacementText": "function superCard(this: ColumnAttribute, padding: number): this {\n    this.cardStyle();\n    this.padding(10);\n    return this;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "\"@Extend\" decorator is not supported (arkui-no-extend-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 2,
+            "endLine": 16,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 7,
+            "endLine": 20,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 20,
+            "endLine": 35,
+            "endColumn": 25,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        }
+    ]
+}

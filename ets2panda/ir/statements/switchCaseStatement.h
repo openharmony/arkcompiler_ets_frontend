@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_SWITCH_CASE_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_SWITCH_CASE_STATEMENT_H
 
+#include "ir/expression.h"
 #include "ir/statement.h"
 
 namespace ark::es2panda::ir {
@@ -44,6 +45,14 @@ public:
         return test_;
     }
 
+    void SetTest(Expression *test) noexcept
+    {
+        if (test != nullptr) {
+            test->SetParent(this);
+        }
+        test_ = test;
+    }
+
     [[nodiscard]] const ArenaVector<Statement *> &Consequent() const noexcept
     {
         return consequent_;
@@ -57,7 +66,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void CheckAndTestCase(checker::ETSChecker *checker, checker::Type *comparedExprType, checker::Type *unboxedDiscType,
                           ir::Expression *node, bool &isDefaultCase);
@@ -66,6 +75,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] SwitchCaseStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     Expression *test_;

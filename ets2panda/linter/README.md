@@ -1,7 +1,7 @@
 # TypeScript linter
 
 Typescript linter ( further mentioned as 'linter' ) is a tool to check typescript sources and find language elements
-and constructions which are deprecated to use in a purpose to migrate sources to STS.
+and constructions which are deprecated to use in a purpose to migrate sources to ETS.
 The linter is currently under development.
 
 ## Prerequisits
@@ -16,13 +16,19 @@ Install the latest stable version of `Node` and `NPM`. It is recommended to use 
 
 ## Building
 
-Run the following command to install all project dependencies and build the project:
+Run the following command to install project dependencies:
 
 ```bash
 npm install
 ```
 
-Run the following command to only build project sources:
+Run the following command to install ohos-typescript:
+
+```bash
+npm run install-ohos-typescript
+```
+
+Run the following command to build project sources:
 
 ```bash
 npm run build

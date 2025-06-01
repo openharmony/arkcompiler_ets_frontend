@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -195,7 +195,7 @@ bool KeywordsUtil::IsIdentifierPart(char32_t cp)
 void KeywordsUtil::ScanIdentifierStart(const Keywords *kws, char32_t cp)
 {
     if (!KeywordsUtil::IsIdentifierStart(cp)) {
-        lexer_->LogSyntaxError("Expected an identifier");
+        lexer_->LogError(diagnostic::UNEXPECTED_TOKEN_ID);
     }
 
     cp_ = cp;
@@ -221,7 +221,7 @@ void KeywordsUtil::ScanIdContinue()
 
             auto cp = ScanUnicodeEscapeSequence();
             if (!IsIdentifierPart(cp)) {
-                lexer_->LogSyntaxError("Invalid identifier part");
+                lexer_->LogError(diagnostic::INVALID_IDENTIFIER_PART);
             }
 
             escapeEnd = Iterator().Index();
@@ -288,7 +288,7 @@ void KeywordsUtil::ScanIdContinueMaybeKeyword(const Keywords *kws, Span<const Ke
 
 char32_t KeywordsUtil::ScanUnicodeEscapeSequence()
 {
-    ASSERT(Iterator().Peek() == LEX_CHAR_BACKSLASH);
+    ES2PANDA_ASSERT(Iterator().Peek() == LEX_CHAR_BACKSLASH);
 
     lexer_->GetToken().flags_ |= lexer::TokenFlags::HAS_ESCAPE;
 

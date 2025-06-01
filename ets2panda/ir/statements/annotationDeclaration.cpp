@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,7 @@
 namespace ark::es2panda::ir {
 void AnnotationDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : properties_) {
+    for (auto *&it : VectorIterationGuard(properties_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -36,6 +36,13 @@ void AnnotationDeclaration::TransformChildren(const NodeTransformer &cb, std::st
             expr_ = transformedNode->AsIdentifier();
         }
     }
+
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
 {
@@ -43,18 +50,25 @@ void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
         cb(expr_);
     }
 
-    for (auto *it : properties_) {
+    for (auto *it : VectorIterationGuard(properties_)) {
+        cb(it);
+    }
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 }
 
 void AnnotationDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"Expr", expr_}, {"properties", properties_}});
+    dumper->Add({{"Expr", expr_}, {"properties", properties_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
 {  // re-understand
-    ASSERT(expr_ != nullptr);
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+    ES2PANDA_ASSERT(expr_ != nullptr);
     dumper->Add("@interface ");
     expr_->Dump(dumper);
     dumper->Add(" {");
@@ -87,9 +101,9 @@ checker::Type *AnnotationDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AnnotationDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType AnnotationDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 Identifier *AnnotationDeclaration::GetBaseName() const

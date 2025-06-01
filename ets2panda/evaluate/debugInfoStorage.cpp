@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,10 +48,10 @@ ImportExportTable::ImportExportTable(ArenaAllocator *allocator)
 {
 }
 
-DebugInfoStorage::DebugInfoStorage(const CompilerOptions &options, ArenaAllocator *allocator)
+DebugInfoStorage::DebugInfoStorage(const util::Options &options, ArenaAllocator *allocator)
     : allocator_(allocator), sourceFileToDebugInfo_(allocator->Adapter()), moduleNameToDebugInfo_(allocator->Adapter())
 {
-    for (const auto &pfPath : options.debuggerEvalPandaFiles) {
+    for (const auto &pfPath : options.GetDebuggerEvalPandaFiles()) {
         LoadFileDebugInfo(pfPath);
     }
 }
@@ -77,7 +77,7 @@ void DebugInfoStorage::LoadFileDebugInfo(std::string_view pfPath)
         std::string_view moduleName = helpers::SplitRecordName(recordName).first;
         auto *debugInfo = allocator_->New<FileDebugInfo>(std::move(pf), classId, moduleName);
         auto sourceFileId = debugInfo->globalClassAcc.GetSourceFileId();
-        ASSERT(sourceFileId.has_value());
+        ES2PANDA_ASSERT(sourceFileId.has_value());
         std::string_view sourceFileName = utf::Mutf8AsCString(debugInfo->pf->GetStringData(*sourceFileId).data);
         debugInfo->sourceFilePath = sourceFileName;
 
@@ -166,7 +166,7 @@ bool DebugInfoStorage::FillEvaluateContext(EvaluateContext &context)
 
 const ImportExportTable &DebugInfoStorage::LazyLoadImportExportTable(FileDebugInfo *info)
 {
-    ASSERT(info);
+    ES2PANDA_ASSERT(info);
 
     if (info->importExportTable.has_value()) {
         return *info->importExportTable;
@@ -179,7 +179,7 @@ const ImportExportTable &DebugInfoStorage::LazyLoadImportExportTable(FileDebugIn
 
 const FileDebugInfo::RecordsMap &DebugInfoStorage::LazyLoadRecords(FileDebugInfo *info)
 {
-    ASSERT(info);
+    ES2PANDA_ASSERT(info);
 
     if (info->records.has_value()) {
         return *info->records;

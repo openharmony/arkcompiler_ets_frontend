@@ -12,11 +12,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "test-function-overload2.ts"
             },
             "end": {
               "line": 17,
-              "column": 13
+              "column": 13,
+              "program": "test-function-overload2.ts"
             }
           }
         },
@@ -27,22 +29,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-function-overload2.ts"
           },
           "end": {
             "line": 17,
-            "column": 16
+            "column": 16,
+            "program": "test-function-overload2.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-function-overload2.ts"
         },
         "end": {
           "line": 17,
-          "column": 16
+          "column": 16,
+          "program": "test-function-overload2.ts"
         }
       }
     },
@@ -57,11 +63,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 10
+              "column": 10,
+              "program": "test-function-overload2.ts"
             },
             "end": {
               "line": 18,
-              "column": 13
+              "column": 13,
+              "program": "test-function-overload2.ts"
             }
           }
         },
@@ -72,22 +80,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-function-overload2.ts"
           },
           "end": {
             "line": 18,
-            "column": 16
+            "column": 16,
+            "program": "test-function-overload2.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-function-overload2.ts"
         },
         "end": {
           "line": 18,
-          "column": 16
+          "column": 16,
+          "program": "test-function-overload2.ts"
         }
       }
     },
@@ -102,11 +114,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 10
+              "column": 10,
+              "program": "test-function-overload2.ts"
             },
             "end": {
               "line": 19,
-              "column": 13
+              "column": 13,
+              "program": "test-function-overload2.ts"
             }
           }
         },
@@ -120,33 +134,39 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 16
+              "column": 16,
+              "program": "test-function-overload2.ts"
             },
             "end": {
               "line": 19,
-              "column": 19
+              "column": 19,
+              "program": "test-function-overload2.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-function-overload2.ts"
           },
           "end": {
             "line": 19,
-            "column": 19
+            "column": 19,
+            "program": "test-function-overload2.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-function-overload2.ts"
         },
         "end": {
           "line": 19,
-          "column": 19
+          "column": 19,
+          "program": "test-function-overload2.ts"
         }
       }
     }
@@ -154,11 +174,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-function-overload2.ts"
     },
     "end": {
       "line": 19,
-      "column": 19
+      "column": 19,
+      "program": "test-function-overload2.ts"
     }
   }
 }

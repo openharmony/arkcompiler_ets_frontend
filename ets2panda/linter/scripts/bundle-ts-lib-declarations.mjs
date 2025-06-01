@@ -98,6 +98,31 @@ function reportErrorAndExit(msg) {
     exit(1);
 }
 
+function copyDirectorySync(srcPath, destPath, options) {
+    const entries = fs.readdirSync(srcPath, { withFileTypes: true });
+
+    if (!fs.existsSync(destPath)) {
+        fs.mkdirSync(destPath, { recursive: true });
+    }
+
+    for (const entry of entries) {
+        const srcEntry = path.join(srcPath, entry.name);
+        const destEntry = path.join(destPath, entry.name);
+
+        if (typeof options.filter === 'function' && !options.filter(srcEntry, destEntry)) {
+            continue;
+        }
+
+        if (entry.isDirectory()) {
+            if (options.recursive) {
+                copyDirectorySync(srcEntry, destEntry, options);
+            }
+        } else {
+            fs.copyFileSync(srcEntry, destEntry);
+        }
+    }
+}
+
 function copyTypescriptLibDeclarationsToDist() {
     const typescript_lib = path.join('node_modules', 'typescript', 'lib');
     const dist = path.join('dist');
@@ -112,22 +137,14 @@ function copyTypescriptLibDeclarationsToDist() {
     const srcPath = path.resolve(typescript_lib);
     const distPath = path.resolve(dist);
 
-    fs.cpSync(srcPath, distPath, {
-        force: true,
+    copyDirectorySync(srcPath, distPath, {
         recursive: true,
         filter: (src, dest) => {
-            if (!src?.length) {
-                return false;
-            }
-            if (fs.statSync(src).isDirectory()) {
-
-                /*
-                 * Return true only for the input directory in order to copy its context. Ignore other sub-directories.
-                 * NOTE: On windows, Node appends special prefix for long paths ("\\?\") to path values. In such case,
-                 * compare the path using the 'endsWith' method.
-                 */
+            if (!src?.length) return false;
+            const stats = fs.statSync(src);
+            if (stats.isDirectory()) {
                 const normalizedSrc = path.resolve(src);
-                return normalizedSrc === srcPath || normalizedSrc.endsWith(srcPath);
+                return normalizedSrc === path.resolve(srcPath) || normalizedSrc.endsWith(srcPath);
             }
             return STANDARD_LIBRARIES.includes(path.basename(src));
         }

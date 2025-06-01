@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,51 +15,17 @@
 
 #include "scope.h"
 
-#include "varbinder/declaration.h"
-#include "util/helpers.h"
-#include "varbinder/tsBinding.h"
-#include "varbinder/variable.h"
-#include "varbinder/variableFlags.h"
-#include "ir/astNode.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/annotationDeclaration.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/module/exportAllDeclaration.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/exportSpecifier.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "compiler/base/literals.h"
-#include "macros.h"
-#include "util/ustring.h"
-#include "generated/signatures.h"
 #include "public/public.h"
+#include "varbinder/tsBinding.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::varbinder {
-VariableScope *Scope::EnclosingVariableScope()
+VariableScope *Scope::EnclosingVariableScope() noexcept
 {
-    Scope *iter = this;
-
-    while (iter != nullptr) {
-        if (iter->IsVariableScope()) {
-            return iter->AsVariableScope();
-        }
-
-        iter = iter->Parent();
-    }
-
-    return nullptr;
+    return const_cast<VariableScope *>(const_cast<Scope const *>(this)->EnclosingVariableScope());
 }
 
-const VariableScope *Scope::EnclosingVariableScope() const
+const VariableScope *Scope::EnclosingVariableScope() const noexcept
 {
     const auto *iter = this;
 
@@ -74,7 +40,7 @@ const VariableScope *Scope::EnclosingVariableScope() const
     return nullptr;
 }
 
-bool Scope::IsSuperscopeOf(const varbinder::Scope *subscope) const
+bool Scope::IsSuperscopeOf(const varbinder::Scope *subscope) const noexcept
 {
     while (subscope != nullptr) {
         if (subscope == this) {
@@ -83,37 +49,6 @@ bool Scope::IsSuperscopeOf(const varbinder::Scope *subscope) const
         subscope = ir::AstNode::EnclosingScope(subscope->Node()->Parent());
     }
     return false;
-}
-
-// NOTE(psiket): Duplication
-ClassScope *Scope::EnclosingClassScope()
-{
-    Scope *iter = this;
-
-    while (iter != nullptr) {
-        if (iter->IsClassScope()) {
-            return iter->AsClassScope();
-        }
-
-        iter = iter->Parent();
-    }
-
-    return nullptr;
-}
-
-const ClassScope *Scope::EnclosingClassScope() const
-{
-    const auto *iter = this;
-
-    while (iter != nullptr) {
-        if (iter->IsVariableScope()) {
-            return iter->AsClassScope();
-        }
-
-        iter = iter->Parent();
-    }
-
-    return nullptr;
 }
 
 Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
@@ -142,18 +77,27 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
 
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
-    ASSERT(var != nullptr);
+    ES2PANDA_ASSERT(var != nullptr);
     auto insertResult = bindings_.emplace(name, var);
     if (insertResult.second) {
-        decls_.push_back(var->Declaration());
+        decls_.emplace_back(var->Declaration());
     }
+    return insertResult;
+}
 
+Scope::InsertResult Scope::InsertOrAssignBinding(const util::StringView &name, Variable *const var)
+{
+    ES2PANDA_ASSERT(var != nullptr);
+    auto insertResult = bindings_.insert_or_assign(name, var);
+    if (insertResult.second) {
+        decls_.emplace_back(var->Declaration());
+    }
     return insertResult;
 }
 
 Scope::InsertResult Scope::TryInsertBinding(const util::StringView &name, Variable *const var)
 {
-    ASSERT(var != nullptr);
+    ES2PANDA_ASSERT(var != nullptr);
     return bindings_.try_emplace(name, var);
 }
 
@@ -170,7 +114,7 @@ Scope::VariableMap::size_type Scope::EraseBinding(const util::StringView &name)
         toBeErased == bindings_.end() ||
         (toBeErased->second->IsLocalVariable() &&
          toBeErased->second->AsLocalVariable()->Declaration()->Node()->IsImportNamespaceSpecifier())) {
-        return 0;
+        return 0U;
     }
 
     return bindings_.erase(name);
@@ -179,20 +123,21 @@ Scope::VariableMap::size_type Scope::EraseBinding(const util::StringView &name)
 ConstScopeFindResult Scope::FindInGlobal(const util::StringView &name, const ResolveBindingOptions options) const
 {
     const auto *scopeIter = this;
-    const auto *scopeParent = this->Parent();
-    // One scope below true global is ETSGLOBAL
-    while (scopeParent != nullptr && !scopeParent->IsGlobalScope()) {
-        scopeIter = scopeParent;
-        scopeParent = scopeIter->Parent();
+    Variable *resolved = nullptr;
+    while (scopeIter != nullptr && !scopeIter->IsGlobalScope()) {
+        bool isModule = scopeIter->Node() != nullptr && scopeIter->Node()->IsClassDefinition() &&
+                        scopeIter->Node()->AsClassDefinition()->IsModule();
+        if (isModule) {
+            resolved = scopeIter->FindLocal(name, options);
+            if (resolved != nullptr) {
+                break;
+            }
+        }
+        scopeIter = scopeIter->Parent();
     }
-
-    auto *resolved = scopeIter->FindLocal(name, options);
-    if (resolved == nullptr && scopeParent != nullptr) {
-        // If the variable cannot be found in the scope of the local ETSGLOBAL, than we still need to check the true
-        // global scope which contains all the imported ETSGLOBALs
-        resolved = scopeParent->FindLocal(name, options);
+    if (resolved == nullptr && scopeIter != nullptr && scopeIter->IsGlobalScope()) {
+        resolved = scopeIter->FindLocal(name, options);
     }
-
     return {name, scopeIter, 0, 0, resolved};
 }
 
@@ -221,7 +166,7 @@ ConstScopeFindResult Scope::Find(const util::StringView &name, const ResolveBind
     return FindImpl<ConstScopeFindResult>(this, name, options);
 }
 
-Decl *Scope::FindDecl(const util::StringView &name) const
+Decl *Scope::FindDecl(const util::StringView &name) const noexcept
 {
     for (auto *it : decls_) {
         if (it->Name() == name) {
@@ -270,6 +215,33 @@ Variable *Scope::AddLocalVar(ArenaAllocator *allocator, Decl *newDecl)
     return scope->PropagateBinding<LocalVariable>(allocator, newDecl->Name(), newDecl, varFlags);
 }
 
+Variable *Scope::AddLocalInterfaceVariable(ArenaAllocator *allocator, Decl *newDecl)
+{
+    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
+                    .first->second;
+    if (newDecl->Node() != nullptr) {
+        newDecl->Node()->AsTSInterfaceDeclaration()->Id()->SetVariable(var);
+    }
+    return var;
+}
+
+Variable *Scope::AddLocalTypeAliasVariable(ArenaAllocator *allocator, Decl *newDecl)
+{
+    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::TYPE_ALIAS)})
+                    .first->second;
+    newDecl->Node()->AsTSTypeAliasDeclaration()->Id()->SetVariable(var);
+    return var;
+}
+
+Variable *Scope::AddLocalClassVariable(ArenaAllocator *allocator, Decl *newDecl)
+{
+    auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
+    VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
+    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)}).first->second;
+    newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
+    return var;
+}
+
 Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                           [[maybe_unused]] ScriptExtension extension)
 {
@@ -289,15 +261,13 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
             return var;
         }
         case DeclType::INTERFACE: {
-            return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
-                .first->second;
+            return AddLocalInterfaceVariable(allocator, newDecl);
         }
         case DeclType::CLASS: {
-            auto *var =
-                bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS)})
-                    .first->second;
-            newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
-            return var;
+            return AddLocalClassVariable(allocator, newDecl);
+        }
+        case DeclType::TYPE_ALIAS: {
+            return AddLocalTypeAliasVariable(allocator, newDecl);
         }
         case DeclType::TYPE_PARAMETER: {
             return bindings_
@@ -328,7 +298,7 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
 
 void VariableScope::CheckDirectEval(public_lib::Context *context)
 {
-    ASSERT(context);
+    ES2PANDA_ASSERT(context);
     const auto &varMap = Bindings();
 
     if (!HasFlag(ScopeFlags::NO_REG_STORE) || varMap.empty()) {
@@ -371,7 +341,7 @@ void VariableScope::CheckDirectEval(public_lib::Context *context)
         uint32_t buffIndex = 0;
         for (const auto *variable : bindings) {
             if (variable == nullptr) {
-                ASSERT(literals[buffIndex].GetString().empty());
+                ES2PANDA_ASSERT(literals[buffIndex].GetString().empty());
                 buffIndex++;
                 continue;
             }
@@ -385,70 +355,135 @@ void VariableScope::CheckDirectEval(public_lib::Context *context)
     evalBindings_ = context->contextLiterals.size() - 1;
 }
 
-Variable *ParamScope::AddParam(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags)
+template <typename T>
+Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                                [[maybe_unused]] ScriptExtension extension)
 {
-    ASSERT(newDecl->IsParameterDecl());
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::HOIST_VAR)).first->second;
+    }
 
-    if (currentVariable != nullptr) {
+    switch (currentVariable->Declaration()->Type()) {
+        case DeclType::VAR: {
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
+            [[fallthrough]];
+        }
+        case DeclType::PARAM:
+        case DeclType::FUNC: {
+            return currentVariable;
+        }
+        default: {
+            ES2PANDA_ASSERT(extension == ScriptExtension::JS);
+            return nullptr;
+        }
+    }
+}
+
+template <typename T>
+Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                                     ScriptExtension extension)
+{
+    VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
+
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
+    }
+
+    if (extension != ScriptExtension::JS || IsModuleScope()) {
         return nullptr;
     }
+
+    switch (currentVariable->Declaration()->Type()) {
+        case DeclType::VAR:
+        case DeclType::FUNC: {
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
+            return currentVariable;
+        }
+        default: {
+            ES2PANDA_ASSERT(extension == ScriptExtension::JS);
+            return nullptr;
+        }
+    }
+}
+
+template <typename T>
+Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *currentVariable,
+                                      Decl *newDecl, VariableFlags flags)
+{
+    ES2PANDA_ASSERT(!currentVariable);
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
+}
+
+template <typename T>
+Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
+{
+    if (currentVariable) {
+        return nullptr;
+    }
+
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::NONE)).first->second;
+}
+
+Variable *ParamScope::AddParameter(ArenaAllocator *allocator, Decl *newDecl, VariableFlags flags)
+{
+    ES2PANDA_ASSERT(newDecl->IsParameterDecl());
 
     auto *param = allocator->New<LocalVariable>(newDecl, flags);
     param->SetScope(this);
 
-    params_.push_back(param);
+    params_.emplace_back(param);
     InsertBinding(newDecl->Name(), param);
+
     return param;
 }
 
-std::tuple<ParameterDecl *, ir::AstNode *, Variable *> ParamScope::AddParamDecl(ArenaAllocator *allocator,
-                                                                                ir::AstNode *param)
+std::tuple<Variable *, ir::Expression *> ParamScope::AddParamDecl(ArenaAllocator *allocator, ir::Expression *parameter)
 {
-    const auto [name, pattern] = util::Helpers::ParamName(allocator, param, params_.size());
-
-    auto *decl = NewDecl<ParameterDecl>(allocator, name);
-    auto *var = AddParam(allocator, FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS), decl,
-                         VariableFlags::VAR | VariableFlags::LOCAL);
-
-    if (var == nullptr) {
-        return {decl, param, nullptr};
+    auto [name, pattern] = util::Helpers::ParamName(allocator, parameter, params_.size());
+    if (name.Is(ERROR_LITERAL)) {
+        name = compiler::GenName(allocator).View();
     }
 
-    if (!pattern) {
-        decl->BindNode(param);
-        return {decl, nullptr, var};
+    auto *variable = FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
+    if (variable != nullptr) {
+        return std::make_tuple(variable, parameter);
     }
 
-    std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(param);
+    if (pattern) {
+        std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(parameter);
 
-    for (auto *binding : bindings) {
-        auto *varDecl = NewDecl<VarDecl>(allocator, binding->Name());
-        varDecl->BindNode(binding);
+        for (auto *binding : bindings) {
+            auto *varDecl = NewDecl<VarDecl>(allocator, binding->Name());
+            varDecl->BindNode(binding);
 
-        if (FindLocal(varDecl->Name(), varbinder::ResolveBindingOptions::BINDINGS) != nullptr) {
-            return {decl, binding, nullptr};
+            if (variable = FindLocal(varDecl->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+                variable != nullptr) {
+                return std::make_tuple(variable, binding);
+            }
+
+            auto *paramVar = allocator->New<LocalVariable>(varDecl, VariableFlags::VAR | VariableFlags::LOCAL);
+            TryInsertBinding(varDecl->Name(), paramVar);
         }
-
-        auto *paramVar = allocator->New<LocalVariable>(varDecl, VariableFlags::VAR | VariableFlags::LOCAL);
-        TryInsertBinding(varDecl->Name(), paramVar);
     }
 
-    return {decl, nullptr, var};
+    auto *const decl = NewDecl<ParameterDecl>(allocator, name);
+    variable = AddParameter(allocator, decl, VariableFlags::VAR | VariableFlags::LOCAL);
+    decl->BindNode(parameter);
+
+    return std::make_tuple(variable, nullptr);
 }
 
 void FunctionParamScope::BindName(ArenaAllocator *allocator, util::StringView name)
 {
-    nameVar_ = AddDecl<ConstDecl, LocalVariable>(allocator, name, VariableFlags::INITIALIZED);
-    if (!functionScope_->InsertBinding(name, nameVar_).second) {
-        nameVar_ = nullptr;
-    }
+    auto [variable, _] = AddDecl<ConstDecl, LocalVariable>(allocator, name, VariableFlags::INITIALIZED);
+    nameVar_ = functionScope_->InsertBinding(name, variable).second ? variable->AsLocalVariable() : nullptr;
 }
 
 Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
                                          [[maybe_unused]] Variable *currentVariable, [[maybe_unused]] Decl *newDecl,
                                          [[maybe_unused]] ScriptExtension extension)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
@@ -467,6 +502,15 @@ Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allo
     return var;
 }
 
+Variable *FunctionScope::InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable,
+                                                      Decl *newDecl, VariableFlags flag)
+{
+    if (currentVariable != nullptr) {
+        return nullptr;
+    }
+    return InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)).first->second;
+}
+
 Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                     [[maybe_unused]] ScriptExtension extension)
 {
@@ -474,7 +518,7 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
     Variable *var {};
     switch (newDecl->Type()) {
         case DeclType::VAR: {
-            return AddVar<LocalVariable>(allocator, currentVariable, newDecl);
+            return AddVar<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
         case DeclType::FUNC: {
             return AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
@@ -490,19 +534,19 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
         // NOTE(psiket):Duplication
         case DeclType::INTERFACE: {
             ident = newDecl->Node()->AsTSInterfaceDeclaration()->Id();
-            auto interfaceVar = allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE);
-            var = InsertBinding(newDecl->Name(), interfaceVar).first->second;
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
             break;
         }
         case DeclType::CLASS: {
+            auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
+            VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
             ident = newDecl->Node()->AsClassDefinition()->Ident();
-            auto classVar = allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS);
-            var = InsertBinding(newDecl->Name(), classVar).first->second;
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, flag);
             break;
         }
         case DeclType::TYPE_ALIAS: {
             ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
-            var = typeAliasScope_->AddBinding(allocator, currentVariable, newDecl, extension);
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, VariableFlags::TYPE_ALIAS);
             break;
         }
         default: {
@@ -523,7 +567,7 @@ Variable *GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVa
 {
     switch (newDecl->Type()) {
         case DeclType::VAR: {
-            return AddVar<GlobalVariable>(allocator, currentVariable, newDecl);
+            return AddVar<GlobalVariable>(allocator, currentVariable, newDecl, extension);
         }
         case DeclType::FUNC: {
             return AddFunction<GlobalVariable>(allocator, currentVariable, newDecl, extension);
@@ -545,7 +589,7 @@ Variable *GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVa
 
 Scope::InsertResult GlobalScope::InsertBinding(const util::StringView &name, Variable *const var)
 {
-    return GlobalScope::InsertImpl(name, var, false, false);
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::NONE);
 }
 
 Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, Variable *const var)
@@ -553,7 +597,7 @@ Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, 
     const auto insRes = Scope::TryInsertBinding(name, var);
     if (insRes.second) {
         [[maybe_unused]] const bool insertSuccess = std::get<1>(foreignBindings_.try_emplace(name, var));
-        ASSERT(insertSuccess);
+        ES2PANDA_ASSERT(insertSuccess);
     }
 
     return insRes;
@@ -561,7 +605,7 @@ Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, 
 
 void GlobalScope::MergeBindings([[maybe_unused]] const VariableMap &bindings)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &name)
@@ -569,7 +613,7 @@ Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &
     const auto erased = Scope::EraseBinding(name);
     if (erased != 0) {
         [[maybe_unused]] const auto erasedForeign = foreignBindings_.erase(name);
-        ASSERT(erasedForeign != 0);
+        ES2PANDA_ASSERT(erasedForeign != 0);
     }
 
     return erased;
@@ -577,13 +621,23 @@ Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &
 
 Scope::InsertResult GlobalScope::InsertForeignBinding(const util::StringView &name, Variable *const var)
 {
-    return GlobalScope::InsertImpl(name, var, true, false);
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN);
 }
 
-Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var, const bool isForeign,
-                                            const bool isDynamic)
+Scope::InsertResult GlobalScope::InsertOrAssignForeignBinding(const util::StringView &name, Variable *const var)
 {
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::ASSIGN);
+}
+
+Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var,
+                                            const InsertBindingFlags flags)
+{
+    bool isAssign = (flags & InsertBindingFlags::ASSIGN) != 0;
+    bool isDynamic = (flags & InsertBindingFlags::DYNAMIC) != 0;
+    bool isForeign = (flags & InsertBindingFlags::FOREIGN) != 0;
+
     if (!isDynamic && isForeign && !var->Declaration()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
+        ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
         if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
@@ -591,27 +645,32 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         }
     }
 
+    if (isAssign) {
+        const auto insRes = Scope::InsertOrAssignBinding(name, var);
+        foreignBindings_.insert_or_assign(name, isForeign);
+        return insRes;
+    }
+
     const auto insRes = Scope::InsertBinding(name, var);
     if (insRes.second) {
         [[maybe_unused]] const bool insertSuccess = std::get<1>(foreignBindings_.emplace(name, isForeign));
-        ASSERT(insertSuccess);
+        ES2PANDA_ASSERT(insertSuccess);
     }
-
     return insRes;
 }
 
 bool GlobalScope::IsForeignBinding(const util::StringView &name) const
 {
     // Asserts make sure that the passed in key comes from this scope
-    ASSERT(Bindings().find(name) != Bindings().end());
-    ASSERT(foreignBindings_.find(name) != foreignBindings_.end());
+    ES2PANDA_ASSERT(Bindings().find(name) != Bindings().end());
+    ES2PANDA_ASSERT(foreignBindings_.find(name) != foreignBindings_.end());
 
     return foreignBindings_.at(name);
 }
 
 Scope::InsertResult GlobalScope::InsertDynamicBinding(const util::StringView &name, Variable *const var)
 {
-    return InsertImpl(name, var, true, true);
+    return InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::DYNAMIC);
 }
 
 // ModuleScope
@@ -621,7 +680,7 @@ Variable *ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVa
 {
     switch (newDecl->Type()) {
         case DeclType::VAR: {
-            return AddVar<LocalVariable>(allocator, currentVariable, newDecl);
+            return AddVar<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
         case DeclType::FUNC: {
             return AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
@@ -742,41 +801,6 @@ bool ModuleScope::ExportAnalysis()
     return true;
 }
 
-Variable *FunctionScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
-{
-    if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
-        auto found = typeAliasScope_->Bindings().find(name);
-        if (found != typeAliasScope_->Bindings().end()) {
-            return found->second;
-        }
-    }
-
-    if ((options & ResolveBindingOptions::ALL_NON_TYPE) == 0) {
-        return nullptr;
-    }
-
-    if ((options & ResolveBindingOptions::INTERFACES) != 0) {
-        std::string tsBindingName = varbinder::TSBinding::ToTSBinding(name);
-        util::StringView interfaceNameView(tsBindingName);
-
-        auto res = Bindings().find(interfaceNameView);
-        if (res != Bindings().end()) {
-            return res->second;
-        }
-
-        if ((options & ResolveBindingOptions::BINDINGS) == 0) {
-            return nullptr;
-        }
-    }
-
-    auto res = Bindings().find(name);
-    if (res == Bindings().end()) {
-        return nullptr;
-    }
-
-    return res->second;
-}
-
 // LocalScope
 
 Variable *LocalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -785,63 +809,11 @@ Variable *LocalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
     return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
-Variable *LocalScopeWithTypeAlias::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
-                                              [[maybe_unused]] ScriptExtension extension)
-{
-    if (newDecl->IsTypeAliasDecl()) {
-        auto *ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
-        auto *var = typeAliasScope_->AddBinding(allocator, currentVariable, newDecl, extension);
-        if (var != nullptr) {
-            var->SetScope(this);
-            if (ident != nullptr) {
-                ident->SetVariable(var);
-            }
-        }
-        return var;
-    }
-    return AddLocal(allocator, currentVariable, newDecl, extension);
-}
-
-Variable *LocalScopeWithTypeAlias::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
+Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
         auto found = typeAliasScope_->Bindings().find(name);
         if (found != typeAliasScope_->Bindings().end()) {
-            return found->second;
-        }
-    }
-
-    if ((options & ResolveBindingOptions::ALL_NON_TYPE) == 0) {
-        return nullptr;
-    }
-
-    if ((options & ResolveBindingOptions::INTERFACES) != 0) {
-        std::string tsBindingName = varbinder::TSBinding::ToTSBinding(name);
-        util::StringView interfaceNameView(tsBindingName);
-
-        auto res = Bindings().find(interfaceNameView);
-        if (res != Bindings().end()) {
-            return res->second;
-        }
-
-        if ((options & ResolveBindingOptions::BINDINGS) == 0) {
-            return nullptr;
-        }
-    }
-
-    auto res = Bindings().find(name);
-    if (res == Bindings().end()) {
-        return nullptr;
-    }
-
-    return res->second;
-}
-
-Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
-{
-    if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
-        auto found = TypeAliasScope()->Bindings().find(name);
-        if (found != TypeAliasScope()->Bindings().end()) {
             return found->second;
         }
     }
@@ -895,47 +867,54 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
 {
     switch (newDecl->Type()) {
         case DeclType::CONST:
+            [[fallthrough]];
         case DeclType::READONLY:
-        case DeclType::LET: {
-            props->SetBindingProps(VariableFlags::PROPERTY, newDecl->Node()->AsClassProperty()->Id(),
-                                   isStatic ? staticFieldScope_ : instanceFieldScope_);
+            [[fallthrough]];
+        case DeclType::LET:
+            if (newDecl->Node()->IsClassProperty()) {
+                props->SetBindingProps(VariableFlags::PROPERTY, newDecl->Node()->AsClassProperty()->Id(),
+                                       isStatic ? staticFieldScope_ : instanceFieldScope_);
+            }
             break;
-        }
-        case DeclType::INTERFACE: {
+
+        case DeclType::INTERFACE:
             props->SetBindingProps(VariableFlags::INTERFACE, newDecl->Node()->AsTSInterfaceDeclaration()->Id(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
+
         case DeclType::CLASS: {
-            props->SetBindingProps(VariableFlags::CLASS, newDecl->Node()->AsClassDefinition()->Ident(),
+            VariableFlags flag = VariableFlags::CLASS;
+            if (newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+                flag = VariableFlags::NAMESPACE;
+            }
+            props->SetBindingProps(flag, newDecl->Node()->AsClassDefinition()->Ident(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
         }
-        case DeclType::ENUM_LITERAL: {
+
+        case DeclType::ENUM_LITERAL:
             props->SetBindingProps(VariableFlags::ENUM_LITERAL, newDecl->Node()->AsTSEnumDeclaration()->Key(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        case DeclType::TYPE_ALIAS: {
+
+        case DeclType::TYPE_ALIAS:
             props->SetBindingProps(VariableFlags::TYPE_ALIAS, newDecl->Node()->AsTSTypeAliasDeclaration()->Id(),
-                                   TypeAliasScope());
+                                   typeAliasScope_);
             break;
-        }
-        case DeclType::ANNOTATIONDECL: {
+
+        case DeclType::ANNOTATIONDECL:
             props->SetBindingProps(VariableFlags::ANNOTATIONDECL,
                                    newDecl->Node()->AsAnnotationDeclaration()->GetBaseName(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        case DeclType::ANNOTATIONUSAGE: {
+
+        case DeclType::ANNOTATIONUSAGE:
             props->SetBindingProps(VariableFlags::ANNOTATIONUSAGE, newDecl->Node()->AsAnnotationUsage()->GetBaseName(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
+
+        default:
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -950,20 +929,27 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
     }
 
     SetBindingProps(newDecl, &props, isStatic);
+    if (props.GetTargetScope() == nullptr) {
+        return nullptr;
+    }
 
-    auto options = newDecl->Type() != DeclType::TYPE_ALIAS ? ResolveBindingOptions::ALL_NON_TYPE
-                                                           : ResolveBindingOptions::TYPE_ALIASES;
-
-    const auto *foundVar = FindLocal(newDecl->Name(), options);
+    // First search
+    const auto *foundVar = FindLocal(newDecl->Name(), ResolveBindingOptions::ALL);
     if (foundVar != nullptr) {
-        if (!newDecl->IsLetOrConstDecl()) {
+        // Found potential conflict in the current scope
+        if (!newDecl->IsLetOrConstDecl() && !newDecl->Node()->IsStatement()) {
             return nullptr;
         }
 
-        foundVar = FindLocal(newDecl->Name(),
-                             ResolveBindingOptions::ALL ^ (isStatic ? ResolveBindingOptions::VARIABLES
-                                                                    : ResolveBindingOptions::STATIC_VARIABLES));
+        // Non-static variables can coexist with static variables and static methods and vice versa.
+        // Run second search with filtered options.
+        const auto excludeOptions =
+            isStatic ? ResolveBindingOptions::VARIABLES | ResolveBindingOptions::METHODS
+                     : ResolveBindingOptions::STATIC_VARIABLES | ResolveBindingOptions::STATIC_METHODS;
+        const auto options = ResolveBindingOptions::ALL ^ excludeOptions;
+        foundVar = FindLocal(newDecl->Name(), options);
         if (foundVar != nullptr) {
+            // Conflict in bindings
             return nullptr;
         }
     }
@@ -1031,7 +1017,7 @@ void LoopScope::ConvertToVariableScope(ArenaAllocator *allocator)
     for (const auto &[_, var] : Bindings()) {
         (void)_;
         if (var->LexicalBound() && var->Declaration()->IsLetDecl()) {
-            ASSERT(declScope_->NeedLexEnv());
+            ES2PANDA_ASSERT(declScope_->NeedLexEnv());
             loopType_ = ScopeType::LOOP;
             break;
         }
@@ -1046,7 +1032,7 @@ void LoopScope::ConvertToVariableScope(ArenaAllocator *allocator)
 Variable *CatchParamScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                       [[maybe_unused]] ScriptExtension extension)
 {
-    return AddParam(allocator, currentVariable, newDecl, VariableFlags::INITIALIZED);
+    return currentVariable != nullptr ? nullptr : AddParameter(allocator, newDecl, VariableFlags::INITIALIZED);
 }
 
 Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -1057,18 +1043,18 @@ Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
         return nullptr;
     }
 
-    if (newDecl->IsTypeAliasDecl()) {
-        auto *ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
-        auto *var = TypeAliasScope()->AddBinding(allocator, currentVariable, newDecl, extension);
-        if (var != nullptr) {
-            var->SetScope(this);
-            if (ident != nullptr) {
-                ident->SetVariable(var);
-            }
-        }
-        return var;
+    return AddLocal(allocator, currentVariable, newDecl, extension);
+}
+
+template <typename T, typename... Args>
+Variable *Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView name, Args &&...args)
+{
+    auto res = bindings_.find(name);
+    if (res == bindings_.end()) {
+        return bindings_.insert({name, allocator->New<T>(std::forward<Args>(args)...)}).first->second;
     }
 
-    return AddLocal(allocator, currentVariable, newDecl, extension);
+    res->second->Reset(std::forward<Args>(args)...);
+    return res->second;
 }
 }  // namespace ark::es2panda::varbinder

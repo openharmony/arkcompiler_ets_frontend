@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -57,9 +57,11 @@ def warning_log(msg: str) -> None:
 
 
 def parsing_failed_msg(file: str) -> None:
-    logging.info("NON FATAL ERROR: Headers parser failed on {file}.\n"
-                 "To reproduce locally: run 'ninja gen_yamls' and check "
-                 "<es2panda_lib::binary_root>/gen/logs/error_logs.txt")
+    logging.warning(
+        f"Headers parser failed on {file}.\n"
+        "To reproduce locally: run 'ninja gen_yamls' and check "
+        "<es2panda_lib::binary_root>/gen/logs/error_logs.txt"
+    )
 
 
 def error_log(msg: str) -> None:

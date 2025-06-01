@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 13
+              "column": 13,
+              "program": "function_implicit_return_type5.ets"
             },
             "end": {
               "line": 17,
-              "column": 14
+              "column": 14,
+              "program": "function_implicit_return_type5.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 12
+                  "column": 12,
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 12
+                      "column": 12,
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
@@ -78,22 +84,26 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 24
+                            "column": 24,
+                            "program": "function_implicit_return_type5.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 26
+                            "column": 26,
+                            "program": "function_implicit_return_type5.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 17
+                          "column": 17,
+                          "program": "function_implicit_return_type5.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 27
+                          "column": 27,
+                          "program": "function_implicit_return_type5.ets"
                         }
                       }
                     }
@@ -101,33 +111,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 15
+                      "column": 15,
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 29
+                      "column": 29,
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 12
+                    "column": 12,
+                    "program": "function_implicit_return_type5.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 29
+                    "column": 29,
+                    "program": "function_implicit_return_type5.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 12
+                  "column": 12,
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 29
+                  "column": 29,
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },
@@ -136,11 +152,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 3
+                "column": 3,
+                "program": "function_implicit_return_type5.ets"
               },
               "end": {
                 "line": 18,
-                "column": 29
+                "column": 29,
+                "program": "function_implicit_return_type5.ets"
               }
             }
           },
@@ -152,12 +170,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 16,
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 16,
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },
@@ -175,12 +195,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 16,
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 16,
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
@@ -193,34 +215,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 16,
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 16,
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 16,
+                    "program": "function_implicit_return_type5.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 16,
+                    "program": "function_implicit_return_type5.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 16,
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 16,
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },
@@ -228,12 +256,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 19,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -241,22 +271,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 15
+            "column": 15,
+            "program": "function_implicit_return_type5.ets"
           },
           "end": {
-            "line": 19,
-            "column": 2
+            "line": 20,
+            "column": 1,
+            "program": "function_implicit_return_type5.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 7
+          "column": 7,
+          "program": "function_implicit_return_type5.ets"
         },
         "end": {
-          "line": 19,
-          "column": 2
+          "line": 20,
+          "column": 1,
+          "program": "function_implicit_return_type5.ets"
         }
       }
     },
@@ -270,11 +304,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "function_implicit_return_type5.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "function_implicit_return_type5.ets"
             }
           }
         },
@@ -285,16 +321,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "function_implicit_return_type5.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "function_implicit_return_type5.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -314,11 +458,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -332,33 +478,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -367,11 +519,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "function_implicit_return_type5.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "function_implicit_return_type5.ets"
               }
             }
           }
@@ -379,22 +533,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "function_implicit_return_type5.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "function_implicit_return_type5.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "function_implicit_return_type5.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "function_implicit_return_type5.ets"
         }
       }
     }
@@ -402,11 +560,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "function_implicit_return_type5.ets"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "function_implicit_return_type5.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,12 @@ void TSMappedType::TransformChildren(const NodeTransformer &cb, std::string_view
             typeAnnotation_ = static_cast<TypeNode *>(transformedNode);
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSMappedType::Iterate(const NodeTraverser &cb) const
@@ -44,6 +50,9 @@ void TSMappedType::Iterate(const NodeTraverser &cb) const
     cb(typeParameter_);
     if (typeAnnotation_ != nullptr) {
         cb(typeAnnotation_);
+    }
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
     }
 }
 
@@ -57,11 +66,15 @@ void TSMappedType::Dump(ir::AstDumper *dumper) const
                                                                  : AstDumper::Optional("-")},
                  {"optional", optional_ == MappedOption::NO_OPTS ? AstDumper::Optional(false)
                               : optional_ == MappedOption::PLUS  ? AstDumper::Optional("+")
-                                                                 : AstDumper::Optional("-")}});
+                                                                 : AstDumper::Optional("-")},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSMappedType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSMappedType");
 }
 
@@ -84,8 +97,8 @@ checker::Type *TSMappedType::GetType([[maybe_unused]] checker::TSChecker *checke
     return nullptr;
 }
 
-checker::Type *TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

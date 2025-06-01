@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 #include "boxingForLocals.h"
 
-#include "varbinder/ETSBinder.h"
+#include "compiler/lowering/util.h"
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::compiler {
@@ -84,15 +84,17 @@ static ArenaSet<varbinder::Variable *> FindModified(public_lib::Context *ctx, ir
     auto *allocator = ctx->allocator;
     auto modified = ArenaSet<varbinder::Variable *>(allocator->Adapter());
 
-    std::function<void(ir::AstNode *)> walker = [&](ir::AstNode *ast) {
-        if (ast->IsAssignmentExpression()) {
-            auto assignment = ast->AsAssignmentExpression();
-            if (assignment->Left()->IsIdentifier()) {
-                ASSERT(assignment->Left()->Variable() != nullptr);
-                auto *var = assignment->Left()->Variable();
-                var->AddFlag(varbinder::VariableFlags::INITIALIZED);
-                modified.insert(var);
-            }
+    std::function<void(ir::AstNode *)> walker = [&](ir::AstNode *ast) -> void {
+        if (!ast->IsAssignmentExpression()) {
+            return;
+        }
+
+        auto expr = ast->AsAssignmentExpression();
+        if (expr->Left()->IsIdentifier()) {
+            ES2PANDA_ASSERT(expr->Left()->Variable() != nullptr);
+            auto *var = expr->Left()->Variable();
+            var->AddFlag(varbinder::VariableFlags::INITIALIZED);
+            modified.insert(var);
         }
     };
 
@@ -124,7 +126,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     auto *oldVar = id->Variable();
     auto *oldType = oldVar->TsType();
     auto *func = param->Parent()->AsScriptFunction();
-    ASSERT(func->Body()->IsBlockStatement());  // guaranteed after expressionLambdaLowering
+    ES2PANDA_ASSERT(func->Body()->IsBlockStatement());  // guaranteed after expressionLambdaLowering
     auto *body = func->Body()->AsBlockStatement();
     auto &bodyStmts = body->Statements();
     auto *scope = body->Scope();
@@ -138,13 +140,16 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     ArenaVector<ir::Expression *> newInitArgs {allocator->Adapter()};
     newInitArgs.push_back(initId);
     auto *newInit = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType), std::move(newInitArgs), nullptr);
-    auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
-        allocator, ir::VariableDeclaratorFlag::CONST, allocator->New<ir::Identifier>(id->Name(), allocator), newInit);
-    ArenaVector<ir::VariableDeclarator *> declVec {allocator->Adapter()};
-    declVec.push_back(newDeclarator);
+        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator), std::move(newInitArgs));
 
-    auto *newDecl = allocator->New<varbinder::ConstDecl>(id->Name(), newDeclarator);
+    auto const newVarName = GenName(allocator);
+    auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
+        allocator, ir::VariableDeclaratorFlag::CONST, allocator->New<ir::Identifier>(newVarName.View(), allocator),
+        newInit);
+    ArenaVector<ir::VariableDeclarator *> declVec {allocator->Adapter()};
+    declVec.emplace_back(newDeclarator);
+
+    auto *newDecl = allocator->New<varbinder::ConstDecl>(newVarName.View(), newDeclarator);
     auto *newVar = allocator->New<varbinder::LocalVariable>(newDecl, oldVar->Flags());
     newVar->SetTsType(boxedType);
 
@@ -186,12 +191,12 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
         auto *arg = declarator->Init();
         if (arg->TsType() != type) {
             arg = util::NodeAllocator::ForceSetParent<ir::TSAsExpression>(
-                allocator, arg, allocator->New<ir::OpaqueTypeNode>(type), false);
+                allocator, arg, allocator->New<ir::OpaqueTypeNode>(type, allocator), false);
         }
         initArgs.push_back(arg);
     }
     auto *newInit = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType), std::move(initArgs), nullptr);
+        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator), std::move(initArgs));
     auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
         allocator, declarator->Flag(), allocator->New<ir::Identifier>(id->Name(), allocator), newInit);
     newDeclarator->SetParent(declarator->Parent());
@@ -218,14 +223,14 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
 
 static bool IsBeingDeclared(ir::AstNode *ast)
 {
-    ASSERT(ast->IsIdentifier());
+    ES2PANDA_ASSERT(ast->IsIdentifier());
     return (ast->Parent()->IsVariableDeclarator() && ast == ast->Parent()->AsVariableDeclarator()->Id()) ||
            (ast->Parent()->IsETSParameterExpression() && ast == ast->Parent()->AsETSParameterExpression()->Ident());
 }
 
 static bool IsPartOfBoxInitializer(public_lib::Context *ctx, ir::AstNode *ast)
 {
-    ASSERT(ast->IsIdentifier());
+    ES2PANDA_ASSERT(ast->IsIdentifier());
     auto *checker = ctx->checker->AsETSChecker();
     auto *id = ast->AsIdentifier();
 
@@ -261,7 +266,7 @@ static ir::AstNode *HandleReference(public_lib::Context *ctx, ir::Identifier *id
     // adjustment later.
     res->Check(checker);
 
-    ASSERT(res->TsType() == id->TsType());
+    ES2PANDA_ASSERT(res->TsType() == id->TsType());
     res->SetBoxingUnboxingFlags(id->GetBoxingUnboxingFlags());
 
     return res;
@@ -271,13 +276,13 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
                                      ArenaMap<varbinder::Variable *, varbinder::Variable *> const &varsMap)
 {
     // Should be true after opAssignment lowering
-    ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ES2PANDA_ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     auto *parser = ctx->parser->AsETSParser();
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
     auto *checker = ctx->checker->AsETSChecker();
 
-    auto *oldVar = ass->Left()->AsIdentifier()->Variable();
+    auto *oldVar = ass->Left()->Variable();
     auto *newVar = varsMap.find(oldVar)->second;
     auto *scope = newVar->GetScope();
     newVar->AddFlag(varbinder::VariableFlags::INITIALIZED);
@@ -295,7 +300,7 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
     varBinder->ResolveReferencesForScopeWithContext(res, scope);
     res->Check(checker);
 
-    ASSERT(res->TsType() == ass->TsType());
+    ES2PANDA_ASSERT(res->TsType() == ass->TsType());
     res->SetBoxingUnboxingFlags(ass->GetBoxingUnboxingFlags());
 
     return res;
@@ -340,18 +345,9 @@ static void HandleScriptFunction(public_lib::Context *ctx, ir::ScriptFunction *f
     func->TransformChildrenRecursivelyPostorder(handleNode, LOWERING_NAME);
 }
 
-bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program)
+bool BoxingForLocals::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     parser::SavedFormattingFileName savedFormattingName(ctx->parser->AsETSParser(), "boxing-for-lambdas");
-
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
 
     std::function<void(ir::AstNode *)> searchForFunctions = [&](ir::AstNode *ast) {
         if (ast->IsScriptFunction()) {
@@ -364,17 +360,8 @@ bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program
     return true;
 }
 
-bool BoxingForLocals::Postcondition([[maybe_unused]] public_lib::Context *ctx, parser::Program const *program)
+bool BoxingForLocals::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx, parser::Program const *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *node) {
         if (node->IsAssignmentExpression() && node->AsAssignmentExpression()->Left()->IsIdentifier()) {
             auto asExpr = node->AsAssignmentExpression();

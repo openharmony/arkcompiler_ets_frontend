@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@
 #include "compiler/core/vReg.h"
 #include "compiler/core/programElement.h"
 #include "lexer/token/sourceLocation.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 #include "utils/span.h"
 
@@ -125,7 +125,7 @@ public:
 
     static uint16_t MapRegister(uint32_t reg, uint32_t totalRegs)
     {
-        ASSERT(reg != VReg::Invalid().GetIndex());
+        ES2PANDA_ASSERT(reg != VReg::Invalid().GetIndex());
 
         uint32_t regCount = VReg::REG_START - totalRegs;
         uint16_t newReg = 0;

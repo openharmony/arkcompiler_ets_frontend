@@ -1,0 +1,607 @@
+{
+  "api_list": [
+    {
+      "import_path": ["@ohos.arkui.Prefetcher", "@kit.ArkUI"],
+      "file_path": ["api/@ohos.arkui.Prefetcher.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "",
+        "api_name": "prefetch",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "index", "type": "number", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "IDataSourcePrefetching",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": ["@hms.collaboration.rcp", "@kit.RemoteCommunicationKit"],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LimitiedVoidType",
+        "api_name": "write",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "buffer", "type": "ArrayBuffer", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "WriteFile",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 115
+      }
+    },
+    {
+      "import_path": ["@hms.collaboration.rcp", "@kit.RemoteCommunicationKit"],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LimitiedVoidType",
+        "api_name": "IncomingDataCallback",
+        "api_type": "TypeAliasDeclaration",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "incomingData", "type": "ArrayBuffer", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 115
+      }
+    },
+    {
+      "import_path": ["@ohos.web.webview", "@kit.ArkWeb"],
+      "file_path": ["api/@ohos.web.webview.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "OptionalMethod",
+        "api_name": "resumePlayer",
+        "api_type": "MethodSignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "NativeMediaPlayerBridge",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "webview",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": ["@ohos.web.webview", "@kit.ArkWeb"],
+      "file_path": ["api/@ohos.web.webview.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "OptionalMethod",
+        "api_name": "suspendPlayer",
+        "api_type": "MethodSignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          { "name": "type", "type": "SuspendType", "is_optional": false, "hasDefault": false }
+        ],
+        "parent_api": [
+          {
+            "api_name": "NativeMediaPlayerBridge",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "webview",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": ["@ohos.file.sendablePhotoAccessHelper", "@kit.MediaLibraryKit"],
+      "file_path": ["api/@ohos.file.sendablePhotoAccessHelper.d.ets"],
+      "is_global": false,
+      "api_info": {
+        "problem": "SendablePropType",
+        "api_name": "position",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+            {
+                "api_name": "SharedPhotoAsset",
+                "api_type": "InterfaceDeclaration"
+            },
+            {
+                "api_name": "sendablePhotoAccessHelper",
+                "api_type": "ModuleDeclaration"
+            }
+            ],
+      "methd_return_type": "",
+      "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+      "problem": "ComputedPropertyName",
+      "api_name": "[ProgressType.Linear]",
+      "api_type": "PropertySignatrue",
+      "api_optional": false,
+      "api_auto_fix": false,
+      "api_auto_fix_context": "",
+      "target_type": "",
+      "api_func_args": [],
+      "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+      ],
+      "methd_return_type": "",
+      "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Ring]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "ProgressStyleMap",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Eclipse]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.ScaleRing]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Capsule]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "ConstructorIface",
+        "api_name": "",
+        "api_type": "ConstructSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "NetworkOutputQueueConstructor",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "INetworkOutputQueue",
+        "codeKind": 180
+      }
+    },
+    {
+      "import_path": [
+        "@ohos.application.AccessibilityExtensionAbility",
+        "@kit.AccessibilityKit"
+      ],
+      "file_path": ["api/application/AccessibilityExtensionContext.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "IndexedAccessType",
+        "api_name": "attributeValue",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          {
+            "name": "attributeName",
+            "type": "T",
+            "is_optional": false,
+            "hasDefault": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "AccessibilityElement",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "Promise<ElementAttributeValues[T]>",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": [
+        "@ohos.application.AccessibilityExtensionAbility",
+        "@kit.AccessibilityKit"
+      ],
+      "file_path": ["api/application/AccessibilityExtensionContext.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "IndexedAccessType",
+        "api_name": "attributeValue",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          {
+            "name": "attributeName",
+            "type": "T",
+            "is_optional": false,
+            "hasDefault": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "AccessibilityElement",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "Promise<ElementAttributeValues[T]>",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": [
+          "@hms.core.deviceCloudGateway.cloudDatabase",
+          "@kit.CloudFoundationKit"
+      ],
+      "file_path": [
+          "api/@hms.core.deviceCloudGateway.cloudDatabase.d.ts"
+      ],
+      "is_global": false,
+      "api_info": {
+          "problem": "ConstructorFuncs",
+          "api_name": "DatabaseQuery",
+          "api_type": "ClassDeclaration",
+          "api_optional": false,
+          "api_auto_fix": false,
+          "api_auto_fix_context": "",
+          "target_type": "",
+          "api_func_args": [
+              {
+                  "name": "entityClass",
+                  "type": "new () => T",
+                  "is_optional": false,
+                  "hasDefault": false
+              }
+          ],
+          "parent_api": [
+              {
+                  "api_name": "cloudDatabase",
+                  "api_type": "ModuleDeclaration"
+              }
+          ],
+          "methd_return_type": "DatabaseQuery<T>",
+          "codeKind": 264
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'authorization'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'content-type'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'accept'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "ContentType | ContentType[]",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'cache-control'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string | string[]",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'user-agent'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/styled_string.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "DeclWithDuplicateName",
+        "api_name": "TextStyle",
+        "api_type": "ClassDeclaration",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          {
+            "name": "value",
+            "type": "TextStyleInterface",
+            "is_optional": true,
+            "hasDefault": false
+          }
+        ],
+        "parent_api": [],
+        "methd_return_type": "TextStyle",
+        "codeKind": 264
+      }
+    },
+    {
+      "import_path": [
+        "@ohos.worker.d.ts",
+        "@kit.ArkTS"
+      ],
+      "file_path": ["api/@ohos.worker.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "TypeQuery",
+        "api_name": "self",
+        "api_type": "PropertySignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "DedicatedWorkerGlobalScope",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "WorkerGlobalScope & typeof globalThis",
+        "codeKind": 170
+      }
+    }
+  ]
+}

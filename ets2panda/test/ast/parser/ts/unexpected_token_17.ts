@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,15 @@
  * limitations under the License.
  */
 
-abstract foo(1 > 0) { 
-    console.log("hehe")
+abstract /* @@ label */foo/* @@ label1 */(1 /* @@ label2 */> 0/* @@ label3 */) /* @@ label4 */{ 
+    console/* @@ label5 */.log(/* @@ label6 */"hehe")
 }
 
 
-/* @@? 16:10 Error SyntaxError: abstract modifier can only appear on a class, struct, method, or property declaration.  */
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 16:16 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 16:19 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 16:21 Error SyntaxError: Unexpected token in class property  */
-/* @@? 17:12 Error SyntaxError: Unexpected token in class property  */
-/* @@? 17:16 Error SyntaxError: Unexpected token in class property  */
-/* @@? 17:23 Error SyntaxError: Unexpected token in class property  */
+/* @@@ label Error SyntaxError: Abstract methods can only appear within an abstract class. */
+/* @@@ label1 Error SyntaxError: Expected '{', got '('. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected ';'. */
+/* @@@ label3 Error SyntaxError: Unexpected token, expected ';'. */
+/* @@@ label4 Error SyntaxError: Unexpected token. */
+/* @@@ label5 Error SyntaxError: Unexpected token, expected ';'. */
+/* @@@ label6 Error SyntaxError: Unexpected token, expected an identifier. */

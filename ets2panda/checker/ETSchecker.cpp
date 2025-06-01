@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,27 +37,41 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
 {
     const auto varMap = checker->VarBinder()->TopScope()->Bindings();
     const auto iterator = varMap.find(signature);
-    ASSERT(iterator != varMap.end());
+    ES2PANDA_ASSERT(iterator != varMap.end());
     auto *var = iterator->second;
     Type *type {nullptr};
     if (var->Declaration()->Node()->IsClassDefinition()) {
         type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     } else {
-        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
         type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
     return iterator->first;
 }
 
-static void SetupFunctionalInterface(ETSObjectType *type)
+void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties)
 {
-    type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-    auto *invokeType = invoke->TsType()->AsETSFunctionType();
-    ASSERT(invokeType->IsETSArrowType());
-    auto *signature = invokeType->CallSignatures()[0];
-    signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
+    static std::set<util::StringView> names;
+    names.clear();
+
+    for (auto property : properties) {
+        if (!property->IsProperty()) {
+            continue;
+        }
+        auto propertyDecl = property->AsProperty();
+        auto propKey = propertyDecl->Key();
+        if (!propKey->IsIdentifier() && !propKey->IsStringLiteral()) {
+            continue;
+        }
+
+        // number kind only used here
+        auto propName = propKey->IsIdentifier() ? propKey->AsIdentifier()->Name() : propKey->AsStringLiteral()->Str();
+        if (names.find(propName) != names.end()) {
+            LogError(diagnostic::OBJ_LIT_PROPERTY_REDECLARATION, {}, property->Start());
+        }
+        names.insert(propName);
+    }
 }
 
 static void SetupBuiltinMember(varbinder::Variable *var)
@@ -68,8 +82,16 @@ static void SetupBuiltinMember(varbinder::Variable *var)
     }
 }
 
+// clang-format off
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 static constexpr std::string_view BUILTINS_TO_INIT[] = {
+    compiler::Signatures::BUILTIN_OBJECT_CLASS,
+    compiler::Signatures::BUILTIN_STRING_CLASS,
+    compiler::Signatures::BUILTIN_BIGINT_CLASS,
+    compiler::Signatures::BUILTIN_EXCEPTION_CLASS,
+    compiler::Signatures::BUILTIN_ERROR_CLASS,
+    compiler::Signatures::BUILTIN_TYPE_CLASS,
+    compiler::Signatures::BUILTIN_PROMISE_CLASS,
     compiler::Signatures::BUILTIN_BOOLEAN_CLASS,
     compiler::Signatures::BUILTIN_BYTE_CLASS,
     compiler::Signatures::BUILTIN_CHAR_CLASS,
@@ -95,44 +117,91 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_FUNCTION14_CLASS,
     compiler::Signatures::BUILTIN_FUNCTION15_CLASS,
     compiler::Signatures::BUILTIN_FUNCTION16_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA0_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA1_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA2_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA3_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA4_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA5_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA6_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA7_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA8_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA9_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA10_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA11_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA12_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA13_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA14_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA15_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA16_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR0_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR1_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR2_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR3_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR4_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR5_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR6_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR7_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR8_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR9_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR10_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR11_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR12_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR13_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR14_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR15_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONR16_CLASS,
     compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION0_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION1_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION2_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION3_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION4_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION5_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION6_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION7_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION8_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION9_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION10_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION11_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION12_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION13_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION14_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION15_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTION16_CLASS,
-    compiler::Signatures::BUILTIN_THROWING_FUNCTIONN_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION0_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION1_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION2_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION3_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION4_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION5_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION6_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION7_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION8_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION9_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION10_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION11_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION12_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION13_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION14_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION15_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION16_CLASS,
-    compiler::Signatures::BUILTIN_RETHROWING_FUNCTIONN_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR0_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR1_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR2_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR3_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR4_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR5_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR6_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR7_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR8_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR9_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR10_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR11_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR12_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR13_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR14_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR15_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAR16_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAN_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE0_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE1_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE2_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE3_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE4_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE5_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE6_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE7_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE8_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE9_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE10_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE11_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE12_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE13_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE14_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE15_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE16_CLASS,
+    compiler::Signatures::BUILTIN_TUPLEN_CLASS,
 };
+// clang-format on
+
+static void IntializeFunctionInterfaces(GlobalTypesHolder *typeHolder)
+{
+    auto const getItf = [typeHolder](size_t arity, bool hasRest) {
+        return typeHolder->GlobalFunctionBuiltinType(arity, hasRest)->AsETSObjectType();
+    };
+
+    for (size_t arity = 0; arity < typeHolder->VariadicFunctionTypeThreshold(); arity++) {
+        getItf(arity, false)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+        getItf(arity, true)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+    }
+}
 
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
@@ -148,35 +217,7 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         InitBuiltin(this, sig);
     }
 
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type = GetGlobalTypesHolder()
-                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::THROWS)
-                         ->AsETSObjectType();
-        SetupFunctionalInterface(type);
-    }
-
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type = GetGlobalTypesHolder()
-                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::RETHROWS)
-                         ->AsETSObjectType();
-        SetupFunctionalInterface(type);
-        // note(gergocs): type->Interfaces().front() should be the same as the type in throwing functions
-        // and adding the functional flag to the interface should be deleted
-        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    }
-
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type =
-            GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::NONE)->AsETSObjectType();
-        SetupFunctionalInterface(type);
-        // note(gergocs): type->Interfaces().front() should be the same as the type in rethrowing functions
-        // and adding the functional flag to the interface should be deleted
-        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-        type->Interfaces().front()->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    }
+    IntializeFunctionInterfaces(GetGlobalTypesHolder());
 
     for (const auto &[name, var] : varMap) {
         (void)name;
@@ -206,17 +247,17 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
     if (var->Declaration()->Node()->IsClassDefinition()) {
         type = BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     } else {
-        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
         type = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
 
-bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOptions &options)
+bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Options &options)
 {
     Initialize(varbinder);
 
-    if (options.parseOnly) {
+    if (options.IsParseOnly()) {
         return false;
     }
 
@@ -232,32 +273,33 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
 
     bool isEvalMode = (debugInfoPlugin_ != nullptr);
     if (UNLIKELY(isEvalMode)) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         debugInfoPlugin_->PreCheck();
     }
 
     CheckProgram(Program(), true);
 
     if (UNLIKELY(isEvalMode)) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         debugInfoPlugin_->PostCheck();
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
-        ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
+        ES2PANDA_ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
     }
 #endif
 
-    if (options.dumpCheckedAst) {
+    if (options.IsDumpDynamicAst()) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.etsHasWarnings) {
-        CheckWarnings(Program(), options);
-    }
+    CheckWarnings(Program(), options);
 
-    return !ErrorLogger()->IsAnyError();
+    return !IsAnyError();
 }
 
 evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()
@@ -289,28 +331,24 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
         }
     }
 
-    ASSERT(Program()->Ast()->IsProgram());
+    ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
-    if (ErrorLogger()->IsAnyError()) {
-        return;
-    }
-
-    if (runAnalysis) {
+    if (runAnalysis && !IsAnyError()) {
         AliveAnalyzer aliveAnalyzer(Program()->Ast(), this);
         AssignAnalyzer(this).Analyze(Program()->Ast());
     }
 
-    ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
+    ES2PANDA_ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
 
     SetProgram(savedProgram);
 }
 
-void ETSChecker::CheckWarnings(parser::Program *program, const CompilerOptions &options)
+void ETSChecker::CheckWarnings(parser::Program *program, const util::Options &options)
 {
-    const auto etsWarningCollection = options.etsWarningCollection;
+    const auto &etsWarningCollection = options.GetEtsWarningCollection();
     for (const auto warning : etsWarningCollection) {
-        ETSWarningAnalyzer(Program()->Ast(), program, warning, options.etsWerror);
+        ETSWarningAnalyzer(Program()->Ast(), program, warning, DiagnosticEngine());
     }
 }
 
@@ -321,6 +359,12 @@ Type *ETSChecker::CheckTypeCached(ir::Expression *expr)
     }
 
     return expr->TsType();
+}
+
+bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::Signature *signature)
+{
+    return objType->HasObjectFlag(checker::ETSObjectFlags::CLASS) &&
+           signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
 }
 
 template <typename... Args>
@@ -457,6 +501,11 @@ ETSObjectType *ETSChecker::GlobalBuiltinPromiseType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalPromiseBuiltinType);
 }
 
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType);
+}
+
 ETSObjectType *ETSChecker::GlobalBuiltinJSRuntimeType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSRuntimeBuiltinType);
@@ -467,9 +516,19 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSValueBuiltinType);
 }
 
-ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, ir::ScriptFunctionFlags flags) const
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, bool hasRest) const
 {
-    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs, flags);
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs, hasRest);
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinLambdaType(size_t nargs, bool hasRest) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalLambdaBuiltinType, nargs, hasRest);
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinTupleType(size_t nargs) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalTupleBuiltinType, nargs);
 }
 
 size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const
@@ -530,25 +589,39 @@ Type *ETSChecker::GlobalTypeError() const
 
 Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
 {
-    node->SetTsType(GlobalTypeError());
-    return node->TsType();
+    return node->SetTsType(GlobalTypeError());
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
+    return TypeError(node, diagKind, util::DiagnosticMessageParams {}, at);
+}
+
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
+{
+    LogError(diagKind, list, at);
     return InvalidateType(node);
 }
 
-Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
+                            const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
+    return TypeError(var, diagKind, {}, at);
+}
+
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
+{
+    LogError(diagKind, list, at);
     var->SetTsType(GlobalTypeError());
     return var->TsType();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 
@@ -567,4 +640,23 @@ Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
     }
 }
 
+Signature *ETSChecker::FindExtensionSetterInMap(util::StringView name, ETSObjectType *type)
+{
+    return GetGlobalTypesHolder()->FindExtensionSetterInMap(name, type);
+}
+
+Signature *ETSChecker::FindExtensionGetterInMap(util::StringView name, ETSObjectType *type)
+{
+    return GetGlobalTypesHolder()->FindExtensionGetterInMap(name, type);
+}
+
+void ETSChecker::InsertExtensionSetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+{
+    GetGlobalTypesHolder()->InsertExtensionSetterToMap(name, type, sig);
+}
+
+void ETSChecker::InsertExtensionGetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+{
+    GetGlobalTypesHolder()->InsertExtensionGetterToMap(name, type, sig);
+}
 }  // namespace ark::es2panda::checker

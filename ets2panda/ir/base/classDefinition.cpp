@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,13 @@ bool ClassDefinition::HasPrivateMethod() const
 {
     return std::any_of(body_.cbegin(), body_.cend(), [](auto *element) {
         return element->IsMethodDefinition() && element->AsClassElement()->IsPrivateElement();
+    });
+}
+
+bool ClassDefinition::HasNativeMethod() const
+{
+    return std::any_of(body_.cbegin(), body_.cend(), [](auto *element) {
+        return element->IsMethodDefinition() && element->AsMethodDefinition()->IsNative();
     });
 }
 
@@ -85,14 +92,14 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_v
         }
     }
 
-    for (auto *&it : implements_) {
+    for (auto *&it : VectorIterationGuard(implements_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsTSClassImplements();
         }
     }
 
-    for (auto *&it : annotations_) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -106,10 +113,12 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_v
         }
     }
 
-    for (auto *&it : body_) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode;
+    // Survives adding new elements to the end
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t ix = 0; ix < body_.size(); ix++) {
+        if (auto *transformedNode = cb(body_[ix]); body_[ix] != transformedNode) {
+            body_[ix]->SetTransformedNode(transformationName, transformedNode);
+            body_[ix] = transformedNode;
         }
     }
 }
@@ -138,7 +147,7 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
         cb(implements_[ix]);
     }
 
-    for (auto *it : annotations_) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 
@@ -170,9 +179,26 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
                  {"superClass", AstDumper::Nullish(superClass_)},
                  {"superTypeParameters", AstDumper::Optional(superTypeParams_)},
                  {"implements", implements_},
-                 {"annotations", AstDumper::Optional(annotations_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"constructor", AstDumper::Optional(ctor_)},
                  {"body", body_, propFilter}});
+}
+
+void ClassDefinition::DumpGlobalClass(ir::SrcDumper *dumper) const
+{
+    ES2PANDA_ASSERT(IsGlobal());
+    for (auto elem : body_) {
+        if (elem->IsClassProperty()) {
+            elem->Dump(dumper);
+            dumper->Endl();
+        }
+    }
+    for (auto elem : body_) {
+        if (elem->IsMethodDefinition()) {
+            elem->Dump(dumper);
+            dumper->Endl();
+        }
+    }
 }
 
 // This method is needed by OHOS CI code checker
@@ -195,10 +221,20 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
-    for (auto *anno : annotations_) {
+    // NOTE: plugin API fails
+    if ((ident_->Name().StartsWith("$dynmodule")) || (ident_->Name().StartsWith("$jscall"))) {
+        return;
+    }
+
+    if (IsGlobal()) {
+        DumpGlobalClass(dumper);
+        return;
+    }
+
+    for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ASSERT(ident_ != nullptr);
+    ES2PANDA_ASSERT(ident_ != nullptr);
 
     if (IsExtern()) {
         dumper->Add("extern ");
@@ -220,7 +256,7 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
         dumper->Add("abstract ");
     }
 
-    dumper->Add("class ");
+    dumper->Add(parent_->IsETSStructDeclaration() ? "struct " : "class ");
     ident_->Dump(dumper);
 
     if (typeParams_ != nullptr) {
@@ -260,9 +296,9 @@ checker::Type *ClassDefinition::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassDefinition::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassDefinition::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 int ClassDefinition::classCounter_ = 0;

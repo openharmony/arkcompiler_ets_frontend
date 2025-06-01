@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_DYNAMIC_FUNCTION_TYPE_H
 
 #include "checker/types/ets/etsFunctionType.h"
-#include "checker/types/signature.h"
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
@@ -31,18 +30,16 @@ public:
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
     }
 
-    explicit ETSDynamicFunctionType(util::StringView name, Signature *signature, ArenaAllocator *allocator,
-                                    Language lang)
-        : ETSFunctionType(name, signature, allocator), lang_(lang)
+    explicit ETSDynamicFunctionType(ETSChecker *checker, Signature *signature, Language lang)
+        : ETSFunctionType(checker, signature), lang_(lang)
     {
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
     }
 
-    explicit ETSDynamicFunctionType(util::StringView name, ArenaAllocator *allocator, Language lang)
-        : ETSFunctionType(name, allocator), lang_(lang)
-    {
-        AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
-    }
+    ETSDynamicFunctionType() = delete;
+    ~ETSDynamicFunctionType() override = default;
+    NO_COPY_SEMANTIC(ETSDynamicFunctionType);
+    NO_MOVE_SEMANTIC(ETSDynamicFunctionType);
 
     es2panda::Language Language() const
     {

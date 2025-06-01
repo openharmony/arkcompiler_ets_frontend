@@ -1,0 +1,1189 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": []
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": []
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": []
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "a",
+                          "decorators": []
+                        },
+                        "right": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "Identifier",
+                            "name": "GoodGreeter",
+                            "decorators": []
+                          },
+                          "arguments": [],
+                          "optional": false
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "c",
+                          "decorators": []
+                        },
+                        "right": {
+                          "type": "ETSNewClassInstanceExpression",
+                          "typeReference": {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "GoodGreeter",
+                                "decorators": []
+                              }
+                            }
+                          },
+                          "arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": []
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "a",
+              "decorators": []
+            },
+            "value": {
+              "type": "CallExpression",
+              "callee": {
+                "type": "Identifier",
+                "name": "GoodGreeter",
+                "decorators": []
+              },
+              "arguments": [],
+              "optional": false
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "definite": false,
+            "decorators": []
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "c",
+              "decorators": []
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "GoodGreeter",
+                  "decorators": []
+                }
+              }
+            },
+            "definite": false,
+            "decorators": []
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": []
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": []
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "m",
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType"
+                            },
+                            "decorators": []
+                          },
+                          "init": {
+                            "type": "NumberLiteral",
+                            "value": 1
+                          }
+                        }
+                      ],
+                      "kind": "let"
+                    },
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "n",
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType"
+                            },
+                            "decorators": []
+                          },
+                          "init": {
+                            "type": "NumberLiteral",
+                            "value": 2
+                          }
+                        }
+                      ],
+                      "kind": "let"
+                    },
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "f",
+                            "typeAnnotation": {
+                              "type": "ETSPrimitiveType"
+                            },
+                            "decorators": []
+                          },
+                          "init": {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "c",
+                              "decorators": []
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "b",
+                              "decorators": []
+                            },
+                            "computed": false,
+                            "optional": false
+                          }
+                        }
+                      ],
+                      "kind": "let"
+                    },
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "k",
+                            "typeAnnotation": {
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "string",
+                                  "decorators": []
+                                }
+                              }
+                            },
+                            "decorators": []
+                          },
+                          "init": {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "c",
+                              "decorators": []
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "name",
+                              "decorators": []
+                            },
+                            "computed": false,
+                            "optional": false
+                          }
+                        }
+                      ],
+                      "kind": "let"
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "console",
+                            "decorators": []
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "log",
+                            "decorators": []
+                          },
+                          "computed": false,
+                          "optional": false
+                        },
+                        "arguments": [
+                          {
+                            "type": "BinaryExpression",
+                            "operator": "+",
+                            "left": {
+                              "type": "Identifier",
+                              "name": "m",
+                              "decorators": []
+                            },
+                            "right": {
+                              "type": "Identifier",
+                              "name": "n",
+                              "decorators": []
+                            }
+                          }
+                        ],
+                        "optional": false
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "console",
+                            "decorators": []
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "log",
+                            "decorators": []
+                          },
+                          "computed": false,
+                          "optional": false
+                        },
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "k",
+                            "decorators": []
+                          }
+                        ],
+                        "optional": false
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "GoodGreeter",
+          "decorators": []
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "name",
+              "decorators": []
+            },
+            "accessibility": "public",
+            "static": false,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "string",
+                  "decorators": []
+                }
+              }
+            },
+            "definite": false,
+            "decorators": []
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "b",
+              "decorators": []
+            },
+            "accessibility": "public",
+            "static": false,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSPrimitiveType"
+            },
+            "definite": false,
+            "decorators": []
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "fooExample",
+              "decorators": []
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "fooExample",
+                  "decorators": []
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSPrimitiveType"
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": []
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": []
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "$_invoke",
+              "decorators": []
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "$_invoke",
+                  "decorators": []
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSPrimitiveType"
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ReturnStatement",
+                      "argument": {
+                        "type": "NumberLiteral",
+                        "value": 5
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": []
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": []
+            },
+            "kind": "constructor",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": []
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "ThisExpression"
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "name",
+                            "decorators": []
+                          },
+                          "computed": false,
+                          "optional": false
+                        },
+                        "right": {
+                          "type": "StringLiteral",
+                          "value": "hello"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "ThisExpression"
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "b",
+                            "decorators": []
+                          },
+                          "computed": false,
+                          "optional": false
+                        },
+                        "right": {
+                          "type": "NumberLiteral",
+                          "value": 7
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": []
+          }
+        ]
+      }
+    }
+  ]
+}
+{
+  "type": "ClassDeclaration",
+  "definition": {
+    "id": {
+      "type": "Identifier",
+      "name": "ETSGLOBAL",
+      "decorators": []
+    },
+    "superClass": null,
+    "implements": [],
+    "body": [
+      {
+        "type": "MethodDefinition",
+        "key": {
+          "type": "Identifier",
+          "name": "_$init$_",
+          "decorators": []
+        },
+        "kind": "method",
+        "accessibility": "public",
+        "static": true,
+        "optional": false,
+        "computed": false,
+        "value": {
+          "type": "FunctionExpression",
+          "function": {
+            "type": "ScriptFunction",
+            "id": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": []
+            },
+            "generator": false,
+            "async": false,
+            "expression": false,
+            "params": [],
+            "body": {
+              "type": "BlockStatement",
+              "statements": [
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "AssignmentExpression",
+                    "operator": "=",
+                    "left": {
+                      "type": "Identifier",
+                      "name": "a",
+                      "decorators": []
+                    },
+                    "right": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "GoodGreeter",
+                        "decorators": []
+                      },
+                      "arguments": [],
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "AssignmentExpression",
+                    "operator": "=",
+                    "left": {
+                      "type": "Identifier",
+                      "name": "c",
+                      "decorators": []
+                    },
+                    "right": {
+                      "type": "ETSNewClassInstanceExpression",
+                      "typeReference": {
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "GoodGreeter",
+                            "decorators": []
+                          }
+                        }
+                      },
+                      "arguments": []
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "overloads": [],
+        "decorators": []
+      },
+      {
+        "type": "ClassProperty",
+        "key": {
+          "type": "Identifier",
+          "name": "a",
+          "decorators": []
+        },
+        "value": {
+          "type": "CallExpression",
+          "callee": {
+            "type": "Identifier",
+            "name": "GoodGreeter",
+            "decorators": []
+          },
+          "arguments": [],
+          "optional": false
+        },
+        "accessibility": "public",
+        "static": true,
+        "readonly": false,
+        "declare": false,
+        "optional": false,
+        "computed": false,
+        "definite": false,
+        "decorators": []
+      },
+      {
+        "type": "ClassProperty",
+        "key": {
+          "type": "Identifier",
+          "name": "c",
+          "decorators": []
+        },
+        "accessibility": "public",
+        "static": true,
+        "readonly": false,
+        "declare": false,
+        "optional": false,
+        "computed": false,
+        "typeAnnotation": {
+          "type": "ETSTypeReference",
+          "part": {
+            "type": "ETSTypeReferencePart",
+            "name": {
+              "type": "Identifier",
+              "name": "GoodGreeter",
+              "decorators": []
+            }
+          }
+        },
+        "definite": false,
+        "decorators": []
+      },
+      {
+        "type": "MethodDefinition",
+        "key": {
+          "type": "Identifier",
+          "name": "main",
+          "decorators": []
+        },
+        "kind": "method",
+        "accessibility": "public",
+        "static": true,
+        "optional": false,
+        "computed": false,
+        "value": {
+          "type": "FunctionExpression",
+          "function": {
+            "type": "ScriptFunction",
+            "id": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": []
+            },
+            "generator": false,
+            "async": false,
+            "expression": false,
+            "params": [],
+            "body": {
+              "type": "BlockStatement",
+              "statements": [
+                {
+                  "type": "VariableDeclaration",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclarator",
+                      "id": {
+                        "type": "Identifier",
+                        "name": "m",
+                        "typeAnnotation": {
+                          "type": "ETSPrimitiveType"
+                        },
+                        "decorators": []
+                      },
+                      "init": {
+                        "type": "NumberLiteral",
+                        "value": 1
+                      }
+                    }
+                  ],
+                  "kind": "let"
+                },
+                {
+                  "type": "VariableDeclaration",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclarator",
+                      "id": {
+                        "type": "Identifier",
+                        "name": "n",
+                        "typeAnnotation": {
+                          "type": "ETSPrimitiveType"
+                        },
+                        "decorators": []
+                      },
+                      "init": {
+                        "type": "NumberLiteral",
+                        "value": 2
+                      }
+                    }
+                  ],
+                  "kind": "let"
+                },
+                {
+                  "type": "VariableDeclaration",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclarator",
+                      "id": {
+                        "type": "Identifier",
+                        "name": "f",
+                        "typeAnnotation": {
+                          "type": "ETSPrimitiveType"
+                        },
+                        "decorators": []
+                      },
+                      "init": {
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "c",
+                          "decorators": []
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "b",
+                          "decorators": []
+                        },
+                        "computed": false,
+                        "optional": false
+                      }
+                    }
+                  ],
+                  "kind": "let"
+                },
+                {
+                  "type": "VariableDeclaration",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclarator",
+                      "id": {
+                        "type": "Identifier",
+                        "name": "k",
+                        "typeAnnotation": {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "string",
+                              "decorators": []
+                            }
+                          }
+                        },
+                        "decorators": []
+                      },
+                      "init": {
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "c",
+                          "decorators": []
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "name",
+                          "decorators": []
+                        },
+                        "computed": false,
+                        "optional": false
+                      }
+                    }
+                  ],
+                  "kind": "let"
+                },
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "MemberExpression",
+                      "object": {
+                        "type": "Identifier",
+                        "name": "console",
+                        "decorators": []
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "name": "log",
+                        "decorators": []
+                      },
+                      "computed": false,
+                      "optional": false
+                    },
+                    "arguments": [
+                      {
+                        "type": "BinaryExpression",
+                        "operator": "+",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "m",
+                          "decorators": []
+                        },
+                        "right": {
+                          "type": "Identifier",
+                          "name": "n",
+                          "decorators": []
+                        }
+                      }
+                    ],
+                    "optional": false
+                  }
+                },
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "MemberExpression",
+                      "object": {
+                        "type": "Identifier",
+                        "name": "console",
+                        "decorators": []
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "name": "log",
+                        "decorators": []
+                      },
+                      "computed": false,
+                      "optional": false
+                    },
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "name": "k",
+                        "decorators": []
+                      }
+                    ],
+                    "optional": false
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "overloads": [],
+        "decorators": []
+      }
+    ]
+  }
+}
+{
+  "type": "ClassDeclaration",
+  "definition": {
+    "id": {
+      "type": "Identifier",
+      "name": "GoodGreeter",
+      "decorators": []
+    },
+    "superClass": null,
+    "implements": [],
+    "body": [
+      {
+        "type": "ClassProperty",
+        "key": {
+          "type": "Identifier",
+          "name": "name",
+          "decorators": []
+        },
+        "accessibility": "public",
+        "static": false,
+        "readonly": false,
+        "declare": false,
+        "optional": false,
+        "computed": false,
+        "typeAnnotation": {
+          "type": "ETSTypeReference",
+          "part": {
+            "type": "ETSTypeReferencePart",
+            "name": {
+              "type": "Identifier",
+              "name": "string",
+              "decorators": []
+            }
+          }
+        },
+        "definite": false,
+        "decorators": []
+      },
+      {
+        "type": "ClassProperty",
+        "key": {
+          "type": "Identifier",
+          "name": "b",
+          "decorators": []
+        },
+        "accessibility": "public",
+        "static": false,
+        "readonly": false,
+        "declare": false,
+        "optional": false,
+        "computed": false,
+        "typeAnnotation": {
+          "type": "ETSPrimitiveType"
+        },
+        "definite": false,
+        "decorators": []
+      },
+      {
+        "type": "MethodDefinition",
+        "key": {
+          "type": "Identifier",
+          "name": "fooExample",
+          "decorators": []
+        },
+        "kind": "method",
+        "accessibility": "public",
+        "static": false,
+        "optional": false,
+        "computed": false,
+        "value": {
+          "type": "FunctionExpression",
+          "function": {
+            "type": "ScriptFunction",
+            "id": {
+              "type": "Identifier",
+              "name": "fooExample",
+              "decorators": []
+            },
+            "generator": false,
+            "async": false,
+            "expression": false,
+            "params": [],
+            "returnType": {
+              "type": "ETSPrimitiveType"
+            },
+            "body": {
+              "type": "BlockStatement",
+              "statements": []
+            }
+          }
+        },
+        "overloads": [],
+        "decorators": []
+      },
+      {
+        "type": "MethodDefinition",
+        "key": {
+          "type": "Identifier",
+          "name": "$_invoke",
+          "decorators": []
+        },
+        "kind": "method",
+        "accessibility": "public",
+        "static": true,
+        "optional": false,
+        "computed": false,
+        "value": {
+          "type": "FunctionExpression",
+          "function": {
+            "type": "ScriptFunction",
+            "id": {
+              "type": "Identifier",
+              "name": "$_invoke",
+              "decorators": []
+            },
+            "generator": false,
+            "async": false,
+            "expression": false,
+            "params": [],
+            "returnType": {
+              "type": "ETSPrimitiveType"
+            },
+            "body": {
+              "type": "BlockStatement",
+              "statements": [
+                {
+                  "type": "ReturnStatement",
+                  "argument": {
+                    "type": "NumberLiteral",
+                    "value": 5
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "overloads": [],
+        "decorators": []
+      },
+      {
+        "type": "MethodDefinition",
+        "key": {
+          "type": "Identifier",
+          "name": "constructor",
+          "decorators": []
+        },
+        "kind": "constructor",
+        "accessibility": "public",
+        "static": false,
+        "optional": false,
+        "computed": false,
+        "value": {
+          "type": "FunctionExpression",
+          "function": {
+            "type": "ScriptFunction",
+            "id": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": []
+            },
+            "generator": false,
+            "async": false,
+            "expression": false,
+            "params": [],
+            "body": {
+              "type": "BlockStatement",
+              "statements": [
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "AssignmentExpression",
+                    "operator": "=",
+                    "left": {
+                      "type": "MemberExpression",
+                      "object": {
+                        "type": "ThisExpression"
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "name": "name",
+                        "decorators": []
+                      },
+                      "computed": false,
+                      "optional": false
+                    },
+                    "right": {
+                      "type": "StringLiteral",
+                      "value": "hello"
+                    }
+                  }
+                },
+                {
+                  "type": "ExpressionStatement",
+                  "expression": {
+                    "type": "AssignmentExpression",
+                    "operator": "=",
+                    "left": {
+                      "type": "MemberExpression",
+                      "object": {
+                        "type": "ThisExpression"
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "name": "b",
+                        "decorators": []
+                      },
+                      "computed": false,
+                      "optional": false
+                    },
+                    "right": {
+                      "type": "NumberLiteral",
+                      "value": 7
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "overloads": [],
+        "decorators": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "1": {
+    "fileName": "getDefinitionAtPosition1.ets",
+    "start": 625,
+    "length": 1
+  },
+  "2": {
+    "fileName": "getDefinitionAtPosition3.ets",
+    "start": 618,
+    "length": 1
+  },
+  "3": {
+    "fileName": "getDefinitionAtPosition4.ets",
+    "start": 625,
+    "length": 1
+  },
+  "4": {
+    "fileName": "getDefinitionAtPosition6.ets",
+    "start": 626,
+    "length": 3
+  },
+  "5": {
+    "fileName": "getDefinitionAtPosition8.ets",
+    "start": 625,
+    "length": 1
+  },
+  "6": {
+    "fileName": "getDefinitionAtPosition10.ets",
+    "start": 626,
+    "length": 3
+  },
+  "7": {
+    "fileName": "getDefinitionAtPosition12.ets",
+    "start": 620,
+    "length": 1
+  },
+  "8": {
+    "fileName": "getDefinitionAtPosition14.ets",
+    "start": 626,
+    "length": 1
+  },
+  "9": {
+    "fileName": "getDefinitionAtPosition16.ets",
+    "start": 622,
+    "length": 3
+  },
+  "10": {
+    "fileName": "text.d.ets",
+    "start": 7586,
+    "length": 4
+  }
+}

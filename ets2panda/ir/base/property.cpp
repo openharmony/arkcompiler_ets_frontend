@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,12 +15,9 @@
 
 #include "property.h"
 
-#include "es2panda.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expression *const key,
@@ -35,21 +32,18 @@ Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent
 {
     auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<Property>(Tag {}, *this, key, value);
 
-    if (auto *const clone = allocator->New<Property>(Tag {}, *this, key, value); clone != nullptr) {
-        if (key != nullptr) {
-            key->SetParent(clone);
-        }
-        if (value != nullptr) {
-            value->SetParent(clone);
-        }
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    if (key != nullptr) {
+        key->SetParent(clone);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (value != nullptr) {
+        value->SetParent(clone);
+    }
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    return clone;
 }
 
 bool Property::ConvertibleToPatternProperty()
@@ -162,7 +156,7 @@ void Property::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -199,8 +193,8 @@ checker::Type *Property::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *Property::Check(checker::ETSChecker *checker)
+checker::VerifiedType Property::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

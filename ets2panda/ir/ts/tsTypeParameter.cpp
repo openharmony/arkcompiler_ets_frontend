@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,12 @@ void TSTypeParameter::TransformChildren(const NodeTransformer &cb, std::string_v
             defaultType_ = static_cast<TypeNode *>(transformedNode);
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSTypeParameter::Iterate(const NodeTraverser &cb) const
@@ -57,22 +63,27 @@ void TSTypeParameter::Iterate(const NodeTraverser &cb) const
     if (defaultType_ != nullptr) {
         cb(defaultType_);
     }
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSTypeParameter::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({
-        {"type", "TSTypeParameter"},
-        {"name", name_},
-        {"constraint", AstDumper::Optional(constraint_)},
-        {"default", AstDumper::Optional(defaultType_)},
-        {"in", AstDumper::Optional(IsIn())},
-        {"out", AstDumper::Optional(IsOut())},
-    });
+    dumper->Add({{"type", "TSTypeParameter"},
+                 {"name", name_},
+                 {"constraint", AstDumper::Optional(constraint_)},
+                 {"default", AstDumper::Optional(defaultType_)},
+                 {"in", AstDumper::Optional(IsIn())},
+                 {"out", AstDumper::Optional(IsOut())},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSTypeParameter::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     if (IsIn()) {
         dumper->Add("in ");
     }
@@ -106,8 +117,8 @@ checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeParameter::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

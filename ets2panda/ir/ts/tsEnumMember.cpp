@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,7 +53,7 @@ void TSEnumMember::Dump(ir::AstDumper *dumper) const
 
 void TSEnumMember::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(key_ != nullptr);
+    ES2PANDA_ASSERT(key_ != nullptr);
     key_->Dump(dumper);
     if (init_ != nullptr) {
         dumper->Add(" = ");
@@ -63,7 +63,7 @@ void TSEnumMember::Dump(ir::SrcDumper *dumper) const
 
 util::StringView TSEnumMember::Name() const
 {
-    ASSERT(key_->IsIdentifier());
+    ES2PANDA_ASSERT(key_->IsIdentifier());
     return key_->AsIdentifier()->Name();
 }
 
@@ -82,8 +82,8 @@ checker::Type *TSEnumMember::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSEnumMember::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSEnumMember::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

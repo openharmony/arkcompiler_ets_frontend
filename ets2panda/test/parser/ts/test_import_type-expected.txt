@@ -19,22 +19,26 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 15
+                      "column": 15,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 20
+                      "column": 20,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 15
+                    "column": 15,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 20
+                    "column": 20,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -42,11 +46,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 21
+                  "column": 21,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 22
+                  "column": 22,
+                  "program": "test_import_type.ts"
                 }
               }
             },
@@ -54,11 +60,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 6
+                "column": 6,
+                "program": "test_import_type.ts"
               }
             }
           },
@@ -66,11 +74,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test_import_type.ts"
             },
             "end": {
               "line": 17,
-              "column": 6
+              "column": 6,
+              "program": "test_import_type.ts"
             }
           }
         }
@@ -79,11 +89,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test_import_type.ts"
         },
         "end": {
           "line": 17,
-          "column": 22
+          "column": 22,
+          "program": "test_import_type.ts"
         }
       }
     },
@@ -103,11 +115,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_import_type.ts"
                 }
               }
             },
@@ -122,22 +136,26 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 17
+                      "column": 17,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 22
+                      "column": 22,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 17
+                    "column": 17,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 22
+                    "column": 22,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -148,11 +166,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 24
+                    "column": 24,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 25
+                    "column": 25,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -160,22 +180,26 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 25
+                  "column": 25,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 26
+                  "column": 26,
+                  "program": "test_import_type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 20,
-                "column": 26
+                "column": 26,
+                "program": "test_import_type.ts"
               }
             }
           },
@@ -189,11 +213,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 9
+                    "column": 9,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 15
+                    "column": 15,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -201,11 +227,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 7
+                  "column": 7,
+                  "program": "test_import_type.ts"
                 }
               }
             },
@@ -219,22 +247,26 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 32
+                      "column": 32,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 37
+                      "column": 37,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 32
+                    "column": 32,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 37
+                    "column": 37,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -245,11 +277,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 39
+                    "column": 39,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 40
+                    "column": 40,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -257,11 +291,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 18
+                  "column": 18,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "test_import_type.ts"
                 }
               }
             },
@@ -269,11 +305,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "test_import_type.ts"
               }
             }
           }
@@ -281,11 +319,13 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 13
+            "column": 13,
+            "program": "test_import_type.ts"
           },
           "end": {
             "line": 22,
-            "column": 2
+            "column": 2,
+            "program": "test_import_type.ts"
           }
         }
       },
@@ -296,11 +336,13 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 11
+            "column": 11,
+            "program": "test_import_type.ts"
           },
           "end": {
             "line": 19,
-            "column": 12
+            "column": 12,
+            "program": "test_import_type.ts"
           }
         }
       },
@@ -308,11 +350,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test_import_type.ts"
         },
         "end": {
           "line": 22,
-          "column": 2
+          "column": 2,
+          "program": "test_import_type.ts"
         }
       }
     },
@@ -327,11 +371,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 10
+              "column": 10,
+              "program": "test_import_type.ts"
             },
             "end": {
               "line": 24,
-              "column": 11
+              "column": 11,
+              "program": "test_import_type.ts"
             }
           }
         },
@@ -352,22 +398,26 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 22
+                      "column": 22,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 27
+                      "column": 27,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 22
+                    "column": 22,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 27
+                    "column": 27,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -382,11 +432,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 29
+                        "column": 29,
+                        "program": "test_import_type.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 30
+                        "column": 30,
+                        "program": "test_import_type.ts"
                       }
                     }
                   },
@@ -397,22 +449,26 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 31
+                        "column": 31,
+                        "program": "test_import_type.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 32
+                        "column": 32,
+                        "program": "test_import_type.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 29
+                      "column": 29,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 32
+                      "column": 32,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
@@ -423,22 +479,26 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 33
+                      "column": 33,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 34
+                      "column": 34,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 29
+                    "column": 29,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 35
+                    "column": 35,
+                    "program": "test_import_type.ts"
                   }
                 }
               },
@@ -446,11 +506,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 34
+                  "column": 34,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 35
+                  "column": 35,
+                  "program": "test_import_type.ts"
                 }
               }
             },
@@ -458,11 +520,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 12
+                "column": 12,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 24,
-                "column": 13
+                "column": 13,
+                "program": "test_import_type.ts"
               }
             }
           }
@@ -477,22 +541,26 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 44
+                  "column": 44,
+                  "program": "test_import_type.ts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 49
+                  "column": 49,
+                  "program": "test_import_type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 44
+                "column": 44,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 24,
-                "column": 49
+                "column": 49,
+                "program": "test_import_type.ts"
               }
             }
           },
@@ -513,11 +581,13 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 57
+                              "column": 57,
+                              "program": "test_import_type.ts"
                             },
                             "end": {
                               "line": 24,
-                              "column": 63
+                              "column": 63,
+                              "program": "test_import_type.ts"
                             }
                           }
                         },
@@ -526,11 +596,13 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 66
+                              "column": 66,
+                              "program": "test_import_type.ts"
                             },
                             "end": {
                               "line": 24,
-                              "column": 72
+                              "column": 72,
+                              "program": "test_import_type.ts"
                             }
                           }
                         }
@@ -538,11 +610,13 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 57
+                          "column": 57,
+                          "program": "test_import_type.ts"
                         },
                         "end": {
                           "line": 24,
-                          "column": 72
+                          "column": 72,
+                          "program": "test_import_type.ts"
                         }
                       }
                     },
@@ -550,11 +624,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 55
+                        "column": 55,
+                        "program": "test_import_type.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 56
+                        "column": 56,
+                        "program": "test_import_type.ts"
                       }
                     }
                   },
@@ -571,22 +647,26 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 91
+                              "column": 91,
+                              "program": "test_import_type.ts"
                             },
                             "end": {
                               "line": 24,
-                              "column": 94
+                              "column": 94,
+                              "program": "test_import_type.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 91
+                            "column": 91,
+                            "program": "test_import_type.ts"
                           },
                           "end": {
                             "line": 24,
-                            "column": 94
+                            "column": 94,
+                            "program": "test_import_type.ts"
                           }
                         }
                       },
@@ -601,11 +681,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 97
+                                    "column": 97,
+                                    "program": "test_import_type.ts"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 104
+                                    "column": 104,
+                                    "program": "test_import_type.ts"
                                   }
                                 }
                               },
@@ -614,11 +696,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 105
+                                    "column": 105,
+                                    "program": "test_import_type.ts"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 112
+                                    "column": 112,
+                                    "program": "test_import_type.ts"
                                   }
                                 }
                               }
@@ -626,11 +710,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 96
+                                "column": 96,
+                                "program": "test_import_type.ts"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 112
+                                "column": 112,
+                                "program": "test_import_type.ts"
                               }
                             }
                           },
@@ -640,11 +726,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 114
+                                "column": 114,
+                                "program": "test_import_type.ts"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 116
+                                "column": 116,
+                                "program": "test_import_type.ts"
                               }
                             }
                           }
@@ -652,11 +740,13 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 95
+                            "column": 95,
+                            "program": "test_import_type.ts"
                           },
                           "end": {
                             "line": 24,
-                            "column": 117
+                            "column": 117,
+                            "program": "test_import_type.ts"
                           }
                         }
                       },
@@ -664,11 +754,13 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 77
+                          "column": 77,
+                          "program": "test_import_type.ts"
                         },
                         "end": {
                           "line": 24,
-                          "column": 118
+                          "column": 118,
+                          "program": "test_import_type.ts"
                         }
                       }
                     },
@@ -676,11 +768,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 74
+                        "column": 74,
+                        "program": "test_import_type.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 75
+                        "column": 75,
+                        "program": "test_import_type.ts"
                       }
                     }
                   }
@@ -697,22 +791,26 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 52
+                            "column": 52,
+                            "program": "test_import_type.ts"
                           },
                           "end": {
                             "line": 24,
-                            "column": 53
+                            "column": 53,
+                            "program": "test_import_type.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 52
+                          "column": 52,
+                          "program": "test_import_type.ts"
                         },
                         "end": {
                           "line": 24,
-                          "column": 54
+                          "column": 54,
+                          "program": "test_import_type.ts"
                         }
                       }
                     }
@@ -720,11 +818,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 51
+                      "column": 51,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 54
+                      "column": 54,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
@@ -735,33 +835,40 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 122
+                        "column": 122,
+                        "program": "test_import_type.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 128
+                        "column": 128,
+                        "program": "test_import_type.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 122
+                      "column": 122,
+                      "program": "test_import_type.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 130
+                      "column": 130,
+                      "program": "test_import_type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 51
+                    "column": 51,
+                    "program": "test_import_type.ts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 130
+                    "column": 130,
+                    "program": "test_import_type.ts"
                   }
                 }
               }
@@ -769,11 +876,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 50
+                "column": 50,
+                "program": "test_import_type.ts"
               },
               "end": {
                 "line": 24,
-                "column": 131
+                "column": 131,
+                "program": "test_import_type.ts"
               }
             }
           },
@@ -781,11 +890,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 132
+              "column": 132,
+              "program": "test_import_type.ts"
             },
             "end": {
               "line": 24,
-              "column": 133
+              "column": 133,
+              "program": "test_import_type.ts"
             }
           }
         },
@@ -795,33 +906,39 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 132
+              "column": 132,
+              "program": "test_import_type.ts"
             },
             "end": {
               "line": 26,
-              "column": 2
+              "column": 2,
+              "program": "test_import_type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "test_import_type.ts"
           },
           "end": {
             "line": 26,
-            "column": 2
+            "column": 2,
+            "program": "test_import_type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test_import_type.ts"
         },
         "end": {
           "line": 26,
-          "column": 2
+          "column": 2,
+          "program": "test_import_type.ts"
         }
       }
     }
@@ -829,11 +946,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_import_type.ts"
     },
     "end": {
       "line": 26,
-      "column": 2
+      "column": 2,
+      "program": "test_import_type.ts"
     }
   }
 }

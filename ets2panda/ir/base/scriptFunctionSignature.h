@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,9 @@
 #ifndef ES2PANDA_COMPILER_CORE_SCRIPT_FUNCTION_SIGNATURE_H
 #define ES2PANDA_COMPILER_CORE_SCRIPT_FUNCTION_SIGNATURE_H
 
-#include "ir/astNode.h"
-#include "ir/ets/etsParameterExpression.h"
+#include "ir/expression.h"
+
+#include <ir/ets/etsParameterExpression.h>
 
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
@@ -25,68 +26,70 @@ class TypeNode;
 
 class FunctionSignature {
 public:
-    using FunctionParams = ArenaVector<Expression *>;
-
-    FunctionSignature(TSTypeParameterDeclaration *typeParams, FunctionParams &&params, TypeNode *returnTypeAnnotation)
-        : typeParams_(typeParams), params_(std::move(params)), returnTypeAnnotation_(returnTypeAnnotation)
+    explicit FunctionSignature(TSTypeParameterDeclaration *typeParams, ArenaVector<ir::Expression *> &&params,
+                               TypeNode *returnTypeAnnotation, bool hasReceiver = false)
+        : typeParams_(typeParams),
+          params_(std::move(params)),
+          returnTypeAnnotation_(returnTypeAnnotation),
+          hasReceiver_(hasReceiver)
     {
     }
 
-    const FunctionParams &Params() const
+    FunctionSignature() = delete;
+    ~FunctionSignature() = default;
+    NO_COPY_SEMANTIC(FunctionSignature);
+    DEFAULT_MOVE_SEMANTIC(FunctionSignature);
+
+    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
     {
         return params_;
     }
 
-    FunctionParams &Params()
+    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
     {
         return params_;
     }
 
-    TSTypeParameterDeclaration *TypeParams()
+    [[nodiscard]] TSTypeParameterDeclaration *TypeParams() noexcept
     {
         return typeParams_;
     }
 
-    const TSTypeParameterDeclaration *TypeParams() const
+    [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
         return typeParams_;
     }
 
-    TypeNode *ReturnType()
+    [[nodiscard]] TypeNode *ReturnType() noexcept
     {
         return returnTypeAnnotation_;
     }
 
-    void SetReturnType(TypeNode *type)
+    void SetReturnType(TypeNode *type) noexcept
     {
         returnTypeAnnotation_ = type;
     }
 
-    const TypeNode *ReturnType() const
+    [[nodiscard]] const TypeNode *ReturnType() const noexcept
     {
         return returnTypeAnnotation_;
     }
 
-    [[nodiscard]] size_t DefaultParamIndex() const
-    {
-        for (size_t i = 0; i < params_.size(); i++) {
-            if (params_[i]->AsETSParameterExpression()->IsDefault()) {
-                return i;
-            }
-        }
-        return params_.size();
-    }
-
     void Iterate(const NodeTraverser &cb) const;
-
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName);
 
     [[nodiscard]] FunctionSignature Clone(ArenaAllocator *allocator);
 
+    [[nodiscard]] bool HasReceiver() const noexcept
+    {
+        return hasReceiver_;
+    }
+
 private:
     TSTypeParameterDeclaration *typeParams_;
-    ArenaVector<Expression *> params_;
+    ArenaVector<ir::Expression *> params_;
     TypeNode *returnTypeAnnotation_;
+    bool hasReceiver_;
 };
 
 }  // namespace ark::es2panda::ir

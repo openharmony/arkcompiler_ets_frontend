@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -366,7 +366,7 @@ checker::Type *TSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpress
             return rightType;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -503,7 +503,7 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
                                               expr->Right(), expr);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -633,7 +633,7 @@ void TSAnalyzer::CheckComputed(ir::MemberExpression *expr, checker::Type *indexT
                 expr->Property()->Start());
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -695,7 +695,7 @@ checker::Type *TSAnalyzer::Check(ir::NewExpression *expr) const
     checker->ThrowTypeError("This expression is not callable.", expr->Start());
     return nullptr;
 }
-static const util::StringView &GetPropertyName(const ir::Expression *key)
+static util::StringView GetPropertyName(const ir::Expression *key)
 {
     if (key->IsIdentifier()) {
         return key->AsIdentifier()->Name();
@@ -705,7 +705,7 @@ static const util::StringView &GetPropertyName(const ir::Expression *key)
         return key->AsStringLiteral()->Str();
     }
 
-    ASSERT(key->IsNumberLiteral());
+    ES2PANDA_ASSERT(key->IsNumberLiteral());
     return key->AsNumberLiteral()->Str();
 }
 
@@ -733,7 +733,7 @@ static checker::Type *GetTypeForProperty(ir::Property *prop, checker::TSChecker 
             return checker->GlobalAnyType();
         }
 
-        ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
+        ES2PANDA_ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
         return funcType->AsObjectType()->CallSignatures()[0]->ReturnType();
     }
 
@@ -748,7 +748,7 @@ void TSAnalyzer::CheckSpread(std::unordered_map<util::StringView, lexer::SourceP
                              checker::ObjectDescriptor *desc, ir::Expression *it) const
 {
     TSChecker *checker = GetTSChecker();
-    ASSERT(it->IsSpreadElement());
+    ES2PANDA_ASSERT(it->IsSpreadElement());
 
     checker::Type *const spreadType = it->AsSpreadElement()->Argument()->Check(checker);
 
@@ -783,7 +783,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
     auto *prop = it->AsProperty();
     checker::Type *propType = GetTypeForProperty(prop, checker);
     varbinder::VariableFlags flags = GetFlagsForProperty(prop);
-    const util::StringView &propName = GetPropertyName(prop->Key());
+    util::StringView propName = GetPropertyName(prop->Key());
 
     auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
 
@@ -890,6 +890,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) c
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OpaqueTypeNode *expr) const
 {
     return expr->TsType();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::BrokenTypeNode *expr) const
+{
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SequenceExpression *expr) const
@@ -1023,7 +1028,7 @@ checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
             return checker->GlobalBooleanType();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1196,7 +1201,7 @@ checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
 
     const util::StringView &funcName = st->Function()->Id()->Name();
     auto result = checker->Scope()->Find(funcName);
-    ASSERT(result.variable);
+    ES2PANDA_ASSERT(result.variable);
 
     checker::ScopeContext scopeCtx(checker, st->Function()->Scope());
 
@@ -1229,7 +1234,7 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
-    ASSERT(ancestor && ancestor->IsScriptFunction());
+    ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
     auto *containingFunc = ancestor->AsScriptFunction();
 
     if (containingFunc->Parent()->Parent()->IsMethodDefinition()) {
@@ -1248,9 +1253,8 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
             returnType = checker->CheckTypeCached(st->Argument());
         }
 
-        checker->IsTypeAssignableTo(returnType, funcReturnType,
-                                    {"Type '", returnType, "' is not assignable to type '", funcReturnType, "'."},
-                                    st->Start());
+        checker->IsTypeAssignableTo(returnType, funcReturnType, diagnostic::INVALID_ASSIGNMNENT_2,
+                                    {returnType, funcReturnType}, st->Start());
     }
 
     return nullptr;
@@ -1351,11 +1355,8 @@ static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::Vari
     }
 
     if (previousType != nullptr) {
-        checker->IsTypeIdenticalTo(bindingVar->TsType(), previousType,
-                                   {"Subsequent variable declaration must have the same type. Variable '",
-                                    bindingVar->Name(), "' must be of type '", previousType, "', but here has type '",
-                                    bindingVar->TsType(), "'."},
-                                   declarator->Id()->Start());
+        checker->IsTypeIdenticalTo(bindingVar->TsType(), previousType, diagnostic::DIFFERENT_SUBSEQ_DECL,
+                                   {bindingVar->Name(), previousType, bindingVar->TsType()}, declarator->Id()->Start());
     }
 
     checker->RemoveStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
@@ -1386,7 +1387,7 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
         return nullptr;
     }
 
-    ASSERT(st->Id()->IsObjectPattern());
+    ES2PANDA_ASSERT(st->Id()->IsObjectPattern());
     auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
     checker::ObjectDestructuringContext({checker, st->Id(), false,
                                          st->Id()->AsObjectPattern()->TypeAnnotation() == nullptr,
@@ -1493,12 +1494,8 @@ checker::Type *TSAnalyzer::Check(ir::TSAsExpression *expr) const
     checker::Type *exprType = checker->GetBaseTypeOfLiteralType(expr->Expr()->Check(checker));
     checker::Type *targetType = expr->TypeAnnotation()->GetType(checker);
 
-    checker->IsTypeComparableTo(
-        targetType, exprType,
-        {"Conversion of type '", exprType, "' to type '", targetType,
-         "' may be a mistake because neither type sufficiently overlaps with the other. If this was ",
-         "intentional, convert the expression to 'unknown' first."},
-        expr->Start());
+    checker->IsTypeComparableTo(targetType, exprType, diagnostic::DISJOINT_CONVERSION, {exprType, targetType},
+                                expr->Start());
 
     return targetType;
 }
@@ -1735,12 +1732,12 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(res && res->IsEnumVariable());
+        ES2PANDA_ASSERT(res && res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
         enumVar->SetTsType(checker->GlobalStringType());
     } else {
-        ASSERT(res->IsEnumVariable());
+        ES2PANDA_ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
         decl->BindNode(variable->Declaration()->Node());
@@ -1777,7 +1774,7 @@ void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double
         return;
     }
 
-    ASSERT(init);
+    ES2PANDA_ASSERT(init);
     if (IsComputedEnumMember(init) && *isLiteralEnum) {
         checker->ThrowTypeError(INVALID_COMPUTED_WITH_STRING, init->Start());
     }
@@ -1799,7 +1796,7 @@ void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double
         return;
     }
 
-    ASSERT(std::holds_alternative<double>(res));
+    ES2PANDA_ASSERT(std::holds_alternative<double>(res));
     variable->SetValue(res);
 
     *value = std::get<double>(res);
@@ -1828,7 +1825,7 @@ checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool isConst, 
     for (size_t i = 0; i < localsSize; i++) {
         const util::StringView &currentName = enumScope->Decls()[i]->Name();
         varbinder::Variable *currentVar = enumScope->FindLocal(currentName, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(currentVar && currentVar->IsEnumVariable());
+        ES2PANDA_ASSERT(currentVar && currentVar->IsEnumVariable());
         InferEnumVariableType(currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst);
     }
 
@@ -1844,7 +1841,7 @@ checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
     TSChecker *checker = GetTSChecker();
     varbinder::Variable *enumVar = st->Key()->Variable();
-    ASSERT(enumVar);
+    ES2PANDA_ASSERT(enumVar);
 
     if (enumVar->TsType() == nullptr) {
         checker::ScopeContext scopeCtx(checker, st->Scope());
@@ -1935,10 +1932,8 @@ static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, ch
             } else if (res->second.second != type) {
                 checker::Type *sourceType = checker->GetTypeOfVariable(inheritedProp);
                 checker::Type *targetType = checker->GetTypeOfVariable(res->second.first);
-                checker->IsTypeIdenticalTo(sourceType, targetType,
-                                           {"Interface '", type, "' cannot simultaneously extend types '",
-                                            res->second.second, "' and '", base->AsInterfaceType(), "'."},
-                                           locInfo);
+                checker->IsTypeIdenticalTo(sourceType, targetType, diagnostic::IFACE_MULTIPLE_EXTENSION,
+                                           {type, res->second.second, base->AsInterfaceType()}, locInfo);
             }
         }
     }
@@ -1948,7 +1943,7 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 {
     TSChecker *checker = GetTSChecker();
     varbinder::Variable *var = st->Id()->Variable();
-    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
+    ES2PANDA_ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
 
     if (st == var->Declaration()->Node()) {
         checker::Type *resolvedType = var->TsType();
@@ -1966,9 +1961,8 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
         CheckInheritedPropertiesAreIdentical(checker, resolvedInterface, st->Id()->Start());
 
         for (auto *base : resolvedInterface->Bases()) {
-            checker->IsTypeAssignableTo(
-                resolvedInterface, base,
-                {"Interface '", st->Id()->Name(), "' incorrectly extends interface '", base, "'"}, st->Id()->Start());
+            checker->IsTypeAssignableTo(resolvedInterface, base, diagnostic::IFACE_INVALID_EXTENDS,
+                                        {st->Id()->Name(), base}, st->Id()->Start());
         }
 
         checker->CheckIndexConstraints(resolvedInterface);

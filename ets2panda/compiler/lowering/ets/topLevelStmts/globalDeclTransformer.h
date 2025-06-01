@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,12 +24,18 @@ namespace ark::es2panda::compiler {
 
 class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
     const std::unordered_set<ir::AstNodeType> typeDecl_ = {
-        ir::AstNodeType::CLASS_DECLARATION,         ir::AstNodeType::STRUCT_DECLARATION,
-        ir::AstNodeType::TS_ENUM_DECLARATION,       ir::AstNodeType::TS_INTERFACE_DECLARATION,
-        ir::AstNodeType::ETS_PACKAGE_DECLARATION,   ir::AstNodeType::ETS_IMPORT_DECLARATION,
-        ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION, ir::AstNodeType::EXPORT_ALL_DECLARATION,
-        ir::AstNodeType::EXPORT_NAMED_DECLARATION,  ir::AstNodeType::REEXPORT_STATEMENT,
-        ir::AstNodeType::NAMESPACE_DECLARATION,     ir::AstNodeType::ANNOTATION_DECLARATION,
+        ir::AstNodeType::CLASS_DECLARATION,
+        ir::AstNodeType::STRUCT_DECLARATION,
+        ir::AstNodeType::TS_ENUM_DECLARATION,
+        ir::AstNodeType::TS_INTERFACE_DECLARATION,
+        ir::AstNodeType::ETS_PACKAGE_DECLARATION,
+        ir::AstNodeType::ETS_IMPORT_DECLARATION,
+        ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION,
+        ir::AstNodeType::EXPORT_ALL_DECLARATION,
+        ir::AstNodeType::EXPORT_NAMED_DECLARATION,
+        ir::AstNodeType::REEXPORT_STATEMENT,
+        ir::AstNodeType::ETS_MODULE,
+        ir::AstNodeType::ANNOTATION_DECLARATION,
     };
 
     const std::unordered_set<ir::AstNodeType> propertiesDecl_ = {
@@ -39,15 +45,24 @@ class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
 
 public:
     struct ResultT {
-        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initStatements(alloc->Adapter()) {}
+        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initializers(alloc->Adapter())
+        {
+            // Note: first for immediate initializer, second for initializer block.
+            initializers.emplace_back(alloc->Adapter());
+            initializers.emplace_back(alloc->Adapter());
+        }
 
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
         ArenaVector<ir::Statement *> classProperties;
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-        ArenaVector<ir::Statement *> initStatements;
+        ArenaVector<ArenaVector<ir::Statement *>> initializers;
     };
 
-    explicit GlobalDeclTransformer(ArenaAllocator *allocator) : allocator_(allocator), result_(allocator) {}
+    explicit GlobalDeclTransformer(ArenaAllocator *allocator, ir::Statement const *currentModule,
+                                   parser::ETSParser *const parser)
+        : allocator_(allocator), result_(allocator), currentModule_(currentModule), parser_(parser)
+    {
+    }
 
     /**
      * Removes top level statements, global variable declarations, global function declarations
@@ -62,20 +77,29 @@ public:
      * @param addInitializer $init$ should contain global variable initializers
      * @return pair (class properties, init statements)
      */
-    ResultT TransformStatements(const ArenaVector<ir::Statement *> &stmts, bool addInitializer);
+    ResultT TransformStatements(const ArenaVector<ir::Statement *> &stmts);
 
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
+    void VisitClassStaticBlock(ir::ClassStaticBlock *classStaticBlock) override;
     void HandleNode(ir::AstNode *node) override;
+    bool CheckValidInitializer(ir::AstNode const *initializer) const;
 
     ir::Identifier *RefIdent(const util::StringView &name);
 
     ir::ExpressionStatement *InitTopLevelProperty(ir::ClassProperty *classProperty);
 
+    [[nodiscard]] bool IsMultiInitializer() const
+    {
+        return initializerBlockCount_ > 1;
+    }
+
 private:
     ArenaAllocator *allocator_;
     ResultT result_;
-    bool addInitializer_ = true;
+    ir::Statement const *currentModule_;
+    parser::ETSParser *const parser_;
+    size_t initializerBlockCount_ = 0;
 };
 
 }  // namespace ark::es2panda::compiler

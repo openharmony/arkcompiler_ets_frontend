@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -356,7 +356,7 @@ ir::TSTypeReference *TSParser::ParseConstExpression()
     auto *identRef = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     identRef->SetRange(Lexer()->GetToken().Loc());
 
-    auto *typeReference = AllocNode<ir::TSTypeReference>(identRef, nullptr);
+    auto *typeReference = AllocNode<ir::TSTypeReference>(identRef, nullptr, Allocator());
     typeReference->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -451,7 +451,7 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
             if (identRef == nullptr) {
                 return nullptr;
             }
-            ASSERT(identRef->IsIdentifier());
+            ES2PANDA_ASSERT(identRef->IsIdentifier());
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
                 ThrowSyntaxError("Unexpected token, expected '=>'");
@@ -542,7 +542,7 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
 
@@ -631,7 +631,7 @@ ir::Expression *TSParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;

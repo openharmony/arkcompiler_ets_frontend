@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -97,7 +97,7 @@ void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *inval
     if (expr->IsIdentifier()) {
         const util::StringView &name = expr->AsIdentifier()->Name();
         auto result = Scope()->Find(name);
-        ASSERT(result.variable);
+        ES2PANDA_ASSERT(result.variable);
 
         if (result.variable->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
             ThrowTypeError({"Cannot assign to '", name, "' because it is not a variable."}, expr->Start());
@@ -225,7 +225,7 @@ bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Va
         varbinder::Variable *resultVar = nullptr;
         if (childNode->IsIdentifier()) {
             auto result = Scope()->Find(childNode->AsIdentifier()->Name());
-            ASSERT(result.variable);
+            ES2PANDA_ASSERT(result.variable);
             resultVar = result.variable;
         }
 
@@ -249,7 +249,7 @@ bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbind
     parent->Iterate([this, searchVar, &found](ir::AstNode *childNode) -> void {
         if (childNode->IsIdentifier()) {
             auto result = Scope()->Find(childNode->AsIdentifier()->Name());
-            ASSERT(result.variable);
+            ES2PANDA_ASSERT(result.variable);
             if (result.variable == searchVar) {
                 found = true;
                 return;
@@ -276,24 +276,21 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
     return false;
 }
 
-void TSChecker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void TSChecker::ThrowTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    ThrowTypeError(FormatMsg(list), pos);
+    DiagnosticEngine().ThrowSemanticError(list, pos);
 }
 
 void TSChecker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(Program()->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::TYPE, Program()->SourceFilePath().Utf8(), message, loc.line, loc.col};
+    DiagnosticEngine().ThrowSemanticError(message, pos);
 }
 
 void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                      lexer::SourcePosition lineInfo)
 {
     if (!HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
-        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", AsSrc(rightType)},
+        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", util::AsSrc(rightType)},
                        lineInfo);
     }
 
@@ -303,7 +300,7 @@ void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *
 void TSChecker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo, bool isAsSrcLeftType)
 {
     if (isAsSrcLeftType || !target->HasTypeFlag(TypeFlag::LITERAL)) {
-        ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
+        ThrowTypeError({"Type '", util::AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
     }
 
     ThrowTypeError({"Type '", source, "' is not assignable to type '", target, "'."}, lineInfo);
@@ -348,10 +345,10 @@ void TSChecker::ElaborateElementwise(Type *targetType, ir::Expression *sourceNod
 
 void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator)
 {
-    ASSERT(declarator->Id()->IsIdentifier());
+    ES2PANDA_ASSERT(declarator->Id()->IsIdentifier());
 
     varbinder::Variable *var = declarator->Id()->AsIdentifier()->Variable();
-    ASSERT(var);
+    ES2PANDA_ASSERT(var);
 
     if (declarator->Id()->AsIdentifier()->TypeAnnotation() != nullptr) {
         var->SetTsType(declarator->Id()->AsIdentifier()->TypeAnnotation()->GetType(this));
@@ -371,7 +368,7 @@ void TSChecker::GetTypeVar(varbinder::Decl *decl)
 {
     ir::AstNode *declarator =
         util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
-    ASSERT(declarator);
+    ES2PANDA_ASSERT(declarator);
 
     if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
         InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
@@ -388,7 +385,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
     if (declaration->IsIdentifier()) {
         auto *ident = declaration->AsIdentifier();
         if (ident->TypeAnnotation() != nullptr) {
-            ASSERT(ident->Variable() == var);
+            ES2PANDA_ASSERT(ident->Variable() == var);
             var->SetTsType(ident->TypeAnnotation()->GetType(this));
             return;
         }
@@ -400,7 +397,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
         ir::Identifier *ident = declaration->AsAssignmentPattern()->Left()->AsIdentifier();
 
         if (ident->TypeAnnotation() != nullptr) {
-            ASSERT(ident->Variable() == var);
+            ES2PANDA_ASSERT(ident->Variable() == var);
             var->SetTsType(ident->TypeAnnotation()->GetType(this));
             return;
         }
@@ -413,7 +410,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
 
 void TSChecker::GetTypeEnum(varbinder::Variable *var, varbinder::Decl *decl)
 {
-    ASSERT(var->IsEnumVariable());
+    ES2PANDA_ASSERT(var->IsEnumVariable());
     varbinder::EnumVariable *enumVar = var->AsEnumVariable();
 
     if (std::holds_alternative<bool>(enumVar->Value())) {
@@ -468,7 +465,7 @@ Type *TSChecker::GetDeclTsType(varbinder::Variable *var, varbinder::Decl *decl)
             break;
         }
         case varbinder::DeclType::ENUM_LITERAL: {
-            UNREACHABLE();  // NOTE: aszilagyi.
+            ES2PANDA_UNREACHABLE();  // NOTE: aszilagyi.
         }
         default: {
             break;
@@ -486,11 +483,7 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 
     varbinder::Decl *decl = var->Declaration();
 
-    TypeStackElement tse(
-        this, decl->Node(),
-        std::initializer_list<TypeErrorMessageElement> {
-            "'", var->Name(), "' is referenced directly or indirectly in its ", "own initializer ot type annotation."},
-        decl->Node()->Start());
+    TypeStackElement tse(this, decl->Node(), {{diagnostic::CYCLIC_VAR_REF, {var->Name()}}}, decl->Node()->Start());
     if (tse.HasTypeError()) {
         return GlobalErrorType();
     }
@@ -521,12 +514,12 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
         return resolvedType;
     }
 
-    TypeStackElement tse(this, var, {"Type alias ", var->Name(), " circularly refences itself"}, node->Start());
+    TypeStackElement tse(this, var, {{diagnostic::CYCLIC_ALIAS_2, {var->Name()}}}, node->Start());
     if (tse.HasTypeError()) {
         return GlobalErrorType();
     }
 
-    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
+    ES2PANDA_ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
     ir::TSTypeAliasDeclaration *declaration = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
     resolvedType = declaration->TypeAnnotation()->GetType(this);
     var->SetTsType(resolvedType);
@@ -536,7 +529,7 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
 
 Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var)
 {
-    ASSERT(var->Declaration());
+    ES2PANDA_ASSERT(var->Declaration());
     varbinder::Decl *decl = var->Declaration();
 
     if (decl->IsInterfaceDecl()) {

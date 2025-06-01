@@ -88,15 +88,8 @@ bool RemoveConst(ir::BinaryExpression *expr)
     return isRemoved;
 }
 
-bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool BigIntLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     auto checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(

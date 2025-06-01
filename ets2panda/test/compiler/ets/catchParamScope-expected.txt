@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "catchParamScope.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "catchParamScope.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "catchParamScope.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "catchParamScope.ets"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "catchParamScope.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 16
+                  "column": 16,
+                  "program": "catchParamScope.ets"
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 16
+                      "column": 16,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
@@ -177,33 +195,39 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 24
+                                "column": 24,
+                                "program": "catchParamScope.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 30
+                                "column": 30,
+                                "program": "catchParamScope.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 24
+                              "column": 24,
+                              "program": "catchParamScope.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 31
+                              "column": 31,
+                              "program": "catchParamScope.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 24
+                            "column": 24,
+                            "program": "catchParamScope.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 31
+                            "column": 31,
+                            "program": "catchParamScope.ets"
                           }
                         }
                       },
@@ -211,22 +235,26 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 17
+                          "column": 17,
+                          "program": "catchParamScope.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 31
+                          "column": 31,
+                          "program": "catchParamScope.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 17
+                        "column": 17,
+                        "program": "catchParamScope.ets"
                       },
                       "end": {
                         "line": 16,
-                        "column": 31
+                        "column": 31,
+                        "program": "catchParamScope.ets"
                       }
                     }
                   }
@@ -236,11 +264,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 33
+                      "column": 33,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 37
+                      "column": 37,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
@@ -250,33 +280,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 38
+                      "column": 38,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 2
+                      "column": 2,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "catchParamScope.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 2
+                    "column": 2,
+                    "program": "catchParamScope.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "catchParamScope.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 2
+                  "column": 2,
+                  "program": "catchParamScope.ets"
                 }
               }
             },
@@ -285,11 +321,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "catchParamScope.ets"
               },
               "end": {
                 "line": 17,
-                "column": 2
+                "column": 2,
+                "program": "catchParamScope.ets"
               }
             }
           },
@@ -302,11 +340,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "catchParamScope.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "catchParamScope.ets"
                 }
               }
             },
@@ -326,11 +366,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 10
+                      "column": 10,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 14
+                      "column": 14,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
@@ -343,11 +385,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 18
+                      "column": 18,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
@@ -370,22 +414,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "catchParamScope.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "catchParamScope.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "catchParamScope.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "catchParamScope.ets"
                                 }
                               }
                             },
@@ -393,11 +441,13 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 9
+                                "column": 9,
+                                "program": "catchParamScope.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 11
+                                "column": 11,
+                                "program": "catchParamScope.ets"
                               }
                             }
                           },
@@ -415,11 +465,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "catchParamScope.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 34
+                                    "column": 34,
+                                    "program": "catchParamScope.ets"
                                   }
                                 }
                               },
@@ -434,11 +486,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 21,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "catchParamScope.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 10
+                                          "column": 10,
+                                          "program": "catchParamScope.ets"
                                         }
                                       }
                                     },
@@ -459,11 +513,13 @@
                                                   "loc": {
                                                     "start": {
                                                       "line": 23,
-                                                      "column": 13
+                                                      "column": 13,
+                                                      "program": "catchParamScope.ets"
                                                     },
                                                     "end": {
                                                       "line": 23,
-                                                      "column": 19
+                                                      "column": 19,
+                                                      "program": "catchParamScope.ets"
                                                     }
                                                   }
                                                 },
@@ -475,11 +531,13 @@
                                                     "loc": {
                                                       "start": {
                                                         "line": 23,
-                                                        "column": 20
+                                                        "column": 20,
+                                                        "program": "catchParamScope.ets"
                                                       },
                                                       "end": {
                                                         "line": 23,
-                                                        "column": 25
+                                                        "column": 25,
+                                                        "program": "catchParamScope.ets"
                                                       }
                                                     }
                                                   }
@@ -488,22 +546,26 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 23,
-                                                    "column": 13
+                                                    "column": 13,
+                                                    "program": "catchParamScope.ets"
                                                   },
                                                   "end": {
                                                     "line": 23,
-                                                    "column": 26
+                                                    "column": 26,
+                                                    "program": "catchParamScope.ets"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 23,
-                                                  "column": 13
+                                                  "column": 13,
+                                                  "program": "catchParamScope.ets"
                                                 },
                                                 "end": {
                                                   "line": 23,
-                                                  "column": 27
+                                                  "column": 27,
+                                                  "program": "catchParamScope.ets"
                                                 }
                                               }
                                             }
@@ -511,11 +573,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 36
+                                              "column": 36,
+                                              "program": "catchParamScope.ets"
                                             },
                                             "end": {
                                               "line": 24,
-                                              "column": 10
+                                              "column": 10,
+                                              "program": "catchParamScope.ets"
                                             }
                                           }
                                         },
@@ -533,33 +597,39 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 22,
-                                                    "column": 25
+                                                    "column": 25,
+                                                    "program": "catchParamScope.ets"
                                                   },
                                                   "end": {
                                                     "line": 22,
-                                                    "column": 34
+                                                    "column": 34,
+                                                    "program": "catchParamScope.ets"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 22,
-                                                  "column": 25
+                                                  "column": 25,
+                                                  "program": "catchParamScope.ets"
                                                 },
                                                 "end": {
                                                   "line": 22,
-                                                  "column": 35
+                                                  "column": 35,
+                                                  "program": "catchParamScope.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 22,
-                                                "column": 25
+                                                "column": 25,
+                                                "program": "catchParamScope.ets"
                                               },
                                               "end": {
                                                 "line": 22,
-                                                "column": 35
+                                                "column": 35,
+                                                "program": "catchParamScope.ets"
                                               }
                                             }
                                           },
@@ -567,22 +637,26 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "catchParamScope.ets"
                                             },
                                             "end": {
                                               "line": 22,
-                                              "column": 23
+                                              "column": 23,
+                                              "program": "catchParamScope.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 11
+                                            "column": 11,
+                                            "program": "catchParamScope.ets"
                                           },
                                           "end": {
                                             "line": 24,
-                                            "column": 10
+                                            "column": 10,
+                                            "program": "catchParamScope.ets"
                                           }
                                         }
                                       }
@@ -591,11 +665,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "catchParamScope.ets"
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 10
+                                        "column": 10,
+                                        "program": "catchParamScope.ets"
                                       }
                                     }
                                   }
@@ -603,44 +679,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "catchParamScope.ets"
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "catchParamScope.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "catchParamScope.ets"
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "catchParamScope.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 26
+                                "column": 26,
+                                "program": "catchParamScope.ets"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 6
+                                "column": 6,
+                                "program": "catchParamScope.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 9
+                              "column": 9,
+                              "program": "catchParamScope.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 6
+                              "column": 6,
+                              "program": "catchParamScope.ets"
                             }
                           }
                         }
@@ -649,11 +733,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "catchParamScope.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 6
+                          "column": 6,
+                          "program": "catchParamScope.ets"
                         }
                       }
                     }
@@ -661,33 +747,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 23
+                      "column": 23,
+                      "program": "catchParamScope.ets"
                     },
                     "end": {
                       "line": 26,
-                      "column": 2
+                      "column": 2,
+                      "program": "catchParamScope.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 10
+                    "column": 10,
+                    "program": "catchParamScope.ets"
                   },
                   "end": {
                     "line": 26,
-                    "column": 2
+                    "column": 2,
+                    "program": "catchParamScope.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "catchParamScope.ets"
                 },
                 "end": {
                   "line": 26,
-                  "column": 2
+                  "column": 2,
+                  "program": "catchParamScope.ets"
                 }
               }
             },
@@ -696,11 +788,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 1
+                "column": 1,
+                "program": "catchParamScope.ets"
               },
               "end": {
                 "line": 26,
-                "column": 2
+                "column": 2,
+                "program": "catchParamScope.ets"
               }
             }
           }
@@ -708,22 +802,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "catchParamScope.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "catchParamScope.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "catchParamScope.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "catchParamScope.ets"
         }
       }
     }
@@ -731,11 +829,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "catchParamScope.ets"
     },
     "end": {
       "line": 27,
-      "column": 1
+      "column": 1,
+      "program": "catchParamScope.ets"
     }
   }
 }

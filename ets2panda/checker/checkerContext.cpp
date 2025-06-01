@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -109,7 +109,7 @@ void CheckerContext::RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noe
 //  and no smart cast change is required.
 checker::Type *CheckerContext::CombineTypes(checker::Type *const typeOne, checker::Type *const typeTwo) const noexcept
 {
-    ASSERT(typeOne != nullptr && typeTwo != nullptr);
+    ES2PANDA_ASSERT(typeOne != nullptr && typeTwo != nullptr);
     auto *const checker = parent_->AsETSChecker();
 
     if (checker->Relation()->IsIdenticalTo(typeOne, typeTwo)) {
@@ -144,7 +144,8 @@ void CheckerContext::CombineSmartCasts(SmartCastArray const &otherSmartCasts)
 }
 
 // Second return value shows if the 'IN_LOOP' flag should be cleared on exit from the loop (case of nested loops).
-std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(ir::LoopStatement const &loop) noexcept
+std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(const ir::LoopStatement &loop,
+                                                          const SmartCastTypes loopConditionSmartCasts) noexcept
 {
     bool const clearFlag = !IsInLoop();
     if (clearFlag) {
@@ -153,12 +154,39 @@ std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(ir::LoopStatement cons
 
     auto smartCasts = CloneSmartCasts();
 
-    SmartVariables changedVariables {};
-    loop.Iterate([this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+    ReassignedVariableMap changedVariables {};
+    if (loop.IsWhileStatement()) {
+        // In 'while' loops, we only invalidate smart casts for reassigned variables in the body. If a variable is
+        // being reassigned in the test condition, it'll have that type until it's reassigned in the body
+        loop.AsWhileStatement()->Body()->Iterate(
+            [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+    } else {
+        // Handling 'for' and 'do-while' loops is a bit different, as the above statement on 'while' loops doesn't hold
+        // here. Later we'll need to implement these checks too.
+        loop.Iterate(
+            [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+    }
+
+    const auto variableIsConstrainedInPrecondition = [&loopConditionSmartCasts](const varbinder::Variable *var) {
+        if (!loopConditionSmartCasts.has_value()) {
+            return false;
+        }
+
+        return std::find_if(loopConditionSmartCasts->begin(), loopConditionSmartCasts->end(),
+                            [&var](const SmartCastTuple &smartCast) { return std::get<0>(smartCast) == var; }) !=
+               loopConditionSmartCasts->end();
+    };
 
     if (!changedVariables.empty()) {
-        for (auto const *variable : changedVariables) {
-            smartCasts_.erase(variable);
+        for (const auto &[variable, isAccessedAfterReassign] : changedVariables) {
+            // Two cases to invalidate a smart cast:
+            //   - when a variable is used in the body after reassignment
+            //   - when a variable is reassigned, and the precondition of the loop does not restrict its type
+            // Currently it allows us to keep the smart types in some cases. It's good enough for now, as a
+            // complete solution would require CFG/DFG, and smart casts will be rewritten with those in the future.
+            if (isAccessedAfterReassign || !(variableIsConstrainedInPrecondition(variable))) {
+                smartCasts_.erase(variable);
+            }
         }
     }
 
@@ -189,13 +217,18 @@ void CheckerContext::ExitLoop(SmartCastArray &prevSmartCasts, bool const clearFl
     CombineSmartCasts(prevSmartCasts);
 }
 
-void CheckerContext::CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept
+void CheckerContext::CheckAssignments(ir::AstNode const *node, ReassignedVariableMap &changedVariables) const noexcept
 {
     if (node == nullptr) {  //  Just in case!
         return;
     }
 
     if (!node->IsAssignmentExpression()) {
+        // If the node is an identifier, check if it was reassigned before
+        if (node->IsIdentifier() && changedVariables.count(node->AsIdentifier()->Variable()) != 0) {
+            changedVariables[node->AsIdentifier()->Variable()] = true;
+        }
+
         node->Iterate(
             [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
         return;
@@ -208,12 +241,11 @@ void CheckerContext::CheckAssignments(ir::AstNode const *node, SmartVariables &c
         auto const *variable = ident->Variable();
         if (variable == nullptr) {
             //  NOTE: we're interesting in the local variables ONLY!
-            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(
-                ident->Name(), varbinder::ResolveBindingOptions::ALL_NON_TYPE);
+            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(ident->Name());
         }
 
         if (variable != nullptr) {
-            changedVariables.insert(variable);
+            changedVariables.insert({variable, false});
         }
     }
 
@@ -223,7 +255,7 @@ void CheckerContext::CheckAssignments(ir::AstNode const *node, SmartVariables &c
 
 SmartCastArray CheckerContext::CheckTryBlock(ir::BlockStatement const &tryBlock) noexcept
 {
-    SmartVariables changedVariables {};
+    ReassignedVariableMap changedVariables {};
     tryBlock.Iterate(
         [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
 
@@ -231,8 +263,8 @@ SmartCastArray CheckerContext::CheckTryBlock(ir::BlockStatement const &tryBlock)
     if (!smartCasts_.empty()) {
         smartCasts.reserve(smartCasts_.size());
 
-        for (auto const [variable, type] : smartCasts_) {
-            if (changedVariables.find(variable) == changedVariables.end()) {
+        for (const auto &[variable, type] : smartCasts_) {
+            if (changedVariables.count(variable) == 0) {
                 smartCasts.emplace_back(variable, type);
             }
         }
@@ -245,7 +277,8 @@ SmartCastArray CheckerContext::CheckTryBlock(ir::BlockStatement const &tryBlock)
 //  (other cases are not interested)
 bool CheckerContext::IsInValidChain(ir::AstNode const *parent) noexcept
 {
-    while (parent != nullptr && !parent->IsIfStatement() && !parent->IsConditionalExpression()) {
+    while (parent != nullptr && !parent->IsIfStatement() && !parent->IsWhileStatement() &&
+           !parent->IsConditionalExpression()) {
         if (parent->IsBinaryExpression()) {
             auto const operation = parent->AsBinaryExpression()->OperatorType();
             if (operation != lexer::TokenType::PUNCTUATOR_LOGICAL_OR &&
@@ -271,7 +304,7 @@ void CheckerContext::CheckIdentifierSmartCastCondition(ir::Identifier const *con
     }
 
     auto const *const variable = identifier->Variable();
-    ASSERT(variable != nullptr);
+    ES2PANDA_ASSERT(variable != nullptr);
 
     //  Smart cast for extended conditional check can be applied only to the variables of reference types.
     if (auto const *const variableType = variable->TsType(); !variableType->IsETSReferenceType()) {
@@ -282,7 +315,7 @@ void CheckerContext::CheckIdentifierSmartCastCondition(ir::Identifier const *con
         return;
     }
 
-    ASSERT(testCondition_.variable == nullptr);
+    ES2PANDA_ASSERT(testCondition_.variable == nullptr);
     if (identifier->TsType()->PossiblyETSNullish()) {
         testCondition_ = {variable, parent_->AsETSChecker()->GlobalETSNullType(), true, false};
     }
@@ -315,7 +348,7 @@ void CheckerContext::CheckBinarySmartCastCondition(ir::BinaryExpression *const b
     }
 
     if (auto const operatorType = binaryExpression->OperatorType(); operatorType == lexer::TokenType::KEYW_INSTANCEOF) {
-        ASSERT(testCondition_.variable == nullptr);
+        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         if (binaryExpression->Left()->IsIdentifier()) {
             testCondition_ = {binaryExpression->Left()->AsIdentifier()->Variable(),
                               binaryExpression->Right()->TsType()};
@@ -324,7 +357,7 @@ void CheckerContext::CheckBinarySmartCastCondition(ir::BinaryExpression *const b
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        ASSERT(testCondition_.variable == nullptr);
+        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         CheckSmartCastEqualityCondition(binaryExpression);
     }
 }
@@ -342,7 +375,7 @@ void CheckerContext::CheckSmartCastEqualityCondition(ir::BinaryExpression *const
     // extracted just to avoid extra nested level
     auto const getTestedType = [&variable, &testedType, &strict](ir::Identifier const *const identifier,
                                                                  ir::Expression *const expression) -> void {
-        ASSERT(identifier != nullptr && expression != nullptr);
+        ES2PANDA_ASSERT(identifier != nullptr && expression != nullptr);
         variable = identifier->Variable();
         if (expression->IsLiteral()) {
             testedType = expression->TsType();
@@ -399,12 +432,17 @@ checker::Type *CheckerContext::GetSmartCast(varbinder::Variable const *const var
 
 void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
 {
+    if (breakStatement->Target() == nullptr) {
+        ES2PANDA_ASSERT(parent_->IsAnyError());
+        return;
+    }
+
     ir::Statement const *targetStatement = breakStatement->Target()->AsStatement();
-    ASSERT(targetStatement != nullptr);
+    ES2PANDA_ASSERT(targetStatement != nullptr);
     if (targetStatement->IsLabelledStatement()) {
         targetStatement = targetStatement->AsLabelledStatement()->Body();
     }
-    ASSERT(targetStatement != nullptr);
+    ES2PANDA_ASSERT(targetStatement != nullptr);
 
     auto const inInnerScope = [targetStatement](varbinder::Scope const *scope, ir::AstNode const *parent) -> bool {
         do {
@@ -445,7 +483,7 @@ void CheckerContext::AddBreakSmartCasts(ir::Statement const *targetStatement, Sm
 
 void CheckerContext::CombineBreakSmartCasts(ir::Statement const *targetStatement)
 {
-    ASSERT(smartCasts_.empty());
+    ES2PANDA_ASSERT(smartCasts_.empty());
 
     if (!breakSmartCasts_.empty()) {
         bool firstCase = true;

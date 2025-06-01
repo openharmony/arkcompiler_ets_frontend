@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,10 @@
 #include <unordered_map>
 #include <utility>
 
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda::evaluate {
 
 struct FileDebugInfo final {
@@ -40,7 +44,7 @@ struct FileDebugInfo final {
                            std::string_view module)
         : pf(std::move(pandaFile)), globalClassAcc(*pf, classId), moduleName(module)
     {
-        ASSERT(pf);
+        ES2PANDA_ASSERT(pf);
     }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
@@ -57,7 +61,7 @@ struct FileDebugInfo final {
 // All "find" methods must accept paths to source files.
 class DebugInfoStorage final {
 public:
-    explicit DebugInfoStorage(const CompilerOptions &options, ArenaAllocator *allocator);
+    explicit DebugInfoStorage(const util::Options &options, ArenaAllocator *allocator);
 
     NO_COPY_SEMANTIC(DebugInfoStorage);
     NO_MOVE_SEMANTIC(DebugInfoStorage);

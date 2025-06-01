@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,37 +21,25 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
-using ark::es2panda::ir::AstNode;
+using ark::es2panda::compiler::ast_verifier::EveryChildHasValidParent;
 
 namespace {
 TEST_F(ASTVerifierTest, ReturnTypeInLambda)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         function main(): void {
             let x: () => void = ()=> {}
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("EveryChildHasValidParentForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TSThisType)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         class A {
             foo(a?: Number): this { return this; }
@@ -60,41 +48,24 @@ TEST_F(ASTVerifierTest, TSThisType)
         function main () {}
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("EveryChildHasValidParentForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TupleFieldInInterface)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         interface I {
             field: [String, String]
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("EveryChildHasValidParentForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 }  // namespace

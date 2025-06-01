@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,29 +15,17 @@
 
 #include "checker.h"
 
-#include "checker/types/type.h"
-#include "ir/expression.h"
-#include "ir/statements/blockStatement.h"
-#include "parser/program/program.h"
-#include "util/helpers.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
-#include "es2panda.h"
+#include "public/public.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ts/unionType.h"
-#include "checker/types/signature.h"
-
-#include <cstdint>
-#include <initializer_list>
-#include <memory>
 
 namespace ark::es2panda::checker {
-Checker::Checker()
+Checker::Checker(util::DiagnosticEngine &diagnosticEngine)
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
       context_(this, CheckerStatus::NO_OPTS),
       globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
-      relation_(allocator_.New<TypeRelation>(this))
+      relation_(allocator_.New<TypeRelation>(this)),
+      diagnosticEngine_(diagnosticEngine)
 {
 }
 
@@ -48,60 +36,30 @@ void Checker::Initialize(varbinder::VarBinder *varbinder)
     program_ = varbinder_->Program();
 }
 
-std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> list)
+void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
-    std::stringstream ss;
-
-    for (const auto &it : list) {
-        if (std::holds_alternative<char *>(it)) {
-            ss << (std::get<char *>(it));
-        } else if (std::holds_alternative<util::StringView>(it)) {
-            ss << (std::get<util::StringView>(it));
-        } else if (std::holds_alternative<lexer::TokenType>(it)) {
-            ss << (TokenToString(std::get<lexer::TokenType>(it)));
-        } else if (std::holds_alternative<const Type *>(it)) {
-            std::get<const Type *>(it)->ToString(ss);
-        } else if (std::holds_alternative<AsSrc>(it)) {
-            std::get<AsSrc>(it).GetType()->ToStringAsSrc(ss);
-        } else if (std::holds_alternative<size_t>(it)) {
-            ss << (std::to_string(std::get<size_t>(it)));
-        } else if (std::holds_alternative<const Signature *>(it)) {
-            std::get<const Signature *>(it)->ToString(ss, nullptr, true);
-        } else {
-            UNREACHABLE();
-        }
-    }
-
-    return ss.str();
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
-void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos)
 {
-    LogTypeError(FormatMsg(list), pos);
+    LogError(diagnostic, {}, pos);
 }
 
 void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    errorLogger_.WriteLog(Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col});
+    diagnosticEngine_.LogSemanticError(message, pos);
 }
 
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    // NOTE: This should go to stderr but currently the test system does not handle stderr messages
-    auto fileName = program_->SourceFilePath().Utf8();
-    fileName = fileName.substr(fileName.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
-    std::cout << "Warning: " << message << " [" << fileName << ":" << loc.line << ":" << loc.col << "]" << std::endl;
+    diagnosticEngine_.LogWarning(message, pos);
 }
 
-void Checker::ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void Checker::ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    Warning(FormatMsg(list), pos);
+    diagnosticEngine_.LogWarning(list, pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)
@@ -121,24 +79,21 @@ bool Checker::IsTypeIdenticalTo(Type *source, Type *target)
     return relation_->IsIdenticalTo(source, target);
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg,
-                                const lexer::SourcePosition &errPos)
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                const util::DiagnosticMessageParams &diagParams, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
+        relation_->GetChecker()->LogError(diagKind, diagParams, errPos);
+        return false;
     }
 
     return true;
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
                                 const lexer::SourcePosition &errPos)
 {
-    if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(list, errPos);
-    }
-
-    return true;
+    return IsTypeIdenticalTo(source, target, diagKind, {}, errPos);
 }
 
 bool Checker::IsTypeAssignableTo(Type *source, Type *target)
@@ -146,21 +101,11 @@ bool Checker::IsTypeAssignableTo(Type *source, Type *target)
     return relation_->IsAssignableTo(source, target);
 }
 
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos)
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                 const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
-    }
-
-    return true;
-}
-
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &errPos)
-{
-    if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(list, errPos);
+        relation_->RaiseError(diagKind, list, errPos);
     }
 
     return true;
@@ -171,21 +116,11 @@ bool Checker::IsTypeComparableTo(Type *source, Type *target)
     return relation_->IsComparableTo(source, target);
 }
 
-bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos)
+bool Checker::IsTypeComparableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                                 const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(errMsg, errPos);
-    }
-
-    return true;
-}
-
-bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &errPos)
-{
-    if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(list, errPos);
+        relation_->RaiseError(diagKind, list, errPos);
     }
 
     return true;
@@ -224,6 +159,37 @@ void Checker::SetAnalyzer(SemanticAnalyzer *analyzer)
 checker::SemanticAnalyzer *Checker::GetAnalyzer() const
 {
     return analyzer_;
+}
+
+bool Checker::IsAnyError()
+{
+    return DiagnosticEngine().IsAnyError();
+}
+
+ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
+    : checker_(checker), prevScope_(checker_->scope_), prevProgram_(checker_->Program())
+{
+    checker_->scope_ = newScope;
+    if (newScope != nullptr && newScope->Node() != nullptr) {
+        auto *topStatement = newScope->Node()->GetTopStatement();
+        if (topStatement->IsETSModule()) {
+            checker_->SetProgram(topStatement->AsETSModule()->Program());
+        }
+    }
+}
+
+void Checker::CleanUp()
+{
+    context_ = CheckerContext(this, CheckerStatus::NO_OPTS);
+    globalTypes_ = allocator_.New<GlobalTypesHolder>(&allocator_);
+    relation_ = allocator_.New<TypeRelation>(this);
+    identicalResults_.cached.clear();
+    assignableResults_.cached.clear();
+    comparableResults_.cached.clear();
+    uncheckedCastableResults_.cached.clear();
+    supertypeResults_.cached.clear();
+    typeStack_.clear();
+    namedTypeStack_.clear();
 }
 
 }  // namespace ark::es2panda::checker

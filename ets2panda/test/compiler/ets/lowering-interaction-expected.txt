@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "lowering-interaction.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "lowering-interaction.ets"
             }
           }
         },
@@ -30,12 +32,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -53,12 +57,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
@@ -71,34 +77,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -106,12 +118,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -119,22 +133,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "lowering-interaction.ets"
           },
           "end": {
-            "line": 16,
-            "column": 11
+            "line": 18,
+            "column": 6,
+            "program": "lowering-interaction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "lowering-interaction.ets"
         },
         "end": {
-          "line": 16,
-          "column": 11
+          "line": 18,
+          "column": 6,
+          "program": "lowering-interaction.ets"
         }
       }
     },
@@ -148,11 +166,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 7
+              "column": 7,
+              "program": "lowering-interaction.ets"
             },
             "end": {
               "line": 18,
-              "column": 9
+              "column": 9,
+              "program": "lowering-interaction.ets"
             }
           }
         },
@@ -168,11 +188,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -189,33 +211,39 @@
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 20
+                        "column": 20,
+                        "program": "lowering-interaction.ets"
                       },
                       "end": {
                         "line": 19,
-                        "column": 21
+                        "column": 21,
+                        "program": "lowering-interaction.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 20
+                      "column": 20,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 20
+                    "column": 20,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 22
+                    "column": 22,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
@@ -223,11 +251,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 16
+                  "column": 16,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 2
+                  "column": 2,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -248,33 +278,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 12
+                      "column": 12,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 13
+                      "column": 13,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 12
+                    "column": 12,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 15
+                    "column": 15,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -283,11 +319,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 20,
-                "column": 2
+                "column": 2,
+                "program": "lowering-interaction.ets"
               }
             }
           },
@@ -299,12 +337,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -322,12 +362,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 11,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 11,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
@@ -340,34 +382,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 11,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 11,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 11,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 11,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -375,12 +423,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 20,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 20,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -388,22 +438,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 10
+            "column": 10,
+            "program": "lowering-interaction.ets"
           },
           "end": {
-            "line": 20,
-            "column": 2
+            "line": 22,
+            "column": 6,
+            "program": "lowering-interaction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "lowering-interaction.ets"
         },
         "end": {
-          "line": 20,
-          "column": 2
+          "line": 22,
+          "column": 6,
+          "program": "lowering-interaction.ets"
         }
       }
     },
@@ -417,11 +471,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 7
+              "column": 7,
+              "program": "lowering-interaction.ets"
             },
             "end": {
               "line": 22,
-              "column": 16
+              "column": 16,
+              "program": "lowering-interaction.ets"
             }
           }
         },
@@ -437,11 +493,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 11
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 15
+                  "column": 15,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -451,11 +509,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 23
+                  "column": 23,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 24
+                  "column": 24,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -470,11 +530,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 17
+                  "column": 17,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 20
+                  "column": 20,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -483,11 +545,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 11
+                "column": 11,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 24,
-                "column": 24
+                "column": 24,
+                "program": "lowering-interaction.ets"
               }
             }
           },
@@ -500,11 +564,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 11
+                  "column": 11,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 16
+                  "column": 16,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -527,44 +593,53 @@
                     "loc": {
                       "start": {
                         "line": 25,
-                        "column": 18
+                        "column": 18,
+                        "program": "lowering-interaction.ets"
                       },
                       "end": {
                         "line": 25,
-                        "column": 19
+                        "column": 19,
+                        "program": "lowering-interaction.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 18
+                      "column": 18,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 20
+                      "column": 20,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 18
+                    "column": 18,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
                     "line": 25,
-                    "column": 20
+                    "column": 20,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 19
+                  "column": 19,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 21
+                  "column": 21,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -573,11 +648,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 11
+                "column": 11,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 25,
-                "column": 21
+                "column": 21,
+                "program": "lowering-interaction.ets"
               }
             }
           },
@@ -590,11 +667,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -614,11 +693,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -644,44 +725,53 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "lowering-interaction.ets"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "lowering-interaction.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 22
+                                "column": 22,
+                                "program": "lowering-interaction.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 24
+                                "column": 24,
+                                "program": "lowering-interaction.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 22
+                              "column": 22,
+                              "program": "lowering-interaction.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 24
+                              "column": 24,
+                              "program": "lowering-interaction.ets"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 23
+                            "column": 23,
+                            "program": "lowering-interaction.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 25
+                            "column": 25,
+                            "program": "lowering-interaction.ets"
                           }
                         }
                       },
@@ -689,22 +779,26 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 16
+                          "column": 16,
+                          "program": "lowering-interaction.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 25
+                          "column": 25,
+                          "program": "lowering-interaction.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 16
+                        "column": 16,
+                        "program": "lowering-interaction.ets"
                       },
                       "end": {
                         "line": 27,
-                        "column": 25
+                        "column": 25,
+                        "program": "lowering-interaction.ets"
                       }
                     }
                   }
@@ -724,11 +818,13 @@
                             "loc": {
                               "start": {
                                 "line": 28,
-                                "column": 5
+                                "column": 5,
+                                "program": "lowering-interaction.ets"
                               },
                               "end": {
                                 "line": 28,
-                                "column": 9
+                                "column": 9,
+                                "program": "lowering-interaction.ets"
                               }
                             }
                           },
@@ -739,11 +835,13 @@
                             "loc": {
                               "start": {
                                 "line": 28,
-                                "column": 10
+                                "column": 10,
+                                "program": "lowering-interaction.ets"
                               },
                               "end": {
                                 "line": 28,
-                                "column": 15
+                                "column": 15,
+                                "program": "lowering-interaction.ets"
                               }
                             }
                           },
@@ -752,11 +850,13 @@
                           "loc": {
                             "start": {
                               "line": 28,
-                              "column": 5
+                              "column": 5,
+                              "program": "lowering-interaction.ets"
                             },
                             "end": {
                               "line": 28,
-                              "column": 15
+                              "column": 15,
+                              "program": "lowering-interaction.ets"
                             }
                           }
                         },
@@ -767,33 +867,39 @@
                           "loc": {
                             "start": {
                               "line": 28,
-                              "column": 18
+                              "column": 18,
+                              "program": "lowering-interaction.ets"
                             },
                             "end": {
                               "line": 28,
-                              "column": 22
+                              "column": 22,
+                              "program": "lowering-interaction.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 28,
-                            "column": 5
+                            "column": 5,
+                            "program": "lowering-interaction.ets"
                           },
                           "end": {
                             "line": 28,
-                            "column": 22
+                            "column": 22,
+                            "program": "lowering-interaction.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 28,
-                          "column": 5
+                          "column": 5,
+                          "program": "lowering-interaction.ets"
                         },
                         "end": {
                           "line": 28,
-                          "column": 23
+                          "column": 23,
+                          "program": "lowering-interaction.ets"
                         }
                       }
                     }
@@ -801,33 +907,39 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 27
+                      "column": 27,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 29,
-                      "column": 4
+                      "column": 4,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 15
+                    "column": 15,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
                     "line": 29,
-                    "column": 4
+                    "column": 4,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 15
+                  "column": 15,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 4
+                  "column": 4,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -836,11 +948,13 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 3
+                "column": 3,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 29,
-                "column": 4
+                "column": 4,
+                "program": "lowering-interaction.ets"
               }
             }
           },
@@ -853,11 +967,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 3
+                  "column": 3,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 7
+                  "column": 7,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -877,11 +993,13 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 3
+                      "column": 3,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 31,
-                      "column": 7
+                      "column": 7,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
@@ -900,33 +1018,39 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 11
+                          "column": 11,
+                          "program": "lowering-interaction.ets"
                         },
                         "end": {
                           "line": 31,
-                          "column": 13
+                          "column": 13,
+                          "program": "lowering-interaction.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 31,
-                        "column": 11
+                        "column": 11,
+                        "program": "lowering-interaction.ets"
                       },
                       "end": {
                         "line": 31,
-                        "column": 15
+                        "column": 15,
+                        "program": "lowering-interaction.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 11
+                      "column": 11,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 31,
-                      "column": 15
+                      "column": 15,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
@@ -950,11 +1074,13 @@
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 7
+                                  "column": 7,
+                                  "program": "lowering-interaction.ets"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "lowering-interaction.ets"
                                 }
                               }
                             },
@@ -967,11 +1093,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 14
+                                      "column": 14,
+                                      "program": "lowering-interaction.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "lowering-interaction.ets"
                                     }
                                   }
                                 },
@@ -982,11 +1110,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "lowering-interaction.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "lowering-interaction.ets"
                                     }
                                   }
                                 },
@@ -995,11 +1125,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "lowering-interaction.ets"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "lowering-interaction.ets"
                                   }
                                 }
                               },
@@ -1013,11 +1145,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "lowering-interaction.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "lowering-interaction.ets"
                                       }
                                     }
                                   },
@@ -1028,11 +1162,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "lowering-interaction.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 34
+                                        "column": 34,
+                                        "program": "lowering-interaction.ets"
                                       }
                                     }
                                   },
@@ -1041,11 +1177,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 25
+                                      "column": 25,
+                                      "program": "lowering-interaction.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "lowering-interaction.ets"
                                     }
                                   }
                                 },
@@ -1055,22 +1193,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 38
+                                      "column": 38,
+                                      "program": "lowering-interaction.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 39
+                                      "column": 39,
+                                      "program": "lowering-interaction.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "lowering-interaction.ets"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 39
+                                    "column": 39,
+                                    "program": "lowering-interaction.ets"
                                   }
                                 }
                               },
@@ -1079,11 +1221,13 @@
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "lowering-interaction.ets"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 40
+                                  "column": 40,
+                                  "program": "lowering-interaction.ets"
                                 }
                               }
                             },
@@ -1091,11 +1235,13 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 7
+                                "column": 7,
+                                "program": "lowering-interaction.ets"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 40
+                                "column": 40,
+                                "program": "lowering-interaction.ets"
                               }
                             }
                           }
@@ -1103,22 +1249,26 @@
                         "loc": {
                           "start": {
                             "line": 32,
-                            "column": 12
+                            "column": 12,
+                            "program": "lowering-interaction.ets"
                           },
                           "end": {
                             "line": 34,
-                            "column": 6
+                            "column": 6,
+                            "program": "lowering-interaction.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 32,
-                          "column": 5
+                          "column": 5,
+                          "program": "lowering-interaction.ets"
                         },
                         "end": {
                           "line": 34,
-                          "column": 6
+                          "column": 6,
+                          "program": "lowering-interaction.ets"
                         }
                       }
                     }
@@ -1126,33 +1276,39 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 14
+                      "column": 14,
+                      "program": "lowering-interaction.ets"
                     },
                     "end": {
                       "line": 35,
-                      "column": 4
+                      "column": 4,
+                      "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 7
+                    "column": 7,
+                    "program": "lowering-interaction.ets"
                   },
                   "end": {
                     "line": 35,
-                    "column": 4
+                    "column": 4,
+                    "program": "lowering-interaction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 7
+                  "column": 7,
+                  "program": "lowering-interaction.ets"
                 },
                 "end": {
                   "line": 35,
-                  "column": 4
+                  "column": 4,
+                  "program": "lowering-interaction.ets"
                 }
               }
             },
@@ -1161,11 +1317,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 3
+                "column": 3,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 35,
-                "column": 4
+                "column": 4,
+                "program": "lowering-interaction.ets"
               }
             }
           }
@@ -1173,22 +1331,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 17
+            "column": 17,
+            "program": "lowering-interaction.ets"
           },
           "end": {
-            "line": 36,
-            "column": 2
+            "line": 38,
+            "column": 1,
+            "program": "lowering-interaction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "lowering-interaction.ets"
         },
         "end": {
-          "line": 36,
-          "column": 2
+          "line": 38,
+          "column": 1,
+          "program": "lowering-interaction.ets"
         }
       }
     },
@@ -1202,11 +1364,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lowering-interaction.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lowering-interaction.ets"
             }
           }
         },
@@ -1217,16 +1381,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "lowering-interaction.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "lowering-interaction.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1246,11 +1518,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1264,33 +1538,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1299,11 +1579,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lowering-interaction.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lowering-interaction.ets"
               }
             }
           }
@@ -1311,22 +1593,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lowering-interaction.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lowering-interaction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lowering-interaction.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lowering-interaction.ets"
         }
       }
     }
@@ -1334,11 +1620,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "lowering-interaction.ets"
     },
     "end": {
       "line": 38,
-      "column": 1
+      "column": 1,
+      "program": "lowering-interaction.ets"
     }
   }
 }

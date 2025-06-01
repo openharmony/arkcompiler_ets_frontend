@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,22 +57,21 @@ private:
 
 class AssignPendingExit : public PendingExit {
 public:
-    explicit AssignPendingExit(const ir::AstNode *node, Set &inits, Set &uninits)
+    explicit AssignPendingExit(const ir::AstNode *node, Set &inits, Set &uninits, bool isInitialConstructor,
+                               bool hasTryFinallyBlock)
         : PendingExit(node), inits_(&inits), uninits_(&uninits)
     {
-        exitInits_ = inits;
-        exitUninits_ = uninits;
+        if (isInitialConstructor || hasTryFinallyBlock) {
+            exitInits_ = inits;
+        }
+        if (hasTryFinallyBlock) {
+            exitUninits_ = uninits;
+        }
     }
     ~AssignPendingExit() override = default;
 
     DEFAULT_COPY_SEMANTIC(AssignPendingExit);
     DEFAULT_NOEXCEPT_MOVE_SEMANTIC(AssignPendingExit);
-
-    void ResolveJump() override
-    {
-        inits_->AndSet(exitInits_);
-        uninits_->AndSet(exitUninits_);
-    }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes,readability-identifier-naming)
     Set *inits_;
@@ -122,7 +121,6 @@ private:
     void AnalyzeContinue(const ir::ContinueStatement *contStmt);
     void AnalyzeReturn(const ir::ReturnStatement *retStmt);
     void AnalyzeThrow(const ir::ThrowStatement *throwStmt);
-    void AnalyzeAssert(const ir::AssertStatement *assertStmt);
     void AnalyzeExpr(const ir::AstNode *node);
     void AnalyzeExprs(const ArenaVector<ir::Expression *> &exprs);
     void AnalyzeCond(const ir::AstNode *node);
@@ -139,16 +137,16 @@ private:
 
     // utils
     void Warning(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
+    void Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
     bool Trackable(const ir::AstNode *node) const;
     bool IsConstUninitializedField(const ir::AstNode *node) const;
     bool IsConstUninitializedStaticField(const ir::AstNode *node) const;
     void NewVar(const ir::AstNode *node);
     void LetInit(const ir::AstNode *node);
     void CheckInit(const ir::AstNode *node);
-    void Split(bool setToNull);
+    void Split(const bool setToNull);
     void Merge();
-    void CheckPendingExits(bool inMethod);
+    void CheckPendingExits();
     NodeId GetNodeId(const ir::AstNode *node) const;
     util::StringView GetVariableType(const ir::AstNode *node) const;
     util::StringView GetVariableName(const ir::AstNode *node) const;
@@ -168,13 +166,13 @@ private:
     ArenaVector<const ir::AstNode *> varDecls_;
     const ir::ClassDefinition *globalClass_ {};
     const ir::ClassDefinition *classDef_ {};
-    bool globalClassIsVisited_ {};
     int classFirstAdr_ {};
     int firstNonGlobalAdr_ {};
     int firstAdr_ {};
     int nextAdr_ {};
     int returnAdr_ {};
     bool isInitialConstructor_ {};
+    bool hasTryFinallyBlock_ {};
     NodeIdMap nodeIdMap_;
     int numErrors_ {};
     ArenaSet<const ir::AstNode *> foundErrors_;

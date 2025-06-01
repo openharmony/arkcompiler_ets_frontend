@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_LITERAL_STRING_LITERAL_H
 
 #include "ir/expressions/literal.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 
 namespace ark::es2panda::ir {
@@ -31,9 +31,20 @@ public:
     explicit StringLiteral() : StringLiteral("") {}
     explicit StringLiteral(util::StringView str) : Literal(AstNodeType::STRING_LITERAL), str_(str) {}
 
-    [[nodiscard]] const util::StringView &Str() const noexcept
+    [[nodiscard]] util::StringView Str() const
     {
         return str_;
+    }
+
+    // NOLINTNEXTLINE(*-explicit-constructor)
+    operator std::string_view() const
+    {
+        return str_.Utf8();
+    }
+
+    std::string ToString() const override
+    {
+        return str_.Mutf8();
     }
 
     bool operator==(const StringLiteral &other) const
@@ -50,7 +61,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

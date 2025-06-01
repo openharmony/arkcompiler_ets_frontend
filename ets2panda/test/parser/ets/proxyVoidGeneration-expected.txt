@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "proxyVoidGeneration.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "proxyVoidGeneration.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
@@ -71,7 +77,7 @@
                     "type": "ETSParameterExpression",
                     "name": {
                       "type": "Identifier",
-                      "name": "log_",
+                      "name": "gensym%%_1",
                       "typeAnnotation": {
                         "type": "ETSUnionType",
                         "types": [
@@ -86,33 +92,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 16
+                                    "column": 16,
+                                    "program": "proxyVoidGeneration.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "proxyVoidGeneration.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "proxyVoidGeneration.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "proxyVoidGeneration.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 16
+                                "column": 16,
+                                "program": "proxyVoidGeneration.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 24
+                                "column": 24,
+                                "program": "proxyVoidGeneration.ets"
                               }
                             }
                           },
@@ -121,11 +133,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 24
+                                "column": 24,
+                                "program": "proxyVoidGeneration.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 28
+                                "column": 28,
+                                "program": "proxyVoidGeneration.ets"
                               }
                             }
                           }
@@ -133,34 +147,40 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 16
+                            "column": 16,
+                            "program": "proxyVoidGeneration.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 28
+                            "column": 28,
+                            "program": "proxyVoidGeneration.ets"
                           }
                         }
                       },
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 17,
-                          "column": 10
+                          "line": 1,
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
-                          "line": 17,
-                          "column": 28
+                          "line": 1,
+                          "column": 1,
+                          "program": null
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 10
+                        "column": 10,
+                        "program": "proxyVoidGeneration.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 35
+                        "column": 35,
+                        "program": "proxyVoidGeneration.ets"
                       }
                     }
                   }
@@ -170,255 +190,391 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 38
+                      "column": 38,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 42
+                      "column": 42,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [],
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 43
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 45
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 9
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 45
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 17,
-                  "column": 9
-                },
-                "end": {
-                  "line": 17,
-                  "column": 45
-                }
-              }
-            },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "exit",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 9
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "exit",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 9
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 38
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 42
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [
+                  "statements": [
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
                         {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "log_",
+                            "typeAnnotation": {
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "Boolean",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 16,
+                                          "program": "proxyVoidGeneration.ets"
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 23,
+                                          "program": "proxyVoidGeneration.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 16,
+                                        "program": "proxyVoidGeneration.ets"
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 24,
+                                        "program": "proxyVoidGeneration.ets"
+                                      }
+                                    }
                                   },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 16,
+                                      "program": "proxyVoidGeneration.ets"
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 24,
+                                      "program": "proxyVoidGeneration.ets"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "ETSNullType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": null
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": null
+                                    }
                                   }
                                 }
+                              ],
+                              "loc": {
+                                "start": {
+                                  "line": 17,
+                                  "column": 16,
+                                  "program": "proxyVoidGeneration.ets"
+                                },
+                                "end": {
+                                  "line": 17,
+                                  "column": 28,
+                                  "program": "proxyVoidGeneration.ets"
+                                }
+                              }
+                            },
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 10,
+                                "program": "proxyVoidGeneration.ets"
                               },
-                              "property": {
+                              "end": {
+                                "line": 17,
+                                "column": 28,
+                                "program": "proxyVoidGeneration.ets"
+                              }
+                            }
+                          },
+                          "init": {
+                            "type": "ConditionalExpression",
+                            "test": {
+                              "type": "BinaryExpression",
+                              "operator": "!==",
+                              "left": {
                                 "type": "Identifier",
-                                "name": "exit",
+                                "name": "gensym%%_1",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   }
                                 }
                               },
-                              "computed": false,
-                              "optional": false,
+                              "right": {
+                                "type": "UndefinedLiteral",
+                                "value": "undefined",
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "proxyVoidGeneration.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "proxyVoidGeneration.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 3,
+                                  "program": "proxyVoidGeneration.ets"
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 3,
+                                  "program": "proxyVoidGeneration.ets"
                                 }
                               }
                             },
-                            "arguments": [
-                              {
+                            "consequent": {
+                              "type": "Identifier",
+                              "name": "gensym%%_1",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "program": null
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "program": null
+                                }
+                              }
+                            },
+                            "alternate": {
+                              "type": "TSAsExpression",
+                              "expression": {
                                 "type": "NullLiteral",
                                 "value": null,
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "proxyVoidGeneration.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 35
+                                    "column": 35,
+                                    "program": "proxyVoidGeneration.ets"
                                   }
                                 }
+                              },
+                              "typeAnnotation": {
+                                "type": "ETSUnionType",
+                                "types": [
+                                  {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Boolean",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 16,
+                                            "program": "proxyVoidGeneration.ets"
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 23,
+                                            "program": "proxyVoidGeneration.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 16,
+                                          "program": "proxyVoidGeneration.ets"
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 24,
+                                          "program": "proxyVoidGeneration.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 16,
+                                        "program": "proxyVoidGeneration.ets"
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 24,
+                                        "program": "proxyVoidGeneration.ets"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "ETSNullType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 1,
+                                        "program": null
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 1,
+                                        "program": null
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 16,
+                                    "program": "proxyVoidGeneration.ets"
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 28,
+                                    "program": "proxyVoidGeneration.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "proxyVoidGeneration.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "proxyVoidGeneration.ets"
+                                }
                               }
-                            ],
-                            "optional": false,
+                            },
                             "loc": {
                               "start": {
-                                "line": 17,
-                                "column": 5
+                                "line": 1,
+                                "column": 3,
+                                "program": "proxyVoidGeneration.ets"
                               },
                               "end": {
-                                "line": 17,
-                                "column": 45
+                                "line": 1,
+                                "column": 3,
+                                "program": "proxyVoidGeneration.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 3,
+                              "program": "proxyVoidGeneration.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 3,
+                              "program": "proxyVoidGeneration.ets"
                             }
                           }
                         }
                       ],
+                      "kind": "let",
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": "proxyVoidGeneration.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 3,
+                          "program": "proxyVoidGeneration.ets"
                         }
                       }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 620,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 620,
-                        "column": 1
-                      }
                     }
-                  },
+                  ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 43,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 45,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
-                "overloads": [],
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 5
+                    "column": 9,
+                    "program": "proxyVoidGeneration.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 45,
+                    "program": "proxyVoidGeneration.ets"
                   }
                 }
+              },
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 9,
+                  "program": "proxyVoidGeneration.ets"
+                },
+                "end": {
+                  "line": 17,
+                  "column": 45,
+                  "program": "proxyVoidGeneration.ets"
+                }
               }
-            ],
+            },
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "proxyVoidGeneration.ets"
               },
               "end": {
                 "line": 17,
-                "column": 45
+                "column": 45,
+                "program": "proxyVoidGeneration.ets"
               }
             }
           },
@@ -431,11 +587,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 11
+                  "column": 11,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -455,11 +613,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 5
+                      "column": 5,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 11
+                      "column": 11,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
@@ -473,71 +633,49 @@
                       "type": "Identifier",
                       "name": "log_",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "Boolean",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 18,
-                                    "column": 19
-                                  },
-                                  "end": {
-                                    "line": 18,
-                                    "column": 26
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 19
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 27
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Boolean",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 19
+                                "column": 19,
+                                "program": "proxyVoidGeneration.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 27
+                                "column": 26,
+                                "program": "proxyVoidGeneration.ets"
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 18,
-                                "column": 16
-                              },
-                              "end": {
-                                "line": 18,
-                                "column": 17
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 19,
+                              "program": "proxyVoidGeneration.ets"
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 27,
+                              "program": "proxyVoidGeneration.ets"
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 19
+                            "column": 19,
+                            "program": "proxyVoidGeneration.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 27
+                            "column": 27,
+                            "program": "proxyVoidGeneration.ets"
                           }
                         }
                       },
@@ -545,22 +683,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 12
+                          "column": 12,
+                          "program": "proxyVoidGeneration.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 27
+                          "column": 27,
+                          "program": "proxyVoidGeneration.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 12
+                        "column": 12,
+                        "program": "proxyVoidGeneration.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 27
+                        "column": 27,
+                        "program": "proxyVoidGeneration.ets"
                       }
                     }
                   }
@@ -570,11 +712,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 29
+                      "column": 29,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 33
+                      "column": 33,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
@@ -584,241 +728,54 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 34
+                      "column": 34,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 36
+                      "column": 36,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 11
+                    "column": 11,
+                    "program": "proxyVoidGeneration.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 36
+                    "column": 36,
+                    "program": "proxyVoidGeneration.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 11
+                  "column": 11,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 36
+                  "column": 36,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "exthat",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 11
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "exthat",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 11
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 29
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 33
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [
-                        {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "exthat",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "arguments": [
-                              {
-                                "type": "UndefinedLiteral",
-                                "value": "undefined",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 18,
-                                "column": 5
-                              },
-                              "end": {
-                                "line": 18,
-                                "column": 36
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 665,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 665,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "proxyVoidGeneration.ets"
               },
               "end": {
                 "line": 18,
-                "column": 36
+                "column": 36,
+                "program": "proxyVoidGeneration.ets"
               }
             }
           },
@@ -830,12 +787,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -853,12 +812,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
@@ -871,34 +832,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "proxyVoidGeneration.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "proxyVoidGeneration.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -906,12 +873,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 19,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -919,22 +888,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "proxyVoidGeneration.ets"
           },
           "end": {
-            "line": 19,
-            "column": 2
+            "line": 21,
+            "column": 9,
+            "program": "proxyVoidGeneration.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "proxyVoidGeneration.ets"
         },
         "end": {
-          "line": 19,
-          "column": 2
+          "line": 21,
+          "column": 9,
+          "program": "proxyVoidGeneration.ets"
         }
       }
     },
@@ -948,11 +921,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "proxyVoidGeneration.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "proxyVoidGeneration.ets"
             }
           }
         },
@@ -968,11 +943,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -992,11 +969,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1010,33 +989,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1045,11 +1030,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "proxyVoidGeneration.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "proxyVoidGeneration.ets"
               }
             }
           },
@@ -1062,11 +1049,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 10
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 14
+                  "column": 14,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -1086,11 +1075,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 10
+                      "column": 10,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 14
+                      "column": 14,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
@@ -1104,33 +1095,39 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 17
+                      "column": 17,
+                      "program": "proxyVoidGeneration.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 2
+                      "column": 2,
+                      "program": "proxyVoidGeneration.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 10
+                    "column": 10,
+                    "program": "proxyVoidGeneration.ets"
                   },
                   "end": {
                     "line": 22,
-                    "column": 2
+                    "column": 2,
+                    "program": "proxyVoidGeneration.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 10
+                  "column": 10,
+                  "program": "proxyVoidGeneration.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "proxyVoidGeneration.ets"
                 }
               }
             },
@@ -1139,11 +1136,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 1
+                "column": 1,
+                "program": "proxyVoidGeneration.ets"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "proxyVoidGeneration.ets"
               }
             }
           }
@@ -1151,22 +1150,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "proxyVoidGeneration.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "proxyVoidGeneration.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "proxyVoidGeneration.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "proxyVoidGeneration.ets"
         }
       }
     }
@@ -1174,11 +1177,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "proxyVoidGeneration.ets"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "proxyVoidGeneration.ets"
     }
   }
 }

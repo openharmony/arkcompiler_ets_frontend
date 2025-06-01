@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 
 #include "ir/statement.h"
 #include "ir/typed.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -33,6 +34,7 @@ public:
                                     TypeNode *typeAnnotation)
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
           decorators_(allocator->Adapter()),
+          annotations_(allocator->Adapter()),
           id_(id),
           typeParams_(typeParams),
           typeParamTypes_(allocator->Adapter())
@@ -42,6 +44,7 @@ public:
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id)
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           decorators_(allocator->Adapter()),
+          annotations_(allocator->Adapter()),
           id_(id),
           typeParams_(nullptr),
           typeParamTypes_(allocator->Adapter())
@@ -98,6 +101,24 @@ public:
         return typeParamTypes_;
     }
 
+    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
+    {
+        return annotations_;
+    }
+
+    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+        for (AnnotationUsage *anno : annotations_) {
+            anno->SetParent(this);
+        }
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -105,15 +126,22 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        typeParamTypes_.clear();
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
+    ArenaVector<AnnotationUsage *> annotations_;
     Identifier *id_;
     TSTypeParameterDeclaration *typeParams_;
     ArenaVector<checker::Type *> typeParamTypes_;

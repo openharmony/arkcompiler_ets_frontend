@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,9 +85,9 @@ checker::Type *TSAsExpression::Check([[maybe_unused]] checker::TSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
+checker::VerifiedType TSAsExpression::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -98,24 +98,25 @@ TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *
         typeAnnotation = typeAnnotation->Clone(allocator, nullptr);
     }
 
-    if (auto *const clone = allocator->New<TSAsExpression>(expression, typeAnnotation, isConst_); clone != nullptr) {
-        if (expression != nullptr) {
-            expression->SetParent(clone);
-        }
+    auto *const clone = allocator->New<TSAsExpression>(expression, typeAnnotation, isConst_);
 
-        if (typeAnnotation != nullptr) {
-            typeAnnotation->SetParent(clone);
-        }
-
-        clone->SetTsType(TsType());
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (expression != nullptr) {
+        expression->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->SetParent(clone);
+    }
+
+    if (Start().Program()->Extension() != ScriptExtension::ETS) {
+        clone->SetTsType(TsType());
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

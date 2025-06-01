@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,7 +32,7 @@ void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb, std::stri
         }
     }
 
-    for (auto *&it : consequent_) {
+    for (auto *&it : VectorIterationGuard(consequent_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsStatement();
@@ -46,7 +46,7 @@ void SwitchCaseStatement::Iterate(const NodeTraverser &cb) const
         cb(test_);
     }
 
-    for (auto *it : consequent_) {
+    for (auto *it : VectorIterationGuard(consequent_)) {
         cb(it);
     }
 }
@@ -93,9 +93,9 @@ checker::Type *SwitchCaseStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *SwitchCaseStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType SwitchCaseStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 // Auxilary function extracted from the 'Check' method for 'SwitchStatement' to reduce function's size.
@@ -103,36 +103,33 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
                                            checker::Type *unboxedDiscType, ir::Expression *node, bool &isDefaultCase)
 {
     if (test_ != nullptr) {
-        auto *caseType = test_->Check(checker);
+        auto caseType = test_->Check(checker);
         bool validCaseType = true;
 
         if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {
             validCaseType = comparedExprType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
-        } else if (caseType->IsETSIntEnumType() && comparedExprType->IsETSIntEnumType()) {
-            validCaseType = comparedExprType->AsETSIntEnumType()->IsSameEnumType(caseType->AsETSIntEnumType());
-        } else if (caseType->IsETSStringEnumType() && comparedExprType->IsETSStringEnumType()) {
-            // CC-OFFNXT(G.FMT.06-CPP) project code style
-            validCaseType = comparedExprType->AsETSStringEnumType()->IsSameEnumType(caseType->AsETSStringEnumType());
+        } else if (caseType->IsETSEnumType() || comparedExprType->IsETSEnumType()) {
+            validCaseType = checker->Relation()->IsIdenticalTo(caseType, comparedExprType);
         } else {
-            if (!checker::AssignmentContext(
-                     // CC-OFFNXT(G.FMT.06-CPP) project code style
-                     checker->Relation(), node, caseType, unboxedDiscType, test_->Start(), {},
-                     (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
-                                                          : checker::TypeRelationFlag::NO_UNBOXING) |
-                         // CC-OFFNXT(G.FMT.02) project code style
-                         checker::TypeRelationFlag::NO_BOXING | checker::TypeRelationFlag::NO_THROW)
-                     .IsAssignable()) {
-                checker->LogTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",
-                                       comparedExprType, "'"},
-                                      test_->Start());
+            const checker::AssignmentContext ctx {
+                checker->Relation(),
+                node,
+                caseType,
+                unboxedDiscType,
+                test_->Start(),
+                std::nullopt,
+                (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
+                                                     : checker::TypeRelationFlag::NO_UNBOXING) |
+                    checker::TypeRelationFlag::NO_BOXING | checker::TypeRelationFlag::NO_THROW};
+            if (!ctx.IsAssignable()) {
+                checker->LogError(diagnostic::SWITCH_CASE_TYPE_INCOMPARABLE, {caseType, comparedExprType},
+                                  test_->Start());
                 return;
             }
         }
 
         if (!validCaseType) {
-            checker->LogTypeError(
-                {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType, "'"},
-                test_->Start());
+            checker->LogError(diagnostic::SWITCH_CASE_TYPE_INCOMPARABLE, {caseType, comparedExprType}, test_->Start());
             return;
         }
     } else {
@@ -143,4 +140,21 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
         caseStmt->Check(checker);
     }
 }
+
+SwitchCaseStatement *SwitchCaseStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
+    ArenaVector<Statement *> consequent(allocator->Adapter());
+
+    for (auto *statement : consequent_) {
+        consequent.push_back(statement->Clone(allocator, nullptr)->AsStatement());
+    }
+
+    auto clone = util::NodeAllocator::ForceSetParent<ir::SwitchCaseStatement>(allocator, test, std::move(consequent));
+
+    clone->SetParent(parent);
+    clone->SetRange(Range());
+    return clone;
+}
+
 }  // namespace ark::es2panda::ir

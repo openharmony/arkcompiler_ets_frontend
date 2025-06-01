@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -32,10 +32,9 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
     Note: 'function' in names of variables is alias for 'method or constructor'
     """
     res: Dict[str, Any] = {}
-    end_of_args = parse_declaration_without_postfix(data, start, res)
 
     # Defines is it declaration or definition:
-    next_semicolon = find_first_of_characters(";", data, start)  # <---  for declaration
+    next_semicolon = smart_find_first_of_characters(";", data, start)  # <---  for declaration
     start_of_body = smart_find_first_of_characters("{", data, start)  # <---  for definition
 
     if next_semicolon <= start_of_body:  # <---  declaration case
@@ -50,6 +49,12 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
     else:
         raise RuntimeError("Error! End of function declaration not found\n")
 
+    # Skip operator overloading
+    if data[start: find_first_of_characters("(", data, start)].find("operator") != -1:
+        return end_of_function + 1, {}
+
+    end_of_args = parse_declaration_without_postfix(data, start, res)
+
     # Defines is it constructor or method
     colon_pos = find_first_of_characters(":", data, end_of_args, end_of_function_declaration)
 
@@ -63,9 +68,7 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
         function_declaration_postfix = data[end_of_args + 1 : colon_pos].strip(" \n")
         res["raw_declaration"] = data[start:colon_pos].strip(" \n")
 
-        start_of_body, initializers = parse_initializers(data, colon_pos + 1)
-        start_of_body, end_of_body = find_scope_borders(data, start_of_body, "{")
-        end_of_function = end_of_body
+        end_of_initializers, initializers = parse_initializers(data, colon_pos + 1)
         # CC-OFFNXT(G.TYP.07) dict key exist
         updated_args, other_initializers = extract_init_args(res["args"], initializers)
 
@@ -74,15 +77,24 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
         if other_initializers != []:
             res["other_initializers"] = other_initializers
 
+        if data[end_of_initializers] == '{':
+            start_of_body, end_of_body = find_scope_borders(data, end_of_initializers, "{")
+            end_of_function = end_of_body
+
     if len(function_declaration_postfix):
         res["postfix"] = function_declaration_postfix
+
+    if end_of_function < len(data) and data[end_of_function] != ';':
+        first_body_token_pos = find_first_not_restricted_character(' \n\t', data, start_of_body + 1)
+        if data[first_body_token_pos: first_body_token_pos + len('return')] == 'return':
+            res["additional_attributes"] = "get"
 
     return end_of_function + 1, res
 
 
 def parse_declaration_without_postfix(data: str, start: int, res: Dict[str, Any]) -> int:
     # Arguments
-    start_of_args = find_first_of_characters("(", data, start)
+    start_of_args = smart_find_first_of_characters("(", data, start)
 
     if start_of_args >= len("operator") and data[start_of_args - len("operator") : start_of_args] == "operator":
         start_of_args = find_first_of_characters("(", data, start_of_args + 1)
@@ -138,7 +150,7 @@ def parse_initializers(data: str, start: int = 0) -> Tuple[int, List]:  # pylint
     current_pos = find_first_not_restricted_character(" \n", data, start)
     parethese_open = find_first_of_characters("{(", data, current_pos)
 
-    while data[current_pos] != "{" and parethese_open != -1:
+    while data[current_pos] != "{" and data[current_pos] != ';' and parethese_open != len(data):
 
         parethese_open, parenthese_close = find_scope_borders(data, parethese_open, "")
         res.append(parse_initializer(data[current_pos : parenthese_close + 1]))

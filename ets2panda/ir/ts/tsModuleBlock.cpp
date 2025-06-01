@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 void TSModuleBlock::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : statements_) {
+    for (auto *&it : VectorIterationGuard(statements_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsStatement();
@@ -34,7 +34,7 @@ void TSModuleBlock::TransformChildren(const NodeTransformer &cb, std::string_vie
 
 void TSModuleBlock::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : statements_) {
+    for (auto *it : VectorIterationGuard(statements_)) {
         cb(it);
     }
 }
@@ -63,8 +63,8 @@ checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::TSChecker *checker
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSModuleBlock::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

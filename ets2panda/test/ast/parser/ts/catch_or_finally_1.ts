@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,23 @@
  * limitations under the License.
  */
 
-try {} ss (fgf) {}
-try {} sfsfsf (fgf) {} finally {}
-try {} catch (fgf) {} aaaaaaa {}
+try {} /* @@ label */ss (fgf) /* @@ label1 */{}
+try {} /* @@ label2 */sfsfsf (fgf) /* @@ label3 */{} /* @@ label4 */finally {}
+try {} catch (fgf) {} aaaaaaa /* @@ label5 */{}
 
-try [] finally {}
+try /* @@ label6 */[] /* @@ label7 */finally {}
 
-/* @@? 16:8 Error SyntaxError: Missing catch or finally clause. */
-/* @@? 16:17 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:8 Error SyntaxError: Missing catch or finally clause. */
-/* @@? 17:21 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:24 Error SyntaxError: Unexpected token: 'finally'. */
-/* @@? 18:31 Error SyntaxError: Unexpected token '{'. */
-/* @@? 20:5 Error SyntaxError: Unexpected token '[', expected '{'. */
-/* @@? 20:5 Error SyntaxError: Expected a '{', got '['. */
-/* @@? 20:8 Error SyntaxError: Unexpected token 'finally'. */
-/* @@? 20:8 Error SyntaxError: Unexpected token: 'finally'. */
-/* @@? 34:1 Error SyntaxError: Expected a '}' got 'eos'. */
-/* @@? 34:1 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 16:22 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 16:46 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:23 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 17:51 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:69 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 17:69 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 18:46 Error SyntaxError: Unexpected token '{'. */
+/* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
+/* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 36:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 36:1 Error SyntaxError: Missing catch or finally clause. */

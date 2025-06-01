@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "lambda_infer_type_arrow_expression.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "lambda_infer_type_arrow_expression.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 10
+                      "column": 10,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     }
                   }
                 },
@@ -82,11 +88,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 13
+                                "column": 13,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 14
+                                "column": 14,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               }
                             }
                           },
@@ -117,33 +125,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 18,
-                                                "column": 27
+                                                "column": 27,
+                                                "program": "lambda_infer_type_arrow_expression.ets"
                                               },
                                               "end": {
                                                 "line": 18,
-                                                "column": 28
+                                                "column": 28,
+                                                "program": "lambda_infer_type_arrow_expression.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 18,
-                                              "column": 27
+                                              "column": 27,
+                                              "program": "lambda_infer_type_arrow_expression.ets"
                                             },
                                             "end": {
                                               "line": 18,
-                                              "column": 29
+                                              "column": 29,
+                                              "program": "lambda_infer_type_arrow_expression.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 27
+                                            "column": 27,
+                                            "program": "lambda_infer_type_arrow_expression.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 29
+                                            "column": 29,
+                                            "program": "lambda_infer_type_arrow_expression.ets"
                                           }
                                         }
                                       },
@@ -151,22 +165,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 18,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "lambda_infer_type_arrow_expression.ets"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 12
+                                          "column": 12,
+                                          "program": "lambda_infer_type_arrow_expression.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       }
                                     }
                                   }
@@ -174,44 +192,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "lambda_infer_type_arrow_expression.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "lambda_infer_type_arrow_expression.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 17
+                                "column": 17,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 12
+                                "column": 12,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 13
+                              "column": 13,
+                              "program": "lambda_infer_type_arrow_expression.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 12
+                              "column": 12,
+                              "program": "lambda_infer_type_arrow_expression.ets"
                             }
                           }
                         }
@@ -220,11 +246,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 9
+                          "column": 9,
+                          "program": "lambda_infer_type_arrow_expression.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 12
+                          "column": 12,
+                          "program": "lambda_infer_type_arrow_expression.ets"
                         }
                       }
                     },
@@ -250,44 +278,52 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "lambda_infer_type_arrow_expression.ets"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 31
+                                        "column": 31,
+                                        "program": "lambda_infer_type_arrow_expression.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "lambda_infer_type_arrow_expression.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 33
+                                      "column": 33,
+                                      "program": "lambda_infer_type_arrow_expression.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "lambda_infer_type_arrow_expression.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "lambda_infer_type_arrow_expression.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "lambda_infer_type_arrow_expression.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 33
+                                  "column": 33,
+                                  "program": "lambda_infer_type_arrow_expression.ets"
                                 }
                               }
                             },
@@ -295,11 +331,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 13
+                                "column": 13,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 21
+                                "column": 21,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               }
                             }
                           },
@@ -310,22 +348,26 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 34
+                                "column": 34,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 35
+                                "column": 35,
+                                "program": "lambda_infer_type_arrow_expression.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 13
+                              "column": 13,
+                              "program": "lambda_infer_type_arrow_expression.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 35
+                              "column": 35,
+                              "program": "lambda_infer_type_arrow_expression.ets"
                             }
                           }
                         }
@@ -334,11 +376,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 9
+                          "column": 9,
+                          "program": "lambda_infer_type_arrow_expression.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 35
+                          "column": 35,
+                          "program": "lambda_infer_type_arrow_expression.ets"
                         }
                       }
                     }
@@ -346,33 +390,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 6
+                      "column": 6,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 11
+                    "column": 11,
+                    "program": "lambda_infer_type_arrow_expression.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 6
+                    "column": 6,
+                    "program": "lambda_infer_type_arrow_expression.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 11
+                  "column": 11,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 }
               }
             },
@@ -381,11 +431,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "lambda_infer_type_arrow_expression.ets"
               },
               "end": {
                 "line": 20,
-                "column": 6
+                "column": 6,
+                "program": "lambda_infer_type_arrow_expression.ets"
               }
             }
           },
@@ -397,12 +449,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 }
               }
             },
@@ -420,12 +474,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     }
                   }
                 },
@@ -438,34 +494,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_arrow_expression.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lambda_infer_type_arrow_expression.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lambda_infer_type_arrow_expression.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_arrow_expression.ets"
                 }
               }
             },
@@ -473,12 +535,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -486,22 +550,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "lambda_infer_type_arrow_expression.ets"
           },
           "end": {
-            "line": 21,
-            "column": 2
+            "line": 22,
+            "column": 1,
+            "program": "lambda_infer_type_arrow_expression.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_arrow_expression.ets"
         },
         "end": {
-          "line": 21,
-          "column": 2
+          "line": 22,
+          "column": 1,
+          "program": "lambda_infer_type_arrow_expression.ets"
         }
       }
     },
@@ -515,11 +583,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_arrow_expression.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_arrow_expression.ets"
             }
           }
         },
@@ -530,16 +600,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "lambda_infer_type_arrow_expression.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "lambda_infer_type_arrow_expression.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -559,11 +737,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -577,33 +757,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -612,11 +798,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_arrow_expression.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_arrow_expression.ets"
               }
             }
           }
@@ -624,22 +812,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_arrow_expression.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_arrow_expression.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_arrow_expression.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_arrow_expression.ets"
         }
       }
     }
@@ -647,11 +839,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_arrow_expression.ets"
     },
     "end": {
       "line": 22,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_arrow_expression.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,7 @@
 #include "checker/types/ts/types.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 #include <cstdint>
 #include <initializer_list>
@@ -121,7 +121,7 @@ struct TupleTypeInfo {
 class TSChecker : public Checker {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
-    explicit TSChecker() : Checker() {}
+    explicit TSChecker(util::DiagnosticEngine &diagnosticEngine) : Checker(diagnosticEngine) {}
 
     Type *GlobalNumberType()
     {
@@ -253,7 +253,7 @@ public:
         return bigintLiteralMap_;
     }
 
-    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
+    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
 
     // Util
@@ -281,8 +281,7 @@ public:
     bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
     bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
-                                     const lexer::SourcePosition &pos);
+    [[noreturn]] void ThrowTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                            lexer::SourcePosition lineInfo);
     [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo,

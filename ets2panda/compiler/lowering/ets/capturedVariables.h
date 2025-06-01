@@ -20,14 +20,14 @@
 
 namespace ark::es2panda::compiler {
 
-class CapturedVariables : public Phase {
+class CapturedVariables : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "CapturedVariables";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

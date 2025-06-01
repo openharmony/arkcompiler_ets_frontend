@@ -13,11 +13,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -28,33 +30,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 17,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 17,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -70,11 +78,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 18,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -85,33 +95,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 18,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 18,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 18,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -127,11 +143,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -142,33 +160,39 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 19,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 19,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -184,11 +208,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -199,33 +225,39 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 20,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 20,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -241,11 +273,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 21,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -256,33 +290,39 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 21,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 21,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 21,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -298,11 +338,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 22,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -313,33 +355,39 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 22,
-              "column": 8
+              "column": 8,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 22,
-            "column": 8
+            "column": 8,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 22,
-          "column": 8
+          "column": 8,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -355,11 +403,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 23,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -370,33 +420,39 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 23,
-              "column": 8
+              "column": 8,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 23,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 23,
-            "column": 8
+            "column": 8,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 23,
-          "column": 8
+          "column": 8,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -412,11 +468,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 24,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -427,33 +485,39 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 24,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 24,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 24,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -469,11 +533,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -484,33 +550,39 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 25,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 25,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -526,11 +598,13 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 26,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -541,33 +615,39 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 26,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 26,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 26,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 26,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -583,11 +663,13 @@
           "loc": {
             "start": {
               "line": 27,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 27,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -598,33 +680,39 @@
           "loc": {
             "start": {
               "line": 27,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 27,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 27,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 27,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 27,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 27,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -640,11 +728,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 28,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -655,33 +745,39 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 28,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 28,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 28,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 28,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -697,11 +793,13 @@
           "loc": {
             "start": {
               "line": 29,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 29,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -712,33 +810,39 @@
           "loc": {
             "start": {
               "line": 29,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 29,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 29,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 29,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 29,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 29,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -754,11 +858,13 @@
           "loc": {
             "start": {
               "line": 30,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 30,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -769,33 +875,39 @@
           "loc": {
             "start": {
               "line": 30,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 30,
-              "column": 8
+              "column": 8,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 30,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 30,
-            "column": 8
+            "column": 8,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 30,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 30,
-          "column": 8
+          "column": 8,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -811,11 +923,13 @@
           "loc": {
             "start": {
               "line": 31,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 31,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -826,33 +940,39 @@
           "loc": {
             "start": {
               "line": 31,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 31,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 31,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 31,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 31,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 31,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -868,11 +988,13 @@
           "loc": {
             "start": {
               "line": 32,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 32,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -883,33 +1005,39 @@
           "loc": {
             "start": {
               "line": 32,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 32,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 32,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 32,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 32,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 32,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -925,11 +1053,13 @@
           "loc": {
             "start": {
               "line": 33,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 33,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -940,33 +1070,39 @@
           "loc": {
             "start": {
               "line": 33,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 33,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 33,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 33,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 33,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 33,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -982,11 +1118,13 @@
           "loc": {
             "start": {
               "line": 34,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 34,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -997,33 +1135,39 @@
           "loc": {
             "start": {
               "line": 34,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 34,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 34,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 34,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 34,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 34,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1039,11 +1183,13 @@
           "loc": {
             "start": {
               "line": 35,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 35,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1054,33 +1200,39 @@
           "loc": {
             "start": {
               "line": 35,
-              "column": 5
+              "column": 5,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 35,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 35,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 35,
-            "column": 6
+            "column": 6,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 35,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 35,
-          "column": 6
+          "column": 6,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1096,11 +1248,13 @@
           "loc": {
             "start": {
               "line": 36,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 36,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1111,33 +1265,39 @@
           "loc": {
             "start": {
               "line": 36,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 36,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 36,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 36,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 36,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 36,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1153,11 +1313,13 @@
           "loc": {
             "start": {
               "line": 37,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 37,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1168,33 +1330,39 @@
           "loc": {
             "start": {
               "line": 37,
-              "column": 14
+              "column": 14,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 37,
-              "column": 15
+              "column": 15,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 37,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 37,
-            "column": 15
+            "column": 15,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 37,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 37,
-          "column": 15
+          "column": 15,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1210,11 +1378,13 @@
           "loc": {
             "start": {
               "line": 38,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 38,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1225,33 +1395,39 @@
           "loc": {
             "start": {
               "line": 38,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 38,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 38,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 38,
-            "column": 7
+            "column": 7,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 38,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 38,
-          "column": 7
+          "column": 7,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1270,11 +1446,13 @@
             "loc": {
               "start": {
                 "line": 40,
-                "column": 1
+                "column": 1,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 40,
-                "column": 2
+                "column": 2,
+                "program": "test-binary-expression.js"
               }
             }
           },
@@ -1285,22 +1463,26 @@
             "loc": {
               "start": {
                 "line": 40,
-                "column": 14
+                "column": 14,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 40,
-                "column": 15
+                "column": 15,
+                "program": "test-binary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 40,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 40,
-              "column": 15
+              "column": 15,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1311,33 +1493,39 @@
           "loc": {
             "start": {
               "line": 40,
-              "column": 19
+              "column": 19,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 40,
-              "column": 20
+              "column": 20,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 40,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 40,
-            "column": 20
+            "column": 20,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 40,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 40,
-          "column": 20
+          "column": 20,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1353,11 +1541,13 @@
           "loc": {
             "start": {
               "line": 41,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 41,
-              "column": 2
+              "column": 2,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1374,11 +1564,13 @@
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 41,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
@@ -1392,11 +1584,13 @@
                 "loc": {
                   "start": {
                     "line": 41,
-                    "column": 10
+                    "column": 10,
+                    "program": "test-binary-expression.js"
                   },
                   "end": {
                     "line": 41,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-binary-expression.js"
                   }
                 }
               },
@@ -1407,33 +1601,39 @@
                 "loc": {
                   "start": {
                     "line": 41,
-                    "column": 14
+                    "column": 14,
+                    "program": "test-binary-expression.js"
                   },
                   "end": {
                     "line": 41,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-binary-expression.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 41,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 41,
-                "column": 6
+                "column": 6,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 41,
-                "column": 15
+                "column": 15,
+                "program": "test-binary-expression.js"
               }
             }
           },
@@ -1447,11 +1647,13 @@
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 41,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
@@ -1462,55 +1664,65 @@
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 41,
-                  "column": 23
+                  "column": 23,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 41,
-                "column": 18
+                "column": 18,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 41,
-                "column": 23
+                "column": 23,
+                "program": "test-binary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 41,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 41,
-              "column": 23
+              "column": 23,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 41,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 41,
-            "column": 23
+            "column": 23,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 41,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 41,
-          "column": 23
+          "column": 23,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1529,11 +1741,13 @@
             "loc": {
               "start": {
                 "line": 42,
-                "column": 1
+                "column": 1,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 42,
-                "column": 2
+                "column": 2,
+                "program": "test-binary-expression.js"
               }
             }
           },
@@ -1544,22 +1758,26 @@
             "loc": {
               "start": {
                 "line": 42,
-                "column": 6
+                "column": 6,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 42,
-                "column": 7
+                "column": 7,
+                "program": "test-binary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 42,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 42,
-              "column": 7
+              "column": 7,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1570,33 +1788,39 @@
           "loc": {
             "start": {
               "line": 42,
-              "column": 12
+              "column": 12,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 42,
-              "column": 13
+              "column": 13,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 42,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 42,
-            "column": 13
+            "column": 13,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 42,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 42,
-          "column": 13
+          "column": 13,
+          "program": "test-binary-expression.js"
         }
       }
     },
@@ -1615,11 +1839,13 @@
             "loc": {
               "start": {
                 "line": 43,
-                "column": 1
+                "column": 1,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 43,
-                "column": 2
+                "column": 2,
+                "program": "test-binary-expression.js"
               }
             }
           },
@@ -1630,22 +1856,26 @@
             "loc": {
               "start": {
                 "line": 43,
-                "column": 5
+                "column": 5,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 43,
-                "column": 6
+                "column": 6,
+                "program": "test-binary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 43,
-              "column": 1
+              "column": 1,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 43,
-              "column": 6
+              "column": 6,
+              "program": "test-binary-expression.js"
             }
           }
         },
@@ -1662,11 +1892,13 @@
               "loc": {
                 "start": {
                   "line": 43,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 43,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
@@ -1677,22 +1909,26 @@
               "loc": {
                 "start": {
                   "line": 43,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-binary-expression.js"
                 },
                 "end": {
                   "line": 43,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-binary-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 43,
-                "column": 10
+                "column": 10,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 43,
-                "column": 15
+                "column": 15,
+                "program": "test-binary-expression.js"
               }
             }
           },
@@ -1703,44 +1939,52 @@
             "loc": {
               "start": {
                 "line": 43,
-                "column": 19
+                "column": 19,
+                "program": "test-binary-expression.js"
               },
               "end": {
                 "line": 43,
-                "column": 20
+                "column": 20,
+                "program": "test-binary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 43,
-              "column": 10
+              "column": 10,
+              "program": "test-binary-expression.js"
             },
             "end": {
               "line": 43,
-              "column": 20
+              "column": 20,
+              "program": "test-binary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 43,
-            "column": 1
+            "column": 1,
+            "program": "test-binary-expression.js"
           },
           "end": {
             "line": 43,
-            "column": 20
+            "column": 20,
+            "program": "test-binary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 43,
-          "column": 1
+          "column": 1,
+          "program": "test-binary-expression.js"
         },
         "end": {
           "line": 43,
-          "column": 20
+          "column": 20,
+          "program": "test-binary-expression.js"
         }
       }
     }
@@ -1748,11 +1992,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-binary-expression.js"
     },
     "end": {
       "line": 44,
-      "column": 1
+      "column": 1,
+      "program": "test-binary-expression.js"
     }
   }
 }

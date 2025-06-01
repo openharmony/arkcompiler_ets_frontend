@@ -15,11 +15,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 2
+                "column": 2,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 17,
-                "column": 3
+                "column": 3,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -29,22 +31,26 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 7
+                "column": 7,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 17,
-                "column": 8
+                "column": 8,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 17,
-              "column": 9
+              "column": 9,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -54,33 +60,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 13
+              "column": 13,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 17,
-              "column": 14
+              "column": 14,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 17,
-            "column": 14
+            "column": 14,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 17,
-          "column": 15
+          "column": 15,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -98,11 +110,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 2
+                "column": 2,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 18,
-                "column": 3
+                "column": 3,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -112,22 +126,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 7
+                "column": 7,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 18,
-                "column": 8
+                "column": 8,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 18,
-              "column": 9
+              "column": 9,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -137,33 +155,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 13
+              "column": 13,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 18,
-              "column": 14
+              "column": 14,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 18,
-            "column": 14
+            "column": 14,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 18,
-          "column": 15
+          "column": 15,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -178,11 +202,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -195,11 +221,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 9
+                "column": 9,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 19,
-                "column": 10
+                "column": 10,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -209,44 +237,52 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 14
+                "column": 14,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 19,
-                "column": 15
+                "column": 15,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 9
+              "column": 9,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 19,
-              "column": 15
+              "column": 15,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 19,
-            "column": 15
+            "column": 15,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 19,
-          "column": 16
+          "column": 16,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -261,11 +297,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -279,11 +317,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 9
+                "column": 9,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 20,
-                "column": 18
+                "column": 18,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -294,44 +334,52 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 22
+                "column": 22,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 20,
-                "column": 31
+                "column": 31,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 9
+              "column": 9,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 20,
-              "column": 31
+              "column": 31,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 20,
-            "column": 31
+            "column": 31,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 20,
-          "column": 32
+          "column": 32,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -349,11 +397,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 1
+                "column": 1,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -364,22 +414,26 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 9
+                "column": 9,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 21,
-                "column": 18
+                "column": 18,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 21,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 21,
-              "column": 18
+              "column": 18,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -392,11 +446,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 22
+                "column": 22,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 21,
-                "column": 23
+                "column": 23,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -406,44 +462,52 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 27
+                "column": 27,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 21,
-                "column": 28
+                "column": 28,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 21,
-              "column": 22
+              "column": 22,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 21,
-              "column": 28
+              "column": 28,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 21,
-            "column": 28
+            "column": 28,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 21,
-          "column": 29
+          "column": 29,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -464,11 +528,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 1
+                  "column": 1,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
@@ -479,22 +545,26 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 1
+                "column": 1,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 22,
-                "column": 18
+                "column": 18,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -504,22 +574,26 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 22
+                "column": 22,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 22,
-                "column": 26
+                "column": 26,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 22,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 22,
-              "column": 26
+              "column": 26,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -532,11 +606,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 30
+                "column": 30,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 22,
-                "column": 32
+                "column": 32,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -546,44 +622,52 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 36
+                "column": 36,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 22,
-                "column": 38
+                "column": 38,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 22,
-              "column": 30
+              "column": 30,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 22,
-              "column": 38
+              "column": 38,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 22,
-            "column": 38
+            "column": 38,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 22,
-          "column": 39
+          "column": 39,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -601,11 +685,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 1
+                "column": 1,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -619,11 +705,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 23,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
@@ -633,33 +721,39 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 23
+                  "column": 23,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 23,
-                  "column": 27
+                  "column": 27,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 9
+                "column": 9,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 23,
-                "column": 28
+                "column": 28,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 23,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 23,
-              "column": 28
+              "column": 28,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -672,11 +766,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 32
+                "column": 32,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 23,
-                "column": 34
+                "column": 34,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -686,44 +782,52 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 38
+                "column": 38,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 23,
-                "column": 40
+                "column": 40,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 23,
-              "column": 32
+              "column": 32,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 23,
-              "column": 40
+              "column": 40,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 23,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 23,
-            "column": 40
+            "column": 40,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 23,
-          "column": 41
+          "column": 41,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -741,11 +845,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 1
+                "column": 1,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 24,
-                "column": 5
+                "column": 5,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -759,11 +865,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 24,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
@@ -773,33 +881,39 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 23
+                  "column": 23,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 24,
-                  "column": 27
+                  "column": 27,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 9
+                "column": 9,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 24,
-                "column": 28
+                "column": 28,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 24,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 24,
-              "column": 28
+              "column": 28,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -812,11 +926,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 32
+                "column": 32,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 24,
-                "column": 34
+                "column": 34,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -826,44 +942,52 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 38
+                "column": 38,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 24,
-                "column": 40
+                "column": 40,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 24,
-              "column": 32
+              "column": 32,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 24,
-              "column": 40
+              "column": 40,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 24,
-            "column": 40
+            "column": 40,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 24,
-          "column": 41
+          "column": 41,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -881,11 +1005,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 2
+                "column": 2,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 25,
-                "column": 6
+                "column": 6,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -895,22 +1021,26 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 10
+                "column": 10,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 25,
-                "column": 14
+                "column": 14,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 25,
-              "column": 15
+              "column": 15,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -926,11 +1056,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
@@ -940,22 +1072,26 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 28
+                  "column": 28,
+                  "program": "test-nullish-coalescing.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 32
+                  "column": 32,
+                  "program": "test-nullish-coalescing.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 19
+                "column": 19,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 25,
-                "column": 33
+                "column": 33,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -965,44 +1101,52 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 37
+                "column": 37,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 25,
-                "column": 41
+                "column": 41,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 19
+              "column": 19,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 25,
-              "column": 41
+              "column": 41,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 25,
-            "column": 41
+            "column": 41,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 25,
-          "column": 41
+          "column": 41,
+          "program": "test-nullish-coalescing.js"
         }
       }
     },
@@ -1020,11 +1164,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 1
+                "column": 1,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 26,
-                "column": 2
+                "column": 2,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -1034,22 +1180,26 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5
+                "column": 5,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 26,
-                "column": 6
+                "column": 6,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 26,
-              "column": 1
+              "column": 1,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 26,
-              "column": 6
+              "column": 6,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
@@ -1062,11 +1212,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 10
+                "column": 10,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 26,
-                "column": 11
+                "column": 11,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
@@ -1076,44 +1228,52 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 14
+                "column": 14,
+                "program": "test-nullish-coalescing.js"
               },
               "end": {
                 "line": 26,
-                "column": 15
+                "column": 15,
+                "program": "test-nullish-coalescing.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 26,
-              "column": 10
+              "column": 10,
+              "program": "test-nullish-coalescing.js"
             },
             "end": {
               "line": 26,
-              "column": 15
+              "column": 15,
+              "program": "test-nullish-coalescing.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 26,
-            "column": 1
+            "column": 1,
+            "program": "test-nullish-coalescing.js"
           },
           "end": {
             "line": 26,
-            "column": 15
+            "column": 15,
+            "program": "test-nullish-coalescing.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "test-nullish-coalescing.js"
         },
         "end": {
           "line": 26,
-          "column": 16
+          "column": 16,
+          "program": "test-nullish-coalescing.js"
         }
       }
     }
@@ -1121,11 +1281,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-nullish-coalescing.js"
     },
     "end": {
       "line": 26,
-      "column": 16
+      "column": 16,
+      "program": "test-nullish-coalescing.js"
     }
   }
 }

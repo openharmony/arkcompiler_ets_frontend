@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
 #include "checker/types/signature.h"
+#include "ir/annotationAllowed.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
@@ -35,7 +36,7 @@ class TSTypeParameterDeclaration;
 class TypeNode;
 class AnnotationUsage;
 
-class ScriptFunction : public AstNode {
+class ScriptFunction : public AnnotationAllowed<AstNode> {
 public:
     // Need to reduce the number of constructor parameters to pass OHOS CI code check
     struct ScriptFunctionData {
@@ -74,24 +75,14 @@ public:
         return signature_;
     }
 
-    [[nodiscard]] FunctionSignature IrSignature() noexcept
-    {
-        return irSignature_;
-    }
-
-    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
+    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
     {
         return irSignature_.Params();
     }
 
-    [[nodiscard]] ArenaVector<Expression *> &Params() noexcept
+    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
     {
         return irSignature_.Params();
-    }
-
-    size_t DefaultParamIndex() const noexcept
-    {
-        return this->irSignature_.DefaultParamIndex();
     }
 
     const ArenaVector<ReturnStatement *> &ReturnStatements() const
@@ -196,6 +187,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::SETTER) != 0;
     }
 
+    [[nodiscard]] bool IsExtensionAccessor() const noexcept
+    {
+        return IsExtensionMethod() && (IsGetter() || IsSetter());
+    }
+
     [[nodiscard]] bool IsMethod() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::METHOD) != 0;
@@ -266,14 +262,20 @@ public:
         return lang_.IsDynamic();
     }
 
+    // Note: This method has been written into CAPI, cannot remove it simply.
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
+        return HasReceiver();
     }
 
     [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept
     {
         return funcFlags_;
+    }
+
+    [[nodiscard]] bool HasReceiver() const noexcept
+    {
+        return irSignature_.HasReceiver();
     }
 
     void SetIdent(Identifier *id) noexcept;
@@ -286,6 +288,11 @@ public:
     void AddFlag(ir::ScriptFunctionFlags flags) noexcept
     {
         funcFlags_ |= flags;
+    }
+
+    void ClearFlag(ir::ScriptFunctionFlags flags) noexcept
+    {
+        funcFlags_ &= (~flags);
     }
 
     void AddModifier(ir::ModifierFlags flags) noexcept
@@ -320,27 +327,19 @@ public:
         return lang_;
     }
 
-    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
+    void SetPreferredReturnType(checker::Type *preferredReturnType) noexcept
     {
-        return annotations_;
+        preferredReturnType_ = preferredReturnType;
     }
 
-    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
+    [[nodiscard]] checker::Type *GetPreferredReturnType() noexcept
     {
-        return annotations_;
+        return preferredReturnType_;
     }
 
-    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
+    [[nodiscard]] checker::Type const *GetPreferredReturnType() const noexcept
     {
-        annotations_ = std::move(annotations);
-        for (auto anno : annotations_) {
-            anno->SetParent(this);
-        }
-    }
-
-    void AddAnnotations(AnnotationUsage *const annotations)
-    {
-        annotations_.emplace_back(annotations);
+        return preferredReturnType_;
     }
 
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -353,11 +352,18 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        signature_ = nullptr;
+        preferredReturnType_ = nullptr;
     }
 
 private:
@@ -367,9 +373,9 @@ private:
     varbinder::FunctionScope *scope_ {nullptr};
     ir::ScriptFunctionFlags funcFlags_;
     checker::Signature *signature_ {};
+    checker::Type *preferredReturnType_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
-    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

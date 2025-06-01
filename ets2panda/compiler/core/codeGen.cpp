@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@
 #include "compiler/base/catchTable.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -119,7 +120,7 @@ Label *CodeGen::AllocLabel()
 
 bool CodeGen::IsDebug() const noexcept
 {
-    return context_->config->options->CompilerOptions().isDebug;
+    return context_->config->options->IsDebugInfo();
 }
 
 std::uint32_t CodeGen::ParamCount() const noexcept
@@ -137,7 +138,7 @@ std::uint32_t CodeGen::FormalParametersCount() const noexcept
         return 0U;
     }
 
-    ASSERT(rootNode_->IsScriptFunction());
+    ES2PANDA_ASSERT(rootNode_->IsScriptFunction());
 
     return rootNode_->AsScriptFunction()->FormalParamsLength();
 }
@@ -295,7 +296,8 @@ void CodeGen::SetFirstStmt(const ir::Statement *stmt) noexcept
 
 void CodeGen::Unimplemented()
 {
-    throw Error(ErrorType::GENERIC, "", "Unimplemented code path");
+    // Unimplemented code path
+    ES2PANDA_UNREACHABLE();
 }
 
 SimpleAllocator &CodeGen::Sa() noexcept

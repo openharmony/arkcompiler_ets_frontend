@@ -16,6 +16,7 @@
 import * as ts from 'typescript';
 
 export const SENDABLE_DECORATOR = 'Sendable';
+export const CONCURRENT_DECORATOR = 'Concurrent';
 
 export const SENDABLE_DECORATOR_NODES = [
   ts.SyntaxKind.ClassDeclaration,

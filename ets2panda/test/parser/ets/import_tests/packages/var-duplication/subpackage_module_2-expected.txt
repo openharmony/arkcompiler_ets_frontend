@@ -1,1 +1,573 @@
-SyntaxError: Variable 'a' has already been declared. [subpackage_module_2.sts:19:12]
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ETSPackageDeclaration",
+      "name": {
+        "type": "TSQualifiedName",
+        "left": {
+          "type": "TSQualifiedName",
+          "left": {
+            "type": "Identifier",
+            "name": "import_tests",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "subpackage_module_2.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 21,
+                "program": "subpackage_module_2.ets"
+              }
+            }
+          },
+          "right": {
+            "type": "Identifier",
+            "name": "packages",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 22,
+                "program": "subpackage_module_2.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 30,
+                "program": "subpackage_module_2.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 9,
+              "program": "subpackage_module_2.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 30,
+              "program": "subpackage_module_2.ets"
+            }
+          }
+        },
+        "right": {
+          "type": "Identifier",
+          "name": "subpackage_b",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 31,
+              "program": "subpackage_module_2.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 43,
+              "program": "subpackage_module_2.ets"
+            }
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 9,
+            "program": "subpackage_module_2.ets"
+          },
+          "end": {
+            "line": 16,
+            "column": 44,
+            "program": "subpackage_module_2.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1,
+          "program": "subpackage_module_2.ets"
+        },
+        "end": {
+          "line": 16,
+          "column": 44,
+          "program": "subpackage_module_2.ets"
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1,
+              "program": "subpackage_module_2.ets"
+            },
+            "end": {
+              "line": 1,
+              "column": 1,
+              "program": "subpackage_module_2.ets"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "a",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 12,
+                              "program": "subpackage_module_2.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 13,
+                              "program": "subpackage_module_2.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "StringLiteral",
+                          "value": "SubpackageB",
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 24,
+                              "program": "subpackage_module_2.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 37,
+                              "program": "subpackage_module_2.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 19,
+                            "column": 12,
+                            "program": "subpackage_module_2.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 37,
+                            "program": "subpackage_module_2.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 19,
+                          "column": 12,
+                          "program": "subpackage_module_2.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 37,
+                          "program": "subpackage_module_2.ets"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "a",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 12,
+                              "program": "subpackage_module_1.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 13,
+                              "program": "subpackage_module_1.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "StringLiteral",
+                          "value": "SubpackageB",
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 24,
+                              "program": "subpackage_module_1.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 37,
+                              "program": "subpackage_module_1.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 19,
+                            "column": 12,
+                            "program": "subpackage_module_1.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 37,
+                            "program": "subpackage_module_1.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 19,
+                          "column": 12,
+                          "program": "subpackage_module_1.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 37,
+                          "program": "subpackage_module_1.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "subpackage_module_2.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "subpackage_module_2.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "a",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 12,
+                  "program": "subpackage_module_2.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 13,
+                  "program": "subpackage_module_2.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "String",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 15,
+                      "program": "subpackage_module_2.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 21,
+                      "program": "subpackage_module_2.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 15,
+                    "program": "subpackage_module_2.ets"
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 23,
+                    "program": "subpackage_module_2.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 15,
+                  "program": "subpackage_module_2.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 23,
+                  "program": "subpackage_module_2.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 12,
+                "program": "subpackage_module_2.ets"
+              },
+              "end": {
+                "line": 19,
+                "column": 37,
+                "program": "subpackage_module_2.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "a",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 12,
+                  "program": "subpackage_module_1.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 13,
+                  "program": "subpackage_module_1.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "String",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 15,
+                      "program": "subpackage_module_1.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 21,
+                      "program": "subpackage_module_1.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 15,
+                    "program": "subpackage_module_1.ets"
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 23,
+                    "program": "subpackage_module_1.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 15,
+                  "program": "subpackage_module_1.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 23,
+                  "program": "subpackage_module_1.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 12,
+                "program": "subpackage_module_1.ets"
+              },
+              "end": {
+                "line": 19,
+                "column": 37,
+                "program": "subpackage_module_1.ets"
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1,
+            "program": "subpackage_module_2.ets"
+          },
+          "end": {
+            "line": 1,
+            "column": 1,
+            "program": "subpackage_module_2.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1,
+          "program": "subpackage_module_2.ets"
+        },
+        "end": {
+          "line": 1,
+          "column": 1,
+          "program": "subpackage_module_2.ets"
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "program": "subpackage_module_2.ets"
+    },
+    "end": {
+      "line": 20,
+      "column": 1,
+      "program": "subpackage_module_2.ets"
+    }
+  }
+}
+TypeError: Variable 'a' has already been declared. [subpackage_module_1.ets:19:12]

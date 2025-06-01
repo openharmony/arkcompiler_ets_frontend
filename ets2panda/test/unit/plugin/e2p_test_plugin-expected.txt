@@ -6,8 +6,8 @@ string
 b
 fooExample
 fooExample
-invoke
-invoke
+$_invoke
+$_invoke
 constructor
 constructor
 name
@@ -34,5 +34,6 @@ n
 console
 log
 k
+After bind
 After check
 After lowerings

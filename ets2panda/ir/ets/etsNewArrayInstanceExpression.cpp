@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
 
 namespace ark::es2panda::ir {
 void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb,
@@ -53,9 +50,9 @@ void ETSNewArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 void ETSNewArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(typeReference_);
+    ES2PANDA_ASSERT(typeReference_);
     typeReference_->Dump(dumper);
-    ASSERT(dimension_);
+    ES2PANDA_ASSERT(dimension_);
     dumper->Add("[");
     dimension_->Dump(dumper);
     dumper->Add("]");
@@ -75,9 +72,9 @@ checker::Type *ETSNewArrayInstanceExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
@@ -85,26 +82,23 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
 {
     auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator, nullptr) : nullptr;
     auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(typeRef, dimension);
 
-    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(typeRef, dimension); clone != nullptr) {
-        if (typeRef != nullptr) {
-            typeRef->SetParent(clone);
-        }
-
-        if (dimension != nullptr) {
-            dimension->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->defaultConstructorSignature_ = defaultConstructorSignature_;
-        clone->SetRange(Range());
-
-        return clone;
+    if (typeRef != nullptr) {
+        typeRef->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (dimension != nullptr) {
+        dimension->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->defaultConstructorSignature_ = defaultConstructorSignature_;
+    clone->SetRange(Range());
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

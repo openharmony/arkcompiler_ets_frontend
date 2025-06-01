@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expressions/memberExpression.h"
 
 namespace ark::es2panda::ir {
 void ChainExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -76,25 +73,25 @@ checker::Type *ChainExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ChainExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ChainExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ChainExpression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const expression = expression_ != nullptr ? expression_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<ChainExpression>(expression);
 
-    if (auto *const clone = allocator->New<ChainExpression>(expression); clone != nullptr) {
-        if (expression != nullptr) {
-            expression->SetParent(clone);
-        }
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    if (expression != nullptr) {
+        expression->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

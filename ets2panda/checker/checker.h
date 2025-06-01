@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,13 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_H
 #define ES2PANDA_CHECKER_CHECKER_H
 
-#include "es2panda.h"
-
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
-#include "util/errorLogger.h"
+#include "util/diagnosticEngine.h"
+
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
 
 namespace ark::es2panda::parser {
 class Program;
@@ -60,7 +62,7 @@ using ArgRange = std::pair<uint32_t, uint32_t>;
 
 class Checker {
 public:
-    explicit Checker();
+    explicit Checker(util::DiagnosticEngine &diagnosticEngine);
     virtual ~Checker() = default;
 
     NO_COPY_SEMANTIC(Checker);
@@ -148,39 +150,41 @@ public:
 
     [[nodiscard]] ETSChecker *AsETSChecker()
     {
-        ASSERT(IsETSChecker());
+        ES2PANDA_ASSERT(IsETSChecker());
         return reinterpret_cast<ETSChecker *>(this);
     }
 
     [[nodiscard]] const ETSChecker *AsETSChecker() const
     {
-        ASSERT(IsETSChecker());
+        ES2PANDA_ASSERT(IsETSChecker());
         return reinterpret_cast<const ETSChecker *>(this);
     }
 
-    virtual bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) = 0;
+    virtual bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) = 0;
     virtual Type *CheckTypeCached(ir::Expression *expr) = 0;
     virtual Type *GetTypeOfVariable(varbinder::Variable *var) = 0;
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;
 
-    std::string FormatMsg(std::initializer_list<TypeErrorMessageElement> list);
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
+    void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
-    bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+    bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                           const util::DiagnosticMessageParams &diagParams, const lexer::SourcePosition &errPos);
+    bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
                            const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target);
-    bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &errPos);
+    bool IsTypeAssignableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target);
-    bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &errPos);
+    bool IsTypeComparableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos);
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
@@ -195,13 +199,22 @@ public:
 
     varbinder::VarBinder *VarBinder() const;
 
-    util::ErrorLogger *ErrorLogger()
+    util::DiagnosticEngine &DiagnosticEngine()
     {
-        return &errorLogger_;
+        return diagnosticEngine_;
+    }
+
+    lexer::SourcePosition GetPositionForDiagnostic() const
+    {
+        return lexer::SourcePosition {Program()};
     }
 
     // NOTE: required only for evaluate.
     void Initialize(varbinder::VarBinder *varbinder);
+
+    [[nodiscard]] bool IsAnyError();
+
+    virtual void CleanUp();
 
 protected:
     parser::Program *Program() const;
@@ -216,7 +229,7 @@ private:
     varbinder::VarBinder *varbinder_ {};
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
-    util::ErrorLogger errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 
     RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
     RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
@@ -249,29 +262,15 @@ private:
 
 class TypeStackElement {
 public:
-    explicit TypeStackElement(Checker *checker, void *element, std::initializer_list<TypeErrorMessageElement> list,
+    explicit TypeStackElement(Checker *checker, void *element, const std::optional<util::DiagnosticWithParams> &diag,
                               const lexer::SourcePosition &pos, bool isRecursive = false)
-        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
+        : checker_(checker), element_(element), isRecursive_(isRecursive)
     {
         if (!checker->typeStack_.insert({element, nullptr}).second) {
             if (isRecursive_) {
                 cleanup_ = false;
             } else {
-                checker_->LogTypeError(list, pos);
-                element_ = nullptr;
-            }
-        }
-    }
-
-    explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos,
-                              bool isRecursive = false)
-        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
-    {
-        if (!checker->typeStack_.insert({element, nullptr}).second) {
-            if (isRecursive_) {
-                cleanup_ = false;
-            } else {
-                checker_->LogTypeError(err, pos);
+                checker_->LogError(diag->kind, diag->params, pos);
                 element_ = nullptr;
             }
         }
@@ -299,7 +298,7 @@ public:
 
     ~TypeStackElement()
     {
-        ASSERT(hasErrorChecker_);
+        ES2PANDA_ASSERT(hasErrorChecker_);
         if (element_ != nullptr && cleanup_) {
             checker_->typeStack_.erase(element_);
         }
@@ -311,9 +310,9 @@ public:
 private:
     Checker *checker_;
     void *element_;
-    bool hasErrorChecker_;
+    bool hasErrorChecker_ {false};
     bool isRecursive_;
-    bool cleanup_;
+    bool cleanup_ {true};
 };
 
 template <typename T>
@@ -348,15 +347,12 @@ private:
 
 class ScopeContext {
 public:
-    explicit ScopeContext(Checker *checker, varbinder::Scope *newScope)
-        : checker_(checker), prevScope_(checker_->scope_)
-    {
-        checker_->scope_ = newScope;
-    }
+    explicit ScopeContext(Checker *checker, varbinder::Scope *newScope);
 
     ~ScopeContext()
     {
         checker_->scope_ = prevScope_;
+        checker_->SetProgram(prevProgram_);
     }
 
     NO_COPY_SEMANTIC(ScopeContext);
@@ -365,6 +361,7 @@ public:
 private:
     Checker *checker_;
     varbinder::Scope *prevScope_;
+    parser::Program *prevProgram_;
 };
 
 class SavedCheckerContext {
@@ -402,6 +399,62 @@ public:
 private:
     Checker *checker_;
     CheckerContext prev_;
+};
+
+// VerifiedType is used to check return type from Expresssion not equal nullptr
+class VerifiedType {
+public:
+    VerifiedType() = delete;
+    ~VerifiedType() = default;
+
+    DEFAULT_MOVE_SEMANTIC(VerifiedType);
+    DEFAULT_COPY_SEMANTIC(VerifiedType);
+
+    VerifiedType([[maybe_unused]] const ir::AstNode *const node, Type *type) : type_(type)
+    {
+        ES2PANDA_ASSERT(type != nullptr || !node->IsExpression());
+    };
+
+    Type *operator*() const
+    {
+        return type_;
+    }
+
+    // NOLINTNEXTLINE(*-explicit-constructor)
+    operator Type *() const
+    {
+        return type_;
+    }
+
+    Type *operator->() const
+    {
+        return type_;
+    }
+
+    friend bool operator==(const VerifiedType &l, const std::nullptr_t &r)
+    {
+        return l.type_ == r;
+    }
+
+    friend bool operator==(const VerifiedType &l, const VerifiedType &r)
+    {
+        return l.type_ == r.type_;
+    }
+
+    friend bool operator!=(const VerifiedType &l, const std::nullptr_t &r)
+    {
+        return !(l == r);
+    }
+
+    friend bool operator!=(const VerifiedType &l, const VerifiedType &r)
+    {
+        return !(l == r);
+    }
+
+    // Other conparison is should't used with VerificationType
+
+private:
+    Type *type_ {};
 };
 
 }  // namespace ark::es2panda::checker

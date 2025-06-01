@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 
 #include "varbinder/scope.h"
+#include "ir/expression.h"
 #include "ir/statement.h"
 
 namespace ark::es2panda::checker {
@@ -51,6 +52,14 @@ public:
         return discriminant_;
     }
 
+    void SetDiscriminant(Expression *discriminant) noexcept
+    {
+        if (discriminant != nullptr) {
+            discriminant->SetParent(this);
+        }
+        discriminant_ = discriminant;
+    }
+
     [[nodiscard]] const ArenaVector<SwitchCaseStatement *> &Cases() const noexcept
     {
         return cases_;
@@ -73,7 +82,7 @@ public:
 
     void SetScope(varbinder::LocalScope *scope) noexcept
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -90,12 +99,14 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] SwitchStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     varbinder::LocalScope *scope_ {nullptr};

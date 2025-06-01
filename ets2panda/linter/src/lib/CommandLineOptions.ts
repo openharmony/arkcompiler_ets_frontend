@@ -21,4 +21,9 @@ export interface CommandLineOptions {
   parsedConfigFile?: ts.ParsedCommandLine;
   inputFiles: string[];
   linterOptions: LinterOptions;
+  ModulePaths?: string;
+  sdkDefaultApiPath?: string;
+  sdkExternalApiPath?: string[];
+  arktsWholeProjectPath?: string;
+  homecheck?: boolean;
 }

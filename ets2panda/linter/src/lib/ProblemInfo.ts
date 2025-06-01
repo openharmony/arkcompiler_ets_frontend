@@ -28,6 +28,7 @@ export interface ProblemInfo {
   suggest: string;
   rule: string;
   ruleTag: number;
+  autofixable?: boolean;
   autofix?: Autofix[];
   autofixTitle?: string;
 }

@@ -1,0 +1,288 @@
+/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+typedef (String or f64 or boolean) es2panda_variantDoubleCharArrayBool;
+
+
+[Entity=Class] interface es2panda_Config {};
+[Entity=Class] interface es2panda_Context {};
+[Entity=Class] interface es2panda_Program {};
+[Entity=Class] interface es2panda_ExternalSource {};
+[Entity=Class] interface es2panda_ArkTsConfig {};
+[Entity=Class] interface es2panda_AstNode {};
+[Entity=Class] interface es2panda_FunctionSignature {};
+[Entity=Class] interface es2panda_SourcePosition {};
+[Entity=Class] interface es2panda_SourceRange {};
+[Entity=Class] interface es2panda_SrcDumper {};
+[Entity=Class] interface es2panda_AstDumper {};
+[Entity=Class] interface es2panda_LabelPair {};
+[Entity=Class] interface es2panda_ScriptFunctionData {};
+[Entity=Class] interface es2panda_ImportSource {};
+[Entity=Class] interface es2panda_Signature {};
+[Entity=Class] interface es2panda_SignatureInfo {};
+[Entity=Class] interface es2panda_CheckerContext {};
+[Entity=Class] interface es2panda_ResolveResult {};
+[Entity=Class] interface es2panda_ValidationInfo {};
+[Entity=Class] interface es2panda_Type {};
+[Entity=Class] interface es2panda_TypeRelation {};
+[Entity=Class] interface es2panda_IndexInfo {};
+[Entity=Class] interface es2panda_GlobalTypesHolder {};
+[Entity=Class] interface es2panda_ObjectDescriptor {};
+[Entity=Class] interface es2panda_Variable {};
+[Entity=Class] interface es2panda_Scope {};
+[Entity=Class] interface es2panda_ScopeFindResult {};
+[Entity=Class] interface es2panda_BindingProps {};
+[Entity=Class] interface es2panda_Declaration {};
+[Entity=Class] interface es2panda_RecordTable {};
+[Entity=Class] interface es2panda_BoundContext {};
+[Entity=Class] interface es2panda_AstVisitor {};
+[Entity=Class] interface es2panda_AstVerifier {};
+[Entity=Class] interface es2panda_VerifierMessage {};
+[Entity=Class] interface es2panda_CodeGen {};
+[Entity=Class] interface es2panda_VReg {};
+[Entity=Class] interface es2panda_IRNode {};
+[Entity=Class] interface es2panda_ErrorLogger {};
+[Entity=Class] interface es2panda_VerificationContext {};
+[Entity=Class] interface es2panda_ImportPathManager {};
+[Entity=Class] interface es2panda_Path {};
+[Entity=Class] interface es2panda_Options {};
+
+
+interface NodeTraverser {
+    void Do(ir.AstNode e2p_node);
+};
+
+interface NodeTransformer {
+    ir.AstNode Do(ir.AstNode e2p_node);
+};
+
+interface NodePredicate {
+    boolean Do(ir.AstNode e2p_node);
+};
+
+interface PropertyProcessor {
+    varbinder.Variable Do(varbinder.Variable e2p_variable, checker.Type e2p_type);
+};
+
+interface PropertyTraverser {
+    void Do(varbinder.Variable e2p_variable);
+};
+
+interface ClassBuilder {
+    void Do(sequence<ir.AstNode> e2p_node, u32 size);
+};
+
+interface MethodBuilder {
+    void Do(sequence<ir.Statement> statements, u32 sizeStatements, sequence<ir.Expression> expression,
+        u32 sizeExpression, sequence<checker.Type> e2p_type);
+};
+
+interface ClassInitializerBuilder {
+    void Do(sequence<ir.Statement> statements, u32 sizeStatements, sequence<ir.Expression> expression,
+        u32 sizeExpression);
+};
+
+interface AstNodeForEachFunction {
+    void Do(ir.AstNode node, VoidPtr arg);
+};
+
+interface es2panda_DynamicImportData {
+    attribute ir.ETSImportDeclaration import_node;
+    attribute ir.AstNode specifier;
+    attribute varbinder.Variable variable;
+};
+
+interface es2panda_OverloadInfo {
+    attribute u32 minArg;
+    attribute u32 maxArg;
+    attribute boolean needHelperOverload;
+    attribute boolean isDeclare;
+    attribute boolean hasRestVar;
+    attribute boolean returnVoid;
+};
+
+dictionary es2panda_ContextState {
+    i32 ES2PANDA_STATE_NEW = 0;
+    i32 ES2PANDA_STATE_PARSED = 1;
+    i32 ES2PANDA_STATE_SCOPE_INITED = 2;
+    i32 ES2PANDA_STATE_BOUND = 3;
+    i32 ES2PANDA_STATE_CHECKED = 4;
+    i32 ES2PANDA_STATE_LOWERED = 5;
+    i32 ES2PANDA_STATE_ASM_GENERATED = 6;
+    i32 ES2PANDA_STATE_BIN_GENERATED = 7;
+    i32 ES2PANDA_STATE_ERROR = 8;
+};
+
+[Entity=Class] interface VoidPtr {}; // void *
+
+
+% Enums::enums&.each do |name, enum|
+% if enum.flags.length > 0
+% if enum.flags.length <= 32 || enum.type == "int"
+dictionary Es2panda<%= name %> {
+% enum.all_flags_with_value&.each do |flag_name, value|
+    i32 <%= enum.name_to_upper_snake %>_<%= flag_name %> = <%= value %>;
+% end
+};
+
+% else
+
+typedef u64 Es2panda<%= name %>;
+
+% end
+% end
+% end
+
+
+interface es2panda_Impl {
+    es2panda_Config CreateConfig(i32 argc, sequence<String> argv);
+    void DestroyConfig(es2panda_Config config);
+    es2panda_Options ConfigGetOptions(es2panda_Config config);
+
+    es2panda_Context CreateContextFromFile(es2panda_Config config, String source_file_name);
+    es2panda_Context CreateContextFromString(es2panda_Config config, String source, String file_name);
+    es2panda_Context ProceedToState(es2panda_Context context, es2panda_ContextState state);  // context is consumed
+    void DestroyContext(es2panda_Context context);
+
+    es2panda_ContextState ContextState(es2panda_Context context);
+    String ContextErrorMessage(es2panda_Context context);
+
+    es2panda_Program ContextProgram(es2panda_Context context);
+    String ExternalSourceName(es2panda_ExternalSource e_source);
+    sequence<es2panda_Program> ExternalSourcePrograms(es2panda_ExternalSource e_source, sequence<u32> len_p);
+
+    void AstNodeForEach(ir.AstNode ast, AstNodeForEachFunction func, VoidPtr arg);
+
+    VoidPtr AllocMemory(es2panda_Context context, u32 numberOfElements, u32 sizeOfElement);
+
+    es2panda_SourcePosition CreateSourcePosition(es2panda_Context context, u32 index, u32 line);
+    es2panda_SourceRange CreateSourceRange(es2panda_Context context, es2panda_SourcePosition start,
+                                               es2panda_SourcePosition end);
+    u32 SourcePositionIndex(es2panda_Context context, es2panda_SourcePosition position);
+    u32 SourcePositionLine(es2panda_Context context, es2panda_SourcePosition position);
+    es2panda_SourcePosition SourceRangeStart(es2panda_Context context, es2panda_SourceRange range);
+    es2panda_SourcePosition SourceRangeEnd(es2panda_Context context, es2panda_SourceRange range);
+    void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
+    void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
+    void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
+    varbinder.Scope AstNodeFindNearestScope(es2panda_Context ctx, ir.AstNode node);
+    varbinder.Scope AstNodeRebind(es2panda_Context ctx, ir.AstNode node);
+    void AstNodeRecheck(es2panda_Context ctx, ir.AstNode node);
+    Es2pandaEnum Es2pandaEnumFromString(es2panda_Context ctx, String str);
+    String Es2pandaEnumToString(es2panda_Context ctx, Es2pandaEnum id);
+    ir.AstNode DeclarationFromIdentifier(es2panda_Context ctx, ir.Identifier node);
+    ir.AstNode FirstDeclarationByNameFromNode(es2panda_Context ctx, ir.AstNode node, String name);
+    ir.AstNode FirstDeclarationByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
+    sequence<ir.AstNode> AllDeclarationsByNameFromNode(es2panda_Context ctx, ir.AstNode node, String name);
+    sequence<ir.AstNode> AllDeclarationsByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
+    void InsertETSImportDeclarationAndParse(es2panda_Context context, es2panda_Program program,
+                                            ETSImportDeclaration node);
+
+% Es2pandaLibApi::ast_nodes&.each do |ast_node|
+%   if ast_node != 'AstNode' && ast_node != 'TypeNode'
+    boolean Is<%= ast_node %>(ir.AstNode ast);
+%   end
+% end
+
+% Es2pandaLibApi::scopes&.each do |scope|
+%   if scope != 'Scope'
+    boolean ScopeIs<%= scope %>(varbinder.Scope scope);
+%   end
+% end
+
+% Es2pandaLibApi::ast_types&.each do |type|
+%   if type != 'Type'
+    boolean TypeIs<%= type %>(checker.Type type);
+%   end
+% end
+
+% Es2pandaLibApi::ast_variables&.each do |variable|
+%   if variable[1] != 'Variable'
+    boolean VariableIs<%= variable[1] %>(varbinder.Variable variable);
+%   end
+% end
+
+    String AstNodeName(ir.AstNode ast);
+};
+
+
+namespace ir {
+
+[Entity=Class, c_type=es2panda_AstNode] interface NumberLiteral: Literal {
+    ir.AstNode Create(es2panda_Context ctx, i32 value);
+    ir.AstNode Create1(es2panda_Context ctx, i64 value);
+    ir.AstNode Create2(es2panda_Context ctx, f64 value);
+    ir.AstNode Create3(es2panda_Context ctx, f32 value);
+
+    ir.AstNode Update(es2panda_Context ctx, ir.AstNode original, i32 value);
+    ir.AstNode Update1(es2panda_Context ctx, ir.AstNode original, i64 value);
+    ir.AstNode Update2(es2panda_Context ctx, ir.AstNode original, f64 value);
+    ir.AstNode Update3(es2panda_Context ctx, ir.AstNode original, f32 value);
+
+    boolean SetInt(ir.AstNode node, i32 new_value);
+    boolean SetLong(ir.AstNode node, i64 new_value);
+    boolean SetDouble(ir.AstNode node, f64 new_value);
+    boolean SetFloat(ir.AstNode node, f32 new_value);
+};
+
+};  // namespace ir
+
+
+% Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
+
+namespace <%= namespaceName %> {
+
+%   namespaceClasses&.each do |className, classData|
+[Entity=Class<%=
+    classData.ast_node_type_value ? ", Es2pandaAstNodeType=#{classData.ast_node_type_value}" : ''
+%><%= classData.class_c_type %>] interface <%= className %><%=
+    ": #{classData.extends_classname}" if classData && classData.extends_classname
+%> {
+%     classData.class_constructors&.each_with_index do |constructor, index|
+%     api_class_type = Es2pandaLibApi::Arg.type_to_idl(classData.constructor_type.idl_type)
+
+    /* <%= constructor['raw_decl'] %> */
+    static <%= api_class_type %> Create<%= constructor['idl_overload'] %>(es2panda_Context context<%=
+    constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
+     then ', ' + arg.lib_args_to_idl end}&.join('')
+%>);
+%       if classData.updater_allowed
+    static <%= api_class_type %> Update<%= constructor['idl_overload'] %>(es2panda_Context context, <%=
+        api_class_type %> original<%=
+    constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
+     then ', ' + arg.lib_args_to_idl end}&.join('')
+%>);
+%       end   # Updater
+%     end    # Constructor
+%     classData.class_methods&.each_with_index do |method_info, index|
+
+    /* <%= method_info['raw_decl'] %> */
+    <%=
+    method_info['get_modifier'] ? "[#{method_info['get_modifier']}] " : ''
+%><%=
+    Es2pandaLibApi::Arg.type_to_idl(method_info['return_type'].idl_type)
+%> <%=method_info['idl_name']%>(es2panda_Context context<%=
+    method_info['args']&.map { |arg| if arg.lib_args_to_str.strip != '' && arg.lib_args_to_str.strip != 'const'
+    then ', ' + arg.lib_args_to_idl end}&.join('')
+%><%=
+    method_info['return_type'].return_args_to_idl
+%>);
+%     end    # Method
+};
+
+%   end    # namespaceClasses
+};  // namespace <%= namespaceName %>
+% end    # classes

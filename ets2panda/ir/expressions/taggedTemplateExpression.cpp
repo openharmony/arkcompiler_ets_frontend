@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,16 +15,9 @@
 
 #include "taggedTemplateExpression.h"
 
-#include "varbinder/variable.h"
-#include "compiler/base/literals.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expressions/templateLiteral.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace ark::es2panda::ir {
 void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -85,9 +78,9 @@ checker::Type *TaggedTemplateExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -95,23 +88,25 @@ TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const 
     auto *const tag = tag_ != nullptr ? tag_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator, nullptr) : nullptr;
     auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr) : nullptr;
+    auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, typeParams);
 
-    if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, typeParams); clone != nullptr) {
-        if (tag != nullptr) {
-            tag->SetParent(clone);
-        }
-        if (quasi != nullptr) {
-            quasi->SetParent(clone);
-        }
-        if (typeParams != nullptr) {
-            typeParams->SetParent(clone);
-        }
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    if (tag != nullptr) {
+        tag->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (quasi != nullptr) {
+        quasi->SetParent(clone);
+    }
+
+    if (typeParams != nullptr) {
+        typeParams->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

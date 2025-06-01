@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -88,6 +88,7 @@ ast_nodes_supported = [
     "ETSTypeReference",
     "ETSTypeReferencePart",
     "ETSUnionType",
+    "ETSKeyofType",
     "ETSLaunchExpression",
     "ETSNewArrayInstanceExpression",
     "ETSNewMultiDimArrayInstanceExpression",
@@ -95,7 +96,7 @@ ast_nodes_supported = [
     "ETSImportDeclaration",
     "ETSParameterExpression",
     "ETSTuple",
-    "ETSScript",
+    "ETSModule",
     "SuperExpression",
     "ETSStructDeclaration",
     "SwitchCaseStatement",
@@ -302,7 +303,7 @@ def need_to_gen(function: dict) -> bool:
         for ban in no_gen_keywords["postfix"]: # CC-OFF(G.TYP.07) dict key exist
             if function["postfix"].find(ban) != -1:
                 return False
-    for name_start in no_gen_keywords["name_starts_with"]: # CC-OFF(G.TYP.07) dict key exist
+    for name_start in no_gen_keywords["name_starts_with"]:  # CC-OFF(G.TYP.07) dict key exist
         if function["name"].startswith(name_start):
             return False
     if "return_type" in function:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@
 #include "checker/ets/narrowingConverter.h"
 #include "checker/ets/unboxingConverter.h"
 #include "checker/ets/wideningConverter.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker::conversion {
@@ -29,14 +30,14 @@ void Identity(TypeRelation *const relation, Type *const source, Type *const targ
 
 void WideningPrimitive(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
+    ES2PANDA_ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
 
     WideningConverter(relation->GetChecker()->AsETSChecker(), relation, target, source);
 }
 
 void NarrowingPrimitive(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
+    ES2PANDA_ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
 
     NarrowingConverter(relation->GetChecker()->AsETSChecker(), relation, target, source);
 }
@@ -96,17 +97,10 @@ bool IsAllowedNarrowingReferenceConversionObjectObject(TypeRelation *const relat
         return true;
     }
 
-    // 5. S is an interface type, T is a class type, and T names a class not marked as final.
-    if (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
-        !target->GetDeclNode()->IsFinal()) {
-        return true;
-    }
-
-    // 6. S is an interface type, T is a class type, and T names a class that is marked as final and that
-    //    implements the interface named by S.
+    // 5. S is an interface type, T is a class type, and T names a class that implements the interface named by S.
     relation->Result(false);
     if (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
-        target->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(target, source)) {
+        relation->IsSupertypeOf(target, source)) {
         return true;
     }
 
@@ -116,8 +110,8 @@ bool IsAllowedNarrowingReferenceConversionObjectObject(TypeRelation *const relat
 
 bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-           target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ES2PANDA_ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
+                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     // 11.1.6. Narrowing Reference Conversion
     // A narrowing reference conversion exists from reference type S to a reference type T if all of the following are
@@ -143,6 +137,13 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
     }
 
     if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_ARRAY)) {
+        // 7. S is the class type Object of the interface type java.io.Serializable or Cloneable (the only interfaces
+        //    implemented by arrays (link to class objects for arrays)), and T is an array type.
+        // NOTE: implement
+        return true;
+    }
+
+    if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_TUPLE)) {
         // 7. S is the class type Object of the interface type java.io.Serializable or Cloneable (the only interfaces
         //    implemented by arrays (link to class objects for arrays)), and T is an array type.
         // NOTE: implement
@@ -187,8 +188,8 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
 bool IsUncheckedNarrowingReferenceConversion([[maybe_unused]] TypeRelation *const relation,
                                              [[maybe_unused]] Type *const source, [[maybe_unused]] Type *const target)
 {
-    ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-           target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ES2PANDA_ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
+                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     // The unchecked narrowing reference conversions are as follows:
     // - A narrowing reference conversion from a type S to a parameterized class or interface
@@ -207,7 +208,7 @@ bool IsUncheckedNarrowingReferenceConversion([[maybe_unused]] TypeRelation *cons
 
 void NarrowingReferenceImpl(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ES2PANDA_ASSERT(target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     if (!IsAllowedNarrowingReferenceConversion(relation, source, target)) {
         Forbidden(relation);
@@ -244,6 +245,11 @@ void NarrowingReference(TypeRelation *const relation, ETSObjectType *const sourc
         return;
     }
 
+    NarrowingReferenceImpl(relation, source, target);
+}
+
+void NarrowingReference(TypeRelation *const relation, ETSObjectType *const source, ETSTupleType *const target)
+{
     NarrowingReferenceImpl(relation, source, target);
 }
 
@@ -284,7 +290,7 @@ void UnboxingWideningPrimitive(TypeRelation *const relation, ETSObjectType *cons
     if (!relation->IsTrue()) {
         return;
     }
-    ASSERT(unboxedSource != nullptr);
+    ES2PANDA_ASSERT(unboxedSource != nullptr);
     WideningPrimitive(relation, target, unboxedSource);
     RollbackBoxingIfFailed(relation);
 }
@@ -295,7 +301,7 @@ void UnboxingNarrowingPrimitive(TypeRelation *const relation, ETSObjectType *con
     if (!relation->IsTrue()) {
         return;
     }
-    ASSERT(unboxedSource != nullptr);
+    ES2PANDA_ASSERT(unboxedSource != nullptr);
     NarrowingPrimitive(relation, target, unboxedSource);
 }
 
@@ -305,7 +311,7 @@ void UnboxingWideningNarrowingPrimitive(TypeRelation *const relation, ETSObjectT
     if (!relation->IsTrue()) {
         return;
     }
-    ASSERT(unboxedSource != nullptr);
+    ES2PANDA_ASSERT(unboxedSource != nullptr);
     WideningNarrowingPrimitive(relation, unboxedSource->AsByteType(), target->AsCharType());
 }
 
@@ -315,7 +321,7 @@ void NarrowingReferenceUnboxing(TypeRelation *const relation, ETSObjectType *con
     if (boxedTarget == nullptr) {
         return;
     }
-    ASSERT(boxedTarget != nullptr);
+    ES2PANDA_ASSERT(boxedTarget != nullptr);
     NarrowingReference(relation, source, boxedTarget->AsETSObjectType());
     if (!relation->IsTrue()) {
         return;
@@ -329,7 +335,7 @@ void BoxingWideningReference(TypeRelation *const relation, Type *const source, E
     if (!relation->IsTrue()) {
         return;
     }
-    ASSERT(boxedSource != nullptr);
+    ES2PANDA_ASSERT(boxedSource != nullptr);
     WideningReference(relation, boxedSource, target);
     RollbackBoxingIfFailed(relation);
 }
@@ -351,7 +357,7 @@ void String(TypeRelation *const relation, Type *const source)
         return;
     }
 
-    ASSERT(source->HasTypeFlag(TypeFlag::ETS_OBJECT));
+    ES2PANDA_ASSERT(source->HasTypeFlag(TypeFlag::ETS_OBJECT));
 }
 
 void Forbidden(TypeRelation *const relation)

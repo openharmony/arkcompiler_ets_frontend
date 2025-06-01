@@ -120,7 +120,7 @@ is converted to
 ```
 interface I {
   get v(): int
-  set v(v: int): void
+  set v(v: int)
 }
 ```
 
@@ -374,7 +374,7 @@ final class LambdaObject-C$lambda$invoke$0 implements Function0<Int> {
     return this.$this.lambda$invoke$0(this.ll) as Object|null|undefined;
   }
   
-  public invoke(): int {
+  public $_invoke(): int {
     return this.$this.lambda$invoke$0(this.ll);
   }
 }
@@ -464,18 +464,6 @@ the `for of` loop converts to
       res = (res + x) as String;
       gensym$_5 = gensym$_4.next();
     }
-```
-
-- `TupleLowering` inserts explicit conversions needed to support tuples.
-(The reason is that tuples are represented as arrays of the LUB type of their elements, 
-and sometimes implicit conversions do not work)
-```
-    let t: [string, short] = ["oh", 11];
-    t[1] = 12;
-```
-The last assignment changes to
-```
-    t[1] = 12 as Short as String|Short;
 ```
 
 - `UnionLowering` does two things: 
@@ -605,7 +593,7 @@ let o: I = {n: 33, s: "ouch"} as $anonymous_class$I
 class $anonymous_class$I implements I {
   private _n: int;
   
-  set n(n: int): void {
+  set n(n: int) {
     this._n = n;
   }
   
@@ -615,7 +603,7 @@ class $anonymous_class$I implements I {
   
   private _s: String;
   
-  set s(s: String): void {
+  set s(s: String) {
     this._s = s;
   }
   

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -65,7 +65,6 @@ def parse_header(src_path: str, dest_path: str) -> None:
         except Exception:  # pylint: disable=W0718
             os.fdopen(os.open(dest_path, os.O_CREAT, mode=511), "w", encoding="utf-8").close()
 
-            warning_log(f"Can't parse '{src_path}'")
             error_log(f"Error! Can't parse '{src_path}'\n{traceback.format_exc()}\n")
             parsing_failed_msg(src_path)
 
@@ -81,6 +80,8 @@ if __name__ == "__main__":
 
     for header in args.headers:
         dst = os.path.join(result_dir, f"{os.path.splitext(os.path.relpath(header, args.es2panda_root))[0]}.yaml")
+        if ".." in dst:
+            dst = os.path.join(result_dir, f"{os.path.splitext(os.path.basename(header))[0]}.yaml")
         parse_header(header, dst)
 
     save_custom_yamls()

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 
-function function1(is: number | string): asserts is is number { return };
+function function1(is: number | string): asserts is is number /* @@ label */{ /* @@ label1 */return };
 
-/* @@? 17:63 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:65 Error SyntaxError: return keyword should be used in function body */
+/* @@@ label Error SyntaxError: Unexpected token '{'. */
+/* @@@ label1 Error SyntaxError: return keyword should be used in function body. */

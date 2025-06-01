@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,6 +66,14 @@ enum class ParserStatus : uint64_t {
 
     ALLOW_DEFAULT_VALUE = 1ULL << 33ULL,
     FUNCTION_HAS_THROW_STATEMENT = 1ULL << 34ULL,
+    ALLOW_RECEIVER = 1ULL << 35ULL,
+    EXTENSION_ACCESSOR = 1ULL << 36ULL,
+    HAS_RECEIVER = 1ULL << 37ULL,
+    PARSE_TRAILING_BLOCK = 1ULL << 38ULL,
+
+    DEPENDENCY_ANALYZER_MODE = 1ULL << 39ULL,
+
+    STATIC_BLOCK = 1ULL << 40ULL
 };
 
 }  // namespace ark::es2panda::parser
@@ -79,7 +87,7 @@ namespace ark::es2panda::parser {
 class ParserContext {
 public:
     // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.sts";
+    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
 
     explicit ParserContext(const Program *program, ParserStatus status);
 
@@ -133,6 +141,16 @@ public:
     [[nodiscard]] ParserStatus &Status() noexcept
     {
         return status_;
+    }
+
+    [[nodiscard]] bool AllowReceiver() const noexcept
+    {
+        return (status_ & ParserStatus::ALLOW_RECEIVER) != 0;
+    }
+
+    [[nodiscard]] bool IsExtensionAccessor() const noexcept
+    {
+        return (status_ & ParserStatus::EXTENSION_ACCESSOR) != 0;
     }
 
     [[nodiscard]] bool IsGenerator() const noexcept

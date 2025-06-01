@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,10 +28,10 @@ parser::Program *ProxyProgramsCache::GetProgram(util::StringView fileName)
 
 void ProxyProgramsCache::AddProgram(parser::Program *program)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     auto filePath = program->SourceFilePath();
-    ASSERT(cache_.find(filePath) == cache_.end());
+    ES2PANDA_ASSERT(cache_.find(filePath) == cache_.end());
 
     cache_.emplace(filePath, program);
 }

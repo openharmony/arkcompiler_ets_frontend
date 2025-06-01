@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,10 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::ir {
 class Expression;
@@ -72,6 +73,8 @@ enum class RelationResult { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
 
 enum class RelationType { COMPARABLE, ASSIGNABLE, IDENTICAL, UNCHECKED_CASTABLE, SUPERTYPE };
 
+enum class VarianceFlag { COVARIANT, CONTRAVARIANT, INVARIANT };
+
 }  // namespace ark::es2panda::checker
 
 template <>
@@ -115,22 +118,6 @@ public:
     RelationMap cached;
     RelationType type {};
 };
-
-class AsSrc {
-public:
-    explicit AsSrc(const Type *type) : type_(const_cast<Type *>(type)) {}
-
-    const Type *GetType() const
-    {
-        return type_;
-    }
-
-private:
-    Type *type_;
-};
-
-using TypeErrorMessageElement =
-    std::variant<const Type *, AsSrc, char *, util::StringView, lexer::TokenType, size_t, const Signature *>;
 
 class TypeRelation {
 public:
@@ -186,7 +173,10 @@ public:
 
     bool InAssignmentContext() const
     {
-        return (flags_ & TypeRelationFlag::IN_ASSIGNMENT_CONTEXT) != 0;
+        return (((flags_ & TypeRelationFlag::IN_ASSIGNMENT_CONTEXT) !=
+                 static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) ||
+                ((flags_ & TypeRelationFlag::ASSIGNMENT_CONTEXT) ==
+                 static_cast<std::underlying_type_t<TypeRelationFlag>>(TypeRelationFlag::ASSIGNMENT_CONTEXT)));
     }
 
     bool OnlyCheckWidening() const
@@ -299,8 +289,7 @@ public:
         return IsIdenticalTo(const_cast<Type *>(source), const_cast<Type *>(target));
     }
     bool IsIdenticalTo(Type *source, Type *target);
-    bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
-    bool IsCompatibleTo(Signature *source, Signature *target);
+    bool SignatureIsIdenticalTo(Signature *source, Signature *target);
     bool IsAssignableTo(Type *source, Type *target);
     bool IsComparableTo(Type *source, Type *target);
     bool IsCastableTo(Type *const source, Type *const target);
@@ -308,10 +297,17 @@ public:
     {
         return IsSupertypeOf(const_cast<Type *>(super), const_cast<Type *>(sub));
     }
+    bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
-    void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
-    void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
-    void LogError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
+    bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
+    bool SignatureIsSupertypeOf(Signature *super, Signature *sub);
+    bool CheckVarianceRecursively(Type *type, VarianceFlag varianceFlag);
+    VarianceFlag TransferVariant(VarianceFlag variance, VarianceFlag posVariance);
+
+    void RaiseError(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &loc) const;
+    void RaiseError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                    const lexer::SourcePosition &loc) const;
+    void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
     {

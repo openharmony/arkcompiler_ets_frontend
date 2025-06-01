@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,12 +17,12 @@
 #define ES2PANDA_COMPILER_CORE_ETSGEN_H
 
 #include "ir/astNode.h"
-#include "varbinder/ETSBinder.h"
 #include "compiler/core/codeGen.h"
 #include "compiler/core/ETSfunction.h"
 #include "compiler/core/targetTypeContext.h"
 #include "checker/ETSchecker.h"
 #include "util/helpers.h"
+#include <variant>
 
 namespace ark::es2panda::compiler {
 
@@ -72,15 +72,15 @@ public:
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                               const util::StringView &propName);
     void LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                             const util::StringView &propName);
+                             std::variant<util::StringView, const ark::es2panda::ir::Expression *> property);
 
     void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
     void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
 
-    void StoreUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                            const util::StringView &propName);
-    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                           const util::StringView &propName);
+    void StorePropertyByName(const ir::AstNode *node, VReg objReg,
+                             checker::ETSChecker::NamedAccessMeta const &fieldMeta);
+    void LoadPropertyByName(const ir::AstNode *node, VReg objReg,
+                            checker::ETSChecker::NamedAccessMeta const &fieldMeta);
 
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
 
@@ -103,148 +103,34 @@ public:
     void Update(const ir::AstNode *node, lexer::TokenType op);
     void UpdateBigInt(const ir::Expression *node, VReg arg, lexer::TokenType op);
 
-    bool TryLoadConstantExpression(const ir::Expression *node);
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse);
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
-    void ResolveConditionalResultFloat(const ir::AstNode *node, Label *realEndLabel)
-    {
-        auto type = GetAccumulatorType();
-        VReg tmpReg = AllocReg();
-        StoreAccumulator(node, tmpReg);
-        if (type->IsFloatType()) {
-            FloatIsNaN(node);
-        } else {
-            DoubleIsNaN(node);
-        }
-        Sa().Emit<Xori>(node, 1);
-
-        BranchIfFalse(node, realEndLabel);
-        LoadAccumulator(node, tmpReg);
-        VReg zeroReg = AllocReg();
-
-        if (type->IsFloatType()) {
-            MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::FLOAT, 0);
-            BinaryNumberComparison<Fcmpl, Jeqz>(node, zeroReg, realEndLabel);
-        } else {
-            MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::DOUBLE, 0);
-            BinaryNumberComparison<FcmplWide, Jeqz>(node, zeroReg, realEndLabel);
-        }
-    }
+    void ResolveConditionalResultFloat(const ir::AstNode *node, Label *realEndLabel);
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse, Label **end)
-    {
-        auto type = GetAccumulatorType();
-        ASSERT(type != nullptr);
-        auto realEndLabel = [end, ifFalse, this](bool useFalseLabel) {
-            if (useFalseLabel) {
-                return ifFalse;
-            }
-            if ((*end) == nullptr) {
-                (*end) = AllocLabel();
-            }
-            return (*end);
-        }(USE_FALSE_LABEL);
-        if (type->IsDoubleType() || type->IsFloatType()) {
-            ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT>(node, realEndLabel);
-        }
-        if (type->IsLongType()) {
-            VReg zeroReg = AllocReg();
-            MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::LONG, 0);
-            BinaryNumberComparison<CmpWide, CondCompare>(node, zeroReg, realEndLabel);
-        }
-        if constexpr (BEFORE_LOGICAL_NOT) {
-            Label *zeroPrimitive = AllocLabel();
-            BranchIfFalse(node, zeroPrimitive);
-            ToBinaryResult(node, zeroPrimitive);
-        }
-    }
+    void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse, Label **end);
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
-    void ResolveConditionalResultReference(const ir::AstNode *node)
-    {
-        auto const testString = [this, node]() {
-            LoadStringLength(node);
-            if constexpr (BEFORE_LOGICAL_NOT) {
-                Label *zeroLenth = AllocLabel();
-                BranchIfFalse(node, zeroLenth);
-                ToBinaryResult(node, zeroLenth);
-            }
-        };
-
-        auto type = GetAccumulatorType();
-        if (!type->PossiblyETSString()) {
-            Sa().Emit<Ldai>(node, 1);
-            return;
-        }
-        if (type->IsETSStringType()) {  // should also be valid for string|null|undefined
-            testString();
-            return;
-        }
-
-        Label *isString = AllocLabel();
-        Label *end = AllocLabel();
-        compiler::VReg objReg = AllocReg();
-        StoreAccumulator(node, objReg);
-
-        Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinETSStringType()->AssemblerName());
-        BranchIfTrue(node, isString);
-        Sa().Emit<Ldai>(node, 1);
-        Branch(node, end);
-        SetLabel(node, isString);
-        LoadAccumulator(node, objReg);
-        InternalCheckCast(node, Checker()->GlobalBuiltinETSStringType());  // help verifier
-        testString();
-        SetLabel(node, end);
-    }
+    void ResolveConditionalResultReference(const ir::AstNode *node);
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse)
-    {
-        auto type = GetAccumulatorType();
-        if (type->IsETSBooleanType()) {
-            return;
-        }
-        Label *ifNullish {nullptr};
-        Label *end {nullptr};
-        if (type->PossiblyETSNullish()) {
-            if constexpr (USE_FALSE_LABEL) {
-                BranchIfNullish(node, ifFalse);
-            } else {
-                ifNullish = AllocLabel();
-                end = AllocLabel();
-                BranchIfNullish(node, ifNullish);
-            }
-        }
-        if (type->DefinitelyETSNullish()) {
-            // skip
-        } else if (type->IsETSReferenceType()) {
-            ResolveConditionalResultReference<CondCompare, BEFORE_LOGICAL_NOT>(node);
-        } else {
-            ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, ifFalse, &end);
-        }
-        if (ifNullish != nullptr) {
-            Branch(node, end);
-            SetLabel(node, ifNullish);
-            Sa().Emit<Ldai>(node, 0);
-        }
-        if (end != nullptr) {
-            SetLabel(node, end);
-        }
-    }
+    void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse);
 
     template <bool BEFORE_LOGICAL_NOT = false, bool FALSE_LABEL_EXISTED = true>
-    void ResolveConditionalResultIfFalse(const ir::AstNode *node, Label *ifFalse = nullptr)
-    {
-        ResolveConditionalResult<Jeqz, BEFORE_LOGICAL_NOT, FALSE_LABEL_EXISTED>(node, ifFalse);
-    }
+    void ResolveConditionalResultIfFalse(const ir::AstNode *node, Label *ifFalse = nullptr);
 
     template <bool BEFORE_LOGICAL_NOT = false, bool FALSE_LABEL_EXISTED = true>
-    void ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *ifFalse = nullptr)
-    {
-        ResolveConditionalResult<Jnez, BEFORE_LOGICAL_NOT, FALSE_LABEL_EXISTED>(node, ifFalse);
-    }
+    void ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *ifFalse = nullptr);
+
+    template <typename CondCompare, typename NegCondCompare>
+    void BranchConditional(const ir::AstNode *node, Label *endLabel);
+
+    void ConditionalFloat(const ir::AstNode *node);
+
+    void BranchConditionalIfFalse(const ir::AstNode *node, Label *endLabel);
+
+    void BranchConditionalIfTrue(const ir::AstNode *node, Label *endLabel);
 
     void BranchIfFalse(const ir::AstNode *node, Label *ifFalse)
     {
@@ -256,34 +142,26 @@ public:
         Sa().Emit<Jnez>(node, ifTrue);
     }
 
-    void BranchIfNull(const ir::AstNode *node, Label *ifNull)
+    void BranchIfUndefined(const ir::AstNode *node, Label *ifNull)
     {
         Sa().Emit<JeqzObj>(node, ifNull);
     }
 
-    void BranchIfUndefined([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifUndefined)
-    {
-#ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
-        Sa().Emit<Jnez>(node, ifUndefined);
-#else
-        UNREACHABLE();
-#endif  // PANDA_WITH_ETS
-    }
-
-    void BranchIfNotUndefined([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifUndefined)
-    {
-#ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
-        Sa().Emit<Jeqz>(node, ifUndefined);
-#else
-        UNREACHABLE();
-#endif  // PANDA_WITH_ETS
-    }
-
-    void BranchIfNotNull(const ir::AstNode *node, Label *ifNotNull)
+    void BranchIfNotUndefined(const ir::AstNode *node, Label *ifNotNull)
     {
         Sa().Emit<JnezObj>(node, ifNotNull);
+    }
+
+    void BranchIfNull(const ir::AstNode *node, Label *ifTaken)
+    {
+        EmitIsNull(node);
+        BranchIfTrue(node, ifTaken);
+    }
+
+    void BranchIfNotNull(const ir::AstNode *node, Label *ifTaken)
+    {
+        EmitIsNull(node);
+        BranchIfFalse(node, ifTaken);
     }
 
     void BranchIfNullish(const ir::AstNode *node, Label *ifNullish);
@@ -307,77 +185,31 @@ public:
     void Negate(const ir::AstNode *node);
     void LogicalNot(const ir::AstNode *node);
 
-    void LoadAccumulatorByte(const ir::AstNode *node, int8_t number)
-    {
-        LoadAccumulatorNumber<int8_t>(node, number, checker::TypeFlag::BYTE);
-    }
+    void LoadAccumulatorByte(const ir::AstNode *node, int8_t number);
 
-    void LoadAccumulatorShort(const ir::AstNode *node, int16_t number)
-    {
-        LoadAccumulatorNumber<int16_t>(node, number, checker::TypeFlag::SHORT);
-    }
+    void LoadAccumulatorShort(const ir::AstNode *node, int16_t number);
 
-    void LoadAccumulatorInt(const ir::AstNode *node, int32_t number)
-    {
-        LoadAccumulatorNumber<int32_t>(node, number, checker::TypeFlag::INT);
-    }
+    void LoadAccumulatorInt(const ir::AstNode *node, int32_t number);
 
-    void LoadAccumulatorWideInt(const ir::AstNode *node, int64_t number)
-    {
-        LoadAccumulatorNumber<int64_t>(node, number, checker::TypeFlag::LONG);
-    }
+    void LoadAccumulatorWideInt(const ir::AstNode *node, int64_t number);
 
-    void LoadAccumulatorFloat(const ir::AstNode *node, float number)
-    {
-        LoadAccumulatorNumber<float>(node, number, checker::TypeFlag::FLOAT);
-    }
+    void LoadAccumulatorFloat(const ir::AstNode *node, float number);
 
-    void LoadAccumulatorDouble(const ir::AstNode *node, double number)
-    {
-        LoadAccumulatorNumber<double>(node, number, checker::TypeFlag::DOUBLE);
-    }
+    void LoadAccumulatorDouble(const ir::AstNode *node, double number);
 
-    void LoadAccumulatorBoolean(const ir::AstNode *node, bool value)
-    {
-        Sa().Emit<Ldai>(node, value ? 1 : 0);
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-        ApplyConversion(node, Checker()->GlobalETSBooleanType());
-    }
+    void LoadAccumulatorBoolean(const ir::AstNode *node, bool value);
 
-    void LoadAccumulatorString(const ir::AstNode *node, util::StringView str)
-    {
-        Sa().Emit<LdaStr>(node, str);
-        SetAccumulatorType(Checker()->GlobalETSStringLiteralType());
-    }
+    void LoadAccumulatorString(const ir::AstNode *node, util::StringView str);
 
-    void LoadAccumulatorBigInt(const ir::AstNode *node, util::StringView str)
-    {
-        Sa().Emit<LdaStr>(node, str);
-        SetAccumulatorType(Checker()->GlobalETSBigIntType());
-    }
+    void LoadAccumulatorBigInt(const ir::AstNode *node, util::StringView str);
 
-    void LoadAccumulatorNull(const ir::AstNode *node, const checker::Type *type)
-    {
-        Sa().Emit<LdaNull>(node);
-        SetAccumulatorType(type);
-    }
+    void LoadAccumulatorUndefined(const ir::AstNode *node);
 
-    void LoadAccumulatorUndefined([[maybe_unused]] const ir::AstNode *node)
-    {
-#ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsLdundefined>(node);
-        SetAccumulatorType(Checker()->GlobalETSUndefinedType());
-#else
-        UNREACHABLE();
-#endif  // PANDA_WITH_ETS
-    }
+    void LoadAccumulatorNull([[maybe_unused]] const ir::AstNode *node);
 
-    void LoadAccumulatorChar(const ir::AstNode *node, char16_t value)
-    {
-        Sa().Emit<Ldai>(node, value);
-        SetAccumulatorType(Checker()->GlobalCharType());
-        ApplyConversion(node, Checker()->GlobalCharType());
-    }
+    void LoadAccumulatorPoison(const ir::AstNode *node, const checker::Type *type);
+
+    void LoadAccumulatorChar(const ir::AstNode *node, char16_t value);
 
     void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);
 
@@ -402,82 +234,17 @@ public:
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
     void StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);
 
-    template <typename T>
-    void MoveImmediateToRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType, T const value)
-    {
-        switch (valueType) {
-            case checker::TypeFlag::ETS_BOOLEAN:
-                [[fallthrough]];
-            case checker::TypeFlag::BYTE: {
-                Ra().Emit<Movi>(node, reg, static_cast<checker::ByteType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalByteType());
-                break;
-            }
-            case checker::TypeFlag::CHAR: {
-                Ra().Emit<Movi>(node, reg, static_cast<checker::CharType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalCharType());
-                break;
-            }
-            case checker::TypeFlag::SHORT: {
-                Ra().Emit<Movi>(node, reg, static_cast<checker::ShortType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalShortType());
-                break;
-            }
-            case checker::TypeFlag::INT: {
-                Ra().Emit<Movi>(node, reg, static_cast<checker::IntType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalIntType());
-                break;
-            }
-            case checker::TypeFlag::LONG: {
-                Ra().Emit<MoviWide>(node, reg, static_cast<checker::LongType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalLongType());
-                break;
-            }
-            case checker::TypeFlag::FLOAT: {
-                Ra().Emit<Fmovi>(node, reg, static_cast<checker::FloatType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalFloatType());
-                break;
-            }
-            case checker::TypeFlag::DOUBLE: {
-                Ra().Emit<FmoviWide>(node, reg, static_cast<checker::DoubleType::UType>(value));
-                SetVRegType(reg, Checker()->GlobalDoubleType());
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-    }
+    util::StringView GetTupleMemberNameForIndex(std::size_t index) const;
+    void LoadTupleElement(const ir::AstNode *node, VReg objectReg, const checker::Type *elementType, std::size_t index);
+    void StoreTupleElement(const ir::AstNode *node, VReg objectReg, const checker::Type *elementType,
+                           std::size_t index);
 
     template <typename T>
-    void IncrementImmediateRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType, T const value)
-    {
-        switch (valueType) {
-            // NOTE: operand of increment instruction (INCI) is defined in spec as 32-bit integer,
-            // but its current implementation actually can work with 64-bit integers as well.
-            case checker::TypeFlag::INT: {
-                Ra().Emit<Inci>(node, reg, static_cast<checker::IntType::UType>(value));
-                break;
-            }
-            case checker::TypeFlag::CHAR: {
-                Ra().Emit<Inci>(node, reg, static_cast<checker::CharType::UType>(value));
-                break;
-            }
-            case checker::TypeFlag::SHORT: {
-                Ra().Emit<Inci>(node, reg, static_cast<checker::ShortType::UType>(value));
-                break;
-            }
-            case checker::TypeFlag::ETS_BOOLEAN:
-                [[fallthrough]];
-            case checker::TypeFlag::BYTE: {
-                Ra().Emit<Inci>(node, reg, static_cast<checker::ByteType::UType>(value));
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-    }
+    void MoveImmediateToRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType, T const value);
+
+    template <typename T>
+    void IncrementImmediateRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType,
+                                    T const value);
 
     template <typename IntCompare>
     void JumpCompareRegister(const ir::AstNode *node, VReg lhs, Label *ifFalse)
@@ -507,8 +274,6 @@ public:
     void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag);
     void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
     void CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType);
-    void CastUnionToFunctionType(const ir::AstNode *node, const checker::ETSUnionType *unionType,
-                                 checker::Signature *signatureTarget);
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
@@ -531,9 +296,27 @@ public:
 
     bool IsDevirtualizedSignature(const checker::Signature *signature)
     {
-        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
         return signature->HasSignatureFlag(checker::SignatureFlags::FINAL | checker::SignatureFlags::PRIVATE |
                                            checker::SignatureFlags::CONSTRUCTOR);
+    }
+
+    void EmitEtsTypeof([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg reg)
+    {
+#ifdef PANDA_WITH_ETS
+        Ra().Emit<EtsTypeof>(node, reg);
+#else
+        ES2PANDA_UNREACHABLE();
+#endif  // PANDA_WITH_ETS
+    }
+
+    void EmitEtsIstrue([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg reg)
+    {
+#ifdef PANDA_WITH_ETS
+        Ra().Emit<EtsIstrue>(node, reg);
+#else
+        ES2PANDA_UNREACHABLE();
+#endif  // PANDA_WITH_ETS
     }
 
     void CallExact(const ir::AstNode *node, checker::Signature *signature,
@@ -569,11 +352,22 @@ public:
         Ra().Emit<Call, 3U>(node, name, arg0, arg1, arg2, dummyReg_);
     }
 
+    void CallByName([[maybe_unused]] const ir::AstNode *const node,
+                    [[maybe_unused]] const checker::Signature *signature, [[maybe_unused]] const VReg arg0,
+                    [[maybe_unused]] const ArenaVector<ir::Expression *> &arguments)
+    {
+#ifdef PANDA_WITH_ETS
+        CallArgStart<EtsCallNameShort, EtsCallName, EtsCallNameRange>(node, signature, arg0, arguments);
+#else
+        ES2PANDA_UNREACHABLE();
+#endif
+    }
+
     void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis,
                      const ArenaVector<ir::Expression *> &arguments)
     {
-        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
-        ASSERT(!signature->Owner()->GetDeclNode()->IsFinal() || signature->IsFinal());
+        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(!signature->Owner()->GetDeclNode()->IsFinal() || signature->IsFinal());
         if (IsDevirtualizedSignature(signature)) {
             CallArgStart<CallShort, Call, CallRange>(node, signature, athis, arguments);
         } else {
@@ -648,6 +442,9 @@ public:
     }
 #endif  // PANDA_WITH_ETS
 
+    // until a lowering for implicit super is available
+    void CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature, const VReg thisReg);
+
     void CreateBigIntObject(const ir::AstNode *node, VReg arg0,
                             std::string_view signature = Signatures::BUILTIN_BIGINT_CTOR);
 
@@ -682,27 +479,35 @@ private:
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
     void TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target);
     void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label, VReg srcReg,
-                                   checker::Type const *target, bool acceptUndefined);
+                                   checker::Type const *target, bool acceptNull);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 
-    void HandleLooseNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
+    template <bool IS_SRTICT = false>
+    void HandleDefinitelyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
+    template <bool IS_SRTICT = false>
+    void HandlePossiblyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
 
-    void EmitIsUndefined([[maybe_unused]] const ir::AstNode *node)
+    void EmitIsNull([[maybe_unused]] const ir::AstNode *node)
     {
 #ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
+        Sa().Emit<EtsIsnullvalue>(node);
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 
+    template <bool IS_SRTICT = false>
     void EmitEtsEquals([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg lhs,
                        [[maybe_unused]] const VReg rhs)
     {
 #ifdef PANDA_WITH_ETS
-        Ra().Emit<EtsEquals>(node, lhs, rhs);
+        if constexpr (IS_SRTICT) {
+            Ra().Emit<EtsStrictequals>(node, lhs, rhs);
+        } else {
+            Ra().Emit<EtsEquals>(node, lhs, rhs);
+        }
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 
@@ -713,54 +518,7 @@ private:
     }
 
     template <typename LongOp, typename IntOp, typename DoubleOp, typename FloatOp>
-    void UpdateOperator(const ir::AstNode *node)
-    {
-        switch (checker::ETSChecker::ETSType(GetAccumulatorType())) {
-            case checker::TypeFlag::LONG: {
-                RegScope scope(this);
-                VReg reg = AllocReg();
-                Ra().Emit<MoviWide>(node, reg, 1LL);
-                Ra().Emit<LongOp>(node, reg);
-                break;
-            }
-            case checker::TypeFlag::INT: {
-                Sa().Emit<IntOp>(node, 1);
-                break;
-            }
-            case checker::TypeFlag::CHAR: {
-                Sa().Emit<IntOp>(node, 1);
-                Sa().Emit<I32tou16>(node);
-                break;
-            }
-            case checker::TypeFlag::SHORT: {
-                Sa().Emit<IntOp>(node, 1);
-                Sa().Emit<I32toi16>(node);
-                break;
-            }
-            case checker::TypeFlag::BYTE: {
-                Sa().Emit<IntOp>(node, 1);
-                Sa().Emit<I32toi8>(node);
-                break;
-            }
-            case checker::TypeFlag::DOUBLE: {
-                RegScope scope(this);
-                VReg reg = AllocReg();
-                Ra().Emit<FmoviWide>(node, reg, 1.0);
-                Ra().Emit<DoubleOp>(node, reg);
-                break;
-            }
-            case checker::TypeFlag::FLOAT: {
-                RegScope scope(this);
-                VReg reg = AllocReg();
-                Ra().Emit<Fmovi>(node, reg, 1.0F);
-                Ra().Emit<FloatOp>(node, reg);
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-    }
+    void UpdateOperator(const ir::AstNode *node);
 
     template <typename Br>
     void InverseCondition(const ir::AstNode *node, Br const &br, Label *target, bool inverse = true)
@@ -775,7 +533,9 @@ private:
         SetLabel(node, loc);
     }
 
+    template <bool IS_SRTICT = false>
     void RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
+    template <bool IS_SRTICT = false>
     void RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
 
     template <typename Compare, typename Cond>
@@ -785,124 +545,17 @@ private:
         Sa().Emit<Cond>(node, ifFalse);
     }
 
-    template <typename DynCompare>
-    void RefEqualityStrictDynamic(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        ASSERT(GetAccumulatorType()->IsETSDynamicType() && GetVRegType(lhs)->IsETSDynamicType());
-        RegScope scope(this);
-        Ra().Emit<CallShort, 2U>(node, Signatures::BUILTIN_JSRUNTIME_STRICT_EQUAL, lhs, MoveAccToReg(node));
-        Ra().Emit<DynCompare>(node, ifFalse);
-    }
+    template <typename IntCompare, typename CondCompare, typename DynCompare, bool IS_STRICT = false>
+    void BinaryEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse);
 
-    template <typename ObjCompare, typename IntCompare, typename CondCompare, typename DynCompare>
-    void BinaryEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        BinaryEqualityCondition<ObjCompare, IntCompare, CondCompare>(node, lhs, ifFalse);
-        ToBinaryResult(node, ifFalse);
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
-
-    template <typename ObjCompare, typename IntCompare, typename CondCompare>
-    void BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        if (targetType_->IsETSReferenceType()) {
-            RegScope rs(this);
-            VReg arg0 = AllocReg();
-            StoreAccumulator(node, arg0);
-            InverseCondition(
-                node, [this, node, lhs, arg0](Label *tgt) { RefEqualityLoose(node, lhs, arg0, tgt); }, ifFalse,
-                std::is_same_v<CondCompare, Jeqz>);
-            SetAccumulatorType(Checker()->GlobalETSBooleanType());
-            return;
-        }
-
-        auto typeKind = checker::ETSChecker::TypeKind(targetType_);
-
-        switch (typeKind) {
-            case checker::TypeFlag::DOUBLE: {
-                BinaryFloatingPointComparison<FcmpgWide, FcmplWide, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::FLOAT: {
-                BinaryFloatingPointComparison<Fcmpg, Fcmpl, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::LONG: {
-                BinaryNumberComparison<CmpWide, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::ETS_INT_ENUM:
-            case checker::TypeFlag::ETS_STRING_ENUM:
-            case checker::TypeFlag::ETS_BOOLEAN:
-            case checker::TypeFlag::BYTE:
-            case checker::TypeFlag::CHAR:
-            case checker::TypeFlag::SHORT:
-            case checker::TypeFlag::INT: {
-                Ra().Emit<IntCompare>(node, lhs, ifFalse);
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
-
-    template <typename ObjCompare, typename DynCompare>
-    void RefEqualityStrict(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        if (GetAccumulatorType()->IsETSDynamicType() || GetVRegType(lhs)->IsETSDynamicType()) {
-            RefEqualityStrictDynamic<DynCompare>(node, lhs, ifFalse);
-        } else {
-            Ra().Emit<ObjCompare>(node, lhs, ifFalse);
-        }
-
-        ToBinaryResult(node, ifFalse);
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
+    template <typename IntCompare, typename CondCompare, bool IS_STRICT = false>
+    void BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse);
 
     template <typename IntCompare, typename CondCompare>
-    void BinaryRelation(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        BinaryRelationCondition<IntCompare, CondCompare>(node, lhs, ifFalse);
-        ToBinaryResult(node, ifFalse);
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
+    void BinaryRelation(const ir::AstNode *node, VReg lhs, Label *ifFalse);
 
     template <typename IntCompare, typename CondCompare>
-    void BinaryRelationCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        auto typeKind = checker::ETSChecker::TypeKind(targetType_);
-
-        switch (typeKind) {
-            case checker::TypeFlag::DOUBLE: {
-                BinaryFloatingPointComparison<FcmpgWide, FcmplWide, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::FLOAT: {
-                BinaryFloatingPointComparison<Fcmpg, Fcmpl, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::LONG: {
-                BinaryNumberComparison<CmpWide, CondCompare>(node, lhs, ifFalse);
-                break;
-            }
-            case checker::TypeFlag::ETS_BOOLEAN:
-            case checker::TypeFlag::BYTE:
-            case checker::TypeFlag::SHORT:
-            case checker::TypeFlag::CHAR:
-            case checker::TypeFlag::INT: {
-                Ra().Emit<IntCompare>(node, lhs, ifFalse);
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
+    void BinaryRelationCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse);
 
     template <typename CompareGreater, typename CompareLess, typename CondCompare>
     void BinaryFloatingPointComparison(const ir::AstNode *node, VReg lhs, Label *ifFalse)
@@ -915,64 +568,15 @@ private:
     }
 
     template <typename IntOp, typename LongOp, typename FloatOp, typename DoubleOp>
-    void BinaryArithmetic(const ir::AstNode *node, VReg lhs)
-    {
-        auto typeKind = checker::ETSChecker::TypeKind(targetType_);
-
-        switch (typeKind) {
-            case checker::TypeFlag::DOUBLE: {
-                Ra().Emit<DoubleOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalDoubleType());
-                break;
-            }
-            case checker::TypeFlag::FLOAT: {
-                Ra().Emit<FloatOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalFloatType());
-                break;
-            }
-            default: {
-                BinaryBitwiseArithmetic<IntOp, LongOp>(node, lhs);
-            }
-        }
-    }
+    void BinaryArithmetic(const ir::AstNode *node, VReg lhs);
 
     template <typename IntOp, typename LongOp>
-    void BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs)
-    {
-        auto typeKind = checker::ETSChecker::TypeKind(targetType_);
+    void BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs);
 
-        switch (typeKind) {
-            case checker::TypeFlag::LONG: {
-                Ra().Emit<LongOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalLongType());
-                break;
-            }
-            case checker::TypeFlag::BYTE:
-            case checker::TypeFlag::SHORT:
-            case checker::TypeFlag::INT: {
-                Ra().Emit<IntOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalIntType());
-                break;
-            }
-            case checker::TypeFlag::ETS_BOOLEAN: {
-                Ra().Emit<IntOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalETSBooleanType());
-                break;
-            }
-            case checker::TypeFlag::CHAR: {
-                Ra().Emit<IntOp>(node, lhs);
-                SetAccumulatorType(Checker()->GlobalCharType());
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-    }
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
 #define COMPILE_ARG(idx)                                                                                       \
-    ASSERT((idx) < arguments.size());                                                                          \
-    ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                             \
+    ES2PANDA_ASSERT((idx) < arguments.size());                                                                 \
+    ES2PANDA_ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                    \
     auto *param##idx = (idx) < signature->Params().size() ? signature->Params()[(idx)] : signature->RestVar(); \
     auto *paramType##idx = param##idx->TsType();                                                               \
     auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
@@ -1026,7 +630,7 @@ private:
     void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
-        ASSERT(signature != nullptr);
+        ES2PANDA_ASSERT(signature != nullptr);
         RegScope rs(this);
 
         switch (arguments.size()) {
@@ -1074,15 +678,15 @@ private:
     }
 #undef COMPILE_ARG
 
-#define COMPILE_ARG(idx, shift)                                                              \
-    ASSERT((idx) < arguments.size());                                                        \
-    ASSERT((idx) + (shift) < signature->Params().size() || signature->RestVar() != nullptr); \
-    auto *paramType##idx = (idx) + (shift) < signature->Params().size()                      \
-                               ? signature->Params()[(idx) + (shift)]->TsType()              \
-                               : signature->RestVar()->TsType();                             \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                               \
-    VReg arg##idx = AllocReg();                                                              \
-    arguments[idx]->Compile(this);                                                           \
+#define COMPILE_ARG(idx, shift)                                                                       \
+    ES2PANDA_ASSERT((idx) < arguments.size());                                                        \
+    ES2PANDA_ASSERT((idx) + (shift) < signature->Params().size() || signature->RestVar() != nullptr); \
+    auto *paramType##idx = (idx) + (shift) < signature->Params().size()                               \
+                               ? signature->Params()[(idx) + (shift)]->TsType()                       \
+                               : signature->RestVar()->TsType();                                      \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                        \
+    VReg arg##idx = AllocReg();                                                                       \
+    arguments[idx]->Compile(this);                                                                    \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
@@ -1167,74 +771,6 @@ private:
     const checker::Type *targetType_ {};
     const checker::ETSObjectType *containingObjectType_ {};
 };
-
-template <typename T>
-void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag typeKind, T number)
-{
-    switch (typeKind) {
-        case checker::TypeFlag::ETS_BOOLEAN:
-        case checker::TypeFlag::BYTE: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ByteType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalByteType());
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            Sa().Emit<Ldai>(node, static_cast<checker::CharType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalCharType());
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ShortType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalShortType());
-            break;
-        }
-        case checker::TypeFlag::INT: {
-            Sa().Emit<Ldai>(node, static_cast<checker::IntType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalIntType());
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            Sa().Emit<LdaiWide>(node, static_cast<checker::LongType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalLongType());
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            Sa().Emit<Fldai>(node, static_cast<checker::FloatType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalFloatType());
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            Sa().Emit<FldaiWide>(node, static_cast<checker::DoubleType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalDoubleType());
-            break;
-        }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalIntType());
-            break;
-        }
-        default: {
-            UNREACHABLE();
-        }
-    }
-}
-
-template <typename T>
-void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
-{
-    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
-                                    !targetType_->IsETSArrayType())
-                        ? checker::ETSChecker::TypeKind(targetType_)
-                        : targetType;
-
-    SetAccumulatorTargetType(node, typeKind, number);
-
-    if (targetType_ && (targetType_->IsETSObjectType() || targetType_->IsETSUnionType())) {
-        ApplyConversion(node, targetType_);
-    }
-}
 
 }  // namespace ark::es2panda::compiler
 

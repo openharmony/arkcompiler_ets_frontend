@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,11 +29,7 @@ public:
     NO_COPY_SEMANTIC(TSQualifiedName);
     NO_MOVE_SEMANTIC(TSQualifiedName);
 
-    explicit TSQualifiedName(Expression *left, Identifier *right)
-        : Expression(AstNodeType::TS_QUALIFIED_NAME), left_(left), right_(right)
-    {
-    }
-
+    explicit TSQualifiedName(Expression *left, Identifier *right, ArenaAllocator *allocator);
     explicit TSQualifiedName(Tag tag, TSQualifiedName const &other, ArenaAllocator *allocator);
 
     [[nodiscard]] const Expression *Left() const noexcept
@@ -56,8 +52,8 @@ public:
         return right_;
     }
 
-    util::StringView ToString(ArenaAllocator *allocator) const;
-    util::StringView BaseToString(ArenaAllocator *allocator) const;
+    [[nodiscard]] util::StringView Name() const;
+
     ir::TSQualifiedName *ResolveLeftMostQualifiedName();
     const ir::TSQualifiedName *ResolveLeftMostQualifiedName() const;
 
@@ -70,7 +66,12 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
+
+    std::string ToString() const override
+    {
+        return std::string {Name()};
+    }
 
     void Accept(ASTVisitorT *v) override
     {
@@ -80,6 +81,7 @@ public:
 private:
     Expression *left_;
     Identifier *right_;
+    ArenaAllocator *allocator_;
 };
 }  // namespace ark::es2panda::ir
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,8 +22,8 @@
 namespace ark::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
-    explicit ETSLexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger)
-        : Lexer(parserContext, errorLogger, false)
+    explicit ETSLexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine)
+        : Lexer(parserContext, diagnosticEngine, false)
     {
         SkipWhiteSpaces();
     }
@@ -51,25 +51,28 @@ public:
         if (!ScanNumberLeadingZeroImpl<uint32_t>(leadingMinus)) {
             Rewind(savedLexerPosition);
             if (!ScanNumberLeadingZeroImpl<uint64_t>(leadingMinus)) {
-                LogSyntaxError("Number is too large");
+                LogError(diagnostic::TOO_LARGE_NUM);
             }
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
             if (!allowBigint) {
-                LogSyntaxError("Invalid BigInt number");
+                LogError(diagnostic::INVALID_BIGINT);
             }
         }
     }
 
     void CheckNumberLiteralEnd() override;
+    void CheckNumberLiteralEndForIdentifier() override
+    {
+        // don't need check in ETS
+    }
     bool CheckUtf16Compatible(char32_t cp) const;
     void ConvertNumber(NumberFlags flags) override;
 
 protected:
     void ScanEqualsPunctuator() override;
     void ScanExclamationPunctuator() override;
-    bool ScanDollarPunctuator() override;
 };
 }  // namespace ark::es2panda::lexer
 

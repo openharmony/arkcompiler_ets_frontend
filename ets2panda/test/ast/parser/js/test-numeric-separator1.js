@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,5 +15,5 @@
 
 
 1__1
-/* @@? 17:3 Error SyntaxError: Invalid numeric separator  */
-/* @@? 17:5 Error SyntaxError: Numeric separators are not allowed at the end of numeric literals  */
+/* @@? 17:1 Error SyntaxError: Invalid numeric separator. */
+/* @@? 17:1 Error SyntaxError: Numeric separators are not allowed at the end of numeric literals. */

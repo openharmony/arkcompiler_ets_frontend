@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "forUpdateCharType.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "forUpdateCharType.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "forUpdateCharType.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "forUpdateCharType.ets"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "forUpdateCharType.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "forUpdateCharType.ets"
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "forUpdateCharType.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 14
+                      "column": 14,
+                      "program": "forUpdateCharType.ets"
                     }
                   }
                 },
@@ -166,11 +184,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "forUpdateCharType.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 22
+                      "column": 22,
+                      "program": "forUpdateCharType.ets"
                     }
                   }
                 },
@@ -196,33 +216,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "forUpdateCharType.ets"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "forUpdateCharType.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "forUpdateCharType.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "forUpdateCharType.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "forUpdateCharType.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "forUpdateCharType.ets"
                                 }
                               }
                             },
@@ -230,11 +256,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 7
+                                "column": 7,
+                                "program": "forUpdateCharType.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 15
+                                "column": 15,
+                                "program": "forUpdateCharType.ets"
                               }
                             }
                           },
@@ -244,22 +272,26 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 27
+                                "column": 27,
+                                "program": "forUpdateCharType.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 29
+                                "column": 29,
+                                "program": "forUpdateCharType.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 7
+                              "column": 7,
+                              "program": "forUpdateCharType.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 29
+                              "column": 29,
+                              "program": "forUpdateCharType.ets"
                             }
                           }
                         }
@@ -268,11 +300,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 3
+                          "column": 3,
+                          "program": "forUpdateCharType.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 30
+                          "column": 30,
+                          "program": "forUpdateCharType.ets"
                         }
                       }
                     },
@@ -291,11 +325,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 15
+                                    "column": 15,
+                                    "program": "forUpdateCharType.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "forUpdateCharType.ets"
                                   }
                                 }
                               },
@@ -303,11 +339,13 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "forUpdateCharType.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "forUpdateCharType.ets"
                                 }
                               }
                             },
@@ -317,22 +355,26 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "forUpdateCharType.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "forUpdateCharType.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 12
+                                "column": 12,
+                                "program": "forUpdateCharType.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 26
+                                "column": 26,
+                                "program": "forUpdateCharType.ets"
                               }
                             }
                           }
@@ -341,11 +383,13 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 8
+                            "column": 8,
+                            "program": "forUpdateCharType.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 26
+                            "column": 26,
+                            "program": "forUpdateCharType.ets"
                           }
                         }
                       },
@@ -359,11 +403,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 28
+                              "column": 28,
+                              "program": "forUpdateCharType.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 29
+                              "column": 29,
+                              "program": "forUpdateCharType.ets"
                             }
                           }
                         },
@@ -373,22 +419,26 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 33
+                              "column": 33,
+                              "program": "forUpdateCharType.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 37
+                              "column": 37,
+                              "program": "forUpdateCharType.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 28
+                            "column": 28,
+                            "program": "forUpdateCharType.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 37
+                            "column": 37,
+                            "program": "forUpdateCharType.ets"
                           }
                         }
                       },
@@ -403,22 +453,26 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 39
+                              "column": 39,
+                              "program": "forUpdateCharType.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 40
+                              "column": 40,
+                              "program": "forUpdateCharType.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 39
+                            "column": 39,
+                            "program": "forUpdateCharType.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 42
+                            "column": 42,
+                            "program": "forUpdateCharType.ets"
                           }
                         }
                       },
@@ -437,11 +491,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 5
+                                    "column": 5,
+                                    "program": "forUpdateCharType.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "forUpdateCharType.ets"
                                   }
                                 }
                               },
@@ -452,33 +508,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "forUpdateCharType.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "forUpdateCharType.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "forUpdateCharType.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "forUpdateCharType.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 5
+                                "column": 5,
+                                "program": "forUpdateCharType.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 19
+                                "column": 19,
+                                "program": "forUpdateCharType.ets"
                               }
                             }
                           }
@@ -486,79 +548,109 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 44
+                            "column": 44,
+                            "program": "forUpdateCharType.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 4
+                            "column": 4,
+                            "program": "forUpdateCharType.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 3
+                          "column": 3,
+                          "program": "forUpdateCharType.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 4
+                          "column": 4,
+                          "program": "forUpdateCharType.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "mystring",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 10
+                              "column": 3,
+                              "program": "forUpdateCharType.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 18
+                              "column": 11,
+                              "program": "forUpdateCharType.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "StringLiteral",
-                          "value": "abcd",
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 22
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 28
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "mystring",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 12,
+                                "program": "forUpdateCharType.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 20,
+                                "program": "forUpdateCharType.ets"
+                              }
+                            }
+                          },
+                          {
+                            "type": "StringLiteral",
+                            "value": "abcd",
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 22,
+                                "program": "forUpdateCharType.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 28,
+                                "program": "forUpdateCharType.ets"
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 9
+                            "column": 3,
+                            "program": "forUpdateCharType.ets"
                           },
                           "end": {
                             "line": 23,
-                            "column": 29
+                            "column": 29,
+                            "program": "forUpdateCharType.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 3
+                          "column": 3,
+                          "program": "forUpdateCharType.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 30
+                          "column": 30,
+                          "program": "forUpdateCharType.ets"
                         }
                       }
                     }
@@ -566,33 +658,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 23
+                      "column": 23,
+                      "program": "forUpdateCharType.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "forUpdateCharType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "forUpdateCharType.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "forUpdateCharType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "forUpdateCharType.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "forUpdateCharType.ets"
                 }
               }
             },
@@ -601,11 +699,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "forUpdateCharType.ets"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "forUpdateCharType.ets"
               }
             }
           }
@@ -613,22 +713,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "forUpdateCharType.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "forUpdateCharType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "forUpdateCharType.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "forUpdateCharType.ets"
         }
       }
     }
@@ -636,11 +740,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "forUpdateCharType.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "forUpdateCharType.ets"
     }
   }
 }

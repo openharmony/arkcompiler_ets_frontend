@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,20 +15,6 @@
 
 #include "promiseVoid.h"
 #include "checker/ETSchecker.h"
-#include "checker/checker.h"
-#include "generated/signatures.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsNullishTypes.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/typeNode.h"
-#include "lexer/token/sourceLocation.h"
-#include "ir/astNode.h"
-#include "ir/statements/blockStatement.h"
-#include "util/ustring.h"
 
 namespace ark::es2panda::compiler {
 ir::BlockStatement *PromiseVoidInferencePhase::HandleAsyncScriptFunctionBody(checker::ETSChecker *checker,
@@ -73,7 +59,7 @@ ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSCheck
 {
     auto *voidParam = [checker]() {
         auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
-        paramsVector.push_back(checker->AllocNode<ir::ETSUndefinedType>());
+        paramsVector.push_back(checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::VOID, checker->Allocator()));
         auto *params = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(paramsVector));
         return params;
     }();
@@ -81,8 +67,8 @@ ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSCheck
     auto *promiseVoidType = [checker, voidParam]() {
         auto *promiseId =
             checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_PROMISE_CLASS, checker->Allocator());
-        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(promiseId, voidParam, nullptr);
-        auto *type = checker->AllocNode<ir::ETSTypeReference>(part);
+        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(promiseId, voidParam, nullptr, checker->Allocator());
+        auto *type = checker->AllocNode<ir::ETSTypeReference>(part, checker->Allocator());
         return type;
     }();
 
@@ -131,7 +117,7 @@ using AstNodePtr = ir::AstNode *;
  * async function f(): Promise<void> { return Void; }
  * */
 
-bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool PromiseVoidInferencePhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
@@ -175,10 +161,10 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
                 function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
             }
 
-            if (function->HasBody()) {
+            if (function->HasBody() && function->Body()->IsBlockStatement()) {
                 HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
             }
-        } else if (hasPromiseVoid && function->HasBody()) {
+        } else if (hasPromiseVoid && function->HasBody() && function->Body()->IsBlockStatement()) {
             HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
         }
 
@@ -190,7 +176,7 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
     return true;
 }
 
-bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool PromiseVoidInferencePhase::PostconditionForModule(public_lib::Context *ctx, const parser::Program *program)
 {
     (void)ctx;
 
@@ -219,7 +205,7 @@ bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const pa
         if (!CheckForPromiseVoid(returnAnn)) {
             return;
         }
-        if (function->HasBody()) {
+        if (function->HasBody() && function->Body()->IsBlockStatement()) {
             if (!checkFunctionBody(function->Body()->AsBlockStatement())) {
                 isOk = false;
                 return;

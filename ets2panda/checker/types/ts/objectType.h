@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -77,13 +77,13 @@ public:
     /* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/                                             \
     typeName *As##typeName()                                                                \
     {                                                                                       \
-        ASSERT(Is##typeName());                                                             \
+        ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. */        \
         return reinterpret_cast<typeName *>(this);                                          \
     }                                                                                       \
     const typeName *As##typeName() const                                                    \
     {                                                                                       \
-        ASSERT(Is##typeName());                                                             \
+        ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<const typeName *>(this);                                    \
     }

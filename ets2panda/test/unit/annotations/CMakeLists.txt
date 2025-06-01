@@ -20,3 +20,21 @@ ets2panda_add_gtest(es2panda_mutiple_annotations_for_class
 ets2panda_add_gtest(es2panda_mutiple_annotations_for_function
     CPP_SOURCES mutiple_annotations_for_function.cpp    
 )
+ets2panda_add_gtest(es2panda_annotations_for_interface
+    CPP_SOURCES annotations_for_interface.cpp    
+)
+ets2panda_add_gtest(es2panda_annotations_for_function
+    CPP_SOURCES annotations_for_function.cpp    
+)
+ets2panda_add_gtest(es2panda_annotations_for_class
+    CPP_SOURCES annotations_for_class.cpp    
+)
+ets2panda_add_gtest(annotations_retention_policy
+    CPP_SOURCES annotations_retention_policy.cpp    
+)
+ets2panda_add_gtest(annotations_for_namespace
+    CPP_SOURCES annotations_for_namespace.cpp    
+)
+ets2panda_add_gtest(annotations_module
+    CPP_SOURCES annotations_module.cpp
+)

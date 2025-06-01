@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -48,12 +48,33 @@ if(PANDA_WITH_ETS)
       "    \"paths\": {\n"
       "      \"std\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}std\"],\n"
       "      \"escompat\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}escompat\"],\n"
-      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
-      "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
+      "      \"@ohos.buffer\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.buffer.ets\"],\n"
+      "      \"@ohos.util.ArrayList\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.ArrayList.ets\"],\n"
+      "      \"@ohos.util.Deque\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Deque.ets\"],\n"
+      "      \"@ohos.util.HashMap\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.HashMap.ets\"],\n"
+      "      \"@ohos.util.HashSet\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.HashSet.ets\"],\n"
+      "      \"@ohos.util.json\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.json.ets\"],\n"
+      "      \"@ohos.util.LightWeightMap\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.LightWeightMap.ets\"],\n"
+      "      \"@ohos.util.LightWeightSet\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.LightWeightSet.ets\"],\n"
+      "      \"@ohos.util.LinkedList\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.LinkedList.ets\"],\n"
+      "      \"@ohos.util.List\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.List.ets\"],\n"
+      "      \"@ohos.util.PlainArray\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.PlainArray.ets\"],\n"
+      "      \"@ohos.util.Queue\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Queue.ets\"],\n"
+      "      \"@ohos.util.Stack\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Stack.ets\"],\n"
+      "      \"@ohos.util\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.ets\"],\n"
+      "      \"@ohos.util.TreeMap\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeMap.ets\"],\n"
+      "      \"@ohos.util.TreeSet\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeSet.ets\"],\n"
+      "      \"@ohos.uri\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.uri.ets\"],\n"
+      "      \"@ohos.url\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.url.ets\"],\n"
+      "      \"@ohos.xml\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.xml.ets\"],\n"
+      "      \"@ohos.base\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.base.ets\"],\n"
+      "      \"@arkts.math.Decimal\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.math.Decimal.ets\"],\n"
+      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
       "    },\n"
       "    \"dynamicPaths\": {\n"
-      "      \"dynamic_js_import_tests\": {\"language\": \"js\", \"hasDecl\": false},\n"
-      "      \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\": {\"language\": \"js\", \"hasDecl\": true}\n"
+      "      \"dynamic_import_tests\": {\"language\": \"js\", \"ohmUrl\": \"dynamic_import_tests\"},\n"
+      "      \"dynamic_import_tests/modules/instanceof\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\"},\n"
+      "      \"dynamic_import_tests/modules/module\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\"}\n"
       "    }\n"
       "  }\n"
       "}\n"
@@ -61,6 +82,7 @@ if(PANDA_WITH_ETS)
   MESSAGE("Generated default arktsconfig to ${GENERATED_DIR}/arktsconfig.json")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${DEFAULT_ARKTSCONFIG}/")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+  file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin-gtests")
 endif()
 
 # add check for PANDA_PRODUCT_BUILD after normal version tracking will be implemented
@@ -100,11 +122,53 @@ panda_isa_gen(
 )
 
 panda_gen(
-    DATA ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
-    TARGET_NAME es2panda_keywords
-    TEMPLATES keywords.h.erb
+    DATA ${CMAKE_CURRENT_SOURCE_DIR}/util/options.yaml
+    TARGET_NAME es2panda_options_gen
+    TEMPLATES options.h.erb
+    SOURCE ${PANDA_ROOT}/templates/options
+    DESTINATION ${GENERATED_DIR}
+    API ${PANDA_ROOT}/templates/common.rb
+)
+
+set(DIAGNOSTIC_DIR
+   ${CMAKE_CURRENT_SOURCE_DIR}/util/diagnostic/
+)
+
+panda_gen(
+    DATA
+        ${DIAGNOSTIC_DIR}/syntax.yaml
+        ${DIAGNOSTIC_DIR}/semantic.yaml
+        ${DIAGNOSTIC_DIR}/warning.yaml
+        ${DIAGNOSTIC_DIR}/fatal.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
+        ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
+    TARGET_NAME es2panda_diagnostic_gen
+    TEMPLATES diagnostic.h.erb
+    SOURCE ${DIAGNOSTIC_DIR}
+    DESTINATION ${GENERATED_DIR}
     API
-       ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+)
+
+panda_gen(
+    TARGET_NAME es2panda_keywords
+    TEMPLATES
+        keywords.h.erb
+        token.inl.erb
+        tokenType.h.erb
+    DATA
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/tokens.yaml
+    API
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.rb
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/tokens.rb
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lexer/templates
     DESTINATION ${GENERATED_DIR}
 )
@@ -121,28 +185,27 @@ panda_gen(
 
 set(ES2PANDA_LIB_SRC
   ast_verifier/ASTVerifier.cpp
-  ast_verifier/arithmeticOperationValid.cpp
-  ast_verifier/checkAbstractMethod.cpp
-  ast_verifier/checkConstProperties.cpp
-  ast_verifier/checkContext.cpp
-  ast_verifier/checkInfiniteLoop.cpp
-  ast_verifier/checkScopeDeclaration.cpp
-  ast_verifier/everyChildHasValidParent.cpp
-  ast_verifier/everyChildInParentRange.cpp
-  ast_verifier/getterSetterValidation.cpp
   ast_verifier/helpers.cpp
-  ast_verifier/identifierHasVariable.cpp
-  ast_verifier/importExportAccessValid.cpp
-  ast_verifier/nodeHasParent.cpp
-  ast_verifier/nodeHasSourceRange.cpp
-  ast_verifier/nodeHasType.cpp
-  ast_verifier/referenceTypeAnnotationIsNull.cpp
-  ast_verifier/forLoopCorrectlyInitialized.cpp
-  ast_verifier/modifierAccessValid.cpp
-  ast_verifier/sequenceExpressionHasLastType.cpp
-  ast_verifier/variableHasEnclosingScope.cpp
-  ast_verifier/variableHasScope.cpp
-  ast_verifier/variableNameIdentifierNameSame.cpp
+  ast_verifier/invariants/arithmeticOperationValid.cpp
+  ast_verifier/invariants/checkAbstractMethod.cpp
+  ast_verifier/invariants/checkConstProperties.cpp
+  ast_verifier/invariants/checkScopeDeclaration.cpp
+  ast_verifier/invariants/checkStructDeclaration.cpp
+  ast_verifier/invariants/everyChildHasValidParent.cpp
+  ast_verifier/invariants/everyChildInParentRange.cpp
+  ast_verifier/invariants/getterSetterValidation.cpp
+  ast_verifier/invariants/identifierHasVariable.cpp
+  ast_verifier/invariants/importExportAccessValid.cpp
+  ast_verifier/invariants/nodeHasParent.cpp
+  ast_verifier/invariants/nodeHasSourceRange.cpp
+  ast_verifier/invariants/nodeHasType.cpp
+  ast_verifier/invariants/referenceTypeAnnotationIsNull.cpp
+  ast_verifier/invariants/forLoopCorrectlyInitialized.cpp
+  ast_verifier/invariants/modifierAccessValid.cpp
+  ast_verifier/invariants/sequenceExpressionHasLastType.cpp
+  ast_verifier/invariants/variableHasEnclosingScope.cpp
+  ast_verifier/invariants/variableHasScope.cpp
+  ast_verifier/invariants/variableNameIdentifierNameSame.cpp
   es2panda.cpp
   varbinder/ASBinder.cpp
   varbinder/TSBinder.cpp
@@ -163,6 +226,7 @@ set(ES2PANDA_LIB_SRC
   compiler/base/literals.cpp
   compiler/base/lreference.cpp
   compiler/base/optionalChain.cpp
+  compiler/core/CFG.cpp
   compiler/core/codeGen.cpp
   compiler/core/compileJob.cpp
   compiler/core/compileQueue.cpp
@@ -206,10 +270,18 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/topLevelStmts/globalDeclTransformer.cpp
   compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp
   compiler/lowering/ets/expressionLambdaLowering.cpp
+  compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
+  compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
+  compiler/lowering/ets/cfgBuilderPhase.cpp
+  compiler/lowering/ets/constantExpressionLowering.cpp
+  compiler/lowering/ets/declareOverloadLowering.cpp
+  compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
+  compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
@@ -217,18 +289,17 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/interfacePropertyDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
   compiler/lowering/ets/ambientLowering.cpp
+  compiler/lowering/ets/asyncMethodLowering.cpp
   compiler/lowering/ets/bigintLowering.cpp
   compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
-  compiler/lowering/ets/tupleLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
+  compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp
   compiler/lowering/ets/expandBrackets.cpp
   compiler/lowering/ets/packageImplicitImport.cpp
   compiler/lowering/ets/partialExportClassGen.cpp
   compiler/lowering/ets/promiseVoid.cpp
-  compiler/lowering/ets/structLowering.cpp
-  compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/interfaceObjectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
@@ -236,12 +307,15 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
+  compiler/lowering/ets/setJumpTarget.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
+  ir/astNodeHistory.cpp
   ir/irnode.cpp
   ir/typeNode.cpp
   ir/opaqueTypeNode.cpp
+  ir/brokenTypeNode.cpp
   ir/base/catchClause.cpp
   ir/base/classElement.cpp
   ir/base/classDefinition.cpp
@@ -250,7 +324,6 @@ set(ES2PANDA_LIB_SRC
   ir/base/decorator.cpp
   ir/base/metaProperty.cpp
   ir/base/methodDefinition.cpp
-  ir/base/namespaceDefinition.cpp
   ir/base/property.cpp
   ir/base/scriptFunction.cpp
   ir/base/scriptFunctionSignature.cpp
@@ -327,7 +400,6 @@ set(ES2PANDA_LIB_SRC
   ir/statements/ifStatement.cpp
   ir/statements/labelledStatement.cpp
   ir/statements/loopStatement.cpp
-  ir/statements/namespaceDeclaration.cpp
   ir/statements/returnStatement.cpp
   ir/statements/switchCaseStatement.cpp
   ir/statements/switchStatement.cpp
@@ -340,6 +412,7 @@ set(ES2PANDA_LIB_SRC
   ir/as/prefixAssertionExpression.cpp
   ir/ets/etsClassLiteral.cpp
   ir/ets/etsFunctionType.cpp
+  ir/ets/etsKeyofType.cpp
   ir/ets/etsLaunchExpression.cpp
   ir/ets/etsNewArrayInstanceExpression.cpp
   ir/ets/etsNewClassInstanceExpression.cpp
@@ -349,14 +422,13 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsPrimitiveType.cpp
   ir/ets/etsNullishTypes.cpp
   ir/ets/etsNeverType.cpp
-  ir/ets/etsScript.cpp
+  ir/ets/etsModule.cpp
   ir/ets/etsStringLiteralType.cpp
   ir/ets/etsTuple.cpp
   ir/ets/etsTypeReference.cpp
   ir/ets/etsTypeReferencePart.cpp
   ir/ets/etsUnionType.cpp
   ir/ets/etsWildcardType.cpp
-  ir/ets/etsImportSource.cpp
   ir/ts/tsAnyKeyword.cpp
   ir/ts/tsArrayType.cpp
   ir/ts/tsAsExpression.cpp
@@ -426,6 +498,7 @@ set(ES2PANDA_LIB_SRC
   parser/parserImpl.cpp
   parser/ETSFormattedParser.cpp
   parser/ETSparser.cpp
+  parser/ETSparserAnnotations.cpp
   parser/ETSparserClasses.cpp
   parser/ETSparserEnums.cpp
   parser/ETSparserExpressions.cpp
@@ -434,6 +507,7 @@ set(ES2PANDA_LIB_SRC
   parser/ETSparserTypes.cpp
   parser/ETSNolintParser.cpp
   parser/TSparser.cpp
+  parser/ThrowingTypedParser.cpp
   parser/TypedParser.cpp
   parser/program/entityNameVisitor.cpp
   parser/program/program.cpp
@@ -468,7 +542,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/narrowingConverter.cpp
   checker/ets/narrowingWideningConverter.cpp
   checker/ets/object.cpp
-  checker/ets/primitiveWrappers.cpp
   checker/ets/typeConverter.cpp
   checker/ets/typeCreation.cpp
   checker/ets/typeRelationContext.cpp
@@ -546,9 +619,11 @@ set(ES2PANDA_LIB_SRC
   checker/types/ts/voidType.cpp
   util/arktsconfig.cpp
   util/bitset.cpp
-  util/errorHandler.cpp
-  util/errorLogger.cpp
+  util/dtoa_helper.cpp
+  util/diagnostic.cpp
+  util/diagnosticEngine.cpp
   util/errorRecovery.cpp
+  util/es2pandaMacros.cpp
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp
@@ -571,7 +646,7 @@ set(ES2PANDA_LIB_SRC
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 panda_add_library(es2panda-lib ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_LIB_SRC})
-add_dependencies(es2panda-lib isa_gen_es2panda es2panda_keywords es2panda_signatures)
+add_dependencies(es2panda-lib isa_gen_es2panda es2panda_options_gen es2panda_diagnostic_gen es2panda_keywords es2panda_signatures)
 
 set(ICU_INCLUDE_DIRS
     ${PANDA_THIRD_PARTY_SOURCES_DIR}/icu/icu4c/source/common
@@ -612,11 +687,31 @@ endif()
 panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
+if(ES2PANDA_ENABLE_PCH AND NOT PANDA_USE_PREBUILT_TARGETS)
+  target_precompile_headers(es2panda-lib
+      PRIVATE
+          util/ustring.h
+          ir/astNode.h
+          compiler/core/pandagen.h
+          compiler/core/ETSGen.h
+          checker/TSchecker.h
+          public/public.h
+  )
+endif()
+
 SET(ES2PANDA_LIB_DIR public)
 add_subdirectory(${ES2PANDA_LIB_DIR})
 
 add_subdirectory(aot)
 add_subdirectory(declgen_ets2ts)
+add_subdirectory(driver/dependency_analyzer)
+
+if(PANDA_TARGET_LINUX OR PANDA_TARGET_WINDOWS)
+  SET(LSP_LIB "es2panda_lsp")
+  add_subdirectory(lsp)
+  set(ES2PANDA_NAPI_LIB_DIR "bindings")
+  add_subdirectory(${ES2PANDA_NAPI_LIB_DIR})
+endif()
 
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)

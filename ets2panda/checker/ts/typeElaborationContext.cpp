@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,7 +53,7 @@ Type *ElaborationContext::GetBestMatchingType(Type *indexType, ir::Expression *s
 
 void ArrayElaborationContext::Start()
 {
-    ASSERT(sourceNode_->IsArrayExpression());
+    ES2PANDA_ASSERT(sourceNode_->IsArrayExpression());
     RemoveUnnecessaryTypes();
 
     for (auto *it : sourceNode_->AsArrayExpression()->Elements()) {
@@ -108,7 +108,7 @@ Type *ObjectElaborationContext::NonComputedPropKeyType(ir::Property *prop)
             return checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -117,7 +117,7 @@ Type *ObjectElaborationContext::NonComputedPropKeyType(ir::Property *prop)
 
 void ObjectElaborationContext::Start()
 {
-    ASSERT(sourceNode_->IsObjectExpression());
+    ES2PANDA_ASSERT(sourceNode_->IsObjectExpression());
     RemoveUnnecessaryTypes();
 
     for (auto *it : sourceNode_->AsObjectExpression()->Properties()) {

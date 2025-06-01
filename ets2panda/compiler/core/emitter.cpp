@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,7 +28,7 @@
 #include "parser/program/program.h"
 #include "checker/types/type.h"
 #include "generated/isa.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "public/public.h"
 
 #include <string>
@@ -68,7 +68,7 @@ static LiteralPair TransformMethodLiterals(const compiler::Literal *literal)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -165,7 +165,7 @@ static Format MatchFormat(const IRNode *node, const Formats &formats)
         }
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return *iter;
 }
 
@@ -186,13 +186,18 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     return len;
 }
 
-static std::string WholeLine(const util::StringView &source, lexer::SourceRange range)
+static std::string WholeLine(const lexer::SourceRange &range)
 {
-    if (source.Empty()) {
+    // NOTE(rsipka, #24105): The program shouldn't be nullptr
+    auto program = range.start.Program();
+    if (program == nullptr || program->SourceCode().Empty()) {
         return {};
     }
-    ASSERT(range.end.index <= source.Length());
-    ASSERT(range.end.index >= range.start.index);
+
+    auto source = program->SourceCode();
+
+    ES2PANDA_ASSERT(range.end.index <= source.Length());
+    ES2PANDA_ASSERT(range.end.index >= range.start.index);
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
 }
 
@@ -200,7 +205,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
 {
     const ir::AstNode *astNode = ins->Node();
 
-    ASSERT(astNode != nullptr);
+    ES2PANDA_ASSERT(astNode != nullptr);
 
     if (astNode == FIRST_NODE_OF_FUNCTION) {
         astNode = cg_->Debuginfo().FirstStatement();
@@ -220,7 +225,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
         }
 
         offset_ += insLen;
-        pandaIns->insDebug.wholeLine = WholeLine(SourceCode(), nodeRange);
+        pandaIns->insDebug.wholeLine = WholeLine(nodeRange);
     }
 }
 
@@ -277,7 +282,7 @@ void FunctionEmitter::GenFunctionCatchTables(pandasm::Function *func)
 
 void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
 {
-    func->sourceFile = std::string {cg_->VarBinder()->Program()->SourceFile().GetAbsolutePath()};
+    func->sourceFile = std::string {cg_->VarBinder()->Program()->RelativeFilePath()};
 
     if (!cg_->IsDebug()) {
         return;
@@ -289,7 +294,7 @@ void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
 }
 
 static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebug, varbinder::Variable *var,
-                                 std::tuple<uint32_t, uint32_t, uint32_t> info, const ScriptExtension extension)
+                                 std::tuple<uint32_t, uint32_t, uint32_t> info, ScriptExtension extension)
 {
     const auto [start, varsLength, totalRegsNum] = info;
 
@@ -299,7 +304,7 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebu
         variableDebug.signature = "any";
         variableDebug.signatureType = "any";
     } else {
-        ASSERT(var->AsLocalVariable()->TsType() != nullptr);
+        ES2PANDA_ASSERT(var->AsLocalVariable()->TsType() != nullptr);
         std::stringstream ss;
         var->AsLocalVariable()->TsType()->ToDebugInfoType(ss);
         variableDebug.signature = ss.str();
@@ -388,7 +393,7 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbin
             varsStarts.emplace(var, count);
         }
     }
-    ASSERT(iter != lastIter);
+    ES2PANDA_ASSERT(iter != lastIter);
 
     GenScopeVariableInfoEnd(func, scope, count, start, varsStarts);
 }
@@ -428,18 +433,19 @@ static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[may
         case pandasm::Opcode::ECMA_CREATEOBJECTWITHBUFFER:
         case pandasm::Opcode::ECMA_CREATEOBJECTHAVINGMETHOD:
         case pandasm::Opcode::ECMA_DEFINECLASSPRIVATEFIELDS: {
-            uint32_t storedOffset = std::stoi(ins->ids.back());
+            constexpr int BASE10 = 10;
+            uint32_t storedOffset = strtoul(ins->ids.back().data(), nullptr, BASE10);
             storedOffset += offset;
             ins->ids.back() = std::to_string(storedOffset);
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
 #else
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 #endif
 }
 
@@ -459,7 +465,7 @@ void Emitter::AddProgramElement(ProgramElement *programElement)
     literalBufferIndex_ = newLiteralBufferIndex;
 
     auto *function = programElement->Function();
-    prog_->functionTable.emplace(function->name, std::move(*function));
+    prog_->AddToFunctionTable(std::move(*function));
 }
 
 static std::string CanonicalizeName(std::string name)
@@ -471,39 +477,51 @@ static std::string CanonicalizeName(std::string name)
     return name;
 }
 
+static std::string DumpAsmFunction(std::string name, const pandasm::Function &func)
+{
+    std::stringstream ss;
+
+    ss << ".function any " << CanonicalizeName(std::move(name)) << '(';
+
+    for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
+        ss << "any a" << std::to_string(i);
+
+        if (i != func.GetParamsNum() - 1) {
+            ss << ", ";
+        }
+    }
+
+    ss << ") {" << std::endl;
+
+    for (const auto &ins : func.ins) {
+        ss << (ins.setLabel ? "" : "\t") << ins.ToString("", true, func.GetTotalRegs()) << std::endl;
+    }
+
+    ss << "}" << std::endl << std::endl;
+
+    for (const auto &ct : func.catchBlocks) {
+        if (ct.exceptionRecord.empty()) {
+            ss << ".catchall ";
+        } else {
+            ss << ".catch " << ct.exceptionRecord << ", ";
+        }
+        ss << ct.tryBeginLabel << ", " << ct.tryEndLabel << ", " << ct.catchBeginLabel << std::endl << std::endl;
+    }
+    return ss.str();
+}
+
 void Emitter::DumpAsm(const pandasm::Program *prog)
 {
     auto &ss = std::cout;
 
     ss << ".language ECMAScript" << std::endl << std::endl;
 
-    for (auto &[name, func] : prog->functionTable) {
-        ss << ".function any " << CanonicalizeName(name) << '(';
+    for (const auto &[name, func] : prog->functionStaticTable) {
+        ss << DumpAsmFunction(name, func);
+    }
 
-        for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
-            ss << "any a" << std::to_string(i);
-
-            if (i != func.GetParamsNum() - 1) {
-                ss << ", ";
-            }
-        }
-
-        ss << ") {" << std::endl;
-
-        for (const auto &ins : func.ins) {
-            ss << (ins.setLabel ? "" : "\t") << ins.ToString("", true, func.GetTotalRegs()) << std::endl;
-        }
-
-        ss << "}" << std::endl << std::endl;
-
-        for (const auto &ct : func.catchBlocks) {
-            if (ct.exceptionRecord.empty()) {
-                ss << ".catchall ";
-            } else {
-                ss << ".catch " << ct.exceptionRecord << ", ";
-            }
-            ss << ct.tryBeginLabel << ", " << ct.tryEndLabel << ", " << ct.catchBeginLabel << std::endl << std::endl;
-        }
+    for (const auto &[name, func] : prog->functionInstanceTable) {
+        ss << DumpAsmFunction(name, func);
     }
 
     ss << std::endl;

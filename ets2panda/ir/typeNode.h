@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_TYPE_NODE_H
 
 #include "ir/expression.h"
+#include "ir/annotationAllowed.h"
 
 namespace ark::es2panda::checker {
 class TSChecker;
@@ -24,7 +25,7 @@ class Type;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::ir {
-class TypeNode : public Expression {
+class TypeNode : public AnnotationAllowed<Expression> {
 public:
     TypeNode() = delete;
     ~TypeNode() override = default;
@@ -50,8 +51,15 @@ public:
     [[nodiscard]] TypeNode *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 protected:
-    explicit TypeNode(AstNodeType const type) : Expression(type) {}
-    explicit TypeNode(AstNodeType const type, ModifierFlags const flags) : Expression(type, flags) {}
+    explicit TypeNode(AstNodeType const type, ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(type, allocator)
+    {
+    }
+
+    explicit TypeNode(AstNodeType const type, ModifierFlags const flags, ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(type, flags, allocator)
+    {
+    }
 };
 }  // namespace ark::es2panda::ir
 

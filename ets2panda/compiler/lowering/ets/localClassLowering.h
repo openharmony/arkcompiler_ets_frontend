@@ -20,10 +20,10 @@
 
 namespace ark::es2panda::compiler {
 
-class LocalClassConstructionPhase : public Phase {
+class LocalClassConstructionPhase : public PhaseForBodies {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 protected:
     void CreateClassPropertiesForCapturedVariables(public_lib::Context *ctx, ir::ClassDefinition *classDef,

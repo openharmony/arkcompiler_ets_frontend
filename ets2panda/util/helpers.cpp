@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,42 +14,41 @@
  */
 
 #include "helpers.h"
+#include <iomanip>
 
-#include "generated/signatures.h"
+#include "parser/program/program.h"
 #include "varbinder/privateBinding.h"
-#include "checker/types/ets/types.h"
-#include "ir/astNode.h"
+#include "lexer/token/letters.h"
+
 #include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/property.h"
 #include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/functionExpression.h"
+#include "ir/base/methodDefinition.h"
+
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/nullLiteral.h"
+#include "ir/expressions/functionExpression.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/statements/variableDeclaration.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+
 #include "ir/statements/variableDeclarator.h"
+
 #include "ir/module/importSpecifier.h"
+#include "ir/module/importDefaultSpecifier.h"
+
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsParameterExpression.h"
+
 #include "ir/ts/tsParameterProperty.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/module/importDeclaration.h"
-#include "lexer/token/letters.h"
+
 #include "libpandabase/utils/utf.h"
-#include "libpandabase/os/filesystem.h"
-#include "ir/module/importDefaultSpecifier.h"
-#include <iomanip>
 
 namespace ark::es2panda::util {
 // Helpers
@@ -83,7 +82,7 @@ util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
             return "undefined";
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -153,7 +152,7 @@ util::StringView Helpers::ToStringView(ArenaAllocator *allocator, double number)
 
 util::StringView Helpers::ToStringView(ArenaAllocator *allocator, uint32_t number)
 {
-    ASSERT(number <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
+    ES2PANDA_ASSERT(number <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
     return ToStringView(allocator, static_cast<int32_t>(number));
 }
 
@@ -304,7 +303,7 @@ const ir::ScriptFunction *Helpers::GetContainingConstructor(const ir::ClassPrope
 {
     for (const auto *parent = node->Parent(); parent != nullptr; parent = parent->Parent()) {
         if (parent->IsClassDefinition()) {
-            ASSERT(parent->AsClassDefinition()->Ctor() != nullptr);
+            ES2PANDA_ASSERT(parent->AsClassDefinition()->Ctor() != nullptr);
             return parent->AsClassDefinition()->Ctor()->Function();
         }
     }
@@ -325,10 +324,10 @@ const ir::ScriptFunction *Helpers::GetContainingFunction(const ir::AstNode *node
 
 const ir::ClassDefinition *Helpers::GetClassDefiniton(const ir::ScriptFunction *node)
 {
-    ASSERT(node->IsConstructor());
-    ASSERT(node->Parent()->IsFunctionExpression());
-    ASSERT(node->Parent()->Parent()->IsMethodDefinition());
-    ASSERT(node->Parent()->Parent()->Parent()->IsClassDefinition());
+    ES2PANDA_ASSERT(node->IsConstructor());
+    ES2PANDA_ASSERT(node->Parent()->IsFunctionExpression());
+    ES2PANDA_ASSERT(node->Parent()->Parent()->IsMethodDefinition());
+    ES2PANDA_ASSERT(node->Parent()->Parent()->Parent()->IsClassDefinition());
 
     return node->Parent()->Parent()->Parent()->AsClassDefinition();
 }
@@ -442,7 +441,7 @@ static void CollectBindingName(ir::AstNode *node, std::vector<ir::Identifier *> 
     }
 }
 
-std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::AstNode *node)
+std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::Expression *node)
 {
     std::vector<ir::Identifier *> bindings;
     CollectBindingName(node, &bindings);
@@ -492,7 +491,7 @@ void Helpers::CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &
     for (auto statement : statements) {
         for (auto specifier : statement->Specifiers()) {
             if (specifier->Type() == ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER) {
-                auto fileName = statement->ResolvedSource()->Str();
+                auto fileName = statement->ResolvedSource();
                 std::cerr << "Warning: default element has already imported [" << fileName << ":"
                           << specifier->Start().line << ":" << specifier->Start().index << "]" << std::endl;
                 return;
@@ -518,7 +517,7 @@ static util::StringView FunctionNameFromParent(const ir::AstNode *parent, ArenaA
 
             if (methodDef->Key()->IsIdentifier()) {
                 auto *ident = methodDef->Id();
-                ASSERT(ident != nullptr);
+                ES2PANDA_ASSERT(ident != nullptr);
 
                 if (!ident->IsPrivateIdent()) {
                     return ident->Name();
@@ -588,8 +587,8 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
     return FunctionNameFromParent(parent, allocator);
 }
 
-std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
-                                                      uint32_t index)
+std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator, const ir::Expression *param,
+                                                      std::uint32_t index)
 {
     switch (param->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
@@ -612,7 +611,7 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
             return ParamName(allocator, param->AsTSParameterProperty()->Parameter(), index);
         }
         case ir::AstNodeType::ETS_PARAMETER_EXPRESSION: {
-            return {param->AsETSParameterExpression()->Ident()->Name(), false};
+            return {param->AsETSParameterExpression()->Name(), false};
         }
         default:
             break;
@@ -699,29 +698,75 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
     return {className, methodName};
 }
 
-std::vector<std::string> &Helpers::StdLib()
+std::vector<std::string> const &Helpers::StdLib()
 {
-    static std::vector<std::string> stdlib {"std/core",       "std/math",  "std/containers",        "std/time",
-                                            "std/interop/js", "std/debug", "std/debug/concurrency", "std/testing",
-                                            "escompat"};
+    static std::vector<std::string> stdlib {"std/core",       "std/math",        "std/containers",        "std/time",
+                                            "std/interop/js", "std/debug",       "std/debug/concurrency", "std/testing",
+                                            "escompat",       "std/concurrency", "std/annotations"};
     return stdlib;
 }
 
 bool Helpers::IsStdLib(const parser::Program *program)
 {
-    auto stdlib = StdLib();
-
-    // NOTE(rsipka): early check: if program is not a package module then it is not part of the stdlib either
-    if (!program->IsPackageModule()) {
+    // NOTE(rsipka): early check: if program is not in a package then it is not part of the stdlib either
+    if (!program->IsPackage()) {
         return false;
     }
-
-    stdlib.emplace_back("std/math/consts");
 
     auto fileFolder = program->ModuleName().Mutf8();
     std::replace(fileFolder.begin(), fileFolder.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                  *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
+
+    if (fileFolder == "std/math/consts") {
+        return true;
+    }
+
+    auto const &stdlib = StdLib();
     return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
+}
+
+checker::Type *Helpers::CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
+                                               checker::Type *const type)
+{
+    ES2PANDA_ASSERT(type != nullptr || !node->IsExpression());
+    return type;
+}
+
+util::UString Helpers::EscapeHTMLString(ArenaAllocator *allocator, const std::string &str)
+{
+    util::UString replaced(allocator);
+    for (const auto c : str) {
+        switch (c) {
+            case '<':
+                replaced.Append("&lt;");
+                break;
+            case '>':
+                replaced.Append("&gt;");
+                break;
+            case '&':
+                replaced.Append("&amp;");
+                break;
+            case '"':
+                replaced.Append("&quot;");
+                break;
+            case '\'':
+                replaced.Append("&apos;");
+                break;
+            default:
+                replaced.Append(c);
+                break;
+        }
+    }
+    return replaced;
+}
+
+bool Helpers::IsAsyncMethod(ir::AstNode const *node)
+{
+    if (!node->IsMethodDefinition()) {
+        return false;
+    }
+    auto *method = node->AsMethodDefinition();
+    return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
 }
 
 }  // namespace ark::es2panda::util

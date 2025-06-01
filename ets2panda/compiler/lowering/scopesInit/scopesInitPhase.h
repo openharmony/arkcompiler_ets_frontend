@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -86,7 +86,7 @@ protected:
     void IterateNoTParams(ir::ClassDefinition *classDef);
 
 protected:
-    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogSemanticError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
     void VisitFunctionExpression(ir::FunctionExpression *funcExpr) override;
     void VisitScriptFunction(ir::ScriptFunction *scriptFunction) override;
@@ -154,7 +154,7 @@ protected:
     virtual util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id);
     void HandleFunction(ir::ScriptFunction *function);
     varbinder::FunctionParamScope *HandleFunctionSig(ir::TSTypeParameterDeclaration *typeParams,
-                                                     const ir::FunctionSignature::FunctionParams &params,
+                                                     const ArenaVector<ir::Expression *> &params,
                                                      ir::TypeNode *returnType);
 
     /**
@@ -187,7 +187,6 @@ protected:
     void BindClassDefinition(ir::ClassDefinition *classDef);
 
     std::tuple<varbinder::Decl *, varbinder::Variable *> AddOrGetVarDecl(ir::VariableDeclaratorFlag flag,
-                                                                         lexer::SourcePosition startLoc,
                                                                          const ir::Identifier *id);
 
     virtual void BindVarDecl([[maybe_unused]] ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
@@ -323,7 +322,7 @@ public:
 private:
     void HandleProgram(parser::Program *program);
 
-    void HandleETSScript(ir::BlockStatement *script);
+    void HandleETSModule(ir::BlockStatement *script);
 
     void ParseGlobalClass(ir::ClassDefinition *global);
 

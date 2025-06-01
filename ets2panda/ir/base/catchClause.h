@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #define ES2PANDA_IR_BASE_CATCH_CLAUSE_H
 
 #include "varbinder/scope.h"
-#include "ir/statement.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::ir {
 class BlockStatement;
@@ -29,7 +29,7 @@ public:
         : TypedStatement(AstNodeType::CATCH_CLAUSE), param_(param), body_(body)
     {
     }
-
+    explicit CatchClause(CatchClause const &other, ArenaAllocator *allocator);
     Expression *Param()
     {
         return param_;
@@ -62,7 +62,7 @@ public:
 
     void SetScope(varbinder::CatchScope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -79,12 +79,13 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+    [[nodiscard]] CatchClause *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     varbinder::CatchScope *scope_ {nullptr};

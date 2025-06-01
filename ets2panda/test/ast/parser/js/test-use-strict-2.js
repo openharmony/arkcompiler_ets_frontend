@@ -18,5 +18,5 @@
 
 /* @@ label */with (o) /* @@ label1 */{}
 
-/* @@@ label Error SyntaxError: 'With' is deprecated and not supported any more.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label Error SyntaxError: 'With' is deprecated and not supported any more. */
+/* @@@ label1 Error SyntaxError: Unexpected token '{'. */

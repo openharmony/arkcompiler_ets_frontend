@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,18 +14,10 @@
  */
 
 #include "recordLowering.h"
-#include <algorithm>
-#include <sstream>
-#include <string_view>
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "macros.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "utils/arena_containers.h"
-#include "varbinder/ETSBinder.h"
 #include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
@@ -66,21 +58,12 @@ RecordLowering::KeyType RecordLowering::TypeToKey(checker::Type *type) const
     if (type->IsETSStringType()) {
         return type->AsETSStringType()->GetValue();
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return {};
 }
 
-bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool RecordLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     // Replace Record Object Expressions with Block Expressions
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
@@ -109,25 +92,22 @@ void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression 
                     (number.IsDouble() && keySet.insert(number.GetDouble()).second)) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->LogTypeError(
-                    "An object literal cannot multiple properties with same name", expr->Start());
+                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
                 break;
             }
             case ir::AstNodeType::STRING_LITERAL: {
                 if (keySet.insert(prop->Key()->AsStringLiteral()->Str()).second) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->LogTypeError(
-                    "An object literal cannot multiple properties with same name", expr->Start());
+                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
                 break;
             }
             case ir::AstNodeType::IDENTIFIER: {
-                ctx->checker->AsETSChecker()->LogTypeError("Object literal may only specify known properties",
-                                                           expr->Start());
+                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
                 break;
             }
         }
@@ -142,9 +122,7 @@ void RecordLowering::CheckLiteralsCompleteness(KeySetType &keySet, ir::ObjectExp
     }
     for (auto &ct : keyType->AsETSUnionType()->ConstituentTypes()) {
         if (ct->IsConstantType() && keySet.find(TypeToKey(ct)) == keySet.end()) {
-            ctx->checker->AsETSChecker()->LogTypeError(
-                "All variants of literals listed in the union type must be listed in the object literal",
-                expr->Start());
+            ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_NOT_COVERING_UNION, {}, expr->Start());
         }
     }
 }
@@ -177,17 +155,13 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->checker->AsETSChecker();
-    if (expr->TsType() == nullptr) {
-        // Hasn't been through checker
-        checker->LogTypeError("Unexpected type error in Record object literal", expr->Start());
-        return expr;
-    }
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
         return expr;
     }
 
+    ES2PANDA_ASSERT(expr->TsType() != nullptr);
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
     if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {
@@ -198,7 +172,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     // Access type arguments
     [[maybe_unused]] size_t constexpr NUM_ARGUMENTS = 2;
     auto typeArguments = expr->PreferredType()->AsETSObjectType()->TypeArguments();
-    ASSERT(typeArguments.size() == NUM_ARGUMENTS);
+    ES2PANDA_ASSERT(typeArguments.size() == NUM_ARGUMENTS);
 
     // check keys correctness
     KeySetType keySet;
@@ -251,13 +225,13 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     }
 
     const std::string createSrc =
-        "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + TypeToString(valueType) + ">()";
-    statements.push_back(CreateStatement(createSrc, ident, nullptr, nullptr, ctx));
+        "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + "@@T2" + ">()";
+    statements.push_back(ctx->parser->AsETSParser()->CreateFormattedStatements(createSrc, ident, valueType).front());
 
     // Build statements from properties
 
     for (const auto &property : properties) {
-        ASSERT(property->IsProperty());
+        ES2PANDA_ASSERT(property->IsProperty());
         auto p = property->AsProperty();
         statements.push_back(
             CreateStatement("@@I1.set(@@E2, @@E3)", ident->Clone(ctx->allocator, nullptr), p->Key(), p->Value(), ctx));

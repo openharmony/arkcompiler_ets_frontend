@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,14 +20,14 @@
 
 namespace ark::es2panda::compiler {
 
-class GenericBridgesPhase : public Phase {
+class GenericBridgesPhase : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "CreateGenericBridges";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
     struct Substitutions {
@@ -38,7 +38,14 @@ private:
 
     ir::ClassDefinition *ProcessClassDefinition(ir::ClassDefinition *classDefinition) const;
 
-    void CreateGenericBridges(ir::ClassDefinition const *classDefinition, Substitutions &substitutions) const;
+    void ProcessInterfaces(ir::ClassDefinition *classDefinition,
+                           ArenaVector<checker::ETSObjectType *> const &interfaces) const;
+
+    Substitutions GetSubstitutions(checker::ETSObjectType const *const objectType,
+                                   ArenaVector<checker::Type *> const &typeParameters) const noexcept;
+
+    void CreateGenericBridges(ir::ClassDefinition const *classDefinition, Substitutions &substitutions,
+                              ArenaVector<ir::AstNode *> const &items) const;
 
     void MaybeAddGenericBridges(ir::ClassDefinition const *classDefinition, ir::MethodDefinition *baseMethod,
                                 ir::MethodDefinition *derivedMethod, Substitutions const &substitutions) const;

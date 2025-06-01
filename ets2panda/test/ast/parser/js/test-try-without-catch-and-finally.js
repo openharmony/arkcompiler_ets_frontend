@@ -16,4 +16,5 @@
 
 try { }
 
-/* @@? 20:1 Error SyntaxError: Missing catch or finally clause. */
+/* @@@ label Error SyntaxError: Missing catch or finally clause. */
+/* @@ label */

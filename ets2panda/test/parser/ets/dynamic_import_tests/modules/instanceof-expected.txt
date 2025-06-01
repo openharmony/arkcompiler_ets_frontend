@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof.ets"
             }
           }
         },
@@ -25,22 +27,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof.ets"
         }
       }
     },
@@ -54,11 +60,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 22
+              "column": 22,
+              "program": "instanceof.ets"
             },
             "end": {
               "line": 20,
-              "column": 31
+              "column": 31,
+              "program": "instanceof.ets"
             }
           }
         },
@@ -73,12 +81,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 }
               }
             },
@@ -96,12 +106,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     }
                   }
                 },
@@ -114,34 +126,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 33,
+                    "program": "instanceof.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 33,
+                    "program": "instanceof.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 }
               }
             },
@@ -149,12 +167,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -162,22 +182,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 32
+            "column": 32,
+            "program": "instanceof.ets"
           },
           "end": {
-            "line": 21,
-            "column": 2
+            "line": 23,
+            "column": 7,
+            "program": "instanceof.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 16
+          "column": 16,
+          "program": "instanceof.ets"
         },
         "end": {
-          "line": 21,
-          "column": 2
+          "line": 23,
+          "column": 7,
+          "program": "instanceof.ets"
         }
       }
     },
@@ -191,11 +215,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 22
+              "column": 22,
+              "program": "instanceof.ets"
             },
             "end": {
               "line": 23,
-              "column": 31
+              "column": 31,
+              "program": "instanceof.ets"
             }
           }
         },
@@ -210,12 +236,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 }
               }
             },
@@ -233,12 +261,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     }
                   }
                 },
@@ -251,34 +281,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 33,
+                      "program": "instanceof.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 23,
+                    "column": 33,
+                    "program": "instanceof.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 23,
+                    "column": 33,
+                    "program": "instanceof.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 33,
+                  "program": "instanceof.ets"
                 }
               }
             },
@@ -286,12 +322,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -299,22 +337,26 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 32
+            "column": 32,
+            "program": "instanceof.ets"
           },
           "end": {
-            "line": 24,
-            "column": 2
+            "line": 25,
+            "column": 1,
+            "program": "instanceof.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 16
+          "column": 16,
+          "program": "instanceof.ets"
         },
         "end": {
-          "line": 24,
-          "column": 2
+          "line": 25,
+          "column": 1,
+          "program": "instanceof.ets"
         }
       }
     }
@@ -322,11 +364,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "instanceof.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "instanceof.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,20 +28,33 @@ void TSLiteralType::TransformChildren(const NodeTransformer &cb, std::string_vie
         literal_->SetTransformedNode(transformationName, transformedNode);
         literal_ = transformedNode->AsExpression();
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSLiteralType::Iterate(const NodeTraverser &cb) const
 {
     cb(literal_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSLiteralType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSLiteralType"}, {"literal", literal_}});
+    dumper->Add(
+        {{"type", "TSLiteralType"}, {"literal", literal_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSLiteralType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSLiteralType");
 }
 
@@ -70,8 +83,8 @@ checker::Type *TSLiteralType::GetType([[maybe_unused]] checker::TSChecker *check
     return TsType();
 }
 
-checker::Type *TSLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

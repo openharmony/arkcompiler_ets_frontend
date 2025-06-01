@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,7 @@
  */
 
 #include "tsPropertySignature.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
+
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -75,9 +74,9 @@ checker::Type *TSPropertySignature::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSPropertySignature::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSPropertySignature::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -85,18 +84,16 @@ TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator,
     auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeAnnotation = TypeAnnotation()->Clone(allocator, nullptr);
 
-    if (auto *const clone = allocator->New<TSPropertySignature>(key, typeAnnotation, computed_, optional_, readonly_);
-        clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        if (key != nullptr) {
-            key->SetParent(clone);
-        }
-        typeAnnotation->SetParent(clone);
-        return clone;
-    }
+    auto *const clone = allocator->New<TSPropertySignature>(key, typeAnnotation, computed_, optional_, readonly_);
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    if (key != nullptr) {
+        key->SetParent(clone);
+    }
+    typeAnnotation->SetParent(clone);
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

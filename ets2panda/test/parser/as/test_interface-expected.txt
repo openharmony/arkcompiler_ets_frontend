@@ -18,11 +18,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -35,11 +37,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 8
+                    "column": 8,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -47,22 +51,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 18,
-                "column": 11
+                "column": 11,
+                "program": "test_interface.ts"
               }
             }
           },
@@ -78,11 +86,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -95,11 +105,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 16
+                    "column": 16,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 20
+                    "column": 20,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -115,11 +127,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 8
+                          "column": 8,
+                          "program": "test_interface.ts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 11
+                          "column": 11,
+                          "program": "test_interface.ts"
                         }
                       }
                     },
@@ -127,11 +141,13 @@
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 8
+                        "column": 8,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 19,
-                        "column": 11
+                        "column": 11,
+                        "program": "test_interface.ts"
                       }
                     }
                   }
@@ -139,11 +155,13 @@
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
@@ -151,22 +169,26 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 8
+                  "column": 8,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 19,
-                "column": 21
+                "column": 21,
+                "program": "test_interface.ts"
               }
             }
           },
@@ -181,11 +203,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -208,11 +232,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 19
+                              "column": 19,
+                              "program": "test_interface.ts"
                             },
                             "end": {
                               "line": 20,
-                              "column": 20
+                              "column": 20,
+                              "program": "test_interface.ts"
                             }
                           }
                         },
@@ -228,11 +254,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "test_interface.ts"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "test_interface.ts"
                                   }
                                 }
                               },
@@ -240,11 +268,13 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "test_interface.ts"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "test_interface.ts"
                                 }
                               }
                             }
@@ -252,11 +282,13 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
@@ -264,11 +296,13 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 14
+                            "column": 14,
+                            "program": "test_interface.ts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 20
+                            "column": 20,
+                            "program": "test_interface.ts"
                           }
                         }
                       },
@@ -276,11 +310,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 11
+                          "column": 11,
+                          "program": "test_interface.ts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 12
+                          "column": 12,
+                          "program": "test_interface.ts"
                         }
                       }
                     },
@@ -296,11 +332,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 24
+                              "column": 24,
+                              "program": "test_interface.ts"
                             },
                             "end": {
                               "line": 20,
-                              "column": 28
+                              "column": 28,
+                              "program": "test_interface.ts"
                             }
                           }
                         },
@@ -308,11 +346,13 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 24
+                            "column": 24,
+                            "program": "test_interface.ts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 28
+                            "column": 28,
+                            "program": "test_interface.ts"
                           }
                         }
                       },
@@ -320,11 +360,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 21
+                          "column": 21,
+                          "program": "test_interface.ts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 22
+                          "column": 22,
+                          "program": "test_interface.ts"
                         }
                       }
                     }
@@ -338,11 +380,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 33
+                          "column": 33,
+                          "program": "test_interface.ts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 36
+                          "column": 36,
+                          "program": "test_interface.ts"
                         }
                       }
                     },
@@ -350,22 +394,26 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 33
+                        "column": 33,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 36
+                        "column": 36,
+                        "program": "test_interface.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 10
+                      "column": 10,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 36
+                      "column": 36,
+                      "program": "test_interface.ts"
                     }
                   }
                 },
@@ -373,11 +421,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 7
+                    "column": 7,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 8
+                    "column": 8,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -393,11 +443,13 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 46
+                        "column": 46,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 47
+                        "column": 47,
+                        "program": "test_interface.ts"
                       }
                     }
                   },
@@ -413,11 +465,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 42
+                              "column": 42,
+                              "program": "test_interface.ts"
                             },
                             "end": {
                               "line": 20,
-                              "column": 44
+                              "column": 44,
+                              "program": "test_interface.ts"
                             }
                           }
                         },
@@ -425,11 +479,13 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 42
+                            "column": 42,
+                            "program": "test_interface.ts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 44
+                            "column": 44,
+                            "program": "test_interface.ts"
                           }
                         }
                       }
@@ -437,11 +493,13 @@
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       },
                       "end": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       }
                     }
                   },
@@ -449,11 +507,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 42
+                      "column": 42,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 47
+                      "column": 47,
+                      "program": "test_interface.ts"
                     }
                   }
                 },
@@ -462,11 +522,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 38
+                    "column": 38,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 39
+                    "column": 39,
+                    "program": "test_interface.ts"
                   }
                 }
               }
@@ -480,11 +542,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 49
+                    "column": 49,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 53
+                    "column": 53,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -492,22 +556,26 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 49
+                  "column": 49,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 53
+                  "column": 53,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 20,
-                "column": 54
+                "column": 54,
+                "program": "test_interface.ts"
               }
             }
           },
@@ -522,11 +590,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -543,11 +613,13 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 16
+                        "column": 16,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 20
+                        "column": 20,
+                        "program": "test_interface.ts"
                       }
                     }
                   },
@@ -555,11 +627,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 16
+                      "column": 16,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 20
+                      "column": 20,
+                      "program": "test_interface.ts"
                     }
                   }
                 },
@@ -567,11 +641,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 13
+                    "column": 13,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 14
+                    "column": 14,
+                    "program": "test_interface.ts"
                   }
                 }
               }
@@ -588,22 +664,26 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 7
+                        "column": 7,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 8
+                        "column": 8,
+                        "program": "test_interface.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 7
+                      "column": 7,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 9
+                      "column": 9,
+                      "program": "test_interface.ts"
                     }
                   }
                 },
@@ -616,22 +696,26 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 10
+                        "column": 10,
+                        "program": "test_interface.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 11
+                        "column": 11,
+                        "program": "test_interface.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 10
+                      "column": 10,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 12
+                      "column": 12,
+                      "program": "test_interface.ts"
                     }
                   }
                 }
@@ -639,11 +723,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 12
+                  "column": 12,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -656,11 +742,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 23
+                    "column": 23,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 25
+                    "column": 25,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -668,22 +756,26 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 23
+                  "column": 23,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 25
+                  "column": 25,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 21,
-                "column": 26
+                "column": 26,
+                "program": "test_interface.ts"
               }
             }
           },
@@ -701,11 +793,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 11
+                      "column": 11,
+                      "program": "test_interface.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 13
+                      "column": 13,
+                      "program": "test_interface.ts"
                     }
                   }
                 },
@@ -713,11 +807,13 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 11
+                    "column": 11,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 13
+                    "column": 13,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -725,11 +821,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 9
+                  "column": 9,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -742,11 +840,13 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 16
+                    "column": 16,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 20
+                    "column": 20,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -754,11 +854,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 16
+                  "column": 16,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 20
+                  "column": 20,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -766,11 +868,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5
+                "column": 5,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 23,
-                "column": 2
+                "column": 2,
+                "program": "test_interface.ts"
               }
             }
           }
@@ -778,11 +882,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 39
+            "column": 39,
+            "program": "test_interface.ts"
           },
           "end": {
             "line": 23,
-            "column": 2
+            "column": 2,
+            "program": "test_interface.ts"
           }
         }
       },
@@ -793,11 +899,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "test_interface.ts"
           },
           "end": {
             "line": 17,
-            "column": 14
+            "column": 14,
+            "program": "test_interface.ts"
           }
         }
       },
@@ -814,11 +922,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 15
+                  "column": 15,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 16
+                  "column": 16,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -831,11 +941,13 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 19
+                    "column": 19,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 22
+                    "column": 22,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -843,22 +955,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 19
+                  "column": 19,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 22
+                  "column": 22,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 15
+                "column": 15,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 17,
-                "column": 23
+                "column": 23,
+                "program": "test_interface.ts"
               }
             }
           },
@@ -871,11 +987,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 24
+                  "column": 24,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 25
+                  "column": 25,
+                  "program": "test_interface.ts"
                 }
               }
             },
@@ -888,11 +1006,13 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 28
+                    "column": 28,
+                    "program": "test_interface.ts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 37
+                    "column": 37,
+                    "program": "test_interface.ts"
                   }
                 }
               },
@@ -900,22 +1020,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 28
+                  "column": 28,
+                  "program": "test_interface.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 37
+                  "column": 37,
+                  "program": "test_interface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 24
+                "column": 24,
+                "program": "test_interface.ts"
               },
               "end": {
                 "line": 17,
-                "column": 38
+                "column": 38,
+                "program": "test_interface.ts"
               }
             }
           }
@@ -923,22 +1047,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 14
+            "column": 14,
+            "program": "test_interface.ts"
           },
           "end": {
             "line": 17,
-            "column": 38
+            "column": 38,
+            "program": "test_interface.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test_interface.ts"
         },
         "end": {
           "line": 23,
-          "column": 2
+          "column": 2,
+          "program": "test_interface.ts"
         }
       }
     }
@@ -946,11 +1074,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_interface.ts"
     },
     "end": {
       "line": 24,
-      "column": 1
+      "column": 1,
+      "program": "test_interface.ts"
     }
   }
 }

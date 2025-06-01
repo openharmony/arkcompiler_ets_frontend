@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,45 +21,28 @@
 #include "libpandabase/mem/mem.h"
 #include "macros.h"
 #include "mem/pool_manager.h"
-#include "util/options.h"
+#include "test/utils/asm_test.h"
 
 namespace ark::es2panda::compiler::test {
 
-class RestParameterTest : public testing::Test {
+class RestParameterTest : public ::test::utils::AsmTest {
 public:
-    RestParameterTest()
-    {
-        const auto compilerSize = 268435456;
+    RestParameterTest() = default;
 
-        mem::MemConfig::Initialize(0, 0, compilerSize, 0, 0, 0);
-        PoolManager::Initialize(PoolType::MMAP);
-    }
-    ~RestParameterTest() override
-    {
-        PoolManager::Finalize();
-        mem::MemConfig::Finalize();
-    }
+    ~RestParameterTest() override = default;
 
-    void SetCurrentProgram(std::string_view src)
+    void CheckRestParameterFlag(std::string_view functionName, bool isStatic)
     {
-        int argc = 1;
-        const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
-        static constexpr std::string_view FILE_NAME = "dummy.sts";
-
-        program_ = GetProgram(argc, &argv, FILE_NAME, src);
-        ASSERT_NE(program_.get(), nullptr);
-    }
-
-    void CheckRestParameterFlag(std::string_view functionName)
-    {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn =
+            GetFunction(functionName, isStatic ? program_->functionStaticTable : program_->functionInstanceTable);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_TRUE(HasRestParameterFlag(fn)) << "Function '" << fn->name << "' doesn't have ACC_VARARGS flag";
     }
 
-    void CheckNoRestParameterFlag(std::string_view functionName)
+    void CheckNoRestParameterFlag(std::string_view functionName, bool isStatic)
     {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn =
+            GetFunction(functionName, isStatic ? program_->functionStaticTable : program_->functionInstanceTable);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_FALSE(HasRestParameterFlag(fn)) << "Function '" << fn->name << "' has ACC_VARARGS flag";
     }
@@ -72,37 +55,6 @@ private:
 
     NO_COPY_SEMANTIC(RestParameterTest);
     NO_MOVE_SEMANTIC(RestParameterTest);
-
-    static std::unique_ptr<pandasm::Program> GetProgram(int argc, const char **argv, std::string_view fileName,
-                                                        std::string_view src)
-    {
-        auto options = std::make_unique<es2panda::util::Options>();
-        if (!options->Parse(argc, argv)) {
-            std::cerr << options->ErrorMsg() << std::endl;
-            return nullptr;
-        }
-
-        Logger::ComponentMask mask {};
-        mask.set(Logger::Component::ES2PANDA);
-        Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
-
-        es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        es2panda::SourceFile input(fileName, src, options->ParseModule());
-
-        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options));
-    }
-
-    pandasm::Function *GetFunction(std::string_view functionName)
-    {
-        auto it = program_->functionTable.find(functionName.data());
-        if (it == program_->functionTable.end()) {
-            return nullptr;
-        }
-        return &it->second;
-    }
-
-private:
-    std::unique_ptr<pandasm::Program> program_ {};
 };
 
 // === Function ===
@@ -112,7 +64,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_0)
         function fn(): void {
         }
     )");
-    CheckNoRestParameterFlag("ETSGLOBAL.fn:void;");
+    CheckNoRestParameterFlag("dummy.ETSGLOBAL.fn:void;", true);
 }
 
 TEST_F(RestParameterTest, function_without_rest_parameters_1)
@@ -121,7 +73,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_1)
         function fn(args: int[]): void {
         }
     )");
-    CheckNoRestParameterFlag("ETSGLOBAL.fn:i32[];void;");
+    CheckNoRestParameterFlag("dummy.ETSGLOBAL.fn:i32[];void;", true);
 }
 
 TEST_F(RestParameterTest, function_without_rest_parameters_2)
@@ -130,7 +82,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_2)
         function fn(arg0: int, args: String[]): void {
         }
     )");
-    CheckNoRestParameterFlag("ETSGLOBAL.fn:i32;std.core.String[];void;");
+    CheckNoRestParameterFlag("dummy.ETSGLOBAL.fn:i32;std.core.String[];void;", true);
 }
 
 TEST_F(RestParameterTest, function_with_rest_parameter_0)
@@ -139,7 +91,7 @@ TEST_F(RestParameterTest, function_with_rest_parameter_0)
         function fn(...args: String[]): void {
         }
     )");
-    CheckRestParameterFlag("ETSGLOBAL.fn:std.core.String[];void;");
+    CheckRestParameterFlag("dummy.ETSGLOBAL.fn:std.core.String[];void;", true);
 }
 
 TEST_F(RestParameterTest, function_with_rest_parameter_1)
@@ -148,7 +100,7 @@ TEST_F(RestParameterTest, function_with_rest_parameter_1)
         function fn(o: Object, ...args: int[]): void {
         }
     )");
-    CheckRestParameterFlag("ETSGLOBAL.fn:std.core.Object;i32[];void;");
+    CheckRestParameterFlag("dummy.ETSGLOBAL.fn:std.core.Object;i32[];void;", true);
 }
 
 // === Method of class ===
@@ -159,7 +111,7 @@ TEST_F(RestParameterTest, class_method_without_rest_parameters_0)
             fn() {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:void;");
+    CheckNoRestParameterFlag("dummy.A.fn:void;", false);
 }
 
 TEST_F(RestParameterTest, class_method_without_rest_parameters_1)
@@ -169,7 +121,7 @@ TEST_F(RestParameterTest, class_method_without_rest_parameters_1)
             fn(arg0: int) {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:i32;void;");
+    CheckNoRestParameterFlag("dummy.A.fn:i32;void;", false);
 }
 
 TEST_F(RestParameterTest, class_method_with_rest_parameters_0)
@@ -179,7 +131,7 @@ TEST_F(RestParameterTest, class_method_with_rest_parameters_0)
             fn(...args: int[]) {};
         }
     )");
-    CheckRestParameterFlag("A.fn:i32[];void;");
+    CheckRestParameterFlag("dummy.A.fn:i32[];void;", false);
 }
 
 // === Static method of class ===
@@ -190,7 +142,7 @@ TEST_F(RestParameterTest, static_class_method_without_rest_parameters_0)
             static fn() {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:void;");
+    CheckNoRestParameterFlag("dummy.A.fn:void;", true);
 }
 
 TEST_F(RestParameterTest, static_class_method_without_rest_parameters_1)
@@ -200,7 +152,7 @@ TEST_F(RestParameterTest, static_class_method_without_rest_parameters_1)
             static fn(arg0: int) {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:i32;void;");
+    CheckNoRestParameterFlag("dummy.A.fn:i32;void;", true);
 }
 
 TEST_F(RestParameterTest, static_class_method_with_rest_parameters_0)
@@ -210,7 +162,7 @@ TEST_F(RestParameterTest, static_class_method_with_rest_parameters_0)
             static fn(...args: int[]) {};
         }
     )");
-    CheckRestParameterFlag("A.fn:i32[];void;");
+    CheckRestParameterFlag("dummy.A.fn:i32[];void;", true);
 }
 
 TEST_F(RestParameterTest, static_class_method_with_rest_parameters_1)
@@ -220,7 +172,7 @@ TEST_F(RestParameterTest, static_class_method_with_rest_parameters_1)
             static fn(a: String[], ...args: int[]) {};
         }
     )");
-    CheckRestParameterFlag("A.fn:std.core.String[];i32[];void;");
+    CheckRestParameterFlag("dummy.A.fn:std.core.String[];i32[];void;", true);
 }
 
 // === Constructor of class ===
@@ -231,7 +183,7 @@ TEST_F(RestParameterTest, class_constructor_without_rest_parameters_0)
             constructor() {};
         }
     )");
-    CheckNoRestParameterFlag("A.<ctor>:void;");
+    CheckNoRestParameterFlag("dummy.A.<ctor>:void;", false);
 }
 
 TEST_F(RestParameterTest, class_constructor_without_rest_parameters_1)
@@ -241,7 +193,7 @@ TEST_F(RestParameterTest, class_constructor_without_rest_parameters_1)
             constructor(args: String[]) {};
         }
     )");
-    CheckNoRestParameterFlag("A.<ctor>:std.core.String[];void;");
+    CheckNoRestParameterFlag("dummy.A.<ctor>:std.core.String[];void;", false);
 }
 
 TEST_F(RestParameterTest, class_constructor_with_rest_parameters_0)
@@ -251,7 +203,7 @@ TEST_F(RestParameterTest, class_constructor_with_rest_parameters_0)
             constructor(...args: int[]) {};
         }
     )");
-    CheckRestParameterFlag("A.<ctor>:i32[];void;");
+    CheckRestParameterFlag("dummy.A.<ctor>:i32[];void;", false);
 }
 
 TEST_F(RestParameterTest, class_constructor_with_rest_parameters_1)
@@ -261,7 +213,7 @@ TEST_F(RestParameterTest, class_constructor_with_rest_parameters_1)
             constructor(v0: long, ...args: String[]) {};
         }
     )");
-    CheckRestParameterFlag("A.<ctor>:i64;std.core.String[];void;");
+    CheckRestParameterFlag("dummy.A.<ctor>:i64;std.core.String[];void;", false);
 }
 
 // === Method of interface ===
@@ -272,7 +224,7 @@ TEST_F(RestParameterTest, interface_without_rest_parameters_0)
             fn() {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:void;");
+    CheckNoRestParameterFlag("dummy.A.fn:void;", false);
 }
 
 TEST_F(RestParameterTest, interface_without_rest_parameters_1)
@@ -282,7 +234,7 @@ TEST_F(RestParameterTest, interface_without_rest_parameters_1)
             fn(args: String[]) {};
         }
     )");
-    CheckNoRestParameterFlag("A.fn:std.core.String[];void;");
+    CheckNoRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
 }
 
 TEST_F(RestParameterTest, interface_with_rest_parameters_0)
@@ -292,7 +244,7 @@ TEST_F(RestParameterTest, interface_with_rest_parameters_0)
             fn(...args: Object[]) {};
         }
     )");
-    CheckRestParameterFlag("A.fn:std.core.Object[];void;");
+    CheckRestParameterFlag("dummy.A.fn:std.core.Object[];void;", false);
 }
 
 TEST_F(RestParameterTest, interface_with_rest_parameters_1)
@@ -302,7 +254,7 @@ TEST_F(RestParameterTest, interface_with_rest_parameters_1)
             fn(o: Object, ...args: String[]) {};
         }
     )");
-    CheckRestParameterFlag("A.fn:std.core.Object;std.core.String[];void;");
+    CheckRestParameterFlag("dummy.A.fn:std.core.Object;std.core.String[];void;", false);
 }
 
 // === Lambda method ===
@@ -313,7 +265,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_0)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i32;");
+    CheckNoRestParameterFlag("dummy.ETSGLOBAL.lambda$invoke$0:i32;", true);
 }
 
 TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
@@ -323,7 +275,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i64[];i32;");
+    CheckNoRestParameterFlag("dummy.ETSGLOBAL.lambda$invoke$0:i64[];i32;", true);
 }
 
 // === Abstract method of abstract class ===
@@ -334,7 +286,7 @@ TEST_F(RestParameterTest, abstract_function_without_rest_parameter_0)
             abstract fn(): void
         }
     )");
-    CheckNoRestParameterFlag("A.fn:void;");
+    CheckNoRestParameterFlag("dummy.A.fn:void;", false);
 }
 
 TEST_F(RestParameterTest, abstract_function_without_rest_parameter_1)
@@ -344,7 +296,7 @@ TEST_F(RestParameterTest, abstract_function_without_rest_parameter_1)
             abstract fn(args: String[]): void
         }
     )");
-    CheckNoRestParameterFlag("A.fn:std.core.String[];void;");
+    CheckNoRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
 }
 
 TEST_F(RestParameterTest, abstract_function_with_rest_parameter_0)
@@ -354,7 +306,7 @@ TEST_F(RestParameterTest, abstract_function_with_rest_parameter_0)
             abstract fn(...args: String[]): void
         }
     )");
-    CheckRestParameterFlag("A.fn:std.core.String[];void;");
+    CheckRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
 }
 
 TEST_F(RestParameterTest, abstract_function_with_rest_parameter_1)
@@ -364,20 +316,20 @@ TEST_F(RestParameterTest, abstract_function_with_rest_parameter_1)
             abstract fn(v: int, ...args: String[]): void
         }
     )");
-    CheckRestParameterFlag("A.fn:i32;std.core.String[];void;");
+    CheckRestParameterFlag("dummy.A.fn:i32;std.core.String[];void;", false);
 }
 
 // === External methods ===
 TEST_F(RestParameterTest, external_function_with_rest_parameter_0)
 {
     SetCurrentProgram("");
-    CheckRestParameterFlag("std.core.LambdaValue.invoke:std.core.Object[];std.core.Object;");
+    CheckRestParameterFlag("std.core.LambdaValue.invoke:std.core.Object[];std.core.Object;", false);
 }
 
 TEST_F(RestParameterTest, external_function_with_rest_parameter_1)
 {
     SetCurrentProgram("");
-    CheckRestParameterFlag("escompat.Math.max:f64[];f64;");
+    CheckRestParameterFlag("escompat.Math.max:f64[];f64;", true);
 }
 
 }  // namespace ark::es2panda::compiler::test

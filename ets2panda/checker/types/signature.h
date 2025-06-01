@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_SIGNATURE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_SIGNATURE_H
 
+#include "ir/ets/etsParameterExpression.h"
 #include "type.h"
 
+#include "varbinder/declaration.h"
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::public_lib {
@@ -26,7 +28,7 @@ struct Context;
 
 namespace ark::es2panda::checker {
 
-class SignatureInfo {
+class SignatureInfo final {
 public:
     explicit SignatureInfo(ArenaAllocator *allocator) : typeParams {allocator->Adapter()}, params {allocator->Adapter()}
     {
@@ -51,6 +53,7 @@ public:
         }
     }
 
+    SignatureInfo() = delete;
     ~SignatureInfo() = default;
     NO_COPY_SEMANTIC(SignatureInfo);
     NO_MOVE_SEMANTIC(SignatureInfo);
@@ -67,30 +70,30 @@ using ENUMBITOPS_OPERATORS;
 
 enum class SignatureFlags : uint32_t {
     NO_OPTS = 0U,
-    VIRTUAL = 1U << 0U,
-    ABSTRACT = 1U << 1U,
-    CALL = 1U << 2U,
-    CONSTRUCT = 1U << 3U,
-    PUBLIC = 1U << 4U,
-    PROTECTED = 1U << 5U,
-    PRIVATE = 1U << 6U,
-    STATIC = 1U << 7U,
-    FINAL = 1U << 8U,
-    CONSTRUCTOR = 1U << 9U,
-    TYPE = 1U << 10U,
-    PROXY = 1U << 11U,
-    INTERNAL = 1U << 12U,
-    NEED_RETURN_TYPE = 1U << 13U,
-    INFERRED_RETURN_TYPE = 1U << 14U,
-    THIS_RETURN_TYPE = 1U << 15U,
-    GETTER = 1U << 16U,
-    SETTER = 1U << 17U,
-    THROWS = 1U << 18U,
-    RETHROWS = 1U << 19U,
+    ABSTRACT = 1U << 0U,
+    CALL = 1U << 1U,
+    CONSTRUCT = 1U << 2U,
+    PUBLIC = 1U << 3U,
+    PROTECTED = 1U << 4U,
+    PRIVATE = 1U << 5U,
+    STATIC = 1U << 6U,
+    FINAL = 1U << 7U,
+    CONSTRUCTOR = 1U << 8U,
+    PROXY = 1U << 9U,
+    INTERNAL = 1U << 10U,
+    NEED_RETURN_TYPE = 1U << 11U,
+    INFERRED_RETURN_TYPE = 1U << 12U,
+    THIS_RETURN_TYPE = 1U << 13U,
+    GETTER = 1U << 14U,
+    SETTER = 1U << 15U,
+    THROWS = 1U << 16U,
+    RETHROWS = 1U << 17U,
+    EXTENSION_FUNCTION = 1U << 18U,
+    DUPLICATE_ASM = 1U << 19U,
 
     INTERNAL_PROTECTED = INTERNAL | PROTECTED,
     GETTER_OR_SETTER = GETTER | SETTER,
-    FUNCTIONAL_INTERFACE_SIGNATURE = VIRTUAL | ABSTRACT | CALL | PUBLIC | TYPE
+    THROWING = THROWS | RETHROWS,
 };
 
 }  // namespace ark::es2panda::checker
@@ -101,127 +104,126 @@ struct enumbitops::IsAllowedType<ark::es2panda::checker::SignatureFlags> : std::
 
 namespace ark::es2panda::checker {
 
-class Signature {
+class Signature final {
 public:
-    Signature(SignatureInfo *signatureInfo, Type *returnType) : signatureInfo_(signatureInfo), returnType_(returnType)
-    {
-    }
-
-    Signature(SignatureInfo *signatureInfo, Type *returnType, util::StringView internalName)
-        : signatureInfo_(signatureInfo), returnType_(returnType), internalName_(internalName)
-    {
-    }
-
-    Signature(SignatureInfo *signatureInfo, Type *returnType, ir::ScriptFunction *func)
+    Signature(SignatureInfo *signatureInfo, Type *returnType, ir::ScriptFunction *func = nullptr)
         : signatureInfo_(signatureInfo), returnType_(returnType), func_(func)
     {
     }
 
+    Signature() = delete;
     ~Signature() = default;
     NO_COPY_SEMANTIC(Signature);
     NO_MOVE_SEMANTIC(Signature);
 
-    const SignatureInfo *GetSignatureInfo() const
+    [[nodiscard]] const SignatureInfo *GetSignatureInfo() const noexcept
     {
         return signatureInfo_;
     }
 
-    SignatureInfo *GetSignatureInfo()
+    [[nodiscard]] SignatureInfo *GetSignatureInfo() noexcept
     {
         return signatureInfo_;
     }
 
-    const ArenaVector<Type *> &TypeParams() const
+    [[nodiscard]] const ArenaVector<Type *> &TypeParams() const noexcept
     {
         return signatureInfo_->typeParams;
     }
 
-    ArenaVector<Type *> &TypeParams()
+    [[nodiscard]] ArenaVector<Type *> &TypeParams() noexcept
     {
         return signatureInfo_->typeParams;
     }
 
-    const ArenaVector<varbinder::LocalVariable *> &Params() const
+    [[nodiscard]] const ArenaVector<varbinder::LocalVariable *> &Params() const noexcept
     {
         return signatureInfo_->params;
     }
 
-    ArenaVector<varbinder::LocalVariable *> &Params()
+    [[nodiscard]] ArenaVector<varbinder::LocalVariable *> &Params() noexcept
     {
         return signatureInfo_->params;
     }
 
-    const Type *ReturnType() const
+    [[nodiscard]] const Type *ReturnType() const noexcept
     {
         return returnType_;
     }
 
-    Type *ReturnType()
+    [[nodiscard]] Type *ReturnType() noexcept
     {
         return returnType_;
     }
 
-    uint32_t MinArgCount() const
+    [[nodiscard]] uint32_t MinArgCount() const noexcept
     {
         return signatureInfo_->minArgCount;
     }
 
-    uint32_t OptionalArgCount() const
+    [[nodiscard]] size_t ArgCount() const
     {
-        return signatureInfo_->params.size() - signatureInfo_->minArgCount;
+        return signatureInfo_->params.size();
     }
 
-    void SetReturnType(Type *type)
+    void SetReturnType(Type *type) noexcept
     {
         returnType_ = type;
     }
 
-    void SetOwner(ETSObjectType *owner)
+    void SetOwner(ETSObjectType *owner) noexcept
     {
         ownerObj_ = owner;
     }
 
-    void SetOwnerVar(varbinder::Variable *owner)
+    void SetOwnerVar(varbinder::Variable *owner) noexcept
     {
         ownerVar_ = owner;
     }
 
-    void SetFunction(ir::ScriptFunction *const function) noexcept
+    [[nodiscard]] bool HasFunction() const noexcept
     {
-        func_ = function;
+        return func_ != nullptr;
     }
 
-    ir::ScriptFunction *Function()
+    [[nodiscard]] ir::ScriptFunction *Function() noexcept
     {
+        ES2PANDA_ASSERT(HasFunction());
         return func_;
     }
 
-    ETSObjectType *Owner()
+    [[nodiscard]] const ir::ScriptFunction *Function() const noexcept
+    {
+        ES2PANDA_ASSERT(HasFunction());
+        return func_;
+    }
+
+    void SetInternalName(util::StringView internalName)
+    {
+        internalName_ = internalName;
+    }
+
+    [[nodiscard]] ETSObjectType *Owner()
     {
         return ownerObj_;
     }
 
-    const ETSObjectType *Owner() const
+    [[nodiscard]] const ETSObjectType *Owner() const noexcept
     {
         return ownerObj_;
     }
 
-    varbinder::Variable *OwnerVar()
+    [[nodiscard]] varbinder::Variable *OwnerVar() noexcept
     {
         return ownerVar_;
     }
 
-    const ir::ScriptFunction *Function() const
-    {
-        return func_;
-    }
-
-    const varbinder::LocalVariable *RestVar() const
+    [[nodiscard]] const varbinder::LocalVariable *RestVar() const noexcept
     {
         return signatureInfo_->restVar;
     }
 
-    uint8_t ProtectionFlag() const
+    [[nodiscard]] uint8_t ProtectionFlag() const noexcept
     {
         if ((flags_ & SignatureFlags::PRIVATE) != 0) {
             return 2U;
@@ -234,6 +236,16 @@ public:
         return 0;
     }
 
+    [[nodiscard]] bool HasProtectionFlagInternal() const noexcept
+    {
+        return (flags_ & SignatureFlags::INTERNAL) != 0;
+    }
+
+    [[nodiscard]] SignatureFlags Flags() const noexcept
+    {
+        return flags_;
+    }
+
     void AddSignatureFlag(SignatureFlags const flag) noexcept
     {
         flags_ |= flag;
@@ -244,43 +256,52 @@ public:
         flags_ &= ~flag;
     }
 
-    bool HasSignatureFlag(SignatureFlags const flag) const noexcept
+    [[nodiscard]] bool HasSignatureFlag(SignatureFlags const flag) const noexcept
     {
         return (flags_ & flag) != 0U;
     }
 
-    [[nodiscard]] SignatureFlags GetFlags() const noexcept
+    [[nodiscard]] bool HasRestParameter() const noexcept
     {
-        return flags_;
+        return signatureInfo_->restVar != nullptr;
     }
 
-    bool IsFinal() const noexcept
+    [[nodiscard]] bool IsFinal() const noexcept
     {
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
+    [[nodiscard]] bool IsExtensionFunction() const noexcept
+    {
+        return HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
+    }
+
+    [[nodiscard]] bool IsExtensionAccessor() const noexcept
+    {
+        return IsExtensionFunction() && HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+    }
+
     void ToAssemblerType(std::stringstream &ss) const;
 
-    util::StringView InternalName() const;
+    [[nodiscard]] util::StringView InternalName() const;
 
-    Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
-    Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
+    [[nodiscard]] Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
+    [[nodiscard]] Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
 
     void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false,
                   bool precise = false) const;
     std::string ToString() const;
-    void Compatible(TypeRelation *relation, Signature *other);
-    bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
+    void IsSubtypeOf(TypeRelation *relation, Signature *super);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
-    Signature *BoxPrimitives(ETSChecker *checker);
+    [[nodiscard]] Signature *ToArrowSignature(ETSChecker *checker);
+    friend class ETSExtensionFuncHelperType;
 
 private:
-    bool CheckParameter(TypeRelation *relation, Type *type1, Type *type2);
-    bool CheckReturnType(TypeRelation *relation, Type *type1, Type *type2);
+    Signature *CreateSignatureForSubstitute(ArenaAllocator *allocator, SignatureInfo *sigInfo, Type *returnType);
 
-    checker::SignatureInfo *signatureInfo_;
+    checker::SignatureInfo *const signatureInfo_;
     Type *returnType_;
-    ir::ScriptFunction *func_ {};
+    ir::ScriptFunction *const func_ {};
     SignatureFlags flags_ {SignatureFlags::NO_OPTS};
     util::StringView internalName_ {};
     ETSObjectType *ownerObj_ {};

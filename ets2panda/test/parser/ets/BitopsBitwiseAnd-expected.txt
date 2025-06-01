@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 14
+              "column": 14,
+              "program": "BitopsBitwiseAnd.ets"
             },
             "end": {
               "line": 16,
-              "column": 30
+              "column": 30,
+              "program": "BitopsBitwiseAnd.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 3
+                  "column": 3,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 4
+                  "column": 4,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -45,11 +49,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -64,11 +70,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -77,11 +85,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 3
+                "column": 3,
+                "program": "BitopsBitwiseAnd.ets"
               },
               "end": {
                 "line": 17,
-                "column": 18
+                "column": 18,
+                "program": "BitopsBitwiseAnd.ets"
               }
             }
           },
@@ -94,11 +104,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 19
+                  "column": 19,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 27
+                  "column": 27,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -108,11 +120,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 36
+                  "column": 36,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 37
+                  "column": 37,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -127,11 +141,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 29
+                  "column": 29,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 33
+                  "column": 33,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -140,11 +156,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 19
+                "column": 19,
+                "program": "BitopsBitwiseAnd.ets"
               },
               "end": {
                 "line": 18,
-                "column": 37
+                "column": 37,
+                "program": "BitopsBitwiseAnd.ets"
               }
             }
           },
@@ -157,11 +175,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -181,11 +201,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 10
+                      "column": 10,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 13
+                      "column": 13,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
@@ -198,11 +220,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 17
+                      "column": 17,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 21
+                      "column": 21,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
@@ -222,11 +246,13 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 }
                               }
                             },
@@ -234,11 +260,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 9
+                                "column": 9,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 24
+                                "column": 24,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -248,22 +276,26 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 33
+                                "column": 33,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 43
+                                "column": 43,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 9
+                              "column": 9,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 43
+                              "column": 43,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         }
@@ -272,11 +304,13 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitwiseAnd.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 44
+                          "column": 44,
+                          "program": "BitopsBitwiseAnd.ets"
                         }
                       }
                     },
@@ -295,11 +329,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   }
                                 }
                               },
@@ -307,11 +343,13 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 }
                               }
                             },
@@ -321,22 +359,26 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 14
+                                "column": 14,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 24
+                                "column": 24,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           }
@@ -345,11 +387,13 @@
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 10
+                            "column": 10,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 24
+                            "column": 24,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
@@ -363,11 +407,13 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 26
+                              "column": 26,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 27
+                              "column": 27,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         },
@@ -378,11 +424,13 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 30
+                                "column": 30,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 34
+                                "column": 34,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -393,11 +441,13 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 35
+                                "column": 35,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 36
+                                "column": 36,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -406,22 +456,26 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 30
+                              "column": 30,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 36
+                              "column": 36,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 26
+                            "column": 26,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 36
+                            "column": 36,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
@@ -436,22 +490,26 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 38
+                              "column": 38,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 39
+                              "column": 39,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 38
+                            "column": 38,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 41
+                            "column": 41,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
@@ -470,11 +528,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 23,
-                                    "column": 7
+                                    "column": 7,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   }
                                 }
                               },
@@ -488,11 +548,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 23,
-                                      "column": 25
+                                      "column": 25,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     },
                                     "end": {
                                       "line": 23,
-                                      "column": 40
+                                      "column": 40,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     }
                                   }
                                 },
@@ -503,44 +565,52 @@
                                   "loc": {
                                     "start": {
                                       "line": 23,
-                                      "column": 43
+                                      "column": 43,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     },
                                     "end": {
                                       "line": 23,
-                                      "column": 44
+                                      "column": 44,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 23,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 44
+                                    "column": 44,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 7
+                                  "column": 7,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 44
+                                  "column": 44,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 45
+                                "column": 45,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           }
@@ -548,123 +618,160 @@
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 43
+                            "column": 43,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 6
+                            "column": 6,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitwiseAnd.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 6
+                          "column": 6,
+                          "program": "BitopsBitwiseAnd.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "bitwiseAndValue",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 12
+                              "column": 5,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 26,
-                              "column": 27
+                              "column": 13,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "BitopsBitwiseAnd",
+                            "name": "bitwiseAndValue",
                             "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 31
+                                "column": 14,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 47
+                                "column": 29,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "BitopsBitwiseAnd",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 31,
+                                  "program": "BitopsBitwiseAnd.ets"
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 47,
+                                  "program": "BitopsBitwiseAnd.ets"
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 48,
+                                  "program": "BitopsBitwiseAnd.ets"
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 56,
+                                  "program": "BitopsBitwiseAnd.ets"
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 48
+                                "column": 31,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 56
+                                "column": 56,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 26,
-                              "column": 31
-                            },
-                            "end": {
-                              "line": 26,
-                              "column": 56
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 26,
+                                "column": 59,
+                                "program": "BitopsBitwiseAnd.ets"
+                              },
+                              "end": {
+                                "line": 26,
+                                "column": 77,
+                                "program": "BitopsBitwiseAnd.ets"
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 12
+                            "column": 5,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 56
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 26,
-                            "column": 58
-                          },
-                          "end": {
-                            "line": 26,
-                            "column": 76
+                            "column": 78,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitwiseAnd.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 77
+                          "column": 79,
+                          "program": "BitopsBitwiseAnd.ets"
                         }
                       }
                     }
@@ -672,33 +779,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 22
+                      "column": 22,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 4
+                      "column": 4,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 13
+                    "column": 13,
+                    "program": "BitopsBitwiseAnd.ets"
                   },
                   "end": {
                     "line": 27,
-                    "column": 4
+                    "column": 4,
+                    "program": "BitopsBitwiseAnd.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 4
+                  "column": 4,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -707,11 +820,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 3
+                "column": 3,
+                "program": "BitopsBitwiseAnd.ets"
               },
               "end": {
                 "line": 27,
-                "column": 4
+                "column": 4,
+                "program": "BitopsBitwiseAnd.ets"
               }
             }
           },
@@ -723,12 +838,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -746,12 +863,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
@@ -764,34 +883,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 32,
+                    "program": "BitopsBitwiseAnd.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 32,
+                    "program": "BitopsBitwiseAnd.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -799,12 +924,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 28,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 28,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -812,22 +939,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 31
+            "column": 31,
+            "program": "BitopsBitwiseAnd.ets"
           },
           "end": {
-            "line": 28,
-            "column": 2
+            "line": 30,
+            "column": 9,
+            "program": "BitopsBitwiseAnd.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 8
+          "column": 8,
+          "program": "BitopsBitwiseAnd.ets"
         },
         "end": {
-          "line": 28,
-          "column": 2
+          "line": 30,
+          "column": 9,
+          "program": "BitopsBitwiseAnd.ets"
         }
       }
     },
@@ -841,11 +972,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "BitopsBitwiseAnd.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "BitopsBitwiseAnd.ets"
             }
           }
         },
@@ -861,11 +994,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -885,11 +1020,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -903,33 +1040,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -938,11 +1081,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitwiseAnd.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitwiseAnd.ets"
               }
             }
           },
@@ -955,11 +1100,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 14
+                  "column": 14,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -979,11 +1126,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 10
+                      "column": 10,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 14
+                      "column": 14,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
@@ -996,11 +1145,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 18
+                      "column": 18,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 22
+                      "column": 22,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
@@ -1019,11 +1170,13 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -1040,33 +1193,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 15
+                                      "column": 15,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "BitopsBitwiseAnd.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 31,
-                                    "column": 15
+                                    "column": 15,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "BitopsBitwiseAnd.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "BitopsBitwiseAnd.ets"
                                 }
                               }
                             },
@@ -1074,22 +1233,26 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 11
+                                "column": 11,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 32
+                                "column": 32,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 31,
-                              "column": 7
+                              "column": 7,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 31,
-                              "column": 32
+                              "column": 32,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         }
@@ -1098,11 +1261,13 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 3
+                          "column": 3,
+                          "program": "BitopsBitwiseAnd.ets"
                         },
                         "end": {
                           "line": 31,
-                          "column": 32
+                          "column": 32,
+                          "program": "BitopsBitwiseAnd.ets"
                         }
                       }
                     },
@@ -1119,11 +1284,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 3
+                                "column": 3,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 4
+                                "column": 4,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -1134,11 +1301,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 5
+                                "column": 5,
+                                "program": "BitopsBitwiseAnd.ets"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitwiseAnd.ets"
                               }
                             }
                           },
@@ -1147,11 +1316,13 @@
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 3
+                              "column": 3,
+                              "program": "BitopsBitwiseAnd.ets"
                             },
                             "end": {
                               "line": 32,
-                              "column": 8
+                              "column": 8,
+                              "program": "BitopsBitwiseAnd.ets"
                             }
                           }
                         },
@@ -1160,22 +1331,26 @@
                         "loc": {
                           "start": {
                             "line": 32,
-                            "column": 3
+                            "column": 3,
+                            "program": "BitopsBitwiseAnd.ets"
                           },
                           "end": {
                             "line": 32,
-                            "column": 10
+                            "column": 10,
+                            "program": "BitopsBitwiseAnd.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 32,
-                          "column": 3
+                          "column": 3,
+                          "program": "BitopsBitwiseAnd.ets"
                         },
                         "end": {
                           "line": 32,
-                          "column": 11
+                          "column": 11,
+                          "program": "BitopsBitwiseAnd.ets"
                         }
                       }
                     }
@@ -1183,33 +1358,39 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 23
+                      "column": 23,
+                      "program": "BitopsBitwiseAnd.ets"
                     },
                     "end": {
                       "line": 33,
-                      "column": 2
+                      "column": 2,
+                      "program": "BitopsBitwiseAnd.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 10
+                    "column": 10,
+                    "program": "BitopsBitwiseAnd.ets"
                   },
                   "end": {
                     "line": 33,
-                    "column": 2
+                    "column": 2,
+                    "program": "BitopsBitwiseAnd.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitwiseAnd.ets"
                 },
                 "end": {
                   "line": 33,
-                  "column": 2
+                  "column": 2,
+                  "program": "BitopsBitwiseAnd.ets"
                 }
               }
             },
@@ -1218,11 +1399,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitwiseAnd.ets"
               },
               "end": {
                 "line": 33,
-                "column": 2
+                "column": 2,
+                "program": "BitopsBitwiseAnd.ets"
               }
             }
           }
@@ -1230,22 +1413,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "BitopsBitwiseAnd.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "BitopsBitwiseAnd.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "BitopsBitwiseAnd.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "BitopsBitwiseAnd.ets"
         }
       }
     }
@@ -1253,11 +1440,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "BitopsBitwiseAnd.ets"
     },
     "end": {
       "line": 34,
-      "column": 1
+      "column": 1,
+      "program": "BitopsBitwiseAnd.ets"
     }
   }
 }

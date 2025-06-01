@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             },
             "end": {
               "line": 16,
-              "column": 10
+              "column": 10,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             }
           }
         },
@@ -31,22 +33,26 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 11
+                    "column": 11,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 12
+                    "column": 12,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 11
+                  "column": 11,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 13
+                  "column": 13,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 }
               }
             }
@@ -54,11 +60,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 10
+              "column": 10,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             },
             "end": {
               "line": 16,
-              "column": 13
+              "column": 13,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             }
           }
         },
@@ -74,11 +82,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 19
+                  "column": 19,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 }
               }
             },
@@ -98,11 +108,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 12
+                      "column": 12,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 19
+                      "column": 19,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
@@ -121,11 +133,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 26
+                          "column": 26,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 29
+                          "column": 29,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         }
                       }
                     },
@@ -143,33 +157,39 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 30
+                                "column": 30,
+                                "program": "typeVarReferenceFromStaticContext2.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 32
+                                "column": 32,
+                                "program": "typeVarReferenceFromStaticContext2.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 30
+                              "column": 30,
+                              "program": "typeVarReferenceFromStaticContext2.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 32
+                              "column": 32,
+                              "program": "typeVarReferenceFromStaticContext2.ets"
                             }
                           }
                         }
@@ -177,33 +197,39 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 29
+                          "column": 29,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 32
+                          "column": 32,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 26
+                        "column": 26,
+                        "program": "typeVarReferenceFromStaticContext2.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 34
+                        "column": 34,
+                        "program": "typeVarReferenceFromStaticContext2.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 26
+                      "column": 26,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 34
+                      "column": 34,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
@@ -219,22 +245,26 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 20
+                            "column": 20,
+                            "program": "typeVarReferenceFromStaticContext2.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 21
+                            "column": 21,
+                            "program": "typeVarReferenceFromStaticContext2.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 20
+                          "column": 20,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 22
+                          "column": 22,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         }
                       }
                     }
@@ -242,11 +272,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 19
+                      "column": 19,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 22
+                      "column": 22,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
@@ -268,11 +300,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 }
                               }
                             },
@@ -290,33 +324,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 18,
-                                          "column": 24
+                                          "column": 24,
+                                          "program": "typeVarReferenceFromStaticContext2.ets"
                                         },
                                         "end": {
                                           "line": 18,
-                                          "column": 25
+                                          "column": 25,
+                                          "program": "typeVarReferenceFromStaticContext2.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 24
+                                        "column": 24,
+                                        "program": "typeVarReferenceFromStaticContext2.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 26
+                                        "column": 26,
+                                        "program": "typeVarReferenceFromStaticContext2.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 18,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "typeVarReferenceFromStaticContext2.ets"
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "typeVarReferenceFromStaticContext2.ets"
                                     }
                                   }
                                 }
@@ -324,33 +364,39 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "typeVarReferenceFromStaticContext2.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 20
+                                "column": 20,
+                                "program": "typeVarReferenceFromStaticContext2.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 27
+                                "column": 27,
+                                "program": "typeVarReferenceFromStaticContext2.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 20
+                              "column": 20,
+                              "program": "typeVarReferenceFromStaticContext2.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 27
+                              "column": 27,
+                              "program": "typeVarReferenceFromStaticContext2.ets"
                             }
                           }
                         },
@@ -358,22 +404,26 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 16
+                            "column": 16,
+                            "program": "typeVarReferenceFromStaticContext2.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 29
+                            "column": 29,
+                            "program": "typeVarReferenceFromStaticContext2.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 9
+                          "column": 9,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 29
+                          "column": 29,
+                          "program": "typeVarReferenceFromStaticContext2.ets"
                         }
                       }
                     }
@@ -381,33 +431,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 33
+                      "column": 33,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 6
+                      "column": 6,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 19
+                    "column": 19,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 6
+                    "column": 6,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 19
+                  "column": 19,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 }
               }
             },
@@ -416,11 +472,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "typeVarReferenceFromStaticContext2.ets"
               },
               "end": {
                 "line": 19,
-                "column": 6
+                "column": 6,
+                "program": "typeVarReferenceFromStaticContext2.ets"
               }
             }
           },
@@ -432,12 +490,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 }
               }
             },
@@ -455,12 +515,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
@@ -473,34 +535,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "typeVarReferenceFromStaticContext2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 15,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 15,
+                    "program": "typeVarReferenceFromStaticContext2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "typeVarReferenceFromStaticContext2.ets"
                 }
               }
             },
@@ -508,12 +576,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 20,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 20,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -521,22 +591,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 14
+            "column": 14,
+            "program": "typeVarReferenceFromStaticContext2.ets"
           },
           "end": {
-            "line": 20,
-            "column": 2
+            "line": 21,
+            "column": 1,
+            "program": "typeVarReferenceFromStaticContext2.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "typeVarReferenceFromStaticContext2.ets"
         },
         "end": {
-          "line": 20,
-          "column": 2
+          "line": 21,
+          "column": 1,
+          "program": "typeVarReferenceFromStaticContext2.ets"
         }
       }
     },
@@ -550,11 +624,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "typeVarReferenceFromStaticContext2.ets"
             }
           }
         },
@@ -565,16 +641,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "typeVarReferenceFromStaticContext2.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "typeVarReferenceFromStaticContext2.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -594,11 +778,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -612,33 +798,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -647,11 +839,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeVarReferenceFromStaticContext2.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeVarReferenceFromStaticContext2.ets"
               }
             }
           }
@@ -659,22 +853,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "typeVarReferenceFromStaticContext2.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "typeVarReferenceFromStaticContext2.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "typeVarReferenceFromStaticContext2.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "typeVarReferenceFromStaticContext2.ets"
         }
       }
     }
@@ -682,11 +880,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "typeVarReferenceFromStaticContext2.ets"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "typeVarReferenceFromStaticContext2.ets"
     }
   }
 }

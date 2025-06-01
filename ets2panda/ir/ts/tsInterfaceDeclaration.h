@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,9 @@
 #define ES2PANDA_IR_TS_INTERFACE_DECLARATION_H
 
 #include "varbinder/scope.h"
+#include "ir/annotationAllowed.h"
 #include "ir/statement.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -29,7 +31,7 @@ class TSInterfaceBody;
 class TSInterfaceHeritage;
 class TSTypeParameterDeclaration;
 
-class TSInterfaceDeclaration : public TypedStatement {
+class TSInterfaceDeclaration : public AnnotationAllowed<TypedStatement> {
 public:
     // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
     struct ConstructorData {
@@ -44,7 +46,7 @@ public:
 
     explicit TSInterfaceDeclaration(ArenaAllocator *allocator, ArenaVector<TSInterfaceHeritage *> &&extends,
                                     ConstructorData &&data)
-        : TypedStatement(AstNodeType::TS_INTERFACE_DECLARATION),
+        : AnnotationAllowed<TypedStatement>(AstNodeType::TS_INTERFACE_DECLARATION, allocator),
           decorators_(allocator->Adapter()),
           id_(data.id),
           typeParams_(data.typeParams),
@@ -71,7 +73,7 @@ public:
 
     void SetScope(varbinder::LocalScope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -188,7 +190,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *InferType(checker::TSChecker *checker, varbinder::Variable *bindingVar) const;
 
     void Accept(ASTVisitorT *v) override

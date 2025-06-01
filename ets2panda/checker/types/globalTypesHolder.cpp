@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,8 +59,6 @@ void GlobalTypesHolder::AddETSEscompatLayer()
     builtinNameMappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
     builtinNameMappings_.emplace("Date", GlobalTypeId::ETS_DATE_BUILTIN);
     builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("OutOfMemoryError", GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
     builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
     builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
     builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
@@ -71,32 +69,34 @@ void GlobalTypesHolder::AddETSEscompatLayer()
 
 void GlobalTypesHolder::AddFunctionTypes(ArenaAllocator *allocator)
 {
-    // ETS throwing functional types
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS), nargs = 0;
-         id < static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        builtinNameMappings_.emplace(util::UString("ThrowingFunction" + std::to_string(nargs), allocator).View(),
-                                     static_cast<GlobalTypeId>(id));
-    }
+    auto addTypes = [this, allocator](const std::string &name, GlobalTypeId from, GlobalTypeId to) {
+        for (size_t id = static_cast<size_t>(from), nargs = 0; id <= static_cast<size_t>(to); id++, nargs++) {
+            builtinNameMappings_.emplace(util::UString(name, allocator).Append(std::to_string(nargs)).View(),
+                                         static_cast<GlobalTypeId>(id));
+        }
+    };
 
-    builtinNameMappings_.emplace("ThrowingFunctionN", GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS);
+    addTypes("Function", GlobalTypeId::ETS_FUNCTION0_CLASS, GlobalTypeId::ETS_FUNCTION16_CLASS);
+    addTypes("Lambda", GlobalTypeId::ETS_LAMBDA0_CLASS, GlobalTypeId::ETS_LAMBDA16_CLASS);
 
-    // ETS rethrowing functional types
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS), nargs = 0;
-         id < static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        builtinNameMappings_.emplace(util::UString("RethrowingFunction" + std::to_string(nargs), allocator).View(),
-                                     static_cast<GlobalTypeId>(id));
-    }
-
-    builtinNameMappings_.emplace("RethrowingFunctionN", GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS);
-
-    // ETS functional types
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
-         id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        builtinNameMappings_.emplace(util::UString("Function" + std::to_string(nargs), allocator).View(),
-                                     static_cast<GlobalTypeId>(id));
-    }
+    addTypes("FunctionR", GlobalTypeId::ETS_FUNCTIONR0_CLASS, GlobalTypeId::ETS_FUNCTIONR16_CLASS);
+    addTypes("LambdaR", GlobalTypeId::ETS_LAMBDAR0_CLASS, GlobalTypeId::ETS_LAMBDAR16_CLASS);
 
     builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
+    builtinNameMappings_.emplace("LambdaN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
+}
+
+void GlobalTypesHolder::AddTupleTypes(ArenaAllocator *allocator)
+{
+    auto addTypes = [this, allocator](const std::string &name, GlobalTypeId from, GlobalTypeId to) {
+        for (size_t id = static_cast<size_t>(from), nargs = 0; id <= static_cast<size_t>(to); id++, nargs++) {
+            builtinNameMappings_.emplace(util::UString(name + std::to_string(nargs), allocator).View(),
+                                         static_cast<GlobalTypeId>(id));
+        }
+    };
+
+    addTypes("Tuple", GlobalTypeId::ETS_TUPLE0_CLASS, GlobalTypeId::ETS_TUPLE16_CLASS);
+    builtinNameMappings_.emplace("TupleN", GlobalTypeId::ETS_TUPLEN_CLASS);
 }
 
 void GlobalTypesHolder::AddTSSpecificTypes(ArenaAllocator *allocator)
@@ -161,7 +161,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Exception", GlobalTypeId::ETS_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("Float", GlobalTypeId::ETS_FLOAT_BUILTIN);
     builtinNameMappings_.emplace("Floating", GlobalTypeId::ETS_FLOATING_BUILTIN);
-    builtinNameMappings_.emplace("Int", GlobalTypeId::ETS_INTEGER_BUILTIN);
+    builtinNameMappings_.emplace("Int", GlobalTypeId::ETS_INT_BUILTIN);
     builtinNameMappings_.emplace("Integral", GlobalTypeId::ETS_INTEGRAL_BUILTIN);
     builtinNameMappings_.emplace("Long", GlobalTypeId::ETS_LONG_BUILTIN);
     builtinNameMappings_.emplace("Object", GlobalTypeId::ETS_OBJECT_BUILTIN);
@@ -170,11 +170,9 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Short", GlobalTypeId::ETS_SHORT_BUILTIN);
     builtinNameMappings_.emplace("StackTraceElement", GlobalTypeId::ETS_STACK_TRACE_ELEMENT_BUILTIN);
     builtinNameMappings_.emplace("StackTrace", GlobalTypeId::ETS_STACK_TRACE_BUILTIN);
-    builtinNameMappings_.emplace("NullPointerException", GlobalTypeId::ETS_NULL_POINTER_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ArrayIndexOutOfBoundsError",
                                  GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN);
     builtinNameMappings_.emplace("ArithmeticError", GlobalTypeId::ETS_ARITHMETIC_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("ClassNotFoundException", GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ClassCastError", GlobalTypeId::ETS_CLASS_CAST_ERROR_BUILTIN);
     builtinNameMappings_.emplace("String", GlobalTypeId::ETS_STRING_BUILTIN);
     builtinNameMappings_.emplace("BigInt", GlobalTypeId::ETS_BIG_INT_BUILTIN);
@@ -182,6 +180,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Type", GlobalTypeId::ETS_TYPE_BUILTIN);
     builtinNameMappings_.emplace("Types", GlobalTypeId::ETS_TYPES_BUILTIN);
     builtinNameMappings_.emplace("Promise", GlobalTypeId::ETS_PROMISE_BUILTIN);
+    builtinNameMappings_.emplace("Function", GlobalTypeId::ETS_FUNCTION_BUILTIN);
     builtinNameMappings_.emplace("Box", GlobalTypeId::ETS_BOX_BUILTIN);
     builtinNameMappings_.emplace("BooleanBox", GlobalTypeId::ETS_BOOLEAN_BOX_BUILTIN);
     builtinNameMappings_.emplace("ByteBox", GlobalTypeId::ETS_BYTE_BOX_BUILTIN);
@@ -193,7 +192,11 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("DoubleBox", GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN);
 }
 
-GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
+    : allocator_(allocator),
+      builtinNameMappings_(allocator->Adapter()),
+      extensionGetterMaps_(allocator->Adapter()),
+      extensionSetterMaps_(allocator->Adapter())
 {
     // TS specific types
     AddTSSpecificTypes(allocator);
@@ -208,17 +211,11 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
 
     builtinNameMappings_.emplace("TYPE ERROR", GlobalTypeId::TYPE_ERROR);
 
-    // ETS functional types
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
-         id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        builtinNameMappings_.emplace(util::UString("Function" + std::to_string(nargs), allocator).View(),
-                                     static_cast<GlobalTypeId>(id));
-    }
-
-    builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
-
     // Function types
     AddFunctionTypes(allocator);
+
+    // Tuple types
+    AddTupleTypes(allocator);
 
     // ETS interop js specific types
     builtinNameMappings_.emplace("JSRuntime", GlobalTypeId::ETS_INTEROP_JSRUNTIME_BUILTIN);
@@ -472,7 +469,7 @@ Type *GlobalTypesHolder::GlobalFloatingBuiltinType()
 
 Type *GlobalTypesHolder::GlobalIntegerBuiltinType()
 {
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_INTEGER_BUILTIN));
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_INT_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalIntegralBuiltinType()
@@ -520,11 +517,6 @@ Type *GlobalTypesHolder::GlobalStackTraceBuiltinType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_STACK_TRACE_BUILTIN));
 }
 
-Type *GlobalTypesHolder::GlobalNullPointerExceptionBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULL_POINTER_EXCEPTION_BUILTIN));
-}
-
 Type *GlobalTypesHolder::GlobalArrayIndexOutOfBoundsErrorBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN));
@@ -535,24 +527,9 @@ Type *GlobalTypesHolder::GlobalArithmeticErrorBuiltinType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ARITHMETIC_ERROR_BUILTIN));
 }
 
-Type *GlobalTypesHolder::GlobalClassNotFoundExceptionBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN));
-}
-
 Type *GlobalTypesHolder::GlobalClassCastErrorBuiltinType() const noexcept
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_CLASS_CAST_ERROR_BUILTIN));
-}
-
-Type *GlobalTypesHolder::GlobalClassOutOfMemoryErrorBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN));
-}
-
-Type *GlobalTypesHolder::GlobalNoSuchMethodErrorBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalAssertionErrorBuiltinType()
@@ -608,6 +585,11 @@ Type *GlobalTypesHolder::GlobalTypesBuiltinType()
 Type *GlobalTypesHolder::GlobalPromiseBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_PROMISE_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalRegExpBuiltinType()
@@ -677,34 +659,39 @@ Type *GlobalTypesHolder::GlobalDoubleBoxBuiltinType()
 
 size_t GlobalTypesHolder::VariadicFunctionTypeThreshold()
 {
-    auto val =
-        static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) - static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
-    ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS) -
-                   static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS)));
-    ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS) -
-                   static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS)));
-    return val;
+    return static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) -
+           static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
 }
 
-Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs, ir::ScriptFunctionFlags flags)
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs, bool hasRest)
 {
-    Type *type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS) + nargs);
-
-    if (nargs >= VariadicFunctionTypeThreshold()) {
-        if ((flags & ir::ScriptFunctionFlags::THROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS));
-        } else if ((flags & ir::ScriptFunctionFlags::RETHROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS));
-        } else {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
-        }
-    } else if ((flags & ir::ScriptFunctionFlags::THROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS) + nargs);
-    } else if ((flags & ir::ScriptFunctionFlags::RETHROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS) + nargs);
+    if (nargs < VariadicFunctionTypeThreshold()) {
+        auto base = hasRest ? GlobalTypeId::ETS_FUNCTIONR0_CLASS : GlobalTypeId::ETS_FUNCTION0_CLASS;
+        return globalTypes_.at(static_cast<size_t>(base) + nargs);
     }
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
+}
 
-    return type;
+Type *GlobalTypesHolder::GlobalLambdaBuiltinType(size_t nargs, bool hasRest)
+{
+    if (nargs < VariadicFunctionTypeThreshold()) {
+        auto base = hasRest ? GlobalTypeId::ETS_LAMBDAR0_CLASS : GlobalTypeId::ETS_LAMBDA0_CLASS;
+        return globalTypes_.at(static_cast<size_t>(base) + nargs);
+    }
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LAMBDAN_CLASS));
+}
+
+size_t GlobalTypesHolder::VariadicTupleTypeThreshold()
+{
+    return static_cast<size_t>(GlobalTypeId::ETS_TUPLEN_CLASS) - static_cast<size_t>(GlobalTypeId::ETS_TUPLE0_CLASS);
+}
+
+Type *GlobalTypesHolder::GlobalTupleBuiltinType(size_t nargs)
+{
+    const auto tupleClassIdPos = nargs < VariadicTupleTypeThreshold()
+                                     ? static_cast<size_t>(GlobalTypeId::ETS_TUPLE0_CLASS) + nargs
+                                     : static_cast<size_t>(GlobalTypeId::ETS_TUPLEN_CLASS);
+    return globalTypes_.at(tupleClassIdPos);
 }
 
 Type *GlobalTypesHolder::GlobalTypeError()
@@ -716,9 +703,40 @@ void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *typ
 {
     const auto typeId = builtinNameMappings_.find(name);
     if (typeId == builtinNameMappings_.end()) {
-        util::Helpers::LogDebug("Did not find '", name, "' builtin in GlobalTypesHolder, it should be added.");
+        LOG(DEBUG, ES2PANDA) << "Did not find '" << name << "' builtin in GlobalTypesHolder, it should be added.";
         return;
     }
     globalTypes_.at(static_cast<size_t>(typeId->second)) = type;
+}
+
+Signature *GlobalTypesHolder::FindExtensionAccessorInMap(util::StringView name, ETSObjectType *type,
+                                                         ExtensionAccessorMap &maps) const
+{
+    auto it = maps.find(name);
+    if (it == maps.end()) {
+        return nullptr;
+    }
+
+    auto targetSig = it->second.find(type);
+    if (targetSig != it->second.end()) {
+        return targetSig->second;
+    }
+
+    return nullptr;
+}
+
+void GlobalTypesHolder::InsertExtensionAccessorToMap(util::StringView name, ETSObjectType *type, Signature *sig,
+                                                     ExtensionAccessorMap &maps)
+{
+    auto it = maps.find(name);
+    if (it == maps.end()) {
+        ArenaUnorderedMap<ETSObjectType *, Signature *> newSigMap(allocator_->Adapter());
+        newSigMap.emplace(type, sig);
+        maps.emplace(name, newSigMap);
+        return;
+    }
+
+    auto targetMap = it->second;
+    targetMap.emplace(type, sig);
 }
 }  // namespace ark::es2panda::checker

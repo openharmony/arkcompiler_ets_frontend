@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 
@@ -76,8 +74,8 @@ void ForOfStatement::Dump(ir::AstDumper *dumper) const
 
 void ForOfStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(left_ != nullptr);
-    ASSERT(right_ != nullptr);
+    ES2PANDA_ASSERT(left_ != nullptr);
+    ES2PANDA_ASSERT(right_ != nullptr);
     dumper->Add("for ");
     if (isAwait_) {
         dumper->Add("await ");
@@ -112,9 +110,9 @@ checker::Type *ForOfStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ForOfStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType ForOfStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -122,29 +120,26 @@ ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *
     auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr) : nullptr;
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const body = body_ != nullptr ? body_->Clone(allocator, nullptr)->AsStatement() : nullptr;
+    auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_);
 
-    if (auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_); clone != nullptr) {
-        if (left != nullptr) {
-            left->SetParent(clone);
-        }
-
-        if (right != nullptr) {
-            right->SetParent(clone);
-        }
-
-        if (body != nullptr) {
-            body->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (left != nullptr) {
+        left->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (right != nullptr) {
+        right->SetParent(clone);
+    }
+
+    if (body != nullptr) {
+        body->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker *checker,
@@ -152,8 +147,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 {
     auto const &position = right_->Start();
 
-    checker::PropertySearchFlags searchFlag =
-        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
+    checker::PropertySearchFlags searchFlag = checker::PropertySearchFlags::SEARCH_METHOD;
     searchFlag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
     // NOTE: maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC)
 
@@ -163,41 +157,40 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     auto *const method = sourceType->GetProperty(compiler::Signatures::ITERATOR_METHOD, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogTypeError("Object type doesn't have proper iterator method.", position);
+        checker->LogError(diagnostic::MISSING_ITERATOR_METHOD, {}, position);
         return nullptr;
     }
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
     auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
-
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, position, "iterator",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
-        checker->LogTypeError("Cannot find iterator method with the required signature.", position);
+        checker->LogError(diagnostic::MISSING_ITERATOR_METHOD_WITH_SIG, {}, position);
         return nullptr;
     }
-    checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
-                                            "Iterator method is not visible here.");
+    checker->ValidateSignatureAccessibility(sourceType, signature, position, {{diagnostic::INVISIBLE_ITERATOR, {}}});
 
-    ASSERT(signature->Function() != nullptr);
-
-    if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
-        checker->CheckThrowingStatements(this);
-    }
+    ES2PANDA_ASSERT(signature->Function() != nullptr);
 
     if (!CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position)) {
+        return nullptr;
+    }
+
+    if (checker->IsClassStaticMethod(sourceType, signature)) {
+        checker->LogError(diagnostic::PROP_IS_STATIC, {compiler::Signatures::ITERATOR_METHOD, sourceType->Name()},
+                          position);
         return nullptr;
     }
 
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogTypeError("Iterator object doesn't have proper next method.", position);
+        checker->LogError(diagnostic::ITERATOR_MISSING_NEXT, {}, position);
         return nullptr;
     }
 
     auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
-
     auto const *const nextSignature = checker->ValidateSignatures(nextSignatures, nullptr, arguments, position,
                                                                   "iterator", checker::TypeRelationFlag::NO_THROW);
     if (nextSignature != nullptr && nextSignature->ReturnType()->IsETSObjectType()) {
@@ -230,7 +223,7 @@ bool ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checke
         return true;
     }
 
-    checker->LogTypeError("Iterator method must return an object which implements Iterator<T>", position);
+    checker->LogError(diagnostic::ITERATOR_DOESNT_RETURN_ITERABLE, {}, position);
     return false;
 }
 

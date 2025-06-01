@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,8 +113,9 @@ public:
 
     std::string GetMethod() const
     {
-        ASSERT(tag_ == LiteralTag::ACCESSOR || tag_ == LiteralTag::METHOD || tag_ == LiteralTag::GENERATOR_METHOD ||
-               tag_ == LiteralTag::ASYNC_METHOD || tag_ == LiteralTag::ASYNC_GENERATOR_METHOD);
+        ES2PANDA_ASSERT(tag_ == LiteralTag::ACCESSOR || tag_ == LiteralTag::METHOD ||
+                        tag_ == LiteralTag::GENERATOR_METHOD || tag_ == LiteralTag::ASYNC_METHOD ||
+                        tag_ == LiteralTag::ASYNC_GENERATOR_METHOD);
 
         return std::get<std::string>(value_);
     }

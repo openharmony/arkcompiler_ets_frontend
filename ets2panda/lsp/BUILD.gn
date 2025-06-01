@@ -1,0 +1,89 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+
+if (ark_standalone_build) {
+  import("$build_root/ark.gni")
+} else {
+  import("//build/ohos.gni")
+}
+
+declare_args() {
+  lsp_build_enable = false
+  bindings_build_enable = false
+}
+
+group("lsp_packages") {
+  if (lsp_build_enable) {
+    deps = [ ":libes2panda_lsp" ]
+  }
+  if (bindings_build_enable) {
+    deps = [ "../bindings:ts_bindings" ]
+  }
+}
+
+config("libes2panda_lsp_config") {
+  include_dirs = [ "include" ]
+  cflags_cc = [ "-Wno-return-type-c-linkage" ]
+}
+
+ohos_source_set("libes2panda_lsp_static") {
+  sources = [
+    "src/api.cpp",
+    "src/brace_matching.cpp",
+    "src/cancellation_token.cpp",
+    "src/classifier.cpp",
+    "src/completions.cpp",
+    "src/find_references.cpp",
+    "src/find_rename_locations.cpp",
+    "src/get_adjusted_location.cpp",
+    "src/internal_api.cpp",
+    "src/line_column_offset.cpp",
+    "src/quick_info.cpp",
+    "src/references.cpp",
+    "src/rename.cpp",
+    "src/services/services.cpp",
+    "src/services/utilities.cpp",
+    "src/string_completions.cpp",
+    "src/suggestion_diagnostics.cpp",
+  ]
+  configs = [
+    "$ark_root/assembler:arkassembler_public_config",
+    "$ark_root:ark_config",
+    "../:libes2panda_public_config",
+    "../:libes2panda_config",
+    "$ark_root/libpandabase:arkbase_public_config",
+    "$ark_root/libpandafile:arkfile_public_config",
+    ":libes2panda_lsp_config",
+  ]
+
+  deps = [
+    "../:libes2panda_frontend_static",
+    "../:libes2panda_public_frontend_static",
+  ]
+
+  external_deps = [
+    "runtime_core:libarktsbytecodeopt_package",
+    sdk_libc_secshared_dep,
+  ]
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_shared_library("libes2panda_lsp") {
+  deps = [ ":libes2panda_lsp_static" ]
+  output_extension = "so"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "array_indexing_without_chaining_non_nullish.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "array_indexing_without_chaining_non_nullish.ets"
             }
           }
         },
@@ -30,12 +32,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -53,12 +57,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     }
                   }
                 },
@@ -71,34 +77,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -106,12 +118,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -119,22 +133,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "array_indexing_without_chaining_non_nullish.ets"
           },
           "end": {
-            "line": 16,
-            "column": 11
+            "line": 18,
+            "column": 4,
+            "program": "array_indexing_without_chaining_non_nullish.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "array_indexing_without_chaining_non_nullish.ets"
         },
         "end": {
-          "line": 16,
-          "column": 11
+          "line": 18,
+          "column": 4,
+          "program": "array_indexing_without_chaining_non_nullish.ets"
         }
       }
     },
@@ -148,11 +166,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "array_indexing_without_chaining_non_nullish.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "array_indexing_without_chaining_non_nullish.ets"
             }
           }
         },
@@ -168,11 +188,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -192,11 +214,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -210,33 +234,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -245,11 +275,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               }
             }
           },
@@ -262,11 +294,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -286,11 +320,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -313,11 +349,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 5
+                              "column": 5,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 8
+                              "column": 8,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             }
                           }
                         },
@@ -337,33 +375,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "array_indexing_without_chaining_non_nullish.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 33
+                                        "column": 33,
+                                        "program": "array_indexing_without_chaining_non_nullish.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 18,
-                                      "column": 27
+                                      "column": 27,
+                                      "program": "array_indexing_without_chaining_non_nullish.ets"
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "array_indexing_without_chaining_non_nullish.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 27
+                                    "column": 27,
+                                    "program": "array_indexing_without_chaining_non_nullish.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 34
+                                    "column": 34,
+                                    "program": "array_indexing_without_chaining_non_nullish.ets"
                                   }
                                 }
                               },
@@ -371,11 +415,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "array_indexing_without_chaining_non_nullish.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "array_indexing_without_chaining_non_nullish.ets"
                                 }
                               }
                             },
@@ -392,33 +438,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 41
+                                        "column": 41,
+                                        "program": "array_indexing_without_chaining_non_nullish.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 42
+                                        "column": 42,
+                                        "program": "array_indexing_without_chaining_non_nullish.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 18,
-                                      "column": 41
+                                      "column": 41,
+                                      "program": "array_indexing_without_chaining_non_nullish.ets"
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 43
+                                      "column": 43,
+                                      "program": "array_indexing_without_chaining_non_nullish.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 41
+                                    "column": 41,
+                                    "program": "array_indexing_without_chaining_non_nullish.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 43
+                                    "column": 43,
+                                    "program": "array_indexing_without_chaining_non_nullish.ets"
                                   }
                                 }
                               },
@@ -426,11 +478,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 37
+                                  "column": 37,
+                                  "program": "array_indexing_without_chaining_non_nullish.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 45
+                                  "column": 45,
+                                  "program": "array_indexing_without_chaining_non_nullish.ets"
                                 }
                               }
                             }
@@ -438,33 +492,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 22
+                              "column": 22,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 45
+                              "column": 45,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 5
+                            "column": 5,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 45
+                            "column": 45,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 5
+                          "column": 5,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 45
+                          "column": 45,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
                         }
                       }
                     },
@@ -480,11 +540,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 5
+                              "column": 5,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             }
                           }
                         },
@@ -497,11 +559,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 21
+                                "column": 21,
+                                "program": "array_indexing_without_chaining_non_nullish.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 24
+                                "column": 24,
+                                "program": "array_indexing_without_chaining_non_nullish.ets"
                               }
                             }
                           },
@@ -511,11 +575,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 25
+                                "column": 25,
+                                "program": "array_indexing_without_chaining_non_nullish.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 26
+                                "column": 26,
+                                "program": "array_indexing_without_chaining_non_nullish.ets"
                               }
                             }
                           },
@@ -524,33 +590,39 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 21
+                              "column": 21,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 27
+                              "column": 27,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 5
+                            "column": 5,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 27
+                            "column": 27,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 27
+                          "column": 27,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
                         }
                       }
                     }
@@ -558,33 +630,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -593,11 +671,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               }
             }
           },
@@ -610,11 +690,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -637,44 +719,53 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 11
+                        "column": 11,
+                        "program": "array_indexing_without_chaining_non_nullish.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 17
+                        "column": 17,
+                        "program": "array_indexing_without_chaining_non_nullish.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 11
+                      "column": 11,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 11
+                    "column": 11,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 18
+                    "column": 18,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 19
+                  "column": 19,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -683,11 +774,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               },
               "end": {
                 "line": 18,
-                "column": 45
+                "column": 45,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               }
             }
           },
@@ -700,11 +793,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -725,33 +820,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 12
+                      "column": 12,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 18
+                      "column": 18,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 12
+                    "column": 12,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 20
+                    "column": 20,
+                    "program": "array_indexing_without_chaining_non_nullish.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }
             },
@@ -760,11 +861,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               },
               "end": {
                 "line": 19,
-                "column": 27
+                "column": 27,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
               }
             }
           }
@@ -772,22 +875,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "array_indexing_without_chaining_non_nullish.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "array_indexing_without_chaining_non_nullish.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "array_indexing_without_chaining_non_nullish.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "array_indexing_without_chaining_non_nullish.ets"
         }
       }
     }
@@ -795,11 +902,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "array_indexing_without_chaining_non_nullish.ets"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "array_indexing_without_chaining_non_nullish.ets"
     }
   }
 }

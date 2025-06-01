@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 14
+              "column": 14,
+              "program": "BitopsBitsInByte.ets"
             },
             "end": {
               "line": 16,
-              "column": 30
+              "column": 30,
+              "program": "BitopsBitsInByte.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 28
+                  "column": 28,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 18
+                      "column": 18,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 28
+                      "column": 28,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -77,11 +83,13 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 32
+                            "column": 32,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 35
+                            "column": 35,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
@@ -89,22 +97,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 29
+                          "column": 29,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 35
+                          "column": 35,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 29
+                        "column": 29,
+                        "program": "BitopsBitsInByte.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 35
+                        "column": 35,
+                        "program": "BitopsBitsInByte.ets"
                       }
                     }
                   }
@@ -114,11 +126,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 38
+                      "column": 38,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 41
+                      "column": 41,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -138,11 +152,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -150,11 +166,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 9
+                                "column": 9,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 10
+                                "column": 10,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -164,22 +182,26 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 18
+                                "column": 18,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 19
+                                "column": 19,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 9
+                              "column": 9,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 19
+                              "column": 19,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         }
@@ -188,11 +210,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 20
+                          "column": 20,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
@@ -209,11 +233,13 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -221,11 +247,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 10
+                                "column": 10,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -235,22 +263,26 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 18
+                                "column": 18,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 19
+                                "column": 19,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 19
+                              "column": 19,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         }
@@ -259,11 +291,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 20
+                          "column": 20,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
@@ -279,11 +313,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 12
+                              "column": 12,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 13
+                              "column": 13,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
@@ -293,22 +329,26 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 16
+                              "column": 16,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 21
+                              "column": 21,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 12
+                            "column": 12,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 21
+                            "column": 21,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
@@ -330,11 +370,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 12
+                                      "column": 12,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 },
@@ -345,22 +387,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 16
+                                      "column": 16,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 11
+                                    "column": 11,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
@@ -370,22 +416,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 11
+                                  "column": 11,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -405,33 +455,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "BitopsBitsInByte.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 10
+                                          "column": 10,
+                                          "program": "BitopsBitsInByte.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "BitopsBitsInByte.ets"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 12
+                                        "column": 12,
+                                        "program": "BitopsBitsInByte.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 }
@@ -439,11 +495,13 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 8
+                                  "column": 8,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -451,11 +509,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -471,11 +531,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 7
+                                    "column": 7,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 8
+                                    "column": 8,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
@@ -485,33 +547,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 7
+                                  "column": 7,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 15
+                                "column": 15,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           }
@@ -519,22 +587,26 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 23
+                            "column": 23,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 6
+                            "column": 6,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 6
+                          "column": 6,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
@@ -547,22 +619,26 @@
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 12
+                            "column": 12,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 13
+                            "column": 13,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 14
+                          "column": 14,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     }
@@ -570,33 +646,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 42
+                      "column": 42,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 4
+                      "column": 4,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 28
+                    "column": 28,
+                    "program": "BitopsBitsInByte.ets"
                   },
                   "end": {
                     "line": 27,
-                    "column": 4
+                    "column": 4,
+                    "program": "BitopsBitsInByte.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 28
+                  "column": 28,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 4
+                  "column": 4,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -605,11 +687,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 3
+                "column": 3,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 27,
-                "column": 4
+                "column": 4,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -622,11 +706,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 11
+                  "column": 11,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -636,11 +722,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 21
+                  "column": 21,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 24
+                  "column": 24,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -655,11 +743,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 15
+                  "column": 15,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 18
+                  "column": 18,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -668,11 +758,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 11
+                "column": 11,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 29,
-                "column": 24
+                "column": 24,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -685,11 +777,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 11
+                  "column": 11,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -699,11 +793,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 21
+                  "column": 21,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 24
+                  "column": 24,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -718,11 +814,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 15
+                  "column": 15,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 18
+                  "column": 18,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -731,11 +829,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 11
+                "column": 11,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 30,
-                "column": 24
+                "column": 24,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -748,11 +848,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 27
+                  "column": 27,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 35
+                  "column": 35,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -762,11 +864,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 43
+                  "column": 43,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 49
+                  "column": 49,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -781,11 +885,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 37
+                  "column": 37,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 31,
-                  "column": 40
+                  "column": 40,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -794,11 +900,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 27
+                "column": 27,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 31,
-                "column": 49
+                "column": 49,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -811,11 +919,13 @@
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 33,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -835,11 +945,13 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 10
+                      "column": 10,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 33,
-                      "column": 13
+                      "column": 13,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -852,11 +964,13 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 17
+                      "column": 17,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 33,
-                      "column": 21
+                      "column": 21,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -876,11 +990,13 @@
                               "loc": {
                                 "start": {
                                   "line": 34,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 34,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -888,11 +1004,13 @@
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 9
+                                "column": 9,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 12
+                                "column": 12,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -902,22 +1020,26 @@
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 20
+                                "column": 20,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 21
+                                "column": 21,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 34,
-                              "column": 9
+                              "column": 9,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 34,
-                              "column": 21
+                              "column": 21,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         }
@@ -926,11 +1048,13 @@
                       "loc": {
                         "start": {
                           "line": 34,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 34,
-                          "column": 22
+                          "column": 22,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
@@ -949,11 +1073,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 35,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 35,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
@@ -961,11 +1087,13 @@
                               "loc": {
                                 "start": {
                                   "line": 35,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 35,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -975,22 +1103,26 @@
                               "loc": {
                                 "start": {
                                   "line": 35,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 35,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 35,
-                                "column": 14
+                                "column": 14,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 35,
-                                "column": 24
+                                "column": 24,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           }
@@ -999,11 +1131,13 @@
                         "loc": {
                           "start": {
                             "line": 35,
-                            "column": 10
+                            "column": 10,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 35,
-                            "column": 24
+                            "column": 24,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
@@ -1017,11 +1151,13 @@
                           "loc": {
                             "start": {
                               "line": 35,
-                              "column": 26
+                              "column": 26,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 35,
-                              "column": 27
+                              "column": 27,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
@@ -1032,11 +1168,13 @@
                             "loc": {
                               "start": {
                                 "line": 35,
-                                "column": 30
+                                "column": 30,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 35,
-                                "column": 34
+                                "column": 34,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -1047,11 +1185,13 @@
                             "loc": {
                               "start": {
                                 "line": 35,
-                                "column": 35
+                                "column": 35,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 35,
-                                "column": 37
+                                "column": 37,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -1060,22 +1200,26 @@
                           "loc": {
                             "start": {
                               "line": 35,
-                              "column": 30
+                              "column": 30,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 35,
-                              "column": 37
+                              "column": 37,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 35,
-                            "column": 26
+                            "column": 26,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 35,
-                            "column": 37
+                            "column": 37,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
@@ -1090,22 +1234,26 @@
                           "loc": {
                             "start": {
                               "line": 35,
-                              "column": 39
+                              "column": 39,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 35,
-                              "column": 40
+                              "column": 40,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 35,
-                            "column": 39
+                            "column": 39,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 35,
-                            "column": 42
+                            "column": 42,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
@@ -1127,11 +1275,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 36,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "BitopsBitsInByte.ets"
                                         },
                                         "end": {
                                           "line": 36,
-                                          "column": 22
+                                          "column": 22,
+                                          "program": "BitopsBitsInByte.ets"
                                         }
                                       }
                                     },
@@ -1139,11 +1289,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 36,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "BitopsBitsInByte.ets"
                                       },
                                       "end": {
                                         "line": 36,
-                                        "column": 17
+                                        "column": 17,
+                                        "program": "BitopsBitsInByte.ets"
                                       }
                                     }
                                   },
@@ -1153,22 +1305,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 36,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "BitopsBitsInByte.ets"
                                       },
                                       "end": {
                                         "line": 36,
-                                        "column": 26
+                                        "column": 26,
+                                        "program": "BitopsBitsInByte.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 36,
-                                      "column": 16
+                                      "column": 16,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 36,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 }
@@ -1177,11 +1333,13 @@
                               "loc": {
                                 "start": {
                                   "line": 36,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -1195,11 +1353,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 36,
-                                    "column": 28
+                                    "column": 28,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 36,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
@@ -1210,11 +1370,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 36,
-                                      "column": 32
+                                      "column": 32,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 36,
-                                      "column": 36
+                                      "column": 36,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 },
@@ -1225,11 +1387,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 36,
-                                      "column": 37
+                                      "column": 37,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 36,
-                                      "column": 39
+                                      "column": 39,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 },
@@ -1238,22 +1402,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 36,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 36,
-                                    "column": 39
+                                    "column": 39,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 36,
-                                  "column": 28
+                                  "column": 28,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 39
+                                  "column": 39,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -1268,22 +1436,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 36,
-                                    "column": 41
+                                    "column": 41,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 36,
-                                    "column": 42
+                                    "column": 42,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 36,
-                                  "column": 41
+                                  "column": 41,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 44
+                                  "column": 44,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -1302,11 +1474,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 37,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "BitopsBitsInByte.ets"
                                         },
                                         "end": {
                                           "line": 37,
-                                          "column": 12
+                                          "column": 12,
+                                          "program": "BitopsBitsInByte.ets"
                                         }
                                       }
                                     },
@@ -1321,11 +1495,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 37,
-                                              "column": 16
+                                              "column": 16,
+                                              "program": "BitopsBitsInByte.ets"
                                             },
                                             "end": {
                                               "line": 37,
-                                              "column": 32
+                                              "column": 32,
+                                              "program": "BitopsBitsInByte.ets"
                                             }
                                           }
                                         },
@@ -1336,11 +1512,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 37,
-                                              "column": 33
+                                              "column": 33,
+                                              "program": "BitopsBitsInByte.ets"
                                             },
                                             "end": {
                                               "line": 37,
-                                              "column": 43
+                                              "column": 43,
+                                              "program": "BitopsBitsInByte.ets"
                                             }
                                           }
                                         },
@@ -1349,11 +1527,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 37,
-                                            "column": 16
+                                            "column": 16,
+                                            "program": "BitopsBitsInByte.ets"
                                           },
                                           "end": {
                                             "line": 37,
-                                            "column": 43
+                                            "column": 43,
+                                            "program": "BitopsBitsInByte.ets"
                                           }
                                         }
                                       },
@@ -1365,11 +1545,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 37,
-                                              "column": 44
+                                              "column": 44,
+                                              "program": "BitopsBitsInByte.ets"
                                             },
                                             "end": {
                                               "line": 37,
-                                              "column": 45
+                                              "column": 45,
+                                              "program": "BitopsBitsInByte.ets"
                                             }
                                           }
                                         }
@@ -1378,33 +1560,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 37,
-                                          "column": 16
+                                          "column": 16,
+                                          "program": "BitopsBitsInByte.ets"
                                         },
                                         "end": {
                                           "line": 37,
-                                          "column": 46
+                                          "column": 46,
+                                          "program": "BitopsBitsInByte.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 37,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "BitopsBitsInByte.ets"
                                       },
                                       "end": {
                                         "line": 37,
-                                        "column": 46
+                                        "column": 46,
+                                        "program": "BitopsBitsInByte.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 37,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 37,
-                                      "column": 47
+                                      "column": 47,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 }
@@ -1412,22 +1600,26 @@
                               "loc": {
                                 "start": {
                                   "line": 36,
-                                  "column": 46
+                                  "column": 46,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 38,
-                                  "column": 8
+                                  "column": 8,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 38,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           }
@@ -1435,123 +1627,160 @@
                         "loc": {
                           "start": {
                             "line": 35,
-                            "column": 44
+                            "column": 44,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 39,
-                            "column": 6
+                            "column": 6,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 35,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 39,
-                          "column": 6
+                          "column": 6,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "sum",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 40,
-                              "column": 12
+                              "column": 5,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 40,
-                              "column": 15
+                              "column": 13,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "BitopsBitsInByte",
+                            "name": "sum",
                             "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 19
+                                "column": 14,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 40,
-                                "column": 35
+                                "column": 17,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "BitopsBitsInByte",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 40,
+                                  "column": 19,
+                                  "program": "BitopsBitsInByte.ets"
+                                },
+                                "end": {
+                                  "line": 40,
+                                  "column": 35,
+                                  "program": "BitopsBitsInByte.ets"
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 40,
+                                  "column": 36,
+                                  "program": "BitopsBitsInByte.ets"
+                                },
+                                "end": {
+                                  "line": 40,
+                                  "column": 44,
+                                  "program": "BitopsBitsInByte.ets"
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 36
+                                "column": 19,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 40,
-                                "column": 44
+                                "column": 44,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 40,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 40,
-                              "column": 44
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 40,
+                                "column": 47,
+                                "program": "BitopsBitsInByte.ets"
+                              },
+                              "end": {
+                                "line": 40,
+                                "column": 65,
+                                "program": "BitopsBitsInByte.ets"
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 40,
-                            "column": 12
+                            "column": 5,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 40,
-                            "column": 44
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 40,
-                            "column": 46
-                          },
-                          "end": {
-                            "line": 40,
-                            "column": 64
+                            "column": 66,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 40,
-                          "column": 5
+                          "column": 5,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 40,
-                          "column": 65
+                          "column": 67,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     }
@@ -1559,33 +1788,39 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 22
+                      "column": 22,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 41,
-                      "column": 4
+                      "column": 4,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 13
+                    "column": 13,
+                    "program": "BitopsBitsInByte.ets"
                   },
                   "end": {
                     "line": 41,
-                    "column": 4
+                    "column": 4,
+                    "program": "BitopsBitsInByte.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 13
+                  "column": 13,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 41,
-                  "column": 4
+                  "column": 4,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -1594,11 +1829,13 @@
             "loc": {
               "start": {
                 "line": 33,
-                "column": 3
+                "column": 3,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 41,
-                "column": 4
+                "column": 4,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -1610,12 +1847,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -1633,12 +1872,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -1651,34 +1892,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 32,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 32,
+                    "program": "BitopsBitsInByte.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 32,
+                    "program": "BitopsBitsInByte.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 32,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -1686,12 +1933,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 42,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 42,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1699,22 +1948,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 31
+            "column": 31,
+            "program": "BitopsBitsInByte.ets"
           },
           "end": {
-            "line": 42,
-            "column": 2
+            "line": 44,
+            "column": 9,
+            "program": "BitopsBitsInByte.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 8
+          "column": 8,
+          "program": "BitopsBitsInByte.ets"
         },
         "end": {
-          "line": 42,
-          "column": 2
+          "line": 44,
+          "column": 9,
+          "program": "BitopsBitsInByte.ets"
         }
       }
     },
@@ -1728,11 +1981,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "BitopsBitsInByte.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "BitopsBitsInByte.ets"
             }
           }
         },
@@ -1748,11 +2003,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1772,11 +2029,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1790,33 +2049,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1825,11 +2090,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           },
@@ -1842,11 +2109,13 @@
               "loc": {
                 "start": {
                   "line": 44,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 44,
-                  "column": 14
+                  "column": 14,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -1866,11 +2135,13 @@
                   "loc": {
                     "start": {
                       "line": 44,
-                      "column": 10
+                      "column": 10,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 44,
-                      "column": 14
+                      "column": 14,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -1883,11 +2154,13 @@
                   "loc": {
                     "start": {
                       "line": 44,
-                      "column": 18
+                      "column": 18,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 44,
-                      "column": 22
+                      "column": 22,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
@@ -1906,11 +2179,13 @@
                             "loc": {
                               "start": {
                                 "line": 45,
-                                "column": 7
+                                "column": 7,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 45,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -1927,33 +2202,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 45,
-                                      "column": 15
+                                      "column": 15,
+                                      "program": "BitopsBitsInByte.ets"
                                     },
                                     "end": {
                                       "line": 45,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "BitopsBitsInByte.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 45,
-                                    "column": 15
+                                    "column": 15,
+                                    "program": "BitopsBitsInByte.ets"
                                   },
                                   "end": {
                                     "line": 45,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "BitopsBitsInByte.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 45,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "BitopsBitsInByte.ets"
                                 },
                                 "end": {
                                   "line": 45,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "BitopsBitsInByte.ets"
                                 }
                               }
                             },
@@ -1961,22 +2242,26 @@
                             "loc": {
                               "start": {
                                 "line": 45,
-                                "column": 11
+                                "column": 11,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 45,
-                                "column": 32
+                                "column": 32,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 45,
-                              "column": 7
+                              "column": 7,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 45,
-                              "column": 32
+                              "column": 32,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         }
@@ -1985,11 +2270,13 @@
                       "loc": {
                         "start": {
                           "line": 45,
-                          "column": 3
+                          "column": 3,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 45,
-                          "column": 32
+                          "column": 32,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     },
@@ -2006,11 +2293,13 @@
                             "loc": {
                               "start": {
                                 "line": 46,
-                                "column": 3
+                                "column": 3,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 46,
-                                "column": 4
+                                "column": 4,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -2021,11 +2310,13 @@
                             "loc": {
                               "start": {
                                 "line": 46,
-                                "column": 5
+                                "column": 5,
+                                "program": "BitopsBitsInByte.ets"
                               },
                               "end": {
                                 "line": 46,
-                                "column": 8
+                                "column": 8,
+                                "program": "BitopsBitsInByte.ets"
                               }
                             }
                           },
@@ -2034,11 +2325,13 @@
                           "loc": {
                             "start": {
                               "line": 46,
-                              "column": 3
+                              "column": 3,
+                              "program": "BitopsBitsInByte.ets"
                             },
                             "end": {
                               "line": 46,
-                              "column": 8
+                              "column": 8,
+                              "program": "BitopsBitsInByte.ets"
                             }
                           }
                         },
@@ -2047,22 +2340,26 @@
                         "loc": {
                           "start": {
                             "line": 46,
-                            "column": 3
+                            "column": 3,
+                            "program": "BitopsBitsInByte.ets"
                           },
                           "end": {
                             "line": 46,
-                            "column": 10
+                            "column": 10,
+                            "program": "BitopsBitsInByte.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 46,
-                          "column": 3
+                          "column": 3,
+                          "program": "BitopsBitsInByte.ets"
                         },
                         "end": {
                           "line": 46,
-                          "column": 11
+                          "column": 11,
+                          "program": "BitopsBitsInByte.ets"
                         }
                       }
                     }
@@ -2070,33 +2367,39 @@
                   "loc": {
                     "start": {
                       "line": 44,
-                      "column": 23
+                      "column": 23,
+                      "program": "BitopsBitsInByte.ets"
                     },
                     "end": {
                       "line": 47,
-                      "column": 2
+                      "column": 2,
+                      "program": "BitopsBitsInByte.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 44,
-                    "column": 10
+                    "column": 10,
+                    "program": "BitopsBitsInByte.ets"
                   },
                   "end": {
                     "line": 47,
-                    "column": 2
+                    "column": 2,
+                    "program": "BitopsBitsInByte.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 44,
-                  "column": 10
+                  "column": 10,
+                  "program": "BitopsBitsInByte.ets"
                 },
                 "end": {
                   "line": 47,
-                  "column": 2
+                  "column": 2,
+                  "program": "BitopsBitsInByte.ets"
                 }
               }
             },
@@ -2105,11 +2408,13 @@
             "loc": {
               "start": {
                 "line": 44,
-                "column": 1
+                "column": 1,
+                "program": "BitopsBitsInByte.ets"
               },
               "end": {
                 "line": 47,
-                "column": 2
+                "column": 2,
+                "program": "BitopsBitsInByte.ets"
               }
             }
           }
@@ -2117,22 +2422,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "BitopsBitsInByte.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "BitopsBitsInByte.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "BitopsBitsInByte.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "BitopsBitsInByte.ets"
         }
       }
     }
@@ -2140,11 +2449,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "BitopsBitsInByte.ets"
     },
     "end": {
       "line": 48,
-      "column": 1
+      "column": 1,
+      "program": "BitopsBitsInByte.ets"
     }
   }
 }

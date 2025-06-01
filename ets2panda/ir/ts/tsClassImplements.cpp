@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,7 +51,7 @@ void TSClassImplements::Dump(ir::AstDumper *dumper) const
 void TSClassImplements::Dump(ir::SrcDumper *dumper) const
 {
     expression_->Dump(dumper);
-    ASSERT(typeParameters_ == nullptr);
+    ES2PANDA_ASSERT(typeParameters_ == nullptr);
 }
 
 void TSClassImplements::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -69,8 +69,8 @@ checker::Type *TSClassImplements::Check([[maybe_unused]] checker::TSChecker *che
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSClassImplements::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSClassImplements::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

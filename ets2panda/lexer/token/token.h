@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,9 @@
 #define ES2PANDA_PARSER_CORE_TOKEN_H
 
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "lexer/token/number.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 
@@ -106,20 +106,20 @@ public:
 
     const util::StringView &BigInt() const
     {
-        ASSERT(type_ == TokenType::LITERAL_NUMBER && (flags_ & TokenFlags::NUMBER_BIGINT));
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_NUMBER && (flags_ & TokenFlags::NUMBER_BIGINT));
         return src_;
     }
 
     Number GetNumber() const
     {
-        ASSERT(type_ == TokenType::LITERAL_NUMBER && !(flags_ & TokenFlags::NUMBER_BIGINT));
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_NUMBER && !(flags_ & TokenFlags::NUMBER_BIGINT));
         return number_;
     }
 
     const util::StringView &String() const
     {
-        ASSERT(type_ == TokenType::LITERAL_STRING || type_ == TokenType::LITERAL_NUMBER ||
-               type_ == TokenType::LITERAL_CHAR);
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_STRING || type_ == TokenType::LITERAL_NUMBER ||
+                        type_ == TokenType::LITERAL_CHAR);
         return src_;
     }
 
@@ -136,10 +136,13 @@ public:
     bool IsReadonlyModifier() const;
     bool IsUpdate() const;
     bool IsUnary() const;
-    bool IsPropNameLiteral() const;
+    [[nodiscard]] bool IsLiteral() const noexcept;
+    [[nodiscard]] bool IsPropNameLiteral() const noexcept;
+    [[nodiscard]] std::string_view ToString() const noexcept;
     bool IsKeyword() const;
     bool IsReservedTypeName() const;
     bool IsDefinableTypeName() const;
+    bool IsPredefinedType() const;
 
     static bool IsBinaryToken(TokenType type);
     static bool IsBinaryLvalueToken(TokenType type);

@@ -20,12 +20,11 @@
 
 namespace ark::es2panda::compiler {
 
-class ObjectLiteralLowering : public Phase {
+class ObjectLiteralLowering : public PhaseForBodies {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
-    bool ExternalSourcesPostcondition(public_lib::Context *ctx, const parser::Program *program);
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

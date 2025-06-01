@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_ETS_ARITHMETIC_H
 
 #include "checker/ETSchecker.h"
+#include "checker/ETSAnalyzer.h"
 
 namespace ark::es2panda::checker {
 
@@ -49,7 +50,7 @@ typename TargetType::UType ETSChecker::GetOperand(Type *type)
             return type->AsETSBooleanType()->GetValue();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -80,16 +81,18 @@ Type *ETSChecker::PerformRelationOperationOnTypes(Type *left, Type *right, lexer
             result = leftValue >= rightValue;
             break;
         }
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EQUAL: {
             result = leftValue == rightValue;
             break;
         }
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
             result = leftValue != rightValue;
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -139,7 +142,7 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -150,7 +153,7 @@ template <>
 inline IntType::UType ark::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType leftValue,
                                                                                        IntType::UType rightValue)
 {
-    ASSERT(rightValue != 0);
+    ES2PANDA_ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 
@@ -158,7 +161,7 @@ template <>
 inline LongType::UType ark::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType leftValue,
                                                                                          LongType::UType rightValue)
 {
-    ASSERT(rightValue != 0);
+    ES2PANDA_ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 
@@ -234,7 +237,7 @@ Type *ETSChecker::HandleBitWiseArithmetic(Type *left, Type *right, lexer::TokenT
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

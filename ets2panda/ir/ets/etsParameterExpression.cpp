@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,35 +16,43 @@
 #include "etsParameterExpression.h"
 
 #include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
-#include "ir/expressions/identifier.h"
-#include "ir/base/spreadElement.h"
 
 namespace ark::es2panda::ir {
 
-ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, Expression *const initializer)
-    : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
+ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, bool isOptional,
+                                               ArenaAllocator *const allocator)
+    : AnnotationAllowed<Expression>(AstNodeType::ETS_PARAMETER_EXPRESSION, allocator)
 {
-    ASSERT(identOrSpread != nullptr);
-    identOrSpread->SetParent(this);
+    SetOptional(isOptional);
 
+    ES2PANDA_ASSERT(identOrSpread != nullptr);
+    identOrSpread->SetParent(this);
+    SetRange(identOrSpread->Range());
     if (identOrSpread->IsIdentifier()) {
         ident_ = identOrSpread->AsIdentifier();
     } else if (identOrSpread->IsRestElement()) {
         spread_ = identOrSpread->AsRestElement();
-        ASSERT(spread_->Argument()->IsIdentifier());
+        ES2PANDA_ASSERT(spread_->Argument()->IsIdentifier());
         ident_ = spread_->Argument()->AsIdentifier();
         ident_->SetParent(spread_);
-        initializer_ = nullptr;  // Just in case!
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
+}
+
+ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, ir::Expression *initializer,
+                                               ArenaAllocator *const allocator)
+    : ETSParameterExpression(identOrSpread, true, allocator)
+{
+    SetInitializer(initializer);
+}
+
+const util::StringView &ETSParameterExpression::Name() const noexcept
+{
+    return ident_->Name();
 }
 
 const Identifier *ETSParameterExpression::Ident() const noexcept
@@ -92,6 +100,11 @@ TypeNode *ETSParameterExpression::TypeAnnotation() noexcept
     return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
 }
 
+void ETSParameterExpression::SetTypeAnnotation(TypeNode *typeNode) noexcept
+{
+    !IsRestParameter() ? ident_->SetTsTypeAnnotation(typeNode) : spread_->SetTsTypeAnnotation(typeNode);
+}
+
 void ETSParameterExpression::SetVariable(varbinder::Variable *const variable) noexcept
 {
     ident_->SetVariable(variable);
@@ -122,10 +135,17 @@ void ETSParameterExpression::TransformChildren(const NodeTransformer &cb, std::s
         }
     }
 
-    if (IsDefault()) {
+    if (initializer_ != nullptr) {
         if (auto *transformedNode = cb(initializer_); initializer_ != transformedNode) {
             initializer_->SetTransformedNode(transformationName, transformedNode);
             initializer_ = transformedNode->AsExpression();
+        }
+    }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 }
@@ -138,30 +158,42 @@ void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
         cb(ident_);
     }
 
-    if (IsDefault()) {
+    if (initializer_ != nullptr) {
         cb(initializer_);
+    }
+
+    for (auto *it : Annotations()) {
+        cb(it);
     }
 }
 
 void ETSParameterExpression::Dump(ir::AstDumper *const dumper) const
 {
     if (!IsRestParameter()) {
-        dumper->Add(
-            {{"type", "ETSParameterExpression"}, {"name", ident_}, {"initializer", AstDumper::Optional(initializer_)}});
+        dumper->Add({{"type", "ETSParameterExpression"},
+                     {"name", ident_},
+                     {"initializer", AstDumper::Optional(initializer_)},
+                     {"annotations", AstDumper::Optional(Annotations())}});
     } else {
-        dumper->Add({{"type", "ETSParameterExpression"}, {"rest parameter", spread_}});
+        dumper->Add({{"type", "ETSParameterExpression"},
+                     {"rest parameter", spread_},
+                     {"annotations", AstDumper::Optional(Annotations())}});
     }
 }
 
 void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     if (IsRestParameter()) {
         spread_->Dump(dumper);
     } else {
         if (ident_ != nullptr) {
-            ASSERT(ident_->IsAnnotatedExpression());
+            ES2PANDA_ASSERT(ident_->IsAnnotatedExpression());
             ident_->Dump(dumper);
-            if (initializer_ != nullptr && initializer_->IsUndefinedLiteral()) {
+            if (isOptional_ && initializer_ == nullptr) {
                 dumper->Add("?");
             }
             auto typeAnnotation = ident_->AsAnnotatedExpression()->TypeAnnotation();
@@ -170,7 +202,7 @@ void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
                 typeAnnotation->Dump(dumper);
             }
         }
-        if (initializer_ != nullptr && !initializer_->IsUndefinedLiteral()) {
+        if (initializer_ != nullptr) {
             dumper->Add(" = ");
             initializer_->Dump(dumper);
         }
@@ -192,9 +224,9 @@ checker::Type *ETSParameterExpression::Check(checker::TSChecker *const checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
+checker::VerifiedType ETSParameterExpression::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -204,21 +236,29 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
     auto *const initializer =
         initializer_ != nullptr ? initializer_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSParameterExpression>(identOrSpread, initializer); clone != nullptr) {
-        identOrSpread->SetParent(clone);
+    auto *const clone = initializer_ != nullptr
+                            ? allocator->New<ETSParameterExpression>(identOrSpread, initializer, allocator)
+                            : allocator->New<ETSParameterExpression>(identOrSpread, isOptional_, allocator);
+    identOrSpread->SetParent(clone);
 
-        if (initializer != nullptr) {
-            initializer->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRequiredParams(extraValue_);
-        return clone;
+    if (initializer != nullptr) {
+        initializer->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRequiredParams(extraValue_);
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

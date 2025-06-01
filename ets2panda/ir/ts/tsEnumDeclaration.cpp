@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,7 @@
 namespace ark::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -37,7 +37,7 @@ void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string
         key_ = transformedNode->AsIdentifier();
     }
 
-    for (auto *&it : members_) {
+    for (auto *&it : VectorIterationGuard(members_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -47,13 +47,13 @@ void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string
 
 void TSEnumDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
     cb(key_);
 
-    for (auto *it : members_) {
+    for (auto *it : VectorIterationGuard(members_)) {
         cb(it);
     }
 }
@@ -70,8 +70,8 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
 
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(isConst_ == false);
-    ASSERT(key_ != nullptr);
+    ES2PANDA_ASSERT(isConst_ == false);
+    ES2PANDA_ASSERT(key_ != nullptr);
     if (IsDeclare()) {
         dumper->Add("declare ");
     }
@@ -106,7 +106,7 @@ varbinder::EnumMemberResult EvaluateMemberExpression(checker::TSChecker *checker
             if (!expr->IsComputed()) {
                 name = expr->Property()->AsIdentifier()->Name();
             } else {
-                ASSERT(checker::TSChecker::IsStringLike(expr->Property()));
+                ES2PANDA_ASSERT(checker::TSChecker::IsStringLike(expr->Property()));
                 name = reinterpret_cast<const ir::StringLiteral *>(expr->Property())->Str();
             }
 
@@ -132,8 +132,8 @@ checker::Type *TSEnumDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSEnumDeclaration::Check(checker::ETSChecker *const checker)
+checker::VerifiedType TSEnumDeclaration::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

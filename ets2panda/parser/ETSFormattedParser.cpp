@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +25,7 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "parser/parserStatusContext.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 //================================================================================================//
@@ -37,18 +38,11 @@ inline constexpr char const TYPE_FORMAT_NODE = 'T';
 inline constexpr char const GENERAL_FORMAT_NODE = 'N';
 inline constexpr char const IDENTIFIER_FORMAT_NODE = 'I';
 
-static constexpr char const INVALID_NUMBER_NODE[] = "Invalid node number in format expression.";
-static constexpr char const INVALID_FORMAT_NODE[] = "Invalid node type in format expression.";
-static constexpr char const INSERT_NODE_ABSENT[] = "There is no any node to insert at the placeholder position.";
-static constexpr char const INVALID_INSERT_NODE[] =
-    "Inserting node type differs from that required by format specification.";
-static constexpr char const INVALID_CLASS_FIELD[] = "Cannot parse class field definition property.";
-static constexpr char const INVALID_CLASS_METHOD[] = "Cannot parse class method definition property.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
 ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
     Lexer()->NextToken();
 
     bool isArray = false;
@@ -57,14 +51,14 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
         Lexer()->NextToken();
     }
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     char const *const identData = Lexer()->GetToken().Ident().Bytes();
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err34-c)
     auto identNumber = std::atoi(identData + 1U);
     if (identNumber <= 0) {
-        LogSyntaxError(INVALID_NUMBER_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_NUMBER, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     return {isArray, *identData,
@@ -74,14 +68,16 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
 ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        const auto &rangeToken = Lexer()->GetToken().Loc();
+        Lexer()->NextToken();
+        return AllocBrokenType(rangeToken);
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat)) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     if (auto const placeholderType = std::get<1>(nodeFormat); placeholderType == TYPE_FORMAT_NODE) {
@@ -89,16 +85,16 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
     } else if (placeholderType == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
         return ParseIdentifierFormatPlaceholder(std::make_optional(std::move(nodeFormat)));
     } else if (placeholderType != EXPRESSION_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertExpression = insertingNode->AsExpression();
@@ -110,14 +106,14 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+            ES2PANDA_UNREACHABLE();
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != TYPE_FORMAT_NODE) {
-            LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -125,8 +121,8 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsTypeNode()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertType = insertingNode->AsExpression()->AsTypeNode();
@@ -138,14 +134,14 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+            return nullptr;
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != IDENTIFIER_FORMAT_NODE) {
-            LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+            return nullptr;
         }
     }
 
@@ -153,8 +149,8 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsIdentifier()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertIdentifier = insertingNode->AsExpression()->AsIdentifier();
@@ -165,22 +161,22 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
 ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsStatement()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -191,21 +187,21 @@ ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
 {
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     if (placeholderNumber >= insertingNodes_.size()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertingNode = insertingNodes_[placeholderNumber];
     if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
         !insertingNode->IsTSTypeParameterInstantiation()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -215,22 +211,22 @@ ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
 ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != GENERAL_FORMAT_NODE) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsTSInterfaceBody()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -240,22 +236,22 @@ ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder()
 ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsBlockExpression()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -265,22 +261,22 @@ ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder()
 ArenaVector<ir::Expression *> &ETSParser::ParseExpressionsArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
-        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsSequenceExpression()) {
-        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -314,6 +310,18 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode)
     }
 
     return blockStmt;
+}
+
+ir::Expression *ETSParser::CreateFormattedExpression(std::string_view const sourceCode,
+                                                     ArenaVector<ir::Expression *> &args)
+{
+    std::vector<ir::AstNode *> insertingNodes {};
+    insertingNodes.reserve(args.size());
+    for (auto it : args) {
+        ProcessFormattedArg(insertingNodes, it);
+    }
+
+    return CreateFormattedExpression(sourceCode, insertingNodes);
 }
 
 ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const sourceCode,
@@ -354,8 +362,8 @@ ir::AstNode *ETSParser::CreateFormattedClassFieldDefinition(std::string_view sou
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsTSInterfaceBody() || property->AsTSInterfaceBody()->Body().empty()) {
-        LogSyntaxError(INVALID_CLASS_FIELD);
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_CLASS_FIELD, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -370,8 +378,8 @@ ir::AstNode *ETSParser::CreateFormattedClassMethodDefinition(std::string_view so
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsMethodDefinition()) {
-        LogSyntaxError(INVALID_CLASS_METHOD);
-        UNREACHABLE();
+        LogError(diagnostic::INVALID_CLASS_METHOD, {}, Lexer()->GetToken().Start());
+        ES2PANDA_UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -407,9 +415,9 @@ ir::AstNode *ETSParser::CreateClassElement(std::string_view sourceCode, const Ar
     return ParseClassElement(properties, modifiers, ir::ModifierFlags::NONE);
 }
 
-ir::ClassDeclaration *ETSParser::CreateFormattedClassDeclaration(std::string_view sourceCode,
-                                                                 std::vector<ir::AstNode *> &insertingNodes,
-                                                                 bool const allowStatic)
+ir::Statement *ETSParser::CreateFormattedClassDeclaration(std::string_view sourceCode,
+                                                          std::vector<ir::AstNode *> &insertingNodes,
+                                                          bool const allowStatic)
 {
     insertingNodes_.swap(insertingNodes);
     auto *const classDeclaration = CreateClassDeclaration(sourceCode, allowStatic);
@@ -417,7 +425,7 @@ ir::ClassDeclaration *ETSParser::CreateFormattedClassDeclaration(std::string_vie
     return classDeclaration;
 }
 
-ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bool allowStatic)
+ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bool allowStatic)
 {
     util::UString source {sourceCode, Allocator()};
     auto const isp = InnerSourceParser(this);
@@ -433,7 +441,7 @@ ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceC
     switch (auto tokenType = Lexer()->GetToken().Type(); tokenType) {
         case lexer::TokenType::KEYW_STATIC: {
             if (!allowStatic) {
-                ThrowUnexpectedToken(Lexer()->GetToken().Type());
+                LogUnexpectedToken(Lexer()->GetToken());
             }
             [[fallthrough]];
         }
@@ -445,7 +453,7 @@ ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceC
             }
 
             if (auto const tokType = Lexer()->GetToken().Type(); tokType != lexer::TokenType::KEYW_CLASS) {
-                ThrowUnexpectedToken(tokType);
+                LogUnexpectedToken(Lexer()->GetToken());
             }
             [[fallthrough]];
         }
@@ -453,7 +461,8 @@ ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceC
             return ParseClassDeclaration(modifiers);
         }
         default: {
-            ThrowUnexpectedToken(tokenType);
+            LogUnexpectedToken(Lexer()->GetToken());
+            return nullptr;
         }
     }
 }
@@ -477,15 +486,15 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        LogSyntaxError({"Constructor should not be async."});
-        UNREACHABLE();
+        LogError(diagnostic::ASYNC_CONSTRUCTOR);
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     modifiers |= ir::ModifierFlags::CONSTRUCTOR;
     Lexer()->NextToken();
 
-    auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers);
+    auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers, true);
     methodDefinition->SetStart(startLoc);
 
     return methodDefinition;
@@ -497,12 +506,9 @@ ir::Expression *ETSParser::CreateExpression(std::string_view const sourceCode, E
     auto const isp = InnerSourceParser(this);
     auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
 
-    lexer::SourcePosition const startLoc = lexer->GetToken().Start();
     lexer->NextToken();
 
     ir::Expression *returnExpression = ParseExpression(flags);
-    returnExpression->SetRange({startLoc, lexer->GetToken().End()});
-
     return returnExpression;
 }
 

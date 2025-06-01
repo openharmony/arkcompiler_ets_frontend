@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_scope.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_scope.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -82,11 +88,13 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 5
+                              "column": 5,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 6
+                              "column": 6,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
@@ -96,33 +104,39 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 9
+                              "column": 9,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 10
+                              "column": 10,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 5
+                            "column": 5,
+                            "program": "lambda_infer_type_scope.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 10
+                            "column": 10,
+                            "program": "lambda_infer_type_scope.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 5
+                          "column": 5,
+                          "program": "lambda_infer_type_scope.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 10
+                          "column": 10,
+                          "program": "lambda_infer_type_scope.ets"
                         }
                       }
                     },
@@ -138,11 +152,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 5
+                              "column": 5,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 6
+                              "column": 6,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
@@ -165,11 +181,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "lambda_infer_type_scope.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 19
+                                        "column": 19,
+                                        "program": "lambda_infer_type_scope.ets"
                                       }
                                     }
                                   },
@@ -177,22 +195,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 10
+                                      "column": 10,
+                                      "program": "lambda_infer_type_scope.ets"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "lambda_infer_type_scope.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 10
+                                    "column": 10,
+                                    "program": "lambda_infer_type_scope.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "lambda_infer_type_scope.ets"
                                   }
                                 }
                               }
@@ -212,11 +234,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 24
+                                          "column": 24,
+                                          "program": "lambda_infer_type_scope.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 25
+                                          "column": 25,
+                                          "program": "lambda_infer_type_scope.ets"
                                         }
                                       }
                                     },
@@ -227,33 +251,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 28
+                                          "column": 28,
+                                          "program": "lambda_infer_type_scope.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 29
+                                          "column": 29,
+                                          "program": "lambda_infer_type_scope.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 24
+                                        "column": 24,
+                                        "program": "lambda_infer_type_scope.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "lambda_infer_type_scope.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 1
+                                      "column": 1,
+                                      "program": null
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 1
+                                      "column": 1,
+                                      "program": null
                                     }
                                   }
                                 }
@@ -261,55 +291,65 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "lambda_infer_type_scope.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 29
+                                "column": 29,
+                                "program": "lambda_infer_type_scope.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 29
+                              "column": 29,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "lambda_infer_type_scope.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 29
+                            "column": 29,
+                            "program": "lambda_infer_type_scope.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "lambda_infer_type_scope.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 29
+                          "column": 29,
+                          "program": "lambda_infer_type_scope.ets"
                         }
                       }
                     }
@@ -317,33 +357,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -352,11 +398,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_scope.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_scope.ets"
               }
             }
           },
@@ -369,11 +417,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 6
+                  "column": 6,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -383,11 +433,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 9,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -402,11 +454,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "lambda_infer_type_scope.ets"
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "lambda_infer_type_scope.ets"
               }
             }
           },
@@ -419,11 +473,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -446,11 +502,13 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 13
+                            "column": 13,
+                            "program": "lambda_infer_type_scope.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 19
+                            "column": 19,
+                            "program": "lambda_infer_type_scope.ets"
                           }
                         }
                       },
@@ -458,22 +516,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 10
+                          "column": 10,
+                          "program": "lambda_infer_type_scope.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 19
+                          "column": 19,
+                          "program": "lambda_infer_type_scope.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 1
+                        "line": 17,
+                        "column": 10,
+                        "program": "lambda_infer_type_scope.ets"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 1
+                        "line": 17,
+                        "column": 19,
+                        "program": "lambda_infer_type_scope.ets"
                       }
                     }
                   }
@@ -493,11 +555,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 24
+                              "column": 24,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 25
+                              "column": 25,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
@@ -508,33 +572,39 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 28
+                              "column": 28,
+                              "program": "lambda_infer_type_scope.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 29
+                              "column": 29,
+                              "program": "lambda_infer_type_scope.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 24
+                            "column": 24,
+                            "program": "lambda_infer_type_scope.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 29
+                            "column": 29,
+                            "program": "lambda_infer_type_scope.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     }
@@ -542,33 +612,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 29
+                  "column": 29,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -583,11 +659,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "lambda_infer_type_scope.ets"
               },
               "end": {
                 "line": 17,
-                "column": 29
+                "column": 29,
+                "program": "lambda_infer_type_scope.ets"
               }
             }
           },
@@ -600,11 +678,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -624,11 +704,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "lambda_infer_type_scope.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "lambda_infer_type_scope.ets"
                     }
                   }
                 },
@@ -640,89 +722,119 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "f",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 19,
-                                "column": 12
-                              },
-                              "end": {
-                                "line": 19,
-                                "column": 13
-                              }
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 5,
+                              "program": "lambda_infer_type_scope.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 13,
+                              "program": "lambda_infer_type_scope.ets"
                             }
-                          },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 42,
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "f",
+                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "lambda_infer_type_scope.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 16
+                                  "column": 15,
+                                  "program": "lambda_infer_type_scope.ets"
                                 }
                               }
-                            }
-                          ],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 19,
-                              "column": 12
                             },
-                            "end": {
-                              "line": 19,
-                              "column": 17
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 42,
+                                "loc": {
+                                  "start": {
+                                    "line": 19,
+                                    "column": 16,
+                                    "program": "lambda_infer_type_scope.ets"
+                                  },
+                                  "end": {
+                                    "line": 19,
+                                    "column": 18,
+                                    "program": "lambda_infer_type_scope.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 14,
+                                "program": "lambda_infer_type_scope.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 19,
+                                "program": "lambda_infer_type_scope.ets"
+                              }
+                            }
+                          },
+                          {
+                            "type": "NumberLiteral",
+                            "value": 43,
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 21,
+                                "program": "lambda_infer_type_scope.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 23,
+                                "program": "lambda_infer_type_scope.ets"
+                              }
                             }
                           }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 43,
-                          "loc": {
-                            "start": {
-                              "line": 19,
-                              "column": 21
-                            },
-                            "end": {
-                              "line": 19,
-                              "column": 23
-                            }
-                          }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 12
+                            "column": 5,
+                            "program": "lambda_infer_type_scope.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 23
+                            "column": 24,
+                            "program": "lambda_infer_type_scope.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "lambda_infer_type_scope.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 23
+                          "column": 25,
+                          "program": "lambda_infer_type_scope.ets"
                         }
                       }
                     }
@@ -730,33 +842,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "lambda_infer_type_scope.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 2
+                      "column": 2,
+                      "program": "lambda_infer_type_scope.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "lambda_infer_type_scope.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 2
+                    "column": 2,
+                    "program": "lambda_infer_type_scope.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambda_infer_type_scope.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 2
+                  "column": 2,
+                  "program": "lambda_infer_type_scope.ets"
                 }
               }
             },
@@ -765,11 +883,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_scope.ets"
               },
               "end": {
                 "line": 20,
-                "column": 2
+                "column": 2,
+                "program": "lambda_infer_type_scope.ets"
               }
             }
           }
@@ -777,22 +897,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_scope.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_scope.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_scope.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_scope.ets"
         }
       }
     }
@@ -800,11 +924,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_scope.ets"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_scope.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,10 +55,8 @@ void TSChecker::CheckIndexConstraints(Type *type)
         for (auto *it : properties) {
             if (it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
                 Type *propType = GetTypeOfVariable(it);
-                IsTypeAssignableTo(propType, numberInfo->GetType(),
-                                   {"Property '", it->Name(), "' of type '", propType,
-                                    "' is not assignable to numeric index type '", numberInfo->GetType(), "'."},
-                                   it->Declaration()->Node()->Start());
+                IsTypeAssignableTo(propType, numberInfo->GetType(), diagnostic::PROP_ASSIGN_TO_NUMERIC_INDEX,
+                                   {it->Name(), propType, numberInfo->GetType()}, it->Declaration()->Node()->Start());
             }
         }
     }
@@ -66,10 +64,8 @@ void TSChecker::CheckIndexConstraints(Type *type)
     if (stringInfo != nullptr) {
         for (auto *it : properties) {
             Type *propType = GetTypeOfVariable(it);
-            IsTypeAssignableTo(propType, stringInfo->GetType(),
-                               {"Property '", it->Name(), "' of type '", propType,
-                                "' is not assignable to string index type '", stringInfo->GetType(), "'."},
-                               it->Declaration()->Node()->Start());
+            IsTypeAssignableTo(propType, stringInfo->GetType(), diagnostic::PROP_ASSIGN_TO_STRING_INDEX,
+                               {it->Name(), propType, stringInfo->GetType()}, it->Declaration()->Node()->Start());
         }
 
         if (numberInfo != nullptr && !IsTypeAssignableTo(numberInfo->GetType(), stringInfo->GetType())) {
@@ -177,7 +173,7 @@ void TSChecker::ResolveObjectTypeMembers(ObjectType *type)
         return;
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->Node()->IsTSTypeLiteral());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->Node()->IsTSTypeLiteral());
     auto *typeLiteral = type->Variable()->Declaration()->Node()->AsTSTypeLiteral();
     ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());
     ArenaVector<ir::TSIndexSignature *> indexDeclarations(Allocator()->Adapter());
@@ -223,7 +219,7 @@ void TSChecker::ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *mem
         return;
     }
 
-    ASSERT(member->IsTSIndexSignature());
+    ES2PANDA_ASSERT(member->IsTSIndexSignature());
     indexDeclarations.push_back(member->AsTSIndexSignature());
 }
 
@@ -376,7 +372,7 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *indexType)
     }
 
     if (type->IsUnionType()) {
-        ASSERT(type->AsUnionType()->MergedObjectType());
+        ES2PANDA_ASSERT(type->AsUnionType()->MergedObjectType());
 
         if (getNumberInfo) {
             return type->AsUnionType()->MergedObjectType()->NumberIndexInfo();
@@ -439,10 +435,10 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
         return type->Bases();
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
-    TypeStackElement tse(this, type, {"Type ", type->Name(), " recursively references itself as a base type."},
+    TypeStackElement tse(this, type, {{diagnostic::RECURSIVE_EXTENSION, {type->Name()}}},
                          decl->Node()->AsTSInterfaceDeclaration()->Id()->Start());
     if (tse.HasTypeError()) {
         type->Bases().clear();
@@ -507,7 +503,7 @@ void TSChecker::ResolveDeclaredMembers(InterfaceType *type)
         return;
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
     ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());
@@ -540,10 +536,8 @@ bool TSChecker::ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder
 
     Type *targetType = GetTypeOfVariable(prop);
     Type *sourceType = GetTypeOfVariable(found);
-    IsTypeIdenticalTo(targetType, sourceType,
-                      {"Subsequent property declarations must have the same type.  Property ", prop->Name(),
-                       " must be of type ", sourceType, ", but here has type ", targetType, "."},
-                      locInfo);
+    IsTypeIdenticalTo(targetType, sourceType, diagnostic::DIFFERENT_SUBSEQ_PROP_DECL,
+                      {prop->Name(), sourceType, targetType}, locInfo);
     return false;
 }
 }  // namespace ark::es2panda::checker

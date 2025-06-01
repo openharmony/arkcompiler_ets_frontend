@@ -15,12 +15,16 @@ if(NOT PANDA_REGRESSION_TESTS)
     return()
 endif()
 
+add_subdirectory(cfg)
 add_subdirectory(dynamic)
 add_subdirectory(lowerings)
 add_subdirectory(public)
 add_subdirectory(plugin)
+add_subdirectory(plugin_ut)
+add_subdirectory(plugin_conversion_rule)
 add_subdirectory(arktsconfig-parser)
 add_subdirectory(annotations)
+add_subdirectory(lsp)
 
 ets2panda_add_gtest(es2panda_astdumper_tests
     CPP_SOURCES ast_dumper_test.cpp

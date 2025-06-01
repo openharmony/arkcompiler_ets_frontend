@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,9 +37,11 @@ import {
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
+import { compileLintOptions } from '../cli/Compiler';
+import * as qEd from './autofixes/QuasiEditor';
 
 export function consoleLog(linterOptions: LinterOptions, ...args: unknown[]): void {
-  if (linterOptions.ideMode) {
+  if (linterOptions.ideMode || linterOptions.ideInteractive) {
     return;
   }
   let outLine = '';
@@ -97,7 +99,10 @@ function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [num
   return [errorNodesTotal, warningNodes];
 }
 
+let linterConfig: LinterConfig;
+
 export function lint(config: LinterConfig, etsLoaderPath: string | undefined): LintRunResult {
+  linterConfig = config;
   const { cmdOptions, tscCompiledProgram } = config;
   const tsProgram = tscCompiledProgram.getProgram();
   const options = cmdOptions.linterOptions;
@@ -130,11 +135,38 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
   logProblemsPercentageByFeatures(linter);
 
   freeMemory();
+  let problemsInfosValues = problemsInfos;
+  if (!options.ideInteractive) {
+    problemsInfosValues = mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics));
+  }
 
   return {
     errorNodes: errorNodesTotal,
-    problemsInfos: mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics))
+    problemsInfos: problemsInfosValues
   };
+}
+
+function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTypescriptLinter): void {
+  for (let pass = 0; pass < qEd.MAX_AUTOFIX_PASSES; pass++) {
+    const qe: qEd.QuasiEditor = new qEd.QuasiEditor(srcFile);
+    if (pass === 0) {
+      qe.backupSrcFile();
+    }
+    qe.fix(linter.problemsInfos);
+    if (qe.wasError) {
+      Logger.error(`Error: fix-all converged for (${srcFile.fileName}) on pass #${pass}`);
+      break;
+    }
+    const tmpLinterConfig = compileLintOptions(linterConfig.cmdOptions);
+    const recompiledFile = tmpLinterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
+
+    if (!recompiledFile) {
+      Logger.error(`Error: recompilation failed for (${srcFile.fileName}) on pass #${pass}`);
+      break;
+    }
+    linter.problemsInfos = [];
+    linter.lint(recompiledFile);
+  }
 }
 
 function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | InteropTypescriptLinter): LintRunResult {
@@ -142,6 +174,9 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
 
   for (const srcFile of srcFiles) {
+    if (linter instanceof TypeScriptLinter) {
+      linter.initSdkInfo();
+    }
     const prevVisitedNodes = linter.totalVisitedNodes;
     const prevErrorLines = linter.totalErrorLines;
     const prevWarningLines = linter.totalWarningLines;
@@ -152,28 +187,27 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
     for (let i = 0; i < FaultID.LAST_ID; i++) {
       nodeCounters[i] = linter.nodeCounters[i];
     }
-
     linter.lint(srcFile);
-    // save results and clear problems array
-    problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
+    const problemsInfosBeforeMigrate = linter.problemsInfos;
+    if (linter.options.migratorMode) {
+      applyFixes(srcFile, linter);
+    }
+    if (linter.options.ideInteractive) {
+      problemsInfos.set(path.normalize(srcFile.fileName), [...problemsInfosBeforeMigrate]);
+    } else {
+      problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
+    }
     linter.problemsInfos.length = 0;
-
-    // print results for current file
-    const fileVisitedNodes = linter.totalVisitedNodes - prevVisitedNodes;
-    const fileErrorLines = linter.totalErrorLines - prevErrorLines;
-    const fileWarningLines = linter.totalWarningLines - prevWarningLines;
-
     problemFiles = countProblemFiles(
       nodeCounters,
       problemFiles,
       srcFile,
-      fileVisitedNodes,
-      fileErrorLines,
-      fileWarningLines,
+      linter.totalVisitedNodes - prevVisitedNodes,
+      linter.totalErrorLines - prevErrorLines,
+      linter.totalWarningLines - prevWarningLines,
       linter
     );
   }
-
   return {
     errorNodes: problemFiles,
     problemsInfos: problemsInfos
@@ -232,7 +266,6 @@ function countProblemFiles(
       ' lines'
     );
   }
-
   return filesNumber;
 }
 

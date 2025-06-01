@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "capturedVariables.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -54,7 +55,7 @@ static varbinder::Variable *FindVariable(ir::Identifier *ident, std::set<varbind
 
     if (var != nullptr) {
         auto *scope = var->GetScope();
-        ASSERT(scope != nullptr);
+        ES2PANDA_ASSERT(scope != nullptr);
         //  We are not interested in variables defined inside arrow function!
         if (scopes.find(scope) != scopes.cend()) {
             return nullptr;
@@ -112,17 +113,8 @@ static void HandleScriptFunction(ir::ScriptFunction const *const scriptFunction)
     variables.clear();
 }
 
-bool CapturedVariables::Perform(public_lib::Context *ctx, parser::Program *program)
+bool CapturedVariables::PerformForModule([[maybe_unused]] public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     std::function<void(ir::AstNode *)> searchForFunctions = [&](ir::AstNode *ast) {
         if (ast->IsScriptFunction()) {
             HandleScriptFunction(ast->AsScriptFunction());  // no recursion

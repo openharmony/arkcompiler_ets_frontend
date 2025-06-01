@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "sourceLocation.h"
 
 #include "lexer/token/letters.h"
+#include "parser/program/program.h"
 
 #include <cstdint>
 
@@ -77,7 +78,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
 
     // It can occur during stdlib parsing where entries does not uploaded
     if (line > entries_.size()) {
-        return SourceLocation(line + 1, col + 1);
+        return SourceLocation(line + 1, col + 1, pos.Program());
     }
 
     if (line == entries_.size()) {
@@ -97,6 +98,55 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
         col += range.cnt;
     }
 
-    return SourceLocation(line + 1, col + 1);
+    return SourceLocation(line + 1, col + 1, pos.Program());
 }
+
+size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
+{
+    ES2PANDA_ASSERT(loc.line != 0);
+    ES2PANDA_ASSERT(loc.col != 0);
+    size_t line = loc.line - 1;
+    size_t col = loc.col - 1;
+
+    if (line >= entries_.size()) {
+        return 0;
+    }
+
+    const auto &entry = entries_[line];
+    size_t offset = entry.lineStart;
+
+    for (const auto &range : entry.ranges) {
+        if (col < range.cnt) {
+            offset += col * range.byteSize;
+            break;
+        }
+
+        col -= range.cnt;
+        offset += range.cnt * range.byteSize;
+    }
+
+    return offset;
+}
+
+SourceLocation SourcePosition::ToLocation() const
+{
+    return lexer::LineIndex(Program()->SourceCode()).GetLocation(*this);
+}
+
+const parser::Program *SourcePosition::Program() const
+{
+    if (program_ != nullptr) {
+        ES2PANDA_ASSERT(!program_->IsDied());
+    }
+    return program_;
+}
+
+const parser::Program *SourceLocation::Program() const
+{
+    if (program_ != nullptr) {
+        ES2PANDA_ASSERT(!program_->IsDied());
+    }
+    return program_;
+}
+
 }  // namespace ark::es2panda::lexer

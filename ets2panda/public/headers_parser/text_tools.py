@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -42,10 +42,54 @@ def rfind_first_not_restricted_character(restricted: str, data: str, pos: int, p
     return len(data)
 
 
+def skip_rstring(data: str, pos: int = 0, pos_end: int = MAX_LEN) -> int:
+    """Returns next position after R-string, start pos if no R-string found"""
+    if data[pos] != '"' or pos < 1:
+        return pos
+
+    if data[pos - 1 : pos + 1] == 'R"':
+        start_of_string_data = data.find("(", pos)
+        if start_of_string_data == -1:
+            raise RuntimeError("Error while finding start of R-string.")
+
+        delimeter = f"{data[pos + 1 : start_of_string_data]}"
+        end_of_string_data = data.find(f'){delimeter}"', start_of_string_data)
+
+        if end_of_string_data == -1 or end_of_string_data >= min(len(data), pos_end):
+            raise RuntimeError("Error while finding end of R-string.")
+
+        return end_of_string_data + len(f'){delimeter}"')
+
+    return pos
+
+
+def skip_string(data: str, pos: int = 0, pos_end: int = MAX_LEN) -> int:
+    """Returns next position after string, raise Runtime error if no string found"""
+    if data[pos] not in "'\"":
+        return pos
+
+    current_quote = data[pos]
+    pos = data.find(current_quote, pos + 1)
+
+    # Skip escaped quotes
+    while pos > 0 and pos < min(len(data), pos_end) and data[pos - 1] == "\\" and (pos == 1 or data[pos - 2] != "\\"):
+        pos = data.find(current_quote, pos + 1)
+
+    if pos == -1 or pos >= min(len(data), pos_end):
+        raise RuntimeError("Error while finding end of string.")
+    return pos + 1
+
+
 def find_first_of_characters(characters: str, data: str, pos: int = 0, pos_end: int = MAX_LEN) -> int:
-    for i in range(pos, min(len(data), pos_end)):
-        if data[i] in characters:
-            return i
+    while pos < min(len(data), pos_end) and pos != -1:
+        # Skip strings (if we are not looking for quotes)
+        if "'" not in characters and '"' not in characters and data[pos] in "'\"":
+            pos = skip_rstring(data, pos)
+            pos = skip_string(data, pos)
+            continue
+        if data[pos] in characters:
+            return pos
+        pos += 1
     return len(data)
 
 
@@ -60,44 +104,53 @@ def rfind_first_of_characters(characters: str, data: str, pos: int, pos_end: int
     return len(data)
 
 
-def find_scope_borders(data: str, start: int = 0, opening: str = "{") -> Tuple[int, int]:
-    """
-    Returns pos of opening and closing brackets in 'data'.
-    If it can't find proper scope -> raise error.
-    """
-    brackets_match: Dict[str, str] = {
-        "{": "}",
-        "(": ")",
-        "<": ">",
-        "[": "]",
-    }
+def is_operator(data: str, current_pos: int) -> bool:
+    if current_pos < len("operator") + 1 or data[current_pos - len("operator") - 1].isalpha():
+        return False
+    return data[current_pos - len("operator") : current_pos] == "operator"
 
-    if opening == "":
-        opening_pos = find_first_of_characters("({<[", data, start)
-        if opening_pos == len(data):
-            raise RuntimeError("Error while finding end of scope in ANY mode")
-        opening = data[opening_pos]
 
-    closing = brackets_match[opening] # CC-OFF(G.TYP.07) dict key exist
+def find_scope_borders(data: str, start: int = 0, opening_bracket: str = "{") -> Tuple[int, int]:
+    """
+    Returns tuple of positions of opening and closing brackets in 'data'.
+    Raises RuntimeError if can't find scope borders.
+    """
+    brackets_match: Dict[str, str] = {"{": "}", "(": ")", "<": ">", "[": "]"}
+    opening = opening_bracket
+    start_of_scope = start
+
+    while not opening:
+        start_of_scope = find_first_of_characters("({<[", data, start_of_scope)
+        if start_of_scope == len(data):
+            raise RuntimeError("No opening bracket found in ANY mode")
+        if is_operator(data, start_of_scope):
+            start_of_scope = find_first_not_restricted_character(data[start_of_scope], data, start_of_scope + 1)
+        else:
+            opening = data[start_of_scope]
+
     start_of_scope = data.find(opening, start)
 
+    while is_operator(data, start_of_scope):
+        start_of_scope = find_first_not_restricted_character(opening, data, start_of_scope + 1)
+        start_of_scope = find_first_of_characters(opening, data, start_of_scope)
+
     if start_of_scope == -1:
-        raise RuntimeError("No opening bracket found!")
+        raise RuntimeError("No opening bracket found")
 
-    end_of_scope = start_of_scope + 1
+    current_pos = start_of_scope
+    closing = brackets_match[opening]
+    bracket_sequence_sum = 1
 
-    def check_opening_closing() -> bool:
-        openings = data[start_of_scope : end_of_scope + 1].count(opening)
-        closings = data[start_of_scope : end_of_scope + 1].count(closing)
-        return openings == closings
-
-    while not check_opening_closing():
-        end_of_scope = data.find(closing, end_of_scope + 1)
-
-        if end_of_scope == -1:
+    while bracket_sequence_sum != 0:
+        current_pos = find_first_of_characters(f"{opening}{closing}", data, current_pos + 1)
+        if current_pos == len(data):
             raise RuntimeError("Error while finding end of scope.")
+        if data[current_pos] == opening:
+            bracket_sequence_sum += 1
+        elif data[current_pos] == closing:
+            bracket_sequence_sum -= 1
 
-    return start_of_scope, end_of_scope
+    return start_of_scope, current_pos
 
 
 def smart_split_by(data: str, delim: str = ",") -> list:

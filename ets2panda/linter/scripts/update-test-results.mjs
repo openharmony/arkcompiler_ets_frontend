@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,7 @@ import * as path from 'node:path';
 const TS_EXT = ".ts";
 const ETS_EXT = ".ets";
 const TSX_EXT = ".tsx";
-const STS_EXT = ".sts";
-const STSX_EXT = ".stsx";
+const ETSX_EXT = ".etsx";
 const D_TS_EXT = '.d.ts';
 
 class Mode {
@@ -50,7 +49,7 @@ for (let arg of process.argv.slice(2)) {
 }
 
 const DEFAULT_COPYRIGHT =  [
-    "Copyright (c) 2024 Huawei Device Co., Ltd.",
+    "Copyright (c) 2025 Huawei Device Co., Ltd.",
     "Licensed under the Apache License, Version 2.0 (the 'License');",
     "you may not use this file except in compliance with the License.",
     "You may obtain a copy of the License at",
@@ -74,11 +73,6 @@ function readJsonFile(filePath) {
 }
 
 function updateTestFile(testDir, testFile) {
-    // Temporary solution: rename '.sts' extension to '.ts'
-    if (testFile.endsWith(STS_EXT) || testFile.endsWith(STSX_EXT)) {
-        testFile = testFile.replace(STS_EXT, TS_EXT);
-    }
-
     let testModes = [Mode.DEFAULT];
 
     const testArgsFile = path.join(testDir, testFile + TEST_ARGS_EXT);
@@ -131,8 +125,7 @@ for (let testDir of testDirs) {
         (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) ||
         x.trimEnd().endsWith(TSX_EXT) ||
         x.trimEnd().endsWith(ETS_EXT) ||
-        x.trimEnd().endsWith(STS_EXT) ||
-        x.trimEnd().endsWith(STSX_EXT)
+        x.trimEnd().endsWith(ETSX_EXT)
     );
 
     if (!testFiles) continue;

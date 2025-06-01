@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,7 +71,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_EXCEPTION_BUILTIN,
     ETS_FLOAT_BUILTIN,
     ETS_FLOATING_BUILTIN,
-    ETS_INTEGER_BUILTIN,
+    ETS_INT_BUILTIN,
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
     ETS_MAP_BUILTIN,
@@ -82,13 +82,9 @@ enum class GlobalTypeId : std::size_t {
     ETS_SHORT_BUILTIN,
     ETS_STACK_TRACE_ELEMENT_BUILTIN,
     ETS_STACK_TRACE_BUILTIN,
-    ETS_NULL_POINTER_EXCEPTION_BUILTIN,
     ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN,
     ETS_ARITHMETIC_ERROR_BUILTIN,
-    ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN,
     ETS_CLASS_CAST_ERROR_BUILTIN,
-    ETS_OUT_OF_MEMORY_ERROR_BUILTIN,
-    ETS_NO_SUCH_METHOD_ERROR_BUILTIN,
     ETS_ASSERTION_ERROR_BUILTIN,
     ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN,
     ETS_NULL_POINTER_ERROR_BUILTIN,
@@ -98,6 +94,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_TYPE_BUILTIN,
     ETS_TYPES_BUILTIN,
     ETS_PROMISE_BUILTIN,
+    ETS_FUNCTION_BUILTIN,
     ETS_REGEXP_BUILTIN,
     ETS_ARRAY_BUILTIN,
     ETS_INTEROP_JSRUNTIME_BUILTIN,
@@ -133,48 +130,87 @@ enum class GlobalTypeId : std::size_t {
     ETS_FUNCTION16_CLASS,
     ETS_FUNCTIONN_CLASS,
 
-    ETS_THROWING_FUNCTION0_CLASS,
-    ETS_THROWING_FUNCTION1_CLASS,
-    ETS_THROWING_FUNCTION2_CLASS,
-    ETS_THROWING_FUNCTION3_CLASS,
-    ETS_THROWING_FUNCTION4_CLASS,
-    ETS_THROWING_FUNCTION5_CLASS,
-    ETS_THROWING_FUNCTION6_CLASS,
-    ETS_THROWING_FUNCTION7_CLASS,
-    ETS_THROWING_FUNCTION8_CLASS,
-    ETS_THROWING_FUNCTION9_CLASS,
-    ETS_THROWING_FUNCTION10_CLASS,
-    ETS_THROWING_FUNCTION11_CLASS,
-    ETS_THROWING_FUNCTION12_CLASS,
-    ETS_THROWING_FUNCTION13_CLASS,
-    ETS_THROWING_FUNCTION14_CLASS,
-    ETS_THROWING_FUNCTION15_CLASS,
-    ETS_THROWING_FUNCTION16_CLASS,
-    ETS_THROWING_FUNCTIONN_CLASS,
+    ETS_LAMBDA0_CLASS,
+    ETS_LAMBDA1_CLASS,
+    ETS_LAMBDA2_CLASS,
+    ETS_LAMBDA3_CLASS,
+    ETS_LAMBDA4_CLASS,
+    ETS_LAMBDA5_CLASS,
+    ETS_LAMBDA6_CLASS,
+    ETS_LAMBDA7_CLASS,
+    ETS_LAMBDA8_CLASS,
+    ETS_LAMBDA9_CLASS,
+    ETS_LAMBDA10_CLASS,
+    ETS_LAMBDA11_CLASS,
+    ETS_LAMBDA12_CLASS,
+    ETS_LAMBDA13_CLASS,
+    ETS_LAMBDA14_CLASS,
+    ETS_LAMBDA15_CLASS,
+    ETS_LAMBDA16_CLASS,
+    ETS_LAMBDAN_CLASS,
 
-    ETS_RETHROWING_FUNCTION0_CLASS,
-    ETS_RETHROWING_FUNCTION1_CLASS,
-    ETS_RETHROWING_FUNCTION2_CLASS,
-    ETS_RETHROWING_FUNCTION3_CLASS,
-    ETS_RETHROWING_FUNCTION4_CLASS,
-    ETS_RETHROWING_FUNCTION5_CLASS,
-    ETS_RETHROWING_FUNCTION6_CLASS,
-    ETS_RETHROWING_FUNCTION7_CLASS,
-    ETS_RETHROWING_FUNCTION8_CLASS,
-    ETS_RETHROWING_FUNCTION9_CLASS,
-    ETS_RETHROWING_FUNCTION10_CLASS,
-    ETS_RETHROWING_FUNCTION11_CLASS,
-    ETS_RETHROWING_FUNCTION12_CLASS,
-    ETS_RETHROWING_FUNCTION13_CLASS,
-    ETS_RETHROWING_FUNCTION14_CLASS,
-    ETS_RETHROWING_FUNCTION15_CLASS,
-    ETS_RETHROWING_FUNCTION16_CLASS,
-    ETS_RETHROWING_FUNCTIONN_CLASS,
+    ETS_FUNCTIONR0_CLASS,
+    ETS_FUNCTIONR1_CLASS,
+    ETS_FUNCTIONR2_CLASS,
+    ETS_FUNCTIONR3_CLASS,
+    ETS_FUNCTIONR4_CLASS,
+    ETS_FUNCTIONR5_CLASS,
+    ETS_FUNCTIONR6_CLASS,
+    ETS_FUNCTIONR7_CLASS,
+    ETS_FUNCTIONR8_CLASS,
+    ETS_FUNCTIONR9_CLASS,
+    ETS_FUNCTIONR10_CLASS,
+    ETS_FUNCTIONR11_CLASS,
+    ETS_FUNCTIONR12_CLASS,
+    ETS_FUNCTIONR13_CLASS,
+    ETS_FUNCTIONR14_CLASS,
+    ETS_FUNCTIONR15_CLASS,
+    ETS_FUNCTIONR16_CLASS,
+
+    ETS_LAMBDAR0_CLASS,
+    ETS_LAMBDAR1_CLASS,
+    ETS_LAMBDAR2_CLASS,
+    ETS_LAMBDAR3_CLASS,
+    ETS_LAMBDAR4_CLASS,
+    ETS_LAMBDAR5_CLASS,
+    ETS_LAMBDAR6_CLASS,
+    ETS_LAMBDAR7_CLASS,
+    ETS_LAMBDAR8_CLASS,
+    ETS_LAMBDAR9_CLASS,
+    ETS_LAMBDAR10_CLASS,
+    ETS_LAMBDAR11_CLASS,
+    ETS_LAMBDAR12_CLASS,
+    ETS_LAMBDAR13_CLASS,
+    ETS_LAMBDAR14_CLASS,
+    ETS_LAMBDAR15_CLASS,
+    ETS_LAMBDAR16_CLASS,
+
+    ETS_TUPLE0_CLASS,
+    ETS_TUPLE1_CLASS,
+    ETS_TUPLE2_CLASS,
+    ETS_TUPLE3_CLASS,
+    ETS_TUPLE4_CLASS,
+    ETS_TUPLE5_CLASS,
+    ETS_TUPLE6_CLASS,
+    ETS_TUPLE7_CLASS,
+    ETS_TUPLE8_CLASS,
+    ETS_TUPLE9_CLASS,
+    ETS_TUPLE10_CLASS,
+    ETS_TUPLE11_CLASS,
+    ETS_TUPLE12_CLASS,
+    ETS_TUPLE13_CLASS,
+    ETS_TUPLE14_CLASS,
+    ETS_TUPLE15_CLASS,
+    ETS_TUPLE16_CLASS,
+    ETS_TUPLEN_CLASS,
 
     TYPE_ERROR,
 
     COUNT,
 };
+
+using ExtensionAccessorMap =
+    ArenaUnorderedMap<util::StringView, ArenaUnorderedMap<checker::ETSObjectType *, Signature *>>;
 
 class GlobalTypesHolder {
 public:
@@ -188,6 +224,7 @@ public:
     void AddEtsSpecificBuiltinTypes();
     void AddTSSpecificTypes(ArenaAllocator *allocator);
     void AddFunctionTypes(ArenaAllocator *allocator);
+    void AddTupleTypes(ArenaAllocator *allocator);
 
     // TS specific types
     Type *GlobalNumberType();
@@ -249,10 +286,8 @@ public:
     Type *GlobalShortBuiltinType();
     Type *GlobalStackTraceElementBuiltinType();
     Type *GlobalStackTraceBuiltinType();
-    Type *GlobalNullPointerExceptionBuiltinType();
     Type *GlobalArrayIndexOutOfBoundsErrorBuiltinType();
     Type *GlobalArithmeticErrorBuiltinType();
-    Type *GlobalClassNotFoundExceptionBuiltinType();
     [[nodiscard]] Type *GlobalClassCastErrorBuiltinType() const noexcept;
     Type *GlobalETSStringBuiltinType();
     Type *GlobalETSBigIntBuiltinType();
@@ -261,6 +296,7 @@ public:
     Type *GlobalTypeBuiltinType();
     Type *GlobalTypesBuiltinType();
     Type *GlobalPromiseBuiltinType();
+    Type *GlobalFunctionBuiltinType();
     Type *GlobalBoxBuiltinType();
     Type *GlobalBooleanBoxBuiltinType();
     Type *GlobalByteBoxBuiltinType();
@@ -273,12 +309,15 @@ public:
 
     // Functional types
     size_t VariadicFunctionTypeThreshold();
-    Type *GlobalFunctionBuiltinType(size_t nargs, ir::ScriptFunctionFlags flags);
+    Type *GlobalFunctionBuiltinType(size_t nargs, bool hasRest);
+    Type *GlobalLambdaBuiltinType(size_t nargs, bool hasRest);
+
+    // Tuple types
+    Type *GlobalTupleBuiltinType(size_t nargs);
+    size_t VariadicTupleTypeThreshold();
 
     // ETS escompat layer
     Type *GlobalArrayBuiltinType();
-    Type *GlobalClassOutOfMemoryErrorBuiltinType();
-    Type *GlobalNoSuchMethodErrorBuiltinType();
     Type *GlobalAssertionErrorBuiltinType();
     Type *GlobalDivideByZeroErrorBuiltinType();
     Type *GlobalNullPointerErrorBuiltinType();
@@ -307,9 +346,44 @@ public:
         return globalTypes_;
     }
 
+    std::optional<GlobalTypeId> NameToId(util::StringView name) const
+    {
+        if (auto it = builtinNameMappings_.find(name); it != builtinNameMappings_.end()) {
+            return it->second;
+        }
+        return std::nullopt;
+    }
+
+    Signature *FindExtensionSetterInMap(util::StringView name, ETSObjectType *type)
+    {
+        return FindExtensionAccessorInMap(name, type, extensionSetterMaps_);
+    }
+
+    Signature *FindExtensionGetterInMap(util::StringView name, ETSObjectType *type)
+    {
+        return FindExtensionAccessorInMap(name, type, extensionGetterMaps_);
+    }
+
+    void InsertExtensionSetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+    {
+        InsertExtensionAccessorToMap(name, type, sig, extensionSetterMaps_);
+    }
+
+    void InsertExtensionGetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+    {
+        InsertExtensionAccessorToMap(name, type, sig, extensionGetterMaps_);
+    }
+
 private:
+    Signature *FindExtensionAccessorInMap(util::StringView name, ETSObjectType *type, ExtensionAccessorMap &maps) const;
+    void InsertExtensionAccessorToMap(util::StringView name, ETSObjectType *type, Signature *sig,
+                                      ExtensionAccessorMap &maps);
+
     Holder globalTypes_ {};
+    ArenaAllocator *allocator_;
     ArenaMap<util::StringView, GlobalTypeId> builtinNameMappings_;
+    ExtensionAccessorMap extensionGetterMaps_;
+    ExtensionAccessorMap extensionSetterMaps_;
 };
 }  // namespace ark::es2panda::checker
 

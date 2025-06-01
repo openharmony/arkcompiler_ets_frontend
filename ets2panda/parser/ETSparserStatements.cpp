@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,20 +15,15 @@
 
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
-#include <utility>
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
-#include "parser/parserStatusContext.h"
 #include "util/errorRecovery.h"
 #include "util/helpers.h"
-#include "util/language.h"
 #include "utils/arena_containers.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
-#include "lexer/ETSLexer.h"
-#include "checker/types/ets/etsEnumType.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
@@ -66,7 +61,6 @@
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/annotationUsage.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"
@@ -89,12 +83,11 @@
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ets/etsParameterExpression.h"
@@ -118,6 +111,7 @@
 #include "ir/ts/tsNonNullExpression.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -148,61 +142,67 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
                                                   lexer::SourcePosition pos)
 {
     if (stmt != nullptr) {
+        if (stmt->IsETSModule()) {
+            return stmt;
+        }
         if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
             !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
-            parser->LogSyntaxError("Can only type export class or interface!", stmt->Start());
+            parser->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
         }
         if (stmt->IsAnnotationDeclaration()) {
             if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
-                parser->LogSyntaxError("Can not export annotation default!", stmt->Start());
+                parser->LogError(diagnostic::INVALID_EXPORT_DEFAULT, {}, stmt->Start());
             }
         }
         stmt->AddModifier(memberModifiers);
     } else {
         if ((memberModifiers &
              (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT | ir::ModifierFlags::EXPORT_TYPE)) != 0U) {
-            parser->LogSyntaxError("Export is allowed only for declarations.", pos);
+            parser->LogError(diagnostic::EXPORT_NON_DECLARATION, {}, pos);
         }
     }
 
     return stmt;
 }
-
-ir::Statement *ETSParser::ParseAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers)
+bool ETSParser::IsExportedDeclaration(ir::ModifierFlags memberModifiers)
 {
-    ir::Statement *result = nullptr;
+    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U &&
+           (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
+            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+}
 
-    Lexer()->NextToken();  // eat '@'
-    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
-        result = ParseAnnotationDeclaration(memberModifiers);
-    } else {
-        auto annotations = ParseAnnotations(memberModifiers);
-        auto savePos = Lexer()->GetToken().Start();
-        result = ParseTopLevelDeclStatement(flags);
-        if (result != nullptr) {
-            ApplyAnnotationsToNode(result, std::move(annotations), savePos);
-        }
+bool ETSParser::IsInitializerBlockStart() const
+{
+    if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC) {
+        return false;
     }
 
-    return result;
+    auto savedPos = Lexer()->Save();
+    Lexer()->NextToken();
+    const bool validStart = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE &&
+                            (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0;
+    Lexer()->Rewind(savedPos);
+    return validStart;
 }
 
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
-    if ((memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U &&
-        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
+    if (IsExportedDeclaration(memberModifiers)) {
         return ParseExport(startLoc, memberModifiers);
+    }
+
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
+        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET) {
+        return ParseAccessorWithReceiver(memberModifiers);
     }
 
     ir::Statement *result = nullptr;
     auto token = Lexer()->GetToken();
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
-            if (result = ParseFunctionDeclaration(false, memberModifiers); result != nullptr) {  // Error processing.
-                result->SetStart(startLoc);
-            }
+            result = ParseFunctionDeclaration(false, memberModifiers);
+            result->SetStart(startLoc);
             break;
         }
         case lexer::TokenType::KEYW_CONST:
@@ -211,19 +211,21 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_LET:
             result = ParseStatement(flags);
             break;
-        case lexer::TokenType::KEYW_NAMESPACE:
         case lexer::TokenType::KEYW_STATIC:
         case lexer::TokenType::KEYW_ABSTRACT:
         case lexer::TokenType::KEYW_FINAL:
         case lexer::TokenType::KEYW_ENUM:
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
-            result = ParseTypeDeclaration(false);
+            result = ParseTypeDeclaration(IsInitializerBlockStart());
             break;
         case lexer::TokenType::PUNCTUATOR_AT:
-            result = ParseAnnotation(flags, memberModifiers);
+            result = ParseTopLevelAnnotation(memberModifiers);
             break;
         case lexer::TokenType::LITERAL_IDENT: {
+            if (IsNamespaceDecl()) {
+                return ParseNamespaceStatement(memberModifiers);
+            }
             result = ParseIdentKeyword();
             if (result == nullptr && (memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U) {
                 return ParseExport(startLoc, memberModifiers);
@@ -248,6 +250,19 @@ ir::Statement *ETSParser::ParseTopLevelStatement()
     return result;
 }
 
+ir::Statement *ETSParser::ParseAnnotationsInStatement(StatementParsingFlags flags)
+{
+    Lexer()->NextToken();  // eat '@'
+
+    auto annotations = ParseAnnotations(false);
+    auto savePos = Lexer()->GetToken().Start();
+    ir::Statement *result = ParseStatement(flags);
+    if (result != nullptr) {
+        ApplyAnnotationsToNode(result, std::move(annotations), savePos);
+    }
+    return result;
+}
+
 ArenaVector<ir::Statement *> ETSParser::ParseTopLevelDeclaration()
 {
     auto topStatements = ParseTopLevelStatements();
@@ -259,7 +274,7 @@ bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 {
     if (type != lexer::TokenType::KEYW_DO && type != lexer::TokenType::KEYW_WHILE &&
         type != lexer::TokenType::KEYW_FOR && type != lexer::TokenType::KEYW_SWITCH) {
-        LogSyntaxError("Label must be followed by a loop statement", Lexer()->GetToken().Start());
+        LogError(diagnostic::MISSING_LOOP_AFTER_LABEL, {}, Lexer()->GetToken().Start());
         return false;
     }
 
@@ -268,50 +283,22 @@ bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 
 bool ETSParser::ValidateForInStatement()
 {
-    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_IN), "'."});
+    LogUnexpectedToken(lexer::TokenType::KEYW_IN);
     return false;
 }
 
-ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
+ir::Statement *ETSParser::ParseDebuggerStatement()
 {
-    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_DEBUGGER), "'."});
-    return nullptr;
+    LogUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
 {
-    ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
-    LogSyntaxError("Nested functions are not allowed");
+    ES2PANDA_ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
+    LogError(diagnostic::NESTED_FUNCTIONS_NOT_ALLOWED);
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
-    return nullptr;
-}
-
-ir::Statement *ETSParser::ParseAssertStatement()
-{
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
-
-    ir::Expression *test = ParseExpression();
-    if (test == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
-    lexer::SourcePosition endLoc = test->End();
-    ir::Expression *second = nullptr;
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
-        second = ParseExpression();
-        if (second != nullptr) {  // Error processing.
-            endLoc = second->End();
-        }
-    }
-
-    auto *asStatement = AllocNode<ir::AssertStatement>(test, second);
-    asStatement->SetRange({startLoc, endLoc});
-    ConsumeSemicolon(asStatement);
-
-    return asStatement;
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Statement *ETSParser::ParseTryStatement()
@@ -324,11 +311,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     ArenaVector<ir::CatchClause *> catchClauses(Allocator()->Adapter());
 
     while (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_CATCH) {
-        ir::CatchClause *clause {};
-
-        clause = ParseCatchClause();
-
-        catchClauses.push_back(clause);
+        catchClauses.push_back(ParseCatchClause());
     }
 
     ir::BlockStatement *finalizer = nullptr;
@@ -339,7 +322,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     }
 
     if (catchClauses.empty() && finalizer == nullptr) {
-        LogSyntaxError("A try statement should contain either finally clause or at least one catch clause.", startLoc);
+        LogError(diagnostic::MISSING_CATCH_OR_FINALLY_AFTER_TRY, {}, startLoc);
         return nullptr;
     }
 
@@ -355,8 +338,8 @@ ir::Statement *ETSParser::ParseTryStatement()
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                     ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
+ir::Statement *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
+                                              ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     modFlags |= ParseClassModifiers();
     return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
@@ -365,15 +348,15 @@ ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementP
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ETSStructDeclaration *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                          ir::ClassDefinitionModifiers modifiers,
-                                                          ir::ModifierFlags modFlags)
+ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
+                                               ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
-    LogSyntaxError("Illegal start of STRUCT expression", Lexer()->GetToken().Start());
+    const auto &rangeStruct = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT, {}, rangeStruct.start);
     ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                               ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
                           modFlags);  // Try to parse struct and drop the result.
-    return nullptr;
+    return AllocBrokenStatement(rangeStruct);
 }
 
 }  // namespace ark::es2panda::parser

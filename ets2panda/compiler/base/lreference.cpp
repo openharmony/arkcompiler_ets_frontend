@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
             return {cg, node, ReferenceKind::MEMBER, {}, false};
         }
         case ir::AstNodeType::VARIABLE_DECLARATION: {
-            ASSERT(node->AsVariableDeclaration()->Declarators().size() == 1);
+            ES2PANDA_ASSERT(node->AsVariableDeclaration()->Declarators().size() == 1);
             return CreateBase(cg, node->AsVariableDeclaration()->Declarators()[0]->Id(), true);
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
@@ -70,7 +70,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
             return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -136,7 +136,7 @@ void JSLReference::GetValue() const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -167,7 +167,7 @@ void JSLReference::SetValue() const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -197,7 +197,7 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
         TargetTypeContext pttctx(etsg_, memberExpr->Property()->TsType());
         memberExpr->Property()->Compile(etsg_);
         etsg_->ApplyConversion(memberExpr->Property());
-        ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
+        ES2PANDA_ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
         propReg_ = etsg_->AllocReg();
         etsg_->StoreAccumulator(node, propReg_);
     }
@@ -206,27 +206,17 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
 ETSLReference ETSLReference::Create(CodeGen *const cg, const ir::AstNode *const node, const bool isDeclaration)
 {
     if (node->Type() == ir::AstNodeType::IDENTIFIER) {
-        if (node->AsIdentifier()->Variable() != nullptr) {
-            auto *var = node->AsIdentifier()->Variable();
-            varbinder::ConstScopeFindResult res;
-            res.name = var->Name();
-            res.variable = var;
-            res.scope = var->GetScope();
-            auto refKind = ReferenceKind::VAR_OR_GLOBAL;
-            if (var->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-                refKind = ReferenceKind::FIELD;
-            }
-            return {cg, node, refKind, res, isDeclaration};
+        auto *var = node->Variable();
+        ES2PANDA_ASSERT(var != nullptr);
+        varbinder::ConstScopeFindResult res;
+        res.name = var->Name();
+        res.variable = var;
+        res.scope = var->GetScope();
+        auto refKind = ReferenceKind::VAR_OR_GLOBAL;
+        if (var->HasFlag(varbinder::VariableFlags::PROPERTY)) {
+            refKind = ReferenceKind::FIELD;
         }
-
-        const auto &name = node->AsIdentifier()->Name();
-        auto res = cg->Scope()->FindInFunctionScope(name, varbinder::ResolveBindingOptions::ALL);
-        if (res.variable == nullptr) {
-            res = cg->Scope()->FindInGlobal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES |
-                                                      varbinder::ResolveBindingOptions::ALL_METHOD);
-        }
-
-        return {cg, node, ReferenceKind::VAR_OR_GLOBAL, res, isDeclaration};
+        return {cg, node, refKind, res, isDeclaration};
     }
     return std::make_from_tuple<ETSLReference>(CreateBase(cg, node, isDeclaration));
 }
@@ -273,7 +263,7 @@ void ETSLReference::GetValue() const
             break;
         }
         default: {
-            ASSERT(Node()->IsIdentifier());
+            ES2PANDA_ASSERT(Node()->IsIdentifier());
             auto const *const ident = Node()->AsIdentifier();
             auto const *const variable = Variable();
             etsg_->LoadVar(ident, variable);
@@ -296,18 +286,17 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    // Same bypass for tuples, as at MemberExpression::Compile
-    const auto *const savedVregType = etsg_->GetVRegType(baseReg_);
-
     if (objectType->IsETSTupleType()) {
-        etsg_->SetVRegType(baseReg_, objectType);
+        ES2PANDA_ASSERT(memberExpr->GetTupleIndexValue().has_value());
+
+        std::size_t indexValue = *memberExpr->GetTupleIndexValue();
+        etsg_->StoreTupleElement(Node(), baseReg_, objectType->AsETSTupleType()->GetTypeAtIndex(indexValue),
+                                 indexValue);
+        return;
     }
 
+    ES2PANDA_ASSERT(objectType->IsETSArrayType());
     etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
-
-    if (objectType->IsETSTupleType()) {
-        etsg_->SetVRegType(baseReg_, savedVregType);
-    }
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const
@@ -319,6 +308,8 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr)
 
     if (sig->Function()->IsStatic()) {
         etsg_->CallExact(Node(), sig->InternalName(), argReg);
+    } else if (memberExpr->Object()->IsSuperExpression()) {
+        etsg_->CallExact(Node(), sig->InternalName(), baseReg_, argReg);
     } else {
         etsg_->CallVirtual(Node(), sig, baseReg_, argReg);
     }
@@ -332,9 +323,7 @@ void ETSLReference::SetValue() const
     }
 
     const auto *const memberExpr = Node()->AsMemberExpression();
-    const auto *const memberExprTsType = memberExpr->Object()->TsType()->IsETSTupleType()
-                                             ? memberExpr->Object()->TsType()->AsETSTupleType()->ElementType()
-                                             : memberExpr->TsType();
+    const auto *const memberExprTsType = memberExpr->TsType();
 
     if (!memberExpr->IsIgnoreBox()) {
         etsg_->ApplyConversion(Node(), memberExprTsType);
@@ -371,7 +360,8 @@ void ETSLReference::SetValue() const
     }
 
     if (objectType->IsETSUnionType()) {
-        etsg_->StoreUnionProperty(Node(), memberExprTsType, baseReg_, propName);
+        etsg_->StorePropertyByName(Node(), baseReg_,
+                                   checker::ETSChecker::FormNamedAccessMetadata(memberExpr->PropVar()));
         return;
     }
 

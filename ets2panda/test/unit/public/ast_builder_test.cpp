@@ -58,7 +58,6 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
 using ark::es2panda::ir::AwaitExpressionBuilder;
 using ark::es2panda::ir::BigIntLiteralBuilder;
 using ark::es2panda::ir::BinaryExpressionBuilder;

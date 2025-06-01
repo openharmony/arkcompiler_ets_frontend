@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "nullable_union_array.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "nullable_union_array.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "nullable_union_array.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "nullable_union_array.ets"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "nullable_union_array.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "nullable_union_array.ets"
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "nullable_union_array.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 14
+                      "column": 14,
+                      "program": "nullable_union_array.ets"
                     }
                   }
                 },
@@ -166,11 +184,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "nullable_union_array.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 22
+                      "column": 22,
+                      "program": "nullable_union_array.ets"
                     }
                   }
                 },
@@ -201,33 +221,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "nullable_union_array.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 24
+                                            "column": 24,
+                                            "program": "nullable_union_array.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "nullable_union_array.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 25
+                                          "column": 25,
+                                          "program": "nullable_union_array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "nullable_union_array.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "nullable_union_array.ets"
                                       }
                                     }
                                   },
@@ -242,33 +268,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 25
+                                            "column": 25,
+                                            "program": "nullable_union_array.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 28
+                                            "column": 28,
+                                            "program": "nullable_union_array.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 25
+                                          "column": 25,
+                                          "program": "nullable_union_array.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 29
+                                          "column": 29,
+                                          "program": "nullable_union_array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "nullable_union_array.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "nullable_union_array.ets"
                                       }
                                     }
                                   },
@@ -277,11 +309,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "nullable_union_array.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 33
+                                        "column": 33,
+                                        "program": "nullable_union_array.ets"
                                       }
                                     }
                                   }
@@ -289,22 +323,27 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
+                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "nullable_union_array.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "nullable_union_array.ets"
                                 }
                               }
                             },
@@ -312,11 +351,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "nullable_union_array.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 15
+                                "column": 15,
+                                "program": "nullable_union_array.ets"
                               }
                             }
                           },
@@ -329,11 +370,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 40
+                                    "column": 40,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 46
+                                    "column": 46,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -343,11 +386,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 48
+                                    "column": 48,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 49
+                                    "column": 49,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -357,11 +402,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 51
+                                    "column": 51,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 52
+                                    "column": 52,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -371,11 +418,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 54
+                                    "column": 54,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 58
+                                    "column": 58,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -385,11 +434,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 60
+                                    "column": 60,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 61
+                                    "column": 61,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -399,11 +450,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 63
+                                    "column": 63,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 65
+                                    "column": 65,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
@@ -413,11 +466,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 67
+                                    "column": 67,
+                                    "program": "nullable_union_array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 71
+                                    "column": 71,
+                                    "program": "nullable_union_array.ets"
                                   }
                                 }
                               }
@@ -425,22 +480,26 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 39
+                                "column": 39,
+                                "program": "nullable_union_array.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 72
+                                "column": 72,
+                                "program": "nullable_union_array.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "nullable_union_array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 72
+                              "column": 72,
+                              "program": "nullable_union_array.ets"
                             }
                           }
                         }
@@ -449,11 +508,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "nullable_union_array.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 73
+                          "column": 73,
+                          "program": "nullable_union_array.ets"
                         }
                       }
                     }
@@ -461,33 +522,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 23
+                      "column": 23,
+                      "program": "nullable_union_array.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 2
+                      "column": 2,
+                      "program": "nullable_union_array.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "nullable_union_array.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 2
+                    "column": 2,
+                    "program": "nullable_union_array.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "nullable_union_array.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 2
+                  "column": 2,
+                  "program": "nullable_union_array.ets"
                 }
               }
             },
@@ -496,11 +563,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "nullable_union_array.ets"
               },
               "end": {
                 "line": 18,
-                "column": 2
+                "column": 2,
+                "program": "nullable_union_array.ets"
               }
             }
           }
@@ -508,22 +577,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "nullable_union_array.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "nullable_union_array.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "nullable_union_array.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "nullable_union_array.ets"
         }
       }
     }
@@ -531,11 +604,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "nullable_union_array.ets"
     },
     "end": {
       "line": 19,
-      "column": 1
+      "column": 1,
+      "program": "nullable_union_array.ets"
     }
   }
 }

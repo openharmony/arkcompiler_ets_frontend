@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 21
+            "column": 21,
+            "program": "D.ets"
           },
           "end": {
             "line": 22,
-            "column": 26
+            "column": 26,
+            "program": "D.ets"
           }
         }
       },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 13
+                "column": 13,
+                "program": "D.ets"
               },
               "end": {
                 "line": 22,
-                "column": 15
+                "column": 15,
+                "program": "D.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 22,
-              "column": 8
+              "column": 8,
+              "program": "D.ets"
             },
             "end": {
               "line": 22,
-              "column": 15
+              "column": 15,
+              "program": "D.ets"
             }
           }
         }
@@ -50,11 +56,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "D.ets"
         },
         "end": {
           "line": 22,
-          "column": 26
+          "column": 26,
+          "program": "D.ets"
         }
       }
     },
@@ -66,11 +74,13 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 21
+            "column": 21,
+            "program": "D.ets"
           },
           "end": {
             "line": 23,
-            "column": 26
+            "column": 26,
+            "program": "D.ets"
           }
         }
       },
@@ -84,22 +94,26 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 13
+                "column": 13,
+                "program": "D.ets"
               },
               "end": {
                 "line": 23,
-                "column": 15
+                "column": 15,
+                "program": "D.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 23,
-              "column": 8
+              "column": 8,
+              "program": "D.ets"
             },
             "end": {
               "line": 23,
-              "column": 15
+              "column": 15,
+              "program": "D.ets"
             }
           }
         }
@@ -107,11 +121,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "D.ets"
         },
         "end": {
           "line": 23,
-          "column": 26
+          "column": 26,
+          "program": "D.ets"
         }
       }
     },
@@ -125,11 +141,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "D.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "D.ets"
             }
           }
         },
@@ -145,11 +163,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -169,11 +189,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -183,391 +205,43 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "VariableDeclaration",
-                      "declarations": [
-                        {
-                          "type": "VariableDeclarator",
-                          "id": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "init": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "CallExpression",
-                                "callee": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "Class",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 3
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 3
-                                      }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "ofCaller",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 3
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 3
-                                      }
-                                    }
-                                  },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 3
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 3
-                                    }
-                                  }
-                                },
-                                "arguments": [],
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 3
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 3
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "getLinker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 3
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 3
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 3
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 3
-                                }
-                              }
-                            },
-                            "arguments": [],
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 3
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        }
-                      ],
-                      "kind": "const",
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    },
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "loadClass",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        },
-                        "arguments": [
-                          {
-                            "type": "StringLiteral",
-                            "value": "C.ETSGLOBAL",
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          {
-                            "type": "BooleanLiteral",
-                            "value": true,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          }
-                        ],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 3
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    },
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "loadClass",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        },
-                        "arguments": [
-                          {
-                            "type": "StringLiteral",
-                            "value": "B.ETSGLOBAL",
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          {
-                            "type": "BooleanLiteral",
-                            "value": true,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          }
-                        ],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 3
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    }
-                  ],
+                  "statements": [],
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -576,11 +250,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "D.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "D.ets"
               }
             }
           },
@@ -593,11 +269,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 10
+                  "column": 10,
+                  "program": "D.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 14
+                  "column": 14,
+                  "program": "D.ets"
                 }
               }
             },
@@ -617,11 +295,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 10
+                      "column": 10,
+                      "program": "D.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 14
+                      "column": 14,
+                      "program": "D.ets"
                     }
                   }
                 },
@@ -645,11 +325,13 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 3
+                                "column": 3,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 10
+                                "column": 10,
+                                "program": "D.ets"
                               }
                             }
                           },
@@ -660,11 +342,13 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 11
+                                "column": 11,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 14
+                                "column": 14,
+                                "program": "D.ets"
                               }
                             }
                           },
@@ -673,11 +357,13 @@
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 3
+                              "column": 3,
+                              "program": "D.ets"
                             },
                             "end": {
                               "line": 26,
-                              "column": 14
+                              "column": 14,
+                              "program": "D.ets"
                             }
                           }
                         },
@@ -691,11 +377,13 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "D.ets"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "D.ets"
                                 }
                               }
                             },
@@ -706,11 +394,13 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "D.ets"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 21
+                                  "column": 21,
+                                  "program": "D.ets"
                                 }
                               }
                             },
@@ -719,11 +409,13 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 15
+                                "column": 15,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 21
+                                "column": 21,
+                                "program": "D.ets"
                               }
                             }
                           }
@@ -732,22 +424,26 @@
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 3
+                            "column": 3,
+                            "program": "D.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 22
+                            "column": 22,
+                            "program": "D.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 3
+                          "column": 3,
+                          "program": "D.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 23
+                          "column": 23,
+                          "program": "D.ets"
                         }
                       }
                     },
@@ -764,11 +460,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 3
+                                "column": 3,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 10
+                                "column": 10,
+                                "program": "D.ets"
                               }
                             }
                           },
@@ -779,11 +477,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 11
+                                "column": 11,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 14
+                                "column": 14,
+                                "program": "D.ets"
                               }
                             }
                           },
@@ -792,11 +492,13 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 3
+                              "column": 3,
+                              "program": "D.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 14
+                              "column": 14,
+                              "program": "D.ets"
                             }
                           }
                         },
@@ -810,11 +512,13 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "D.ets"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "D.ets"
                                 }
                               }
                             },
@@ -825,11 +529,13 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "D.ets"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 21
+                                  "column": 21,
+                                  "program": "D.ets"
                                 }
                               }
                             },
@@ -838,11 +544,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 15
+                                "column": 15,
+                                "program": "D.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 21
+                                "column": 21,
+                                "program": "D.ets"
                               }
                             }
                           }
@@ -851,22 +559,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 3
+                            "column": 3,
+                            "program": "D.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 22
+                            "column": 22,
+                            "program": "D.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 3
+                          "column": 3,
+                          "program": "D.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 23
+                          "column": 23,
+                          "program": "D.ets"
                         }
                       }
                     }
@@ -874,33 +586,39 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 17
+                      "column": 17,
+                      "program": "D.ets"
                     },
                     "end": {
                       "line": 28,
-                      "column": 2
+                      "column": 2,
+                      "program": "D.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 10
+                    "column": 10,
+                    "program": "D.ets"
                   },
                   "end": {
                     "line": 28,
-                    "column": 2
+                    "column": 2,
+                    "program": "D.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 10
+                  "column": 10,
+                  "program": "D.ets"
                 },
                 "end": {
                   "line": 28,
-                  "column": 2
+                  "column": 2,
+                  "program": "D.ets"
                 }
               }
             },
@@ -909,11 +627,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 1
+                "column": 1,
+                "program": "D.ets"
               },
               "end": {
                 "line": 28,
-                "column": 2
+                "column": 2,
+                "program": "D.ets"
               }
             }
           }
@@ -921,22 +641,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "D.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "D.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "D.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "D.ets"
         }
       }
     }
@@ -944,11 +668,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "D.ets"
     },
     "end": {
       "line": 29,
-      "column": 1
+      "column": 1,
+      "program": "D.ets"
     }
   }
 }

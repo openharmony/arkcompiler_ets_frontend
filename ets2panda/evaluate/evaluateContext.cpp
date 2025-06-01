@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,7 +28,7 @@ namespace ark::es2panda::evaluate {
 
 void EvaluateContext::FindEvaluationMethod(parser::Program *evalMethodProgram)
 {
-    ASSERT(evalMethodProgram);
+    ES2PANDA_ASSERT(evalMethodProgram);
     auto &topLevelStatements = evalMethodProgram->Ast()->Statements();
 
     // Find evaluation class.
@@ -36,7 +36,7 @@ void EvaluateContext::FindEvaluationMethod(parser::Program *evalMethodProgram)
         return stmt->IsClassDeclaration() &&
                !stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
     });
-    ASSERT(evalClassDefIter != topLevelStatements.end());
+    ES2PANDA_ASSERT(evalClassDefIter != topLevelStatements.end());
     auto *methodClass = (*evalClassDefIter)->AsClassDeclaration()->Definition();
     const auto &expectedMethodName = methodClass->Ident()->Name();
 
@@ -46,14 +46,14 @@ void EvaluateContext::FindEvaluationMethod(parser::Program *evalMethodProgram)
             return iter->IsMethodDefinition() &&
                    iter->AsMethodDefinition()->Key()->AsIdentifier()->Name() == expectedMethodName;
         });
-    ASSERT(evalMethodIter != methodClass->Body().end());
+    ES2PANDA_ASSERT(evalMethodIter != methodClass->Body().end());
     auto *method = (*evalMethodIter)->AsMethodDefinition();
     auto *scriptFunction = method->Value()->AsFunctionExpression()->Function();
-    ASSERT(scriptFunction != nullptr);
+    ES2PANDA_ASSERT(scriptFunction != nullptr);
 
     // Extract method statements and last statement.
     methodStatements = scriptFunction->Body()->AsBlockStatement();
-    ASSERT(!methodStatements->Statements().empty());
+    ES2PANDA_ASSERT(!methodStatements->Statements().empty());
     auto *stmt = methodStatements->Statements().back();
     if (stmt->IsExpressionStatement()) {
         lastStatement = stmt->AsExpressionStatement();

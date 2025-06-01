@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,7 @@ void IntType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *so
     NarrowingWideningConverter(relation->GetChecker()->AsETSChecker(), relation, this, source);
 }
 
-bool IntType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+bool IntType::AssignmentSource(TypeRelation *relation, Type *target)
 {
     if (relation->InAssignmentContext()) {
         relation->GetChecker()->AsETSChecker()->CheckUnboxedTypeWidenable(relation, target, this);
@@ -54,11 +54,6 @@ void IntType::Cast(TypeRelation *const relation, Type *const target)
 {
     if (target->HasTypeFlag(TypeFlag::INT)) {
         conversion::Identity(relation, this, target);
-        return;
-    }
-
-    if (target->IsETSEnumType()) {
-        relation->Result(true);
         return;
     }
 

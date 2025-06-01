@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,23 +23,22 @@ class ASBinder : public VarBinder {
 public:
     explicit ASBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
 
+    ASBinder() = delete;
     NO_COPY_SEMANTIC(ASBinder);
     NO_MOVE_SEMANTIC(ASBinder);
     ~ASBinder() override = default;
 
-    ScriptExtension Extension() const override
+    [[nodiscard]] ScriptExtension Extension() const noexcept override
     {
         return ScriptExtension::AS;
     }
 
-    ResolveBindingOptions BindingOptions() const override
+    [[nodiscard]] ResolveBindingOptions BindingOptions() const noexcept override
     {
         return ResolveBindingOptions::BINDINGS;
     }
 
     void IdentifierAnalysis() override {}
-
-private:
 };
 }  // namespace ark::es2panda::varbinder
 

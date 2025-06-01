@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expression.h"
 
 namespace ark::es2panda::ir {
 void ThrowStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -43,7 +40,7 @@ void ThrowStatement::Dump(ir::AstDumper *dumper) const
 
 void ThrowStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(Argument() != nullptr);
+    ES2PANDA_ASSERT(Argument() != nullptr);
     dumper->Add("throw ");
     Argument()->Dump(dumper);
     dumper->Add(";");
@@ -64,8 +61,20 @@ checker::Type *ThrowStatement::Check([[maybe_unused]] checker::TSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+ThrowStatement *ThrowStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expression = argument_->Clone(allocator, nullptr)->AsExpression();
+    auto *const clone = allocator->New<ThrowStatement>(expression);
+    expression->SetParent(clone);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    clone->SetRange(range_);
+    return clone;
 }
 }  // namespace ark::es2panda::ir

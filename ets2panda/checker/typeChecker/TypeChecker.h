@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,12 +35,12 @@ public:
     }
 
 protected:
-    // NOTE(aleksisch): checker should be replaced with some `ErrorHandler`
     explicit TypeChecker(Checker *checker) : checker_(checker) {}
 
-    void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos)
     {
-        checker_->LogTypeError(list, pos);
+        checker_->LogError(diagnostic, diagnosticParams, pos);
     }
 
 private:

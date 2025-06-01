@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,9 +69,9 @@ checker::Type *ReturnStatement::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ReturnStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType ReturnStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)
@@ -86,7 +86,7 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
 
             argumentType = checker->MaybeBoxInRelation(argumentType);
             if (argumentType == nullptr) {
-                checker->LogTypeError("Invalid return statement expression", argument_->Start());
+                checker->LogError(diagnostic::INVALID_EXPR_IN_RETURN, {}, argument_->Start());
                 return;
             }
             argument_->AddBoxingUnboxingFlags(checker->GetBoxingFlag(argumentType));
@@ -102,6 +102,19 @@ void ReturnStatement::SetArgument(Expression *arg)
     if (argument_ != nullptr) {
         argument_->SetParent(this);
     }
+}
+
+bool ReturnStatement::IsAsyncImplReturn() const
+{
+    const auto *parent = Parent();
+
+    while (parent != nullptr) {
+        if (parent->IsScriptFunction()) {
+            return parent->AsScriptFunction()->IsAsyncImplFunc();
+        }
+        parent = parent->Parent();
+    }
+    return false;
 }
 
 ReturnStatement *ReturnStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

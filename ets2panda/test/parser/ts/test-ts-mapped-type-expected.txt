@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -29,11 +31,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 31
+                "column": 31,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 35
+                "column": 35,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -49,44 +53,52 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 45
+                    "column": 45,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 47
+                    "column": 47,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 45
+                  "column": 45,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 47
+                  "column": 47,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 39
+                "column": 39,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 47
+                "column": 47,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 31
+              "column": 31,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 17,
-              "column": 47
+              "column": 47,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -95,11 +107,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 52
+              "column": 52,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 17,
-              "column": 59
+              "column": 59,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -108,11 +122,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 17,
-            "column": 62
+            "column": 62,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -128,22 +144,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -151,22 +171,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 17,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 17,
-          "column": 63
+          "column": 63,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -175,11 +199,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 62
+          "column": 62,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 17,
-          "column": 63
+          "column": 63,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -192,11 +218,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 18,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -211,11 +239,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 31
+                "column": 31,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 35
+                "column": 35,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -231,44 +261,52 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 45
+                    "column": 45,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 47
+                    "column": 47,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 45
+                  "column": 45,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 47
+                  "column": 47,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 39
+                "column": 39,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 47
+                "column": 47,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 31
+              "column": 31,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 47
+              "column": 47,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -277,11 +315,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 52
+              "column": 52,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 59
+              "column": 59,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -290,11 +330,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 18,
-            "column": 62
+            "column": 62,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -310,22 +352,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -333,22 +379,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 18,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 18,
-          "column": 63
+          "column": 63,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -357,11 +407,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 62
+          "column": 62,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 18,
-          "column": 63
+          "column": 63,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -374,11 +426,13 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 19,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -393,11 +447,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 30
+                "column": 30,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 19,
-                "column": 34
+                "column": 34,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -413,44 +469,52 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 44
+                    "column": 44,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 46
+                    "column": 46,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 44
+                  "column": 44,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 46
+                  "column": 46,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 38
+                "column": 38,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 19,
-                "column": 46
+                "column": 46,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 30
+              "column": 30,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 19,
-              "column": 46
+              "column": 46,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -459,11 +523,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 50
+              "column": 50,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 19,
-              "column": 57
+              "column": 57,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -472,11 +538,13 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 19,
-            "column": 60
+            "column": 60,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -492,22 +560,26 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 19,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -515,22 +587,26 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 19,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 19,
-          "column": 61
+          "column": 61,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -539,11 +615,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 60
+          "column": 60,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 19,
-          "column": 61
+          "column": 61,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -556,11 +634,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 20,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -575,11 +655,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 21
+                "column": 21,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 20,
-                "column": 25
+                "column": 25,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -595,44 +677,52 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 35
+                    "column": 35,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 35
+                  "column": 35,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 29
+                "column": 29,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 20,
-                "column": 37
+                "column": 37,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 21
+              "column": 21,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 20,
-              "column": 37
+              "column": 37,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -641,22 +731,26 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 40
+              "column": 40,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 20,
-              "column": 47
+              "column": 47,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 20,
-            "column": 50
+            "column": 50,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -672,22 +766,26 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 20,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -695,22 +793,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 20,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 20,
-          "column": 51
+          "column": 51,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -719,11 +821,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 50
+          "column": 50,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 20,
-          "column": 51
+          "column": 51,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -736,11 +840,13 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 21,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -755,11 +861,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 21
+                "column": 21,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 21,
-                "column": 25
+                "column": 25,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -775,44 +883,52 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 35
+                    "column": 35,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 35
+                  "column": 35,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 29
+                "column": 29,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 21,
-                "column": 37
+                "column": 37,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 21,
-              "column": 21
+              "column": 21,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 21,
-              "column": 37
+              "column": 37,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
@@ -821,22 +937,26 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 40
+              "column": 40,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 21,
-              "column": 47
+              "column": 47,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 21,
-            "column": 49
+            "column": 49,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -852,22 +972,26 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 21,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -875,22 +999,26 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 21,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 21,
-          "column": 50
+          "column": 50,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -899,11 +1027,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 49
+          "column": 49,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 21,
-          "column": 50
+          "column": 50,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -916,11 +1046,13 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 22,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -935,11 +1067,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 21
+                "column": 21,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 22,
-                "column": 25
+                "column": 25,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -955,55 +1089,65 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 35
+                    "column": 35,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 35
+                  "column": 35,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 29
+                "column": 29,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 22,
-                "column": 37
+                "column": 37,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 22,
-              "column": 21
+              "column": 21,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 22,
-              "column": 37
+              "column": 37,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 22,
-            "column": 41
+            "column": 41,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -1019,22 +1163,26 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 22,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -1042,22 +1190,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 22,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 22,
-          "column": 42
+          "column": 42,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -1066,11 +1218,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 41
+          "column": 41,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 22,
-          "column": 42
+          "column": 42,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -1083,11 +1237,13 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 23,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -1102,11 +1258,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 21
+                "column": 21,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 23,
-                "column": 25
+                "column": 25,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
@@ -1122,55 +1280,65 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 35
+                    "column": 35,
+                    "program": "test-ts-mapped-type.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-mapped-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 35
+                  "column": 35,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 29
+                "column": 29,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 23,
-                "column": 37
+                "column": 37,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 23,
-              "column": 21
+              "column": 21,
+              "program": "test-ts-mapped-type.ts"
             },
             "end": {
               "line": 23,
-              "column": 37
+              "column": 37,
+              "program": "test-ts-mapped-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 23,
-            "column": 18
+            "column": 18,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 23,
-            "column": 40
+            "column": 40,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
@@ -1186,22 +1354,26 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-mapped-type.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-ts-mapped-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-mapped-type.ts"
               },
               "end": {
                 "line": 23,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-mapped-type.ts"
               }
             }
           }
@@ -1209,22 +1381,26 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-mapped-type.ts"
           },
           "end": {
             "line": 23,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-mapped-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 23,
-          "column": 41
+          "column": 41,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     },
@@ -1233,11 +1409,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 40
+          "column": 40,
+          "program": "test-ts-mapped-type.ts"
         },
         "end": {
           "line": 23,
-          "column": 41
+          "column": 41,
+          "program": "test-ts-mapped-type.ts"
         }
       }
     }
@@ -1245,11 +1423,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-ts-mapped-type.ts"
     },
     "end": {
       "line": 23,
-      "column": 41
+      "column": 41,
+      "program": "test-ts-mapped-type.ts"
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,10 +23,13 @@
 #include "util/arktsconfig.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
-
-#include "es2panda.h"
+#include "util/path.h"
+#include "util/options.h"
 
 namespace ark::es2panda::util {
+namespace gen::extension {
+enum Enum : size_t;
+}  // namespace gen::extension
 
 using ENUMBITOPS_OPERATORS;
 
@@ -35,25 +38,80 @@ enum class ImportFlags {
     DEFAULT_IMPORT = 1U << 1U,
     IMPLICIT_PACKAGE_IMPORT = 1U << 2U,
 };
+
+}  // namespace ark::es2panda::util
+
+namespace enumbitops {
+template <>
+struct IsAllowedType<ark::es2panda::util::ImportFlags> : std::true_type {
+};
+}  // namespace enumbitops
+
+namespace ark::es2panda::ir {
+class StringLiteral;
+}  // namespace ark::es2panda::ir
+
+namespace ark::es2panda::parser {
+class ParserContext;
+}  // namespace ark::es2panda::parser
+
+namespace ark::es2panda::util {
+
+enum class ModuleKind { MODULE, DECLARATION, PACKAGE };
+
+struct ModuleInfo {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    StringView moduleName {};
+    StringView modulePrefix {};
+    ModuleKind kind {};
+    // NOTE(dkofanov): Should be refactored and aligned with 'ModuleKind' and
+    // 'Program::MaybeTransformToDeclarationModule'.
+    bool isDeclForDynamicStaticInterop {};
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
+};
+
 class ImportPathManager {
 public:
-    struct ImportData {
-        Language lang;
-        std::string module;
-        bool hasDecl;
+    static constexpr auto DUMMY_PATH = "dummy_path";  // CC-OFF(G.NAM.03-CPP) project code style
+    struct ImportMetadata {
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+        ImportFlags importFlags {};
+        Language::Id lang {Language::Id::COUNT};
+        std::string_view resolvedSource {};
+        std::string_view declPath {};
+        std::string_view ohmUrl {};
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+        bool HasSpecifiedDeclPath() const
+        {
+            return !declPath.empty() && (declPath != DUMMY_PATH);
+        }
+
+        bool IsImplicitPackageImported() const
+        {
+            return (importFlags & ImportFlags::IMPLICIT_PACKAGE_IMPORT) != 0;
+        }
+
+        bool IsValid() const;
     };
 
     struct ParseInfo {
-        StringView sourcePath;
-        bool isParsed;
-        bool isImplicitPackageImported = false;
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+        bool isParsed {};
+        ImportMetadata importData;
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
     };
 
-    ImportPathManager(ark::ArenaAllocator *allocator, std::shared_ptr<ArkTsConfig> arktsConfig, std::string stdLib)
+    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options, parser::Program *globalProgram,
+                      util::DiagnosticEngine &diagnosticEngine)
         : allocator_(allocator),
-          arktsConfig_(std::move(arktsConfig)),
-          stdLib_(std::move(stdLib)),
-          parseList_(allocator->Adapter())
+          arktsConfig_(options.ArkTSConfig()),
+          absoluteEtsPath_(
+              options.GetEtsPath().empty() ? "" : util::Path(options.GetEtsPath(), allocator_).GetAbsolutePath()),
+          stdLib_(options.GetStdlib()),
+          parseList_(allocator->Adapter()),
+          globalProgram_(globalProgram),
+          diagnosticEngine_ {diagnosticEngine}
     {
     }
 
@@ -67,33 +125,53 @@ public:
         return parseList_;
     }
 
-    StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
-    void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags);
-    ImportData GetImportData(const util::StringView &path, const ScriptExtension &extension) const;
-    void MarkAsParsed(const StringView &path);
+    util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
+    ImportMetadata GatherImportMetadata(const parser::ParserContext &context, ir::StringLiteral *importPath);
+    void AddImplicitPackageImportToParseList(StringView packageDir, const lexer::SourcePosition &srcPos);
+
+    // API version for resolving paths. Kept only for API compatibility. Doesn't support 'dynamicPath'.
+    util::StringView ResolvePathAPI(StringView curModulePath, ir::StringLiteral *importPath) const;
+
+    void MarkAsParsed(StringView path);
+    util::StringView FormRelativePath(const util::Path &path);
 
 private:
-    bool IsRelativePath(const StringView &path) const;
-    StringView GetRealPath(const StringView &path) const;
-    StringView AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const;
+    util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path);
+    util::StringView FormModuleName(const util::Path &path);
+
+    struct ResolvedPathRes {
+        // On successfull resolving, 2 variants are possible:
+        // `resolvedPath` is a module-path - if dynamic path was resolved;
+        // `resolvedPath` is a realpath - if static path was resolved.
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+        std::string_view resolvedPath;
+        bool resolvedIsDynamic {false};
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
+    };
+    ResolvedPathRes ResolvePath(std::string_view curModulePath, ir::StringLiteral *importPath) const;
+    ResolvedPathRes ResolveAbsolutePath(const ir::StringLiteral &importPathNode) const;
+    std::string_view DirOrDirWithIndexFile(StringView dir) const;
+    ResolvedPathRes AppendExtensionOrIndexFileIfOmitted(StringView basePath) const;
+    std::string TryMatchDynamicPath(std::string_view fixedPath) const;
+    StringView GetRealPath(StringView path) const;
+
+    void AddToParseList(const ImportMetadata importMetadata);
 #ifdef USE_UNIX_SYSCALL
-    void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags);
+    void UnixWalkThroughDirectoryAndAddToParseList(ImportMetadata importMetadata);
 #endif
 
-    ArenaAllocator *allocator_ {nullptr};
-    std::shared_ptr<ArkTsConfig> arktsConfig_ {nullptr};
-    std::string stdLib_ {};
+private:
+    ark::ArenaAllocator *const allocator_;
+    std::shared_ptr<ArkTsConfig> const arktsConfig_;
+    std::string absoluteEtsPath_;
+    std::string stdLib_;
     ArenaVector<ParseInfo> parseList_;
+    parser::Program *globalProgram_;
+    util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
+    mutable const lexer::SourcePosition *srcPos_ {};
 };
 
 }  // namespace ark::es2panda::util
-
-namespace enumbitops {
-
-template <>
-struct IsAllowedType<ark::es2panda::util::ImportFlags> : std::true_type {
-};
-}  // namespace enumbitops
 
 #endif  // ES2PANDA_UTIL_IMPORT_PATH_MANAGER_H

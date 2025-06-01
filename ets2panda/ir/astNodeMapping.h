@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,8 +68,6 @@
     _(META_PROPERTY_EXPRESSION, MetaProperty)                                             \
     _(METHOD_DEFINITION, MethodDefinition)                                                \
     _(NAMED_TYPE, NamedType)                                                              \
-    _(NAMESPACE_DECLARATION, NamespaceDeclaration)                                        \
-    _(NAMESPACE_DEFINITION, NamespaceDefinition)                                          \
     _(NEW_EXPRESSION, NewExpression)                                                      \
     _(NULL_LITERAL, NullLiteral)                                                          \
     _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \
@@ -95,6 +93,7 @@
     _(ETS_TYPE_REFERENCE, ETSTypeReference)                                               \
     _(ETS_TYPE_REFERENCE_PART, ETSTypeReferencePart)                                      \
     _(ETS_UNION_TYPE, ETSUnionType)                                                       \
+    _(ETS_KEYOF_TYPE, ETSKeyofType)                                                       \
     _(ETS_LAUNCH_EXPRESSION, ETSLaunchExpression)                                         \
     _(ETS_NEW_ARRAY_INSTANCE_EXPRESSION, ETSNewArrayInstanceExpression)                   \
     _(ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION, ETSNewMultiDimArrayInstanceExpression) \
@@ -102,7 +101,7 @@
     _(ETS_IMPORT_DECLARATION, ETSImportDeclaration)                                       \
     _(ETS_PARAMETER_EXPRESSION, ETSParameterExpression)                                   \
     _(ETS_TUPLE, ETSTuple)                                                                \
-    _(ETS_SCRIPT, ETSScript)                                                              \
+    _(ETS_MODULE, ETSModule)                                                              \
     _(SUPER_EXPRESSION, SuperExpression)                                                  \
     _(STRUCT_DECLARATION, ETSStructDeclaration)                                           \
     _(SWITCH_CASE_STATEMENT, SwitchCaseStatement)                                         \
@@ -175,7 +174,8 @@
     _(WHILE_STATEMENT, WhileStatement)                                                    \
     _(YIELD_EXPRESSION, YieldExpression)                                                  \
     _(OPAQUE_TYPE_NODE, OpaqueTypeNode)                                                   \
-    _(BLOCK_EXPRESSION, BlockExpression)
+    _(BLOCK_EXPRESSION, BlockExpression)                                                  \
+    _(BROKEN_TYPE_NODE, BrokenTypeNode)
 
 #define AST_NODE_REINTERPRET_MAPPING(_)                                                   \
     _(ARRAY_EXPRESSION, ARRAY_PATTERN, ArrayExpression, ArrayPattern)                     \

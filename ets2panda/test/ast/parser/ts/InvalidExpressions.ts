@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,24 +30,27 @@ let x = new Type(a, ...);
 let x = new Type(1, 2, ;
 // This expression should be the last to test EOS.
 
-/* @@? 17:1 Error SyntaxError: expected '=>' on the same line after an argument list, got line terminator */
-/* @@? 20:10 Error SyntaxError: Uncaught SyntaxError: expected expression, got '=>' */
-/* @@? 20:10 Error SyntaxError: expected '=>' on the same line after an argument list, got line terminator */
+/* @@? 17:1 Error SyntaxError: expected '=>' on the same line after an argument list, got line terminator. */
+/* @@? 20:10 Error SyntaxError: Expected expression, got '=>'. */
+/* @@? 20:10 Error SyntaxError: expected '=>' on the same line after an argument list, got line terminator. */
 /* @@? 22:13 Error SyntaxError: Unexpected token. */
 /* @@? 22:20 Error SyntaxError: Unexpected token. */
 /* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 22:24 Error SyntaxError: Unexpected token: ':'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 22:32 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:32 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 24:3 Error SyntaxError: Unexpected token '#'. */
-/* @@? 24:5 Error SyntaxError: Unexpected token in private field */
+/* @@? 24:5 Error SyntaxError: Unexpected token in private field. */
+/* @@? 24:5 Error SyntaxError: Unexpected token '19'. */
 /* @@? 25:2 Error SyntaxError: Unexpected token '#'. */
-/* @@? 25:7 Error SyntaxError: Unexpected private identifier */
-/* @@? 27:1 Error SyntaxError: Unexpected token: 'let'. */
-/* @@? 27:13 Error SyntaxError: 'new.Target' is not allowed here */
-/* @@? 28:30 Error SyntaxError: Cannot use new with import(...) */
-/* @@? 29:24 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 30:24 Error SyntaxError: Unexpected token: ';'. */
-/* @@? 54:1 Error SyntaxError: Unexpected token: 'eos'. */
-/* @@? 54:1 Error SyntaxError: Unexpected token in argument parsing */
+/* @@? 25:7 Error SyntaxError: Unexpected private identifier. */
+/* @@? 27:1 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 27:13 Error SyntaxError: 'new.Target' is not allowed here. */
+/* @@? 28:30 Error SyntaxError: Cannot use new with import(...). */
+/* @@? 29:24 Error SyntaxError: Unexpected token ')'. */
+/* @@? 30:24 Error SyntaxError: Unexpected token ';'. */
+/* @@? 30:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */

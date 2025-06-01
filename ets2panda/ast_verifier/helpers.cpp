@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,9 @@
 #include "checker/types/typeFlag.h"
 #include "checker/types/type.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsUnionType.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "parser/program/program.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -66,20 +67,16 @@ bool IsBooleanType(const ir::AstNode *ast)
 bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
 {
     if (ast == nullptr) {
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 
     if (!ast->IsTyped()) {
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 
     auto typedAst = static_cast<const ir::TypedAstNode *>(ast);
 
     if (typedAst->TsType() == nullptr) {
-        // std::cout << typedAst
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 
@@ -130,27 +127,23 @@ bool IsStringType(const ir::AstNode *ast)
 
 bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDeclNode)
 {
-    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
-    if (!ast->GetTopStatement()->IsETSScript()) {
+    if (!ast->GetTopStatement()->IsETSModule()) {
         return false;
     }
-    auto *currentTopStatement = (static_cast<const ir::ETSScript *>(ast->GetTopStatement()));
+    auto *currentTopStatement = ast->GetTopStatement()->AsETSModule();
     auto *currentProgram = currentTopStatement->Program();
     if (currentProgram == nullptr) {
         return false;
     }
-    util::StringView moduleNameCurrent = currentProgram->ModuleName();
-    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
-    if (!objTypeDeclNode->GetTopStatement()->IsETSScript()) {
+    if (!objTypeDeclNode->GetTopStatement()->IsETSModule()) {
         return false;
     }
-    auto *objectTopStatement = (static_cast<const ir::ETSScript *>(objTypeDeclNode->GetTopStatement()));
+    auto *objectTopStatement = objTypeDeclNode->GetTopStatement()->AsETSModule();
     auto *objectProgram = objectTopStatement->Program();
     if (objectProgram == nullptr) {
         return false;
     }
-    util::StringView moduleNameObject = objectProgram->ModuleName();
-    return currentTopStatement == objectTopStatement || moduleNameCurrent == moduleNameObject;
+    return currentTopStatement == objectTopStatement || currentProgram->ModuleName() == objectProgram->ModuleName();
 }
 
 const checker::Type *GetClassDefinitionType(const ir::AstNode *ast)
@@ -269,6 +262,22 @@ bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::M
     if (propVarDeclNode == nullptr) {
         return false;
     }
+
+    // NOTE: need to refactor: type of member expression object can be obtained via
+    // me->ObjType() or me->Object()->TsType() and they may differ!!!!
+    if (auto objType = const_cast<ir::MemberExpression *>(ast)->Object()->TsType(); objType->IsETSUnionType()) {
+        bool res = true;
+        for (auto type : objType->AsETSUnionType()->ConstituentTypes()) {
+            const_cast<ir::MemberExpression *>(ast)->SetObjectType(type->AsETSObjectType());
+            // Just to skip enclosing if clause checking whether object tsType is ETSUnionType in subsequent recursive
+            // call
+            const_cast<ir::MemberExpression *>(ast)->Object()->SetTsType(type->AsETSObjectType());
+        }
+        const_cast<ir::MemberExpression *>(ast)->SetObjectType(ast->ObjType());
+        const_cast<ir::MemberExpression *>(ast)->Object()->SetTsType(objType);
+        return res;
+    }
+
     auto *objType = ast->ObjType();
     if (objType == nullptr) {
         return false;
@@ -293,11 +302,19 @@ bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::M
 
 bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, const ir::CallExpression *ast)
 {
+    // NOTE: need to refactor: type of member expression object can be obtained via
+    // me->ObjType() or me->Object()->TsType() and they may differ!!!!
     if (memberExpression->Object()->TsType() != nullptr) {
         // When calling enum methods member expression
         // object has ETSEnumType instead of ETSObjectType.
         const auto *const type = memberExpression->Object()->TsType();
         if (type->IsETSEnumType()) {
+            return true;
+        }
+
+        // When calling enum methods member expression
+        // object has ETSUnionType instead of ETSObjectType.
+        if (type->IsETSUnionType()) {
             return true;
         }
     }

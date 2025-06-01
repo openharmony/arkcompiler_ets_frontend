@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,10 +18,12 @@
 
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
+#include "ir/annotationAllowed.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/srcDump.h"
 #include "ir/statements/annotationUsage.h"
+#include "ir/statements/classDeclaration.h"
 #include "util/language.h"
 
 namespace ark::es2panda::ir {
@@ -50,7 +52,12 @@ enum class ClassDefinitionModifiers : uint32_t {
     FROM_EXTERNAL = 1U << 10U,
     LOCAL = 1U << 11U,
     CLASSDEFINITION_CHECKED = 1U << 12U,
-    DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
+    NAMESPACE_TRANSFORMED = 1U << 13U,
+    STRING_ENUM_TRANSFORMED = 1U << 14U,
+    INT_ENUM_TRANSFORMED = 1U << 15U,
+    FROM_STRUCT = 1U << 16U,
+    DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
+    ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
 
 }  // namespace ark::es2panda::ir
@@ -61,7 +68,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ClassDefinitionModifiers> : 
 
 namespace ark::es2panda::ir {
 
-class ClassDefinition : public TypedAstNode {
+class ClassDefinition : public AnnotationAllowed<TypedAstNode> {
 public:
     ClassDefinition() = delete;
     ~ClassDefinition() override = default;
@@ -69,13 +76,13 @@ public:
     NO_COPY_SEMANTIC(ClassDefinition);
     NO_MOVE_SEMANTIC(ClassDefinition);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    explicit ClassDefinition(const util::StringView &privateId, Identifier *ident,
-                             TSTypeParameterDeclaration *typeParams, TSTypeParameterInstantiation *superTypeParams,
+    explicit ClassDefinition(Identifier *ident, TSTypeParameterDeclaration *typeParams,
+                             TSTypeParameterInstantiation *superTypeParams,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
-          privateId_(privateId),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags,
+                                          ArenaVector<AnnotationUsage *>(body.get_allocator())),
           ident_(ident),
           typeParams_(typeParams),
           superTypeParams_(superTypeParams),
@@ -89,13 +96,13 @@ public:
           localVariableIsNeeded_(body_.get_allocator()),
           localIndex_(classCounter_++),
           localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          exportedClasses_(body_.get_allocator())
     {
     }
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
                              ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
@@ -105,13 +112,13 @@ public:
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
           localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          exportedClasses_(body_.get_allocator())
     {
     }
 
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
@@ -121,7 +128,7 @@ public:
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
           localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          exportedClasses_(body_.get_allocator())
     {
     }
 
@@ -137,7 +144,7 @@ public:
 
     void SetScope(varbinder::LocalScope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -158,19 +165,14 @@ public:
 
     void SetIdent(ir::Identifier *ident) noexcept;
 
-    [[nodiscard]] const util::StringView &PrivateId() const noexcept
-    {
-        return privateId_;
-    }
-
     [[nodiscard]] const util::StringView &InternalName() const noexcept
     {
-        return privateId_;
+        return internalName_;
     }
 
     void SetInternalName(util::StringView internalName) noexcept
     {
-        privateId_ = internalName;
+        internalName_ = internalName;
     }
 
     [[nodiscard]] Expression *Super() noexcept
@@ -225,6 +227,41 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::CLASSDEFINITION_CHECKED) != 0;
     }
 
+    [[nodiscard]] bool IsAnonymous() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::ANONYMOUS) != 0;
+    }
+
+    [[nodiscard]] bool IsIntEnumTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::INT_ENUM_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsStringEnumTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::STRING_ENUM_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsEnumTransformed() const noexcept
+    {
+        return IsIntEnumTransformed() || IsStringEnumTransformed();
+    }
+
+    [[nodiscard]] bool IsNamespaceTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::NAMESPACE_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsFromStruct() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::FROM_STRUCT) != 0;
+    }
+
+    [[nodiscard]] bool IsModule() const noexcept
+    {
+        return IsGlobal() || IsNamespaceTransformed();
+    }
+
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
@@ -243,6 +280,21 @@ public:
     void SetClassDefinitionChecked() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::CLASSDEFINITION_CHECKED;
+    }
+
+    void SetAnonymousModifier() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::ANONYMOUS;
+    }
+
+    void SetNamespaceTransformed() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::NAMESPACE_TRANSFORMED;
+    }
+
+    void SetFromStructModifier() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::FROM_STRUCT;
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept
@@ -359,19 +411,6 @@ public:
         return capturedVars_.erase(var) != 0;
     }
 
-    const ArenaVector<AnnotationUsage *> &Annotations() const
-    {
-        return annotations_;
-    }
-
-    void SetAnnotations(ArenaVector<AnnotationUsage *> &&annotations)
-    {
-        annotations_ = std::move(annotations);
-        for (auto anno : annotations_) {
-            anno->SetParent(this);
-        }
-    }
-
     void SetOrigEnumDecl(ir::TSEnumDeclaration *enumDecl)
     {
         origEnumDecl_ = enumDecl;
@@ -382,8 +421,19 @@ public:
         return origEnumDecl_;
     }
 
+    ClassDeclaration *GetAnonClass() noexcept
+    {
+        return anonClass_;
+    }
+
+    void SetAnonClass(ClassDeclaration *anonClass) noexcept
+    {
+        anonClass_ = anonClass;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
+    bool HasNativeMethod() const;
     bool HasComputedInstanceField() const;
     bool HasMatchingPrivateKey(const util::StringView &name) const;
 
@@ -395,7 +445,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -417,15 +467,33 @@ public:
         }
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        modifiers_ &= ~(ClassDefinitionModifiers::CLASSDEFINITION_CHECKED);
+    }
+
+    void AddToExportedClasses(const ir::ClassDeclaration *cls)
+    {
+        ES2PANDA_ASSERT(cls->IsExported());
+        exportedClasses_.push_back(cls);
+    }
+
+    [[nodiscard]] const ArenaVector<const ir::ClassDeclaration *> &ExportedClasses() const noexcept
+    {
+        return exportedClasses_;
+    }
+
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
                                         const std::vector<compiler::VReg> &staticComputedFieldKeys) const;
 
     // This method is needed by OHOS CI code checker
     void DumpBody(ir::SrcDumper *dumper) const;
+    void DumpGlobalClass(ir::SrcDumper *dumper) const;
 
     varbinder::LocalScope *scope_ {nullptr};
-    util::StringView privateId_ {};
+    util::StringView internalName_ {};
     Identifier *ident_ {};
     TSTypeParameterDeclaration *typeParams_ {};
     TSTypeParameterInstantiation *superTypeParams_ {};
@@ -438,10 +506,11 @@ private:
     ArenaSet<varbinder::Variable *> capturedVars_;
     ArenaSet<varbinder::Variable *> localVariableIsNeeded_;
     TSEnumDeclaration *origEnumDecl_ {};
+    ClassDeclaration *anonClass_ {nullptr};
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};
-    ArenaVector<AnnotationUsage *> annotations_;
+    ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir
 

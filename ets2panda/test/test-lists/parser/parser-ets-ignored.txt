@@ -1,3 +1,24 @@
-# Issue: ##20531
-compiler/ets/import_tests/enum_export.sts
-parser/ets/declare_enum.sts
+# Issue: ##21522
+compiler/ts/interfaceAssignment.ts
+compiler/ts/memberExpTests.ts
+compiler/ts/objectLiteralAssignability.ts
+
+# Issue: ##20990
+compiler/ets/instanceof_dyndecl_dynvalue.ets
+compiler/ets/instanceof_dyndecl_jsvalue.ets
+compiler/ets/instanceof_x_dyndecl.ets
+compiler/ets/instanceof_x_etstype.ets
+compiler/ets/instanceof_x_object.ets
+parser/ets/dynamic_import_tests/dynamic_decl_import.ets
+parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.ets
+
+
+parser/as/test_class_method.ts
+parser/as/test_class_property.ts
+parser/as/test_decorators4.ts
+parser/ets/dynamic_import_tests/modules/instanceof.ets
+parser/ts/test-func-param.ts
+parser/ts/test-tuple-type.ts
+parser/ts/test-type-literal.ts
+parser/ts/test_generic.ts
+compiler/ts/functionCall.ts

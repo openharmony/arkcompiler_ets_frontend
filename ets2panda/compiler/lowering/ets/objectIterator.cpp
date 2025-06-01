@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,6 +35,7 @@
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "checker/ETSchecker.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -50,7 +51,7 @@ std::string_view ObjectIteratorLowering::Name() const
 void ObjectIteratorLowering::TransferForOfLoopBody(ir::Statement *const forBody, ir::BlockStatement *const whileBody,
                                                    bool const needCleaning) const noexcept
 {
-    ASSERT(forBody != nullptr && whileBody != nullptr);
+    ES2PANDA_ASSERT(forBody != nullptr && whileBody != nullptr);
     auto &whileStatements = whileBody->Statements();
 
     //  Currently while loop body consists of 2 statements: 'x = it.value!' and 'it = ci.next()'
@@ -96,8 +97,8 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
 
     ir::Identifier *const iterIdent = Gensym(allocator);
     ir::Identifier *const nextIdent = Gensym(allocator);
-    std::string loopVariableName;
     bool declared = true;
+    ir::Identifier *loopVariableIdent = nullptr;
 
     //  Replace the for-of loop with the while loop using the provided iterator interface
     std::string whileStatement = "let @@I1 = (@@E2)." + std::string {compiler::Signatures::ITERATOR_METHOD} + "(); ";
@@ -108,22 +109,22 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
         auto *const declaration = left->AsVariableDeclaration();
         whileStatement +=
             declaration->Kind() != ir::VariableDeclaration::VariableDeclarationKind::CONST ? "let " : "const ";
-        loopVariableName = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Name().Mutf8();
+        loopVariableIdent = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Clone(allocator, nullptr);
     } else if (left->IsIdentifier()) {
         declared = false;
-        loopVariableName = left->AsIdentifier()->Name().Mutf8();
+        loopVariableIdent = left->AsIdentifier()->Clone(allocator, nullptr);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
-    whileStatement += loopVariableName + " = @@I6.value!; ";
+    whileStatement += "@@I6 = @@I7.value!; ";
     //  later on here we will insert the current for-of-loop body.
-    whileStatement += "@@I7 = @@I8.next(); }";
+    whileStatement += "@@I8 = @@I9.next(); }";
 
     // Parse ArkTS code string and create corresponding AST nodes
     auto *const loweringResult = parser->CreateFormattedStatement(
         whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
-        nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), loopVariableIdent, nextIdent->Clone(allocator, nullptr),
         nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
     loweringResult->SetParent(forOfStatement->Parent());
 
@@ -139,24 +140,14 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
     return loweringResult;
 }
 
-bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ObjectIteratorLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto &options = ctx->config->options->CompilerOptions();
-    if (options.compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
     auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
-    ASSERT(varbinder != nullptr);
+    ES2PANDA_ASSERT(varbinder != nullptr);
 
     auto hasIterator = [](checker::Type const *const exprType) -> bool {
         return exprType != nullptr &&

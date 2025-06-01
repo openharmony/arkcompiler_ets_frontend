@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_CORE_TS_PARSER_H
 #define ES2PANDA_PARSER_CORE_TS_PARSER_H
 
-#include "TypedParser.h"
+#include "ThrowingTypedParser.h"
 #include "parserFlags.h"
 
 namespace ark::es2panda::ir {
@@ -25,10 +25,11 @@ enum class TSTupleKind;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::parser {
-class TSParser : public TypedParser {
+class TSParser : public ThrowingTypedParser {
 public:
-    TSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status)
+    TSParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
+             ParserStatus status = ParserStatus::NO_OPTS)
+        : ThrowingTypedParser(program, &options, diagnosticEngine, status)
     {
     }
 
@@ -145,7 +146,7 @@ private:
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;
     ir::Statement *GetDeclarationForNamedExport(ir::ClassDefinitionModifiers &classModifiers, ir::ModifierFlags &flags);
-    ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc) override;
+    ir::Statement *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc) override;
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation) override;
     ir::Expression *ParsePotentialAsExpression(ir::Expression *expr) override;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 
+#include "scriptFunction.h"
 #include "ir/base/classElement.h"
 
 namespace ark::es2panda::checker {
@@ -27,7 +28,25 @@ namespace ark::es2panda::ir {
 class Expression;
 class ScriptFunction;
 
-enum class MethodDefinitionKind { NONE, CONSTRUCTOR, METHOD, EXTENSION_METHOD, GET, SET };
+enum class MethodDefinitionKind {
+    NONE,
+    CONSTRUCTOR,
+    METHOD,
+    EXTENSION_METHOD,
+    GET,
+    SET,
+    EXTENSION_GET,
+    EXTENSION_SET,
+};
+
+struct OverloadInfo {
+    uint32_t minArg = 0;
+    size_t maxArg = 0;
+    bool needHelperOverload = false;
+    bool isDeclare = false;
+    bool hasRestVar = false;
+    bool returnVoid = false;
+};
 
 class MethodDefinition : public ClassElement {
 public:
@@ -47,8 +66,8 @@ public:
           baseOverloadMethod_(nullptr),
           asyncPairMethod_(nullptr)
     {
-        ASSERT(key_ != nullptr);
-        ASSERT(value != nullptr);
+        ES2PANDA_ASSERT(key_ != nullptr);
+        ES2PANDA_ASSERT(value != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -64,9 +83,35 @@ public:
         return kind_ == MethodDefinitionKind::CONSTRUCTOR;
     }
 
+    [[nodiscard]] bool IsMethod() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::METHOD;
+    }
+
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
-        return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
+        return (kind_ == MethodDefinitionKind::EXTENSION_METHOD) || (kind_ == MethodDefinitionKind::EXTENSION_GET) ||
+               (kind_ == MethodDefinitionKind::EXTENSION_SET);
+    }
+
+    [[nodiscard]] bool IsGetter() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::GET;
+    }
+
+    [[nodiscard]] bool IsSetter() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::SET;
+    }
+
+    [[nodiscard]] bool IsDefaultAccessModifier() const noexcept
+    {
+        return isDefault_;
+    }
+
+    void SetDefaultAccessModifier(bool isDefault)
+    {
+        isDefault_ = isDefault;
     }
 
     [[nodiscard]] const OverloadsT &Overloads() const noexcept
@@ -94,6 +139,11 @@ public:
         return asyncPairMethod_;
     }
 
+    [[nodiscard]] OverloadInfo &GetOverloadInfo() noexcept
+    {
+        return overloadInfo_;
+    }
+
     void SetOverloads(OverloadsT &&overloads)
     {
         overloads_ = std::move(overloads);
@@ -106,7 +156,9 @@ public:
 
     void AddOverload(MethodDefinition *const overload)
     {
+        ES2PANDA_ASSERT(overload != nullptr);
         overloads_.emplace_back(overload);
+        overload->Function()->AddFlag((ir::ScriptFunctionFlags::OVERLOAD));
         overload->SetBaseOverloadMethod(this);
     }
 
@@ -127,6 +179,7 @@ public:
 
     ScriptFunction *Function();
     const ScriptFunction *Function() const;
+    void InitializeOverloadInfo();
     PrivateFieldKind ToPrivateFieldKind(bool isStatic) const override;
 
     [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -141,16 +194,20 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
 
+    void CleanUp() override;
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
+    void ResetOverloads();
 
+    bool isDefault_ = false;
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.
     // The very firstly processed method becomes the base(1) and the others tied into it as overloads(N).
@@ -160,6 +217,7 @@ private:
     // Pair method points at the original async method in case of an implement method and vice versa an implement
     // method's point at the async method
     MethodDefinition *asyncPairMethod_;
+    OverloadInfo overloadInfo_;
 };
 }  // namespace ark::es2panda::ir
 

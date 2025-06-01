@@ -18,11 +18,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 6
+                  "column": 6,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -35,33 +37,39 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 8
+                    "column": 8,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 9
+                    "column": 9,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 9
+                  "column": 9,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 18,
-                "column": 10
+                "column": 10,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -77,11 +85,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -94,33 +104,39 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 8
+                    "column": 8,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 9
+                    "column": 9,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 8
+                  "column": 8,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 19,
-                "column": 10
+                "column": 10,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           }
@@ -128,11 +144,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 13
+            "column": 13,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
@@ -143,11 +161,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 17,
-            "column": 12
+            "column": 12,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
@@ -155,11 +175,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 2,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     },
@@ -180,11 +202,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 5
+                  "column": 5,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 6
+                  "column": 6,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -197,33 +221,39 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 8
+                    "column": 8,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 9
+                    "column": 9,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 8
+                  "column": 8,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 9
+                  "column": 9,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 23,
-                "column": 10
+                "column": 10,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           }
@@ -231,11 +261,13 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 23
+            "column": 23,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 24,
-            "column": 2
+            "column": 2,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
@@ -246,11 +278,13 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 11
+            "column": 11,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 22,
-            "column": 12
+            "column": 12,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
@@ -266,33 +300,39 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 21
+                  "column": 21,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 22
+                  "column": 22,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 23
+                "column": 23,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 22,
-                "column": 22
+                "column": 22,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 22,
-              "column": 23
+              "column": 23,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 22,
-              "column": 22
+              "column": 22,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         }
@@ -300,11 +340,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 24,
-          "column": 2
+          "column": 2,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     },
@@ -325,22 +367,26 @@
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 10
+                    "column": 10,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 26,
-                    "column": 11
+                    "column": 11,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 10
+                  "column": 10,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 11
+                  "column": 11,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -348,11 +394,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5
+                "column": 5,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 26,
-                "column": 8
+                "column": 8,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -360,11 +408,13 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 5
+              "column": 5,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 26,
-              "column": 8
+              "column": 8,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         }
@@ -373,11 +423,13 @@
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 26,
-          "column": 12
+          "column": 12,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     },
@@ -402,11 +454,13 @@
                     "loc": {
                       "start": {
                         "line": 28,
-                        "column": 1
+                        "column": 1,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 28,
-                        "column": 4
+                        "column": 4,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -417,11 +471,13 @@
                     "loc": {
                       "start": {
                         "line": 28,
-                        "column": 5
+                        "column": 5,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 28,
-                        "column": 6
+                        "column": 6,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -430,11 +486,13 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 1
+                      "column": 1,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 28,
-                      "column": 6
+                      "column": 6,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -445,11 +503,13 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 7
+                      "column": 7,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 28,
-                      "column": 8
+                      "column": 8,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -458,11 +518,13 @@
                 "loc": {
                   "start": {
                     "line": 28,
-                    "column": 1
+                    "column": 1,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 8
+                    "column": 8,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -473,11 +535,13 @@
                 "loc": {
                   "start": {
                     "line": 28,
-                    "column": 9
+                    "column": 9,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 10
+                    "column": 10,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -486,11 +550,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 1
+                  "column": 1,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 10
+                  "column": 10,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -501,11 +567,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 11
+                  "column": 11,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 12
+                  "column": 12,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -514,11 +582,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 1
+                "column": 1,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 28,
-                "column": 12
+                "column": 12,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -529,11 +599,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 13
+                "column": 13,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 28,
-                "column": 14
+                "column": 14,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -542,11 +614,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 1
+              "column": 1,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 28,
-              "column": 14
+              "column": 14,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -557,11 +631,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 15
+              "column": 15,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 28,
-              "column": 16
+              "column": 16,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -570,22 +646,26 @@
         "loc": {
           "start": {
             "line": 28,
-            "column": 1
+            "column": 1,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 28,
-            "column": 16
+            "column": 16,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 28,
-          "column": 17
+          "column": 17,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     },
@@ -612,11 +692,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 1
+                          "column": 1,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 4
+                          "column": 4,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         }
                       }
                     },
@@ -627,11 +709,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 5
+                          "column": 5,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 6
+                          "column": 6,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         }
                       }
                     },
@@ -640,11 +724,13 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 1
+                        "column": 1,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 6
+                        "column": 6,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -655,11 +741,13 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 7
+                        "column": 7,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 8
+                        "column": 8,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -668,11 +756,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 1
+                      "column": 1,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 8
+                      "column": 8,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -683,11 +773,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 9
+                      "column": 9,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 10
+                      "column": 10,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -696,11 +788,13 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 1
+                    "column": 1,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 10
+                    "column": 10,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -711,11 +805,13 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 11
+                    "column": 11,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 12
+                    "column": 12,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -724,11 +820,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 1
+                  "column": 1,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 12
+                  "column": 12,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -739,11 +837,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 13
+                  "column": 13,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 14
+                  "column": 14,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -752,11 +852,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 1
+                "column": 1,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 29,
-                "column": 14
+                "column": 14,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -767,11 +869,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 15
+                "column": 15,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 29,
-                "column": 16
+                "column": 16,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -780,11 +884,13 @@
           "loc": {
             "start": {
               "line": 29,
-              "column": 1
+              "column": 1,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 29,
-              "column": 16
+              "column": 16,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -795,11 +901,13 @@
           "loc": {
             "start": {
               "line": 29,
-              "column": 17
+              "column": 17,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 29,
-              "column": 18
+              "column": 18,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -808,22 +916,26 @@
         "loc": {
           "start": {
             "line": 29,
-            "column": 1
+            "column": 1,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 29,
-            "column": 18
+            "column": 18,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 29,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 29,
-          "column": 19
+          "column": 19,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     },
@@ -850,11 +962,13 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 1
+                          "column": 1,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         },
                         "end": {
                           "line": 30,
-                          "column": 4
+                          "column": 4,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         }
                       }
                     },
@@ -865,11 +979,13 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 5
+                          "column": 5,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         },
                         "end": {
                           "line": 30,
-                          "column": 6
+                          "column": 6,
+                          "program": "interfacePropertyReferenceContainingInterface.ts"
                         }
                       }
                     },
@@ -878,11 +994,13 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 1
+                        "column": 1,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 30,
-                        "column": 6
+                        "column": 6,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -893,11 +1011,13 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 7
+                        "column": 7,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       },
                       "end": {
                         "line": 30,
-                        "column": 8
+                        "column": 8,
+                        "program": "interfacePropertyReferenceContainingInterface.ts"
                       }
                     }
                   },
@@ -906,11 +1026,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 1
+                      "column": 1,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 30,
-                      "column": 8
+                      "column": 8,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -921,11 +1043,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 9
+                      "column": 9,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     },
                     "end": {
                       "line": 30,
-                      "column": 10
+                      "column": 10,
+                      "program": "interfacePropertyReferenceContainingInterface.ts"
                     }
                   }
                 },
@@ -934,11 +1058,13 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 1
+                    "column": 1,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 30,
-                    "column": 10
+                    "column": 10,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -949,11 +1075,13 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 11
+                    "column": 11,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   },
                   "end": {
                     "line": 30,
-                    "column": 12
+                    "column": 12,
+                    "program": "interfacePropertyReferenceContainingInterface.ts"
                   }
                 }
               },
@@ -962,11 +1090,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 1
+                  "column": 1,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 30,
-                  "column": 12
+                  "column": 12,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -977,11 +1107,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 13
+                  "column": 13,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 },
                 "end": {
                   "line": 30,
-                  "column": 14
+                  "column": 14,
+                  "program": "interfacePropertyReferenceContainingInterface.ts"
                 }
               }
             },
@@ -990,11 +1122,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 1
+                "column": 1,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 30,
-                "column": 14
+                "column": 14,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -1005,11 +1139,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 15
+                "column": 15,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               },
               "end": {
                 "line": 30,
-                "column": 16
+                "column": 16,
+                "program": "interfacePropertyReferenceContainingInterface.ts"
               }
             }
           },
@@ -1018,11 +1154,13 @@
           "loc": {
             "start": {
               "line": 30,
-              "column": 1
+              "column": 1,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 30,
-              "column": 16
+              "column": 16,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -1033,11 +1171,13 @@
           "loc": {
             "start": {
               "line": 30,
-              "column": 17
+              "column": 17,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             },
             "end": {
               "line": 30,
-              "column": 18
+              "column": 18,
+              "program": "interfacePropertyReferenceContainingInterface.ts"
             }
           }
         },
@@ -1046,22 +1186,26 @@
         "loc": {
           "start": {
             "line": 30,
-            "column": 1
+            "column": 1,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           },
           "end": {
             "line": 30,
-            "column": 18
+            "column": 18,
+            "program": "interfacePropertyReferenceContainingInterface.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 30,
-          "column": 1
+          "column": 1,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         },
         "end": {
           "line": 30,
-          "column": 19
+          "column": 19,
+          "program": "interfacePropertyReferenceContainingInterface.ts"
         }
       }
     }
@@ -1069,11 +1213,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "interfacePropertyReferenceContainingInterface.ts"
     },
     "end": {
       "line": 31,
-      "column": 1
+      "column": 1,
+      "program": "interfacePropertyReferenceContainingInterface.ts"
     }
   }
 }

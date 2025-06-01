@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "compileQueue.h"
 
+#include "util/diagnostic.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/scope.h"
 #include "compiler/core/emitter.h"
@@ -48,7 +49,7 @@ CompileQueue::~CompileQueue()
 
 void CompileQueue::Schedule(public_lib::Context *context)
 {
-    ASSERT(jobsCount_ == 0);
+    ES2PANDA_ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
     const auto &functions = context->parserProgram->VarBinder()->Functions();
     jobs_ = new CompileJob[functions.size()]();
@@ -93,7 +94,7 @@ void CompileQueue::Consume()
 
         try {
             job.Run();
-        } catch (const Error &e) {
+        } catch (const util::ThrowableDiagnostic &e) {
             lock.lock();
             errors_.push_back(e);
             lock.unlock();
@@ -120,6 +121,7 @@ void CompileQueue::Wait(const JobsFinishedCb &onFinishedCb)
         onFinishedCb(jobs_ + i);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
 
+    // CC-OFFNXT(G.VAR.05) false positive
     delete[] jobs_;
 }
 }  // namespace ark::es2panda::compiler

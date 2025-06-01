@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,8 @@
 
 #include "program.h"
 
+#include "compiler/core/CFG.h"
+#include "generated/signatures.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "ir/astDump.h"
@@ -22,6 +24,17 @@
 #include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::parser {
+
+Program::Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
+    : allocator_(allocator),
+      varbinder_(varbinder),
+      externalSources_(allocator_->Adapter()),
+      directExternalSources_(allocator_->Adapter()),
+      extension_(varbinder->Extension()),
+      etsnolintCollection_(allocator_->Adapter()),
+      cfg_(allocator_->New<compiler::CFG>(allocator_))
+{
+}
 
 std::string Program::Dump() const
 {
@@ -32,7 +45,7 @@ std::string Program::Dump() const
 void Program::DumpSilent() const
 {
     [[maybe_unused]] ir::AstDumper dumper {ast_, SourceCode()};
-    ASSERT(!dumper.Str().empty());
+    ES2PANDA_ASSERT(!dumper.Str().empty());
 }
 
 varbinder::ClassScope *Program::GlobalClassScope()
@@ -47,27 +60,39 @@ const varbinder::ClassScope *Program::GlobalClassScope() const
 
 varbinder::GlobalScope *Program::GlobalScope()
 {
-    ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
+    ES2PANDA_ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
     return static_cast<varbinder::GlobalScope *>(ast_->Scope());
 }
 
 const varbinder::GlobalScope *Program::GlobalScope() const
 {
-    ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
+    ES2PANDA_ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
-void Program::SetDeclarationModuleInfo()
+void Program::SetPackageInfo(const util::StringView &name, util::ModuleKind kind)
 {
-    bool onlyDeclarations = true;
-    for (auto stmt : ast_->Statements()) {
-        if (stmt->IsDeclare() || stmt->IsTSTypeAliasDeclaration()) {
-            continue;
-        }
-        onlyDeclarations = false;
-        break;
+    moduleInfo_.moduleName = name;
+    moduleInfo_.modulePrefix =
+        name.Empty()
+            ? ""
+            : util::UString(std::string(name).append(compiler::Signatures::METHOD_SEPARATOR), allocator_).View();
+
+    moduleInfo_.kind = kind;
+}
+
+// NOTE(vpukhov): part of ongoing design
+void Program::MaybeTransformToDeclarationModule()
+{
+    if (IsPackage() || ast_->Statements().empty()) {
+        return;
     }
-    moduleInfo_.isDeclModule = onlyDeclarations;
+    for (auto stmt : ast_->Statements()) {
+        if (!(stmt->IsDeclare() || stmt->IsTSTypeAliasDeclaration())) {
+            return;
+        }
+    }
+    moduleInfo_.kind = util::ModuleKind::DECLARATION;
 }
 
 void Program::AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection)
@@ -85,6 +110,23 @@ bool Program::NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning
     }
 
     return nodeEtsnolints->second.find(warning) != nodeEtsnolints->second.end();
+}
+
+Program::~Program()  // NOLINT(modernize-use-equals-default)
+{
+#ifndef NDEBUG
+    poisonValue_ = 0;
+#endif
+}
+
+compiler::CFG *Program::GetCFG()
+{
+    return cfg_;
+}
+
+const compiler::CFG *Program::GetCFG() const
+{
+    return cfg_;
 }
 
 }  // namespace ark::es2panda::parser

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 void TSInterfaceBody::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : body_) {
+    for (auto *&it : VectorIterationGuard(body_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -34,8 +34,9 @@ void TSInterfaceBody::TransformChildren(const NodeTransformer &cb, std::string_v
 
 void TSInterfaceBody::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : body_) {
-        cb(it);
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t idx = 0; idx < body_.size(); idx++) {
+        cb(body_[idx]);
     }
 }
 
@@ -66,8 +67,8 @@ checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,14 +33,14 @@ public:
           prevVarScope_(varBinder->VarScope()),
           prevScope_(varBinder->GetScope())
     {
-        ASSERT(varBinder);
-        ASSERT(program);
+        ES2PANDA_ASSERT(varBinder);
+        ES2PANDA_ASSERT(program);
 
         varBinder_->SetProgram(program);
 
         auto &extTables = varBinder_->GetExternalRecordTable();
         auto iter = extTables.find(program);
-        ASSERT(iter != extTables.end());
+        ES2PANDA_ASSERT(iter != extTables.end());
         varBinder_->SetRecordTable(iter->second);
 
         varBinder_->ResetAllScopes(program->GlobalScope(), program->GlobalScope(), program->GlobalScope());
@@ -74,10 +74,10 @@ class RecordTableClassScope final {
 public:
     explicit RecordTableClassScope(varbinder::ETSBinder *varBinder, ir::AstNode *recordClass) : varBinder_(varBinder)
     {
-        ASSERT(varBinder_);
+        ES2PANDA_ASSERT(varBinder_);
 
         auto *recordTable = varBinder_->GetRecordTable();
-        ASSERT(recordTable);
+        ES2PANDA_ASSERT(recordTable);
 
         prevRecordClass_ = recordTable->ClassDefinition();
         if (prevRecordClass_ == nullptr) {
@@ -102,7 +102,7 @@ public:
     ~RecordTableClassScope() noexcept
     {
         auto *recordTable = varBinder_->GetRecordTable();
-        ASSERT(recordTable != nullptr);
+        ES2PANDA_ASSERT(recordTable != nullptr);
 
         if (prevRecordClass_ != nullptr) {
             if (prevRecordClass_->IsClassDefinition()) {

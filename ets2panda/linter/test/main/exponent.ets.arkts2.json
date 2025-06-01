@@ -1,0 +1,78 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 5,
+            "endLine": 16,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 10,
+            "endLine": 16,
+            "endColumn": 24,
+            "problem": "MathPow",
+            "suggest": "",
+            "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 11,
+            "endLine": 19,
+            "endColumn": 13,
+            "problem": "ExponentOp",
+            "suggest": "",
+            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 3,
+            "endLine": 22,
+            "endColumn": 6,
+            "problem": "ExponentOp",
+            "suggest": "",
+            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 27,
+            "problem": "MathPow",
+            "suggest": "",
+            "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        }
+    ]
+}

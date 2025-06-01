@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,10 @@
 namespace ark::es2panda::ir {
 class TSLiteralType : public TypeNode {
 public:
-    explicit TSLiteralType(Expression *literal) : TypeNode(AstNodeType::TS_LITERAL_TYPE), literal_(literal) {}
+    explicit TSLiteralType(Expression *literal, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_LITERAL_TYPE, allocator), literal_(literal)
+    {
+    }
 
     const Expression *Literal() const
     {
@@ -36,7 +39,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

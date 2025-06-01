@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "objectLiteralReadonlyKey.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "objectLiteralReadonlyKey.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 14,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 15
+                  "column": 15,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -50,11 +54,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 20
+                  "column": 20,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -63,11 +69,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 14
+                "column": 14,
+                "program": "objectLiteralReadonlyKey.ets"
               },
               "end": {
                 "line": 17,
-                "column": 20
+                "column": 20,
+                "program": "objectLiteralReadonlyKey.ets"
               }
             }
           },
@@ -79,12 +87,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -102,12 +112,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "objectLiteralReadonlyKey.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "objectLiteralReadonlyKey.ets"
                     }
                   }
                 },
@@ -120,34 +132,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "objectLiteralReadonlyKey.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "objectLiteralReadonlyKey.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "objectLiteralReadonlyKey.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "objectLiteralReadonlyKey.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -155,12 +173,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -168,22 +188,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "objectLiteralReadonlyKey.ets"
           },
           "end": {
-            "line": 18,
-            "column": 2
+            "line": 20,
+            "column": 4,
+            "program": "objectLiteralReadonlyKey.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "objectLiteralReadonlyKey.ets"
         },
         "end": {
-          "line": 18,
-          "column": 2
+          "line": 20,
+          "column": 4,
+          "program": "objectLiteralReadonlyKey.ets"
         }
       }
     },
@@ -197,11 +221,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "objectLiteralReadonlyKey.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "objectLiteralReadonlyKey.ets"
             }
           }
         },
@@ -217,11 +243,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -241,11 +269,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -259,33 +289,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -294,11 +330,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "objectLiteralReadonlyKey.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "objectLiteralReadonlyKey.ets"
               }
             }
           },
@@ -311,11 +349,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -335,11 +375,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -362,11 +404,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 5
+                              "column": 5,
+                              "program": "objectLiteralReadonlyKey.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 6
+                              "column": 6,
+                              "program": "objectLiteralReadonlyKey.ets"
                             }
                           }
                         },
@@ -385,11 +429,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 5
+                                    "column": 5,
+                                    "program": "objectLiteralReadonlyKey.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "objectLiteralReadonlyKey.ets"
                                   }
                                 }
                               },
@@ -399,11 +445,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 8
+                                    "column": 8,
+                                    "program": "objectLiteralReadonlyKey.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 10
+                                    "column": 10,
+                                    "program": "objectLiteralReadonlyKey.ets"
                                   }
                                 }
                               },
@@ -411,11 +459,13 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "objectLiteralReadonlyKey.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "objectLiteralReadonlyKey.ets"
                                 }
                               }
                             }
@@ -423,33 +473,39 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 12
+                              "column": 12,
+                              "program": "objectLiteralReadonlyKey.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 2
+                              "column": 2,
+                              "program": "objectLiteralReadonlyKey.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 5
+                            "column": 5,
+                            "program": "objectLiteralReadonlyKey.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 2
+                            "column": 2,
+                            "program": "objectLiteralReadonlyKey.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "objectLiteralReadonlyKey.ets"
                         },
                         "end": {
                           "line": 22,
-                          "column": 2
+                          "column": 2,
+                          "program": "objectLiteralReadonlyKey.ets"
                         }
                       }
                     }
@@ -457,33 +513,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -492,11 +554,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "objectLiteralReadonlyKey.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "objectLiteralReadonlyKey.ets"
               }
             }
           },
@@ -509,11 +573,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -534,33 +600,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 8
+                      "column": 8,
+                      "program": "objectLiteralReadonlyKey.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 9
+                      "column": 9,
+                      "program": "objectLiteralReadonlyKey.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 8
+                    "column": 8,
+                    "program": "objectLiteralReadonlyKey.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 11
+                    "column": 11,
+                    "program": "objectLiteralReadonlyKey.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 8
+                  "column": 8,
+                  "program": "objectLiteralReadonlyKey.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 11
+                  "column": 11,
+                  "program": "objectLiteralReadonlyKey.ets"
                 }
               }
             },
@@ -569,11 +641,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "objectLiteralReadonlyKey.ets"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "objectLiteralReadonlyKey.ets"
               }
             }
           }
@@ -581,22 +655,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "objectLiteralReadonlyKey.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "objectLiteralReadonlyKey.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "objectLiteralReadonlyKey.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "objectLiteralReadonlyKey.ets"
         }
       }
     }
@@ -604,11 +682,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "objectLiteralReadonlyKey.ets"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "objectLiteralReadonlyKey.ets"
     }
   }
 }

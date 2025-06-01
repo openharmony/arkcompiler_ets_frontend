@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,6 +27,11 @@ bool Type::IsETSStringType() const
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::STRING);
 }
 
+bool Type::IsETSCharType() const
+{
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR);
+}
+
 bool Type::IsETSBigIntType() const
 {
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BIGINT);
@@ -41,7 +46,8 @@ bool Type::IsLambdaObject() const
 {
     if (IsETSObjectType() && (AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE) ||
                               AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CLASS))) {
-        auto *invoke = AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke");
+        auto *invoke = AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
+            compiler::Signatures::STATIC_INVOKE_METHOD);
         if (invoke != nullptr && invoke->TsType() != nullptr && invoke->TsType()->IsETSFunctionType()) {
             return true;
         }
@@ -140,7 +146,7 @@ Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]]
 
 std::uint32_t Type::GetPrecedence(Type const *type) noexcept
 {
-    ASSERT(type != nullptr);
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->HasTypeFlag(TypeFlag::BYTE)) {
         return 1U;
     }

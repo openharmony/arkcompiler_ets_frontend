@@ -1,0 +1,354 @@
+
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+module:
+  name: es2panda
+  namespace: ark::es2panda::util::gen
+
+options:
+- name: help
+  type: bool
+  default: false
+  description: Print this message and exit
+
+- name: arktsconfig
+  type: std::string
+  default: $ORIGIN/arktsconfig.json
+  description: Path to arkts configuration file
+
+# Parser
+- name: extension
+  type: std::string
+  default: ets
+  description: Parse the input as the given extension
+  enum: &ScriptExtension
+  - js
+  - ts
+  - as
+  - ets
+  possible_values: *ScriptExtension
+
+- name: module
+  type: bool
+  default: false
+  description: Parse the input as module (JS only option)
+
+- name: parse-only
+  type: bool
+  default: false
+  description: Parse the input only
+
+- name: dump-ast
+  type: bool
+  default: false
+  description: Dump the parsed AST
+
+- name: dump-cfg
+  type: bool
+  default: false
+  description: Dump the constructed CFG into a .dot file
+
+- name: dump-dynamic-ast
+  type: bool
+  default: false
+  description: Dump AST with synthetic nodes for dynamic languages
+
+- name: dump-ast-only-silent
+  type: bool
+  default: false
+  description: Dump parsed AST with all dumpers available but don't print to stdout
+
+- name: list-files
+  type: bool
+  default: false
+  description: Print names of files that are part of compilation
+
+# Compiler
+- name: dump-assembly
+  type: bool
+  default: false
+  description: Dump pandasm
+
+- name: debug-info
+  type: bool
+  default: false
+  description: Compile with debug info
+
+- name: dump-debug-info
+  type: bool
+  default: false
+  description: Dump debug info
+
+- name: with-export-table
+  type: bool
+  default: false
+  description: enable abc file with export table info
+
+- name: opt-level
+  type: int
+  default: 0
+  description: Compiler optimization level
+  range: 0-2
+
+- name: ets-module
+  type: bool
+  default: false
+  description: Compile the input as ets-module
+
+- name: eval-mode
+  description: (js-only) Set 'eval'-mode
+  type: std::string
+  enum: &EvalMode
+  - none
+  - default
+  - direct
+  - function
+  possible_values: *EvalMode
+  default: none
+
+- name: ets-warnings
+  description: Enable ETS-warnings
+  enum: &ETSWarnings
+    # Warinings that keep code in subset:
+    subset_aware:
+    - ets-prohibit-top-level-statements  # Prohibit top-level statements
+    - ets-boost-equality-statement       # Suggest boosting Equality Statements
+    - ets-remove-lambda                  # Suggestions to replace lambda with regular functions
+    - ets-implicit-boxing-unboxing       # Check if a program contains implicit boxing or unboxing
+    - ets-annotation-unused-generic-alias-warn # Check if type alias unused
+    # Warinings that do not keep code in subset:
+    subset_unaware:
+    - ets-suggest-final           # Suggest final keyword warning
+    - ets-remove-async            # Suggests replacing async functions with coroutines
+  sub_options:
+  - name: werror
+    type: bool
+    default: false
+    description: Treat all enabled warnings as errors
+  - name: enable
+    description: Specify warnings to enable. Overrided by ':disable=' suboption.
+    type: arg_list_t
+    default: [ subset_aware, subset_unaware ]
+    possible_values: *ETSWarnings
+    delimiter: ":"
+  - name: disable
+    description: Specify warnings to disable. Overrides ':enable=' suboption.
+    type: arg_list_t
+    default: []
+    possible_values: *ETSWarnings
+    delimiter: ":"
+
+- name: debugger-eval
+  description: Compile given file in evaluation mode
+  sub_options:
+  - name: line
+    type: uint64_t
+    default: 0
+    description: Line in the source file code where evaluate occurs.
+  - name: source
+    type: std::string
+    default: ""
+    description: Path to evaluation mode source file
+  - name: panda-files
+    type: arg_list_t
+    default: []
+    description: Paths to evaluation mode (.abc) files, must be accessible
+    delimiter: ":"
+
+- name: thread
+  type: int
+  default: 0
+  description: Number of worker threads
+
+- name: dump-size-stat
+  type: bool
+  default: false
+  description: Dump size statistics
+
+- name: output
+  type: std::string
+  default: ""
+  description: Compiler binary output (.abc)
+
+- name: log-level
+  type: std::string
+  default: error
+  description: Log-level
+  possible_values:
+  - debug
+  - info
+  - warning
+  - error
+  - fatal
+
+- name: stdlib
+  type: std::string
+  default: ""
+  description: Path to standard library
+
+- name: gen-stdlib
+  type: bool
+  default: false
+  description: Gen standard library
+
+- name: plugins
+  type: arg_list_t
+  default: []
+  description: Plugins
+  delimiter: ","
+
+- name: skip-phases
+  type: arg_list_t
+  default: []
+  description: Phases to skip
+  delimiter: ","
+
+- name: ast-verifier
+  description: Configure AST-verifier.
+  enum: &VerifierInvariants
+    Base:
+    - NodeHasParent
+    - NodeHasSourceRange
+    - EveryChildHasValidParent
+    - EveryChildInParentRange
+    AfterPluginsAfterParse:
+    - CheckStructDeclaration
+    AfterScopesInitPhase:
+    - VariableHasScope
+    AfterCheckerPhase:
+    - NodeHasType
+    - NoPrimitiveTypes
+    - IdentifierHasVariable
+    - ReferenceTypeAnnotationIsNull
+    - ArithmeticOperationValid
+    - SequenceExpressionHasLastType
+    - ForLoopCorrectlyInitialized
+    - VariableHasEnclosingScope
+    - ModifierAccessValid
+    - VariableNameIdentifierNameSame
+    - CheckAbstractMethod
+    - GetterSetterValidation
+    - CheckScopeDeclaration
+    - CheckConstProperties
+    # - ImportExportAccessValid
+  sub_options:
+  - name: warnings
+    type: arg_list_t
+    description: Print warnings and continue compilation even if AST tree is incorrect.
+    default: [ ]
+    possible_values: *VerifierInvariants
+    delimiter: ':'
+  - name: errors
+    type: arg_list_t
+    description: Print errors and aborts compilation if AST tree is incorrect.
+    default:
+    - ArithmeticOperationValid
+    - CheckAbstractMethod
+    # - CheckConstProperties
+    # - CheckScopeDeclaration
+    - CheckStructDeclaration
+    - EveryChildHasValidParent
+    # - EveryChildInParentRange
+    - ForLoopCorrectlyInitialized
+    - GetterSetterValidation
+    - IdentifierHasVariable
+    - ModifierAccessValid
+    - NodeHasParent
+    # - NodeHasSourceRange
+    - NodeHasType
+    - NoPrimitiveTypes
+    - ReferenceTypeAnnotationIsNull
+    - SequenceExpressionHasLastType
+    - VariableHasEnclosingScope
+    - VariableHasScope
+    - VariableNameIdentifierNameSame
+    possible_values: *VerifierInvariants
+    delimiter: ':'
+  - name: phases
+    type: arg_list_t
+    default: [ "after" ]
+    description: >
+      Specify phases to finalize with ASTVerifier. Shortcuts: "before", "each", "after".
+    delimiter: ':'
+  - name: full-program
+    type: bool
+    default: false
+    description: Analyze full program, including program AST and it's dependencies
+  - name: json
+    type: bool
+    default: false
+    description: Report in json-format instead of stderr dump. More verbose.
+  - name: json-path
+    type: std::string
+    default: "astverifier_report.json"
+    description: Path to json-dump (if enabled)
+
+- name: list-phases
+  type: bool
+  default: false
+  description: Dump list of available phases
+
+- name: ets-unnamed
+  type: bool
+  default: false
+  description: Legacy option to compile a module as unnamed
+
+- name: ets-path
+  type: std::string
+  default: ""
+  description: Legacy option to set global prefix path for all compiled modules
+
+- name: exit-before-phase
+  type: std::string
+  default: ""
+  description: Exit compilation before running the provided phase
+
+- name: exit-after-phase
+  type: std::string
+  default: ""
+  description: Exit compilation after running the provided phase
+
+- name: dump-before-phases
+  type: arg_list_t
+  default: []
+  description: Generate program dump before running phases in the list
+  delimiter: ","
+
+- name: dump-after-phases
+  type: arg_list_t
+  default: []
+  description: Generate program dump after running phases in the list
+  delimiter: ","
+
+- name: dump-ets-src-before-phases
+  type: arg_list_t
+  default: []
+  description: Generate program dump as ets source code before running phases in the list
+  delimiter: ","
+
+- name: dump-ets-src-after-phases
+  type: arg_list_t
+  default: []
+  description: Generate program dump as ets source code after running phases in the list
+  delimiter: ","
+
+- name: bco-optimizer
+  type: arg_list_t
+  default: []
+  description: Bytecode optimizer arguments
+
+- name: bco-compiler
+  type: arg_list_t
+  default: []
+  description: Bytecode optimizer's compiler arguments

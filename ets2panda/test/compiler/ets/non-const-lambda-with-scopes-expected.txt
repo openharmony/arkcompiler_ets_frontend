@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "non-const-lambda-with-scopes.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "non-const-lambda-with-scopes.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "non-const-lambda-with-scopes.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "non-const-lambda-with-scopes.ets"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 15,
-                  "column": 10
+                  "column": 10,
+                  "program": "non-const-lambda-with-scopes.ets"
                 },
                 "end": {
                   "line": 15,
-                  "column": 14
+                  "column": 14,
+                  "program": "non-const-lambda-with-scopes.ets"
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 15,
-                      "column": 10
+                      "column": 10,
+                      "program": "non-const-lambda-with-scopes.ets"
                     },
                     "end": {
                       "line": 15,
-                      "column": 14
+                      "column": 14,
+                      "program": "non-const-lambda-with-scopes.ets"
                     }
                   }
                 },
@@ -176,11 +194,13 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 9
+                                "column": 9,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 10
+                                "column": 10,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
@@ -190,22 +210,26 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 13
+                                "column": 13,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 14
+                                "column": 14,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 9
+                              "column": 9,
+                              "program": "non-const-lambda-with-scopes.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 14
+                              "column": 14,
+                              "program": "non-const-lambda-with-scopes.ets"
                             }
                           }
                         }
@@ -214,11 +238,13 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 5
+                          "column": 5,
+                          "program": "non-const-lambda-with-scopes.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 14
+                          "column": 14,
+                          "program": "non-const-lambda-with-scopes.ets"
                         }
                       }
                     },
@@ -238,22 +264,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "non-const-lambda-with-scopes.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "non-const-lambda-with-scopes.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "non-const-lambda-with-scopes.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "non-const-lambda-with-scopes.ets"
                                 }
                               }
                             },
@@ -261,11 +291,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 10
+                                "column": 10,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
@@ -293,11 +325,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 9
+                                            "column": 9,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 10
+                                            "column": 10,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           }
                                         }
                                       },
@@ -307,33 +341,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 13
+                                            "column": 13,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 14
+                                            "column": 14,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 18,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 18,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 14
+                                        "column": 14,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       }
                                     }
                                   },
@@ -352,11 +392,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 20,
-                                                "column": 5
+                                                "column": 5,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               },
                                               "end": {
                                                 "line": 20,
-                                                "column": 6
+                                                "column": 6,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               }
                                             }
                                           },
@@ -366,33 +408,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 20,
-                                                "column": 9
+                                                "column": 9,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               },
                                               "end": {
                                                 "line": 20,
-                                                "column": 10
+                                                "column": 10,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 20,
-                                              "column": 5
+                                              "column": 5,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 20,
-                                              "column": 10
+                                              "column": 10,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 20,
-                                            "column": 5
+                                            "column": 5,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           },
                                           "end": {
                                             "line": 20,
-                                            "column": 10
+                                            "column": 10,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           }
                                         }
                                       }
@@ -400,11 +448,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 10
+                                        "column": 10,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       }
                                     }
                                   },
@@ -416,11 +466,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 17
+                                          "column": 17,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
@@ -439,11 +491,13 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 23,
-                                                  "column": 13
+                                                  "column": 13,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 },
                                                 "end": {
                                                   "line": 23,
-                                                  "column": 14
+                                                  "column": 14,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 }
                                               }
                                             },
@@ -453,33 +507,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 23,
-                                                  "column": 17
+                                                  "column": 17,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 },
                                                 "end": {
                                                   "line": 23,
-                                                  "column": 18
+                                                  "column": 18,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 23,
-                                                "column": 13
+                                                "column": 13,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               },
                                               "end": {
                                                 "line": 23,
-                                                "column": 18
+                                                "column": 18,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 23,
-                                              "column": 13
+                                              "column": 13,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 23,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         }
@@ -487,11 +547,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 24,
-                                          "column": 10
+                                          "column": 10,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
@@ -499,11 +561,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 10
+                                        "column": 10,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       }
                                     }
                                   },
@@ -523,11 +587,13 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 25,
-                                                  "column": 21
+                                                  "column": 21,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 },
                                                 "end": {
                                                   "line": 25,
-                                                  "column": 24
+                                                  "column": 24,
+                                                  "program": "non-const-lambda-with-scopes.ets"
                                                 }
                                               }
                                             },
@@ -535,11 +601,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 25,
-                                                "column": 18
+                                                "column": 18,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               },
                                               "end": {
                                                 "line": 25,
-                                                "column": 19
+                                                "column": 19,
+                                                "program": "non-const-lambda-with-scopes.ets"
                                               }
                                             }
                                           },
@@ -547,11 +615,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 25,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 25,
-                                              "column": 19
+                                              "column": 19,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         }
@@ -560,11 +630,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 25,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 25,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
@@ -577,11 +649,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 25,
-                                              "column": 29
+                                              "column": 29,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 25,
-                                              "column": 30
+                                              "column": 30,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         }
@@ -589,11 +663,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 25,
-                                          "column": 28
+                                          "column": 28,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 25,
-                                          "column": 31
+                                          "column": 31,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
@@ -609,11 +685,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 26,
-                                              "column": 13
+                                              "column": 13,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 14
+                                              "column": 14,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         },
@@ -623,44 +701,52 @@
                                           "loc": {
                                             "start": {
                                               "line": 26,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "non-const-lambda-with-scopes.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 26,
-                                            "column": 13
+                                            "column": 13,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           },
                                           "end": {
                                             "line": 26,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "non-const-lambda-with-scopes.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 26,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         },
                                         "end": {
                                           "line": 26,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "non-const-lambda-with-scopes.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 25,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "non-const-lambda-with-scopes.ets"
                                       }
                                     }
                                   }
@@ -668,44 +754,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "non-const-lambda-with-scopes.ets"
                                   },
                                   "end": {
                                     "line": 34,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "non-const-lambda-with-scopes.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "non-const-lambda-with-scopes.ets"
                                 },
                                 "end": {
                                   "line": 34,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "non-const-lambda-with-scopes.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 25
+                                "column": 25,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 6
+                                "column": 6,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "non-const-lambda-with-scopes.ets"
                             },
                             "end": {
                               "line": 34,
-                              "column": 6
+                              "column": 6,
+                              "program": "non-const-lambda-with-scopes.ets"
                             }
                           }
                         }
@@ -714,11 +808,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "non-const-lambda-with-scopes.ets"
                         },
                         "end": {
                           "line": 34,
-                          "column": 6
+                          "column": 6,
+                          "program": "non-const-lambda-with-scopes.ets"
                         }
                       }
                     },
@@ -733,11 +829,13 @@
                           "loc": {
                             "start": {
                               "line": 35,
-                              "column": 5
+                              "column": 5,
+                              "program": "non-const-lambda-with-scopes.ets"
                             },
                             "end": {
                               "line": 35,
-                              "column": 6
+                              "column": 6,
+                              "program": "non-const-lambda-with-scopes.ets"
                             }
                           }
                         },
@@ -746,22 +844,26 @@
                         "loc": {
                           "start": {
                             "line": 35,
-                            "column": 5
+                            "column": 5,
+                            "program": "non-const-lambda-with-scopes.ets"
                           },
                           "end": {
                             "line": 35,
-                            "column": 8
+                            "column": 8,
+                            "program": "non-const-lambda-with-scopes.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 35,
-                          "column": 5
+                          "column": 5,
+                          "program": "non-const-lambda-with-scopes.ets"
                         },
                         "end": {
                           "line": 35,
-                          "column": 8
+                          "column": 8,
+                          "program": "non-const-lambda-with-scopes.ets"
                         }
                       }
                     },
@@ -778,11 +880,13 @@
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 5
+                                "column": 5,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 36,
-                                "column": 12
+                                "column": 12,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
@@ -793,11 +897,13 @@
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 13
+                                "column": 13,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 36,
-                                "column": 16
+                                "column": 16,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           },
@@ -806,11 +912,13 @@
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 5
+                              "column": 5,
+                              "program": "non-const-lambda-with-scopes.ets"
                             },
                             "end": {
                               "line": 36,
-                              "column": 16
+                              "column": 16,
+                              "program": "non-const-lambda-with-scopes.ets"
                             }
                           }
                         },
@@ -822,11 +930,13 @@
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 17
+                                "column": 17,
+                                "program": "non-const-lambda-with-scopes.ets"
                               },
                               "end": {
                                 "line": 36,
-                                "column": 18
+                                "column": 18,
+                                "program": "non-const-lambda-with-scopes.ets"
                               }
                             }
                           }
@@ -835,22 +945,26 @@
                         "loc": {
                           "start": {
                             "line": 36,
-                            "column": 5
+                            "column": 5,
+                            "program": "non-const-lambda-with-scopes.ets"
                           },
                           "end": {
                             "line": 36,
-                            "column": 19
+                            "column": 19,
+                            "program": "non-const-lambda-with-scopes.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 36,
-                          "column": 5
+                          "column": 5,
+                          "program": "non-const-lambda-with-scopes.ets"
                         },
                         "end": {
                           "line": 36,
-                          "column": 19
+                          "column": 19,
+                          "program": "non-const-lambda-with-scopes.ets"
                         }
                       }
                     }
@@ -858,33 +972,39 @@
                   "loc": {
                     "start": {
                       "line": 15,
-                      "column": 17
+                      "column": 17,
+                      "program": "non-const-lambda-with-scopes.ets"
                     },
                     "end": {
                       "line": 37,
-                      "column": 2
+                      "column": 2,
+                      "program": "non-const-lambda-with-scopes.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 15,
-                    "column": 10
+                    "column": 10,
+                    "program": "non-const-lambda-with-scopes.ets"
                   },
                   "end": {
                     "line": 37,
-                    "column": 2
+                    "column": 2,
+                    "program": "non-const-lambda-with-scopes.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 15,
-                  "column": 10
+                  "column": 10,
+                  "program": "non-const-lambda-with-scopes.ets"
                 },
                 "end": {
                   "line": 37,
-                  "column": 2
+                  "column": 2,
+                  "program": "non-const-lambda-with-scopes.ets"
                 }
               }
             },
@@ -893,11 +1013,13 @@
             "loc": {
               "start": {
                 "line": 15,
-                "column": 1
+                "column": 1,
+                "program": "non-const-lambda-with-scopes.ets"
               },
               "end": {
                 "line": 37,
-                "column": 2
+                "column": 2,
+                "program": "non-const-lambda-with-scopes.ets"
               }
             }
           }
@@ -905,22 +1027,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "non-const-lambda-with-scopes.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "non-const-lambda-with-scopes.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "non-const-lambda-with-scopes.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "non-const-lambda-with-scopes.ets"
         }
       }
     }
@@ -928,11 +1054,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "non-const-lambda-with-scopes.ets"
     },
     "end": {
       "line": 38,
-      "column": 1
+      "column": 1,
+      "program": "non-const-lambda-with-scopes.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,16 +24,18 @@ class GlobalTypesHolder;
 class ETSAsyncFuncReturnType : public ETSObjectType {
 public:
     ETSAsyncFuncReturnType(ArenaAllocator *allocator, TypeRelation *relation, ETSObjectType *promiseType)
-        : ETSObjectType(allocator, ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE, relation), promiseType_(promiseType)
+        : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_OBJECT,
+                        std::make_tuple(nullptr, ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE, relation)),
+          promiseType_(promiseType)
     {
-        ASSERT(promiseType->TypeArguments().size() == 1);
-        SetAssemblerName(compiler::Signatures::BUILTIN_OBJECT);
+        ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1);
     }
 
     void ToString(std::stringstream &ss, bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
 
     const Type *GetPromiseTypeArg() const
     {

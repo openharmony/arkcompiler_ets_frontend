@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,7 +54,7 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 
 void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
-    ASSERT(BuilderKind() == BuilderType::ASYNC_GENERATOR);
+    ES2PANDA_ASSERT(BuilderKind() == BuilderType::ASYNC_GENERATOR);
 
     pg_->GeneratorYield(node, funcObj_);
     pg_->SuspendAsyncGenerator(node, funcObj_);
@@ -64,8 +64,8 @@ void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg completionType, V
 
 void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
-    ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
-           BuilderKind() == BuilderType::GENERATOR);
+    ES2PANDA_ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
+                    BuilderKind() == BuilderType::GENERATOR);
 
     pg_->SuspendGenerator(node, funcObj_);
     ResumeGenerator(node, completionType, completionValue);
@@ -73,8 +73,8 @@ void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg compl
 
 void FunctionBuilder::ResumeGenerator(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
-    ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
-           BuilderKind() == BuilderType::GENERATOR);
+    ES2PANDA_ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
+                    BuilderKind() == BuilderType::GENERATOR);
 
     pg_->ResumeGenerator(node, funcObj_);
     pg_->StoreAccumulator(node, completionValue);
@@ -86,7 +86,7 @@ VReg FunctionBuilder::FunctionReg(const ir::ScriptFunction *node) const
 {
     varbinder::FunctionScope *scope = node->Scope();
     auto res = scope->Find(varbinder::VarBinder::MANDATORY_PARAM_FUNC);
-    ASSERT(res.level == 0 && res.variable->IsLocalVariable());
+    ES2PANDA_ASSERT(res.level == 0 && res.variable->IsLocalVariable());
     return res.variable->AsLocalVariable()->Vreg();
 }
 
@@ -97,7 +97,7 @@ void FunctionBuilder::Await(const ir::AstNode *node)
         PandaGen::Unimplemented();
     }
 
-    ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR);
+    ES2PANDA_ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR);
 
     RegScope rs(pg_);
     VReg completionType = pg_->AllocReg();
@@ -142,7 +142,7 @@ void FunctionBuilder::HandleCompletion(const ir::AstNode *node, VReg completionT
 // CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
 void FunctionBuilder::YieldStar(const ir::AstNode *node)
 {
-    ASSERT(BuilderKind() == BuilderType::GENERATOR || BuilderKind() == BuilderType::ASYNC_GENERATOR);
+    ES2PANDA_ASSERT(BuilderKind() == BuilderType::GENERATOR || BuilderKind() == BuilderType::ASYNC_GENERATOR);
 
     RegScope rs(pg_);
 

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "declare_func.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "declare_func.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 18
+                  "column": 18,
+                  "program": "declare_func.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 21
+                  "column": 21,
+                  "program": "declare_func.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "declare_func.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 21
+                      "column": 21,
+                      "program": "declare_func.ets"
                     }
                   }
                 },
@@ -83,33 +89,39 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 25
+                                "column": 25,
+                                "program": "declare_func.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 31
+                                "column": 31,
+                                "program": "declare_func.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 25
+                              "column": 25,
+                              "program": "declare_func.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 32
+                              "column": 32,
+                              "program": "declare_func.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 25
+                            "column": 25,
+                            "program": "declare_func.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 32
+                            "column": 32,
+                            "program": "declare_func.ets"
                           }
                         }
                       },
@@ -117,22 +129,26 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 22
+                          "column": 22,
+                          "program": "declare_func.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 32
+                          "column": 32,
+                          "program": "declare_func.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 22
+                        "column": 22,
+                        "program": "declare_func.ets"
                       },
                       "end": {
                         "line": 16,
-                        "column": 32
+                        "column": 32,
+                        "program": "declare_func.ets"
                       }
                     }
                   }
@@ -142,11 +158,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 34
+                      "column": 34,
+                      "program": "declare_func.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 38
+                      "column": 38,
+                      "program": "declare_func.ets"
                     }
                   }
                 },
@@ -154,22 +172,26 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 18
+                    "column": 18,
+                    "program": "declare_func.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 21
+                    "column": 21,
+                    "program": "declare_func.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 18
+                  "column": 18,
+                  "program": "declare_func.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 21
+                  "column": 21,
+                  "program": "declare_func.ets"
                 }
               }
             },
@@ -178,11 +200,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "declare_func.ets"
               },
               "end": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "declare_func.ets"
               }
             }
           }
@@ -190,22 +214,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "declare_func.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "declare_func.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "declare_func.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "declare_func.ets"
         }
       }
     }
@@ -213,11 +241,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "declare_func.ets"
     },
     "end": {
       "line": 17,
-      "column": 1
+      "column": 1,
+      "program": "declare_func.ets"
     }
   }
 }

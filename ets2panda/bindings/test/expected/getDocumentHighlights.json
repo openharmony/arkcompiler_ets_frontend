@@ -1,0 +1,317 @@
+{
+  "1": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights1.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights1.ets",
+            "textSpan": {
+              "start": 613,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights1.ets",
+            "textSpan": {
+              "start": 634,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights1.ets",
+            "textSpan": {
+              "start": 661,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "2": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights2.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights2.ets",
+            "textSpan": {
+              "start": 628,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights2.ets",
+            "textSpan": {
+              "start": 655,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights2.ets",
+            "textSpan": {
+              "start": 716,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "3": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights3.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights3.ets",
+            "textSpan": {
+              "start": 615,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights3.ets",
+            "textSpan": {
+              "start": 660,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights3.ets",
+            "textSpan": {
+              "start": 718,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "4": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights4.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights4.ets",
+            "textSpan": {
+              "start": 625,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights4.ets",
+            "textSpan": {
+              "start": 672,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights4.ets",
+            "textSpan": {
+              "start": 741,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights4.ets",
+            "textSpan": {
+              "start": 752,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "5": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights5.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights5.ets",
+            "textSpan": {
+              "start": 618,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights5.ets",
+            "textSpan": {
+              "start": 696,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights5.ets",
+            "textSpan": {
+              "start": 740,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "6": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights6.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights6.ets",
+            "textSpan": {
+              "start": 615,
+              "length": 8
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights6.ets",
+            "textSpan": {
+              "start": 653,
+              "length": 8
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  },
+  "7": {
+    "documentHighlights": [
+      {
+        "fileName": "getDocumentHighlights7.ets",
+        "highlightSpans": [
+          {
+            "fileName": "getDocumentHighlights7.ets",
+            "textSpan": {
+              "start": 618,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 3
+          },
+          {
+            "fileName": "getDocumentHighlights7.ets",
+            "textSpan": {
+              "start": 732,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          },
+          {
+            "fileName": "getDocumentHighlights7.ets",
+            "textSpan": {
+              "start": 745,
+              "length": 3
+            },
+            "contextSpan": {
+              "start": 0,
+              "length": 0
+            },
+            "kind": 2
+          }
+        ]
+      }
+    ]
+  }
+}

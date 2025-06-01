@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -89,12 +89,13 @@ enum class TypeFlag : uint64_t {
     TYPE_ERROR = 1ULL << 60ULL,                   // type error
     ETS_TYPE_ALIAS = 1ULL << 61ULL,               // ETS Type alias
     ETS_NEVER = 1ULL << 62ULL,                    // ETS never
+    ETS_METHOD = 1ULL << 63ULL,                   // ETS method (or function in module) (possibly overloaded)
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |
-               WILDCARD | ETS_TYPE_PARAMETER | ETS_INT_ENUM | ETS_STRING_ENUM | ETS_DYNAMIC_TYPE | ETS_UNION |
-               ETS_NULL | ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY | ETS_REQUIRED_TYPE_PARAMETER |
-               ETS_PARTIAL_TYPE_PARAMETER | ETS_NEVER,
+               FUNCTION | WILDCARD | ETS_TYPE_PARAMETER | ETS_DYNAMIC_TYPE | ETS_UNION | ETS_NULL | ETS_UNDEFINED |
+               ETS_NONNULLISH | ETS_READONLY | ETS_REQUIRED_TYPE_PARAMETER | ETS_PARTIAL_TYPE_PARAMETER | ETS_NEVER |
+               ETS_TUPLE,
     ETS_INTEGRAL_NUMERIC = BYTE | SHORT | INT | LONG,
     ETS_FLOATING_POINT = FLOAT | DOUBLE,
     ETS_NUMERIC = ETS_INTEGRAL_NUMERIC | ETS_FLOATING_POINT,
@@ -102,7 +103,7 @@ enum class TypeFlag : uint64_t {
     ETS_ENUM = ETS_INT_ENUM | ETS_STRING_ENUM,
     ETS_ARRAY_INDEX = BYTE | SHORT | INT,
     ETS_CONVERTIBLE_TO_NUMERIC = ETS_NUMERIC | CHAR | ETS_INT_ENUM,
-    VALID_SWITCH_TYPE = ETS_INTEGRAL | ETS_ENUM,
+    VALID_SWITCH_TYPE = ETS_INTEGRAL,
     ETS_ARRAY_OR_OBJECT = ETS_ARRAY | ETS_OBJECT,
     ANY_OR_UNKNOWN = ANY | UNKNOWN,
     ANY_OR_VOID = ANY | VOID,
@@ -123,7 +124,8 @@ enum class TypeFlag : uint64_t {
     UNIT = LITERAL | UNDEFINED | NULL_TYPE,
     GETTER_SETTER = GETTER | SETTER,
     CONDITION_EXPRESSION_TYPE = ETS_NULL | ETS_UNDEFINED | ETS_OBJECT | ETS_ARRAY | ETS_UNION | CONSTANT | BYTE | CHAR |
-                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM,
+                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM |
+                                FUNCTION | ETS_TUPLE,
 };
 
 }  // namespace ark::es2panda::checker

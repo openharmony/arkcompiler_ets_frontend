@@ -14,5 +14,5 @@
  */
 
 
-var a: [?number]
-/* @@? 17:9 Error SyntaxError: Type expected  */
+var a: [/* @@ label */?number]
+/* @@@ label Error SyntaxError: Type expected  */

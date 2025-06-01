@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,6 @@
 #include "assembler/assembly-program.h"
 #include "ir/astDump.h"
 #include "ir/expressions/literals/stringLiteral.h"
-
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler/compiler_logger.h"
 #include "mem/arena_allocator.h"
@@ -28,28 +27,39 @@
 #include "es2panda.h"
 #include "util/arktsconfig.h"
 #include "util/generateBin.h"
-#include "util/options.h"
 #include "libpandabase/mem/mem.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "test/utils/asm_test.h"
 
 namespace {
 
-struct TestParams {
-    explicit TestParams(std::string_view testSrc, std::string testArgsList = std::string {},
-                        int testArgsCount = ARGS_COUNT_DEFAULT, std::string_view testFileName = FILE_NAME_DEFAULT)
-        : src {testSrc}, argsList {std::move(testArgsList)}, argsCount {testArgsCount}, fileName {testFileName}
+class TestParams {
+public:
+    TestParams(std::string_view src, std::initializer_list<const char *> argsList) : src_ {src}
     {
+        argsList_.push_back(test::utils::PandaExecutablePathGetter::Get()[0]);
+        argsList_.insert(argsList_.end(), argsList.begin(), argsList.end());
     }
+    auto GetSrc()
+    {
+        return src_;
+    };
+    auto GetExec()
+    {
+        return argsList_[0];
+    };
+    auto GetFilename()
+    {
+        return "dummy.ets";
+    };
+    auto GetArgs() const
+    {
+        return argsList_;
+    };
 
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    std::string_view src;
-    std::string argsList;
-    int argsCount;
-    std::string_view fileName;
-
-    static constexpr int ARGS_COUNT_DEFAULT = 1;
-    static constexpr std::string_view FILE_NAME_DEFAULT = "dummy.sts";
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
+private:
+    std::string_view src_;
+    std::vector<const char *> argsList_;
 };
 
 TestParams DumpJsonSimple()
@@ -62,7 +72,7 @@ TestParams DumpJsonSimple()
             return a + b;\
         }";
 
-    return TestParams {SRC};
+    return TestParams {SRC, {}};
 }
 
 TestParams DumpJsonUTF16Char()
@@ -77,7 +87,7 @@ TestParams DumpJsonUTF16Char()
             return 0;\
         }";
 
-    return TestParams {SRC};
+    return TestParams {SRC, {}};
 }
 
 TestParams DumpEtsSrcSimple()
@@ -90,26 +100,16 @@ TestParams DumpEtsSrcSimple()
             return a + b;\
         }";
 
-    auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
-    auto argsList =
-        es2pandaPath +
-        "--extension=sts "
-        "--dump-ets-src-before-phases=\"plugins-after-parse:lambda-lowering:checker:plugins-after-check:generate-"
-        "ts-"
-        "declarations:op-assignment:tuple-lowering:union-property-access:plugins-after-lowering\"";
-
-    return TestParams {SRC, argsList};
+    return TestParams {SRC,
+                       {"--extension=ets",
+                        "--dump-ets-src-before-phases=plugins-after-parse,plugins-after-check,plugins-after-lowering"}};
 }
-
-}  // namespace
 
 class ASTDumperTest : public testing::TestWithParam<TestParams> {
 public:
     ASTDumperTest()
     {
-        constexpr auto COMPILER_SIZE = 268435456;
-
-        ark::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        ark::mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
         ark::PoolManager::Initialize(ark::PoolType::MMAP);
     }
 
@@ -119,40 +119,16 @@ public:
         ark::mem::MemConfig::Finalize();
     };
 
-    static ark::pandasm::Program *GetProgram(std::string_view src, const char **argsList, int argsCount,
-                                             std::string_view fileName)
-    {
-        auto options = std::make_unique<ark::es2panda::util::Options>();
-        if (!options->Parse(argsCount, argsList)) {
-            std::cerr << options->ErrorMsg() << std::endl;
-            return nullptr;
-        }
-
-        ark::Logger::ComponentMask mask {};
-        mask.set(ark::Logger::Component::ES2PANDA);
-        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
-
-        ark::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        ark::es2panda::SourceFile input(fileName, src, options->ParseModule());
-
-        return compiler.Compile(input, *options);
-    }
-
     NO_COPY_SEMANTIC(ASTDumperTest);
     NO_MOVE_SEMANTIC(ASTDumperTest);
 };
 
-TEST_P(ASTDumperTest, CheckNoDump)
+TEST_P(ASTDumperTest, CheckJsonDump)
 {
     auto param = GetParam();
-    if (param.argsList.empty()) {
-        param.argsList = test::utils::PandaExecutablePathGetter {}.Get();
-    }
-
-    auto argsListPtr = param.argsList.c_str();
-
-    auto program =
-        std::unique_ptr<ark::pandasm::Program> {GetProgram(param.src, &argsListPtr, param.argsCount, param.fileName)};
+    auto argsList = param.GetArgs();
+    auto program = std::unique_ptr<ark::pandasm::Program> {
+        test::utils::AsmTest::GetProgram(argsList.size(), argsList.data(), param.GetFilename(), param.GetSrc())};
     ASSERT(program);
 
     auto dumpStr = program->JsonDump();
@@ -160,4 +136,23 @@ TEST_P(ASTDumperTest, CheckNoDump)
 }
 
 INSTANTIATE_TEST_SUITE_P(ASTDumperTestParamList, ASTDumperTest,
-                         ::testing::Values(DumpJsonSimple(), DumpJsonUTF16Char(), DumpEtsSrcSimple()));
+                         ::testing::Values(DumpJsonSimple(), DumpJsonUTF16Char()));
+
+TEST_F(ASTDumperTest, CheckSrcDump)
+{
+    std::stringstream dumpStr;
+    std::streambuf *prevcoutbuf = std::cout.rdbuf(dumpStr.rdbuf());
+
+    auto param = DumpEtsSrcSimple();
+    auto argsList = param.GetArgs();
+    auto program = std::unique_ptr<ark::pandasm::Program> {
+        test::utils::AsmTest::GetProgram(argsList.size(), argsList.data(), param.GetFilename(), param.GetSrc())};
+    ASSERT(program);
+
+    std::cout.rdbuf(prevcoutbuf);
+
+    ASSERT(program);
+    ASSERT(!dumpStr.str().empty());
+}
+
+}  // namespace

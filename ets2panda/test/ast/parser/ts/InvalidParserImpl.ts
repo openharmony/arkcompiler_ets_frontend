@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 class A {
     x: number;
 
-    private get latest(): number {
+    private get /* @@ label */latest(): number {
         return 0;
     }
 
@@ -26,8 +26,8 @@ class A {
 }
 
 declare class A {
-    x: number = 3;
+    x: number = /* @@ label1 */3;
 }
 
-/* @@? 19:17 Error SyntaxError: A get accessor must be at least as accessible as the setter */
-/* @@? 29:17 Error SyntaxError: Initializers are not allowed in ambient contexts. */
+/* @@@ label Error SyntaxError: A get accessor must be at least as accessible as the setter. */
+/* @@@ label1 Error SyntaxError: Initializers are not allowed in ambient contexts. */

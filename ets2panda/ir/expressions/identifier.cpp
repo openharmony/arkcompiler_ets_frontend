@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
@@ -34,38 +32,53 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     }
 }
 
+Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(ERROR_LITERAL, allocator)
+{
+    flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+}
+
+Identifier::Identifier(util::StringView const name, ArenaAllocator *const allocator)
+    : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
+{
+    if (name == ERROR_LITERAL) {
+        flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+    }
+}
+
+Identifier::Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator)
+    : AnnotatedExpression(AstNodeType::IDENTIFIER, typeAnnotation), name_(name), decorators_(allocator->Adapter())
+{
+    if (name == ERROR_LITERAL) {
+        flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+    }
+}
+
+void Identifier::SetName(const util::StringView &newName) noexcept
+{
+    ES2PANDA_ASSERT(newName != ERROR_LITERAL);
+    name_ = newName;
+}
+
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
-        clone->SetTsType(TsType());
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator);
 
-        clone->SetRange(Range());
-
-        return clone;
+    clone->SetTsType(TsType());
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
-        clone->SetTsType(TsType());
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-
-        if (clone->IsReference(ScriptExtension::ETS) && (clone->TypeAnnotation() != nullptr)) {
-            clone->SetTsTypeAnnotation(nullptr);
-        }
-
-        return clone;
+    auto *const clone = Clone(allocator, parent);
+    if (clone->IsReference(ScriptExtension::ETS)) {
+        clone->SetTsTypeAnnotation(nullptr);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    return clone;
 }
 
 void Identifier::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -77,7 +90,7 @@ void Identifier::TransformChildren(const NodeTransformer &cb, std::string_view c
         }
     }
 
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -91,7 +104,7 @@ void Identifier::Iterate(const NodeTraverser &cb) const
         cb(TypeAnnotation());
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 }
@@ -121,11 +134,21 @@ void Identifier::Dump(ir::AstDumper *dumper) const
 
 void Identifier::Dump(ir::SrcDumper *dumper) const
 {
+    if (IsReceiver()) {
+        dumper->Add("this");
+        return;
+    }
+
     if (IsPrivateIdent()) {
         dumper->Add("private ");
     }
 
-    dumper->Add(std::string(name_));
+    auto name = std::string(name_);
+    std::string propertyStr = compiler::Signatures::PROPERTY.data();
+    if (UNLIKELY(name.find(propertyStr) != std::string::npos)) {
+        name.replace(name.find(propertyStr), propertyStr.length(), "_$property$_");
+    }
+    dumper->Add(name);
     if (IsOptional()) {
         dumper->Add("?");
     }
@@ -146,15 +169,15 @@ checker::Type *Identifier::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *Identifier::Check(checker::ETSChecker *checker)
+checker::VerifiedType Identifier::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 bool Identifier::IsDeclaration(ScriptExtension ext) const
 {
     // GLOBAL class is not a reference
-    if (Name() == "ETSGLOBAL") {
+    if (Name() == compiler::Signatures::ETS_GLOBAL) {
         return true;
     }
 
@@ -433,4 +456,12 @@ bool Identifier::CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtensi
     return false;
 }
 
+std::string Identifier::ToString() const
+{
+    if (!Name().Empty() && !Name().Is(ERROR_LITERAL)) {
+        return std::string {Name().Utf8()};
+    }
+
+    return AnnotatedExpression::ToString();
+}
 }  // namespace ark::es2panda::ir

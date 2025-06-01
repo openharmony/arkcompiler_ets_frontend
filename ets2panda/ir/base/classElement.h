@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,6 +66,16 @@ public:
         return value_;
     }
 
+    [[nodiscard]] const TSEnumMember *OriginEnumMember() const noexcept
+    {
+        return enumMember_;
+    }
+
+    void SetOrigEnumMember(ir::TSEnumMember *enumMember)
+    {
+        enumMember_ = enumMember;
+    }
+
     [[nodiscard]] bool IsPrivateElement() const noexcept;
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
@@ -108,6 +118,7 @@ protected:
     Expression *value_;
     ArenaVector<Decorator *> decorators_;
     bool isComputed_;
+    TSEnumMember *enumMember_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 }  // namespace ark::es2panda::ir
