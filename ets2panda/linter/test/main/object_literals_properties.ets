@@ -244,15 +244,15 @@ let b3: Derived3 = { // Fixable
   m() { console.log(2); }
 };
 
-interface A {
+interface I4 {
   map: Map<string, string>;
 }
 let map:Map<string,string> = new Map<string,string>();
-let a:A = {map};
+let i4: I4 = {map};
 
-class C {
+class C6 {
   map1: Map<string, string> = new Map<string,string>();
 }
 
 let map1:Map<string,string> = new Map<string,string>();
-let c:C = {map1};
+let c6: C6 = {map1};

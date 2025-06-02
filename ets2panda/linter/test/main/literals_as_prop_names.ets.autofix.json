@@ -1035,8 +1035,8 @@
             "autofix": [
                 {
                     "replacementText": "age",
-                    "start": 2465,
-                    "end": 2470,
+                    "start": 2466,
+                    "end": 2471,
                     "line": 132,
                     "column": 10,
                     "endLine": 132,
@@ -1055,8 +1055,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2481,
-                    "end": 2482,
+                    "start": 2482,
+                    "end": 2483,
                     "replacementText": "1.0",
                     "line": 132,
                     "column": 26,
@@ -1069,20 +1069,40 @@
             "severity": "ERROR"
         },
         {
+            "line": 135,
+            "column": 37,
+            "endLine": 135,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
             "line": 136,
-            "column": 12,
+            "column": 3,
             "endLine": 136,
-            "endColumn": 13,
+            "endColumn": 12,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 136,
+            "column": 14,
+            "endLine": 136,
+            "endColumn": 15,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2554,
-                    "end": 2555,
+                    "start": 2557,
+                    "end": 2558,
                     "replacementText": "1.0",
                     "line": 136,
-                    "column": 12,
+                    "column": 14,
                     "endLine": 136,
-                    "endColumn": 13
+                    "endColumn": 15
                 }
             ],
             "suggest": "",
@@ -1091,19 +1111,215 @@
         },
         {
             "line": 137,
-            "column": 11,
+            "column": 13,
             "endLine": 137,
-            "endColumn": 12,
+            "endColumn": 14,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2573,
-                    "end": 2574,
+                    "start": 2594,
+                    "end": 2595,
                     "replacementText": "1.0",
                     "line": 137,
-                    "column": 11,
+                    "column": 13,
                     "endLine": 137,
-                    "endColumn": 12
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 3,
+            "endLine": 141,
+            "endColumn": 15,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 18,
+            "endLine": 141,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2644,
+                    "end": 2645,
+                    "replacementText": "1.0",
+                    "line": 141,
+                    "column": 18,
+                    "endLine": 141,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 142,
+            "column": 3,
+            "endLine": 142,
+            "endColumn": 6,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 142,
+            "column": 4,
+            "endLine": 142,
+            "endColumn": 5,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2672,
+                    "end": 2673,
+                    "replacementText": "2.0",
+                    "line": 142,
+                    "column": 4,
+                    "endLine": 142,
+                    "endColumn": 5
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 3,
+            "endLine": 143,
+            "endColumn": 34,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 37,
+            "endLine": 143,
+            "endColumn": 38,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2748,
+                    "end": 2749,
+                    "replacementText": "3.0",
+                    "line": 143,
+                    "column": 37,
+                    "endLine": 143,
+                    "endColumn": 38
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 146,
+            "column": 19,
+            "endLine": 146,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 147,
+            "column": 3,
+            "endLine": 147,
+            "endColumn": 15,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 147,
+            "column": 17,
+            "endLine": 147,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2812,
+                    "end": 2813,
+                    "replacementText": "1.0",
+                    "line": 147,
+                    "column": 17,
+                    "endLine": 147,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 148,
+            "column": 3,
+            "endLine": 148,
+            "endColumn": 6,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 148,
+            "column": 4,
+            "endLine": 148,
+            "endColumn": 5,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2840,
+                    "end": 2841,
+                    "replacementText": "2.0",
+                    "line": 148,
+                    "column": 4,
+                    "endLine": 148,
+                    "endColumn": 5
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 149,
+            "column": 3,
+            "endLine": 149,
+            "endColumn": 34,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 149,
+            "column": 36,
+            "endLine": 149,
+            "endColumn": 37,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2914,
+                    "end": 2915,
+                    "replacementText": "3.0",
+                    "line": 149,
+                    "column": 36,
+                    "endLine": 149,
+                    "endColumn": 37
                 }
             ],
             "suggest": "",
