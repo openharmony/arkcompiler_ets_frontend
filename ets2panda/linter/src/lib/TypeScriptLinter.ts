@@ -1376,7 +1376,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleTsInterop(propertyAccessNode, () => {
       this.checkInteropForPropertyAccess(propertyAccessNode);
     });
-     this.propertyAccessExpressionForInterop(propertyAccessNode);
+    this.propertyAccessExpressionForInterop(propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -1422,13 +1422,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       while (ts.isPropertyAccessExpression(current)) {
         current = current.expression;
       }
-      
+
       return current;
     }
 
     const firstObjNode = getFirstObjectNode(propertyAccessNode);
     const isFromJs = this.tsUtils.isJsImport(firstObjNode);
-    
+
     if(isFromJs) {
       if (ts.isBinaryExpression(propertyAccessNode.parent) &&
           propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
@@ -1438,7 +1438,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
         this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
       }
-    }   
+    }
   }
 
   private checkDepricatedIsConcurrent(node: ts.PropertyAccessExpression): void {
@@ -5190,7 +5190,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const sym = this.tsUtils.trueSymbolAtLocation(identifier);
       const decl = TsUtils.getDeclaration(sym);
       if (decl?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
-        this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
+        const autofix = this.autofixer?.fixInteropAsExpression(tsAsExpr);
+        this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport, autofix);
       }
     }
   }
@@ -5203,7 +5204,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       type.getText() === 'null';
     if (isNullAssertion) {
       this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
-
     }
   }
 
@@ -8958,7 +8958,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
 
-      const returnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression); 
+      const returnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression);
       if (className && isStaticPropertyAccess(returnStmt.expression, className) && returnType.isUnion()) {
         this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
       }
