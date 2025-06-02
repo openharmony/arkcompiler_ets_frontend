@@ -71,6 +71,17 @@
             "endLine": 17,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, a + 1)\na = a + 1\n",
+                    "start": 673,
+                    "end": 686,
+                    "line": 17,
+                    "column": 5,
+                    "endLine": 17,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
@@ -81,6 +92,17 @@
             "endLine": 18,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\na = a + 1\nfoo.setPropertyByName(num, a)\n",
+                    "start": 687,
+                    "end": 700,
+                    "line": 18,
+                    "column": 5,
+                    "endLine": 18,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
@@ -91,6 +113,17 @@
             "endLine": 19,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, a - 1)\na = a - 1\n",
+                    "start": 701,
+                    "end": 714,
+                    "line": 19,
+                    "column": 5,
+                    "endLine": 19,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
@@ -101,6 +134,101 @@
             "endLine": 20,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\na = a - 1\nfoo.setPropertyByName(num, a)\n",
+                    "start": 715,
+                    "end": 728,
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_1 = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, tmp_1 + 1)\ntmp_1 = tmp_1 + 1\n",
+                    "start": 730,
+                    "end": 739,
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_2 = foo.getPropertyByName(\"num\").toNumber()\ntmp_2 = tmp_2 + 1\nfoo.setPropertyByName(num, tmp_2)\n",
+                    "start": 740,
+                    "end": 749,
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_3 = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, tmp_3 - 1)\ntmp_3 = tmp_3 - 1\n",
+                    "start": 750,
+                    "end": 759,
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_4 = foo.getPropertyByName(\"num\").toNumber()\ntmp_4 = tmp_4 - 1\nfoo.setPropertyByName(num, tmp_4)\n",
+                    "start": 760,
+                    "end": 769,
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 10
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"

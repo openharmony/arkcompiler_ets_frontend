@@ -81,3 +81,8 @@ export type IdentifierAndArguments = {
   ident: undefined | ts.Identifier;
   args: ts.NodeArray<ts.Expression> | undefined;
 };
+
+export type IncrementDecrementNodeInfo = {
+  varAssignText: string;
+  addOrDecrOperation: ts.BinaryExpression;
+};

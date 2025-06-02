@@ -8330,14 +8330,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkAutoIncrementDecrement(unaryExpr: ts.PostfixUnaryExpression | ts.PrefixUnaryExpression): void {
-    if (ts.isPropertyAccessExpression(unaryExpr.operand)) {
-      const propertyAccess = unaryExpr.operand;
-      if (this.useStatic && this.options.arkts2) {
-        if (this.isFromJSModule(propertyAccess.expression)) {
-          this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement);
-        }
-      }
+    if (!this.useStatic || !this.options.arkts2) {
+      return;
     }
+
+    if (!ts.isPropertyAccessExpression(unaryExpr.operand)) {
+      return;
+    }
+
+    const propertyAccess = unaryExpr.operand;
+    if (!this.tsUtils.isJsImport(propertyAccess.expression)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixUnaryIncrDecr(unaryExpr, propertyAccess);
+
+    this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement, autofix);
   }
 
   private handleObjectLiteralforUnionTypeInterop(node: ts.VariableDeclaration): void {

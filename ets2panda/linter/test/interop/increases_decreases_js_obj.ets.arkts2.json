@@ -73,6 +73,46 @@
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
         }
     ]
 }

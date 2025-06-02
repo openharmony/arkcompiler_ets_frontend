@@ -42,6 +42,7 @@ import {
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
 import { ES_VALUE } from '../utils/consts/ESObject';
+import type { IncrementDecrementNodeInfo } from '../utils/consts/InteropAPI';
 import {
   LOAD,
   GET_PROPERTY_BY_NAME,
@@ -87,6 +88,9 @@ const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
 
 const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
 const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
+
+const GENERATED_TMP_VARIABLE_NAME = 'tmp_';
+const GENERATED_TMP_VARIABLE_TRESHOLD = 1000;
 
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
@@ -150,6 +154,11 @@ export class Autofixer {
   private readonly importVarNameGenerator = new NameGenerator(
     GENERATED_IMPORT_VARIABLE_NAME,
     GENERATED_IMPORT_VARIABLE_TRESHOLD
+  );
+
+  private readonly tmpVariableNameGenerator = new NameGenerator(
+    GENERATED_TMP_VARIABLE_NAME,
+    GENERATED_TMP_VARIABLE_TRESHOLD
   );
 
   private modVarName: string = '';
@@ -3063,6 +3072,229 @@ export class Autofixer {
         values.push(tempVals[j]);
       }
     }
+  }
+
+  private getVariableName(node: ts.Node): string | undefined {
+    let variableName: string | undefined;
+
+    switch (node.kind) {
+      case ts.SyntaxKind.BinaryExpression: {
+        const binaryExpr = node as ts.BinaryExpression;
+        if (binaryExpr.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+          return undefined;
+        }
+
+        variableName = binaryExpr.left.getText();
+        break;
+      }
+      case ts.SyntaxKind.VariableDeclaration: {
+        const variableDecl = node as ts.VariableDeclaration;
+        variableName = variableDecl.name.getText();
+        break;
+      }
+      case ts.SyntaxKind.ExpressionStatement: {
+        variableName = TsUtils.generateUniqueName(this.tmpVariableNameGenerator, this.sourceFile);
+        break;
+      }
+      default: {
+        return undefined;
+      }
+    }
+
+    return variableName;
+  }
+
+  private getNewNodesForIncrDecr(variableName: string, operator: number): IncrementDecrementNodeInfo | undefined {
+    let update: string | undefined;
+    let updateNode: ts.BinaryExpression | undefined;
+
+    switch (operator) {
+      case ts.SyntaxKind.MinusMinusToken: {
+        const { varAssignText, addOrDecrOperation } = this.createNewIncrDecrNodes(
+          variableName,
+          ts.SyntaxKind.MinusToken
+        );
+        update = varAssignText;
+        updateNode = addOrDecrOperation;
+        break;
+      }
+      case ts.SyntaxKind.PlusPlusToken: {
+        const { varAssignText, addOrDecrOperation } = this.createNewIncrDecrNodes(
+          variableName,
+          ts.SyntaxKind.PlusToken
+        );
+        update = varAssignText;
+        updateNode = addOrDecrOperation;
+        break;
+      }
+      default:
+        return undefined;
+    }
+
+    return { varAssignText: update, addOrDecrOperation: updateNode };
+  }
+
+  fixUnaryIncrDecr(
+    node: ts.PrefixUnaryExpression | ts.PostfixUnaryExpression,
+    pan: ts.PropertyAccessExpression
+  ): Autofix[] | undefined {
+    const parent = node.parent;
+    const grandParent = parent.parent;
+
+    const { expression, name } = pan;
+    const { operator } = node;
+    const isVariableDeclaration = ts.isVariableDeclaration(node.parent);
+
+    const variableName = this.getVariableName(node.parent);
+
+    if (!variableName) {
+      return undefined;
+    }
+
+    const updateNodes = this.getNewNodesForIncrDecr(variableName, operator);
+
+    if (!updateNodes?.varAssignText || !updateNodes.addOrDecrOperation) {
+      return undefined;
+    }
+
+    const replacementText = this.getReplacementTextForPrefixAndPostfixUnary(
+      node,
+      updateNodes,
+      expression,
+      name,
+      variableName
+    );
+
+    if (!replacementText) {
+      return undefined;
+    }
+
+    if (isVariableDeclaration) {
+      const start = grandParent.getStart();
+      const end = grandParent.getEnd();
+      return [{ replacementText, start, end }];
+    }
+
+    const start = parent.getStart();
+    const end = parent.getEnd();
+    return [{ replacementText, start, end }];
+  }
+
+  private getReplacementTextForPrefixAndPostfixUnary(
+    node: ts.Node,
+    updateNodes: IncrementDecrementNodeInfo,
+    expression: ts.LeftHandSideExpression,
+    name: ts.MemberName,
+    variableName: string
+  ): string | undefined {
+    const { varAssignText, addOrDecrOperation } = updateNodes;
+    const converted: ts.Node = this.createGetPropertyForIncrDecr(expression.getText(), name.text);
+    let convertedAssigned = '';
+    if (ts.isBinaryExpression(node.parent) && node.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      convertedAssigned = this.wrapPropertyAccessInBinaryExpr(variableName, converted);
+    } else {
+      convertedAssigned = this.wrapPropertyAccessInVariableDeclaration(variableName, converted);
+    }
+    let replacementText = '';
+
+    switch (node.kind) {
+      case ts.SyntaxKind.PrefixUnaryExpression: {
+        const assign = this.createSetProperty(
+          expression.getText(),
+          name.text,
+          ts.factory.createIdentifier(variableName)
+        );
+        replacementText = `${convertedAssigned}\n${varAssignText}\n${assign}\n`;
+        break;
+      }
+      case ts.SyntaxKind.PostfixUnaryExpression: {
+        const assign = this.createSetProperty(expression.getText(), name.text, addOrDecrOperation as ts.Expression);
+        replacementText = `${convertedAssigned}\n${assign}\n${varAssignText}\n`;
+        break;
+      }
+      default: {
+        return undefined;
+      }
+    }
+
+    return replacementText;
+  }
+
+  private wrapPropertyAccessInVariableDeclaration(variableName: string, wrappedNode: ts.Node): string {
+    const node = ts.factory.createVariableDeclarationList(
+      [
+        ts.factory.createVariableDeclaration(
+          ts.factory.createIdentifier(variableName),
+          undefined,
+          undefined,
+          wrappedNode as ts.Expression
+        )
+      ],
+      ts.NodeFlags.Let
+    );
+
+    return this.printer.printNode(ts.EmitHint.Unspecified, node, this.sourceFile);
+  }
+
+  private wrapPropertyAccessInBinaryExpr(variableName: string, wrappedNode: ts.Node): string {
+    const node = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier(variableName),
+      ts.SyntaxKind.EqualsToken,
+      wrappedNode as ts.Expression
+    );
+
+    return this.printer.printNode(ts.EmitHint.Unspecified, node, this.sourceFile);
+  }
+
+  private createGetPropertyForIncrDecr(expression: string, name: string): ts.Node {
+    void this;
+    return ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(expression),
+            ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
+          ),
+          undefined,
+          [ts.factory.createStringLiteral(name)]
+        ),
+        ts.factory.createIdentifier(TO_NUMBER)
+      ),
+      undefined,
+      []
+    );
+  }
+
+  private createNewIncrDecrNodes(variableName: string, token: number): IncrementDecrementNodeInfo {
+    const update = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier(variableName),
+      ts.factory.createToken(token),
+      ts.factory.createNumericLiteral('1')
+    );
+
+    const node = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier(variableName),
+      ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+      update
+    );
+
+    return {
+      addOrDecrOperation: update,
+      varAssignText: this.printer.printNode(ts.EmitHint.Unspecified, node, this.sourceFile)
+    };
+  }
+
+  private createSetProperty(expression: string, field: string, value: ts.Expression): string {
+    const node = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(expression),
+        ts.factory.createIdentifier(SET_PROPERTY_BY_NAME)
+      ),
+      undefined,
+      [ts.factory.createIdentifier(field), value]
+    );
+
+    return this.printer.printNode(ts.EmitHint.Unspecified, node, this.sourceFile);
   }
 
   fixVariableDeclaration(node: ts.VariableDeclaration, isEnum: boolean): Autofix[] | undefined {
