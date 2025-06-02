@@ -2050,6 +2050,11 @@ void ETSParser::CheckDeclare()
 
     Lexer()->NextToken();  // eat 'declare'
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && Lexer()->GetToken().Ident().Is("module")) {
+        LogError(diagnostic::ERROR_ARKTS_NO_AMBIENT_DECLS);
+        return;
+    }
+
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_LET:
         case lexer::TokenType::KEYW_CONST:
