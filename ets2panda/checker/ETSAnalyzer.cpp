@@ -25,6 +25,8 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "util/es2pandaMacros.h"
 
+#include <unordered_set>
+
 namespace ark::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -1857,7 +1859,7 @@ static bool ValidatePreferredType(ETSChecker *checker, ir::ObjectExpression *exp
     }
 
     if (!preferredType->IsETSObjectType()) {
-        checker->LogError(diagnostic::CKASS_COMPOSITE_INVALID_TARGET, {preferredType}, expr->Start());
+        checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_TARGET, {preferredType}, expr->Start());
         return false;
     }
 
@@ -1878,6 +1880,359 @@ static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker
     }
 }
 
+// Helper to check for parameterless constructor
+static bool HasParameterlessConstructor(checker::ETSObjectType *objType, ETSChecker *checker,
+                                        const lexer::SourcePosition &pos)
+{
+    for (checker::Signature *sig : objType->ConstructSignatures()) {
+        if (sig->Params().empty()) {
+            checker->ValidateSignatureAccessibility(objType, sig, pos);
+            return true;
+        }
+    }
+    return false;
+}
+
+// Helper to resolve property name from key expression
+static std::optional<util::StringView> GetPropertyNameFromKey(ir::Expression *key)
+{
+    if (key->IsStringLiteral()) {
+        return key->AsStringLiteral()->Str();
+    }
+    if (key->IsIdentifier()) {
+        return key->AsIdentifier()->Name();
+    }
+    return std::nullopt;  // Indicates invalid key type
+}
+
+// Helper to determine property search flags based on object type
+static checker::PropertySearchFlags DetermineSearchFlagsForLiteral(checker::ETSObjectType *potentialObjType)
+{
+    if (potentialObjType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
+        return checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
+               checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
+               checker::PropertySearchFlags::SEARCH_INSTANCE_DECL | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
+    }
+    return checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD | checker::PropertySearchFlags::SEARCH_IN_BASE |
+           checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD;
+}
+
+static bool CheckSinglePropertyCompatibility(ir::Expression *propExpr, checker::ETSObjectType *potentialObjType)
+{
+    if (!propExpr->IsProperty()) {
+        return false;  // Not a key-value property
+    }
+    ir::Expression *key = propExpr->AsProperty()->Key();
+
+    std::optional<util::StringView> optPname = GetPropertyNameFromKey(key);
+    if (!optPname.has_value()) {
+        return false;  // Invalid key type in literal
+    }
+    util::StringView pname = optPname.value();
+
+    checker::PropertySearchFlags searchFlags = DetermineSearchFlagsForLiteral(potentialObjType);
+
+    return potentialObjType->GetProperty(pname, searchFlags) != nullptr;
+}
+
+static bool CheckObjectLiteralCompatibility(ir::ObjectExpression *expr, checker::ETSObjectType *potentialObjType)
+{
+    for (ir::Expression *propExpr : expr->Properties()) {
+        if (!CheckSinglePropertyCompatibility(propExpr, potentialObjType)) {
+            return false;
+        }
+    }
+    return true;  // All properties found
+}
+
+// Helper to check if a property type indicates optionality (union with undefined)
+static bool IsPropertyTypeOptional(checker::Type *propertyType)
+{
+    if (!propertyType->IsETSUnionType()) {
+        return false;
+    }
+
+    auto *unionType = propertyType->AsETSUnionType();
+    for (auto *constituentType : unionType->ConstituentTypes()) {
+        if (constituentType->IsETSUndefinedType()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Helper to check if a property has a default value in its declaration
+static bool HasPropertyDefaultValue(varbinder::LocalVariable *property)
+{
+    auto *decl = property->Declaration();
+    if (decl == nullptr || decl->Node() == nullptr || !decl->Node()->IsClassProperty()) {
+        return false;
+    }
+
+    auto *classProp = decl->Node()->AsClassProperty();
+    return classProp->Value() != nullptr;
+}
+
+// Helper to check if a property is optional (flag or declaration)
+static bool IsPropertyOptional(varbinder::LocalVariable *property, checker::Type *propertyType)
+{
+    // Check if property is marked as optional
+    if (property->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        return true;
+    }
+
+    // Check if property type includes undefined (indicating optional)
+    if (IsPropertyTypeOptional(propertyType)) {
+        return true;
+    }
+
+    // Check if declaration has optional modifier
+    auto *decl = property->Declaration();
+    if (decl != nullptr && decl->Node() != nullptr && decl->Node()->IsClassProperty()) {
+        auto *classProp = decl->Node()->AsClassProperty();
+        if (classProp->IsOptionalDeclaration()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Helper to check if a method property is only getters/setters
+static bool IsMethodOnlyAccessors(checker::Type *propertyType)
+{
+    if (!propertyType->IsETSMethodType()) {
+        return false;
+    }
+
+    auto methodType = propertyType->AsETSFunctionType();
+    for (auto *sig : methodType->CallSignatures()) {
+        if (!sig->HasSignatureFlag(checker::SignatureFlags::GETTER) &&
+            !sig->HasSignatureFlag(checker::SignatureFlags::SETTER)) {
+            // Regular method found
+            return false;
+        }
+    }
+    return true;
+}
+
+// Helper to check if an interface property is compatible with object literal property
+static bool IsInterfacePropertyCompatible(ir::Expression *propExpr, checker::ETSObjectType *interfaceType,
+                                          ETSChecker *checker)
+{
+    if (!propExpr->IsProperty()) {
+        return false;
+    }
+
+    ir::Expression *key = propExpr->AsProperty()->Key();
+    std::optional<util::StringView> optPname = GetPropertyNameFromKey(key);
+    if (!optPname.has_value()) {
+        return false;
+    }
+    util::StringView pname = optPname.value();
+
+    // Check if property exists in interface
+    varbinder::LocalVariable *property =
+        interfaceType->GetProperty(pname, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
+                                              checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
+                                              checker::PropertySearchFlags::SEARCH_INSTANCE_DECL |
+                                              checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
+
+    if (property == nullptr) {
+        return false;
+    }
+
+    auto *propertyType = checker->GetTypeOfVariable(property);
+
+    // If it's a method type, it should only be getter/setter, not regular methods
+    if (propertyType->IsETSMethodType()) {
+        return IsMethodOnlyAccessors(propertyType);
+    }
+
+    return true;
+}
+
+// Helper to check if all required interface properties are satisfied
+static bool AreAllRequiredInterfacePropertiesSatisfied(ir::ObjectExpression *expr,
+                                                       checker::ETSObjectType *interfaceType, ETSChecker *checker)
+{
+    // Get all properties of the interface using GetAllProperties
+    auto allProperties = interfaceType->GetAllProperties();
+
+    // Create a set of property names provided in the object literal
+    std::unordered_set<std::string> literalProperties;
+    for (ir::Expression *propExpr : expr->Properties()) {
+        if (propExpr->IsProperty()) {
+            ir::Expression *key = propExpr->AsProperty()->Key();
+            if (auto optPname = GetPropertyNameFromKey(key); optPname.has_value()) {
+                literalProperties.insert(std::string(optPname.value().Utf8()));
+            }
+        }
+    }
+
+    // Check if all literal properties exist in this interface
+    for (const auto &litPropName : literalProperties) {
+        bool found = false;
+        for (auto *property : allProperties) {
+            if (property->Name().Utf8() == litPropName) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            return false;
+        }
+    }
+
+    // Check that all required interface properties are satisfied
+    for (auto *property : allProperties) {
+        std::string propName(property->Name().Utf8());
+        auto *propertyType = checker->GetTypeOfVariable(property);
+
+        // Skip method types that aren't getters/setters (they make interface incompatible anyway)
+        if (propertyType->IsETSMethodType()) {
+            if (!IsMethodOnlyAccessors(propertyType)) {
+                // Regular methods not allowed
+                return false;
+            }
+        }
+        // Check if this property is provided in the literal
+        bool isInLiteral = literalProperties.find(propName) != literalProperties.end();
+        if (!isInLiteral) {
+            // Property not in literal - check if it's optional or has default value
+            bool isOptional = IsPropertyOptional(property, propertyType);
+            bool hasDefaultValue = HasPropertyDefaultValue(property);
+            if (!isOptional && !hasDefaultValue) {
+                return false;
+            }
+        }
+    }
+
+    return true;  // All required properties are satisfied
+}
+
+static bool IsObjectTypeCompatibleWithLiteral(ETSChecker *checker, ir::ObjectExpression *expr,
+                                              checker::ETSObjectType *potentialObjType)
+{
+    // Split record/map types, class types and interfaces as requested by reviewer
+
+    checker::ETSObjectType *originalBaseType = potentialObjType->GetOriginalBaseType();
+    checker::GlobalTypesHolder *globalTypes = checker->GetGlobalTypesHolder();
+
+    // Handle Record/Map types
+    if (checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalMapBuiltinType()) ||
+        checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalRecordBuiltinType())) {
+        // Maps and Records are always compatible with object literals
+        return true;
+    }
+
+    // Handle interface types
+    if (potentialObjType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
+        // For interface types, check that all literal properties exist in the interface
+        // and that interface has no regular methods (only getters/setters allowed)
+
+        // For non-empty literals, check that all literal properties exist in interface
+        // and all required interface properties are satisfied
+        for (ir::Expression *propExpr : expr->Properties()) {
+            if (!IsInterfacePropertyCompatible(propExpr, potentialObjType, checker)) {
+                return false;
+            }
+        }
+
+        // Check all required interface properties are satisfied
+        return AreAllRequiredInterfacePropertiesSatisfied(expr, potentialObjType, checker);
+    }
+
+    // Handle class types
+    // For class types, you need to check:
+    // - that there is a parameterless constructor, and
+    // - that all fields/properties set in the object literal are present in the class
+
+    if (!HasParameterlessConstructor(potentialObjType, checker, expr->Start())) {
+        return false;
+    }
+
+    // Check that all properties in literal exist in class
+    return CheckObjectLiteralCompatibility(expr, potentialObjType);
+}
+
+checker::ETSObjectType *ResolveUnionObjectTypeForObjectLiteral(ETSChecker *checker, ir::ObjectExpression *expr,
+                                                               checker::ETSUnionType *unionType)
+{
+    std::vector<checker::ETSObjectType *> candidateObjectTypes;
+    // Phase 1: Gather all ETSObjectTypes from the union
+    for (auto *constituentType : unionType->ConstituentTypes()) {
+        if (constituentType->IsETSObjectType()) {
+            candidateObjectTypes.push_back(constituentType->AsETSObjectType());
+        }
+    }
+
+    if (candidateObjectTypes.empty()) {
+        // No ETSObjectTypes in the union at all
+        checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_TARGET, {expr->PreferredType()}, expr->Start());
+        return nullptr;
+    }
+
+    std::vector<checker::ETSObjectType *> matchingObjectTypes;
+    // Phase 2: Filter candidates using the helper function
+    for (auto *potentialObjType : candidateObjectTypes) {
+        if (IsObjectTypeCompatibleWithLiteral(checker, expr, potentialObjType)) {
+            matchingObjectTypes.push_back(potentialObjType);
+        }
+    }
+
+    // Phase 3: Decide based on number of matches
+    if (matchingObjectTypes.size() == 1) {
+        return matchingObjectTypes.front();
+    }
+    if (matchingObjectTypes.empty()) {
+        // No candidate ETSObjectType from the union matched all properties
+        checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_TARGET, {expr->PreferredType()}, expr->Start());
+        return nullptr;
+    }
+    // Ambiguous
+    checker->LogError(diagnostic::AMBIGUOUS_REFERENCE, {expr->PreferredType()->ToString()}, expr->Start());
+    return nullptr;
+}
+
+static checker::ETSObjectType *ResolveObjectTypeFromPreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
+{
+    // Assume not null, checked by caller in Check()
+    checker::Type *preferredType = expr->PreferredType();
+
+    if (preferredType->IsETSUnionType()) {
+        return ResolveUnionObjectTypeForObjectLiteral(checker, expr, preferredType->AsETSUnionType());
+    }
+
+    if (preferredType->IsETSObjectType()) {
+        return preferredType->AsETSObjectType();
+    }
+
+    return nullptr;
+}
+
+// Helper to handle interface type objects
+static checker::Type *HandleInterfaceType(ETSChecker *checker, ir::ObjectExpression *expr,
+                                          checker::ETSObjectType *objType)
+{
+    auto *analyzer = static_cast<checker::ETSAnalyzer *>(checker->GetAnalyzer());
+    analyzer->CheckObjectExprProps(
+        expr, objType,
+        checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD | checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
+            checker::PropertySearchFlags::SEARCH_INSTANCE_DECL | checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
+    expr->SetTsType(objType);
+    return objType;
+}
+
+// Helper to handle Record/Map types
+static checker::Type *HandleRecordOrMapType(ETSChecker *checker, ir::ObjectExpression *expr,
+                                            checker::ETSObjectType *objType)
+{
+    expr->SetTsType(objType);
+    SetTypeforRecordProperties(expr, objType, checker);
+    return objType;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1885,7 +2240,14 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         return expr->TsType();
     }
 
-    if (!ValidatePreferredType(checker, expr)) {
+    if (expr->PreferredType() == nullptr) {
+        checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
+    }
+
+    if (!expr->PreferredType()->IsETSUnionType() && !expr->PreferredType()->IsETSDynamicType() &&
+        !ValidatePreferredType(checker, expr)) {
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
@@ -1894,53 +2256,48 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         return CheckDynamic(expr);
     }
 
-    checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
-    if (objType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
-        // Object literal of interface tpye
-        // Further interfaceObjectLiteralLowering phase will resolve interface type
-        // and create corresponding anonymous class and class type
-        // Here we just set the type to pass the checker
-        CheckObjectExprProps(expr, checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                                       checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
-        expr->SetTsType(objType);
-        return objType;
-    }
+    checker::ETSObjectType *objType = ResolveObjectTypeFromPreferredType(checker, expr);
 
-    if (expr->PreferredType()->ToAssemblerName().str() == compiler::Signatures::BUILTIN_RECORD ||
-        expr->PreferredType()->ToAssemblerName().str() == compiler::Signatures::BUILTIN_MAP) {
-        // 7.6.3 Object Literal of Record Type
-        // Record is an alias to Map
-        // Here we just set the type to pass the checker
-        // See Record Lowering for details
-        expr->SetTsType(objType);
-        SetTypeforRecordProperties(expr, objType, checker);
-        return objType;
-    }
-
-    bool haveEmptyConstructor = false;
-    for (checker::Signature *sig : objType->ConstructSignatures()) {
-        if (sig->Params().empty()) {
-            haveEmptyConstructor = true;
-            checker->ValidateSignatureAccessibility(objType, sig, expr->Start());
-            break;
+    if (objType == nullptr) {
+        if (!expr->PreferredType()->IsETSUnionType()) {
+            checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_TARGET, {expr->PreferredType()}, expr->Start());
         }
-    }
-    if (!haveEmptyConstructor) {
-        return checker->TypeError(expr, diagnostic::NO_PARAMLESS_CTOR, {objType->Name()}, expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
     }
 
-    CheckObjectExprProps(expr, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
-                                   checker::PropertySearchFlags::SEARCH_IN_BASE |
-                                   checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+    if (objType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
+        return HandleInterfaceType(checker, expr, objType);
+    }
+
+    checker::ETSObjectType *originalBaseObjType = objType->GetOriginalBaseType();
+    checker::GlobalTypesHolder *globalTypes = checker->GetGlobalTypesHolder();
+    if (checker->IsTypeIdenticalTo(originalBaseObjType, globalTypes->GlobalMapBuiltinType()) ||
+        checker->IsTypeIdenticalTo(originalBaseObjType, globalTypes->GlobalRecordBuiltinType())) {
+        return HandleRecordOrMapType(checker, expr, objType);
+    }
+
+    // If we reach here, objType is a class. It must have a parameterless constructor
+    if (!HasParameterlessConstructor(objType, checker, expr->Start())) {
+        expr->SetTsType(checker->TypeError(expr, diagnostic::NO_PARAMLESS_CTOR, {objType->Name()}, expr->Start()));
+        return expr->TsType();
+    }
+
+    CheckObjectExprProps(expr, objType,
+                         checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
+                             checker::PropertySearchFlags::SEARCH_IN_BASE |
+                             checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD);
 
     expr->SetTsType(objType);
     return objType;
 }
 
-void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const
+void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
+                                       checker::ETSObjectType *objectTypeForProperties,
+                                       checker::PropertySearchFlags searchFlags) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
+    checker::ETSObjectType *objType = objectTypeForProperties;
 
     for (ir::Expression *propExpr : expr->Properties()) {
         if (!propExpr->IsProperty()) {

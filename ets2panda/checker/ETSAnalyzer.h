@@ -40,7 +40,8 @@ public:
     checker::Type *CheckDynamic(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
     void GetUnionPreferredType(ir::Expression *expr, Type *originalType) const;
-    void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
+    void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::ETSObjectType *objectTypeForProperties,
+                              checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                          Type *leftType) const;
     [[nodiscard]] checker::Type *ReturnTypeForStatement([[maybe_unused]] const ir::Statement *const st) const;
