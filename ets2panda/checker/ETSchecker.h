@@ -329,9 +329,6 @@ public:
                                              bool isRecursive = false);
     ETSFunctionType *CreateETSArrowType(Signature *signature);
     ETSFunctionType *CreateETSMethodType(util::StringView name, ArenaVector<Signature *> &&signatures);
-    ETSFunctionType *CreateETSDynamicArrowType(Signature *signature, Language lang);
-    ETSFunctionType *CreateETSDynamicMethodType(util::StringView name, ArenaVector<Signature *> &&signatures,
-                                                Language lang);
     ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                  ETSFunctionType *extensionFunctionType);
     void AddThisReturnTypeFlagForInterfaceInvoke(ETSObjectType *interface);
@@ -341,7 +338,6 @@ public:
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,
                                                                                   size_t dim);
     Signature *CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim);
-    std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
     ETSObjectType *CreatePromiseOf(Type *type);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);
@@ -783,15 +779,6 @@ public:
     static Type *TryToInstantiate(Type *type, ArenaAllocator *allocator, TypeRelation *relation,
                                   GlobalTypesHolder *globalTypes);
 
-    // Dynamic interop
-    template <typename T>
-    Signature *ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments, Language lang,
-                                            bool isConstruct);
-    ir::ClassProperty *CreateStaticReadonlyField(const char *name);
-    void BuildClassBodyFromDynamicImports(const ArenaVector<ir::ETSImportDeclaration *> &dynamicImports,
-                                          ArenaVector<ir::AstNode *> *classBody);
-    void BuildDynamicImportClass();
-    void BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::TypeNode *retTypeAnnotation);
     // Trailing lambda
     void EnsureValidCurlyBrace(ir::CallExpression *callExpr);
 
@@ -1007,7 +994,6 @@ private:
     ir::MethodDefinition *CreateLambdaObjectClassInvokeMethod(Signature *invokeSignature,
                                                               ir::TypeNode *retTypeAnnotation);
 
-    void ClassInitializerFromImport(ir::ETSImportDeclaration *import, ArenaVector<ir::Statement *> *statements);
     void EmitDynamicModuleClassInitCall();
     DynamicCallIntrinsicsMap *DynamicCallIntrinsics(bool isConstruct)
     {

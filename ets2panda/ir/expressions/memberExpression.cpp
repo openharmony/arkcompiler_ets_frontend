@@ -447,13 +447,6 @@ static void CastTupleElementFromClassMemberType(checker::ETSChecker *checker,
 
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    if (baseType->IsETSDynamicType()) {
-        if (!property_->Check(checker)->IsETSStringType()) {
-            checker->ValidateArrayIndex(property_);
-        }
-        return checker->GlobalBuiltinDynamicType(baseType->AsETSDynamicType()->Language());
-    }
-
     if (baseType->IsETSArrayType()) {
         auto *dflt = baseType->AsETSArrayType()->ElementType();
         if (!checker->ValidateArrayIndex(property_)) {

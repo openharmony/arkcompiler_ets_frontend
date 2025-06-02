@@ -54,7 +54,6 @@ public:
     [[nodiscard]] checker::Type const *TypeForVar(varbinder::Variable const *var) const noexcept override;
 
     void LoadVar(const ir::Identifier *node, varbinder::Variable const *var);
-    void LoadDynamicModuleVariable(const ir::AstNode *node, varbinder::Variable const *var);
     void LoadDynamicNamespaceVariable(const ir::AstNode *node, varbinder::Variable const *var);
     void StoreVar(const ir::Identifier *node, const varbinder::ConstScopeFindResult &result);
 
@@ -69,13 +68,6 @@ public:
                        const util::StringView &name);
     void LoadProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                       const util::StringView &fullName);
-    void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                              const util::StringView &propName);
-    void LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                             std::variant<util::StringView, const ark::es2panda::ir::Expression *> property);
-
-    void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
-    void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
 
     void StorePropertyByName(const ir::AstNode *node, VReg objReg,
                              checker::ETSChecker::NamedAccessMeta const &fieldMeta);
@@ -93,7 +85,6 @@ public:
 
     void BranchIfIsInstance(const ir::AstNode *node, VReg srcReg, const checker::Type *target, Label *ifTrue);
     void IsInstance(const ir::AstNode *node, VReg srcReg, checker::Type const *target);
-    void IsInstanceDynamic(const ir::BinaryExpression *node, VReg srcReg, VReg tgtReg);
     void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
 
     void EmitNullcheck([[maybe_unused]] const ir::AstNode *node)
@@ -220,8 +211,6 @@ public:
 
     void LoadAccumulatorChar(const ir::AstNode *node, char16_t value);
 
-    void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);
-
     void ApplyConversion(const ir::AstNode *node)
     {
         if (targetType_ != nullptr) {
@@ -276,10 +265,7 @@ public:
     void CastToLong(const ir::AstNode *node);
     void CastToInt(const ir::AstNode *node);
     void CastToString(const ir::AstNode *node);
-    void CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicType *type);
-    void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag);
     void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
-    void CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType);
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
@@ -533,8 +519,6 @@ private:
 
     template <bool IS_SRTICT = false>
     void RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
-    template <bool IS_SRTICT = false>
-    void RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
 
     template <typename Compare, typename Cond>
     void BinaryNumberComparison(const ir::AstNode *node, VReg lhs, Label *ifFalse)
@@ -759,9 +743,6 @@ private:
     template <typename T>
     void SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag typeKind, T number);
     void InitializeContainingClass();
-
-    util::StringView FormDynamicModulePropReference(const varbinder::Variable *var);
-    util::StringView FormDynamicModulePropReference(const ir::ETSImportDeclaration *import);
 
     friend class TargetTypeContext;
 

@@ -16,7 +16,6 @@
 #include <mutex>
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
@@ -2177,13 +2176,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 {
     std::vector<ResolveResult *> resolveRes {};
 
-    if (target->IsETSDynamicType() && !target->AsETSDynamicType()->HasDecl()) {
-        auto propName = memberExpr->Property()->AsIdentifier()->Name();
-        varbinder::LocalVariable *propVar = target->AsETSDynamicType()->GetPropertyDynamic(propName, this);
-        resolveRes.emplace_back(ProgramAllocator()->New<ResolveResult>(propVar, ResolvedKind::PROPERTY));
-        return resolveRes;
-    }
-
     if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
         !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2257,9 +2249,6 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
 {
     if (classType->SuperType() == nullptr) {
         return;
-    }
-    if (classType->SuperType()->IsETSDynamicType()) {
-        LogError(diagnostic::EXTEND_DYNAMIC, {classDef->Ident()->Name()}, classDef->Start());
     }
 
     const auto &allProps = classType->GetAllProperties();

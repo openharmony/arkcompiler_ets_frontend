@@ -48,7 +48,7 @@ ir::ETSTypeReference *CreateAsyncImplMethodReturnTypeAnnotation(checker::ETSChec
     // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
     auto *objectId =
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
-    checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
+    checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId);
 
     auto *returnTypeAnn = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),

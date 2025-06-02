@@ -553,9 +553,6 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unuse
 
 bool ETSObjectType::IsBoxedPrimitive() const
 {
-    if (this->IsETSDynamicType()) {
-        return false;
-    }
     if (this->IsETSEnumType()) {
         return false;
     }
@@ -1137,31 +1134,6 @@ static std::pair<util::StringView, util::StringView> GetObjectTypeDeclNames(ir::
     return {node->AsAnnotationDeclaration()->GetBaseName()->Name(), node->AsAnnotationDeclaration()->InternalName()};
 }
 
-static std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName)
-{
-    Language lang(Language::Id::ETS);
-    bool hasDecl = false;
-
-    if (declNode->IsClassDefinition()) {
-        auto *clsDef = declNode->AsClassDefinition();
-        lang = clsDef->Language();
-        hasDecl = clsDef->IsDeclare();
-    }
-
-    if (declNode->IsTSInterfaceDeclaration()) {
-        auto *ifaceDecl = declNode->AsTSInterfaceDeclaration();
-        lang = ifaceDecl->Language();
-        hasDecl = ifaceDecl->IsDeclare();
-    }
-
-    auto res = compiler::Signatures::Dynamic::LanguageFromType(assemblerName.Utf8());
-    if (res) {
-        lang = *res;
-    }
-
-    return std::make_tuple(lang, hasDecl);
-}
-
 ETSObjectType *ETSObjectType::CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags)
 {
     auto const [name, internalName] = GetObjectTypeDeclNames(declNode);
@@ -1173,12 +1145,6 @@ ETSObjectType *ETSObjectType::CreateETSObjectType(ir::AstNode *declNode, ETSObje
         ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
         return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, GetRelation());
     }
-
-    if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), std::make_tuple(name, internalName, lang),
-                                                std::make_tuple(declNode, flags, GetRelation()), hasDecl);
-    }
-
     if (internalName == compiler::Signatures::BUILTIN_ARRAY) {
         return Allocator()->New<ETSResizableArrayType>(Allocator(), name,
                                                        std::make_tuple(declNode, flags, GetRelation()));

@@ -996,7 +996,6 @@ ast/compiler/ets/extension_function_tests/extension_function_return_this_union3.
 ast/compiler/ets/generic_typealias_2_neg.ets
 ast/compiler/ets/tuple_types_4_neg.ets
 ast/compiler/ets/annotation_tests/annotationUsage_excessive_param01.ets
-ast/compiler/ets/import_tests/dynamic_import_interop_neg.ets
 ast/compiler/ets/import_tests/selective_export_tests/import_function_wrong_name.ets
 ast/compiler/ets/import_tests/selective_export_tests/import_interface_wrong_name.ets
 ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.ets

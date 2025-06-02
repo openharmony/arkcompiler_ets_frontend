@@ -154,14 +154,6 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 bool TypeRelation::IsComparableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->ComparableResults(), RelationType::COMPARABLE);
-
-    // NOTE: vpukhov. reimplement dynamic comparison and remove this check
-    if (source->IsETSDynamicType() || target->IsETSDynamicType()) {
-        if (!(source->IsETSDynamicType() && target->IsETSDynamicType())) {
-            return false;
-        }
-    }
-
     if (result_ == RelationResult::CACHE_MISS) {
         if (IsAssignableTo(source, target)) {
             return true;

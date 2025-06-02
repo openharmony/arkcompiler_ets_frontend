@@ -1156,9 +1156,6 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     bool hasRestParam =
         (oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter()) ||
         call->Signature()->HasRestParameter();
-    if (ifaceType->IsETSDynamicType()) {
-        return call;
-    }
     util::StringView invokeMethodName =
         util::UString {checker::FunctionalInterfaceInvokeName(arity, hasRestParam), allocator}.View();
 

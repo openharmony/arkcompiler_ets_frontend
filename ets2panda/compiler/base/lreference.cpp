@@ -183,8 +183,7 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
 
     const auto *memberExpr = Node()->AsMemberExpression();
     staticObjRef_ = memberExpr->Object()->TsType();
-    if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar()) &&
-        !staticObjRef_->IsETSDynamicType()) {
+    if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar())) {
         return;
     }
 
@@ -281,11 +280,6 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
 {
     const auto *const objectType = memberExpr->Object()->TsType();
 
-    if (objectType->IsETSDynamicType()) {
-        etsg_->StoreElementDynamic(Node(), baseReg_, propReg_);
-        return;
-    }
-
     if (objectType->IsETSTupleType()) {
         ES2PANDA_ASSERT(memberExpr->GetTupleIndexValue().has_value());
 
@@ -350,21 +344,12 @@ void ETSLReference::SetValue() const
     if (memberExpr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
         const util::StringView fullName = etsg_->FormClassPropReference(staticObjRef_->AsETSObjectType(), propName);
 
-        if (staticObjRef_->IsETSDynamicType()) {
-            etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
-        } else {
-            etsg_->StoreStaticProperty(Node(), memberExprTsType, fullName);
-        }
+        etsg_->StoreStaticProperty(Node(), memberExprTsType, fullName);
 
         return;
     }
 
     auto const *objectType = memberExpr->Object()->TsType();
-
-    if (objectType->IsETSDynamicType()) {
-        etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
-        return;
-    }
 
     if (objectType->IsETSUnionType()) {
         etsg_->StorePropertyByName(Node(), baseReg_,

@@ -113,9 +113,7 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
             if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
                 ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
                     ir::MemberExpressionKind::ELEMENT_ACCESS) {
-                if (auto const *const objectType =
-                        ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType();
-                    objectType != nullptr && !objectType->IsETSDynamicType()) {
+                if (ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType() != nullptr) {
                     return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
                 }
             }
@@ -128,8 +126,7 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
             if (ast->IsMemberExpression() &&
                 ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-                if (auto const *const objectType = ast->AsMemberExpression()->ObjType();
-                    objectType != nullptr && !objectType->IsETSDynamicType()) {
+                if (ast->AsMemberExpression()->ObjType() != nullptr) {
                     return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
                 }
             }
@@ -147,7 +144,7 @@ bool ObjectIndexLowering::PostconditionForModule([[maybe_unused]] public_lib::Co
         if (ast->IsMemberExpression() &&
             ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
             if (auto const *const objectType = ast->AsMemberExpression()->ObjType(); objectType != nullptr) {
-                return !objectType->IsETSDynamicType();
+                return true;
             }
         }
         return false;

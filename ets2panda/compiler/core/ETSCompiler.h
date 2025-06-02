@@ -35,7 +35,6 @@ public:
 
 private:
     void GetDynamicNameParts(const ir::CallExpression *expr, ArenaVector<util::StringView> &parts) const;
-    void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const;
     void CompileCastPrimitives(const ir::Expression *expr, checker::Type const *targetType) const;
     void CompileCast(const ir::TSAsExpression *expr, checker::Type const *targetType) const;
     void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, checker::Signature *signature) const;

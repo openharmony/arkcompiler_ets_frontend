@@ -29,10 +29,8 @@ class Variable;
 namespace ark::es2panda::checker {
 class ObjectDescriptor;
 class GlobalTypesHolder;
-class ETSDynamicType;
 class ETSAsyncFuncReturnType;
 class ETSChecker;
-class ETSDynamicFunctionType;
 class ETSTypeParameter;
 class ETSEnumType;
 
@@ -143,24 +141,7 @@ public:
         return reinterpret_cast<const ETSResizableArrayType *>(this);
     }
 
-    [[nodiscard]] bool IsETSDynamicType() const noexcept
-    {
-        return IsETSObjectType() && HasTypeFlag(TypeFlag::ETS_DYNAMIC_FLAG);
-    }
-
     [[nodiscard]] bool IsBuiltinNumeric() const noexcept;
-
-    ETSDynamicType *AsETSDynamicType()
-    {
-        ES2PANDA_ASSERT(IsETSDynamicType());
-        return reinterpret_cast<ETSDynamicType *>(this);
-    }
-
-    const ETSDynamicType *AsETSDynamicType() const
-    {
-        ES2PANDA_ASSERT(IsETSDynamicType());
-        return reinterpret_cast<const ETSDynamicType *>(this);
-    }
 
     ETSAsyncFuncReturnType *AsETSAsyncFuncReturnType()
     {
@@ -172,23 +153,6 @@ public:
     {
         ES2PANDA_ASSERT(IsETSAsyncFuncReturnType());
         return reinterpret_cast<const ETSAsyncFuncReturnType *>(this);
-    }
-
-    bool IsETSDynamicFunctionType() const
-    {
-        return TypeFlags() == TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE;
-    }
-
-    ETSDynamicFunctionType *AsETSDynamicFunctionType()
-    {
-        ES2PANDA_ASSERT(IsETSDynamicFunctionType());
-        return reinterpret_cast<ETSDynamicFunctionType *>(this);
-    }
-
-    const ETSDynamicFunctionType *AsETSDynamicFunctionType() const
-    {
-        ES2PANDA_ASSERT(IsETSDynamicFunctionType());
-        return reinterpret_cast<const ETSDynamicFunctionType *>(this);
     }
 
     bool IsConstantType() const

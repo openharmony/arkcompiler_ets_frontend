@@ -655,34 +655,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
     }
 
     tsType = GlobalETSBooleanType();
-    if (rightType->IsETSDynamicType() && leftType->IsETSDynamicType()) {
-        return {tsType, GlobalBuiltinJSValueType()};
-    }
 
     return {tsType, GlobalETSObjectType()};
-}
-
-static Type *CheckOperatorEqualDynamic(ETSChecker *checker, BinaryArithmOperands const &ops)
-{
-    auto left = ops.expr->Left();
-    auto right = ops.expr->Right();
-    // canonicalize
-    auto *const dynExp = left->TsType()->IsETSDynamicType() ? left : right;
-    auto *const otherExp = dynExp == left ? right : left;
-
-    if (otherExp->TsType()->IsETSDynamicType()) {
-        return checker->GlobalBuiltinJSValueType();
-    }
-    if (dynExp->TsType()->AsETSDynamicType()->IsConvertible(otherExp->TsType())) {
-        // NOTE: vpukhov. boxing flags are not set in dynamic values
-        return otherExp->TsType();
-    }
-    if (otherExp->TsType()->IsETSReferenceType()) {
-        // have to prevent casting dyn_exp via ApplyCast without nullish flag
-        return checker->GlobalETSAnyType();
-    }
-    checker->LogError(diagnostic::BINOP_DYN_UNIMPLEMENTED, {}, ops.expr->Start());
-    return checker->GlobalETSAnyType();
 }
 
 static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOperands const &ops)
@@ -720,10 +694,6 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
 
     if (typeL->IsTypeError()) {  // both are errors
         return checker->GlobalTypeError();
-    }
-
-    if (typeL->IsETSDynamicType() || typeR->IsETSDynamicType()) {
-        return CheckOperatorEqualDynamic(checker, ops);
     }
 
     if (reducedL->IsETSBooleanType() && reducedR->IsETSBooleanType()) {
@@ -819,12 +789,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
         return {GlobalETSBooleanBuiltinType(), leftType};
     }
 
-    if (rightType->IsETSDynamicType() && !rightType->AsETSDynamicType()->HasDecl()) {
-        LogError(diagnostic::INSTANCEOF_NOT_TYPE, {}, pos);
-        return {GlobalETSBooleanBuiltinType(), leftType};
-    }
-
-    checker::Type *opType = rightType->IsETSDynamicType() ? GlobalBuiltinJSValueType() : GlobalETSObjectType();
+    checker::Type *opType = GlobalETSObjectType();
     RemoveStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
 
     return {GlobalETSBooleanBuiltinType(), opType};

@@ -1242,9 +1242,7 @@ module Es2pandaLibApi
   def ast_type_additional_children
     %w[
       ETSStringType
-      ETSDynamicType
       ETSAsyncFuncReturnType
-      ETSDynamicFunctionType
       ETSEnumType
       ETSBigIntType
     ]

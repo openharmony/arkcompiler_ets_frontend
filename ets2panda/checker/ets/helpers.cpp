@@ -652,7 +652,7 @@ static bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *i
         checker->SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
 
-    if (init->IsArrayExpression() && (annotationType != nullptr) && !annotationType->IsETSDynamicType()) {
+    if (init->IsArrayExpression() && (annotationType != nullptr)) {
         if (annotationType->IsETSTupleType() &&
             !checker->IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
             return false;
@@ -1754,11 +1754,6 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
 
     if (var->TsType() != nullptr && var->TsType()->IsTypeError()) {
         return name->SetTsType(GlobalTypeError());
-    }
-
-    auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
-    if (importData != nullptr && importData->import->IsPureDynamic()) {
-        return name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
     }
 
     return name->SetTsType(ResolveReferencedType(var->AsLocalVariable(), name));

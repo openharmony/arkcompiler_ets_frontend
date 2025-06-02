@@ -68,7 +68,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
         std::ignore = TypeError(ident->Variable(), diagnostic::NAMESPACE_CALL, {ident->ToString()}, ident->Start());
     }
-    if (type->IsETSFunctionType() || type->IsETSDynamicType()) {
+    if (type->IsETSFunctionType()) {
         return;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

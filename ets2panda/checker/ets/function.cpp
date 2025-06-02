@@ -1686,13 +1686,8 @@ checker::ETSFunctionType *ETSChecker::BuildMethodType(ir::ScriptFunction *func)
 {
     ES2PANDA_ASSERT(!func->IsArrow());
     auto *nameVar = func->Id()->Variable();
-    ETSFunctionType *funcType;
-    if (func->IsDynamic()) {
-        funcType = CreateETSDynamicMethodType(nameVar->Name(), {{func->Signature()}, ProgramAllocator()->Adapter()},
-                                              func->Language());
-    } else {
-        funcType = CreateETSMethodType(nameVar->Name(), {{func->Signature()}, ProgramAllocator()->Adapter()});
-    }
+    ETSFunctionType *funcType =
+        CreateETSMethodType(nameVar->Name(), {{func->Signature()}, ProgramAllocator()->Adapter()});
     funcType->SetVariable(nameVar);
     return funcType;
 }
