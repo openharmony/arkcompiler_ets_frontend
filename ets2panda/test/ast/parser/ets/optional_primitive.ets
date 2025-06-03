@@ -17,3 +17,5 @@ function main() {
     let a ?: number = 1
     assertEQ(a, 1)
 }
+
+/* @@? 17:12 Error SyntaxError: Optional variable is deprecated and no longer supported.  */

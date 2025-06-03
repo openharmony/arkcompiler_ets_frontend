@@ -1634,6 +1634,9 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
         }
         Lexer()->NextToken();  // eat '?'
         init->AddModifier(ir::ModifierFlags::OPTIONAL);
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+            LogError(diagnostic::OPTIONAL_VARIABLE);
+        }
     }
 
     if (auto const tokenType = Lexer()->GetToken().Type(); tokenType == lexer::TokenType::PUNCTUATOR_COLON) {

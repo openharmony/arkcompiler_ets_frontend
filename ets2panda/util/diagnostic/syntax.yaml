@@ -1231,3 +1231,7 @@ syntax:
 - name: DEEP_NESTING
   id: 305
   message: "Maximum allowed nesting level exceeded."
+
+- name: OPTIONAL_VARIABLE
+  id: 306
+  message: "Optional variable is deprecated and no longer supported."
