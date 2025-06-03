@@ -8328,16 +8328,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
+
     const left = node.left;
     const right = node.right;
     const getNode = (expr: ts.Expression): ts.Node => {
       return ts.isPropertyAccessExpression(expr) || ts.isCallExpression(expr) ? expr.expression : expr;
     };
+
     const leftExpr = getNode(left);
     const rightExpr = getNode(right);
-    if (this.tsUtils.isJsImport(leftExpr) || this.tsUtils.isJsImport(rightExpr)) {
-      this.incrementCounters(node, FaultID.InteropJsInstanceof);
+
+    if (!this.tsUtils.isJsImport(leftExpr) && !this.tsUtils.isJsImport(rightExpr)) {
+      return;
     }
+
+    const autofix = this.autofixer?.fixInteropJsInstanceOfExpression(node);
+    this.incrementCounters(node, FaultID.InteropJsInstanceof, autofix);
   }
 
   private checkAutoIncrementDecrement(unaryExpr: ts.PostfixUnaryExpression | ts.PrefixUnaryExpression): void {
