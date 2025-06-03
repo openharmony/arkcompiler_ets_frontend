@@ -759,6 +759,12 @@ bool ETSUnionType::IsOverlapWith(TypeRelation *relation, Type *type)
         if (type->IsETSUnionType() && type->AsETSUnionType()->IsOverlapWith(relation, ct)) {
             return true;
         }
+        if (type->IsETSObjectType() && ct->IsETSObjectType()) {
+            if (type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC) &&
+                ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC)) {
+                return true;
+            }
+        }
         if (relation->IsSupertypeOf(ct, type) || relation->IsSupertypeOf(type, ct)) {
             return true;
         }
