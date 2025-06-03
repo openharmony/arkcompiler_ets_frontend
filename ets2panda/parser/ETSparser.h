@@ -260,7 +260,6 @@ private:
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
-    std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function);
     std::string PrimitiveTypeToName(ir::PrimitiveType type) const;
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
     std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const;
@@ -300,7 +299,7 @@ private:
     ir::AstNode *ParseJsDocInfoInInterfaceBody();
     ir::AstNode *ParseAnnotationsInInterfaceBody();
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
-    bool CheckModuleAsModifier();
+    void CheckModuleAsModifier();
     bool IsFixedArrayTypeNode(ir::AstNode *node);
     ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent, bool isOptional);
     std::pair<ir::Expression *, std::string> TypeAnnotationValue(ir::TypeNode *typeAnnotation);
