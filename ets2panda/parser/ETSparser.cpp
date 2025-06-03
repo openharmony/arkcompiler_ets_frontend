@@ -1366,6 +1366,10 @@ ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modif
         return ParseSingleExportForAnonymousConst(modifiers);
     }
 
+    if (token.KeywordType() == lexer::TokenType::KEYW_AS) {
+        LogError(diagnostic::ERROR_ARKTS_NO_UMD, {}, token.Start());
+        return nullptr;
+    }
     if (token.Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::EXPORT_NON_DECLARATION, {}, token.Start());
         return nullptr;
@@ -1498,6 +1502,12 @@ SpecifiersInfo ETSParser::ParseNamedSpecifiers()
     ArenaVector<ir::ImportDefaultSpecifier *> resultDefault(Allocator()->Adapter());
     ArenaVector<ir::ExportSpecifier *> resultExportDefault(Allocator()->Adapter());
 
+    auto token = Lexer()->GetToken();
+    if (token.Ident() == (lexer::TokenToString(lexer::TokenType::KEYW_IMPORT)) &&
+        token.Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        LogError(diagnostic::ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT);
+    }
+
     ParseList(
         lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
         [this, &result, &resultDefault, &resultExportDefault, &fileName]() {
@@ -1552,6 +1562,10 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
 
 ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
 {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+        LogError(diagnostic::ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT);
+        return nullptr;
+    }
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
     }
