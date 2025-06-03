@@ -2166,7 +2166,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const processExpression = (expr: ts.Expression): void => {
       const symbol = this.tsUtils.trueSymbolAtLocation(expr);
       if (this.isJsFileSymbol(symbol) || this.isJsFileExpression(expr)) {
-        this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare);
+        const autofix = this.autofixer?.fixInteropOperators(expr);
+        this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare, autofix);
       }
     };
 
@@ -9137,8 +9138,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const processExpression = (expr: ts.Expression): void => {
       const symbol = this.tsUtils.trueSymbolAtLocation(expr);
-      if (this.isJsFileSymbol(symbol)) {
-        this.incrementCounters(expr, FaultID.BinaryOperations);
+      if (this.isJsFileSymbol(symbol) || this.isJsFileExpression(expr)) {
+        const autofix = this.autofixer?.fixInteropOperators(expr);
+        this.incrementCounters(expr, FaultID.BinaryOperations, autofix);
       }
     };
 

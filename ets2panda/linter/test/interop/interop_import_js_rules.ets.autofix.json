@@ -401,6 +401,17 @@
             "endLine": 34,
             "endColumn": 11,
             "problem": "InterOpImportJsDataCompare",
+            "autofix": [
+                {
+                    "start": 1118,
+                    "end": 1124,
+                    "replacementText": "ff1.getPropertyByName(\"f1\").toNumber()",
+                    "line": 34,
+                    "column": 5,
+                    "endLine": 34,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"

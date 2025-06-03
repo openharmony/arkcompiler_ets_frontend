@@ -4323,6 +4323,65 @@ export class Autofixer {
     ];
   }
 
+  fixInteropOperators(expr: ts.Expression): Autofix[] | undefined {
+    if (ts.isPropertyAccessExpression(expr)) {
+      return this.fixPropertyAccessToNumber(expr);
+    }
+
+    if (ts.isIdentifier(expr)) {
+      const symbol = this.utils.trueSymbolAtLocation(expr);
+
+      if (this.utils.isJsImport(expr)) {
+        const toNumberCall = ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(expr, ts.factory.createIdentifier(TO_NUMBER)),
+          undefined,
+          []
+        );
+
+        const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, toNumberCall, expr.getSourceFile());
+
+        return [
+          {
+            start: expr.getStart(),
+            end: expr.getEnd(),
+            replacementText
+          }
+        ];
+      }
+
+      const decl = symbol?.declarations?.find(ts.isVariableDeclaration);
+      if (decl?.initializer && ts.isPropertyAccessExpression(decl.initializer)) {
+        return this.fixPropertyAccessToNumber(decl.initializer);
+      }
+    }
+
+    return undefined;
+  }
+
+  private fixPropertyAccessToNumber(expr: ts.PropertyAccessExpression): Autofix[] {
+    const getPropCall = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(expr.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)),
+      undefined,
+      [ts.factory.createStringLiteral(expr.name.getText())]
+    );
+
+    const toNumberCall = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(getPropCall, ts.factory.createIdentifier(TO_NUMBER)),
+      undefined,
+      []
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, toNumberCall, expr.getSourceFile());
+
+    return [
+      {
+        start: expr.getStart(),
+        end: expr.getEnd(),
+        replacementText
+      }
+    ];
+  }
+
   fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
     const statements = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),

@@ -14,3 +14,5 @@
  */
 
 export let foo = {a: 1, b: 2}
+export let m = 3
+export let n = 2
