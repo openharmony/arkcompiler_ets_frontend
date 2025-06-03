@@ -392,7 +392,7 @@
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
+            "severity": "WARNING"
         },
         {
             "line": 64,
@@ -412,7 +412,7 @@
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
+            "severity": "WARNING"
         },
         {
             "line": 65,
