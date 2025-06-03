@@ -15,35 +15,29 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 49,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 49,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 619,
-                    "end": 667,
+                    "start": 606,
+                    "end": 654,
                     "replacementText": "",
-                    "line": 17,
+                    "line": 16,
                     "column": 1,
-                    "endLine": 17,
+                    "endLine": 16,
                     "endColumn": 49
                 },
                 {
-                    "start": 667,
-                    "end": 667,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "start": 654,
+                    "end": 654,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 49
                 }
             ],
             "suggest": "",
@@ -51,19 +45,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 11,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 18,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 678,
-                    "end": 685,
+                    "start": 665,
+                    "end": 672,
                     "replacementText": "foo.getPropertyByName(\"arr\")",
-                    "line": 18,
+                    "line": 17,
                     "column": 11,
-                    "endLine": 18,
+                    "endLine": 17,
                     "endColumn": 18
                 }
             ],
@@ -73,29 +67,8 @@
         },
         {
             "line": 18,
-            "column": 11,
-            "endLine": 18,
-            "endColumn": 18,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('arr')",
-                    "start": 678,
-                    "end": 685,
-                    "line": 18,
-                    "column": 11,
-                    "endLine": 18,
-                    "endColumn": 18
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
             "column": 1,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 7,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -103,16 +76,68 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 1,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 7,
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
                     "replacementText": "arr.getPropertyByIndex(1).toNumber()",
-                    "start": 686,
-                    "end": 692,
+                    "start": 673,
+                    "end": 679,
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 7,
+            "problem": "InterOpImportJsIndex",
+            "autofix": [
+                {
+                    "start": 673,
+                    "end": 679,
+                    "replacementText": "arr.getPropertyByIndex(1)",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 7,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "autofix": [
+                {
+                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
+                    "start": 680,
+                    "end": 690,
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -127,65 +152,17 @@
             "line": 19,
             "column": 1,
             "endLine": 19,
-            "endColumn": 7,
-            "problem": "InterOpImportJsIndex",
-            "autofix": [
-                {
-                    "start": 686,
-                    "end": 692,
-                    "replacementText": "arr.getPropertyByIndex(1)",
-                    "line": 19,
-                    "column": 1,
-                    "endLine": 19,
-                    "endColumn": 7
-                }
-            ],
-            "suggest": "",
-            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
-            "endColumn": 7,
-            "problem": "InteropJsObjectTraverseJsInstance",
-            "autofix": [
-                {
-                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
-                    "start": 693,
-                    "end": 703,
-                    "line": 20,
-                    "column": 1,
-                    "endLine": 20,
-                    "endColumn": 7
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
             "endColumn": 11,
             "problem": "InterOpImportJsIndex",
             "autofix": [
                 {
-                    "start": 693,
-                    "end": 703,
-                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))"
+                    "start": 680,
+                    "end": 690,
+                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -193,19 +170,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 19,
             "column": 10,
-            "endLine": 20,
+            "endLine": 19,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 702,
-                    "end": 703,
+                    "start": 689,
+                    "end": 690,
                     "replacementText": "4.0",
-                    "line": 20,
+                    "line": 19,
                     "column": 10,
-                    "endLine": 20,
+                    "endLine": 19,
                     "endColumn": 11
                 }
             ],

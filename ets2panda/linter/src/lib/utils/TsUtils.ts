@@ -44,9 +44,8 @@ import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
-import { USE_STATIC } from './consts/InteropAPI';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_ETS, EXTNAME_JS } from './consts/ExtensionName';
+import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const SYMBOL = 'Symbol';
@@ -3654,7 +3653,7 @@ export class TsUtils {
         ) {
           return false;
         }
-        
+
         return true;
       }
       current = current.parent;
@@ -3722,21 +3721,19 @@ export class TsUtils {
     return (
       importSourceFile.fileName.endsWith(EXTNAME_ETS) &&
       currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      !TsUtils.isArkts12File(importSourceFile) &&
-      TsUtils.isArkts12File(currentSourceFile)
+      !this.isArkts12File(importSourceFile) &&
+      this.isArkts12File(currentSourceFile)
     );
   }
 
-  static isArkts12File(sourceFile: ts.SourceFile): boolean {
-    if (!sourceFile?.statements.length) {
+  isArkts12File(sourceFile: ts.SourceFile): boolean {
+    if (!sourceFile?.fileName) {
       return false;
     }
-    const statements = sourceFile.statements;
-    return (
-      ts.isExpressionStatement(statements[0]) &&
-      ts.isStringLiteral(statements[0].expression) &&
-      statements[0].expression.getText() === USE_STATIC
-    );
+    if (sourceFile.fileName.endsWith(EXTNAME_D_ETS)) {
+      return true;
+    }
+    return !!this.options.inputFiles?.includes(sourceFile.fileName);
   }
 
   static removeOrReplaceQuotes(str: string, isReplace: boolean): string {

@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 49,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 5,
             "endLine": 20,

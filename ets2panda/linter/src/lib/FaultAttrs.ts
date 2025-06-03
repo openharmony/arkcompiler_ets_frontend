@@ -186,7 +186,6 @@ faultsAttrs[FaultID.UIInterfaceImport] = new FaultAttributes(259);
 faultsAttrs[FaultID.EntryAnnotation] = new FaultAttributes(260);
 faultsAttrs[FaultID.MakeObservedIsNotSupported] = new FaultAttributes(262);
 faultsAttrs[FaultID.ProvideAnnotation] = new FaultAttributes(263);
-faultsAttrs[FaultID.InteropJsObjectUsage] = new FaultAttributes(264);
 faultsAttrs[FaultID.InteropJsObjectInheritance] = new FaultAttributes(265);
 faultsAttrs[FaultID.InteropJsObjectTraverseJsInstance] = new FaultAttributes(266);
 faultsAttrs[FaultID.InteropJsObjectCallStaticFunc] = new FaultAttributes(267);

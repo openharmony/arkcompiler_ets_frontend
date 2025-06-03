@@ -13,15 +13,12 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
+let arkTsMod = await import('./test_files/dummy_arkts1_file');
+let tsModule  = await import('./test_files/dummy_ts_file');
+let jsModule = await import('./test_files/dummy_js_file');
 
-
-+foo.getPropertyByName("num").toNumber();
--foo.getPropertyByName("num").toNumber();
-!foo.getPropertyByName("num").toNumber();
-~foo.getPropertyByName("num").toNumber();
-+(foo.getPropertyByName("num").toNumber());
--(foo.getPropertyByName("num").toNumber());
-!(foo.getPropertyByName("num").toNumber());
-~(foo.getPropertyByName("num").toNumber());
+function main(): void {
+  import('./test_files/dummy_ts_file').then((m) => {
+    console.log(m.Data.name)
+  })
+}

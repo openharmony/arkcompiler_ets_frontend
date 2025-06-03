@@ -476,6 +476,16 @@
         },
         {
             "line": 107,
+            "column": 9,
+            "endLine": 107,
+            "endColumn": 19,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 107,
             "column": 18,
             "endLine": 107,
             "endColumn": 18,
@@ -962,6 +972,16 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 183,
+            "column": 6,
+            "endLine": 183,
+            "endColumn": 13,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

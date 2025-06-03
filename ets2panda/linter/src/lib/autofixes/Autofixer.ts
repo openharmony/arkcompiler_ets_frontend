@@ -53,8 +53,10 @@ import {
   WRAP,
   INSTANTIATE,
   TO_NUMBER,
+  TO_PROMISE,
   INVOKE,
-  INVOKE_METHOD
+  INVOKE_METHOD,
+  LENGTH
 } from '../utils/consts/InteropAPI';
 import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
 
@@ -3603,7 +3605,7 @@ export class Autofixer {
 
     let start = node.getStart();
     let end = node.getEnd();
-    let replacementText = `${objName}.getPropertyByName('${propName}')`;
+    let replacementText = `${objName}.${GET_PROPERTY_BY_NAME}('${propName}')`;
 
     // Check if there is an "as number" type assertion in the statement
     if (ts.isAsExpression(node.parent) && node.parent.type.kind === ts.SyntaxKind.NumberKeyword) {
@@ -3622,27 +3624,91 @@ export class Autofixer {
     const start = node.getStart();
     const end = node.getEnd();
 
-    const replacement = `${objName}.getPropertyByName('${propName}')${this.utils.findTypeOfNodeForConversion(node)}`;
+    const typeTag = this.utils.findTypeOfNodeForConversion(node);
+    const replacement = `${objName}.${GET_PROPERTY_BY_NAME}('${propName}')${typeTag}`;
 
     return [{ replacementText: replacement, start, end }];
   }
 
-  createReplacementJsImportElementAccessExpression(
-    elementAccessExpr: ts.ElementAccessExpression,
-    identifier: ts.Identifier
-  ): Autofix[] {
-    const isParentBinaryExp = ts.isBinaryExpression(elementAccessExpr.parent);
-    const exprText = elementAccessExpr.argumentExpression.getText();
-    const start = isParentBinaryExp ? elementAccessExpr.parent.getStart() : elementAccessExpr.getStart();
-    const end = isParentBinaryExp ? elementAccessExpr.parent.getEnd() : elementAccessExpr.getEnd();
+  /**
+   * Converts a JS element access (e.g. `arr[index]`) into the corresponding
+   * interop call:
+   *   - On assignment (`arr[index] = value`), emits `arr.setPropertyByIndex(index, ESValue.wrap(value))`
+   *   - On read, emits `arr.getPropertyByIndex(index)` plus any type conversion suffix
+   *
+   * @param elementAccessExpr The original `ElementAccessExpression` node.
+   * @returns An array with a single `Autofix` describing the replacement range and text.
+   */
+  fixJsImportElementAccessExpression(elementAccessExpr: ts.ElementAccessExpression): Autofix[] {
+    const parent = elementAccessExpr.parent;
 
-    const replacementText =
-      isParentBinaryExp && elementAccessExpr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken ?
-        `${identifier.text}.setPropertyByIndex(${exprText},` +
-          ` ESValue.wrap(${elementAccessExpr.parent.right.getText()}))` :
-        `${identifier.text}.getPropertyByIndex(${exprText})` +
-          this.utils.findTypeOfNodeForConversion(elementAccessExpr);
+    const isAssignment =
+      parent !== undefined && ts.isBinaryExpression(parent) && parent.operatorToken.kind === ts.SyntaxKind.EqualsToken;
+
+    // array identifier (e.g. "arr")
+    const identifierNode = elementAccessExpr.expression as ts.Identifier;
+
+    let replacementText: string;
+    if (isAssignment) {
+      // arr.setPropertyByIndex(index, ESValue.wrap(value))
+      const wrapped = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(ES_VALUE),
+          ts.factory.createIdentifier(WRAP)
+        ),
+        undefined,
+        [parent.right]
+      );
+
+      const callExpr = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(identifierNode, ts.factory.createIdentifier(SET_PROPERTY_BY_INDEX)),
+        undefined,
+        [elementAccessExpr.argumentExpression, wrapped]
+      );
+
+      replacementText = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, elementAccessExpr.getSourceFile());
+    } else {
+      // arr.getPropertyByIndex(index) plus conversion
+      const callExpr = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(identifierNode, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),
+        undefined,
+        [elementAccessExpr.argumentExpression]
+      );
+
+      replacementText =
+        this.printer.printNode(ts.EmitHint.Unspecified, callExpr, elementAccessExpr.getSourceFile()) +
+        this.utils.findTypeOfNodeForConversion(elementAccessExpr);
+    }
+
+    const start = isAssignment ? (parent as ts.Node).getStart() : elementAccessExpr.getStart();
+    const end = isAssignment ? (parent as ts.Node).getEnd() : elementAccessExpr.getEnd();
+
     return [{ replacementText, start, end }];
+  }
+
+  /**
+   * Replace each loop‐variable reference (e.g. `element`) with
+   * `array.getPropertyByIndex(i)` plus appropriate conversion.
+   *
+   * @param identifier The Identifier node of the loop variable usage.
+   * @param arrayName  The name of the array being iterated.
+   */
+  fixInteropArrayElementUsage(identifier: ts.Identifier, arrayName: string): Autofix {
+    // arr.getPropertyByIndex(i)
+    const callExpr = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(arrayName),
+        ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)
+      ),
+      undefined,
+      [ts.factory.createIdentifier('i')]
+    );
+
+    // Print and append proper conversion suffix
+    const printed = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, identifier.getSourceFile());
+    const replacementText = printed + this.utils.findTypeOfNodeForConversion(identifier);
+
+    return { replacementText, start: identifier.getStart(), end: identifier.getEnd() };
   }
 
   fixSharedArrayBufferConstructor(node: ts.NewExpression): Autofix[] | undefined {
@@ -3669,6 +3735,63 @@ export class Autofixer {
     const replacementText = 'ArrayBuffer';
 
     return [{ replacementText, start: node.getStart(), end: node.getEnd() }];
+  }
+
+  /**
+   * Converts a `for...of` over an interop array into
+   * an index-based `for` loop using `getPropertyByName("length")`.
+   *
+   * @param node The `ForOfStatement` node to fix.
+   * @returns A single Autofix for the loop header replacement.
+   */
+  fixInteropArrayForOf(node: ts.ForOfStatement): Autofix {
+    const iterableName = node.expression.getText();
+
+    const initializer = ts.factory.createVariableDeclarationList(
+      [
+        ts.factory.createVariableDeclaration(
+          ts.factory.createIdentifier('i'),
+          undefined,
+          undefined,
+          ts.factory.createNumericLiteral('0')
+        )
+      ],
+      ts.NodeFlags.Let
+    );
+
+    const lengthAccess = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(iterableName),
+        ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
+      ),
+      undefined,
+      [ts.factory.createStringLiteral(LENGTH)]
+    );
+    const condition = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier('i'),
+      ts.SyntaxKind.LessThanToken,
+      lengthAccess
+    );
+
+    const incrementor = ts.factory.createPrefixUnaryExpression(
+      ts.SyntaxKind.PlusPlusToken,
+      ts.factory.createIdentifier('i')
+    );
+
+    // Render just the "(initializer; condition; incrementor)" text:
+    const headerText = [
+      this.printer.printNode(ts.EmitHint.Unspecified, initializer, node.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, condition, node.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, incrementor, node.getSourceFile())
+    ].join('');
+
+    // Only replace from the start of the initializer to the end of the 'of' expression
+    const start = node.initializer.getStart();
+    const end = node.expression.getEnd();
+
+    return { start, end, replacementText: headerText };
   }
 
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
@@ -3757,30 +3880,52 @@ export class Autofixer {
     return '';
   }
 
-  private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
-    return args.
-      map((arg) => {
-        return `ESValue.wrap(${arg.getText()})`;
-      }).
-      join(', ');
-  }
-
-  private fixInterOpImportJsProcessNode(node: ts.Node): string {
+  private fixInterOpImportJsProcessNode(node: ts.Node): string | undefined {
     if (ts.isIdentifier(node)) {
       return node.text;
     } else if (ts.isCallExpression(node)) {
-      const callee = this.fixInterOpImportJsProcessNode(node.expression);
-      const args = Autofixer.fixInterOpImportJsWrapArgs(node.arguments);
-      return `${callee}.invoke(${args})`;
+      const newArgs = this.createArgs(node.arguments);
+      const callee = node.expression;
+      switch (callee.kind) {
+        case ts.SyntaxKind.PropertyAccessExpression: {
+          const propertyAccessExpr = node.expression as ts.PropertyAccessExpression;
+          const newCallExpr = this.createJSInvokeCallExpression(propertyAccessExpr.expression, INVOKE_METHOD, [
+            ts.factory.createStringLiteral(propertyAccessExpr.name.text),
+            ...newArgs || []
+          ]);
+
+          if (!newCallExpr) {
+            return undefined;
+          }
+          return this.printer.printNode(ts.EmitHint.Unspecified, newCallExpr, node.getSourceFile());
+        }
+        default: {
+          const callExpr = this.createJSInvokeCallExpression(node.expression, INVOKE, [...newArgs || []]);
+
+          if (!callExpr) {
+            return undefined;
+          }
+
+          return this.printer.printNode(ts.EmitHint.Unspecified, callExpr, node.getSourceFile());
+        }
+      }
     } else if (ts.isPropertyAccessExpression(node)) {
       const base = this.fixInterOpImportJsProcessNode(node.expression);
+      if (!base) {
+        return undefined;
+      }
       const propName = node.name.text;
-      return `${base}.getPropertyByName('${propName}')`;
+      return `${base}.${GET_PROPERTY_BY_NAME}('${propName}')`;
     } else if (ts.isNewExpression(node)) {
-      const constructor = this.fixInterOpImportJsProcessNode(node.expression);
-      return `${constructor}.instantiate()`;
+      const newArgs = this.createArgs(node.arguments);
+      const newCallExpr = this.createJSInvokeCallExpression(node.expression, INSTANTIATE, [...newArgs || []]);
+
+      if (!newCallExpr) {
+        return undefined;
+      }
+      return this.printer.printNode(ts.EmitHint.Unspecified, newCallExpr, node.getSourceFile());
     }
-    return '';
+    return undefined;
   }
 
   fixInterOpImportJs(
@@ -3986,8 +4131,11 @@ export class Autofixer {
     const start = typeofExpress.getStart();
     const end = typeofExpress.getEnd();
     const processed = this.fixInterOpImportJsProcessNode(node);
+    if (!processed) {
+      return undefined;
+    }
     const replacementText = `${processed}.typeOf()`;
-    return replacementText ? [{ start, end, replacementText }] : undefined;
+    return [{ start, end, replacementText }];
   }
 
   fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
@@ -4248,6 +4396,80 @@ export class Autofixer {
       return funcNode.type;
     }
     return undefined;
+  }
+
+  private createJSInvokeCallExpression(
+    ident: ts.Expression,
+    method: string,
+    args: ts.Expression[] | undefined
+  ): ts.CallExpression | undefined {
+    if (ts.isNewExpression(ident)) {
+      const instantiatedClass = this.createJSInvokeCallExpression(
+        ident.expression,
+        INSTANTIATE,
+        this.createArgs(ident.arguments)
+      );
+      if (!instantiatedClass) {
+        return undefined;
+      }
+      return this.createJSInvokeCallExpression(instantiatedClass, method, args);
+    }
+    return ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(ident, ts.factory.createIdentifier(method)),
+      undefined,
+      args
+    );
+  }
+
+  fixAwaitJsCallExpression(ident: ts.Identifier, args: ts.NodeArray<ts.Expression> | undefined): Autofix[] | undefined {
+    const newArgs = this.createArgs(args);
+
+    const newCallExpr = this.createJSInvokeCallExpression(ident, INVOKE, newArgs);
+    if (!newCallExpr) {
+      return undefined;
+    }
+
+    const replacedNode = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(newCallExpr, ts.factory.createIdentifier(TO_PROMISE)),
+      undefined,
+      undefined
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacedNode, ident.getSourceFile());
+    return [{ start: ident.parent.getStart(), end: ident.parent.getEnd(), replacementText }];
+  }
+
+  fixAwaitJsMethodCallExpression(
+    ident: ts.Identifier,
+    args: ts.NodeArray<ts.Expression> | undefined
+  ): Autofix[] | undefined {
+    const propertyAccessExpr = ident.parent as ts.PropertyAccessExpression;
+    const accessedProperty = propertyAccessExpr.expression;
+    const newArgs = this.createArgs(args);
+
+    const newCallExpr = this.createJSInvokeCallExpression(accessedProperty, INVOKE_METHOD, [
+      ts.factory.createStringLiteral(ident.text),
+      ...newArgs || []
+    ]);
+
+    if (!newCallExpr) {
+      return undefined;
+    }
+
+    const replacedNode = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(newCallExpr, ts.factory.createIdentifier(TO_PROMISE)),
+      undefined,
+      undefined
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacedNode, ident.getSourceFile());
+    return [{ start: propertyAccessExpr.parent.getStart(), end: propertyAccessExpr.parent.getEnd(), replacementText }];
+  }
+
+  fixAwaitJsPromise(ident: ts.Identifier): Autofix[] {
+    void this;
+    const replacementText = `${ident.text}.toPromise()`;
+    return [{ start: ident.getStart(), end: ident.getEnd(), replacementText }];
   }
 
   fixMissingAttribute(node: ts.PropertyAccessExpression): Autofix[] {

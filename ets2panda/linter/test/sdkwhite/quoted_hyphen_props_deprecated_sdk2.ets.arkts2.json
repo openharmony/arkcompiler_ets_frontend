@@ -15,6 +15,26 @@
     ],
     "result": [
         {
+            "line": 42,
+            "column": 10,
+            "endLine": 42,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 20,
+            "endLine": 48,
+            "endColumn": 30,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 65,
             "column": 5,
             "endLine": 65,

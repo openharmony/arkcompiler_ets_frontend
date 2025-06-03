@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use static'
+ 
 import myAaa,{ClassA,Dog,Person,Wiki} from "./interop_import_js_js";
 import { Dog as Doge } from './interop_import_js_js';
 import { Wiki as wiki } from './interop_import_js_js';

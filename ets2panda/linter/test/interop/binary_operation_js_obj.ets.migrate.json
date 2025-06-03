@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 5,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 72,
             "problem": "AnyType",
             "suggest": "",
@@ -25,10 +25,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 16,
             "column": 5,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 56,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -45,19 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 35,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
+            "line": 25,
             "column": 1,
-            "endLine": 26,
+            "endLine": 25,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",

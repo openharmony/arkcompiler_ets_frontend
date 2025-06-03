@@ -15,29 +15,19 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 24,
             "column": 1,
-            "endLine": 23,
-            "endColumn": 38,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 1,
-            "endLine": 25,
+            "endLine": 24,
             "endColumn": 23,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 744,
-                    "end": 775,
+                    "start": 731,
+                    "end": 762,
                     "replacementText": "objectLiteralType.setPropertyByName('name',ESValue.wrap(\"test\"))",
-                    "line": 25,
+                    "line": 24,
                     "column": 1,
-                    "endLine": 25,
+                    "endLine": 24,
                     "endColumn": 23
                 }
             ],
@@ -46,19 +36,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 26,
             "column": 1,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 22,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 777,
-                    "end": 807,
+                    "start": 764,
+                    "end": 794,
                     "replacementText": "intersectionType.setPropertyByName('name',ESValue.wrap(\"test\"))",
-                    "line": 27,
+                    "line": 26,
                     "column": 1,
-                    "endLine": 27,
+                    "endLine": 26,
                     "endColumn": 22
                 }
             ],
@@ -67,9 +57,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 1,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 13,
             "problem": "InteropTSFunctionInvoke",
             "suggest": "",
@@ -77,9 +67,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 1,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 11,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
@@ -87,9 +77,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 30,
             "column": 3,
-            "endLine": 32,
+            "endLine": 31,
             "endColumn": 2,
             "problem": "TsLikeCatchType",
             "suggest": "",
@@ -97,9 +87,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 33,
             "column": 1,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 20,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
@@ -107,9 +97,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 33,
             "column": 1,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 11,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",

@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 import {foo} from "./increases_decreases_js_obj_js"
 let a: number =0
 a = foo.num++

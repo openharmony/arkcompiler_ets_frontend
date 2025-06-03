@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 18,
             "column": 2,
-            "endLine": 17,
+            "endLine": 18,
             "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",

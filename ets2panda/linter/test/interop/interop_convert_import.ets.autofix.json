@@ -13,11 +13,11 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-"result": [
+    "result": [
         {
-            "line": 17,
+            "line": 18,
             "column": 2,
-            "endLine": 17,
+            "endLine": 18,
             "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",
@@ -25,28 +25,28 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 18,
             "column": 2,
-            "endLine": 17,
+            "endLine": 18,
             "endColumn": 106,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 636,
-                    "end": 740,
+                    "start": 649,
+                    "end": 753,
                     "replacementText": "",
-                    "line": 17,
+                    "line": 18,
                     "column": 2,
-                    "endLine": 17,
+                    "endLine": 18,
                     "endColumn": 106
                 },
                 {
-                    "start": 740,
-                    "end": 740,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_convert_import_js.js');\r\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\r\nlet foo2 = GeneratedImportVar_1.getPropertyByName('foo2');\r\nlet foo3 = GeneratedImportVar_1.getPropertyByName('foo3');\r\nlet foo4 = GeneratedImportVar_1.getPropertyByName('foo4');\r\nlet array_val = GeneratedImportVar_1.getPropertyByName('array_val');\r\nlet null_val = GeneratedImportVar_1.getPropertyByName('null_val');\r\nlet undefined_val = GeneratedImportVar_1.getPropertyByName('undefined_val');\r\n",
-                    "line": 17,
+                    "start": 753,
+                    "end": 753,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_convert_import_js.js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet foo2 = GeneratedImportVar_1.getPropertyByName('foo2');\nlet foo3 = GeneratedImportVar_1.getPropertyByName('foo3');\nlet foo4 = GeneratedImportVar_1.getPropertyByName('foo4');\nlet array_val = GeneratedImportVar_1.getPropertyByName('array_val');\nlet null_val = GeneratedImportVar_1.getPropertyByName('null_val');\nlet undefined_val = GeneratedImportVar_1.getPropertyByName('undefined_val');\n",
+                    "line": 18,
                     "column": 2,
-                    "endLine": 17,
+                    "endLine": 18,
                     "endColumn": 106
                 }
             ],
@@ -55,19 +55,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 18,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 35,
             "problem": "InterOpConvertImport",
             "autofix": [
                 {
-                    "start": 761,
-                    "end": 778,
+                    "start": 774,
+                    "end": 791,
                     "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
-                    "line": 19,
+                    "line": 20,
                     "column": 18,
-                    "endLine": 19,
+                    "endLine": 20,
                     "endColumn": 35
                 }
             ],
@@ -76,61 +76,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 18,
-            "endLine": 19,
-            "endColumn": 25,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 761,
-                    "end": 768,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
-                    "line": 19,
-                    "column": 18,
-                    "endLine": 19,
-                    "endColumn": 25
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 18,
-            "endLine": 19,
-            "endColumn": 25,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num')",
-                    "start": 761,
-                    "end": 768,
-                    "line": 19,
-                    "column": 18,
-                    "endLine": 19,
-                    "endColumn": 25
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
+            "line": 21,
             "column": 20,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 41,
             "problem": "InterOpConvertImport",
             "autofix": [
                 {
-                    "start": 799,
-                    "end": 820,
+                    "start": 812,
+                    "end": 833,
                     "replacementText": "foo2.getPropertyByName(\"bool\").toBoolean()",
-                    "line": 20,
+                    "line": 21,
                     "column": 20,
-                    "endLine": 20,
+                    "endLine": 21,
                     "endColumn": 41
                 }
             ],
@@ -139,61 +97,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 20,
-            "endLine": 20,
-            "endColumn": 29,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 799,
-                    "end": 808,
-                    "replacementText": "foo2.getPropertyByName(\"bool\")",
-                    "line": 20,
-                    "column": 20,
-                    "endLine": 20,
-                    "endColumn": 29
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 20,
-            "endLine": 20,
-            "endColumn": 29,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo2.getPropertyByName('bool').toBoolean()",
-                    "start": 799,
-                    "end": 808,
-                    "line": 20,
-                    "column": 20,
-                    "endLine": 20,
-                    "endColumn": 29
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
+            "line": 22,
             "column": 19,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 38,
             "problem": "InterOpConvertImport",
             "autofix": [
                 {
-                    "start": 840,
-                    "end": 859,
+                    "start": 853,
+                    "end": 872,
                     "replacementText": "foo3.getPropertyByName(\"str\").toString()",
-                    "line": 21,
+                    "line": 22,
                     "column": 19,
-                    "endLine": 21,
+                    "endLine": 22,
                     "endColumn": 38
                 }
             ],
@@ -202,61 +118,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 23,
             "column": 19,
-            "endLine": 21,
-            "endColumn": 27,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 840,
-                    "end": 848,
-                    "replacementText": "foo3.getPropertyByName(\"str\")",
-                    "line": 21,
-                    "column": 19,
-                    "endLine": 21,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 19,
-            "endLine": 21,
-            "endColumn": 27,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo3.getPropertyByName('str').toString()",
-                    "start": 840,
-                    "end": 848,
-                    "line": 21,
-                    "column": 19,
-                    "endLine": 21,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 19,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 38,
             "problem": "InterOpConvertImport",
             "autofix": [
                 {
-                    "start": 879,
-                    "end": 898,
+                    "start": 892,
+                    "end": 911,
                     "replacementText": "foo4.getPropertyByName(\"big\").toBigInt()",
-                    "line": 22,
+                    "line": 23,
                     "column": 19,
-                    "endLine": 22,
+                    "endLine": 23,
                     "endColumn": 38
                 }
             ],
@@ -265,51 +139,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
-            "column": 19,
-            "endLine": 22,
-            "endColumn": 27,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 879,
-                    "end": 887,
-                    "replacementText": "foo4.getPropertyByName(\"big\")",
-                    "line": 22,
-                    "column": 19,
-                    "endLine": 22,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 19,
-            "endLine": 22,
-            "endColumn": 27,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo4.getPropertyByName('big')",
-                    "start": 879,
-                    "end": 887,
-                    "line": 22,
-                    "column": 19,
-                    "endLine": 22,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
+            "line": 26,
             "column": 9,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 27,
             "problem": "InterOpConvertImport",
             "suggest": "",
@@ -317,9 +149,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 44,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 62,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -327,19 +159,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 54,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 55,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 981,
-                    "end": 982,
+                    "start": 994,
+                    "end": 995,
                     "replacementText": "1.0",
-                    "line": 25,
+                    "line": 26,
                     "column": 54,
-                    "endLine": 25,
+                    "endLine": 26,
                     "endColumn": 55
                 }
             ],
@@ -348,19 +180,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 57,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 58,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 984,
-                    "end": 985,
+                    "start": 997,
+                    "end": 998,
                     "replacementText": "2.0",
-                    "line": 25,
+                    "line": 26,
                     "column": 57,
-                    "endLine": 25,
+                    "endLine": 26,
                     "endColumn": 58
                 }
             ],
@@ -369,19 +201,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 60,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 61,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 987,
-                    "end": 988,
+                    "start": 1000,
+                    "end": 1001,
                     "replacementText": "3.0",
-                    "line": 25,
+                    "line": 26,
                     "column": 60,
-                    "endLine": 25,
+                    "endLine": 26,
                     "endColumn": 61
                 }
             ],
@@ -390,9 +222,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 31,
             "column": 9,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 30,
             "problem": "InterOpConvertImport",
             "suggest": "",
@@ -400,19 +232,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 31,
             "column": 48,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 49,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1195,
-                    "end": 1196,
+                    "start": 1208,
+                    "end": 1209,
                     "replacementText": "1.0",
-                    "line": 30,
+                    "line": 31,
                     "column": 48,
-                    "endLine": 30,
+                    "endLine": 31,
                     "endColumn": 49
                 }
             ],
@@ -421,19 +253,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 31,
             "column": 50,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 51,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1197,
-                    "end": 1198,
+                    "start": 1210,
+                    "end": 1211,
                     "replacementText": "2.0",
-                    "line": 30,
+                    "line": 31,
                     "column": 50,
-                    "endLine": 30,
+                    "endLine": 31,
                     "endColumn": 51
                 }
             ],
@@ -442,19 +274,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 31,
             "column": 52,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 53,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1199,
-                    "end": 1200,
+                    "start": 1212,
+                    "end": 1213,
                     "replacementText": "3.0",
-                    "line": 30,
+                    "line": 31,
                     "column": 52,
-                    "endLine": 30,
+                    "endLine": 31,
                     "endColumn": 53
                 }
             ],
@@ -463,9 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 36,
             "column": 8,
-            "endLine": 35,
+            "endLine": 36,
             "endColumn": 24,
             "problem": "InterOpConvertImport",
             "suggest": "",
@@ -473,9 +305,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
+            "line": 41,
             "column": 8,
-            "endLine": 40,
+            "endLine": 41,
             "endColumn": 34,
             "problem": "InterOpConvertImport",
             "suggest": "",

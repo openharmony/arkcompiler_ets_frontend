@@ -22,9 +22,9 @@
             "problem": "SharedArrayBufferDeprecated",
             "autofix": [
                 {
-                    "replacementText": "ArrayBuffer",
                     "start": 624,
                     "end": 641,
+                    "replacementText": "ArrayBuffer",
                     "line": 16,
                     "column": 15,
                     "endLine": 16,
@@ -43,9 +43,9 @@
             "problem": "SharedArrayBufferDeprecated",
             "autofix": [
                 {
-                    "replacementText": "ArrayBuffer",
                     "start": 661,
                     "end": 678,
+                    "replacementText": "ArrayBuffer",
                     "line": 17,
                     "column": 10,
                     "endLine": 17,
@@ -64,9 +64,9 @@
             "problem": "SharedArrayBufferDeprecated",
             "autofix": [
                 {
-                    "replacementText": "ArrayBuffer",
                     "start": 685,
                     "end": 702,
+                    "replacementText": "ArrayBuffer",
                     "line": 17,
                     "column": 34,
                     "endLine": 17,
@@ -106,9 +106,9 @@
             "problem": "SharedArrayBufferDeprecated",
             "autofix": [
                 {
-                    "replacementText": "ArrayBuffer",
                     "start": 737,
                     "end": 754,
+                    "replacementText": "ArrayBuffer",
                     "line": 19,
                     "column": 20,
                     "endLine": 19,
@@ -127,9 +127,9 @@
             "problem": "SharedArrayBufferDeprecated",
             "autofix": [
                 {
-                    "replacementText": "ArrayBuffer",
                     "start": 853,
                     "end": 870,
+                    "replacementText": "ArrayBuffer",
                     "line": 22,
                     "column": 28,
                     "endLine": 22,
@@ -155,6 +155,48 @@
                     "column": 46,
                     "endLine": 22,
                     "endColumn": 47
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 17,
+            "endLine": 26,
+            "endColumn": 34,
+            "problem": "SharedArrayBufferDeprecated",
+            "autofix": [
+                {
+                    "start": 945,
+                    "end": 962,
+                    "replacementText": "ArrayBuffer",
+                    "line": 26,
+                    "column": 17,
+                    "endLine": 26,
+                    "endColumn": 34
+                }
+            ],
+            "suggest": "",
+            "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 16,
+            "endLine": 28,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1000,
+                    "end": 1001,
+                    "replacementText": "1.0",
+                    "line": 28,
+                    "column": 16,
+                    "endLine": 28,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
