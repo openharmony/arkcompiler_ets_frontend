@@ -493,6 +493,14 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
         // Object literals should be checked separately afterwards after call resolution
         return true;
     }
+
+    // Set preferred type for array expressions before checking, similar to spread elements
+    if (argument->IsArrayExpression()) {
+        if (!SetPreferredTypeForArrayArgument(argument->AsArrayExpression(), substitutedSig)) {
+            return false;
+        }
+    }
+
     const auto argumentType = argument->Check(this);
     auto *restParam = substitutedSig->RestVar()->TsType();
     if (restParam->IsETSTupleType()) {
@@ -510,7 +518,35 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
         Relation(), argument, argumentType, targetType, argument->Start(),
         {{diagnostic::REST_PARAM_INCOMPAT_AT, {argumentType, targetType, index + 1}}}, flags);
 
-    return invocationCtx.IsInvocable();
+    bool result = invocationCtx.IsInvocable();
+    // Clear preferred type if invocation fails, similar to spread elements
+    if (!result && argument->IsArrayExpression()) {
+        ModifyPreferredType(argument->AsArrayExpression(), nullptr);
+    }
+
+    return result;
+}
+
+bool ETSChecker::SetPreferredTypeForArrayArgument(ir::ArrayExpression *arrayExpr, Signature *substitutedSig)
+{
+    auto *const restVarType = substitutedSig->RestVar()->TsType();
+    if (!restVarType->IsETSArrayType() && !restVarType->IsETSResizableArrayType()) {
+        return true;
+    }
+    auto targetType = GetElementTypeOfArray(restVarType);
+    if (substitutedSig->OwnerVar() == nullptr) {
+        targetType = MaybeBoxType(targetType);
+    }
+    // Validate tuple size before setting preferred type
+    if (targetType->IsETSTupleType()) {
+        auto *tupleType = targetType->AsETSTupleType();
+        if (tupleType->GetTupleSize() != arrayExpr->Elements().size()) {
+            // Size mismatch - don't set preferred type, this will cause a type error
+            return false;
+        }
+    }
+    arrayExpr->SetPreferredType(targetType);
+    return true;
 }
 
 bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
