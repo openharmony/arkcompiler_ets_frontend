@@ -56,136 +56,130 @@ public:
 
     explicit ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data);
 
+    explicit ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data, AstNodeHistory *history);
+
     [[nodiscard]] const Identifier *Id() const noexcept
     {
-        return id_;
+        return GetHistoryNodeAs<ScriptFunction>()->id_;
     }
 
     [[nodiscard]] Identifier *Id() noexcept
     {
-        return id_;
+        return GetHistoryNodeAs<ScriptFunction>()->id_;
     }
 
     [[nodiscard]] const checker::Signature *Signature() const noexcept
     {
-        return signature_;
+        return GetHistoryNodeAs<ScriptFunction>()->signature_;
     }
 
     [[nodiscard]] checker::Signature *Signature() noexcept
     {
-        return signature_;
+        return GetHistoryNodeAs<ScriptFunction>()->signature_;
     }
 
     [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
     {
-        return irSignature_.Params();
+        return GetHistoryNodeAs<ScriptFunction>()->irSignature_.Params();
     }
 
-    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
-    {
-        return irSignature_.Params();
-    }
+    [[nodiscard]] const ArenaVector<ir::Expression *> &Params();
 
     const ArenaVector<ReturnStatement *> &ReturnStatements() const
     {
-        return returnStatements_;
+        return GetHistoryNodeAs<ScriptFunction>()->returnStatements_;
     }
 
-    ArenaVector<ReturnStatement *> &ReturnStatements()
-    {
-        return returnStatements_;
-    }
+    [[nodiscard]] const ArenaVector<ReturnStatement *> &ReturnStatements();
+    [[nodiscard]] ArenaVector<ReturnStatement *> &ReturnStatementsForUpdate();
 
     [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
-        return irSignature_.TypeParams();
+        return GetHistoryNodeAs<ScriptFunction>()->irSignature_.TypeParams();
     }
 
     [[nodiscard]] TSTypeParameterDeclaration *TypeParams() noexcept
     {
-        return irSignature_.TypeParams();
+        return GetHistoryNode()->AsScriptFunction()->irSignature_.TypeParams();
     }
 
     [[nodiscard]] const AstNode *Body() const noexcept
     {
-        return body_;
+        return GetHistoryNodeAs<ScriptFunction>()->body_;
     }
 
     [[nodiscard]] AstNode *Body() noexcept
     {
-        return body_;
+        return GetHistoryNodeAs<ScriptFunction>()->body_;
     }
 
     void AddReturnStatement(ReturnStatement *returnStatement)
     {
-        returnStatements_.push_back(returnStatement);
+        EmplaceReturnStatements(returnStatement);
     }
 
-    void SetBody(AstNode *body) noexcept
-    {
-        body_ = body;
-    }
+    void SetBody(AstNode *body);
 
     [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
-        return irSignature_.ReturnType();
+        return GetHistoryNodeAs<ScriptFunction>()->irSignature_.ReturnType();
     }
 
     [[nodiscard]] TypeNode *ReturnTypeAnnotation() noexcept
     {
-        return irSignature_.ReturnType();
+        return GetHistoryNode()->AsScriptFunction()->irSignature_.ReturnType();
     }
 
     void SetReturnTypeAnnotation(TypeNode *node) noexcept;
 
     [[nodiscard]] bool IsEntryPoint() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::ENTRY_POINT) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::ENTRY_POINT) != 0;
     }
 
     [[nodiscard]] bool IsGenerator() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::GENERATOR) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::GENERATOR) != 0;
     }
 
     [[nodiscard]] bool IsAsyncFunc() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::ASYNC) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::ASYNC) != 0;
     }
 
     [[nodiscard]] bool IsAsyncImplFunc() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::ASYNC_IMPL) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::ASYNC_IMPL) != 0;
     }
 
     [[nodiscard]] bool IsArrow() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::ARROW) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::ARROW) != 0;
     }
 
     [[nodiscard]] bool IsOverload() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::OVERLOAD) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::OVERLOAD) != 0;
     }
 
     [[nodiscard]] bool IsExternalOverload() const
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD) != 0;
     }
 
     [[nodiscard]] bool IsConstructor() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
     }
 
     [[nodiscard]] bool IsGetter() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::GETTER) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::GETTER) != 0;
     }
 
     [[nodiscard]] bool IsSetter() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::SETTER) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::SETTER) != 0;
     }
 
     [[nodiscard]] bool IsExtensionAccessor() const noexcept
@@ -195,72 +189,77 @@ public:
 
     [[nodiscard]] bool IsMethod() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::METHOD) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::METHOD) != 0;
     }
 
     [[nodiscard]] bool IsProxy() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::PROXY) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::PROXY) != 0;
     }
 
     [[nodiscard]] bool IsStaticBlock() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0;
     }
 
     [[nodiscard]] bool IsEnum() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::ENUM) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::ENUM) != 0;
     }
 
     [[nodiscard]] bool IsHidden() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::HIDDEN) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::HIDDEN) != 0;
     }
 
     [[nodiscard]] bool IsExternal() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::EXTERNAL) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::EXTERNAL) != 0;
     }
 
     [[nodiscard]] bool IsImplicitSuperCallNeeded() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED) != 0;
     }
 
     [[nodiscard]] bool HasBody() const noexcept
     {
-        return body_ != nullptr;
+        return Body() != nullptr;
     }
 
     [[nodiscard]] bool HasRestParameter() const noexcept
     {
-        return signature_->RestVar() != nullptr;
+        return Signature()->RestVar() != nullptr;
     }
 
     [[nodiscard]] bool HasReturnStatement() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::HAS_RETURN) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0;
     }
 
     [[nodiscard]] bool HasThrowStatement() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::HAS_THROW) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::HAS_THROW) != 0;
     }
 
     [[nodiscard]] bool IsThrowing() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::THROWS) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::THROWS) != 0;
     }
 
     [[nodiscard]] bool IsRethrowing() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
+        return (Flags() & ir::ScriptFunctionFlags::RETHROWS) != 0;
+    }
+
+    [[nodiscard]] bool IsTrailingLambda() const noexcept
+    {
+        return (Flags() & ir::ScriptFunctionFlags::TRAILING_LAMBDA) != 0;
     }
 
     [[nodiscard]] bool IsDynamic() const noexcept
     {
-        return lang_.IsDynamic();
+        return Language().IsDynamic();
     }
 
     // Note: This method has been written into CAPI, cannot remove it simply.
@@ -271,34 +270,30 @@ public:
 
     [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept
     {
-        return funcFlags_;
+        return GetHistoryNodeAs<ScriptFunction>()->funcFlags_;
     }
 
     [[nodiscard]] bool HasReceiver() const noexcept
     {
-        return irSignature_.HasReceiver();
+        return GetHistoryNodeAs<ScriptFunction>()->irSignature_.HasReceiver();
     }
 
     void SetIdent(Identifier *id) noexcept;
 
-    void SetSignature(checker::Signature *signature) noexcept
-    {
-        signature_ = signature;
-    }
+    void SetSignature(checker::Signature *signature);
 
     void AddFlag(ir::ScriptFunctionFlags flags) noexcept
     {
-        funcFlags_ |= flags;
+        if (!All(Flags(), flags)) {
+            GetOrCreateHistoryNode()->AsScriptFunction()->funcFlags_ |= flags;
+        }
     }
 
     void ClearFlag(ir::ScriptFunctionFlags flags) noexcept
     {
-        funcFlags_ &= (~flags);
-    }
-
-    void AddModifier(ir::ModifierFlags flags) noexcept
-    {
-        flags_ |= flags;
+        if (Any(Flags(), flags)) {
+            GetOrCreateHistoryNode()->AsScriptFunction()->funcFlags_ &= ~flags;
+        }
     }
 
     [[nodiscard]] std::size_t FormalParamsLength() const noexcept;
@@ -310,37 +305,31 @@ public:
 
     [[nodiscard]] varbinder::FunctionScope *Scope() const noexcept override
     {
-        return scope_;
+        return GetHistoryNodeAs<ScriptFunction>()->scope_;
     }
 
-    void SetScope(varbinder::FunctionScope *scope) noexcept
-    {
-        scope_ = scope;
-    }
+    void SetScope(varbinder::FunctionScope *scope);
 
     void ClearScope() noexcept override
     {
-        scope_ = nullptr;
+        SetScope(nullptr);
     }
 
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
-        return lang_;
+        return GetHistoryNodeAs<ScriptFunction>()->lang_;
     }
 
-    void SetPreferredReturnType(checker::Type *preferredReturnType) noexcept
-    {
-        preferredReturnType_ = preferredReturnType;
-    }
+    void SetPreferredReturnType(checker::Type *preferredReturnType);
 
     [[nodiscard]] checker::Type *GetPreferredReturnType() noexcept
     {
-        return preferredReturnType_;
+        return GetHistoryNodeAs<ScriptFunction>()->preferredReturnType_;
     }
 
     [[nodiscard]] checker::Type const *GetPreferredReturnType() const noexcept
     {
-        return preferredReturnType_;
+        return GetHistoryNodeAs<ScriptFunction>()->preferredReturnType_;
     }
 
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -373,9 +362,17 @@ public:
     void CleanUp() override
     {
         AstNode::CleanUp();
-        signature_ = nullptr;
-        preferredReturnType_ = nullptr;
+        SetSignature(nullptr);
+        SetPreferredReturnType(nullptr);
     }
+    void EmplaceReturnStatements(ReturnStatement *returnStatements);
+    void ClearReturnStatements();
+    void SetValueReturnStatements(ReturnStatement *returnStatements, size_t index);
+
+    void EmplaceParams(Expression *params);
+    void ClearParams();
+    void SetValueParams(Expression *params, size_t index);
+    ArenaVector<Expression *> &ParamsForUpdate();
 
 protected:
     ScriptFunction *Construct(ArenaAllocator *allocator) override;

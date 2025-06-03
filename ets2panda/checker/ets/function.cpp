@@ -229,7 +229,7 @@ static void ResetInferredNode(ETSChecker *checker)
     auto resetFuncState = [](ir::ArrowFunctionExpression *expr) {
         auto *func = expr->Function();
         func->SetSignature(nullptr);
-        func->ReturnStatements().clear();
+        func->ClearReturnStatements();
         expr->SetTsType(nullptr);
     };
 
@@ -1134,7 +1134,7 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
         auto *candidateFunctionType =
             sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
         auto *currentReceiver = candidateFunctionType->Params()[0];
-        trailingLambda->Function()->Params().emplace_back(currentReceiver);
+        trailingLambda->Function()->EmplaceParams(currentReceiver);
         sigContainLambdaWithReceiverAsParam.emplace_back(sig);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         signature = ValidateSignatures(sigContainLambdaWithReceiverAsParam, callExpr->TypeParams(), arguments,
@@ -1144,7 +1144,7 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
             return signature;
         }
         sigContainLambdaWithReceiverAsParam.clear();
-        trailingLambda->Function()->Params().clear();
+        trailingLambda->Function()->ClearParams();
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ValidateSignatures(normalSig, callExpr->TypeParams(), arguments, callExpr->Start(), "call",
@@ -1260,7 +1260,7 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
 // Note: this function is extracted to reduce the size of `BuildMethodSignature`
 static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *method, ETSFunctionType *funcType)
 {
-    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfoForUpdate();
     ArenaVector<ETSFunctionType *> overloads(checker->ProgramAllocator()->Adapter());
 
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
@@ -1272,11 +1272,16 @@ static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *
             method->Id()->Variable()->SetTsType(checker->GlobalTypeError());
             return false;
         }
-        auto *const overloadType = checker->BuildMethodType(currentFunc->Function());
+
+        auto *const overloadType = currentFunc->TsType() != nullptr ? currentFunc->TsType()->AsETSFunctionType()
+                                                                    : checker->BuildMethodType(currentFunc->Function());
         ldInfo.needHelperOverload |=
             checker->CheckIdenticalOverloads(funcType, overloadType, currentFunc, ldInfo.isDeclare);
 
-        currentFunc->SetTsType(overloadType);
+        if (currentFunc->TsType() == nullptr) {
+            currentFunc->SetTsType(overloadType);
+        }
+
         auto overloadSig = currentFunc->Function()->Signature();
         funcType->AddCallSignature(overloadSig);
         if (overloadSig->IsExtensionAccessor()) {
@@ -1320,7 +1325,7 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     if (!CollectOverload(this, method, funcType)) {
         return GlobalTypeError();
     }
-    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfoForUpdate();
 
     ldInfo.needHelperOverload &= ldInfo.isDeclare;
     if (ldInfo.needHelperOverload) {
@@ -1510,6 +1515,10 @@ void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
 void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
 {
     bool isArrow = func->IsArrow();
+    // note(Ekko): For extenal function overload, need to not change ast tree, for arrow type, need perferred type.
+    if (func->Signature() != nullptr && !isArrow) {
+        return;
+    }
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
     auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
 
@@ -2163,11 +2172,8 @@ void ETSChecker::MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *
 }
 
 using SFunctionData = ir::ScriptFunction::ScriptFunctionData;
-void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig)
+ir::ScriptFunction *ETSChecker::CreateLambdaFunction(ir::BlockStatement *trailingBlock, Signature *sig)
 {
-    auto *trailingBlock = callExpr->TrailingBlock();
-    ES2PANDA_ASSERT(trailingBlock != nullptr);
-
     auto *funcParamScope = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder()).GetScope();
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
 
@@ -2214,7 +2220,19 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
     funcParamScope->BindNode(funcNode);
 
     trailingBlock->SetScope(funcScope);
-    ReplaceScope(funcNode->Body(), trailingBlock, funcScope);
+
+    return funcNode;
+}
+
+void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig)
+{
+    auto *trailingBlock = callExpr->TrailingBlock();
+    ES2PANDA_ASSERT(trailingBlock != nullptr);
+
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    auto *funcNode = CreateLambdaFunction(trailingBlock, sig);
+    funcNode->AddFlag(ir::ScriptFunctionFlags::TRAILING_LAMBDA);
+    ReplaceScope(funcNode->Body(), trailingBlock, funcNode->Scope());
     callExpr->SetTrailingBlock(nullptr);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

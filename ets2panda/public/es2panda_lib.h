@@ -43,6 +43,7 @@ extern "C" {
 
 typedef struct es2panda_Config es2panda_Config;
 typedef struct es2panda_Context es2panda_Context;
+typedef struct es2panda_GlobalContext es2panda_GlobalContext;
 
 typedef struct es2panda_variantDoubleCharArrayBool {
     int index;
@@ -175,14 +176,23 @@ typedef enum es2panda_ContextState es2panda_ContextState;
 struct CAPI_EXPORT es2panda_Impl {
     int version;
 
+    void (*MemInitialize)();
+    void (*MemFinalize)();
+
     es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
     void (*DestroyConfig)(es2panda_Config *config);
     const es2panda_Options *(*ConfigGetOptions)(es2panda_Config *config);
 
     es2panda_Context *(*CreateContextFromFile)(es2panda_Config *config, char const *source_file_name);
+    es2panda_Context *(*CreateCacheContextFromFile)(es2panda_Config *config, char const *source_file_name,
+                                                    es2panda_GlobalContext *globalContext, bool isExternal);
     es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);
     es2panda_Context *(*ProceedToState)(es2panda_Context *context, es2panda_ContextState state);  // context is consumed
     void (*DestroyContext)(es2panda_Context *context);
+
+    es2panda_GlobalContext *(*CreateGlobalContext)(es2panda_Config *config, const char **externalFileList,
+                                                   size_t fileNum, bool LspUsage);
+    void (*DestroyGlobalContext)(es2panda_GlobalContext *globalContext);
 
     es2panda_ContextState (*ContextState)(es2panda_Context *context);
     char const *(*ContextErrorMessage)(es2panda_Context *context);
@@ -257,6 +267,9 @@ struct CAPI_EXPORT es2panda_Impl {
                                                es2panda_AstNode *importDeclaration);
     int (*GenerateStaticDeclarationsFromContext)(es2panda_Context *context, const char *outputPath);
 
+    void (*InvalidateFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
+    void (*RemoveFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
+    void (*AddFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };

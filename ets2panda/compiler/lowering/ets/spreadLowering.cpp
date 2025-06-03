@@ -82,7 +82,7 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
                                                       ArenaVector<ir::Statement *> &statements,
                                                       ir::Identifier *newArrayLengthId)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
@@ -286,7 +286,8 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
                                   newTupleAssignmentStatements.cend());
             } else {
                 ir::Identifier *spreadArrIterator = Gensym(allocator);
-                checker::Type *arrayElementType = ctx->checker->AsETSChecker()->GetElementTypeOfArray(array->TsType());
+                checker::Type *arrayElementType =
+                    ctx->GetChecker()->AsETSChecker()->GetElementTypeOfArray(array->TsType());
                 statements.emplace_back(CreateElementsAssignStatementBySpreadArr(
                     ctx, spArrIds[spArrIdx++], newArrayAndIndex, spreadArrIterator, arrayElementType));
             }
@@ -343,7 +344,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
  */
 static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     auto *const allocator = ctx->allocator;
 
@@ -356,7 +357,7 @@ static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context 
 
 bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
     varbinder::ETSBinder *const varbinder = checker->VarBinder()->AsETSBinder();
 
     program->Ast()->TransformChildrenRecursively(

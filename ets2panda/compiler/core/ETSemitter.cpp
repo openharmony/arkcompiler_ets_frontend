@@ -240,7 +240,7 @@ static std::vector<std::pair<std::string, std::string>> StoreExportNodes(
     std::vector<std::pair<std::string, std::string>> result;
 
     for (auto &pair : declGen) {
-        auto declString = pair.first;
+        auto declString = std::string {pair.first};
         auto *node = pair.second;
         if (node->IsClassProperty() && node->IsConst()) {
             StoreEntity(literals, parser::EntityType::CLASS_PROPERTY);
@@ -291,7 +291,7 @@ void ETSEmitter::GenAnnotation()
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
-            func.metadata->SetAnnotations(std::move(annotations));
+            func.metadata->AddAnnotations(annotations);
         }
         Program()->AddToFunctionTable(std::move(func));
     }
@@ -303,7 +303,7 @@ void ETSEmitter::GenAnnotation()
         GenExternalRecord(recordTable, extProg);
     }
 
-    const auto *checker = static_cast<checker::ETSChecker *>(Context()->checker);
+    const auto *checker = static_cast<checker::ETSChecker *>(Context()->GetChecker());
 
     for (auto [arrType, signature] : checker->GlobalArrayTypes()) {
         GenGlobalArrayRecord(arrType, signature);
@@ -340,7 +340,7 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const pa
         GenInterfaceRecord(interfaceDecl, !isGenStdLib);
     }
 
-    for (auto *signature : recordTable->Signatures()) {
+    for (auto const *signature : recordTable->Signatures()) {
         auto func = GenScriptFunction(signature->Node()->AsScriptFunction(), this);
 
         if (!isGenStdLib) {
@@ -348,7 +348,7 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const pa
         }
 
         if (func.metadata->IsForeign() && IsFromSelfHeadFile(func.name, Context()->parserProgram, extProg)) {
-            return;
+            continue;
         }
 
         if (Program()->functionStaticTable.find(func.name) == Program()->functionStaticTable.cend()) {
@@ -547,7 +547,7 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenAnnotations(const ir::ClassD
     auto classIdent = classDef->Ident()->Name().Mutf8();
     bool isConstruct = classIdent == Signatures::JSNEW_CLASS;
     if (isConstruct || classIdent == Signatures::JSCALL_CLASS) {
-        auto *callNames = Context()->checker->AsETSChecker()->DynamicCallNames(isConstruct);
+        auto *callNames = Context()->GetChecker()->AsETSChecker()->DynamicCallNames(isConstruct);
         annotations.push_back(GenAnnotationDynamicCall(*callNames));
     }
 
@@ -756,7 +756,7 @@ LiteralArrayVector ETSEmitter::CreateLiteralArray(std::string &baseName, const i
 
 void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Field &field)
 {
-    auto *checker = Context()->checker->AsETSChecker();
+    auto *checker = Context()->GetChecker()->AsETSChecker();
     uint8_t rank = 1;
     auto *elemType = checker->GetElementTypeOfArray(prop->TsType());
     while (elemType->IsETSArrayType() || elemType->IsETSResizableArrayType()) {
@@ -874,7 +874,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
         return ProcessETSEnumType(baseName, init, type);
     }
     switch (checker::ETSChecker::TypeKind(
-        Context()->checker->AsETSChecker()->MaybeUnboxType(const_cast<checker::Type *>(type)))) {
+        Context()->GetChecker()->AsETSChecker()->MaybeUnboxType(const_cast<checker::Type *>(type)))) {
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT:
         case checker::TypeFlag::INT:
@@ -1066,7 +1066,7 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
     }
 
     ir::MethodDefinition *method = (*it)->AsMethodDefinition();
-    auto *checker = static_cast<checker::ETSChecker *>(Context()->checker);
+    auto *checker = static_cast<checker::ETSChecker *>(Context()->GetChecker());
     checker::TypeRelation *typeRel = checker->Relation();
     checker::SavedTypeRelationFlagsContext savedFlagsCtx(typeRel, checker::TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());

@@ -21,23 +21,27 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
+
+void ETSTypeReference::SetPart(ETSTypeReferencePart *part)
+{
+    this->GetOrCreateHistoryNodeAs<ETSTypeReference>()->part_ = part;
+}
+
 void ETSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    if (auto *transformedNode = cb(part_); part_ != transformedNode) {
-        part_->SetTransformedNode(transformationName, transformedNode);
-        part_ = transformedNode->AsETSTypeReferencePart();
+    auto const part = Part();
+    if (auto *transformedNode = cb(part); part != transformedNode) {
+        part->SetTransformedNode(transformationName, transformedNode);
+        SetPart(transformedNode->AsETSTypeReferencePart());
     }
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSTypeReference::Iterate(const NodeTraverser &cb) const
 {
-    cb(part_);
+    auto const part = GetHistoryNodeAs<ETSTypeReference>()->part_;
+    cb(part);
     for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
@@ -45,7 +49,7 @@ void ETSTypeReference::Iterate(const NodeTraverser &cb) const
 
 ir::Identifier *ETSTypeReference::BaseName() const
 {
-    ir::ETSTypeReferencePart *partIter = part_;
+    ir::ETSTypeReferencePart *partIter = Part();
 
     while (partIter->Previous() != nullptr) {
         partIter = partIter->Previous();
@@ -68,7 +72,7 @@ ir::Identifier *ETSTypeReference::BaseName() const
 
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}, {"annotations", AstDumper::Optional(Annotations())}});
+    dumper->Add({{"type", "ETSTypeReference"}, {"part", Part()}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
@@ -76,8 +80,8 @@ void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ES2PANDA_ASSERT(part_ != nullptr);
-    part_->Dump(dumper);
+    ES2PANDA_ASSERT(Part() != nullptr);
+    Part()->Dump(dumper);
 }
 
 void ETSTypeReference::Compile(compiler::PandaGen *pg) const
@@ -103,7 +107,7 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
     if (TsType() != nullptr) {
         return TsType();
     }
-    auto *type = part_->GetType(checker);
+    auto *type = Part()->GetType(checker);
     if (IsReadonlyType()) {
         type = checker->GetReadonlyType(type);
     }
@@ -112,14 +116,14 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const partClone = part_ != nullptr ? part_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
+    auto *const partClone = Part() != nullptr ? Part()->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
     auto *const clone = allocator->New<ETSTypeReference>(partClone, allocator);
 
     if (partClone != nullptr) {
         partClone->SetParent(clone);
     }
 
-    clone->flags_ = flags_;
+    clone->flags_ = Modifiers();
 
     if (parent != nullptr) {
         clone->SetParent(parent);

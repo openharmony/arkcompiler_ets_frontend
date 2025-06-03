@@ -58,7 +58,7 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);
     method->SetRange(funcDecl->Range());
-    method->Function()->SetAnnotations(std::move(funcDecl->Annotations()));
+    method->Function()->SetAnnotations(funcDecl->Annotations());
 
     if (funcDecl->Function()->IsExported() && funcDecl->Function()->HasExportAlias()) {
         method->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);

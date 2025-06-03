@@ -526,6 +526,7 @@ set(ES2PANDA_LIB_SRC
   parser/program/program.cpp
   parser/statementParser.cpp
   parser/statementTSParser.cpp
+  public/public.cpp
   checker/checker.cpp
   checker/checkerContext.cpp
   checker/ETSAnalyzer.cpp

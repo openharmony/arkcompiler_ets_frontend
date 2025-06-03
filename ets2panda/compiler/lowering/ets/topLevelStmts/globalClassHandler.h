@@ -62,8 +62,8 @@ private:
                             ir::ClassDefinition *globalClass, bool isDeclare);
     void SetupInitializerBlock(parser::Program *program, ArenaVector<ArenaVector<ir::Statement *>> &&initializerBlock,
                                ir::ClassDefinition *globalClass);
-    ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
-                                                            parser::Program *program);
+    ArenaVector<ir::Statement *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
+                                                     parser::Program *program);
 
     ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);

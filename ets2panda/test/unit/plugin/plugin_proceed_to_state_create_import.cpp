@@ -133,7 +133,7 @@ bool Find(es2panda_AstNode *ast)
 {
     if (g_impl->IsETSImportDeclaration(ast)) {
         size_t len = 0;
-        auto specifiers = g_impl->ImportDeclarationSpecifiers(g_ctx, ast, &len);
+        auto specifiers = g_impl->ImportDeclarationSpecifiersConst(g_ctx, ast, &len);
         auto source = g_impl->ImportDeclarationSource(g_ctx, ast);
         auto importDeclaration =
             g_impl->UpdateETSImportDeclaration(g_ctx, ast, source, specifiers, len, IMPORT_KINDS_ALL);

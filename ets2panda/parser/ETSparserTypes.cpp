@@ -390,7 +390,7 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(Type
     return std::make_pair(typeAnnotation, true);
 }
 
-static bool IsSimpleReturnThis(lexer::Token const &tokenAfterThis)
+bool IsSimpleReturnThis(lexer::Token const &tokenAfterThis)
 {
     return (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_ARROW) ||
            (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_COMMA) ||

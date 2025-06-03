@@ -97,7 +97,7 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
 
 const checker::ETSChecker *ETSGen::Checker() const noexcept
 {
-    return Context()->checker->AsETSChecker();
+    return Context()->GetChecker()->AsETSChecker();
 }
 
 const varbinder::ETSBinder *ETSGen::VarBinder() const noexcept

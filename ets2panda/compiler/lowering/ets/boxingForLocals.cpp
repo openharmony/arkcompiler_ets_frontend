@@ -119,7 +119,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
                                 ArenaMap<varbinder::Variable *, varbinder::Variable *> *varsMap)
 {
     auto *allocator = ctx->allocator;
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *varBinder = checker->VarBinder();
 
     auto *id = param->Ident()->AsIdentifier();
@@ -128,7 +128,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     auto *func = param->Parent()->AsScriptFunction();
     ES2PANDA_ASSERT(func->Body()->IsBlockStatement());  // guaranteed after expressionLambdaLowering
     auto *body = func->Body()->AsBlockStatement();
-    auto &bodyStmts = body->Statements();
+    auto &bodyStmts = body->StatementsForUpdates();
     auto *scope = body->Scope();
 
     auto *initId = allocator->New<ir::Identifier>(id->Name(), allocator);
@@ -177,7 +177,7 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
                                              ArenaMap<varbinder::Variable *, varbinder::Variable *> *varsMap)
 {
     auto *allocator = ctx->allocator;
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *varBinder = checker->VarBinder();
 
     auto *id = declarator->Id()->AsIdentifier();
@@ -231,7 +231,7 @@ static bool IsBeingDeclared(ir::AstNode *ast)
 static bool IsPartOfBoxInitializer(public_lib::Context *ctx, ir::AstNode *ast)
 {
     ES2PANDA_ASSERT(ast->IsIdentifier());
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *id = ast->AsIdentifier();
 
     // NOTE(gogabr): rely on caching for type instantiations, so we can use pointer comparison.
@@ -248,7 +248,7 @@ static bool OnLeftSideOfAssignment(ir::AstNode *ast)
 static ir::AstNode *HandleReference(public_lib::Context *ctx, ir::Identifier *id, varbinder::Variable *var)
 {
     auto *parser = ctx->parser->AsETSParser();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     // `as` is needed to account for smart types
     auto *res = parser->CreateFormattedExpression("@@I1.get() as @@T2", var->Name(), id->TsType());
@@ -279,8 +279,8 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
     ES2PANDA_ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     auto *parser = ctx->parser->AsETSParser();
-    auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *varBinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto *oldVar = ass->Left()->Variable();
     auto *newVar = varsMap.find(oldVar)->second;

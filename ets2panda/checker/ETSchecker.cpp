@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+#include <mutex>
+#include <public/public.h>
+#include <utility>
+
 #include "ETSchecker.h"
 
 #include "es2panda.h"
@@ -33,40 +37,57 @@
 
 namespace ark::es2panda::checker {
 
-ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine)
-    // NOLINTNEXTLINE(readability-redundant-member-init)
-    : Checker(diagnosticEngine),
-      arrayTypes_(Allocator()->Adapter()),
-      pendingConstraintCheckRecords_(Allocator()->Adapter()),
-      globalArraySignatures_(Allocator()->Adapter()),
-      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
-                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
-      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
-                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
-      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-      functionalInterfaceCache_(Allocator()->Adapter()),
-      apparentTypes_(Allocator()->Adapter()),
-      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
-      overloadSigContainer_(Allocator()->Adapter())
+void ETSChecker::ReputCheckerData()
 {
-}
+    readdedChecker_.insert(this);
+    for (auto &[_, extPrograms] : Program()->ExternalSources()) {
+        (void)_;
+        auto *extProg = extPrograms.front();
+        if (!extProg->IsASTLowered()) {
+            continue;
+        }
+        auto eChecker = extProg->Checker()->AsETSChecker();
 
-ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator)
-    // NOLINTNEXTLINE(readability-redundant-member-init)
-    : Checker(diagnosticEngine, programAllocator),
-      arrayTypes_(Allocator()->Adapter()),
-      pendingConstraintCheckRecords_(Allocator()->Adapter()),
-      globalArraySignatures_(Allocator()->Adapter()),
-      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
-                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
-      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
-                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
-      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-      functionalInterfaceCache_(Allocator()->Adapter()),
-      apparentTypes_(Allocator()->Adapter()),
-      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
-      overloadSigContainer_(Allocator()->Adapter())
-{
+        if (!HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
+            SetGlobalTypesHolder(eChecker->GetGlobalTypesHolder());
+            AddStatus(CheckerStatus::BUILTINS_INITIALIZED);
+        }
+
+        if (auto it = readdedChecker_.find(eChecker); it != readdedChecker_.end()) {
+            continue;
+        }
+        readdedChecker_.insert(eChecker->readdedChecker_.begin(), eChecker->readdedChecker_.end());
+        auto computedAbstractMapToCopy = eChecker->GetCachedComputedAbstracts();
+        for (auto &[key, value] : *computedAbstractMapToCopy) {
+            if (GetCachedComputedAbstracts()->find(key) != GetCachedComputedAbstracts()->end()) {
+                continue;
+            }
+            auto &[v1, v2] = value;
+            ArenaVector<ETSFunctionType *> newV1(Allocator()->Adapter());
+            ArenaUnorderedSet<ETSObjectType *> newV2(Allocator()->Adapter());
+            newV1.assign(v1.cbegin(), v1.cend());
+            newV2.insert(v2.cbegin(), v2.cend());
+            GetCachedComputedAbstracts()->try_emplace(key, newV1, newV2);
+        }
+
+        auto &globalArraySigs = eChecker->globalArraySignatures_;
+        globalArraySignatures_.insert(globalArraySigs.cbegin(), globalArraySigs.cend());
+
+        auto &apparentTypes = eChecker->apparentTypes_;
+        apparentTypes_.insert(apparentTypes.cbegin(), apparentTypes.cend());
+
+        auto &objectInstantiationMap = eChecker->objectInstantiationMap_;
+        for (auto &[key, value] : objectInstantiationMap) {
+            if (objectInstantiationMap_.find(key) == objectInstantiationMap_.end()) {
+                objectInstantiationMap_.insert(objectInstantiationMap.cbegin(), objectInstantiationMap.cend());
+            }
+        }
+
+        auto &invokeToArrowSignatures = eChecker->invokeToArrowSignatures_;
+        invokeToArrowSignatures_.insert(invokeToArrowSignatures.cbegin(), invokeToArrowSignatures.cend());
+        auto &arrowToFuncInterfaces = eChecker->arrowToFuncInterfaces_;
+        arrowToFuncInterfaces_.insert(arrowToFuncInterfaces.cbegin(), arrowToFuncInterfaces.cend());
+    }
 }
 
 static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signature)
@@ -88,8 +109,7 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
 
 void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties)
 {
-    static std::set<util::StringView> names;
-    names.clear();
+    std::set<util::StringView> names;
 
     for (auto property : properties) {
         if (!property->IsProperty()) {
@@ -291,8 +311,6 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
 
 bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Options &options)
 {
-    Initialize(varbinder);
-
     if (options.IsParseOnly()) {
         return false;
     }
@@ -352,23 +370,19 @@ void ETSChecker::SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo)
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
 {
-    if (program->IsASTChecked()) {
-        return;
-    }
-
     auto *savedProgram = Program();
     SetProgram(program);
 
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            if (extProg->IsASTChecked()) {
-                continue;
+            if (!extProg->IsASTLowered()) {
+                extProg->PushChecker(this);
+                varbinder::RecordTableContext recordTableCtx(VarBinder()->AsETSBinder(), extProg);
+                checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
+                AddStatus(checker::CheckerStatus::IN_EXTERNAL);
+                CheckProgram(extProg, VarBinder()->IsGenStdLib());
             }
-            checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
-            AddStatus(checker::CheckerStatus::IN_EXTERNAL);
-            CheckProgram(extProg, VarBinder()->IsGenStdLib());
-            extProg->SetFlag(parser::ProgramFlags::AST_CHECK_PROCESSED);
         }
     }
 

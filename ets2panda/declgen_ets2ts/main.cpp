@@ -105,7 +105,7 @@ static int Run(int argc, const char **argv)
         impl->CreateContextFromString(cfg, parserInputCStr, cfgImpl->options->SourceFileName().c_str());
 
     auto *ctxImpl = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
-    auto *checker = reinterpret_cast<checker::ETSChecker *>(ctxImpl->checker);
+    auto *checker = reinterpret_cast<checker::ETSChecker *>(ctxImpl->GetChecker());
 
     auto *isolatedDeclgenChecker = reinterpret_cast<checker::IsolatedDeclgenChecker *>(ctxImpl->isolatedDeclgenChecker);
     impl->ProceedToState(ctx, ES2PANDA_STATE_BOUND);

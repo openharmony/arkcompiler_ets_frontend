@@ -17,10 +17,17 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
+import * as crypto from 'crypto';
+
+
 import cluster, {
   Cluster,
-  Worker
+  Worker,
 } from 'cluster';
+import {
+  Worker as ThreadWorker,
+  workerData
+} from 'worker_threads';
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
@@ -59,13 +66,18 @@ import {
   CompileFileInfo,
   DependencyFileConfig,
   DependentModuleConfig,
+  JobInfo,
+  KPointer,
   ModuleInfo
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
+import { create } from 'domain';
+import { emitKeypressEvents } from 'readline';
 export abstract class BaseMode {
   buildConfig: BuildConfig;
   entryFiles: Set<string>;
+  allFiles: Map<string, CompileFileInfo>;
   compileFiles: Map<string, CompileFileInfo>;
   outputDir: string;
   cacheDir: string;
@@ -93,6 +105,7 @@ export abstract class BaseMode {
   isCacheFileExists: boolean;
   dependencyFileMap: DependencyFileConfig | null;
   isBuildConfigModified: boolean | undefined;
+  hasCleanWorker: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -121,12 +134,14 @@ export abstract class BaseMode {
 
     this.moduleInfos = new Map<string, ModuleInfo>();
     this.compileFiles = new Map<string, CompileFileInfo>();
+    this.allFiles = new Map<string, CompileFileInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
     this.dependencyJsonFile = path.resolve(this.cacheDir, DEPENDENCY_JSON_FILE);
     this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
     this.dependencyAnalyzerCmd = ['"' + this.buildConfig.dependencyAnalyzerPath + '"'];
 
     this.logger = Logger.getInstance();
+    this.hasCleanWorker = false;
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
@@ -465,8 +480,17 @@ export abstract class BaseMode {
         const filePathFromModuleRoot = path.relative(moduleInfo.moduleRootPath, file);
         const filePathInCache = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
         const abcFilePath = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
-        
         this.abcFiles.add(abcFilePath);
+
+        const fileInfo: CompileFileInfo = {
+          filePath: file,
+          dependentFiles: this.dependencyFileMap?.dependants[file] || [],
+          abcFilePath,
+          arktsConfigFile: moduleInfo.arktsConfigFile,
+          packageName: moduleInfo.packageName
+        };
+        this.allFiles.set(file, fileInfo);
+
         if (this.isBuildConfigModified || this.isFileChanged(file, abcFilePath)) {
           compileFiles.add(file);
           queue.push(file);
@@ -541,7 +565,7 @@ export abstract class BaseMode {
   }
 
   protected collectCompileFiles(): void {
-    if (!this.isBuildConfigModified && this.isCacheFileExists && !this.enableDeclgenEts2Ts) {
+    if (!this.enableDeclgenEts2Ts) {
       this.collectDependentCompileFiles();
       return;
     }
@@ -554,19 +578,16 @@ export abstract class BaseMode {
         let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
         let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
         this.abcFiles.add(abcFilePath);
-        if (!this.isBuildConfigModified && this.shouldSkipFile(file, moduleInfo, filePathFromModuleRoot, abcFilePath)) {
-          return;
-        }
         this.hashCache[file] = getFileHash(file);
         let fileInfo: CompileFileInfo = {
-          filePath: file,
+          filePath: path.resolve(file),
           dependentFiles: [],
           abcFilePath: abcFilePath,
           arktsConfigFile: moduleInfo.arktsConfigFile,
           packageName: moduleInfo.packageName
         };
         moduleInfo.compileFileInfos.push(fileInfo);
-        this.compileFiles.set(file, fileInfo);
+        this.compileFiles.set(path.resolve(file), fileInfo);
         return;
       }
       const logData: LogData = LogDataFactory.newInstance(
@@ -615,6 +636,7 @@ export abstract class BaseMode {
     this.mergeAbcFiles();
   }
 
+  // -- runParallell code begins --
   private terminateAllWorkers(): void {
     Object.values(cluster.workers || {}).forEach(worker => {
       worker?.kill();
@@ -622,7 +644,7 @@ export abstract class BaseMode {
   };
 
   public generatedependencyFileMap(): void {
-    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts) {
+    if (this.enableDeclgenEts2Ts) {
       return;
     }
     let dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);
@@ -808,7 +830,6 @@ export abstract class BaseMode {
     });
     return JSON.parse(jsonStr);
   }
-
   setupCluster(cluster: Cluster, options: SetupClusterOptions): void {
     const {
       clearExitListeners,
@@ -825,4 +846,488 @@ export abstract class BaseMode {
       execArgv: execArgs,
     });
   }
+  // -- runParallell code ends --
+
+
+  // -- runConcurrent code begins --
+
+  private findStronglyConnectedComponents(graph: DependencyFileConfig): Map<string, Set<string>> {
+    const adjacencyList: Record<string, string[]> = {};
+    const reverseAdjacencyList: Record<string, string[]> = {};
+    const allNodes = new Set<string>();
+
+    for (const node in graph.dependencies) {
+        allNodes.add(node);
+        graph.dependencies[node].forEach(dep => allNodes.add(dep));
+    }
+    for (const node in graph.dependants) {
+        allNodes.add(node);
+        graph.dependants[node].forEach(dep => allNodes.add(dep));
+    }
+
+    Array.from(allNodes).forEach(node => {
+        adjacencyList[node] = graph.dependencies[node] || [];
+        reverseAdjacencyList[node] = graph.dependants[node] || [];
+    });
+
+    const visited = new Set<string>();
+    const order: string[] = [];
+
+    function dfs(node: string): void {
+        visited.add(node);
+        for (const neighbor of adjacencyList[node]) {
+            if (!visited.has(neighbor)) {
+                dfs(neighbor);
+            }
+        }
+        order.push(node);
+    }
+
+    Array.from(allNodes).forEach(node => {
+        if (!visited.has(node)) {
+            dfs(node);
+        }
+    });
+
+    visited.clear();
+    const components = new Map<string, Set<string>>();
+
+    function reverseDfs(node: string, component: Set<string>): void {
+        visited.add(node);
+        component.add(node);
+        for (const neighbor of reverseAdjacencyList[node]) {
+            if (!visited.has(neighbor)) {
+                reverseDfs(neighbor, component);
+            }
+        }
+    }
+
+    for (let i = order.length - 1; i >= 0; i--) {
+        const node = order[i];
+        if (!visited.has(node)) {
+            const component = new Set<string>();
+            reverseDfs(node, component);
+            if (component.size > 1) {
+              const sortedFiles = Array.from(component).sort();
+              const hashKey = createHash(sortedFiles.join('|'));
+              components.set(hashKey, component);
+            }
+
+        }
+    }
+
+    return components;
+  }
+
+
+  private getJobDependencies(fileDeps: string[], cycleFiles: Map<string, string[]>): Set<string> {
+    let depJobList: Set<string> = new Set<string>();
+    fileDeps.forEach((file) => {
+      if (!cycleFiles.has(file)) {
+        depJobList.add(this.getExternalProgramJobId(file));
+      } else {
+        cycleFiles.get(file)?.forEach((f) => {
+          depJobList.add(f);
+        });
+      }
+    });
+
+    return depJobList;
+  }
+
+  private getAbcJobId(file: string): string {
+    return '1' + file;
+  }
+  
+  private getExternalProgramJobId(file: string): string {
+    return '0' + file;
+  }
+
+  private getJobDependants(fileDeps: string[], cycleFiles: Map<string, string[]>): Set<string> {
+    let depJobList: Set<string> = new Set<string>();
+    fileDeps.forEach((file) => {  
+      if (!file.endsWith(DECL_ETS_SUFFIX)) {
+        depJobList.add(this.getAbcJobId(file));
+      }
+      if (cycleFiles.has(file)) {
+        cycleFiles.get(file)?.forEach((f) => {
+          depJobList.add(f);
+        });
+      } else {
+        depJobList.add(this.getExternalProgramJobId(file));
+      }
+    });
+
+    return depJobList;
+  }
+
+  private collectCompileJobs(jobs: Record<string, Job>): void {
+    let fileDepsInfo: DependencyFileConfig = this.dependencyFileMap!;
+    Object.keys(fileDepsInfo.dependants).forEach((file) => {
+      if (!(file in fileDepsInfo.dependencies)) {
+        fileDepsInfo.dependencies[file] = [];
+      }
+    });
+
+    const cycleGroups = this.findStronglyConnectedComponents(fileDepsInfo);
+    let cycleFiles: Map<string, string[]> = new Map<string, string[]>();
+    cycleGroups.forEach((value: Set<string>, key: string) => {
+      value.forEach((file) => {
+        cycleFiles.set(file, [key]);
+      });
+    });
+
+    Object.entries(fileDepsInfo.dependencies).forEach(([key, value]) => {
+      if (this.entryFiles.has(key) && !this.compileFiles.has(key)) {
+        return;
+      }
+      let dependencies = this.getJobDependencies(value, cycleFiles);
+
+      if (!key.endsWith(DECL_ETS_SUFFIX)) {
+        let abcJobId: string = this.getAbcJobId(key);
+        jobs[abcJobId] = {
+          id: abcJobId,
+          isDeclFile: false,
+          isInCycle: cycleFiles.has(key),
+          isAbcJob: true,
+          fileList: [key],
+          dependencies: Array.from(dependencies), // 依赖external program
+          dependants: []
+        };
+      }
+
+      if (cycleFiles.has(key)) {
+        const externalProgramJobIds = cycleFiles.get(key)!;
+        externalProgramJobIds.forEach((id) => {
+          let fileList: string[] = Array.from(cycleGroups.get(id)!);
+          this.createExternalProgramJob(id, fileList, jobs, dependencies, true);
+        });
+      } else {
+        const id = this.getExternalProgramJobId(key);
+        let fileList: string[] = [key];
+        this.createExternalProgramJob(id, fileList, jobs, dependencies);
+      }
+
+      if (key.endsWith(DECL_ETS_SUFFIX)) {
+        let fileInfo: CompileFileInfo = {
+          filePath: key,
+          dependentFiles: [],
+          abcFilePath: '',
+          arktsConfigFile: this.moduleInfos.get(this.packageName)!.arktsConfigFile,
+          packageName: this.moduleInfos.get(this.packageName)!.packageName
+        };
+
+        if (!this.allFiles.has(key)) {
+          this.allFiles.set(key, fileInfo);
+        }
+      }
+    });
+
+    Object.entries(fileDepsInfo.dependants).forEach(([key, value]) => {
+      if (this.entryFiles.has(key) && !this.compileFiles.has(key)) {
+        return;
+      }
+      let dependants = this.getJobDependants(value, cycleFiles);
+
+      this.dealWithDependants(cycleFiles, key, jobs, dependants);
+    });
+  }
+
+  private dealWithDependants(cycleFiles: Map<string, string[]>, key: string, jobs: Record<string, Job>, dependants: Set<string>): void {
+    if (cycleFiles.has(key)) {
+      const externalProgramJobIds = cycleFiles.get(key)!;
+      externalProgramJobIds.forEach((id) => {
+        jobs[id].dependants.forEach(dep => {
+          dependants.add(dep);
+        });
+        if (dependants.has(id)) {
+          dependants.delete(id);
+        }
+
+        jobs[id].dependants = Array.from(dependants);
+      });
+    } else {
+      const id = this.getExternalProgramJobId(key);
+      jobs[id].dependants.forEach(dep => {
+        dependants.add(dep);
+      });
+      if (dependants.has(id)) {
+        dependants.delete(id);
+      }
+      jobs[id].dependants = Array.from(dependants);
+    }
+  }
+
+  private createExternalProgramJob(id: string, fileList: string[], jobs: Record<string, Job>, dependencies: Set<string>, isInCycle?: boolean): void {
+    if (dependencies.has(id)) {
+      dependencies.delete(id);
+    }
+
+    // TODO: can be duplicated ids
+    if (jobs[id]) {
+      // If job already exists, merge the file lists and dependencies
+      const existingJob = jobs[id];
+      const mergedDependencies = new Set([
+        ...existingJob.dependencies,
+        ...Array.from(dependencies)
+      ]);
+      jobs[id] = {
+        ...existingJob,
+        dependencies: Array.from(mergedDependencies)
+      };
+    } else {
+      jobs[id] = {
+        id,
+        fileList,
+        isDeclFile: true,
+        isInCycle,
+        isAbcJob: false,
+        dependencies: Array.from(dependencies), // 依赖external program
+        dependants: []
+      };
+    }
+  }
+
+  private addJobToQueues(job: Job, queues: Queues): void {
+    if (queues.externalProgramQueue.some(j => j.id === job.id) ||
+      queues.abcQueue.some(j => j.id === job.id)) {
+      return;
+    }
+
+    if (!job.isAbcJob) {
+      queues.externalProgramQueue.push(job);
+    } else {
+      queues.abcQueue.push(job);
+    }
+  }
+
+  private initCompileQueues(jobs: Record<string, Job>, queues: Queues): void {
+    this.collectCompileJobs(jobs);
+    Object.values(jobs).forEach(job => {
+      if (job.dependencies.length === 0) {
+        this.addJobToQueues(job, queues);
+      }
+    });
+  }
+
+  private checkAllTasksDone(queues: Queues, workerPool: WorkerInfo[]): boolean {
+    if (queues.externalProgramQueue.length === 0) {
+      for (let i = 0; i < workerPool.length; i++) {
+        if (!workerPool[i].isIdle) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private processAfterCompile(config: KPointer, globalContext: KPointer): void {
+
+    if (this.hasCleanWorker) {
+      return;
+    }
+    this.hasCleanWorker = true;
+    let arktsGlobal = this.buildConfig.arktsGlobal;
+    let arkts = this.buildConfig.arkts;
+
+    arktsGlobal.es2panda._DestroyGlobalContext(globalContext);
+    arkts.destroyConfig(config);
+    arktsGlobal.es2panda._MemFinalize();
+
+    this.mergeAbcFiles();
+  }
+
+  // CC-OFFNXT(huge_depth)
+  private async invokeWorkers(jobs: Record<string, Job>, queues: Queues, processingJobs: Set<string>, workers: ThreadWorker[]): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const numWorkers = 1;
+
+      let files: string[] = [];
+
+      Object.entries(jobs).forEach(([key, job]) => {
+        for (let i = 0; i < job.fileList.length; i++) {
+          files.push(job.fileList[i]);
+        }
+      });
+
+      let arkts = this.buildConfig.arkts;
+      let fileInfo = this.compileFiles.values().next().value!;
+
+      let ets2pandaCmd: string[] = [
+        '_',
+        '--extension',
+        'ets',
+        '--arktsconfig',
+        fileInfo.arktsConfigFile,
+        '--output',
+        fileInfo.abcFilePath,
+      ];
+  
+      if (this.isDebug) {
+        ets2pandaCmd.push('--debug-info');
+      }
+      ets2pandaCmd.push(fileInfo.filePath);
+
+      arkts.MemInitialize();
+
+      let config = arkts.Config.create(ets2pandaCmd).peer;
+
+      let globalContextPtr = arkts.CreateGlobalContext(config, files, files.length, false);
+      const serializableConfig = this.getSerializableConfig();
+
+      const workerPool: WorkerInfo[] = [];
+      for (let i = 0; i < numWorkers; i++) {
+        const worker = new ThreadWorker(
+          path.resolve(__dirname, 'compile_thread_worker.js'),
+          { workerData: { workerId: i } }
+        );
+
+        workers.push(worker);
+        workerPool.push({ worker, isIdle: true });
+        this.assignTaskToIdleWorker(workerPool[i], queues, processingJobs, serializableConfig, globalContextPtr);
+        worker.on('message', (msg) => {
+          if (msg.type === 'TASK_FINISH') {
+            const workerInfo = workerPool.find(w => w.worker === worker);
+            if (workerInfo) {
+              workerInfo.isIdle = true;
+            }
+            const jobId = msg.jobId;
+            finishedJob.push(jobId);
+            processingJobs.delete(jobId);
+            const completedJob = jobs[jobId];
+            completedJob.dependants.forEach(depJobId => {
+              const depJob = jobs[depJobId];
+              if (!depJob) {
+                return;
+              }
+              const depIndex = depJob.dependencies.indexOf(jobId);
+              if (depIndex !== -1) {
+                depJob.dependencies.splice(depIndex, 1);
+                if (depJob.dependencies.length === 0) {
+                  this.addJobToQueues(depJob, queues);
+                }
+              }
+            });
+            for (let j = 0; j < workerPool.length; j++) {
+              if (workerPool[j].isIdle) {
+                this.assignTaskToIdleWorker(workerPool[j], queues, processingJobs, serializableConfig, globalContextPtr);
+              }
+            }
+          }
+          if (this.checkAllTasksDone(queues, workerPool)) {
+            workers.forEach(worker => worker.postMessage({ type: 'EXIT' }));
+            this.processAfterCompile(config, globalContextPtr);
+            resolve();
+          }
+        });
+      }
+    });
+  }
+
+  private updateDependantJobs(jobId: string, processingJobs: Set<string>, jobs: Record<string, Job>, queues: Queues): void {
+    finishedJob.push(jobId);
+    processingJobs.delete(jobId);
+    const completedJob = jobs[jobId];
+    completedJob.dependants.forEach(depJobId => {
+      const depJob = jobs[depJobId];
+      // During incremental compilation, the dependants task does not necessarily exist
+      if (!depJob) {
+        return;
+      }
+      const depIndex = depJob.dependencies.indexOf(jobId);
+      if (depIndex !== -1) {
+        depJob.dependencies.splice(depIndex, 1);
+        if (depJob.dependencies.length === 0) {
+          this.addJobToQueues(depJob, queues);
+        }
+      }
+    });
+  }
+
+  private assignTaskToIdleWorker(
+    workerInfo: WorkerInfo, 
+    queues: Queues, 
+    processingJobs: Set<string>, 
+    serializableConfig: Object, 
+    globalContextPtr: KPointer): void {
+    let job: Job | undefined;
+    let jobInfo: JobInfo | undefined;
+
+    if (queues.externalProgramQueue.length > 0) {
+      job = queues.externalProgramQueue.shift()!;
+      jobInfo = {
+        id: job.id,
+        isCompileAbc: false,
+        compileFileInfo: this.allFiles.get(job.fileList[0])!,
+        buildConfig: serializableConfig,
+        globalContextPtr: globalContextPtr
+      };
+    } 
+    else if (queues.abcQueue.length > 0) {
+      job = queues.abcQueue.shift()!;
+      jobInfo = {
+        id: job.id,
+        isCompileAbc: true,
+        compileFileInfo: this.allFiles.get(job.fileList[0])!,
+        buildConfig: serializableConfig,
+        globalContextPtr: globalContextPtr
+      };
+    }
+
+    if (job) {
+      processingJobs.add(job.id);
+      workerInfo.worker.postMessage({ type: 'ASSIGN_TASK', jobInfo });
+      workerInfo.isIdle = false;
+    }
+  }
+
+  public async runConcunrent(): Promise<void> {
+    this.generateModuleInfos();
+    if (this.compileFiles.size === 0) {
+      return;
+    }
+    this.generateArkTSConfigForModules();
+
+    const jobs: Record<string, Job> = {};
+    const queues: Queues = {
+      externalProgramQueue: [],
+      abcQueue: [],
+    };
+    this.initCompileQueues(jobs, queues);
+
+    const processingJobs = new Set<string>();
+    const workers: ThreadWorker[] = [];
+    await this.invokeWorkers(jobs, queues, processingJobs, workers);
+  }
 }
+
+interface WorkerInfo {
+  worker: ThreadWorker;
+  isIdle: boolean;
+}
+
+interface Job {
+  id: string;
+  isDeclFile: boolean;
+  isInCycle?: boolean;
+  fileList: string[];
+  dependencies: string[];
+  dependants: string[];
+  isAbcJob: boolean;
+}
+
+interface Queues {
+  externalProgramQueue: Job[];
+  abcQueue: Job[];
+}
+
+function createHash(str: string): string {
+  const hash = crypto.createHash('sha256');
+  hash.update(str);
+  return hash.digest('hex');
+}
+
+  // -- runConcurrent code ends --
+
+let finishedJob: string[] = [];

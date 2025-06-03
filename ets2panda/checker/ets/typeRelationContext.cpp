@@ -179,7 +179,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
     }
 
     result_ = type->Substitute(checker_->Relation(), substitution)->AsETSObjectType();
-    type->GetInstantiationMap().try_emplace(hash, result_->AsETSObjectType());
+    type->InsertInstantiationMap(hash, result_->AsETSObjectType());
     result_->AddTypeFlag(TypeFlag::GENERIC);
 
     ctScope.TryCheckConstraints();

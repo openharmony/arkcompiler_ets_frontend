@@ -60,20 +60,9 @@ void BoxNumberLiteralArguments(ir::CallExpression *callExpr, PhaseManager *phase
     }
 }
 
-bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool BoxedTypeLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (const auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : extPrograms) {
-            if (extProg->GetFlag(parser::ProgramFlags::AST_BOXED_TYPE_LOWERED)) {
-                continue;
-            }
-            Perform(ctx, extProg);
-            extProg->SetFlag(parser::ProgramFlags::AST_BOXED_TYPE_LOWERED);
-        }
-    }
-
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
     auto parser = ctx->parser->AsETSParser();
     auto phaseManager = ctx->phaseManager;
     program->Ast()->TransformChildrenRecursively(
@@ -95,7 +84,6 @@ bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program 
             return ast;
         },
         Name());
-
     return true;
 }
 

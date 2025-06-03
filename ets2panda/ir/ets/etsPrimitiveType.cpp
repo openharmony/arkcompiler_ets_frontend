@@ -24,12 +24,7 @@ namespace ark::es2panda::ir {
 void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                          [[maybe_unused]] std::string_view const transformationName)
 {
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSPrimitiveType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
@@ -109,7 +104,7 @@ checker::VerifiedType ETSPrimitiveType::Check(checker::ETSChecker *checker)
 
 checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *checker)
 {
-    switch (type_) {
+    switch (GetPrimitiveType()) {
         case PrimitiveType::BYTE: {
             SetTsType(checker->GlobalByteType());
             return TsType();
@@ -158,7 +153,7 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
 
 ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const clone = allocator->New<ETSPrimitiveType>(type_, allocator);
+    auto *const clone = allocator->New<ETSPrimitiveType>(GetPrimitiveType(), allocator);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

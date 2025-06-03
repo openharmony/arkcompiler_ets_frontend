@@ -343,7 +343,7 @@ TEST_F(PluginConversionRuleUnitTest, PairReturnValue)
 es2panda_Type *classInstance, [[maybe_unused]] es2panda_Type *sourceType/*return_args:*/,
 es2panda_Type **returnTypeSecond)
     {
-        auto *checkerE2p = reinterpret_cast<Context *>(context)->checker->AsETSChecker();
+        auto *checkerE2p = reinterpret_cast<Context *>(context)->GetChecker()->AsETSChecker();
         auto *sourceTypeE2p = reinterpret_cast<checker::Type *>(sourceType);
  	    auto *ctx = reinterpret_cast<Context *>(context);
  	    [[maybe_unused]] auto *ctxAllocator = ctx->allocator;

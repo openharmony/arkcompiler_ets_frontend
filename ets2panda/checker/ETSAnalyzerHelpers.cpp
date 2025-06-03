@@ -420,7 +420,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
         methodCallSig->GetSignatureInfo()->minArgCount++;
         auto &paramsVar = methodCallSig->Params();
         paramsVar.insert(paramsVar.begin(), dummyReceiverVar);
-        auto &params = methodCallSig->Function()->Params();
+        auto &params = methodCallSig->Function()->ParamsForUpdate();
         params.insert(params.begin(), dummyReceiver);
         if (typeParamsNeeded) {
             auto &typeParams = methodCallSig->TypeParams();
@@ -436,7 +436,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
         methodCallSig->GetSignatureInfo()->minArgCount--;
         auto &paramsVar = methodCallSig->Params();
         paramsVar.erase(paramsVar.begin());
-        auto &params = methodCallSig->Function()->Params();
+        auto &params = methodCallSig->Function()->ParamsForUpdate();
         params.erase(params.begin());
         if (typeParamsNeeded) {
             auto &typeParams = methodCallSig->TypeParams();

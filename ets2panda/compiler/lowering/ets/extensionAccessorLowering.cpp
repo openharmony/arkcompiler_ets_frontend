@@ -133,7 +133,7 @@ bool ExtensionAccessorPhase::PerformForModule(public_lib::Context *ctx, parser::
         return true;
     }
 
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
     program->Ast()->TransformChildrenRecursively(
         [&checker](ir::AstNode *const node) -> AstNodePtr { return CheckAndReturnNode(checker, node); }, Name());
     return true;

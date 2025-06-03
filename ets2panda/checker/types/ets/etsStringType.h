@@ -21,14 +21,14 @@
 namespace ark::es2panda::checker {
 class ETSStringType : public ETSObjectType {
 public:
-    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super)
+    explicit ETSStringType(ThreadSafeArenaAllocator *allocator, ETSObjectType *super)
         : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING, nullptr,
                         ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER)
     {
         SetSuperType(super);
     }
 
-    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation)
+    explicit ETSStringType(ThreadSafeArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation)
         : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING,
                         std::make_tuple(nullptr,
                                         ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
@@ -37,7 +37,7 @@ public:
         SetSuperType(super);
     }
 
-    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
+    explicit ETSStringType(ThreadSafeArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
                            util::StringView value)
         : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING,
                         std::make_tuple(nullptr,

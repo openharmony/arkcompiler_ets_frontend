@@ -60,7 +60,7 @@ ir::MethodDefinition *MakeMethodDef(public_lib::Context *ctx, ir::ClassDefinitio
     auto *const methodDef = ctx->AllocNode<ir::MethodDefinition>(
         ir::MethodDefinitionKind::METHOD, identClone, functionExpr, function->Modifiers(), ctx->Allocator(), false);
     methodDef->SetParent(enumClass);
-    enumClass->Body().push_back(methodDef);
+    enumClass->EmplaceBody(methodDef);
 
     return methodDef;
 }
@@ -152,7 +152,7 @@ template <typename ElementMaker>
         arrayIdent, arrayExpr, typeAnnotation,
         ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
     arrayClassProp->SetParent(enumClass);
-    enumClass->Body().push_back(arrayClassProp);
+    enumClass->EmplaceBody(arrayClassProp);
 
     return arrayIdent;
 }
@@ -208,7 +208,7 @@ void EnumLoweringPhase::CreateEnumItemFields(const ir::TSEnumDeclaration *const 
         return field;
     };
     for (auto *const member : enumDecl->Members()) {
-        enumClass->Body().push_back(createEnumItemField(member->AsTSEnumMember()));
+        enumClass->EmplaceBody(createEnumItemField(member->AsTSEnumMember()));
     }
 }
 
@@ -316,7 +316,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
         AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, identClone, funcExpr,
                                         ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC, Allocator(), false);
     methodDef->SetParent(enumClass);
-    enumClass->Body().push_back(methodDef);
+    enumClass->EmplaceBody(methodDef);
 }
 
 ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *const enumClass)
@@ -327,7 +327,7 @@ ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *co
         AllocNode<ir::ClassProperty>(fieldIdent, nullptr, intTypeAnnotation,
                                      ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
 
-    enumClass->Body().push_back(field);
+    enumClass->EmplaceBody(field);
     field->SetParent(enumClass);
     return field;
 }
@@ -377,7 +377,7 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
     auto *superConstructorCall = AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
     auto *superCallStatement = AllocNode<ir::ExpressionStatement>(superConstructorCall);
     superCallStatement->SetParent(body);
-    body->Statements().push_back(superCallStatement);
+    body->AddStatement(superCallStatement);
 
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
     auto *fieldIdentifier = Allocator()->New<ir::Identifier>(ORDINAL_NAME, Allocator());
@@ -389,7 +389,7 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
         AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     auto initStatement = AllocNode<ir::ExpressionStatement>(initializer);
     initStatement->SetParent(body);
-    body->Statements().push_back(initStatement);
+    body->AddStatement(initStatement);
 
     return func;
 }
@@ -403,7 +403,7 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
     auto *const methodDef = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, identClone, funcExpr,
                                                             ir::ModifierFlags::PUBLIC, Allocator(), false);
     methodDef->SetParent(enumClass);
-    enumClass->Body().push_back(methodDef);
+    enumClass->EmplaceBody(methodDef);
 }
 
 void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl,
@@ -539,7 +539,7 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
     }
 
     context_ = ctx;
-    checker_ = ctx->checker->AsETSChecker();
+    checker_ = ctx->GetChecker()->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program_ = program;
 

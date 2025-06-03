@@ -38,17 +38,21 @@ public:
 
     [[nodiscard]] checker::Type const *TsType() const
     {
-        return tsType_;
+        return AstNode::GetHistoryNodeAs<Typed<T>>()->tsType_;
     }
 
     [[nodiscard]] checker::Type *TsType()
     {
-        return tsType_;
+        return AstNode::GetHistoryNodeAs<Typed<T>>()->tsType_;
     }
 
     checker::Type *SetTsType(checker::Type *tsType) noexcept
     {
-        return (tsType_ = tsType);
+        auto nowNode = AstNode::GetHistoryNodeAs<Typed<T>>();
+        if (nowNode->tsType_ != tsType) {
+            AstNode::GetOrCreateHistoryNodeAs<Typed<T>>()->tsType_ = tsType;
+        }
+        return tsType;
     }
 
     bool IsTyped() const override

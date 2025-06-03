@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 
+#include <mutex>
 #include "lexer/token/sourceLocation.h"
 #include "generated/tokenType.h"
 #include "util/ustring.h"
@@ -110,11 +111,18 @@ public:
     RelationType type;
 };
 
-using RelationMap = std::unordered_map<RelationKey, RelationEntry, RelationKeyHasher, RelationKeyComparator>;
+using RelationMap = ArenaUnorderedMap<RelationKey, RelationEntry, RelationKeyHasher, RelationKeyComparator>;
 
 class RelationHolder {
 public:
+    RelationHolder(ThreadSafeArenaAllocator *allocator, RelationType relationType)
+        : cached(allocator->Adapter()), type(relationType)
+    {
+    }
+
+    // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
     RelationMap cached;
+    // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
     RelationType type {};
 };
 
@@ -245,6 +253,7 @@ public:
 
     void IncreaseTypeRecursionCount(Type *const type)
     {
+        std::lock_guard<std::mutex> lock(mtx_);
         if (const auto foundType = instantiationRecursionMap_.find(type);
             foundType != instantiationRecursionMap_.end()) {
             foundType->second += 1;
@@ -261,12 +270,14 @@ public:
         // possible to reference the correct types of it's members and methods. 2 is possibly enough, because if we
         // chain expressions, every one of them will be rechecked separately, thus allowing another 2 recursion.
         constexpr auto MAX_RECURSIVE_TYPE_INST = 2;
+        std::lock_guard<std::mutex> lock(mtx_);
         const auto foundType = instantiationRecursionMap_.find(type);
         return foundType == instantiationRecursionMap_.end() ? true : (foundType->second < MAX_RECURSIVE_TYPE_INST);
     }
 
     void DecreaseTypeRecursionCount(Type *const type)
     {
+        std::lock_guard<std::mutex> lock(mtx_);
         const auto foundType = instantiationRecursionMap_.find(type);
         if (foundType == instantiationRecursionMap_.end()) {
             return;
@@ -342,6 +353,7 @@ private:
     RelationResult CacheLookup(const Type *source, const Type *target, const RelationHolder &holder,
                                RelationType type) const;
 
+    std::mutex mtx_;
     Checker *checker_;
     RelationResult result_ {};
     TypeRelationFlag flags_ {};

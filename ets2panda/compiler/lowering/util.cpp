@@ -52,7 +52,13 @@ ir::Identifier *Gensym(ArenaAllocator *const allocator)
 util::UString GenName(ArenaAllocator *const allocator)
 {
     static std::size_t gensymCounter = 0U;
-    return util::UString {std::string(GENSYM_CORE) + std::to_string(++gensymCounter), allocator};
+    static std::mutex gensymCounterMutex {};
+    std::size_t individualGensym = 0;
+    {
+        std::lock_guard lock(gensymCounterMutex);
+        individualGensym = ++gensymCounter;
+    }
+    return util::UString {std::string(GENSYM_CORE) + std::to_string(individualGensym), allocator};
 }
 
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
@@ -69,7 +75,7 @@ ir::AstNode *RefineSourceRanges(ir::AstNode *node)
     };
 
     auto const refine = [isDummyLoc](ir::AstNode *ast) {
-        if (isDummyLoc(ast->Range(), ast) && ast->Parent() != nullptr) {
+        if (ast->Parent() != nullptr && isDummyLoc(ast->Range(), ast)) {
             ast->SetRange(ast->Parent()->Range());
         }
     };
@@ -167,7 +173,7 @@ static void ClearHelper(parser::Program *prog)
 {
     ResetGlobalClass(prog);
     // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
-    auto &stmts = prog->Ast()->Statements();
+    auto &stmts = prog->Ast()->StatementsForUpdates();
     // clang-format off
     stmts.erase(std::remove_if(stmts.begin(), stmts.end(),
         [](ir::AstNode *ast) -> bool {
@@ -216,31 +222,56 @@ varbinder::Scope *Rebind(PhaseManager *phaseManager, varbinder::ETSBinder *varBi
     return scope;
 }
 
+void HandleExternalProgram(varbinder::ETSBinder *newVarbinder, parser::Program *program)
+{
+    for (auto [_, program_list] : program->ExternalSources()) {
+        for (auto prog : program_list) {
+            if (!prog->IsASTLowered()) {
+                ClearHelper(prog);
+                prog->PushVarBinder(newVarbinder);
+            }
+        }
+    }
+}
+
 // Rerun varbinder and checker on the node.
 void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checker::ETSChecker *checker,
              ir::AstNode *node)
 {
     RefineSourceRanges(node);
     if (node->IsProgram()) {
+        auto ctx = varBinder->GetContext();
+        phaseManager->SetCurrentPhaseId(0);
         auto program = node->AsETSModule()->Program();
-        if (program->IsPackage()) {
-            return;
-        }
 
-        for (auto [_, program_list] : program->ExternalSources()) {
-            for (auto prog : program_list) {
-                ClearHelper(prog);
-            }
-        }
+        auto newVarbinder = ctx->allocator->New<varbinder::ETSBinder>(ctx->allocator);
+        newVarbinder->SetProgram(program);
+        newVarbinder->SetContext(ctx);
+        program->PushVarBinder(newVarbinder);
+        varBinder->CopyTo(newVarbinder);
+        HandleExternalProgram(newVarbinder, program);
 
         ClearHelper(program);
 
-        varBinder->CleanUp();
-        varBinder->GetContext()->checker->CleanUp();
+        auto newChecker =
+            ctx->allocator->New<checker::ETSChecker>(ctx->allocator, *ctx->diagnosticEngine, ctx->allocator);
+        auto analyzer = ctx->allocator->New<checker::ETSAnalyzer>(newChecker);
+
+        ctx->PushAnalyzer(analyzer);
+        newChecker->SetAnalyzer(analyzer);
+        newChecker->Initialize(newVarbinder);
+        ctx->PushChecker(newChecker);
+        for (auto [_, program_list] : program->ExternalSources()) {
+            if (auto prog = program_list.front(); prog->IsASTLowered()) {
+                newChecker->SetGlobalTypesHolder(prog->Checker()->GetGlobalTypesHolder());
+                break;
+            }
+        }
 
         for (auto *phase : phaseManager->RecheckPhases()) {
-            phase->Apply(varBinder->GetContext(), program);
+            phase->Apply(ctx, program);
         }
+        phaseManager->SetCurrentPhaseIdToAfterCheck();
         return;
     }
 

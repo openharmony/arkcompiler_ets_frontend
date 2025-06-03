@@ -33,24 +33,26 @@ public:
 
     [[nodiscard]] bool IsGrouped() const noexcept
     {
-        return grouped_;
+        return AstNode::GetHistoryNodeAs<Expression>()->grouped_;
     }
 
     void SetGrouped() noexcept
     {
-        grouped_ = true;
+        if (!IsGrouped()) {
+            AstNode::GetOrCreateHistoryNodeAs<Expression>()->grouped_ = true;
+        }
     }
 
     [[nodiscard]] const Literal *AsLiteral() const
     {
         ES2PANDA_ASSERT(IsLiteral());
-        return reinterpret_cast<const Literal *>(this);
+        return reinterpret_cast<const Literal *>(GetHistoryNodeAs<Expression>());
     }
 
     [[nodiscard]] Literal *AsLiteral()
     {
         ES2PANDA_ASSERT(IsLiteral());
-        return reinterpret_cast<Literal *>(this);
+        return reinterpret_cast<Literal *>(GetHistoryNodeAs<Expression>());
     }
 
     [[nodiscard]] virtual bool IsLiteral() const noexcept
@@ -76,25 +78,25 @@ public:
     [[nodiscard]] TypeNode *AsTypeNode()
     {
         ES2PANDA_ASSERT(IsTypeNode());
-        return reinterpret_cast<TypeNode *>(this);
+        return reinterpret_cast<TypeNode *>(GetHistoryNodeAs<Expression>());
     }
 
     [[nodiscard]] const TypeNode *AsTypeNode() const
     {
         ES2PANDA_ASSERT(IsTypeNode());
-        return reinterpret_cast<const TypeNode *>(this);
+        return reinterpret_cast<const TypeNode *>(GetHistoryNodeAs<Expression>());
     }
 
     [[nodiscard]] AnnotatedExpression *AsAnnotatedExpression()
     {
         ES2PANDA_ASSERT(IsAnnotatedExpression());
-        return reinterpret_cast<AnnotatedExpression *>(this);
+        return reinterpret_cast<AnnotatedExpression *>(GetHistoryNodeAs<Expression>());
     }
 
     [[nodiscard]] const AnnotatedExpression *AsAnnotatedExpression() const
     {
         ES2PANDA_ASSERT(IsAnnotatedExpression());
-        return reinterpret_cast<const AnnotatedExpression *>(this);
+        return reinterpret_cast<const AnnotatedExpression *>(GetHistoryNodeAs<Expression>());
     }
 
     bool IsBrokenExpression() const noexcept;
@@ -109,7 +111,7 @@ protected:
 
     Expression(Expression const &other) : TypedAstNode(static_cast<TypedAstNode const &>(other))
     {
-        grouped_ = other.grouped_;
+        grouped_ = other.IsGrouped();
     }
 
 private:
@@ -150,12 +152,12 @@ public:
 
     [[nodiscard]] bool IsOptional() const noexcept
     {
-        return optional_;
+        return GetHistoryNodeAs<MaybeOptionalExpression>()->optional_;
     }
 
     void ClearOptional() noexcept
     {
-        optional_ = false;
+        GetOrCreateHistoryNodeAs<MaybeOptionalExpression>()->optional_ = false;
     }
 
 protected:

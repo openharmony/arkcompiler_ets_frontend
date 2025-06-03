@@ -17,7 +17,9 @@
 #define ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 
 #include "varbinder/variable.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/expression.h"
+#include "ir/expressions/arrowFunctionExpression.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -184,6 +186,9 @@ public:
         AstNode::CleanUp();
         signature_ = nullptr;
         uncheckedType_ = nullptr;
+        if (IsTransformedFromTrailingCall()) {
+            RetrieveTrailingBlock();
+        }
     }
 
 private:
@@ -192,6 +197,19 @@ private:
         bool isTrailingCall {false};
         bool isBlockInNewLine {false};
     };
+
+    bool IsTransformedFromTrailingCall()
+    {
+        return !arguments_.empty() && arguments_.back()->IsArrowFunctionExpression() &&
+               arguments_.back()->AsArrowFunctionExpression()->Function()->IsTrailingLambda();
+    }
+
+    void RetrieveTrailingBlock()
+    {
+        SetTrailingBlock(arguments_.back()->AsArrowFunctionExpression()->Function()->Body()->AsBlockStatement());
+        trailingLambdaInfo_.isTrailingCall = false;
+        arguments_.pop_back();
+    }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

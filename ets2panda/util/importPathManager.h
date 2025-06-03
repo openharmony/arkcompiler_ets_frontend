@@ -130,6 +130,11 @@ public:
         return parseList_;
     }
 
+    void ClearParseList()
+    {
+        parseList_.clear();
+    }
+
     util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
     ImportMetadata GatherImportMetadata(parser::Program *program, ImportFlags importFlags,
                                         ir::StringLiteral *importPath);
@@ -161,7 +166,8 @@ private:
     std::string TryMatchDynamicPath(std::string_view fixedPath) const;
     StringView GetRealPath(StringView path) const;
 
-    void AddToParseList(const ImportMetadata importMetadata);
+public:
+    void AddToParseList(ImportMetadata importMetadata);
 #ifdef USE_UNIX_SYSCALL
     void UnixWalkThroughDirectoryAndAddToParseList(ImportMetadata importMetadata);
 #endif

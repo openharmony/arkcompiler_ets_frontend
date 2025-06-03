@@ -42,7 +42,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
 {
     auto *const parser = ctx->parser->AsETSParser();
     ES2PANDA_ASSERT(parser != nullptr);
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     ES2PANDA_ASSERT(checker != nullptr);
     auto *dimension = newInstanceExpression->Dimension();
     auto *dimType = dimension->TsType();
@@ -84,7 +84,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
 {
     auto *const parser = ctx->parser->AsETSParser();
     ES2PANDA_ASSERT(parser != nullptr);
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     ES2PANDA_ASSERT(checker != nullptr);
     ir::BlockExpression *returnExpression = nullptr;
 
@@ -146,7 +146,7 @@ ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
     newInstanceExpression->SetTsType(nullptr);
     blockExpression->AddStatement(ctx->AllocNode<ir::ExpressionStatement>(newInstanceExpression));
 
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, NearestScope(blockExpression));
     blockExpression->Check(checker);

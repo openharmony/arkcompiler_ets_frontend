@@ -29,7 +29,7 @@ static ir::ClassProperty *CreateCapturedField(public_lib::Context *ctx, const va
                                               varbinder::ClassScope *scope, size_t &idx)
 {
     auto *allocator = ctx->Allocator();
-    auto *varBinder = ctx->checker->AsETSChecker()->VarBinder();
+    auto *varBinder = ctx->GetChecker()->AsETSChecker()->VarBinder();
 
     // Enter the lambda class instance field scope, every property will be bound to the lambda instance itself
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope->InstanceFieldScope());
@@ -103,7 +103,7 @@ ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(public_lib:
                                                                      varbinder::FunctionParamScope *scope,
                                                                      util::StringView name, checker::Type *type)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto newParam = checker->AddParam(name, nullptr);
     newParam->SetTsType(type);
     newParam->Ident()->SetTsType(type);
@@ -126,8 +126,8 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
     for (auto *signature : classType->ConstructSignatures()) {
         LOG(DEBUG, ES2PANDA) << "  - Modifying Constructor: " << signature->InternalName();
         auto constructor = signature->Function();
-        auto &parameters = constructor->Params();
         auto &sigParams = signature->Params();
+        auto &parameters = constructor->ParamsForUpdate();
         signature->GetSignatureInfo()->minArgCount += capturedVars.size();
 
         ES2PANDA_ASSERT(signature == constructor->Signature());
@@ -146,7 +146,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             sigParams.insert(sigParams.begin(), newParam->Ident()->Variable()->AsLocalVariable());
             parameterMap[var] = newParam->Ident()->Variable()->AsLocalVariable();
         }
-        reinterpret_cast<varbinder::ETSBinder *>(ctx->checker->AsETSChecker()->VarBinder())
+        reinterpret_cast<varbinder::ETSBinder *>(ctx->GetChecker()->AsETSChecker()->VarBinder())
             ->BuildFunctionName(constructor);
         LOG(DEBUG, ES2PANDA) << "    Transformed Constructor: " << signature->InternalName();
 
@@ -170,7 +170,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             initStatements.push_back(initStatement);
         }
         if (body != nullptr && body->IsBlockStatement()) {
-            auto &statements = body->AsBlockStatement()->Statements();
+            auto &statements = body->AsBlockStatement()->StatementsForUpdates();
             statements.insert(statements.begin(), initStatements.begin(), initStatements.end());
         }
     }
@@ -235,7 +235,7 @@ void LocalClassConstructionPhase::HandleLocalClass(
 
 bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
     ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {
         ctx->allocator->Adapter()};
 

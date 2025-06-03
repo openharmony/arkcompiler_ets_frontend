@@ -27,7 +27,7 @@ using AstNodePtr = ir::AstNode *;
 
 ir::ClassProperty *TransformerClassProperty(public_lib::Context *ctx, ir::ClassProperty *property)
 {
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
     auto allocator = ctx->allocator;
     // Note: This code will be excluded after primitive type refactoring
     if (property->TsType()->IsETSPrimitiveType()) {
@@ -46,9 +46,9 @@ ir::ClassProperty *TransformerClassProperty(public_lib::Context *ctx, ir::ClassP
 
 static ir::AstNode *TransformerMemberExpression(ir::MemberExpression *memberExpr, public_lib::Context *ctx)
 {
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
     auto parser = ctx->parser->AsETSParser();
-    auto varbinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto varbinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
     auto allocator = ctx->Allocator();
     auto originalType = memberExpr->TsType();
     // Note: This code will be excluded after primitive type refactoring

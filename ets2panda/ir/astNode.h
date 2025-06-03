@@ -19,6 +19,7 @@
 #include "es2panda.h"
 #include "astNodeFlags.h"
 #include "astNodeMapping.h"
+#include "compiler/lowering/phase_id.h"
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
 #include "util/es2pandaMacros.h"
@@ -41,6 +42,20 @@ class Scope;
 }  // namespace ark::es2panda::varbinder
 
 namespace ark::es2panda::ir {
+
+inline thread_local bool g_enableContextHistory;
+// CC-OFFNXT(G.INC.10)
+[[maybe_unused]] static void DisableContextHistory()
+{
+    g_enableContextHistory = false;
+}
+
+// CC-OFFNXT(G.INC.10)
+[[maybe_unused]] static void EnableContextHistory()
+{
+    g_enableContextHistory = true;
+}
+
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline constexpr char const CLONE_ALLOCATION_ERROR[] = "Unsuccessful allocation during cloning.";
 // NOLINTEND(modernize-avoid-c-arrays)
@@ -96,6 +111,7 @@ inline std::string_view ToString(AstNodeType nodeType)
 #undef STRING_FROM_NODE_TYPE
 
 // Forward declarations
+class AstNodeHistory;
 class AstDumper;
 class Expression;
 class SrcDumper;
@@ -127,31 +143,31 @@ public:
 
     bool IsProgram() const
     {
-        return parent_ == nullptr;
+        return GetHistoryNode()->parent_ == nullptr;
     }
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_IS_CHECKS(nodeType, className)                                               \
-    bool Is##className() const                                                               \
-    {                                                                                        \
-        /* CC-OFFNXT(G.PRE.02) name part*/                                                   \
-        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
-        return type_ == AstNodeType::nodeType; /* CC-OFF(G.PRE.02) name part*/               \
+#define DECLARE_IS_CHECKS(nodeType, className)                                                   \
+    bool Is##className() const                                                                   \
+    {                                                                                            \
+        /* CC-OFFNXT(G.PRE.02) name part*/                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */     \
+        return GetHistoryNode()->type_ == AstNodeType::nodeType; /* CC-OFF(G.PRE.02) name part*/ \
     }
     AST_NODE_MAPPING(DECLARE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_IS_CHECKS(nodeType1, nodeType2, baseClass, reinterpretClass)                 \
-    bool Is##baseClass() const                                                               \
-    {                                                                                        \
-        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
-        return type_ == AstNodeType::nodeType1; /* CC-OFF(G.PRE.02) name part*/              \
-    }                                                                                        \
-    bool Is##reinterpretClass() const                                                        \
-    {                                                                                        \
-        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
-        return type_ == AstNodeType::nodeType2; /* CC-OFF(G.PRE.02) name part*/              \
+#define DECLARE_IS_CHECKS(nodeType1, nodeType2, baseClass, reinterpretClass)                      \
+    bool Is##baseClass() const                                                                    \
+    {                                                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */      \
+        return GetHistoryNode()->type_ == AstNodeType::nodeType1; /* CC-OFF(G.PRE.02) name part*/ \
+    }                                                                                             \
+    bool Is##reinterpretClass() const                                                             \
+    {                                                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */      \
+        return GetHistoryNode()->type_ == AstNodeType::nodeType2; /* CC-OFF(G.PRE.02) name part*/ \
     }
     AST_NODE_REINTERPRET_MAPPING(DECLARE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
@@ -265,62 +281,72 @@ public:
 
     void SetRange(const lexer::SourceRange &loc) noexcept
     {
-        range_ = loc;
+        if (GetHistoryNode()->range_ != loc) {
+            GetOrCreateHistoryNode()->range_ = loc;
+        }
     }
 
     void SetStart(const lexer::SourcePosition &start) noexcept
     {
-        range_.start = start;
+        if (GetHistoryNode()->range_.start != start) {
+            GetOrCreateHistoryNode()->range_.start = start;
+        }
     }
 
     void SetEnd(const lexer::SourcePosition &end) noexcept
     {
-        range_.end = end;
+        if (GetHistoryNode()->range_.end != end) {
+            GetOrCreateHistoryNode()->range_.end = end;
+        }
     }
 
     [[nodiscard]] const lexer::SourcePosition &Start() const noexcept
     {
-        return range_.start;
+        return GetHistoryNode()->range_.start;
     }
 
     [[nodiscard]] const lexer::SourcePosition &End() const noexcept
     {
-        return range_.end;
+        return GetHistoryNode()->range_.end;
     }
 
     [[nodiscard]] const lexer::SourceRange &Range() const noexcept
     {
-        return range_;
+        return GetHistoryNode()->range_;
     }
 
     [[nodiscard]] AstNodeType Type() const noexcept
     {
-        return type_;
+        return GetHistoryNode()->type_;
     }
 
     [[nodiscard]] AstNode *Parent() noexcept
     {
-        return parent_;
+        return GetHistoryNode()->parent_;
     }
 
     [[nodiscard]] const AstNode *Parent() const noexcept
     {
-        return parent_;
+        return GetHistoryNode()->parent_;
     }
 
     void SetParent(AstNode *const parent) noexcept
     {
-        parent_ = parent;
+        if (GetHistoryNode()->parent_ != parent) {
+            GetOrCreateHistoryNode()->parent_ = parent;
+        }
     }
 
     [[nodiscard]] varbinder::Variable *Variable() const noexcept
     {
-        return variable_;
+        return GetHistoryNode()->variable_;
     }
 
     void SetVariable(varbinder::Variable *variable) noexcept
     {
-        variable_ = variable;
+        if (GetHistoryNode()->variable_ != variable) {
+            GetOrCreateHistoryNode()->variable_ = variable;
+        }
     }
 
     // When no decorators are allowed, we cannot return a reference to an empty vector.
@@ -354,62 +380,62 @@ public:
 
     void SetOverride() noexcept
     {
-        flags_ |= ModifierFlags::OVERRIDE;
+        AddModifier(ModifierFlags::OVERRIDE);
     }
 
     [[nodiscard]] bool IsAsync() const noexcept
     {
-        return (flags_ & ModifierFlags::ASYNC) != 0;
+        return (Modifiers() & ModifierFlags::ASYNC) != 0;
     }
 
     [[nodiscard]] bool IsSynchronized() const noexcept
     {
-        return (flags_ & ModifierFlags::SYNCHRONIZED) != 0;
+        return (Modifiers() & ModifierFlags::SYNCHRONIZED) != 0;
     }
 
     [[nodiscard]] bool IsNative() const noexcept
     {
-        return (flags_ & ModifierFlags::NATIVE) != 0;
+        return (Modifiers() & ModifierFlags::NATIVE) != 0;
     }
 
     [[nodiscard]] bool IsConst() const noexcept
     {
-        return (flags_ & ModifierFlags::CONST) != 0;
+        return (Modifiers() & ModifierFlags::CONST) != 0;
     }
 
     [[nodiscard]] bool IsStatic() const noexcept
     {
-        return (flags_ & ModifierFlags::STATIC) != 0;
+        return (Modifiers() & ModifierFlags::STATIC) != 0;
     }
 
     [[nodiscard]] bool IsFinal() const noexcept
     {
-        return (flags_ & ModifierFlags::FINAL) != 0U;
+        return (Modifiers() & ModifierFlags::FINAL) != 0U;
     }
 
     [[nodiscard]] bool IsAbstract() const noexcept
     {
-        return (flags_ & ModifierFlags::ABSTRACT) != 0;
+        return (Modifiers() & ModifierFlags::ABSTRACT) != 0;
     }
 
     [[nodiscard]] bool IsPublic() const noexcept
     {
-        return (flags_ & ModifierFlags::PUBLIC) != 0;
+        return (Modifiers() & ModifierFlags::PUBLIC) != 0;
     }
 
     [[nodiscard]] bool IsProtected() const noexcept
     {
-        return (flags_ & ModifierFlags::PROTECTED) != 0;
+        return (Modifiers() & ModifierFlags::PROTECTED) != 0;
     }
 
     [[nodiscard]] bool IsPrivate() const noexcept
     {
-        return (flags_ & ModifierFlags::PRIVATE) != 0;
+        return (Modifiers() & ModifierFlags::PRIVATE) != 0;
     }
 
     [[nodiscard]] bool IsInternal() const noexcept
     {
-        return (flags_ & ModifierFlags::INTERNAL) != 0;
+        return (Modifiers() & ModifierFlags::INTERNAL) != 0;
     }
 
     [[nodiscard]] bool IsExported() const noexcept;
@@ -420,42 +446,36 @@ public:
 
     [[nodiscard]] bool IsDeclare() const noexcept
     {
-        return (flags_ & ModifierFlags::DECLARE) != 0;
+        return (Modifiers() & ModifierFlags::DECLARE) != 0;
     }
 
     [[nodiscard]] bool IsIn() const noexcept
     {
-        return (flags_ & ModifierFlags::IN) != 0;
+        return (Modifiers() & ModifierFlags::IN) != 0;
     }
 
     [[nodiscard]] bool IsOut() const noexcept
     {
-        return (flags_ & ModifierFlags::OUT) != 0;
+        return (Modifiers() & ModifierFlags::OUT) != 0;
     }
 
     [[nodiscard]] bool IsSetter() const noexcept
     {
-        return (flags_ & ModifierFlags::SETTER) != 0;
+        return (Modifiers() & ModifierFlags::SETTER) != 0;
     }
 
-    void AddModifier(ModifierFlags const flags) noexcept
-    {
-        flags_ |= flags;
-    }
+    void AddModifier(ModifierFlags const flags) noexcept;
 
-    void ClearModifier(ModifierFlags const flags) noexcept
-    {
-        flags_ &= ~flags;
-    }
+    void ClearModifier(ModifierFlags const flags) noexcept;
 
     [[nodiscard]] ModifierFlags Modifiers() noexcept
     {
-        return flags_;
+        return GetHistoryNode()->flags_;
     }
 
     [[nodiscard]] ModifierFlags Modifiers() const noexcept
     {
-        return flags_;
+        return GetHistoryNode()->flags_;
     }
 
     [[nodiscard]] bool HasExportAlias() const noexcept;
@@ -464,28 +484,34 @@ public:
 #define DECLARE_FLAG_OPERATIONS(flag_type, member_name)                                     \
     void Set##flag_type(flag_type flags) const noexcept                                     \
     {                                                                                       \
-        (member_name) = flags;                                                              \
+        if (GetHistoryNode()->member_name != flags) {                                       \
+            GetOrCreateHistoryNode()->member_name = flags;                                  \
+        }                                                                                   \
     }                                                                                       \
                                                                                             \
     void Add##flag_type(flag_type flag) const noexcept                                      \
     {                                                                                       \
-        (member_name) |= flag;                                                              \
+        if (!All(GetHistoryNode()->member_name, flag)) {                                    \
+            GetOrCreateHistoryNode()->member_name |= flag;                                  \
+        }                                                                                   \
     }                                                                                       \
                                                                                             \
     [[nodiscard]] flag_type Get##flag_type() const noexcept                                 \
     {                                                                                       \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
-        return (member_name);                                                               \
+        return GetHistoryNode()->member_name;                                               \
     }                                                                                       \
                                                                                             \
     bool Has##flag_type(flag_type flag) const noexcept                                      \
     {                                                                                       \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
-        return ((member_name)&flag) != 0U;                                                  \
+        return (GetHistoryNode()->member_name & flag) != 0U;                                \
     }                                                                                       \
     void Remove##flag_type(flag_type flag) const noexcept                                   \
     {                                                                                       \
-        (member_name) &= ~flag;                                                             \
+        if (Any(GetHistoryNode()->member_name, flag)) {                                     \
+            GetOrCreateHistoryNode()->member_name &= ~flag;                                 \
+        }                                                                                   \
     }
 
     DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxingUnboxingFlags_);
@@ -552,6 +578,11 @@ public:
 
     AstNode *ShallowClone(ArenaAllocator *allocator);
 
+    bool IsValidInCurrentPhase() const;
+
+    AstNode *GetHistoryNode() const;
+    AstNode *GetOrCreateHistoryNode() const;
+
 protected:
     AstNode(AstNode const &other);
 
@@ -561,7 +592,24 @@ protected:
 
     void SetType(AstNodeType const type) noexcept
     {
-        type_ = type;
+        if (Type() != type) {
+            GetOrCreateHistoryNode()->type_ = type;
+        }
+    }
+
+    void InitHistory();
+    bool HistoryInitialized() const;
+
+    template <typename T>
+    T *GetHistoryNodeAs() const
+    {
+        return reinterpret_cast<T *>(GetHistoryNode());
+    }
+
+    template <typename T>
+    T *GetOrCreateHistoryNodeAs() const
+    {
+        return reinterpret_cast<T *>(GetOrCreateHistoryNode());
     }
 
     friend class SizeOfNodeTest;
@@ -572,10 +620,14 @@ protected:
     ModifierFlags flags_ {};
     mutable AstNodeFlags astNodeFlags_ {};
     mutable BoxingUnboxingFlags boxingUnboxingFlags_ {};
+    AstNodeHistory *history_ {nullptr};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
+    compiler::PhaseId GetFirstCreated() const;
     AstNode &operator=(const AstNode &) = default;
+
+    const std::optional<std::pair<std::string_view, AstNode *>> &TransformedNode() const noexcept;
 
     varbinder::Variable *variable_ {};
     AstNode *originalNode_ = nullptr;
@@ -594,12 +646,14 @@ public:
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
-        return typeAnnotation_;
+        return AstNode::GetHistoryNodeAs<Annotated<T>>()->typeAnnotation_;
     }
 
     void SetTsTypeAnnotation(TypeNode *const typeAnnotation) noexcept
     {
-        typeAnnotation_ = typeAnnotation;
+        if (TypeAnnotation() != typeAnnotation) {
+            AstNode::GetOrCreateHistoryNodeAs<Annotated<T>>()->typeAnnotation_ = typeAnnotation;
+        }
     }
 
     void CopyTo(AstNode *other) const override

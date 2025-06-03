@@ -74,67 +74,18 @@
 
 namespace ark::es2panda::compiler {
 
-static CheckerPhase g_checkerPhase;
-static SetJumpTargetPhase g_setJumpTargetPhase;
-static CFGBuilderPhase g_cfgBuilderPhase;
-static ResolveIdentifiers g_resolveIdentifiers {};
-static AmbientLowering g_ambientLowering;
-static ArrayLiteralLowering g_arrayLiteralLowering {};
-static BigIntLowering g_bigintLowering;
-static StringConstructorLowering g_stringConstructorLowering;
-static ConstantExpressionLowering g_constantExpressionLowering;
-static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
-static EnumLoweringPhase g_enumLoweringPhase;
-static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
-static RestTupleConstructionPhase g_restTupleConstructionPhase;
-static SpreadConstructionPhase g_spreadConstructionPhase;
-static ExtensionAccessorPhase g_extensionAccessorPhase;
-static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
-static OpAssignmentLowering g_opAssignmentLowering;
-static BoxingForLocals g_boxingForLocals;
-static CapturedVariables g_capturedVariables {};
-static LambdaConversionPhase g_lambdaConversionPhase;
-static ObjectIndexLowering g_objectIndexLowering;
-static ObjectIteratorLowering g_objectIteratorLowering;
-static ObjectLiteralLowering g_objectLiteralLowering;
-static InterfaceObjectLiteralLowering g_interfaceObjectLiteralLowering;
-static UnionLowering g_unionLowering;
-static OptionalLowering g_optionalLowering;
-static ExpandBracketsPhase g_expandBracketsPhase;
-static ExportAnonymousConstPhase g_exportAnonymousConstPhase;
-static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
-static RecordLowering g_recordLowering;
-static DeclareOverloadLowering g_declareOverloadLowering;
-static DefaultParametersLowering g_defaultParametersLowering;
-static DefaultParametersInConstructorLowering g_defaultParametersInConstructorLowering;
-static OptionalArgumentsLowering g_optionalArgumentsLowering;
-static TopLevelStatements g_topLevelStatements;
-static LocalClassConstructionPhase g_localClassLowering;
-static StringComparisonLowering g_stringComparisonLowering;
-static StringConstantsLowering g_stringConstantsLowering;
-static PartialExportClassGen g_partialExportClassGen;
-static PackageImplicitImport g_packageImplicitImport;
-static GenericBridgesPhase g_genericBridgesLowering;
-static BoxedTypeLowering g_boxedTypeLowering;
-static AsyncMethodLowering g_asyncMethodLowering;
-static TypeFromLowering g_typeFromLowering;
-static ResizableArrayConvert g_resizableArrayConvert;
-static RestArgsLowering g_restArgsLowering;
-static LateInitializationConvert g_lateInitializationConvert;
-static InsertOptionalParametersAnnotation g_insertOptionalParametersAnnotation;
-static ConvertPrimitiveCastMethodCall g_convertPrimitiveCastMethodCall;
-static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
-static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
-static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
-static PluginPhase g_pluginsAfterLowerings {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
-                                            &util::Plugin::AfterLowerings};
 // NOLINTBEGIN(fuchsia-statically-constructed-objects)
+static CheckerPhase g_checkerPhase;
 static InitScopesPhaseETS g_initScopesPhaseEts;
 static InitScopesPhaseAS g_initScopesPhaseAs;
 static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
-static DynamicImportLowering g_dynamicImportLowering;
+// static DynamicImportLowering g_dynamicImportLowering;
+const static inline char *g_pluginsAfterParse = "plugins-after-parse";
+const static inline char *g_pluginsAfterBind = "plugins-after-bind";
+const static inline char *g_pluginsAfterCheck = "plugins-after-check";
+const static inline char *g_pluginsAfterLowering = "plugins-after-lowering";
 
 // CC-OFFNXT(huge_method, G.FUN.01-CPP) long initialization list
 std::vector<Phase *> GetETSPhaseList()
@@ -142,64 +93,75 @@ std::vector<Phase *> GetETSPhaseList()
     // clang-format off
     // NOLINTBEGIN
     return {
-        &g_pluginsAfterParse,
-        &g_stringConstantsLowering,
-        &g_packageImplicitImport,
-        &g_exportAnonymousConstPhase,
-        &g_topLevelStatements,
-        &g_resizableArrayConvert,
-        &g_expressionLambdaConstructionPhase,
-        &g_insertOptionalParametersAnnotation,
-        &g_defaultParametersInConstructorLowering,
-        &g_defaultParametersLowering,
-        &g_ambientLowering,
-        &g_restTupleConstructionPhase,
-        &g_initScopesPhaseEts,
-        &g_optionalLowering,
-        &g_promiseVoidInferencePhase,
-        &g_interfacePropDeclPhase,
-        &g_constantExpressionLowering,
-        &g_enumLoweringPhase,
-        &g_resolveIdentifiers,
-        &g_pluginsAfterBind,
-        &g_capturedVariables,
-        &g_setJumpTargetPhase,
-        &g_cfgBuilderPhase,
-        &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
-        &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
-        &g_convertPrimitiveCastMethodCall,
-        &g_dynamicImportLowering,
-        &g_asyncMethodLowering,
-        &g_declareOverloadLowering,
-        &g_enumPostCheckLoweringPhase,
-        &g_spreadConstructionPhase,
-        &g_restArgsLowering,
-        &g_arrayLiteralLowering,
-        &g_bigintLowering,
-        &g_opAssignmentLowering,
-        &g_lateInitializationConvert,
-        &g_extensionAccessorPhase,
-        &g_boxingForLocals,
-        &g_recordLowering,
-        &g_boxedTypeLowering,
-        &g_objectIndexLowering,
-        &g_objectIteratorLowering,
-        &g_lambdaConversionPhase,
-        &g_unionLowering,
-        &g_expandBracketsPhase,
-        &g_localClassLowering,
-        &g_partialExportClassGen,
-        &g_interfaceObjectLiteralLowering, // this lowering should be put after all classs generated.
-        &g_objectLiteralLowering,
-        &g_stringConstructorLowering,
-        &g_stringComparisonLowering,
-        &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
-        &g_genericBridgesLowering,
-        &g_typeFromLowering,
-        &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
+        new PluginPhase {g_pluginsAfterParse, ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse},
+        new StringConstantsLowering,
+        new PackageImplicitImport,
+        new ExportAnonymousConstPhase,
+        new TopLevelStatements,
+        new ResizableArrayConvert,
+        new ExpressionLambdaConstructionPhase,
+        new InsertOptionalParametersAnnotation,
+        new DefaultParametersInConstructorLowering,
+        new DefaultParametersLowering,
+        new AmbientLowering,
+        new RestTupleConstructionPhase,
+        new InitScopesPhaseETS,
+        new OptionalLowering,
+        new PromiseVoidInferencePhase,
+        new InterfacePropertyDeclarationsPhase,
+        new ConstantExpressionLowering,
+        new EnumLoweringPhase,
+        new ResolveIdentifiers,
+        new PluginPhase {g_pluginsAfterBind, ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind},
+        new CapturedVariables,
+        new SetJumpTargetPhase,
+        new CFGBuilderPhase,
+        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
+        new CheckerPhase,
+        // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
+        new ConvertPrimitiveCastMethodCall,
+        new DynamicImportLowering,
+        new AsyncMethodLowering,
+        new DeclareOverloadLowering,
+        new EnumPostCheckLoweringPhase,
+        new SpreadConstructionPhase,
+        new RestArgsLowering,
+        new ArrayLiteralLowering,
+        new BigIntLowering,
+        new OpAssignmentLowering,
+        new LateInitializationConvert,
+        new ExtensionAccessorPhase,
+        new BoxingForLocals,
+        new RecordLowering,
+        new BoxedTypeLowering,
+        new ObjectIndexLowering,
+        new ObjectIteratorLowering,
+        new LambdaConversionPhase,
+        new UnionLowering,
+        new ExpandBracketsPhase,
+        new LocalClassConstructionPhase,
+        new PartialExportClassGen,
+        new InterfaceObjectLiteralLowering, // must be put after all classes are generated.
+        new ObjectLiteralLowering,
+        new StringConstructorLowering,
+        new StringComparisonLowering,
+        new OptionalArgumentsLowering, // #22952 could be moved to earlier phase
+        new GenericBridgesPhase,
+        new TypeFromLowering,
+        // pluginsAfterLowerings has to come at the very end, nothing should go after it
+        new PluginPhase{g_pluginsAfterLowering, ES2PANDA_STATE_LOWERED,
+                        &util::Plugin::AfterLowerings},
     };
     // NOLINTEND
     // clang-format on
+}
+
+void DestoryETSPhaseList(std::vector<Phase *> &list)
+{
+    for (auto *phase : list) {
+        delete phase;
+    }
 }
 
 std::vector<Phase *> GetASPhaseList()
@@ -239,6 +201,16 @@ void SetPhaseManager(PhaseManager *phaseManager)
     g_phaseManager = phaseManager;
 }
 
+void PhaseManager::Reset()
+{
+    prev_ = {0, INVALID_PHASE_ID};
+    curr_ = {0, PARSER_PHASE_ID};
+    next_ = PARSER_PHASE_ID + 1;
+    ES2PANDA_ASSERT(next_ == 0);
+
+    SetPhaseManager(this);
+}
+
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
     SetPhaseManager(ctx->phaseManager);
@@ -246,7 +218,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
-        ctx->checker->LogError(diagnostic::PRECOND_FAILED, {Name()}, lexer::SourcePosition {});
+        ctx->GetChecker()->LogError(diagnostic::PRECOND_FAILED, {Name()}, lexer::SourcePosition {});
         return false;
     }
 #endif
@@ -257,7 +229,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
-        ctx->checker->LogError(diagnostic::POSTCOND_FAILED, {Name()}, lexer::SourcePosition {});
+        ctx->GetChecker()->LogError(diagnostic::POSTCOND_FAILED, {Name()}, lexer::SourcePosition {});
         return false;
     }
 #endif
@@ -270,6 +242,9 @@ bool PhaseForDeclarations::Precondition(public_lib::Context *ctx, const parser::
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTLowered()) {
+                continue;
+            }
             if (!Precondition(ctx, extProg)) {
                 return false;
             }
@@ -281,11 +256,14 @@ bool PhaseForDeclarations::Precondition(public_lib::Context *ctx, const parser::
 
 bool PhaseForDeclarations::Perform(public_lib::Context *ctx, parser::Program *program)
 {
+    FetchCache(ctx, program);
     bool result = true;
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            result &= Perform(ctx, extProg);
+            if (!extProg->IsASTLowered()) {
+                result &= Perform(ctx, extProg);
+            }
         }
     }
 
@@ -298,6 +276,9 @@ bool PhaseForDeclarations::Postcondition(public_lib::Context *ctx, const parser:
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTLowered()) {
+                continue;
+            }
             if (!Postcondition(ctx, extProg)) {
                 return false;
             }
@@ -330,16 +311,26 @@ bool PhaseForBodies::Precondition(public_lib::Context *ctx, const parser::Progra
     return PreconditionForModule(ctx, program);
 }
 
-bool PhaseForBodies::Perform(public_lib::Context *ctx, parser::Program *program)
+bool PhaseForBodies::ProcessExternalPrograms(public_lib::Context *ctx, parser::Program *program)
 {
     bool result = true;
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
+    for (auto &[_, extPrograms] : program->ExternalSources()) {
+        (void)_;
+        for (auto *extProg : extPrograms) {
+            if (!extProg->IsASTLowered()) {
                 result &= Perform(ctx, extProg);
             }
         }
+    }
+    return result;
+}
+
+bool PhaseForBodies::Perform(public_lib::Context *ctx, parser::Program *program)
+{
+    FetchCache(ctx, program);
+    bool result = true;
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+        result &= ProcessExternalPrograms(ctx, program);
     }
 
     result &= PerformForModule(ctx, program);
@@ -369,6 +360,13 @@ bool PhaseForBodies::Postcondition(public_lib::Context *ctx, const parser::Progr
     return PostconditionForModule(ctx, program);
 }
 
+PhaseManager::~PhaseManager()
+{
+    if (ScriptExtension::ETS == ext_) {
+        DestoryETSPhaseList(phases_);
+    }
+}
+
 void PhaseManager::InitializePhases()
 {
     switch (ext_) {
@@ -390,6 +388,19 @@ void PhaseManager::InitializePhases()
 
     int id = 0;
     for (auto phase : phases_) {
+        // js side UI plugin needs an extra phaseID, which is different from c++ side plugin phase
+        if (phase->Name() == std::string(g_pluginsAfterParse)) {
+            jsPluginAfterParse_ = id++;
+        }
+        if (phase->Name() == std::string(g_pluginsAfterBind)) {
+            jsPluginAfterBind_ = id++;
+        }
+        if (phase->Name() == std::string(g_pluginsAfterCheck)) {
+            jsPluginAfterCheck_ = id++;
+        }
+        if (phase->Name() == std::string(g_pluginsAfterLowering)) {
+            jsPluginAfterLower_ = id++;
+        }
         phase->id_ = id++;
     }
 }
@@ -403,21 +414,36 @@ std::vector<Phase *> PhaseManager::AllPhases()
 std::vector<Phase *> PhaseManager::RebindPhases()
 {
     ES2PANDA_ASSERT(IsInitialized());
-    return {
-        &g_initScopesPhaseEts,
-        &g_resolveIdentifiers,
-    };
+    return GetSubPhases({ScopesInitPhase::NAME, ResolveIdentifiers::NAME});
+}
+
+std::vector<Phase *> PhaseManager::GetSubPhases(const std::vector<std::string_view> &phaseNames)
+{
+    std::vector<Phase *> phases;
+    for (auto &phaseName : phaseNames) {
+        for (auto phase : phases_) {
+            if (phase->Name() == phaseName) {
+                phases.emplace_back(phase);
+            }
+        }
+    }
+    return phases;
 }
 
 std::vector<Phase *> PhaseManager::RecheckPhases()
 {
     ES2PANDA_ASSERT(IsInitialized());
-    return {
-        &g_initScopesPhaseEts,
-        &g_resolveIdentifiers,
-        &g_capturedVariables,
-        &g_checkerPhase,
-    };
+    return GetSubPhases({ScopesInitPhase::NAME, ResolveIdentifiers::NAME, "CapturedVariables", CheckerPhase::NAME});
+}
+
+int32_t PhaseManager::GetCurrentMajor() const
+{
+    return curr_.major;
+}
+
+int32_t PhaseManager::GetCurrentMinor() const
+{
+    return curr_.minor;
 }
 
 }  // namespace ark::es2panda::compiler

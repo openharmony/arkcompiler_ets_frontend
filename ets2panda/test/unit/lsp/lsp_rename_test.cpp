@@ -441,7 +441,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForNode1)
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
-    auto checker = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->checker->AsETSChecker();
+    auto checker = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->GetChecker()->AsETSChecker();
     auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
 
     auto targetNode = ast->FindChild([](ark::es2panda::ir::AstNode *node) {

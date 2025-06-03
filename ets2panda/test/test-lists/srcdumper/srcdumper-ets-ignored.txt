@@ -188,6 +188,8 @@ runtime/ets/exportDefault_1.ets
 runtime/ets/exportDefault_2.ets
 runtime/ets/declareExport.ets
 runtime/ets/implicit_stringliteral_init.ets
+runtime/ets/mypackage/implicit_package_import_1.ets
+runtime/ets/class_implements_interface_import.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets

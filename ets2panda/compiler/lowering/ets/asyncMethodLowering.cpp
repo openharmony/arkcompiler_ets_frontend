@@ -126,7 +126,7 @@ ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodD
 {
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
     if (!asyncFunc->IsExternal()) {
-        checker->VarBinder()->AsETSBinder()->GetRecordTable()->Signatures().push_back(asyncFunc->Scope());
+        checker->VarBinder()->AsETSBinder()->GetRecordTable()->EmplaceSignatures(asyncFunc->Scope(), asyncFunc);
     }
 
     ir::MethodDefinition *implMethod = CreateAsyncImplMethod(checker, asyncMethod, classDef);
@@ -170,7 +170,7 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
         implMethod->Function()->Id()->SetVariable(baseOverloadImplMethod->Function()->Id()->Variable());
         baseOverloadImplMethod->AddOverload(implMethod);
     } else {
-        classDef->Body().push_back(implMethod);
+        classDef->EmplaceBody(implMethod);
     }
 }
 
@@ -199,7 +199,7 @@ void UpdateClassDefintion(checker::ETSChecker *checker, ir::ClassDefinition *cla
 
 bool AsyncMethodLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
 
     ir::NodeTransformer handleClassAsyncMethod = [checker](ir::AstNode *const ast) {
         if (ast->IsClassDefinition()) {

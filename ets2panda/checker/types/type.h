@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_H
 
+#include <mutex>
 #include "generated/signatures.h"
 #include "checker/types/typeMapping.h"
 #include "checker/types/typeRelation.h"
@@ -50,6 +51,7 @@ class Type {
 public:
     explicit Type(TypeFlag flag) : typeFlags_(flag)
     {
+        std::lock_guard<std::mutex> lock(idLock_);
         static uint64_t typeId = 0;
         id_ = ++typeId;
     }
@@ -58,6 +60,7 @@ public:
     NO_MOVE_SEMANTIC(Type);
 
     virtual ~Type() = default;
+    static std::mutex idLock_;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_IS_CHECKS(typeFlag, typeName)                                                  \

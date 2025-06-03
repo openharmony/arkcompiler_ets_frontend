@@ -1942,7 +1942,7 @@ change_types:
       max_ptr_depth: 1
     new_args:
     cast:
-      expression: auto |es2panda_arg.type.ptr_depth||arg_name|E2p = reinterpret_cast<Context *>(context)->checker;
+      expression: auto |es2panda_arg.type.ptr_depth||arg_name|E2p = reinterpret_cast<Context *>(context)->GetChecker();
       call_cast:
         start: >-
             (reinterpret_cast<Context *>(context)->checker)->
@@ -1997,7 +1997,7 @@ change_types:
     new_args:
     cast:
       expression: >-
-        auto *|arg_name|E2p = reinterpret_cast<Context *>(context)->checker->AsETSChecker();
+        auto *|arg_name|E2p = reinterpret_cast<Context *>(context)->GetChecker()->AsETSChecker();
       call_cast:
         start: >-
             (reinterpret_cast<Context *>(context)->checker->AsETSChecker())->

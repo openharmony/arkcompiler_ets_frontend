@@ -54,7 +54,7 @@ void ObjectIteratorLowering::TransferForOfLoopBody(ir::Statement *const forBody,
                                                    ir::BlockStatement *const whileBody) const noexcept
 {
     ES2PANDA_ASSERT(forBody != nullptr && whileBody != nullptr);
-    auto &whileStatements = whileBody->Statements();
+    auto &whileStatements = whileBody->StatementsForUpdates();
 
     //  Currently while loop body consists of 2 statements: 'x = it.value!' and 'it = ci.next()'
     //  We need to insert the body of original for-of-loop between them, change their parent and
@@ -128,7 +128,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
     //  class has required accessible iterator method and all the types and scopes are properly resolved.
     auto *const allocator = ctx->Allocator();
 
-    auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *const varbinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
     ES2PANDA_ASSERT(varbinder != nullptr);
     auto statementScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(forOfStatement));
 
@@ -179,7 +179,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
                                                       ->Body()
                                                       ->AsBlockStatement());
 
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     ES2PANDA_ASSERT(checker != nullptr);
     CheckLoweredNode(varbinder, checker, loweringResult);
 

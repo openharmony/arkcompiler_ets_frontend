@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,7 +28,7 @@ std::string_view BigIntLowering::Name() const
 ir::Expression *CreateBigInt(public_lib::Context *ctx, ir::BigIntLiteral *literal)
 {
     auto parser = ctx->parser->AsETSParser();
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
 
     // This will change the bigint literal node into the new class instance expression:
     // 123456n => new BigInt("123456")
@@ -90,7 +90,7 @@ bool RemoveConst(ir::BinaryExpression *expr)
 
 bool BigIntLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

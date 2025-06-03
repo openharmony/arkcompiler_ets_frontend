@@ -107,7 +107,7 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
 {
     auto *const parser = ctx->parser->AsETSParser();
     ES2PANDA_ASSERT(parser != nullptr);
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     ES2PANDA_ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(

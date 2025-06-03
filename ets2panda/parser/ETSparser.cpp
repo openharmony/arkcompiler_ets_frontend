@@ -133,7 +133,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     if ((GetContext().Status() & parser::ParserStatus::DEPENDENCY_ANALYZER_MODE) == 0) {
         script = ParseETSGlobalScript(startLoc, statements);
     } else {
-        script = ParseImportsOnly(startLoc, statements);
+        script = ParseImportsAndReExportOnly(startLoc, statements);
     }
 
     if ((GetContext().Status() & ParserStatus::IN_PACKAGE) != 0) {
@@ -167,7 +167,8 @@ ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
     return etsModule;
 }
 
-ir::ETSModule *ETSParser::ParseImportsOnly(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
+ir::ETSModule *ETSParser::ParseImportsAndReExportOnly(lexer::SourcePosition startLoc,
+                                                      ArenaVector<ir::Statement *> &statements)
 {
     ETSNolintParser etsnolintParser(this);
     etsnolintParser.CollectETSNolints();
@@ -224,11 +225,20 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
 
     std::vector<Program *> programs;
     auto *ctx = GetProgram()->VarBinder()->GetContext();
-    if (ctx->compilingState != public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
-        programs = ParseSources();
-        AddExternalSource(programs);
+    if (ctx->compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
+        return statements;
     }
 
+    if (!Context()->compiledByCapi) {
+        AddExternalSource(ParseSources());
+    } else {
+        if (Context()->globalContext != nullptr && Context()->globalContext->stdLibAstCache != nullptr) {
+            globalProgram_->MergeExternalSource(Context()->globalContext->stdLibAstCache);
+            importPathManager_->ClearParseList();
+        } else {
+            AddExternalSource(ParseSources());
+        }
+    }
     return statements;
 }
 
@@ -279,6 +289,25 @@ static bool SearchImportedExternalSources(ETSParser *parser, const std::string_v
     return false;
 }
 
+bool ETSParser::TryMergeFromCache(size_t idx, ArenaVector<util::ImportPathManager::ParseInfo> &parseList)
+{
+    if (Context()->globalContext == nullptr) {
+        return false;
+    }
+
+    auto &importData = parseList[idx].importData;
+    auto src = importData.HasSpecifiedDeclPath() ? importData.declPath : importData.resolvedSource;
+    const auto &absPath = std::string {util::Path {src, Allocator()}.GetAbsolutePath()};
+    auto cacheExtProgs = Context()->globalContext->cachedExternalPrograms;
+    if (cacheExtProgs.find(absPath) != cacheExtProgs.end() && cacheExtProgs[absPath] != nullptr) {
+        if (globalProgram_->MergeExternalSource(cacheExtProgs[absPath])) {
+            importPathManager_->MarkAsParsed(parseList[idx].importData.resolvedSource);
+            return true;
+        }
+    }
+    return false;
+}
+
 // NOTE (mmartin): Need a more optimal solution here
 // This is needed, as during a parsing of a file, programs can be re-added to the parseList, which needs to be
 // re-parsed. This won't change the size of the list, so with only the 'for loop', there can be unparsed files
@@ -300,6 +329,11 @@ std::vector<Program *> ETSParser::SearchForNotParsed(ArenaVector<util::ImportPat
             if (parseList[idx].isParsed) {
                 continue;
             }
+
+            if (TryMergeFromCache(idx, parseList)) {
+                continue;
+            }
+
             const auto &data = parseList[idx].importData;
             if (data.declPath.empty()) {
                 importPathManager_->MarkAsParsed(data.resolvedSource);

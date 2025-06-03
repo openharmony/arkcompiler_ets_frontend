@@ -30,7 +30,7 @@ static ir::BlockExpression *CreateRestArgsBlockExpression(public_lib::Context *c
 {
     auto *allocator = context->allocator;
     auto *parser = context->parser->AsETSParser();
-    auto *checker = context->checker->AsETSChecker();
+    auto *checker = context->GetChecker()->AsETSChecker();
 
     ArenaVector<ir::Statement *> blockStatements(allocator->Adapter());
     const auto arraySymbol = Gensym(allocator);
@@ -89,7 +89,7 @@ static ir::Expression *CreateRestArgsArray(public_lib::Context *context, ArenaVe
 {
     auto *allocator = context->allocator;
     auto *parser = context->parser->AsETSParser();
-    auto *checker = context->checker->AsETSChecker();
+    auto *checker = context->GetChecker()->AsETSChecker();
 
     // Handle single spread element case
     const size_t extraArgs = arguments.size() - signature->Params().size();
@@ -121,7 +121,7 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
                                                  checker::Signature *signature, ir::Expression *restArgsArray)
 {
     auto *allocator = context->allocator;
-    auto *varbinder = context->checker->VarBinder()->AsETSBinder();
+    auto *varbinder = context->GetChecker()->VarBinder()->AsETSBinder();
     ArenaVector<ir::Expression *> newArgs(allocator->Adapter());
 
     for (size_t i = 0; i < signature->Params().size(); ++i) {
@@ -143,7 +143,7 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
 
     auto *scope = NearestScope(newCall->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, scope);
-    CheckLoweredNode(context->checker->VarBinder()->AsETSBinder(), context->checker->AsETSChecker(), newCall);
+    CheckLoweredNode(context->GetChecker()->VarBinder()->AsETSBinder(), context->GetChecker()->AsETSChecker(), newCall);
     newCall->RemoveAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
     return newCall;
 }
@@ -169,8 +169,9 @@ static ir::ETSNewClassInstanceExpression *RebuildNewClassInstanceExpression(
     newCall->AddModifier(originalCall->Modifiers());
     newCall->AddBoxingUnboxingFlags(originalCall->GetBoxingUnboxingFlags());
     auto *scope = NearestScope(newCall->Parent());
-    auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(context->checker->VarBinder()->AsETSBinder(), scope);
-    CheckLoweredNode(context->checker->VarBinder()->AsETSBinder(), context->checker->AsETSChecker(), newCall);
+    auto bscope =
+        varbinder::LexicalScope<varbinder::Scope>::Enter(context->GetChecker()->VarBinder()->AsETSBinder(), scope);
+    CheckLoweredNode(context->GetChecker()->VarBinder()->AsETSBinder(), context->GetChecker()->AsETSChecker(), newCall);
     return newCall;
 }
 

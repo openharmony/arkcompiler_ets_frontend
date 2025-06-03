@@ -46,7 +46,7 @@ public:
     void Print(const DiagnosticBase &diagnostic) const override;
 };
 
-using DiagnosticStorage = std::vector<std::unique_ptr<DiagnosticBase>>;
+using DiagnosticStorage = std::vector<std::shared_ptr<DiagnosticBase>>;
 
 class DiagnosticEngine {
 public:
@@ -77,6 +77,13 @@ public:
     void LogDiagnostic(T &&...args)
     {
         LogDiagnostic<Diagnostic>(std::forward<T>(args)...);
+    }
+
+    void ClearDiagnostics()
+    {
+        for (auto &it : diagnostics_) {
+            it.clear();
+        }
     }
 
     // NOTE(schernykh): should be removed
@@ -165,6 +172,7 @@ private:
     std::array<DiagnosticStorage, static_cast<size_t>(DiagnosticType::COUNT)> diagnostics_;
     std::unique_ptr<const DiagnosticPrinter> printer_;
     bool wError_ {false};
+    bool isFlushed_ {false};
 };
 
 }  // namespace ark::es2panda::util

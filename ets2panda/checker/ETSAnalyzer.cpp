@@ -1692,7 +1692,7 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 }
 
 std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *baseType, ir::MemberExpression *expr,
-                                                                 util::StringView &aliasName, ETSChecker *checker)
+                                                                 util::StringView const &aliasName, ETSChecker *checker)
 {
     std::pair<ETSObjectType *, util::StringView> ret {};
 
@@ -2753,10 +2753,9 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
         stmt->Check(checker);
 
         //  NOTE! Processing of trailing blocks was moved here so that smart casts could be applied correctly
-        if (auto const tb = st->trailingBlocks_.find(stmt); tb != st->trailingBlocks_.end()) {
-            auto *const trailingBlock = tb->second;
+        if (auto *const trailingBlock = st->SearchStatementInTrailingBlock(stmt); trailingBlock != nullptr) {
             trailingBlock->Check(checker);
-            st->Statements().emplace(std::next(st->Statements().begin() + idx), trailingBlock);
+            st->AddStatement(idx, trailingBlock);
             ++idx;
         }
     }
@@ -3092,7 +3091,8 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
                                              ir::TypeNode *returnTypeAnnotation, ETSChecker *checker)
 {
     // check valid `this` type as return type
-    if (containingFunc->GetPreferredReturnType() != nullptr || !returnTypeAnnotation->IsTSThisType()) {
+    if (containingFunc->GetPreferredReturnType() != nullptr ||
+        (returnTypeAnnotation != nullptr && !returnTypeAnnotation->IsTSThisType())) {
         return true;
     }
 

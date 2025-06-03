@@ -841,6 +841,9 @@ void InitScopesPhaseETS::HandleProgram(parser::Program *program)
         (void)_;
         auto savedTopScope(program->VarBinder()->TopScope());
         auto mainProg = progList.front();
+        if (mainProg->IsASTLowered()) {
+            continue;
+        }
         mainProg->VarBinder()->InitTopScope();
         AddGlobalToBinder(mainProg);
         BindScopeNode(mainProg->VarBinder()->GetScope(), mainProg->Ast());
@@ -1251,7 +1254,9 @@ void InitScopesPhaseETS::VisitClassDefinition(ir::ClassDefinition *classDef)
     auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), classDef);
 
     IterateNoTParams(classDef);
-    FilterOverloads(classDef->Body());
+
+    // Will generate new node when compiling decl, so when compiling main file, will not generate new history in decl.
+    FilterOverloads(classDef->BodyForUpdate());
     auto *classScope = classCtx.GetScope();
     BindScopeNode(classScope, classDef);
 }
@@ -1378,7 +1383,7 @@ void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
         CallNode(decl);
     }
     CallNode(global->Annotations());
-    FilterOverloads(global->Body());
+    FilterOverloads(global->BodyForUpdate());
 }
 
 void InitScopesPhaseETS::AddGlobalDeclaration(ir::AstNode *node)

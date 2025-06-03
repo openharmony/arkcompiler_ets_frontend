@@ -28,7 +28,9 @@ bool CFGBuilderPhase::Perform(public_lib::Context *ctx, parser::Program *program
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
+            if (!extProg->IsASTLowered()) {
+                Perform(ctx, extProg);
+            }
         }
     }
 

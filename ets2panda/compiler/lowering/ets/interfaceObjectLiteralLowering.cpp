@@ -48,7 +48,7 @@ static inline bool IsAbstractClassType(const checker::Type *type)
 
 static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVector<ReadonlyFieldHolder> &readonlyFields)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker::ClassInitializerBuilder initBuilder =
         [ctx, checker, parser, readonlyFields](ArenaVector<ir::Statement *> *statements,
@@ -204,14 +204,14 @@ static void AnnotateGeneratedAnonClass(checker::ETSChecker *checker, ir::ClassDe
     annoUsage->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
     annoUsage->SetParent(classDef);
     annoId->SetParent(annoUsage);
-    classDef->Annotations().emplace_back(annoUsage);
+    classDef->AddAnnotations(annoUsage);
     RefineSourceRanges(annoUsage);
     CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, annoUsage);
 }
 
 static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSInterfaceDeclaration *ifaceNode)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     if (ifaceNode->GetAnonClass() != nullptr) {
         return;
@@ -255,7 +255,7 @@ static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSI
     auto *classImplements = ctx->AllocNode<ir::TSClassImplements>(
         ctx->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), ctx->Allocator()));
     classImplements->SetParent(classDef);
-    classDef->Implements().emplace_back(classImplements);
+    classDef->EmplaceImplements(classImplements);
     classType->RemoveObjectFlag(checker::ETSObjectFlags::RESOLVED_INTERFACES);
     checker->GetInterfacesOfClass(classType);
 
@@ -264,7 +264,7 @@ static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSI
 
 static void GenerateAnonClassTypeFromAbstractClass(public_lib::Context *ctx, ir::ClassDefinition *abstractClassNode)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     if (abstractClassNode->GetAnonClass() != nullptr) {
         return;
@@ -341,7 +341,7 @@ static checker::Type *ProcessDeclNode(checker::ETSChecker *checker, checker::ETS
 
 static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *targetType = objExpr->TsType();
     checker->CheckObjectLiteralKeys(objExpr->Properties());
 
@@ -433,6 +433,9 @@ bool InterfaceObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::P
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTLowered()) {
+                continue;
+            }
             auto *savedProgram = varbinder->Program();
             auto *savedRecordTable = varbinder->GetRecordTable();
             auto *savedTopScope = varbinder->TopScope();
@@ -451,6 +454,9 @@ bool InterfaceObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::P
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTLowered()) {
+                continue;
+            }
             TransfromInterfaceLiteral(ctx, extProg);
         }
     }

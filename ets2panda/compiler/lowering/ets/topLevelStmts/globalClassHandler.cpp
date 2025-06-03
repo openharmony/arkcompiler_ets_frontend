@@ -42,7 +42,7 @@ void GlobalClassHandler::AddStaticBlockToClass(ir::AstNode *node)
     if (node->IsClassDefinition() && !node->AsClassDefinition()->IsDeclare()) {
         auto classDef = node->AsClassDefinition();
         if (auto staticBlock = CreateStaticBlock(classDef); staticBlock != nullptr) {
-            classDef->Body().emplace_back(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
+            classDef->EmplaceBody(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
             staticBlock->SetParent(classDef);
         }
     }
@@ -103,7 +103,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
 
 static void InsertInGlobal(ir::ClassDefinition *globalClass, ir::AstNode *node)
 {
-    globalClass->Body().insert(globalClass->Body().begin(), node);
+    globalClass->BodyForUpdate().insert(globalClass->Body().begin(), node);
     node->SetParent(globalClass);
 }
 
@@ -165,11 +165,9 @@ void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces
                 parser->LogError(diagnostic::NAMESPACE_ANNOTATION_CONFLICT, {ns->Ident()->Name().Mutf8()}, ns->Start());
             } else if (!ns->Annotations().empty()) {
                 ES2PANDA_ASSERT(res->second->Annotations().empty());
-                res->second->SetAnnotations(std::move(ns->Annotations()));
+                res->second->SetAnnotations(std::move(ns->AnnotationsForUpdate()));
             }
-            for (auto *statement : ns->Statements()) {
-                res->second->Statements().emplace_back(statement);
-            }
+            res->second->AddStatements(ns->Statements());
             namespaces.erase(it);
         } else {
             nsMap.insert({ns->Ident()->Name(), ns});
@@ -178,10 +176,10 @@ void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces
     }
 }
 
-ArenaVector<ir::ClassDeclaration *> GlobalClassHandler::TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
-                                                                            parser::Program *program)
+ArenaVector<ir::Statement *> GlobalClassHandler::TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
+                                                                     parser::Program *program)
 {
-    ArenaVector<ir::ClassDeclaration *> classDecls {allocator_->Adapter()};
+    ArenaVector<ir::Statement *> classDecls {allocator_->Adapter()};
     MergeNamespace(namespaces, program);
     for (auto ns : namespaces) {
         classDecls.emplace_back(TransformNamespace(ns, program));
@@ -197,7 +195,7 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     ArenaVector<GlobalStmts> immediateInitializers(allocator_->Adapter());
     ArenaVector<GlobalStmts> initializerBlock(allocator_->Adapter());
     ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
-    auto &body = ns->Statements();
+    auto &body = ns->StatementsForUpdates();
     for (auto *statement : body) {
         statement->Iterate([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
     }
@@ -224,14 +222,14 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     body.erase(end, body.end());
     auto globalClasses = TransformNamespaces(namespaces, program);
     for (auto *cls : globalClasses) {
-        globalClass->Body().emplace_back(cls);
+        globalClass->EmplaceBody(cls);
         cls->SetParent(globalClass);
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(cls->AsClassDeclaration()->Definition());
     }
 
     // Add rest statement, such as type declaration
     for (auto *statement : body) {
-        globalClass->Body().emplace_back(statement);
+        globalClass->EmplaceBody(statement);
         statement->SetParent(globalClass);
     }
     body.clear();
@@ -241,10 +239,10 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
 void GlobalClassHandler::CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces)
 {
     auto classDecls = TransformNamespaces(namespaces, program);
+    program->Ast()->AddStatements(classDecls);
     for (auto cls : classDecls) {
-        program->Ast()->Statements().push_back(cls);
         cls->SetParent(program->Ast());
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(cls->AsClassDeclaration()->Definition());
     }
 }
 
@@ -286,9 +284,9 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     ArenaVector<GlobalStmts> initializerBlock(allocator_->Adapter());
     ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
 
-    for (auto program : programs) {
+    for (auto const program : programs) {
         program->Ast()->IterateRecursively([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
-        auto &body = program->Ast()->Statements();
+        auto &body = program->Ast()->StatementsForUpdates();
         auto stmts = CollectProgramGlobalStatements(body, globalClass, program->Ast());
         auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
             if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {
@@ -306,7 +304,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
         program->SetGlobalClass(globalClass);
     }
 
-    globalProgram->Ast()->Statements().emplace_back(globalDecl);
+    globalProgram->Ast()->AddStatement(globalDecl);
     globalDecl->SetParent(globalProgram->Ast());
     globalClass->SetGlobalInitialized();
     CollectProgramGlobalClasses(globalProgram, namespaces);
@@ -367,7 +365,7 @@ void GlobalClassHandler::AddInitializerBlockToStaticBlock(ir::ClassDefinition *g
 
     auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
     initializerStmts->SetParent(blockBody);
-    blockBody->Statements().emplace_back(initializerStmts);
+    blockBody->AddStatement(initializerStmts);
 }
 
 void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod)
@@ -388,7 +386,7 @@ void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalCla
     auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
     auto exprStmt = NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, callExpr);
     exprStmt->SetParent(blockBody);
-    blockBody->Statements().emplace_back(exprStmt);
+    blockBody->AddStatement(exprStmt);
 }
 
 ir::Identifier *GlobalClassHandler::RefIdent(const util::StringView &name)

@@ -92,18 +92,18 @@ void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression 
                     (number.IsDouble() && keySet.insert(number.GetDouble()).second)) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
+                ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
                 break;
             }
             case ir::AstNodeType::STRING_LITERAL: {
                 if (keySet.insert(prop->Key()->AsStringLiteral()->Str()).second) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
+                ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
                 break;
             }
             case ir::AstNodeType::IDENTIFIER: {
-                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
+                ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
                 break;
             }
             default: {
@@ -122,7 +122,7 @@ void RecordLowering::CheckLiteralsCompleteness(KeySetType &keySet, ir::ObjectExp
     }
     for (auto &ct : keyType->AsETSUnionType()->ConstituentTypes()) {
         if (ct->IsConstantType() && keySet.find(TypeToKey(ct)) == keySet.end()) {
-            ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_NOT_COVERING_UNION, {}, expr->Start());
+            ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::OBJ_LIT_NOT_COVERING_UNION, {}, expr->Start());
         }
     }
 }
@@ -154,7 +154,7 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
-    auto checker = ctx->checker->AsETSChecker();
+    auto checker = ctx->GetChecker()->AsETSChecker();
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
@@ -188,7 +188,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     block->SetParent(expr->Parent());
 
     // Run checks
-    InitScopesPhaseETS::RunExternalNode(block, ctx->checker->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(block, ctx->GetChecker()->VarBinder());
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(block, NearestScope(block));
     block->Check(checker);
 

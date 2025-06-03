@@ -27,7 +27,7 @@ static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_li
     auto *parser = ctx->parser->AsETSParser();
     ir::TypeNode *typeAnnotation =
         parser->CreateFormattedTypeAnnotation("Array<" + node->ElementType()->DumpEtsSrc() + ">");
-    typeAnnotation->SetAnnotations(std::move(node->Annotations()));
+    typeAnnotation->SetAnnotations(node->Annotations());
     typeAnnotation->SetParent(node->Parent());
     typeAnnotation->SetRange(node->Range());
     RefineSourceRanges(node);

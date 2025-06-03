@@ -52,8 +52,8 @@ DiagnosticStorage DiagnosticEngine::GetAllDiagnostic()
     DiagnosticStorage merged;
     merged.reserve(totalSize);
     for (auto &vec : diagnostics_) {
-        for (auto &&diag : vec) {
-            merged.emplace_back(std::move(diag));
+        for (auto &diag : vec) {
+            merged.emplace_back(diag);
         }
     }
     return merged;
@@ -61,6 +61,9 @@ DiagnosticStorage DiagnosticEngine::GetAllDiagnostic()
 
 void DiagnosticEngine::FlushDiagnostic()
 {
+    if (isFlushed_) {
+        return;
+    }
     auto log = GetAllDiagnostic();
     std::sort(log.begin(), log.end(), [](const auto &lhs, const auto &rhs) { return *lhs < *rhs; });
     auto last =
@@ -68,6 +71,7 @@ void DiagnosticEngine::FlushDiagnostic()
     for (auto it = log.begin(); it != last; it++) {
         printer_->Print(**it);
     }
+    isFlushed_ = true;
 }
 #ifndef FUZZING_EXIT_ON_FAILED_ASSERT
 static void SigSegvHandler([[maybe_unused]] int sig)

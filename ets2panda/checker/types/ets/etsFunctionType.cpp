@@ -15,6 +15,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/types/globalTypesHolder.h"
+#include "compiler/lowering/phase.h"
 
 namespace ark::es2panda::checker {
 
@@ -104,11 +105,16 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
 
 ETSObjectType *ETSFunctionType::ArrowToFunctionalInterface(ETSChecker *checker)
 {
-    auto &cached = arrowToFuncInterface_;
-    if (LIKELY(cached != nullptr)) {
-        return cached;
+    auto &cached = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->GetArrowToFuncInterfaces();
+
+    auto found = cached.find(this);
+    if (LIKELY(found != cached.end())) {
+        return found->second;
     }
-    return cached = FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), ArrowSignature()->MinArgCount());
+    return cached
+        .emplace(this,
+                 FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), ArrowSignature()->MinArgCount()))
+        .first->second;
 }
 
 ETSObjectType *ETSFunctionType::ArrowToFunctionalInterfaceDesiredArity(ETSChecker *checker, size_t arity)
@@ -121,13 +127,15 @@ ETSObjectType *ETSFunctionType::ArrowToFunctionalInterfaceDesiredArity(ETSChecke
 
 ETSFunctionType *ETSFunctionType::MethodToArrow(ETSChecker *checker)
 {
-    auto &cached = invokeToArrowSignature_;
-    if (LIKELY(cached != nullptr)) {
-        return cached;
+    auto &cached = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->GetInvokeToArrowSignatures();
+
+    auto found = cached.find(this);
+    if (LIKELY(found != cached.end())) {
+        return found->second;
     }
 
     ES2PANDA_ASSERT(!IsETSArrowType() && CallSignatures().size() == 1);
-    return cached = checker->CreateETSArrowType(CallSignatures()[0]);
+    return cached.emplace(this, checker->CreateETSArrowType(CallSignatures()[0])).first->second;
 }
 
 void ETSFunctionType::AddCallSignature(Signature *signature)

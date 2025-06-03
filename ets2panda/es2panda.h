@@ -140,7 +140,7 @@ private:
 
 // g_diagnosticEngine used only for flush diagnostic before unexpected process termination:
 // - inside SIGSEGV handler
-extern util::DiagnosticEngine *g_diagnosticEngine;
+thread_local extern util::DiagnosticEngine *g_diagnosticEngine;
 }  // namespace ark::es2panda
 
 #endif

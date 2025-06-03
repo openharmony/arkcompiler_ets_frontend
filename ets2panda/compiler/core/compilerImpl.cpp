@@ -88,6 +88,7 @@ static public_lib::Context::CodeGenCb MakeCompileJob()
         RegSpiller regSpiller;
         ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         AstCompiler astcompiler;
+        compiler::SetPhaseManager(context->phaseManager);
         CodeGen cg(&allocator, &regSpiller, context, std::make_tuple(scope, programElement, &astcompiler));
         FunctionEmitter funcEmitter(&cg, programElement);
         funcEmitter.Generate();
@@ -299,7 +300,18 @@ static void AddExternalPrograms(public_lib::Context *ctx, const CompilationUnit 
         if (gt != nullptr && gt->IsETSObjectType()) {
             auto *relation = gt->AsETSObjectType()->GetRelation();
             if (relation != nullptr) {
-                relation->SetChecker(ctx->checker);
+                relation->SetChecker(ctx->GetChecker());
+            }
+        }
+    }
+}
+
+[[maybe_unused]] static void MarkAsLowered(parser::Program &program)
+{
+    for (auto &[name, extPrograms] : program.ExternalSources()) {
+        for (auto &extProgram : extPrograms) {
+            if (!extProgram->IsASTLowered()) {
+                extProgram->MarkASTAsLowered();
             }
         }
     }
@@ -373,8 +385,9 @@ static void SavePermanents(public_lib::Context *ctx, parser::Program *program)
     varbinder->GetGlobalRecordTable()->CleanUp();
     varbinder->Functions().clear();
 
-    ctx->transitionMemory->SetGlobalTypes(ctx->checker->GetGlobalTypesHolder());
-    ctx->transitionMemory->SetCachechedComputedAbstracts(ctx->checker->AsETSChecker()->GetCachedComputedAbstracts());
+    ctx->transitionMemory->SetGlobalTypes(ctx->GetChecker()->GetGlobalTypesHolder());
+    ctx->transitionMemory->SetCachechedComputedAbstracts(
+        ctx->GetChecker()->AsETSChecker()->GetCachedComputedAbstracts());
     ctx->transitionMemory->AddCompiledProgram(ctx->parserProgram);
 }
 
@@ -422,7 +435,9 @@ template <typename Parser, typename VarBinder, typename Checker, typename Analyz
 static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl,
                                  [[maybe_unused]] public_lib::Context *context)
 {
+    ir::DisableContextHistory();
     auto config = public_lib::ConfigImpl {};
+    auto phaseManager = compiler::PhaseManager(context, unit.ext, context->allocator);
     context->config = &config;
     context->config->options = &unit.options;
     context->sourceFile = &unit.input;
@@ -435,13 +450,13 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
     auto parser =
         Parser(&program, unit.options, unit.diagnosticEngine, static_cast<parser::ParserStatus>(unit.rawParserStatus));
     context->parser = &parser;
-    auto checker = Checker(unit.diagnosticEngine, context->allocator);
-    context->checker = &checker;
-    auto analyzer = Analyzer(&checker);
-    auto phaseManager = compiler::PhaseManager(unit.ext, context->allocator);
-    checker.SetAnalyzer(&analyzer);
-    context->analyzer = checker.GetAnalyzer();
+    parser.SetContext(context);
+    auto checker = Checker(context->allocator, unit.diagnosticEngine, context->allocator);
     context->parserProgram = &program;
+    context->PushChecker(&checker);
+    auto analyzer = Analyzer(&checker);
+    checker.SetAnalyzer(&analyzer);
+    context->PushAnalyzer(checker.GetAnalyzer());
     context->codeGenCb = MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>();
     context->diagnosticEngine = &unit.diagnosticEngine;
     context->phaseManager = &phaseManager;
@@ -450,7 +465,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
         CreateDebuggerEvaluationPlugin(checker, *context->allocator, &program, unit.options);
         if (context->compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
             checker.SetCachedComputedAbstracts(context->transitionMemory->CachedComputedAbstracts());
-            checker.SetGlobalTypes(context->transitionMemory->GlobalTypes());
+            checker.SetGlobalTypesHolder(context->transitionMemory->GlobalTypes());
             checker.AddStatus(ark::es2panda::checker::CheckerStatus::BUILTINS_INITIALIZED);
         } else {
             checker.InitCachedComputedAbstracts();
@@ -461,11 +476,13 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
     auto *varbinder = program.VarBinder();
     varbinder->SetProgram(&program);
     varbinder->SetContext(context);
-    context->checker->Initialize(varbinder);
+    context->GetChecker()->Initialize(varbinder);
 
     if (!ExecuteParsingAndCompiling(unit, context)) {
         return nullptr;
     }
+
+    MarkAsLowered(program);
     return EmitProgram(compilerImpl, context, unit);
 }
 

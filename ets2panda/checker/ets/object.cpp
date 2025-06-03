@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
+#include <mutex>
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
+#include "compiler/lowering/phase.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classElement.h"
 #include "ir/base/classProperty.h"
@@ -2411,10 +2413,16 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);
     }
 
-    auto it = classDef->Body().begin();
-    while (it != classDef->Body().end()) {
+    auto &body = classDef->Body();
+    if (!std::any_of(body.cbegin(), body.cend(), [](const ir::AstNode *node) {
+            return node->IsClassProperty() && (node->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U;
+        })) {
+        return;
+    }
+    auto it = classDef->BodyForUpdate().begin();
+    while (it != classDef->BodyForUpdate().end()) {
         if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
-            it = classDef->Body().erase(it);
+            it = classDef->BodyForUpdate().erase(it);
         } else {
             ++it;
         }
@@ -2478,14 +2486,18 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
 // This function computes effective runtime view of type
 Type *ETSChecker::GetApparentType(Type *type)
 {
-    if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
+    auto currChecker = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker();
+    auto &apparentTypes = currChecker->apparentTypes_;
+
+    if (auto it = apparentTypes.find(type); LIKELY(it != apparentTypes.end())) {
         return it->second;
     }
-    auto cached = [this, type](Type *res) {
+
+    auto cached = [&apparentTypes, type](Type *res) {
         if (type != res) {
-            apparentTypes_.insert({type, res});
+            apparentTypes.insert({type, res});
         }
-        apparentTypes_.insert({res, res});
+        apparentTypes.insert({res, res});
         return res;
     };
 
@@ -2526,7 +2538,9 @@ Type *ETSChecker::GetApparentType(Type *type)
 
 Type const *ETSChecker::GetApparentType(Type const *type) const
 {
-    if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
+    auto currChecker = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker();
+    auto &apparentTypes = currChecker->apparentTypes_;
+    if (auto it = apparentTypes.find(type); LIKELY(it != apparentTypes.end())) {
         return it->second;
     }
     // Relaxed for some types

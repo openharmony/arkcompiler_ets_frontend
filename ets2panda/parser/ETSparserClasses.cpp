@@ -821,7 +821,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
         return nullptr;
     }
     method->AddModifier(ir::ModifierFlags::PUBLIC);
-    method->SetRange({Lexer()->GetToken().Start(), method->Id()->End()});
     if (methodKind == ir::MethodDefinitionKind::GET) {
         method->Id()->SetAccessor();
         method->Function()->AddFlag(ir::ScriptFunctionFlags::GETTER);
