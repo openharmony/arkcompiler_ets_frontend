@@ -291,7 +291,7 @@ void ETSEmitter::GenAnnotation()
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
-            func.metadata->SetAnnotations(std::move(annotations));
+            func.metadata->AddAnnotations(annotations);
         }
         Program()->AddToFunctionTable(std::move(func));
     }
