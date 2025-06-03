@@ -34,5 +34,5 @@
   /* @@? 30:19 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
   /* @@? 30:29 Error TypeError: No static $_invoke method and static $_instantiate method in Record. Record() is not allowed. */
   /* @@? 30:29 Error TypeError: Type 'Record<K,V>' has no call signatures. */
-  /* @@? 31:38 Error TypeError: Type Array<String> is not assignable to constraint type Numeric|String */
-  /* @@? 32:38 Error TypeError: Type Array<T> is not assignable to constraint type Numeric|String */
+  /* @@? 31:38 Error TypeError: Type Array<String> is not assignable to constraint type Numeric|String|BaseEnum<Int>|BaseEnum<Long>|BaseEnum<String> */
+  /* @@? 32:38 Error TypeError: Type Array<T> is not assignable to constraint type Numeric|String|BaseEnum<Int>|BaseEnum<Long>|BaseEnum<String> */

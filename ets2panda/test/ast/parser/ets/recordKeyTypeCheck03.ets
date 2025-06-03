@@ -18,4 +18,4 @@ class A{}
 function main(){
     let a: Record/* @@ label */<BigInt, number>
 }
-/* @@@ label Error TypeError: Type BigInt is not assignable to constraint type Numeric|String  */
+/* @@@ label Error TypeError: Type BigInt is not assignable to constraint type Numeric|String|BaseEnum<Int>|BaseEnum<Long>|BaseEnum<String> */
