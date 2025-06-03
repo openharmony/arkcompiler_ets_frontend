@@ -1243,3 +1243,11 @@ syntax:
 - name: ERROR_ARKTS_NO_AMBIENT_DECLS
   id: 308
   message: "Ambient module declaration is not supported!"
+
+- name: TYPEOF_IN_ANNOTATION
+  id: 309
+  message: "Result of 'typeof' operator is not supported to be used as type annotation."
+
+- name: WRONG_LEFT_OF_INSTANCEOF
+  id: 310
+  message: "The left operand of 'instanceof' operator cannot be a type."
