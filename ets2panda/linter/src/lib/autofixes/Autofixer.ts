@@ -2621,12 +2621,6 @@ export class Autofixer {
     return { pattern, flag };
   }
 
-  fixDebuggerStatement(debuggerStmt: ts.DebuggerStatement): Autofix[] {
-    void this;
-    const text = SPECIAL_LIB_NAME + '.debugger();';
-    return [{ start: debuggerStmt.getStart(), end: debuggerStmt.getEnd(), replacementText: text }];
-  }
-
   /*
    * "unsafe" (result is not common subset) autofixes
    */

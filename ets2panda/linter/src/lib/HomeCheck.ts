@@ -46,7 +46,7 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
   });
   const languageTags = new Map<string, number>();
   inputFiles.forEach((file) => {
-    languageTags.set(file, 2);
+    languageTags.set(path.normalize(file), 2);
   });
   const ruleConfigInfo = {
     ruleSet: ['plugin:@migration/all'],

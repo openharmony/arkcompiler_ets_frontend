@@ -236,7 +236,7 @@ cookBookTag[198] = 'Class TS overloading is not supported(arkts-no-ts-overload)'
 cookBookTag[199] = 'Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)';
 cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
-cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
+cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';

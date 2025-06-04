@@ -21,7 +21,7 @@
             "endColumn": 10,
             "problem": "DebuggerStatement",
             "suggest": "",
-            "rule": "\"debugger\" is not supported (arkts-no-debugger-stmt)",
+            "rule": "\"debugger\" is not supported (arkts-no-debugger)",
             "severity": "ERROR"
         },
         {
@@ -31,7 +31,7 @@
             "endColumn": 12,
             "problem": "DebuggerStatement",
             "suggest": "",
-            "rule": "\"debugger\" is not supported (arkts-no-debugger-stmt)",
+            "rule": "\"debugger\" is not supported (arkts-no-debugger)",
             "severity": "ERROR"
         }
     ]
