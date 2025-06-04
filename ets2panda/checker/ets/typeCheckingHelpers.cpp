@@ -16,6 +16,7 @@
 #include "checker/checker.h"
 #include "checker/ets/wideningConverter.h"
 #include "checker/types/globalTypesHolder.h"
+#include "checker/types/gradualType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "ir/base/catchClause.h"
@@ -87,6 +88,9 @@ bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 
 Type *ETSChecker::GetNonNullishType(Type *type)
 {
+    if (type->IsGradualType()) {
+        return GetNonNullishType(type->AsGradualType()->GetBaseType());
+    }
     if (type->DefinitelyNotETSNullish()) {
         return type;
     }
@@ -192,7 +196,8 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
     ArenaVector<Type *> nullishTypes(ProgramAllocator()->Adapter());
     ArenaVector<Type *> notNullishTypes(ProgramAllocator()->Adapter());
 
-    for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
+    for (auto *ctype : type->AsETSUnionType()->ConstituentTypes()) {
+        auto constituentType = ctype->MaybeBaseTypeOfGradualType();
         if (constituentType->IsETSUndefinedType() || constituentType->IsETSNullType()) {
             nullishTypes.push_back(constituentType);
         } else {
@@ -214,6 +219,9 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 template <typename Pred, typename Trv>
 static bool MatchConstituentOrConstraint(const Type *type, Pred const &pred, Trv const &trv)
 {
+    if (type->IsGradualType()) {
+        return MatchConstituentOrConstraint(type->AsGradualType()->GetBaseType(), pred, trv);
+    }
     auto const traverse = [&pred, &trv](const Type *ttype) {
         return MatchConstituentOrConstraint<Pred, Trv>(ttype, pred, trv);
     };
@@ -263,6 +271,30 @@ bool Type::PossiblyETSUndefined() const
     return MatchConstituentOrConstraint(
         this, [](const Type *t) { return t->IsETSAnyType() || t->IsETSUndefinedType(); },
         [](const Type *t) { return !t->IsETSNonNullishType(); });
+}
+
+static bool ObjectPossiblyInForeignDomain(ETSObjectType const *type)
+{
+    if (type->IsGlobalETSObjectType()) {
+        return true;
+    }
+    auto dnode = type->GetDeclNode();
+    if (dnode == nullptr) {
+        return false;
+    }
+    auto lang = dnode->IsClassDefinition() ? dnode->AsClassDefinition()->Language()
+                                           : dnode->AsTSInterfaceDeclaration()->Language();
+    return lang != Language::Id::ETS;
+}
+
+bool Type::PossiblyInForeignDomain() const
+{
+    return MatchConstituentOrConstraint(
+        this,
+        [](const Type *t) {
+            return t->IsETSAnyType() || (t->IsETSObjectType() && ObjectPossiblyInForeignDomain(t->AsETSObjectType()));
+        },
+        []([[maybe_unused]] const Type *t) { return true; });
 }
 
 bool Type::PossiblyETSNullish() const
@@ -335,7 +367,7 @@ bool Type::IsETSMethodType() const
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
         TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_ANY | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION |
         TypeFlag::ETS_ARRAY | TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE |
-        TypeFlag::ETS_ENUM | TypeFlag::ETS_READONLY;
+        TypeFlag::ETS_ENUM | TypeFlag::ETS_READONLY | TypeFlag::GRADUAL_TYPE;
 
     // Issues
     if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
@@ -461,10 +493,10 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
             Type *containingClass {};
 
             if (classDef->TsType() == nullptr) {
-                containingClass = BuildBasicClassProperties(classDef);
-                ResolveDeclaredMembersOfObject(containingClass->AsETSObjectType());
+                containingClass = BuildBasicClassProperties(classDef)->MaybeBaseTypeOfGradualType();
+                ResolveDeclaredMembersOfObject(containingClass);
             } else {
-                containingClass = classDef->TsType()->AsETSObjectType();
+                containingClass = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
             }
 
             ES2PANDA_ASSERT(classDef->TsType());

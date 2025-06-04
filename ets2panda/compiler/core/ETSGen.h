@@ -21,6 +21,7 @@
 #include "compiler/core/ETSfunction.h"
 #include "compiler/core/targetTypeContext.h"
 #include "checker/ETSchecker.h"
+#include "ir/expressions/identifier.h"
 #include "util/helpers.h"
 #include <variant>
 
@@ -68,6 +69,15 @@ public:
                        const util::StringView &name);
     void LoadProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                       const util::StringView &fullName);
+
+    void StoreByIndexAny(const ir::MemberExpression *node, VReg objectReg, VReg index);
+    void LoadByIndexAny(const ir::MemberExpression *node, VReg objectReg);
+
+    void StoreByValueAny(const ir::MemberExpression *node, VReg objectReg, VReg value);
+    void LoadByValueAny(const ir::MemberExpression *node, VReg objectReg);
+
+    void StorePropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName);
+    void LoadPropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName);
 
     void StorePropertyByName(const ir::AstNode *node, VReg objReg,
                              checker::ETSChecker::NamedAccessMeta const &fieldMeta);
@@ -268,6 +278,7 @@ public:
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
+    void EmitAnyCheckCast(const ir::AstNode *node, const checker::Type *target);
     void CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target);
     void GuardUncheckedType(const ir::AstNode *node, const checker::Type *unchecked, const checker::Type *target);
 
@@ -308,6 +319,11 @@ public:
 #else
         ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
+    }
+
+    void EmitAnyIsInstance(const ir::AstNode *node, VReg objReg)
+    {
+        Sa().Emit<AnyIsinstance>(node, objReg);
     }
 
     void CallExact(const ir::AstNode *node, checker::Signature *signature,
@@ -411,6 +427,22 @@ public:
                      const ArenaVector<ir::Expression *> &arguments)
     {
         CallDynamicImpl<CallShort, Call, CallRange>(data, param3, signature, arguments);
+    }
+
+    void CallAnyNew(const ir::AstNode *const node, const ArenaVector<ir::Expression *> &arguments, const VReg athis)
+    {
+        CallAnyImpl<AnyCallNew0, AnyCallNewShort, AnyCallNewRange>(node, arguments, athis);
+    }
+
+    void CallAnyThis(const ir::AstNode *const node, const ir::Identifier *ident,
+                     const ArenaVector<ir::Expression *> &arguments, const VReg athis)
+    {
+        CallAnyImpl<AnyCallThis0, AnyCallThisShort, AnyCallThisRange>(node, ident, arguments, athis);
+    }
+
+    void CallAny(const ir::AstNode *const node, const ArenaVector<ir::Expression *> &arguments, const VReg athis)
+    {
+        CallAnyImpl<AnyCall0, AnyCallShort, AnyCallRange>(node, arguments, athis);
     }
 
     // until a lowering for implicit super is available
@@ -554,7 +586,7 @@ private:
     template <typename IntOp, typename LongOp>
     void BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs);
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty, modernize-loop-convert)
 #define COMPILE_ARG(idx)                                                                                       \
     ES2PANDA_ASSERT((idx) < arguments.size());                                                                 \
     ES2PANDA_ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                    \
@@ -733,7 +765,72 @@ private:
     }
 
 #undef COMPILE_ARG
-    // NOLINTEND(cppcoreguidelines-macro-usage, readability-container-size-empty)
+
+#define COMPILE_ANY_ARG(idx)                                   \
+    ES2PANDA_ASSERT((idx) < arguments.size());                 \
+    auto *param##idx = arguments[idx];                         \
+    auto *paramType##idx = param##idx->TsType();               \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx); \
+    arguments[idx]->Compile(this);                             \
+    VReg arg##idx = AllocReg();                                \
+    ApplyConversion(arguments[idx], nullptr);                  \
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
+
+    template <typename Zero, typename Short, typename Range>
+    void CallAnyImpl(const ir::AstNode *node, const ir::Identifier *ident,
+                     const ArenaVector<ir::Expression *> &arguments, const VReg athis)
+    {
+        ES2PANDA_ASSERT(ident != nullptr);
+        RegScope rs(this);
+
+        switch (arguments.size()) {
+            case 0U: {
+                Ra().Emit<Zero>(node, ident->Name(), athis);
+                break;
+            }
+            case 1U: {
+                COMPILE_ANY_ARG(0);
+                Ra().Emit<Short>(node, ident->Name(), athis, arg0);
+                break;
+            }
+            default: {
+                VReg argStart = NextReg();
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ANY_ARG(idx);
+                }
+
+                Rra().Emit<Range>(node, argStart, arguments.size(), ident->Name(), athis, argStart, arguments.size());
+            }
+        }
+    }
+
+    template <typename Zero, typename Short, typename Range>
+    void CallAnyImpl(const ir::AstNode *node, const ArenaVector<ir::Expression *> &arguments, const VReg athis)
+    {
+        RegScope rs(this);
+
+        switch (arguments.size()) {
+            case 0U: {
+                Ra().Emit<Zero>(node, athis);
+                break;
+            }
+            case 1U: {
+                COMPILE_ANY_ARG(0);
+                Ra().Emit<Short>(node, athis, arg0);
+                break;
+            }
+            default: {
+                VReg argStart = NextReg();
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ANY_ARG(idx);
+                }
+
+                Rra().Emit<Range>(node, argStart, arguments.size(), athis, argStart, arguments.size());
+            }
+        }
+    }
+#undef COMPILE_ANY_ARG
+    // NOLINTEND(cppcoreguidelines-macro-usage, readability-container-size-empty, modernize-loop-convert)
 
     void ToBinaryResult(const ir::AstNode *node, Label *ifFalse);
 

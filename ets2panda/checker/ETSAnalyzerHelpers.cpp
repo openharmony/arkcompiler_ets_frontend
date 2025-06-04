@@ -306,7 +306,7 @@ static bool HasIteratorInterface(ETSObjectType const *const objectType)
 void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
                                    const lexer::SourcePosition &position, const std::string &methodName)
 {
-    const auto *returnType = scriptFunc->Signature()->ReturnType();
+    const auto *returnType = scriptFunc->Signature()->ReturnType()->MaybeBaseTypeOfGradualType();
 
     if (returnType == nullptr) {
         checker->LogError(diagnostic::MISSING_RETURN_TYPE_2, {util::StringView(methodName)}, position);

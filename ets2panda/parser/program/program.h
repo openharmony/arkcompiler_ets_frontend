@@ -276,6 +276,11 @@ public:
         return moduleInfo_.kind == util::ModuleKind::PACKAGE;
     }
 
+    bool IsDeclForDynamicStaticInterop() const
+    {
+        return moduleInfo_.isDeclForDynamicStaticInterop;
+    }
+
     void SetFlag(ProgramFlags flag);
     bool GetFlag(ProgramFlags flag) const;
     void SetASTChecked();

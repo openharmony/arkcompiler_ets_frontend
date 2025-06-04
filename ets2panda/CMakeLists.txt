@@ -276,6 +276,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
+  compiler/lowering/ets/gradualTypeNarrowing.cpp
   compiler/lowering/ets/arrayLiteralLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
@@ -288,6 +289,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/exportAnonymousConst.cpp
   compiler/lowering/ets/lateInitialization.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/dynamicImport.cpp
   compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
@@ -574,6 +576,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/type.cpp
   checker/types/typeRelation.cpp
   checker/types/globalTypesHolder.cpp
+  checker/types/gradualType.cpp
   checker/types/ets/byteType.cpp
   checker/types/ets/charType.cpp
   checker/types/ets/doubleType.cpp

@@ -19,6 +19,7 @@
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
+#include "checker/types/gradualType.h"
 #include "compiler/lowering/phase.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classElement.h"
@@ -155,7 +156,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return false;
     }
 
-    Type *superType = classDef->Super()->AsTypeNode()->GetType(this);
+    auto *superType = classDef->Super()->AsTypeNode()->GetType(this);
     if (superType == nullptr) {
         return true;
     }
@@ -165,7 +166,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return true;
     }
 
-    ETSObjectType *superObj = superType->AsETSObjectType();
+    ETSObjectType *superObj = superType->MaybeBaseTypeOfGradualType()->AsETSObjectType();
 
     // struct node has class definition, too
     if (superObj->GetDeclNode()->Parent()->IsETSStructDeclaration()) {
@@ -405,7 +406,6 @@ ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const para
     paramType->SetVariable(param->Variable());
     // NOTE: #15026 recursive type parameter workaround
     paramType->SetConstraintType(GlobalETSAnyType());
-
     var->SetTsType(paramType);
     return paramType;
 }
@@ -437,12 +437,15 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
     }
 
     checker::ETSObjectType *interfaceType {};
+    checker::Type *type {};
     if (var->TsType() == nullptr) {
         interfaceType = CreateETSObjectTypeOrBuiltin(interfaceDecl, checker::ETSObjectFlags::INTERFACE);
         interfaceType->SetVariable(var);
-        var->SetTsType(interfaceType);
+        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
+        var->SetTsType(type);
     } else {
         interfaceType = var->TsType()->AsETSObjectType();
+        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
     }
 
     ConstraintCheckScope ctScope(this);
@@ -462,7 +465,7 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         CheckInterfaceFunctions(interfaceType);
     }
 
-    return interfaceType;
+    return type;
 }
 
 Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
@@ -478,21 +481,24 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
     }
 
     checker::ETSObjectType *classType {};
+    checker::Type *type {};
     if (var->TsType() == nullptr) {
         classType = CreateETSObjectTypeOrBuiltin(classDef, checker::ETSObjectFlags::CLASS);
+        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
         classType->SetVariable(var);
-        var->SetTsType(classType);
+        var->SetTsType(type);
         if (classDef->IsAbstract()) {
             classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
     } else if (var->TsType()->IsETSObjectType()) {
         classType = var->TsType()->AsETSObjectType();
+        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
     } else {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();
     }
 
-    classDef->SetTsType(classType);
+    classDef->SetTsType(type);
 
     ConstraintCheckScope ctScope(this);
     if (classDef->TypeParams() != nullptr) {
@@ -516,7 +522,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
         GetInterfaces(classType);
     }
     ctScope.TryCheckConstraints();
-    return classType;
+    return type;
 }
 
 ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType)
@@ -620,6 +626,10 @@ static void ResolveDeclaredDeclsOfObject(ETSChecker *checker, const ETSObjectTyp
 
 void ETSChecker::ResolveDeclaredMembersOfObject(const Type *type)
 {
+    if (type->IsGradualType()) {
+        return ResolveDeclaredMembersOfObject(type->AsGradualType()->GetBaseType());
+    }
+
     if (!type->IsETSObjectType() || type->AsETSObjectType()->IsPropertiesInstantiated()) {
         return;
     }
@@ -1188,7 +1198,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         return;
     }
 
-    auto *classType = classDef->TsType()->AsETSObjectType();
+    auto *classType = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
     }
@@ -1521,7 +1531,7 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
-    auto const expressionType = expr->Check(this);
+    auto const expressionType = expr->Check(this)->MaybeBaseTypeOfGradualType();
     if (expressionType->IsTypeError()) {
         return false;
     }
@@ -2185,6 +2195,9 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     }
     const auto *const targetRef = GetTargetRef(memberExpr);
     auto searchFlag = GetSearchFlags(memberExpr, targetRef);
+    if (target->HasObjectFlag(ETSObjectFlags::LAZY_IMPORT_OBJECT)) {
+        searchFlag |= PropertySearchFlags::SEARCH_INSTANCE;
+    }
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
     varbinder::Variable *const globalFunctionVar = ResolveInstanceExtension(memberExpr);

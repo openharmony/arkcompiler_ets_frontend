@@ -214,7 +214,7 @@ std::optional<std::string> HandleETSSpecificTypes(const checker::Type *checkerTy
             return checkerType->ToString();
 
         case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE:
+        case checker::TypeFlag::GRADUAL_TYPE:
             return HandleObjectType(checkerType, checker);
 
         case checker::TypeFlag::ETS_ARRAY:

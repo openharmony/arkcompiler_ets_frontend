@@ -19,6 +19,7 @@
 #include "ir/expressions/identifier.h"
 #include "checker/checker.h"
 #include "checker/ETSAnalyzer.h"
+#include "checker/types/gradualType.h"
 
 namespace ark::es2panda::compiler {
 
@@ -365,8 +366,12 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
         newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
     }
-    auto checkerCtx = checker::SavedCheckerContext(
-        checker, newStatus, containingClass != nullptr ? containingClass->TsType()->AsETSObjectType() : nullptr);
+
+    auto classType = containingClass == nullptr ? nullptr
+                     : containingClass->TsType()->IsGradualType()
+                         ? containingClass->TsType()->AsGradualType()->GetBaseType()->AsETSObjectType()
+                         : containingClass->TsType()->AsETSObjectType();
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, classType);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);

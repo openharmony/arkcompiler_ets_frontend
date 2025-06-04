@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "util/diagnostic.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
@@ -449,8 +450,38 @@ static void CastTupleElementFromClassMemberType(checker::ETSChecker *checker,
                                                   tupleElementAccessor->Start(), checker::TypeRelationFlag::NO_THROW});
 }
 
+checker::Type *MemberExpression::HandleComputedInGradualType(checker::ETSChecker *checker, checker::Type *baseType)
+{
+    property_->Check(checker);
+    if (baseType->IsETSObjectType()) {
+        util::StringView searchName;
+        if (property_->IsLiteral()) {
+            searchName = util::StringView {property_->AsLiteral()->ToString()};
+        }
+        auto found = baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_ALL);
+        if (found == nullptr) {
+            // Try to find indexer method
+            checker::Type *indexType = CheckIndexAccessMethod(checker);
+            if (indexType != nullptr) {
+                return indexType;
+            }
+            checker->LogError(diagnostic::PROPERTY_NONEXISTENT, {searchName, baseType->AsETSObjectType()->Name()},
+                              property_->Start());
+            return nullptr;
+        }
+        return found->TsType();
+    }
+    ES2PANDA_UNREACHABLE();
+    return nullptr;
+}
+
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
+    if (baseType->IsGradualType()) {
+        auto objType = baseType->MaybeBaseTypeOfGradualType()->AsETSObjectType();
+        SetObjectType(objType);
+        return HandleComputedInGradualType(checker, objType);
+    }
     if (baseType->IsETSArrayType()) {
         auto *dflt = baseType->AsETSArrayType()->ElementType();
         if (!checker->ValidateArrayIndex(property_)) {

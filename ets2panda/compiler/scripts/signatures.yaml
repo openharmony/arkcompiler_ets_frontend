@@ -157,6 +157,8 @@ defines:
     ref: REQUIRED_TYPE_NAME
   - name: 'Array'
     ref: ARRAY
+  - name: 'gradual'
+    ref: GRADUAL_TYPE_NAME
   - name: '<property>'
     ref: PROPERTY
   - name: 'Any'

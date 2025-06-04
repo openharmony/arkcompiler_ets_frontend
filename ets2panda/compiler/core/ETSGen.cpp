@@ -15,6 +15,8 @@
 
 #include "ETSGen-inl.h"
 
+#include "compiler/core/regScope.h"
+#include "generated/isa.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
@@ -372,6 +374,22 @@ void ETSGen::StoreProperty(const ir::AstNode *const node, const checker::Type *p
     }
 }
 
+void ETSGen::StorePropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName)
+{
+    ES2PANDA_ASSERT(node->IsMemberExpression() &&
+                    Checker()->GetApparentType(node->AsMemberExpression()->Object()->TsType())->IsETSAnyType());
+    Ra().Emit<AnyStbyname>(node, objReg, fullName);
+    SetAccumulatorType(node->AsMemberExpression()->TsType());
+}
+
+void ETSGen::LoadPropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName)
+{
+    ES2PANDA_ASSERT(node->IsMemberExpression() &&
+                    Checker()->GetApparentType(node->AsMemberExpression()->Object()->TsType())->IsETSAnyType());
+    Ra().Emit<AnyLdbyname>(node, objReg, fullName);
+    SetAccumulatorType(node->AsMemberExpression()->TsType());
+}
+
 void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *propType, const VReg objReg,
                           const util::StringView &fullName)
 {
@@ -423,6 +441,48 @@ void ETSGen::LoadPropertyByName([[maybe_unused]] const ir::AstNode *const node, 
 #else
     ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
+}
+
+void ETSGen::StoreByIndexAny(const ir::MemberExpression *node, VReg objectReg, VReg index)
+{
+    RegScope rs(this);
+
+    // Store property by index
+    Ra().Emit<AnyStbyidx>(node, objectReg, index);
+    SetAccumulatorType(Checker()->GlobalVoidType());
+}
+
+void ETSGen::LoadByIndexAny(const ir::MemberExpression *node, VReg objectReg)
+{
+    RegScope rs(this);
+
+    VReg indexReg = AllocReg();
+    StoreAccumulator(node, indexReg);
+
+    // Get property by index
+    Ra().Emit<AnyLdbyidx>(node, objectReg);
+    SetAccumulatorType(node->TsType());
+}
+
+void ETSGen::StoreByValueAny(const ir::MemberExpression *node, VReg objectReg, VReg value)
+{
+    RegScope rs(this);
+
+    // Store property by value
+    Ra().Emit<AnyStbyval>(node, objectReg, value);
+    SetAccumulatorType(Checker()->GlobalVoidType());
+}
+
+void ETSGen::LoadByValueAny(const ir::MemberExpression *node, VReg objectReg)
+{
+    RegScope rs(this);
+
+    VReg valueReg = AllocReg();
+    StoreAccumulator(node, valueReg);
+
+    // Get property by value
+    Ra().Emit<AnyLdbyval>(node, objectReg, valueReg);
+    SetAccumulatorType(node->TsType());
 }
 
 void ETSGen::CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature,
@@ -647,6 +707,15 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
         EmitCheckCast(node, ToAssemblerType(target));
     }
     SetAccumulatorType(target);
+}
+
+// Handle checkcast for interop if it is 1.2 type.
+void ETSGen::EmitAnyCheckCast(const ir::AstNode *node, const checker::Type *target)
+{
+    if (!target->IsETSAnyType() &&
+        (target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType())) {
+        InternalCheckCast(node, target);
+    }
 }
 
 // optimized specialization for object and [] targets

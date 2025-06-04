@@ -23,6 +23,8 @@
 #include "varbinder/ETSBinder.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 
+#include <checker/types/gradualType.h>
+
 namespace ark::es2panda::checker {
 
 std::optional<ir::TypeNode *> ETSChecker::GetUtilityTypeTypeParamNode(
@@ -121,6 +123,11 @@ Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 
     if (typeToBePartial->IsETSAnyType()) {
         return typeToBePartial;
+    }
+
+    if (typeToBePartial->IsGradualType()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return CreatePartialType(typeToBePartial->AsGradualType()->GetBaseType());
     }
 
     if (typeToBePartial->IsETSTypeParameter()) {
@@ -388,8 +395,8 @@ ir::TSTypeParameterInstantiation *ETSChecker::CreateNewSuperPartialRefTypeParams
             !originRefParams[ix]->AsETSTypeReference()->Part()->TsType()->IsETSTypeParameter()) {
             continue;
         }
-        auto it = likeSubstitution->find(
-            originRefParams[ix]->AsETSTypeReference()->Part()->TsType()->AsETSTypeParameter()->GetDeclNode());
+        auto type = originRefParams[ix]->AsETSTypeReference()->Part()->TsType();
+        auto it = likeSubstitution->find(type->AsETSTypeParameter()->GetDeclNode());
         if (it != likeSubstitution->end()) {
             auto *typeParamRefPart =
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

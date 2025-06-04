@@ -59,6 +59,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_UNDEFINED,
     ETS_UNION_UNDEFINED_NULL,
     ETS_ANY,
+    ETS_RELAXED_ANY,
     ETS_NEVER,
     ETS_UNION_UNDEFINED_NULL_OBJECT,
     ETS_WILDCARD,
@@ -270,6 +271,7 @@ public:
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
     Type *GlobalETSAnyType();
+    Type *GlobalETSRelaxedAnyType();
     Type *GlobalETSNeverType();
     Type *GlobalETSUnionUndefinedNull();
     Type *GlobalETSUnionUndefinedNullObject();

@@ -59,6 +59,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     INT_ENUM_TRANSFORMED = 1U << 15U,
     FROM_STRUCT = 1U << 16U,
     FUNCTIONAL_REFERENCE = 1U << 17U,
+    LAZY_IMPORT_OBJECT_CLASS = 1U << 18U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -272,6 +273,11 @@ public:
         return (Modifiers() & ClassDefinitionModifiers::NAMESPACE_TRANSFORMED) != 0;
     }
 
+    [[nodiscard]] bool IsLazyImportObjectClass() const noexcept
+    {
+        return (Modifiers() & ClassDefinitionModifiers::LAZY_IMPORT_OBJECT_CLASS) != 0;
+    }
+
     [[nodiscard]] bool IsFromStruct() const noexcept
     {
         return (Modifiers() & ClassDefinitionModifiers::FROM_STRUCT) != 0;
@@ -310,6 +316,11 @@ public:
     void SetNamespaceTransformed() noexcept
     {
         AddClassModifiers(ClassDefinitionModifiers::NAMESPACE_TRANSFORMED);
+    }
+
+    void SetLazyImportObjectClass() noexcept
+    {
+        AddClassModifiers(ClassDefinitionModifiers::LAZY_IMPORT_OBJECT_CLASS);
     }
 
     void SetFromStructModifier() noexcept

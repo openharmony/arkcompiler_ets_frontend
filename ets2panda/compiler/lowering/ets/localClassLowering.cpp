@@ -274,6 +274,9 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         if (ast->IsETSNewClassInstanceExpression()) {
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
+            if (calleeType->IsETSAnyType()) {
+                return;
+            }
 
             ES2PANDA_ASSERT(calleeType->IsETSObjectType());
             auto *calleeObj = calleeType->AsETSObjectType();

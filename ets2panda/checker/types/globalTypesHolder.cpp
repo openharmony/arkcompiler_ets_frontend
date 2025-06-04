@@ -150,6 +150,7 @@ void GlobalTypesHolder::AddEtsSpecificTypes(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::TYPE_ERROR)] = allocator->New<TypeError>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_ANY)] = allocator->New<ETSAnyType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_RELAXED_ANY)] = allocator->New<ETSAnyType>(true);
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NEVER)] = allocator->New<ETSNeverType>();
 }
 
@@ -410,6 +411,11 @@ Type *GlobalTypesHolder::GlobalETSUndefinedType()
 Type *GlobalTypesHolder::GlobalETSAnyType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ANY));
+}
+
+Type *GlobalTypesHolder::GlobalETSRelaxedAnyType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RELAXED_ANY));
 }
 
 Type *GlobalTypesHolder::GlobalETSNeverType()

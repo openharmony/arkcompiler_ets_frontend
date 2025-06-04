@@ -183,7 +183,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
 
     const auto *memberExpr = Node()->AsMemberExpression();
     staticObjRef_ = memberExpr->Object()->TsType();
-    if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar())) {
+    if (!memberExpr->IsComputed() && memberExpr->PropVar() != nullptr &&
+        etsg_->Checker()->IsVariableStatic(memberExpr->PropVar())) {
         return;
     }
 
@@ -196,7 +197,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
         TargetTypeContext pttctx(etsg_, memberExpr->Property()->TsType());
         memberExpr->Property()->Compile(etsg_);
         etsg_->ApplyConversion(memberExpr->Property());
-        ES2PANDA_ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
+        ES2PANDA_ASSERT(memberExpr->Object()->TsType()->IsETSAnyType() ||
+                        etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
         propReg_ = etsg_->AllocReg();
         etsg_->StoreAccumulator(node, propReg_);
     }
@@ -280,6 +282,15 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
 {
     const auto *const objectType = memberExpr->Object()->TsType();
 
+    if (objectType->IsETSAnyType()) {
+        if (memberExpr->Property()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+            etsg_->StoreByIndexAny(memberExpr, baseReg_, propReg_);
+        } else {
+            etsg_->StoreByValueAny(memberExpr, baseReg_, propReg_);
+        }
+        return;
+    }
+
     if (objectType->IsETSTupleType()) {
         ES2PANDA_ASSERT(memberExpr->GetTupleIndexValue().has_value());
 
@@ -325,6 +336,7 @@ void ETSLReference::SetValue() const
 
     const auto *const memberExpr = Node()->AsMemberExpression();
     const auto *const memberExprTsType = memberExpr->TsType();
+    auto const *objectType = memberExpr->Object()->TsType();
 
     if (!memberExpr->IsIgnoreBox()) {
         etsg_->ApplyConversion(Node(), memberExprTsType);
@@ -332,6 +344,11 @@ void ETSLReference::SetValue() const
 
     if (memberExpr->IsComputed()) {
         SetValueComputed(memberExpr);
+        return;
+    }
+
+    if (objectType->IsETSAnyType()) {
+        etsg_->StorePropertyByNameAny(memberExpr, baseReg_, memberExpr->Property()->AsIdentifier()->Name());
         return;
     }
 
@@ -348,8 +365,6 @@ void ETSLReference::SetValue() const
 
         return;
     }
-
-    auto const *objectType = memberExpr->Object()->TsType();
 
     if (objectType->IsETSUnionType()) {
         etsg_->StorePropertyByName(Node(), baseReg_,

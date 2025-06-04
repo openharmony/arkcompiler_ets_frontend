@@ -35,15 +35,13 @@ std::string_view InterfaceObjectLiteralLowering::Name() const
 static inline bool IsInterfaceType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) &&
-           !type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) && !type->IsETSAnyType();
 }
 
 static inline bool IsAbstractClassType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) &&
-           !type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && !type->IsETSAnyType();
 }
 
 static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVector<ReadonlyFieldHolder> &readonlyFields)
@@ -232,7 +230,7 @@ static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSI
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     RefineSourceRanges(classDecl);
     auto *classDef = classDecl->Definition();
-    auto *classType = classDef->TsType()->AsETSObjectType();
+    auto *classType = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
     classDef->SetAnonymousModifier();
 
     classDecl->SetRange(ifaceNode->Range());
@@ -287,7 +285,7 @@ static void GenerateAnonClassTypeFromAbstractClass(public_lib::Context *ctx, ir:
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     RefineSourceRanges(classDecl);
     auto *classDef = classDecl->Definition();
-    auto *classType = classDef->TsType()->AsETSObjectType();
+    auto *classType = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
 
     classDecl->SetRange(abstractClassNode->Range());
     classDef->SetAnonymousModifier();
@@ -389,7 +387,7 @@ static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *in
 
 static bool CheckAbstractClassShouldGenerateAnonClass(ir::ClassDefinition *classDef)
 {
-    auto constructorSigs = classDef->TsType()->AsETSObjectType()->ConstructSignatures();
+    auto constructorSigs = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType()->ConstructSignatures();
     if (auto res = std::find_if(constructorSigs.cbegin(), constructorSigs.cend(),
                                 [](checker::Signature *sig) -> bool { return sig->MinArgCount() == 0; });
         res == constructorSigs.cend()) {

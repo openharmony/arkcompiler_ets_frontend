@@ -36,6 +36,7 @@
 #include "checker/types/signature.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
+#include "checker/types/gradualType.h"
 #include "checker/types/ets/types.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "public/public.h"
@@ -94,6 +95,9 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifierFlags)
 
 static pandasm::Type PandasmTypeWithRank(checker::Type const *type, uint32_t rank = 0)
 {
+    if (type->IsGradualType()) {
+        return PandasmTypeWithRank(type->AsGradualType()->GetBaseType());
+    }
     if (type->IsETSTypeParameter()) {
         return PandasmTypeWithRank(type->AsETSTypeParameter()->GetConstraintType());
     }
@@ -506,7 +510,9 @@ void ETSEmitter::GenGlobalArrayRecord(const checker::ETSArrayType *arrayType, ch
 
 void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external)
 {
-    auto *baseType = interfaceDecl->TsType()->AsETSObjectType();
+    auto *baseType = interfaceDecl->TsType()->IsGradualType()
+                         ? interfaceDecl->TsType()->AsGradualType()->GetBaseType()->AsETSObjectType()
+                         : interfaceDecl->TsType()->AsETSObjectType();
     auto interfaceRecord = pandasm::Record(interfaceDecl->InternalName().Mutf8(), Program()->lang);
 
     uint32_t accessFlags = ACC_PUBLIC | ACC_ABSTRACT | ACC_INTERFACE;
@@ -603,8 +609,9 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     uint32_t accessFlags = GetAccessFlags(classDef);
     classRecord.metadata->SetAccessFlags(accessFlags);
     classRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
-
-    auto *baseType = classDef->TsType()->AsETSObjectType();
+    auto *baseType = classDef->TsType()->IsGradualType()
+                         ? classDef->TsType()->AsGradualType()->GetBaseType()->AsETSObjectType()
+                         : classDef->TsType()->AsETSObjectType();
     GenClassInheritedFields(baseType, classRecord);
     for (const auto *prop : classDef->Body()) {
         if (!prop->IsClassProperty()) {

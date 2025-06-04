@@ -39,10 +39,12 @@
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/genericBridgesLowering.h"
+#include "compiler/lowering/ets/gradualTypeNarrowing.h"
 #include "compiler/lowering/ets/insertOptionalParametersAnnotation.h"
 #include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
+#include "compiler/lowering/ets/dynamicImport.h"
 #include "compiler/lowering/ets/localClassLowering.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
@@ -124,6 +126,8 @@ std::vector<Phase *> GetETSPhaseList()
         // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
         // new ConvertPrimitiveCastMethodCall,
+        new DynamicImport,
+        new GradualTypeNarrowing,
         new AnnotationCopyPostLowering,
         new AsyncMethodLowering,
         new DeclareOverloadLowering,

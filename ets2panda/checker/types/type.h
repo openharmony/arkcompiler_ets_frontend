@@ -33,6 +33,7 @@ class ETSAsyncFuncReturnType;
 class ETSChecker;
 class ETSTypeParameter;
 class ETSEnumType;
+class GradualType;
 
 // CC-OFFNXT(G.PRE.02) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -113,6 +114,8 @@ public:
     bool PossiblyETSValueTyped() const;
     bool PossiblyETSValueTypedExceptNullish() const;
 
+    bool PossiblyInForeignDomain() const;
+
     ETSStringType *AsETSStringType()
     {
         ES2PANDA_ASSERT(IsETSObjectType());
@@ -161,6 +164,8 @@ public:
     {
         return HasTypeFlag(checker::TypeFlag::CONSTANT);
     }
+
+    Type *MaybeBaseTypeOfGradualType();
 
     TypeFlag TypeFlags() const
     {

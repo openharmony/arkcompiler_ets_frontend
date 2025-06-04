@@ -19,6 +19,7 @@
 #include "checker/types/ets/etsEnumType.h"
 #include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/globalTypesHolder.h"
+#include "checker/types/gradualType.h"
 #include "checker/types/type.h"
 #include "ir/statements/annotationDeclaration.h"
 
@@ -122,6 +123,30 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePoll
     }
 
     return arrayType;
+}
+
+Type *ETSChecker::CreateGradualType(Type *type, Language const lang)
+{
+    if (type == nullptr) {
+        return type;
+    }
+    if (type->IsGradualType()) {
+        return type;
+    }
+    if (!type->PossiblyInForeignDomain()) {
+        return type;
+    }
+    if (type->IsETSAnyType()) {
+        return type;
+    }
+    if (type->IsETSUnionType()) {
+        ArenaVector<Type *> copied(ProgramAllocator()->Adapter());
+        for (auto const &t : type->AsETSUnionType()->ConstituentTypes()) {
+            copied.push_back(CreateGradualType(t, lang));
+        }
+        return CreateETSUnionType(std::move(copied));
+    }
+    return ProgramAllocator()->New<GradualType>(type);
 }
 
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
@@ -332,22 +357,24 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, E
 ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags)
 {
     auto const [name, internalName] = GetObjectTypeDeclNames(declNode);
-
+    ETSObjectType *objectType = nullptr;
     if (declNode->IsClassDefinition() && (declNode->AsClassDefinition()->IsEnumTransformed())) {
         if (declNode->AsClassDefinition()->IsIntEnumTransformed()) {
-            return ProgramAllocator()->New<ETSIntEnumType>(ProgramAllocator(), name, internalName, declNode,
-                                                           Relation());
+            objectType =
+                ProgramAllocator()->New<ETSIntEnumType>(ProgramAllocator(), name, internalName, declNode, Relation());
+        } else {
+            ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
+            objectType = ProgramAllocator()->New<ETSStringEnumType>(ProgramAllocator(), name, internalName, declNode,
+                                                                    Relation());
         }
-        ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
-        return ProgramAllocator()->New<ETSStringEnumType>(ProgramAllocator(), name, internalName, declNode, Relation());
+    } else if (internalName == compiler::Signatures::BUILTIN_ARRAY) {
+        objectType = ProgramAllocator()->New<ETSResizableArrayType>(ProgramAllocator(), name,
+                                                                    std::make_tuple(declNode, flags, Relation()));
+    } else {
+        objectType = ProgramAllocator()->New<ETSObjectType>(ProgramAllocator(), name, internalName,
+                                                            std::make_tuple(declNode, flags, Relation()));
     }
-
-    if (internalName == compiler::Signatures::BUILTIN_ARRAY) {
-        return ProgramAllocator()->New<ETSResizableArrayType>(ProgramAllocator(), name,
-                                                              std::make_tuple(declNode, flags, Relation()));
-    }
-    return ProgramAllocator()->New<ETSObjectType>(ProgramAllocator(), name, internalName,
-                                                  std::make_tuple(declNode, flags, Relation()));
+    return objectType;
 }
 
 std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,

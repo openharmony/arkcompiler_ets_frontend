@@ -235,7 +235,6 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(ut
     for (auto &s : signatureSet) {
         funcType->AddCallSignature(s.second);
     }
-
     res->SetTsType(funcType);
     funcType->SetVariable(res);
 
@@ -1284,7 +1283,8 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     ES2PANDA_ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {
-        substitution.emplace(typeArguments_[ix]->AsETSTypeParameter(), checker->MaybeBoxType(arguments[ix]));
+        substitution.emplace(typeArguments_[ix]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(arguments[ix]->MaybeBaseTypeOfGradualType()));
     }
 
     return Substitute(relation, &substitution);

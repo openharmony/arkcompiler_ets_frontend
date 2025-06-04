@@ -61,13 +61,23 @@ ir::Identifier *ETSTypeReference::BaseName() const
         return baseName->AsIdentifier();
     }
 
-    ir::TSQualifiedName *nameIter = baseName->AsTSQualifiedName();
-
-    while (nameIter->Left()->IsTSQualifiedName()) {
-        nameIter = nameIter->Left()->AsTSQualifiedName();
+    if (baseName->IsIdentifier()) {
+        return baseName->AsIdentifier();
     }
+    if (baseName->IsTSQualifiedName()) {
+        ir::TSQualifiedName *iter = baseName->AsTSQualifiedName();
 
-    return nameIter->Left()->AsIdentifier();
+        while (iter->Left()->IsTSQualifiedName()) {
+            iter = iter->Left()->AsTSQualifiedName();
+        }
+        return iter->Left()->AsIdentifier();
+    }
+    ir::MemberExpression *iter = baseName->AsMemberExpression();
+
+    while (iter->Property()->IsMemberExpression()) {
+        iter = iter->Property()->AsMemberExpression();
+    }
+    return iter->Property()->AsIdentifier();
 }
 
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const

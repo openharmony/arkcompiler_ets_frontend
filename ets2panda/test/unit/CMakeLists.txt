@@ -27,6 +27,7 @@ add_subdirectory(arktsconfig-parser)
 add_subdirectory(annotations)
 add_subdirectory(lsp)
 add_subdirectory(relative_path)
+add_subdirectory(any_ins_test)
 
 ets2panda_add_gtest(es2panda_astdumper_tests
     CPP_SOURCES ast_dumper_test.cpp
