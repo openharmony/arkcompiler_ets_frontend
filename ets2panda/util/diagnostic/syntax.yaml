@@ -1235,3 +1235,7 @@ syntax:
 - name: OPTIONAL_VARIABLE
   id: 306
   message: "Optional variable is deprecated and no longer supported."
+
+- name: ERROR_ARKTS_NO_EXPORT_ASSIGNMENT
+  id: 307
+  message: "'export = ...' syntax is not supported, use regular import/export instead!"
