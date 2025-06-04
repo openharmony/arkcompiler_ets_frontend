@@ -40,7 +40,9 @@ import {
   LspInlayHint,
   LspInlayHintList,
   TextSpan,
-  LspSignatureHelpItems
+  LspSignatureHelpItems,
+  CodeFixActionInfo,
+  CodeFixActionInfoList
 } from './lspNode';
 import { passStringArray, unpackString } from './private';
 import { Es2pandaContextState } from './generated/Es2pandaEnums';
@@ -109,6 +111,16 @@ export class Lsp {
       throw new Error(`File content not found for path: ${filePath}`);
     }
     return getSource.replace(/\r\n/g, '\n');
+  }
+
+  private getModuleNameFromFilename(filePath: string): string {
+    const projectRoot = this.projectPath;
+    if (!filePath.startsWith(projectRoot)) {
+      return '';
+    }
+    const relativePath = path.relative(projectRoot, filePath);
+    const parts = relativePath.split(path.sep);
+    return parts[0] || '';
   }
 
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
@@ -529,6 +541,9 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
     const source = this.getFileSource(filePath);
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    const moduleName = this.getModuleNameFromFilename(filePath);
+    const buildConfig = this.moduleToBuildConfig[moduleName];
+    PluginDriver.getInstance().getPluginContext().setProjectConfig(buildConfig);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
@@ -681,6 +696,28 @@ export class Lsp {
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
     return new LspTextSpan(ptr);
+  }
+
+  getCodeFixesAtPosition(filename: String, start: number, end: number, errorCodes: number[]): CodeFixActionInfo[] {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let ptr = global.es2panda._getCodeFixesAtPosition(localCtx, start, end, new Int32Array(errorCodes), errorCodes.length);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
+    lspDriverHelper.destroyConfig(localCfg);
+    const codeFixActionInfoList = new CodeFixActionInfoList(ptr);
+    const codeFixActionInfos: CodeFixActionInfo[] = [];
+    codeFixActionInfos.push(...codeFixActionInfoList.codeFixActionInfos);
+    return codeFixActionInfos;
   }
 
   provideInlayHints(filename: String, span: TextSpan): LspInlayHint[] {

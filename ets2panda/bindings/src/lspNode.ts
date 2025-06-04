@@ -644,6 +644,43 @@ export class FileTextChanges extends LspNode {
   readonly textChanges: TextChange[];
 }
 
+export class CodeActionInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.changes = new NativePtrDecoder()
+      .decode(global.es2panda._getFileTextChangesFromCodeActionInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new FileTextChanges(elPeer);
+      });
+    this.description = unpackString(global.es2panda._getDescriptionFromCodeActionInfo(peer));
+  }
+  readonly changes: FileTextChanges[];
+  readonly description: String;
+}
+
+export class CodeFixActionInfo extends CodeActionInfo {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fixName = unpackString(global.es2panda._getFixNameFromCodeFixActionInfo(peer));
+    this.fixId_ = unpackString(global.es2panda._getFixIdFromCodeFixActionInfo(peer));
+    this.fixAllDescription_ = unpackString(global.es2panda._getFixAllDescriptionFromCodeFixActionInfo(peer));
+  }
+  readonly fixName: String;
+  readonly fixId_: String;
+  readonly fixAllDescription_: String;
+}
+
+export class CodeFixActionInfoList extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.codeFixActionInfos = new NativePtrDecoder()
+      .decode(global.es2panda._getCodeFixActionInfos(peer))
+      .map((elPeer: KNativePointer) => {
+        return new CodeFixActionInfo(elPeer);
+      });
+  }
+  readonly codeFixActionInfos: CodeFixActionInfo[];
+}
 
 export class LspFileTextChanges extends LspNode {
   constructor(peer: KNativePointer) {

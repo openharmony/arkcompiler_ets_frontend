@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr } from './InteropTypes';
+import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr, KInt32ArrayPtr } from './InteropTypes';
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from './loadLibraries';
 import { throwError } from './utils';
@@ -721,6 +721,35 @@ export class Es2pandaNativeModule {
   }
 
   _getSafeDeleteInfo(context: KNativePointer, position: KInt, path: String): boolean {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixesAtPosition(context: KNativePointer, startPosition: KInt, endPosition: KInt,
+    errorCodesPtr: KInt32ArrayPtr, codeLength: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixActionInfos(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChangesFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDescriptionFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixNameFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixIdFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixAllDescriptionFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
