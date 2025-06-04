@@ -152,6 +152,9 @@ function formArkts2Options(cmdOptions: CommandLineOptions, commanderOpts: Option
   if (commanderOpts.verbose) {
     cmdOptions.verbose = true;
   }
+  if (commanderOpts.enableInterop) {
+    cmdOptions.scanWholeProjectInHomecheck = true;
+  }
 }
 
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
@@ -226,12 +229,10 @@ function createCommand(): Command {
     option('--migration-max-pass <num>', 'Maximum number of migration passes').
     option('--migration-report', 'Generate migration report').
     option('--check-ts-and-js', 'check ts and js files').
-    option(
-      '--only-arkts2-syntax-rules',
-      'only syntax rules, excluding rules such as SDK, Arkui, Interop, Concurrent, etc'
-    ).
+    option('--only-arkts2-syntax-rules', 'only syntax rules').
     option('-o, --output-file-path <path>', 'path to store all log and result files').
     option('--verbose', 'set log level to see debug messages').
+    option('--enable-interop', 'scan whole project to report 1.1 import 1.2').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).

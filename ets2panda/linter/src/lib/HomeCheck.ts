@@ -41,6 +41,10 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
   projectConfigInfo: ProjectConfigInfo;
 } {
   let inputFiles = cmdOptions.inputFiles;
+  let fliesTocheck: string[] = inputFiles;
+  if (cmdOptions.scanWholeProjectInHomecheck === true) {
+    fliesTocheck = [];
+  }
   inputFiles = inputFiles.filter((input) => {
     return shouldProcessFile(cmdOptions, input);
   });
@@ -61,7 +65,7 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
     hmsSdkPath: cmdOptions.sdkExternalApiPath ? cmdOptions.sdkExternalApiPath[0] : '',
     reportDir: './',
     languageTags: languageTags,
-    fileOrFolderToCheck: [],
+    fileOrFolderToCheck: fliesTocheck,
     logLevel: cmdOptions.verbose ? 'DEBUG' : 'INFO',
     arkAnalyzerLogLevel: cmdOptions.verbose ? 'DEBUG' : 'ERROR'
   };
