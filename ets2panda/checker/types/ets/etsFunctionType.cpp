@@ -74,7 +74,9 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     if (signature->RestVar() != nullptr) {
         auto *functionN = checker->GlobalBuiltinFunctionType(arity, true)->AsETSObjectType();
         auto *substitution = checker->NewSubstitution();
-        auto *elementType = checker->GetElementTypeOfArray(signature->RestVar()->TsType());
+        auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
+                                ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
+                                : checker->GlobalETSNullishObjectType();
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), checker->MaybeBoxType(elementType));
         return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
     }

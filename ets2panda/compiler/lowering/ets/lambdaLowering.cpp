@@ -503,7 +503,8 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
 static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReallocation(
     public_lib::Context *ctx, LambdaClassInvokeInfo const *lciInfo)
 {
-    if (!lciInfo->lambdaSignature->HasRestParameter()) {
+    if (!lciInfo->lambdaSignature->HasRestParameter() ||
+        lciInfo->lambdaSignature->RestVar()->TsType()->IsETSTupleType()) {
         return ArenaVector<ir::Statement *>(ctx->allocator->Adapter());
     }
 
@@ -513,13 +514,12 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
 
     auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
     auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
-    bool isFixedArray = restParameterSubstituteType->IsETSArrayType();
     auto *elementType = checker->GetElementTypeOfArray(restParameterSubstituteType);
     std::stringstream statements;
     auto restParameterIndex = GenName(allocator).View();
     auto spreadArrIterator = GenName(allocator).View();
     ir::Statement *args = nullptr;
-    if (isFixedArray) {
+    if (restParameterSubstituteType->IsETSArrayType()) {
         auto tmpArray = GenName(allocator).View();
         statements << "let @@I1: int = 0;";
         if (elementType->IsETSReferenceType()) {
@@ -543,6 +543,7 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
             restParameterIndex, spreadArrIterator, checker->MaybeBoxType(elementType), elementType, restParameterIndex,
             restParameterIndex);
     } else {
+        ES2PANDA_ASSERT(restParameterSubstituteType->IsETSResizableArrayType());
         auto *typeNode = allocator->New<ir::OpaqueTypeNode>(
             checker->GetElementTypeOfArray(lciInfo->lambdaSignature->RestVar()->TsType()), allocator);
         statements << "let @@I1: int = 0;"
@@ -575,9 +576,10 @@ static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClas
 
     auto *restIdent = Gensym(allocator);
     lciInfo->restParameterIdentifier = restIdent->Name();
-    lciInfo->restArgumentIdentifier = GenName(allocator).View();
     auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
-    auto *arr = checker->CreateETSArrayType(anyType);
+    auto *arr = lciInfo->lambdaSignature->RestVar()->TsType()->IsETSTupleType()
+                    ? lciInfo->lambdaSignature->RestVar()->TsType()
+                    : checker->CreateETSArrayType(anyType);
     auto *typeAnnotation = allocator->New<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
@@ -619,16 +621,20 @@ static ArenaVector<ir::Expression *> CreateCallArgumentsForLambdaClassInvoke(pub
         callArguments.push_back(arg);
     }
 
-    if (lciInfo->lambdaSignature->HasRestParameter()) {
-        auto *restIdent = allocator->New<ir::Identifier>(lciInfo->restArgumentIdentifier, allocator);
-        if (lciInfo->lambdaSignature->RestVar()->TsType()->IsETSArrayType()) {
-            auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, restIdent);
-            restIdent->SetParent(spread);
-            callArguments.push_back(spread);
-        } else {
-            restIdent->AddAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
-            callArguments.push_back(restIdent);
-        }
+    if (!lciInfo->lambdaSignature->HasRestParameter()) {
+        return callArguments;
+    }
+    auto restType = lciInfo->lambdaSignature->RestVar()->TsType();
+    auto *restIdent = allocator->New<ir::Identifier>(
+        restType->IsETSTupleType() ? lciInfo->restParameterIdentifier : lciInfo->restArgumentIdentifier, allocator);
+    if (restType->IsETSArrayType() || restType->IsETSTupleType()) {
+        auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, restIdent);
+        restIdent->SetParent(spread);
+        callArguments.push_back(spread);
+    } else {
+        ES2PANDA_ASSERT(restType->IsETSResizableArrayType());
+        restIdent->AddAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
+        callArguments.push_back(restIdent);
     }
     return callArguments;
 }
@@ -716,6 +722,7 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
 
     if (lciInfo->lambdaSignature->HasRestParameter()) {
         CreateInvokeMethodRestParameter(ctx, lciInfo, &params);
+        lciInfo->restArgumentIdentifier = GenName(allocator).View();
     }
 
     auto *returnType2 = allocator->New<ir::OpaqueTypeNode>(
@@ -882,6 +889,13 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
                 .View();
         CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, invokeMethodName, true);
         // NOTE(vpukhov): for optional methods, the required invokeRk k={min, max-1} is not emitted
+    }
+    if (signature->HasRestParameter() && signature->RestVar()->TsType()->IsETSTupleType()) {
+        auto invokeMethodName =
+            util::UString {checker::FunctionalInterfaceInvokeName(lciInfo.arity + 1, signature->HasRestParameter()),
+                           ctx->allocator}
+                .View();
+        CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, invokeMethodName, true);
     }
     CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, compiler::Signatures::LAMBDA_OBJECT_INVOKE, false);
 
@@ -1138,11 +1152,12 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     auto *ifaceType = oldType->IsETSObjectType()
                           ? oldType->AsETSObjectType()
                           : oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, arity);
+    bool hasRestParam =
+        (oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter()) ||
+        call->Signature()->HasRestParameter();
     if (ifaceType->IsETSDynamicType()) {
         return call;
     }
-    bool hasRestParam =
-        oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter();
     util::StringView invokeMethodName =
         util::UString {checker::FunctionalInterfaceInvokeName(arity, hasRestParam), allocator}.View();
 
@@ -1166,6 +1181,9 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
        In the future, make sure those conversions behave appropriately.
     */
     for (auto *arg : call->Arguments()) {
+        if (arg->IsSpreadElement()) {
+            continue;
+        }
         auto boxingFlags = arg->GetBoxingUnboxingFlags();
         Recheck(ctx->phaseManager, varBinder, checker, arg);
         arg->SetBoxingUnboxingFlags(boxingFlags);
