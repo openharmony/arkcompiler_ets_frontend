@@ -101,7 +101,6 @@ namespace secharmony {
     const tempReservedName: string[] = ['.', '..', ''];
     configReservedFileNameOrPath.map(fileNameOrPath => {
       if (!fileNameOrPath || fileNameOrPath.length === 0) {
-        endFilesEvent(EventList.FILENAME_OBFUSCATION_INITIALIZATION);
         return;
       }
       const directories = FileUtils.splitFilePath(fileNameOrPath);
