@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,10 +59,9 @@ void ETSTypeParameter::Cast(TypeRelation *relation, Type *target)
     }
 
     // NOTE(vpukhov): adjust UNCHECKED_CAST flags
-    if (target->IsETSObjectType()) {
-        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+    if (target->IsETSReferenceType()) {
+        relation->Result(relation->InCastingContext());
     }
-    relation->Result(relation->InCastingContext());
 }
 
 void ETSTypeParameter::CastTarget(TypeRelation *relation, Type *source)
@@ -89,6 +88,39 @@ void ETSTypeParameter::IsSubtypeOf(TypeRelation *relation, Type *target)
     relation->Result(false);
 }
 
+void ETSTypeParameter::CheckVarianceRecursively([[maybe_unused]] TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    if (!declNode_->IsIn() && !declNode_->IsOut()) {
+        return;
+    }
+    auto classTypeParameters = relation->GetChecker()->Context().ContainingClass()->TypeArguments();
+    if (std::all_of(classTypeParameters.begin(), classTypeParameters.end(), [this](Type *param) {
+            return this->GetDeclNode()->Name()->Name() != param->AsETSTypeParameter()->Name();
+        })) {
+        return;
+    }
+
+    if (varianceFlag == VarianceFlag::INVARIANT) {
+        relation->GetChecker()->LogError(diagnostic::VARIANT_PARAM_INVARIAN_USE,
+                                         {declNode_->Name()->Name(), declNode_->IsOut() ? " 'out'" : " 'in'"},
+                                         relation->GetNode()->Start());
+        relation->Result(false);
+        return;
+    }
+
+    if (varianceFlag == VarianceFlag::COVARIANT && !declNode_->IsOut()) {
+        relation->GetChecker()->LogError(diagnostic::VARIANCE_TPARAM_IN_OUT, {declNode_->Name()->Name()},
+                                         relation->GetNode()->Start());
+        relation->Result(false);
+    }
+
+    if (varianceFlag == VarianceFlag::CONTRAVARIANT && !declNode_->IsIn()) {
+        relation->GetChecker()->LogError(diagnostic::VARIANCE_TPARAM_OUT_IN, {declNode_->Name()->Name()},
+                                         relation->GetNode()->Start());
+        relation->Result(false);
+    }
+}
+
 Type *ETSTypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                     [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
@@ -109,6 +141,7 @@ Type *ETSTypeParameter::Substitute([[maybe_unused]] TypeRelation *relation, cons
         return this;
     }
     if (auto repl = substitution->find(GetOriginal()); repl != substitution->end()) {
+        // 22955: The result is sometimes primitve. Can be reproduced for type aliases
         return repl->second;
     }
     return this;

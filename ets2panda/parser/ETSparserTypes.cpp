@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #include "ETSNolintParser.h"
 #include <utility>
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
 #include "util/helpers.h"
@@ -47,13 +47,12 @@
 #include "ir/ets/etsWildcardType.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/module/importNamespaceSpecifier.h"
@@ -71,6 +70,8 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "util/errorRecovery.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -79,27 +80,26 @@ using namespace std::literals::string_literals;
 
 ir::TypeNode *ETSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus status)
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        if ((status & ParserStatus::CONSTRUCTOR_FUNCTION) != 0U) {
-            ThrowSyntaxError("Type annotation isn't allowed for constructor.");
-        }
-        Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR |
-                                               TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE |
-                                               TypeAnnotationParsingOptions::RETURN_TYPE;
-        return ParseTypeAnnotation(&options);
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        return nullptr;
     }
-
-    return nullptr;
+    if ((status & ParserStatus::CONSTRUCTOR_FUNCTION) != 0U) {
+        LogError(diagnostic::TYPE_ANNOTATION_FOR_CONSTRUCTOR);
+    }
+    Lexer()->NextToken();  // eat ':'
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR |
+                                           TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE |
+                                           TypeAnnotationParsingOptions::RETURN_TYPE;
+    return ParseTypeAnnotation(&options);
 }
 
 ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type)
 {
     if (((*options) & TypeAnnotationParsingOptions::DISALLOW_PRIMARY_TYPE) != 0) {
-        ThrowSyntaxError("Primitive type is not allowed here.");
+        LogError(diagnostic::PRIMITIVE_NOT_ALLOWED);
     }
 
-    auto *typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type);
+    auto *const typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type, Allocator());
     typeAnnotation->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return typeAnnotation;
@@ -114,13 +114,14 @@ ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const firstType)
         Lexer()->NextToken();  // eat '|'
 
         auto options = TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
-        if (auto typeAnnotation = ParseTypeAnnotation(&options); typeAnnotation != nullptr) {  // Error processing.
+        auto typeAnnotation = ParseTypeAnnotation(&options);
+        if (!typeAnnotation->IsBrokenTypeNode()) {
             types.push_back(typeAnnotation);
         }
     }
 
     auto const endLoc = types.back()->End();
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
+    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
     unionType->SetRange({firstType->Start(), endLoc});
     return unionType;
 }
@@ -176,82 +177,50 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     ir::ETSTypeReference *typeReference = nullptr;
     if (!isUnboundOut) {
         auto reference = ParseTypeReference(options);
-        if (reference == nullptr) {  // Error processing.
-            return nullptr;
-        }
-
         typeReference = reference->AsETSTypeReference();
     }
 
-    auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier);
+    auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier, Allocator());
     wildcardType->SetRange({varianceStartLoc, typeReference == nullptr ? varianceEndLoc : typeReference->End()});
 
     return wildcardType;
 }
 
-ir::TypeNode *ETSParser::ParseFunctionType()
+ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options)
 {
     auto startLoc = Lexer()->GetToken().Start();
-    auto fullParams = ParseFunctionParams();
-    // CC-OFFNXT(G.FMT.14-CPP) project code style
-    auto *const returnTypeAnnotation = [this]() -> ir::TypeNode * {
-        ExpectToken(lexer::TokenType::PUNCTUATOR_ARROW);
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
-        return ParseTypeAnnotation(&options);
-    }();
-    if (returnTypeAnnotation == nullptr) {  // Error processing.
+    auto params = ParseFunctionParams();
+    bool hasReceiver = !params.empty() && params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_ARROW)) {
+        if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
+        }
+        return nullptr;
+    }
+    ir::TypeNode *returnTypeAnnotation = nullptr;
+    if (hasReceiver) {
+        SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::HAS_RECEIVER);
+        returnTypeAnnotation = ParseTypeAnnotation(options);
+    } else {
+        returnTypeAnnotation = ParseTypeAnnotation(options);
+    }
+    if (returnTypeAnnotation == nullptr) {
         return nullptr;
     }
 
     ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(false);
-
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    ArenaVector<ir::TypeNode *> constituentTypes(Allocator()->Adapter());
-    for (auto it : fullParams) {
-        if (!it->AsETSParameterExpression()->IsDefault()) {
-            params.push_back(it);
-        } else {
-            ArenaVector<ir::Expression *> tmpParams(Allocator()->Adapter());
-
-            for (auto param : params) {
-                tmpParams.push_back(param->Clone(Allocator(), nullptr)->AsExpression());
-            }
-
-            auto *funcType = AllocNode<ir::ETSFunctionType>(
-                ir::FunctionSignature(nullptr, std::move(tmpParams), returnTypeAnnotation->Clone(Allocator(), nullptr)),
-                throwMarker);
-
-            funcType->ReturnType()->SetParent(funcType);
-
-            constituentTypes.push_back(funcType);
-            params.push_back(it);
-        }
-    }
-
-    if (constituentTypes.empty()) {
-        auto *funcType = AllocNode<ir::ETSFunctionType>(
-            ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), throwMarker);
-        const auto endLoc = returnTypeAnnotation->End();
-        funcType->SetRange({startLoc, endLoc});
-        return funcType;
-    }
-
     auto *funcType = AllocNode<ir::ETSFunctionType>(
-        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), throwMarker);
-    constituentTypes.push_back(funcType);
+        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver), throwMarker, Allocator());
+    funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(constituentTypes));
-    const auto endLoc = returnTypeAnnotation->End();
-    unionType->SetRange({startLoc, endLoc});
-
-    return unionType;
+    return funcType;
 }
 
 bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
         if (spreadTypePresent) {
-            ThrowSyntaxError("Only one spread type declaration allowed, at the last index");
+            LogError(diagnostic::ONLY_SPREAD_AT_LAST_INDEX);
         }
 
         spreadTypePresent = true;
@@ -260,7 +229,7 @@ bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
         // This can't be implemented to any index, with type consistency. If a spread type is in the middle of
         // the tuple, then bounds check can't be made for element access, so the type of elements after the
         // spread can't be determined in compile time.
-        ThrowSyntaxError("Spread type must be at the last index in the tuple type");
+        LogError(diagnostic::SPREAD_MUST_BE_LAST_IN_TUPLE);
     }
 
     return spreadTypePresent;
@@ -268,91 +237,71 @@ bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
 
 ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
 
     const auto startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();  // eat '['
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
 
     ArenaVector<ir::TypeNode *> tupleTypeList(Allocator()->Adapter());
     auto *const tupleType = AllocNode<ir::ETSTuple>(Allocator());
 
-    bool spreadTypePresent = false;
-
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        // Parse named parameter if name presents
-        if ((Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) &&
-            (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
-            ExpectIdentifier();
-            Lexer()->NextToken();  // eat ':'
-        }
-
-        spreadTypePresent = ParseTriplePeriod(spreadTypePresent);
-
+    auto parseElem = [this, options, &tupleTypeList, &tupleType]() {
         auto *const currentTypeAnnotation = ParseTypeAnnotation(options);
         if (currentTypeAnnotation == nullptr) {  // Error processing.
             Lexer()->NextToken();
-            continue;
+            return false;
         }
 
         currentTypeAnnotation->SetParent(tupleType);
+        tupleTypeList.push_back(currentTypeAnnotation);
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-            // NOTE(mmartin): implement optional types for tuples
-            ThrowSyntaxError("Optional types in tuples are not yet implemented.");
-        }
+        return true;
+    };
 
-        if (spreadTypePresent) {
-            if (!currentTypeAnnotation->IsTSArrayType()) {
-                ThrowSyntaxError("Spread type must be an array type");
-            }
-
-            tupleType->SetSpreadType(currentTypeAnnotation);
-        } else {
-            tupleTypeList.push_back(currentTypeAnnotation);
-        }
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken();  // eat comma
-            continue;
-        }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            // tuple_type_3_neg.sts
-            LogSyntaxError("Comma is mandatory between elements in a tuple type declaration");
-            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-        }
-    }
-
-    Lexer()->NextToken();  // eat ']'
+    lexer::SourcePosition endLoc;
+    ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET, lexer::NextTokenFlags::NONE, parseElem, &endLoc, true);
 
     tupleType->SetTypeAnnotationsList(std::move(tupleTypeList));
-    const auto endLoc = Lexer()->GetToken().End();
     tupleType->SetRange({startLoc, endLoc});
 
     return tupleType;
 }
 
 // Helper function for  ETSParser::GetTypeAnnotationFromToken(...) method
-ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
-                                                      lexer::SourcePosition startLoc)
+ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options)
 {
-    if (((*options) & TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE) == 0 &&
-        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
-         Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || Lexer()->Lookahead() == lexer::LEX_CHAR_QUESTION)) {
-        GetContext().Status() |= ParserStatus::ALLOW_DEFAULT_VALUE;
-        auto typeAnnotation = ParseFunctionType();
-        GetContext().Status() ^= ParserStatus::ALLOW_DEFAULT_VALUE;
-        if (typeAnnotation == nullptr) {  // Error processing.
-            return nullptr;
+    auto savePos = Lexer()->Save();
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+
+    auto isPotentiallyOptionalWithTypeAnnotation = [this]() {
+        bool res = false;
+
+        if (Lexer()->Lookahead() != lexer::LEX_CHAR_QUESTION) {
+            return res;
         }
 
-        typeAnnotation->SetStart(startLoc);
+        auto currentPos = Lexer()->Save();
+        // jump to '?' token
+        Lexer()->NextToken();
+
+        if (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON) {
+            res = true;
+        }
+
+        Lexer()->Rewind(currentPos);
+        return res;
+    };
+    if (((*options) & TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE) == 0 &&
+        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
+         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD ||
+         Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || isPotentiallyOptionalWithTypeAnnotation())) {
+        GetContext().Status() |= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
+        // '(' is consumed in `ParseFunctionType`
+        Lexer()->Rewind(savePos);
+        auto typeAnnotation = ParseFunctionType(options);
+        GetContext().Status() ^= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         return typeAnnotation;
     }
-
-    auto savePos = Lexer()->Save();
-    ParseTypeAnnotation(options);
-
     Lexer()->Rewind(savePos);
     return nullptr;
 }
@@ -360,11 +309,9 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *typeAnnotation = nullptr;
-
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
-            typeAnnotation = ParseLiteralIdent(options);
+            auto typeAnnotation = ParseLiteralIdent(options);
             if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
                 (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
                 return std::make_pair(typeAnnotation, false);
@@ -372,22 +319,25 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_NULL: {
-            typeAnnotation = AllocNode<ir::ETSNullType>();
+            auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
-            typeAnnotation = AllocNode<ir::ETSUndefinedType>();
+            auto typeAnnotation = AllocNode<ir::ETSUndefinedType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_STRING: {
-            typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String());
+            auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String(), Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
+        }
+        case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
+            return std::make_pair(ParseMultilineString(), true);
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return GetTypeAnnotationFromParentheses(options);
@@ -398,27 +348,35 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             return std::make_pair(ParseETSTupleType(options), true);
         case lexer::TokenType::KEYW_THIS:
             return std::make_pair(ParseThisType(options), true);
-        default:
-            return std::make_pair(typeAnnotation, true);
+        default: {
+            return {nullptr, true};
+        }
     }
 }
 
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *typeAnnotation = nullptr;
     auto startLoc = Lexer()->GetToken().Start();
-    lexer::LexerPosition savedPos = Lexer()->Save();
-    Lexer()->NextToken();  // eat '('
 
-    typeAnnotation = ParsePotentialFunctionalType(options, startLoc);
+    ir::TypeNode *typeAnnotation = ParsePotentialFunctionalType(options);
     if (typeAnnotation != nullptr) {
+        typeAnnotation->SetStart(startLoc);
         return std::make_pair(typeAnnotation, true);
+    }
+
+    lexer::LexerPosition savedPos = Lexer()->Save();
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)) {
+        if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+        }
+        return {nullptr, false};
     }
 
     typeAnnotation = ParseTypeAnnotation(options);
     if (typeAnnotation == nullptr) {
         return std::make_pair(typeAnnotation, true);
     }
+
     typeAnnotation->SetStart(startLoc);
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
@@ -430,25 +388,45 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(Type
     return std::make_pair(typeAnnotation, true);
 }
 
+static bool IsSimpleReturnThis(lexer::Token const &tokenAfterThis)
+{
+    return (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_ARROW) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_COMMA) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) ||
+           ((tokenAfterThis.Flags() & lexer::TokenFlags::NEW_LINE) != 0);
+}
+
 ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+
+    auto startPos = Lexer()->GetToken().Start();
+    auto const tokenLoc = Lexer()->GetToken().Loc();
+    Lexer()->NextToken();  // eat 'this'
 
     // A syntax error should be thrown if
     // - the usage of 'this' as a type is not allowed in the current context, or
     // - 'this' is not used as a return type, or
     // - the current context is an arrow function (might be inside a method of a class where 'this' is allowed).
-    if (((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) &&
-        (((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0) ||
-         ((*options & TypeAnnotationParsingOptions::RETURN_TYPE) == 0) ||
-         ((GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0))) {
-        ThrowSyntaxError("A 'this' type is available only as return type in a non-static method of a class or struct.");
+    // - Specially, Function with Receiver, Lambda with Receiver and Function type with Receiver can return 'this'.
+    bool reportErr = (*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
+    bool allowThisType = ((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) != 0);
+    bool isArrowFunc = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
+    bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
+    bool isExtensionFunction = (GetContext().Status() & ParserStatus::HAS_RECEIVER) != 0;
+    bool isInUnion = (*options & TypeAnnotationParsingOptions::DISALLOW_UNION) != 0;
+    if (isExtensionFunction) {
+        if (reportErr && (!IsSimpleReturnThis(Lexer()->GetToken()) || isInUnion)) {
+            LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
+        }
+    } else if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc)) {
+        LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
     }
 
-    auto *thisType = AllocNode<ir::TSThisType>();
-    thisType->SetRange(Lexer()->GetToken().Loc());
-
-    Lexer()->NextToken();  // eat 'this'
+    auto *const thisType = AllocNode<ir::TSThisType>(Allocator());
+    thisType->SetRange(tokenLoc);
 
     return thisType;
 }
@@ -471,24 +449,28 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
             return nullptr;
         }
 
-        typeNode = AllocNode<ir::TSArrayType>(typeNode);
+        typeNode = AllocNode<ir::TSArrayType>(typeNode, Allocator());
         typeNode->SetRange({startPos, Lexer()->GetToken().End()});
-
         Lexer()->NextToken();  // eat ']'
     }
-
     return typeNode;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options)
 {
     bool const reportError = ((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
-
+    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
+    auto startPos = Lexer()->GetToken().Start();
     auto [typeAnnotation, needFurtherProcessing] = GetTypeAnnotationFromToken(options);
 
     if (typeAnnotation == nullptr) {
         if (reportError) {
-            LogSyntaxError("Invalid Type");
+            LogError(diagnostic::INVALID_TYPE);
+            auto typeNode = AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+            return typeNode;
         }
         return nullptr;
     }
@@ -501,28 +483,62 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
 
     if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
         return ParseUnionType(typeAnnotation);
     }
-
+    ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos, *options);
     return typeAnnotation;
+}
+
+bool ETSParser::ParseReadonlyInTypeAnnotation()
+{
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        Lexer()->NextToken();  // eat '<'
+        Lexer()->NextToken();  // eat 'identifier'
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
+            Lexer()->NextToken();  // eat '>'
+            return true;
+        }
+    }
+
+    return false;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
+    ir::TypeNode *typeAnnotation = nullptr;
+    auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
-        auto startPos = Lexer()->GetToken().Start();
-        Lexer()->NextToken();  // eat 'readonly'
-        ir::TypeNode *typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
-        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
-            ThrowSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
+    if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
+        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
+            !(typeAnnotation->IsETSTypeReference() &&
+              typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
+            if (!ParseReadonlyInTypeAnnotation()) {
+                LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
+            } else {
+                LogError(diagnostic::READONLY_TYPE_EXPECTED);
+            }
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
-        return typeAnnotation;
+    } else {
+        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
     }
+    return typeAnnotation;
+}
 
-    return ParseTypeAnnotationNoPreferParam(options);
+ir::TypeNode *ETSParser::ParseMultilineString()
+{
+    const auto startPos = Lexer()->GetToken().Start();
+    const auto multilineStr = Lexer()->ScanMultilineString();
+    Lexer()->ScanTemplateStringEnd();
+
+    auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(multilineStr, Allocator());
+    typeAnnotation->SetRange({startPos, Lexer()->GetToken().End()});
+    Lexer()->NextToken();
+
+    return typeAnnotation;
 }
 
 }  // namespace ark::es2panda::parser

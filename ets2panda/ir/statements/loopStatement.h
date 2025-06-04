@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ public:
 
     void SetScope(varbinder::LoopScope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -52,35 +52,31 @@ public:
     void TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                            [[maybe_unused]] std::string_view const transformationName) override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Iterate([[maybe_unused]] const NodeTraverser &cb) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Dump([[maybe_unused]] AstDumper *dumper) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
         return nullptr;
     }
 
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override
-    {
-        UNREACHABLE();
-        return nullptr;
-    }
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 protected:
     explicit LoopStatement(AstNodeType type) : Statement(type) {}

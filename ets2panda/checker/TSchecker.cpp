@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,28 +17,29 @@
 
 #include "ir/statements/blockStatement.h"
 #include "parser/program/program.h"
+#include "util/options.h"
 
 namespace ark::es2panda::checker {
 
-bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
+bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options)
 {
     Initialize(varbinder);
     varbinder->IdentifierAnalysis();
 
-    if (options.dumpAst) {
+    if (options.IsDumpAst()) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.opDumpAstOnlySilent) {
+    if (options.IsDumpAstOnlySilent()) {
         Program()->DumpSilent();
         return false;
     }
 
-    if (options.parseOnly) {
+    if (options.IsParseOnly()) {
         return false;
     }
 
-    ASSERT(Program()->Ast()->IsProgram());
+    ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
     return false;

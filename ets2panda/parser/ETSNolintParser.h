@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,14 @@
 #ifndef ES2PANDA_PARSER_CORE_ETS_NOLINT_PARSER_H
 #define ES2PANDA_PARSER_CORE_ETS_NOLINT_PARSER_H
 
+#include "lexer/lexer.h"
+#include "ETSparser.h"
+
 namespace ark::es2panda::parser {
 
 class ETSNolintParser {
 public:
-    explicit ETSNolintParser(const ParserImpl *mainParser);
+    explicit ETSNolintParser(ParserImpl *mainParser);
     void CollectETSNolints();
     void ApplyETSNolintsToStatements(ArenaVector<ir::Statement *> &statements) const;
 
@@ -40,8 +43,8 @@ private:
     bool IsEnd();
 
     std::set<ETSWarnings> ParseETSNolintArgs();
-    bool ValidETSNolintArg(const std::u32string &warningName) const;
-    ETSWarnings MapETSNolintArg(const std::u32string &warningName) const;
+    bool ValidETSNolintArg(const std::string &warningName) const;
+    ETSWarnings MapETSNolintArg(const std::string &warningName) const;
 
     void AddToETSNolintLinesCollection(std::size_t line, const std::set<ETSWarnings> &collection);
     bool IsLineWithETSNolint(const std::size_t line) const;
@@ -49,13 +52,12 @@ private:
 
     void ApplyETSNolintsToNodesRecursively(ir::AstNode *node) const;
 
-    const ParserImpl *parser_;
+    ParserImpl *parser_;
     std::size_t startPos_ = 0;
     std::size_t posOffset_ = 0;
     std::size_t line_ = 0;
     std::set<ETSWarnings> applyingCollection_;
     std::map<size_t, std::set<ETSWarnings>> linesCollection_;
-    std::map<std::u32string, ETSWarnings> warningsMap_;
 };
 }  // namespace ark::es2panda::parser
 #endif

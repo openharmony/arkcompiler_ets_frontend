@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,50 +17,26 @@
 #include "macros.h"
 #include "public/es2panda_lib.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "test/utils/ast_verifier_test.h"
+#include "util/diagnostic.h"
 
-class Es2PandaLibTest : public testing::Test {
-public:
-    Es2PandaLibTest()
-    {
-        impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
-        // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-        char const *argv[] = {es2pandaPath.c_str()};
-        cfg_ = impl_->CreateConfig(1, argv);
-    }
+namespace {
 
-    ~Es2PandaLibTest() override
-    {
-        impl_->DestroyConfig(cfg_);
-    }
-
-    NO_COPY_SEMANTIC(Es2PandaLibTest);
-    NO_MOVE_SEMANTIC(Es2PandaLibTest);
-
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_;
-    es2panda_Config *cfg_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
+using Es2PandaLibTest = test::utils::AstVerifierTest;
 
 TEST_F(Es2PandaLibTest, NoError)
 {
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, "function main() {}", "no-error.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);  // don't produce any object files
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ASM_GENERATED);
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "function main() {}", "no-error.ets") {}
 }
 
 TEST_F(Es2PandaLibTest, TypeError)
 {
-    es2panda_Context *ctx =
-        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "type-error.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
-    ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Type '\"\"' cannot be assigned to type 'int'[type-error.sts:1,32]");
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, ES2PANDA_STATE_ERROR, "function main() { let x: int = \"\" }", "error.ets")
+    {
+        ASSERT_EQ(GetImpl()->ContextState(GetContext()), ES2PANDA_STATE_ERROR);
+        auto diagnostics = GetImpl()->GetSemanticErrors(GetContext());
+        ASSERT_EQ(reinterpret_cast<const ark::es2panda::util::DiagnosticStorage *>(diagnostics)->size(), 1);
+    }
 }
 
 TEST_F(Es2PandaLibTest, ListIdentifiers)
@@ -75,17 +51,12 @@ function main() {
     console.log(c.n + 1) // type error, but not syntax error
 }
 )XXX";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "list-ids.sts");
-    ctx = impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     struct Arg {
-        es2panda_Impl const *impl = nullptr;
-        es2panda_Context *ctx = nullptr;
-        std::vector<std::string> ids;
-    } arg;
-    arg.impl = impl_;
-    arg.ctx = ctx;
+        es2panda_Impl const *impl;
+        es2panda_Context *ctx;
+        std::vector<std::string> ids {};
+    };
 
     auto func = [](es2panda_AstNode *ast, void *argp) {
         auto *a = reinterpret_cast<Arg *>(argp);
@@ -93,12 +64,36 @@ function main() {
             a->ids.emplace_back(a->impl->IdentifierName(a->ctx, ast));
         }
     };
+    CONTEXT(ES2PANDA_STATE_PARSED, text, "list-ids.ets")
+    {
+        Arg arg {GetImpl(), GetContext()};
+        AstNodeForEach(func, &arg);
 
-    impl_->AstNodeForEach(impl_->ProgramAst(impl_->ContextProgram(ctx)), func, &arg);
-
-    std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
-                                       "c", "C", "console", "log",         "c",           "n"};
-    ASSERT_EQ(arg.ids, expected);
-
-    impl_->DestroyContext(ctx);
+        std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
+                                           "c", "C", "console", "log",         "c",           "n"};
+        ASSERT_EQ(arg.ids, expected);
+    }
 }
+
+TEST_F(Es2PandaLibTest, LogDiagnostic)
+{
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "", "user-error.ets")
+    {
+        auto pos = GetImpl()->CreateSourcePosition(GetContext(), 3, 5);
+        auto diagnostics = GetImpl()->GetPluginErrors(GetContext());
+        auto diagnosticStorage = reinterpret_cast<const ark::es2panda::util::DiagnosticStorage *>(diagnostics);
+        ASSERT_EQ(diagnosticStorage->size(), 0);
+
+        auto kind = GetImpl()->CreateDiagnosticKind(GetContext(), "Test {}");
+        const char **args = new const char *[1];
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        args[0] = "1";
+        GetImpl()->LogDiagnostic(GetContext(), kind, args, 1, pos);
+        delete[] args;
+        ASSERT_EQ(diagnosticStorage->size(), 1);
+        ASSERT_EQ((*diagnosticStorage)[0]->Type(), ark::es2panda::util::DiagnosticType::PLUGIN);
+        ASSERT_EQ((*diagnosticStorage)[0]->Message(), "Test 1");
+    }
+}
+
+}  // namespace

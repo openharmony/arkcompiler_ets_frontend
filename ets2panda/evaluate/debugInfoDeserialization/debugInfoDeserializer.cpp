@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,7 +41,7 @@ std::string GetVarDeclSourceCode(std::string_view varName, DebugInfoDeserializer
                                  checker::GlobalTypesHolder *globalTypes)
 {
     auto returnType = helpers::ToTypeName(typeSignature, globalTypes);
-    ASSERT(returnType.has_value());
+    ES2PANDA_ASSERT(returnType.has_value());
 
     std::stringstream sstream;
     sstream << "let " << varName << ':' << *returnType << '=' << helpers::DEBUGGER_API_CLASS_NAME << '.'
@@ -72,10 +72,10 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrClass(panda_file::File::Enti
                                                           util::StringView pathToSource, util::StringView classDeclName)
 {
     LOG(DEBUG, ES2PANDA) << "DebugInfoDeserializer::CreateIrClass " << classDeclName << " in " << pathToSource;
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     const auto *pf = debugInfoPlugin_.GetDebugInfoStorage()->GetPandaFile(pathToSource.Utf8());
-    ASSERT(pf);
+    ES2PANDA_ASSERT(pf);
 
     // NOTE: may cache the created `ClassDataAccessor`.
     auto cda = panda_file::ClassDataAccessor(*pf, classId);
@@ -110,7 +110,7 @@ ir::ClassDeclaration *DebugInfoDeserializer::CreateClassDeclaration(util::String
 varbinder::Variable *DebugInfoDeserializer::CreateIrLocalVariable(
     ir::Identifier *ident, const panda_file::LocalVariableTable &localVariableTable, size_t bytecodeOffset)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
 
     auto typedVarIter = localVariableTable.end();
     uint32_t startOffset = 0;
@@ -134,30 +134,30 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalVariable(parser::Progr
                                                                    util::StringView pathToSource,
                                                                    util::StringView varDeclName)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     auto *debugInfoStorage = debugInfoPlugin_.GetDebugInfoStorage();
     auto *checkHelper = debugInfoPlugin_.GetIrCheckHelper();
 
     const auto *pf = debugInfoStorage->GetPandaFile(pathToSource.Utf8());
-    ASSERT(pf);
+    ES2PANDA_ASSERT(pf);
 
     varbinder::Variable *var = nullptr;
 
     auto *cda = debugInfoStorage->GetGlobalClassAccessor(pathToSource.Utf8());
     cda->EnumerateFields([program, varDeclName, pf, &var, checkHelper](panda_file::FieldDataAccessor &fda) {
         // All ETSGLOBAL fields must be static.
-        ASSERT(fda.IsStatic());
+        ES2PANDA_ASSERT(fda.IsStatic());
 
         const char *name = utf::Mutf8AsCString(pf->GetStringData(fda.GetNameId()).data);
         if (!varDeclName.Is(name)) {
             return;
         }
         // Must be unique within global variables.
-        ASSERT(var == nullptr);
+        ES2PANDA_ASSERT(var == nullptr);
 
         auto *typeNode = helpers::PandaTypeToTypeNode(*pf, fda, checkHelper->GetChecker());
-        ASSERT(typeNode);
+        ES2PANDA_ASSERT(typeNode);
 
         // Global variable is found - add it into source module's global class properties.
         auto modFlags = helpers::GetModifierFlags(fda, true) | ir::ModifierFlags::EXPORT;
@@ -178,7 +178,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalMethods(ArenaVector<ir
                                                                   util::StringView pathToSource,
                                                                   util::StringView methodDeclName)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     varbinder::Variable *var = nullptr;
 
@@ -200,8 +200,8 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalMethods(ArenaVector<ir
 
         // Sanity checks.
         auto *methodVar = method->AsClassElement()->Value()->AsFunctionExpression()->Function()->Id()->Variable();
-        ASSERT(methodVar != nullptr);
-        ASSERT(var == nullptr || var == methodVar);
+        ES2PANDA_ASSERT(methodVar != nullptr);
+        ES2PANDA_ASSERT(var == nullptr || var == methodVar);
         var = methodVar;
     });
 
@@ -211,7 +211,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalMethods(ArenaVector<ir
 varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *ident, RegisterNumber regNumber,
                                                                const std::string &typeSignature)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
 
     auto *checkHelper = debugInfoPlugin_.GetIrCheckHelper();
     auto *varBinder = debugInfoPlugin_.GetETSBinder();
@@ -228,11 +228,15 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
     auto statementScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, topStatement->Scope());
 
     parser::Program p(checker->Allocator(), varBinder);
-    auto parser = parser::ETSParser(&p, varBinder->GetContext()->config->options->CompilerOptions(),
-                                    parser::ParserStatus::NO_OPTS);
+    auto parser = parser::ETSParser(&p, *varBinder->GetContext()->config->options,
+                                    *varBinder->GetContext()->diagnosticEngine, parser::ParserStatus::NO_OPTS);
 
     auto *varDecl = parser.CreateFormattedStatement(varDeclSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
-    ASSERT(varDecl != nullptr);
+
+    // NOTE(kaskov): #23399 It is temporary solution, we clear SourcePosition in generated code
+    compiler::SetSourceRangesRecursively(varDecl, lexer::SourceRange());
+
+    ES2PANDA_ASSERT(varDecl != nullptr);
     varDecl->SetParent(topStatement);
     // Declaration will be placed at start of current scope.
     // Can't insert right away until block's statements iteration ends.
@@ -243,14 +247,18 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
     auto varUpdateSource = GetVarUpdateSourceCode(identName, regNumber, typeId);
 
     auto *varUpdate = parser.CreateFormattedStatement(varUpdateSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
-    ASSERT(varUpdate != nullptr);
+
+    // NOTE(kaskov): #23399 It is temporary solution, we clear SourcePosition in generated code
+    compiler::SetSourceRangesRecursively(varUpdate, lexer::SourceRange());
+
+    ES2PANDA_ASSERT(varUpdate != nullptr);
     varUpdate->SetParent(topStatement);
     // Can't insert right away until block's statements iteration ends.
     debugInfoPlugin_.RegisterPrologueEpilogue<false>(topStatement, varUpdate);
     checkHelper->CheckLocalEntity(varUpdate);
 
     // Local variables are not registered, as they can be found in local scope.
-    ASSERT(varDecl->AsVariableDeclaration()->Declarators().size() == 1);
+    ES2PANDA_ASSERT(varDecl->AsVariableDeclaration()->Declarators().size() == 1);
     return varDecl->AsVariableDeclaration()->Declarators()[0]->Id()->Variable();
 }
 

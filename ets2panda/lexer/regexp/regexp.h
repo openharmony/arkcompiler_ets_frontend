@@ -49,7 +49,7 @@ struct RegExp {
 
 class RegExpParser {
 public:
-    explicit RegExpParser(const RegExp &re, ArenaAllocator *allocator, const parser::ParserImpl &parser);
+    explicit RegExpParser(const RegExp &re, ArenaAllocator *allocator, parser::ParserImpl *parser);
     void ParsePattern();
 
 private:
@@ -102,7 +102,7 @@ private:
     uint32_t capturingGroupCount_ {};
     std::unordered_set<util::StringView> groupNames_;
     std::unordered_set<util::StringView> backReferences_;
-    const es2panda::parser::ParserImpl &parser_;
+    es2panda::parser::ParserImpl *parser_;
 };
 }  // namespace ark::es2panda::lexer
 

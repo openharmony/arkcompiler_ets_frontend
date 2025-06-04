@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,16 +18,7 @@
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/regScope.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/objectExpression.h"
-
 #include "checker/TSchecker.h"
-#include "checker/ts/destructuringContext.h"
-#include "checker/ets/typeRelationContext.h"
 
 namespace ark::es2panda::ir {
 
@@ -121,12 +112,12 @@ void AssignmentExpression::Dump(ir::AstDumper *dumper) const
 
 void AssignmentExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(left_);
+    ES2PANDA_ASSERT(left_);
     left_->Dump(dumper);
     dumper->Add(" ");
     dumper->Add(TokenToString(operator_));
     dumper->Add(" ");
-    ASSERT(right_);
+    ES2PANDA_ASSERT(right_);
     right_->Dump(dumper);
 }
 
@@ -153,9 +144,9 @@ checker::Type *AssignmentExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 AssignmentExpression::AssignmentExpression([[maybe_unused]] Tag const tag, AssignmentExpression const &other,
@@ -177,16 +168,13 @@ AssignmentExpression *AssignmentExpression::Clone(ArenaAllocator *const allocato
 {
     auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<AssignmentExpression>(Tag {}, *this, left, right);
 
-    if (auto *const clone = allocator->New<AssignmentExpression>(Tag {}, *this, left, right); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

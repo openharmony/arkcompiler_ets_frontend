@@ -41,6 +41,7 @@ public:
     const util::StringView &GetAbsolutePath() const;
     const util::StringView &GetExtension() const;
     const util::StringView &GetFileName() const;
+    const util::StringView &GetFileNameWithExtension() const;
     const util::StringView &GetParentFolder() const;
     const util::StringView &GetAbsoluteParentFolder() const;
     constexpr static char GetPathDelimiter()
@@ -55,6 +56,7 @@ private:
     util::StringView basePath_ {};
     util::StringView absolutePath_ {};
     util::StringView fileName_ {};
+    util::StringView fileNameWithExtension_ {};
     util::StringView fileExtension_ {};
     util::StringView parentFolder_ {};
     util::StringView absoluteParentFolder_ {};
@@ -65,6 +67,7 @@ private:
     void InitializeParentFolder();
     void InitializeAbsoluteParentFolder();
     void InitializeFileName();
+    void InitializeFileNameWithExtension();
     void InitializeFileExtension();
 };
 }  // namespace ark::es2panda::util

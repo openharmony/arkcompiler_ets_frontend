@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,10 +29,17 @@
 namespace ark::es2panda::ir {
 void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
+        }
+    }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 
@@ -58,7 +65,11 @@ void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb, std::s
 
 void TSTypeAliasDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
+        cb(it);
+    }
+
+    for (auto *it : Annotations()) {
         cb(it);
     }
 
@@ -77,6 +88,7 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeAliasDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"id", id_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())},
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
@@ -84,7 +96,11 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
 
 void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(id_);
+    ES2PANDA_ASSERT(id_);
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     dumper->Add("type ");
     id_->Dump(dumper);
     if (typeParams_ != nullptr) {
@@ -95,7 +111,7 @@ void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
     dumper->Add(" = ");
     if (id_->IsAnnotatedExpression()) {
         auto type = TypeAnnotation();
-        ASSERT(type);
+        ES2PANDA_ASSERT(type);
         type->Dump(dumper);
     }
     dumper->Add(";");
@@ -117,9 +133,9 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::TSChecker
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 }  // namespace ark::es2panda::ir

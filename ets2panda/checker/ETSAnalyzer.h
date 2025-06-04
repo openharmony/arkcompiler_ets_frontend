@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,13 +43,14 @@ public:
     void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                          Type *leftType) const;
+    [[nodiscard]] checker::Type *ReturnTypeForStatement([[maybe_unused]] const ir::Statement *const st) const;
 
 private:
     ETSChecker *GetETSChecker() const;
     void CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *&calleeObj) const;
     void CheckMethodModifiers(ir::MethodDefinition *node) const;
-    checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                         bool isFunctionalInterface, bool isUnionTypeWithFunctionalInterface) const;
+    checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
+                                         checker::Type *calleeType) const;
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
     checker::Type *GetCallExpressionReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
@@ -60,24 +61,9 @@ private:
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;
     void CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const;
-    checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
-    {
-        checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
-        if (calleeType->IsTypeError()) {
-            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
-            return checker->GlobalTypeError();
-        }
 
-        if (!calleeType->IsETSObjectType()) {
-            checker->LogTypeError("This expression is not constructible.", expr->Start());
-            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
-            return checker->GlobalTypeError();
-        }
-
-        return calleeType;
-    }
-
-    checker::Type *CheckEnumMemberExpression(ETSEnumType *const baseType, ir::MemberExpression *const expr) const;
+    checker::Type *ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
+                                                     ir::MemberExpression *expr) const;
 
     void CheckVoidTypeExpression(ETSChecker *checker, const ir::Expression *expr) const
     {
@@ -92,10 +78,10 @@ private:
                 return;
             }
         }
-        bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement() ||
-                          parent->IsETSLaunchExpression() || parent->IsCallExpression();
+        bool acceptVoid =
+            parent->IsExpressionStatement() || parent->IsReturnStatement() || parent->IsETSLaunchExpression();
         if (!acceptVoid) {
-            checker->LogTypeError({"Cannot use type 'void' as value. "}, expr->Start());
+            checker->LogError(diagnostic::VOID_VALUE, {}, expr->Start());
         }
     }
 };

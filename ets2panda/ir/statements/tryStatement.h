@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,7 +60,7 @@ public:
           finalizer_(finalizer),
           finalizerInsertions_(catchClauses_.get_allocator())
     {
-        ASSERT(finalizerInsertionsLabelPair.size() == finalizerInsertionsStatement.size());
+        ES2PANDA_ASSERT(finalizerInsertionsLabelPair.size() == finalizerInsertionsStatement.size());
 
         for (uint64_t i = 0; i < finalizerInsertionsLabelPair.size(); i++) {
             finalizerInsertions_.push_back(
@@ -68,6 +68,7 @@ public:
         }
     }
 
+    explicit TryStatement(TryStatement const &other, ArenaAllocator *allocator);
     friend class checker::TSAnalyzer;
     friend class checker::ETSAnalyzer;
     friend class compiler::JSCompiler;
@@ -120,12 +121,14 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] TryStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     BlockStatement *block_;

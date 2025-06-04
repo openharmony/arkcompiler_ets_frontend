@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,12 +35,6 @@ public:
         return *this;
     }
 
-    ETSNewClassInstanceExpressionBuilder &SetClassDefinition(ir::ClassDefinition *classDef)
-    {
-        classDef_ = classDef;
-        return *this;
-    }
-
     ETSNewClassInstanceExpressionBuilder &AddArgument(ir::Expression *argument)
     {
         arguments_.emplace_back(argument);
@@ -49,14 +43,13 @@ public:
 
     ETSNewClassInstanceExpression *Build()
     {
-        auto *node = AllocNode(typeReference_, std::move(arguments_), classDef_);
+        auto *node = AllocNode(typeReference_, std::move(arguments_));
         return node;
     }
 
 private:
     ir::Expression *typeReference_ = nullptr;
     ArenaVector<ir::Expression *> arguments_;
-    ir::ClassDefinition *classDef_ = nullptr;
 };
 
 }  // namespace ark::es2panda::ir

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,12 +60,14 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] WhileStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     Expression *test_;

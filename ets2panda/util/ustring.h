@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_UTIL_INCLUDE_USTRING_H
 #define ES2PANDA_UTIL_INCLUDE_USTRING_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "utils/arena_containers.h"
 
 #include <cstddef>
@@ -58,6 +58,16 @@ public:
     bool operator>(const StringView &rhs) const noexcept
     {
         return sv_ > rhs.sv_;
+    }
+
+    bool operator<=(const StringView &rhs) const noexcept
+    {
+        return sv_ <= rhs.sv_;
+    }
+
+    bool operator>=(const StringView &rhs) const noexcept
+    {
+        return sv_ >= rhs.sv_;
     }
 
     int Compare(const StringView &other) const noexcept
@@ -103,7 +113,7 @@ public:
         return sv_.empty();
     }
 
-    const std::string_view &Utf8() const noexcept
+    std::string_view Utf8() const noexcept
     {
         return sv_;
     }
@@ -309,7 +319,7 @@ public:
         return *this;
     }
 
-    util::UString &Append(const StringView &other) noexcept
+    util::UString &Append(StringView other) noexcept
     {
         if (str_ == nullptr) {
             Alloc();
@@ -317,6 +327,11 @@ public:
 
         *str_ += other.Utf8();
         return *this;
+    }
+
+    util::UString &Append(std::string_view other) noexcept
+    {
+        return Append(StringView(other));
     }
 
     util::UString &Append(const char *other) noexcept

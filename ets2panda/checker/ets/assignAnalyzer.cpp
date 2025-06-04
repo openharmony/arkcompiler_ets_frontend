@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,7 +39,6 @@
 #include "ir/statements/continueStatement.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/statements/tryStatement.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/arrowFunctionExpression.h"
@@ -142,7 +141,7 @@ Set &Set::AndSet(const Set &xs)
     std::set<int> res;
     std::set_intersection(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(),
                           std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -150,7 +149,7 @@ Set &Set::OrSet(const Set &xs)
 {
     std::set<int> res;
     std::set_union(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(), std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -159,7 +158,7 @@ Set &Set::DiffSet(const Set &xs)
     std::set<int> res;
     std::set_difference(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(),
                         std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -186,16 +185,9 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     globalClass_ = program->GlobalClass();
 
     AnalyzeClassDef(globalClass_);
-    globalClassIsVisited_ = true;
 
     firstNonGlobalAdr_ = nextAdr_;
-
     AnalyzeNodes(node);
-
-    if (numErrors_ > 0) {
-        checker_->LogTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
-                               node->Start());
-    }
 }
 
 void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
@@ -204,7 +196,7 @@ void AssignAnalyzer::Warning(const std::string_view message, const lexer::Source
     checker_->Warning(message, pos);
 }
 
-void AssignAnalyzer::Warning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void AssignAnalyzer::Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
     checker_->ReportWarning(list, pos);
@@ -217,9 +209,7 @@ void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeNode(const ir::AstNode *node)
 {
-    if (node == nullptr) {
-        return;
-    }
+    ES2PANDA_ASSERT(node != nullptr);
 
     // NOTE(pantos) these are dummy methods to conform the CI's method size and complexity requirements
     if (AnalyzeStmtNode1(node) || AnalyzeStmtNode2(node) || AnalyzeExprNode1(node) || AnalyzeExprNode2(node)) {
@@ -236,7 +226,9 @@ void AssignAnalyzer::AnalyzeNode(const ir::AstNode *node)
             break;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
-            AnalyzeClassDef(node->AsClassDefinition());
+            if (node->AsClassDefinition() != globalClass_) {
+                AnalyzeClassDef(node->AsClassDefinition());
+            }
             break;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
@@ -328,10 +320,6 @@ bool AssignAnalyzer::AnalyzeStmtNode2(const ir::AstNode *node)
             AnalyzeThrow(node->AsThrowStatement());
             break;
         }
-        case ir::AstNodeType::ASSERT_STATEMENT: {
-            AnalyzeAssert(node->AsAssertStatement());
-            break;
-        }
         default:
             return false;
     }
@@ -401,10 +389,7 @@ bool AssignAnalyzer::AnalyzeExprNode2(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeStat(const ir::AstNode *node)
 {
-    if (node == nullptr) {
-        return;
-    }
-
+    ES2PANDA_ASSERT(node != nullptr);
     AnalyzeNode(node);
 }
 
@@ -434,10 +419,6 @@ void AssignAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *classDecl)
 
 void AssignAnalyzer::AnalyzeClassDef(const ir::ClassDefinition *classDef)
 {
-    if (classDef == globalClass_ && globalClassIsVisited_) {
-        return;
-    }
-
     SetOldPendingExits(PendingExits());
 
     ScopeGuard save(firstAdr_, nextAdr_, classDef_, classFirstAdr_);
@@ -506,12 +487,12 @@ void AssignAnalyzer::ProcessClassDefStaticFields(const ir::ClassDefinition *clas
             (it->IsStatic() && it->IsMethodDefinition() &&
              it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD))) {
             AnalyzeNodes(it);
-            CheckPendingExits(false);
+            ClearPendingExits();
         }
     }
 
     // verify all static const fields got initailized
-    if (classDef != globalClass_) {
+    if (!classDef->IsModule()) {
         for (int i = firstAdr_; i < nextAdr_; i++) {
             const ir::AstNode *var = varDecls_[i];
             if (var->IsStatic() && (var->IsConst() || CHECK_ALL_PROPERTIES)) {
@@ -583,6 +564,9 @@ void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     ScopeGuard save(firstAdr_, nextAdr_, returnAdr_, isInitialConstructor_);
 
+    hasTryFinallyBlock_ = func->IsAnyChild([](ir::AstNode *ast) {
+        return (ast->Type() == ir::AstNodeType::TRY_STATEMENT && ast->AsTryStatement()->FinallyBlock() != nullptr);
+    });
     isInitialConstructor_ = IsInitialConstructor(methodDef);
     if (!isInitialConstructor_) {
         firstAdr_ = nextAdr_;
@@ -599,10 +583,10 @@ void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
         }
     }
 
-    CheckPendingExits(true);
+    CheckPendingExits();
 
-    inits_ = initsPrev;
-    uninits_ = uninitsPrev;
+    inits_ = std::move(initsPrev);
+    uninits_ = std::move(uninitsPrev);
 }
 
 void AssignAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *varDef)
@@ -611,7 +595,7 @@ void AssignAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *varDef)
         NewVar(var);
 
         if (var->Init() != nullptr) {
-            AnalyzeNode(var->Init());
+            AnalyzeExpr(var->Init());
             LetInit(var);
         }
     }
@@ -649,8 +633,8 @@ void AssignAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhileStmt)
         uninits_ = uninitsEntry.AndSet(uninitsWhenTrue_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(doWhileStmt);
 }
@@ -688,8 +672,8 @@ void AssignAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
         uninits_ = uninitsEntry.AndSet(uninits_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(whileStmt);
 }
@@ -698,7 +682,9 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 {
     ScopeGuard save(nextAdr_);
 
-    AnalyzeNode(forStmt->Init());
+    if (forStmt->Init() != nullptr) {
+        AnalyzeNode(forStmt->Init());
+    }
 
     Set initsSkip {};
     Set uninitsSkip {};
@@ -731,7 +717,9 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 
         ResolveContinues(forStmt);
 
-        AnalyzeNode(forStmt->Update());
+        if (forStmt->Update() != nullptr) {
+            AnalyzeNode(forStmt->Update());
+        }
 
         if (prevErrors != numErrors_ || phase == LOOP_PHASES || uninitsEntry.DiffSet(uninits_).Next(firstAdr_) == -1) {
             break;
@@ -740,8 +728,8 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
         uninits_ = uninitsEntry.AndSet(uninits_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(forStmt);
 }
@@ -783,7 +771,7 @@ void AssignAnalyzer::AnalyzeForOfLoop(const ir::ForOfStatement *forOfStmt)
     }
 
     inits_ = initsStart;
-    uninits_ = uninitsStart.AndSet(uninits_);
+    uninits_ = std::move(uninitsStart.AndSet(uninits_));
 
     ResolveBreaks(forOfStmt);
 }
@@ -800,10 +788,10 @@ void AssignAnalyzer::AnalyzeIf(const ir::IfStatement *ifStmt)
     AnalyzeStat(ifStmt->Consequent());
 
     if (ifStmt->Alternate() != nullptr) {
-        Set initsAfterThen = inits_;
-        Set uninitsAfterThen = uninits_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        Set initsAfterThen = std::move(inits_);
+        Set uninitsAfterThen = std::move(uninits_);
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeStat(ifStmt->Alternate());
 
@@ -860,7 +848,7 @@ void AssignAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switchStmt)
             }
             for (auto *var : stmt->AsVariableDeclaration()->Declarators()) {
                 NodeId adr = GetNodeId(var);
-                ASSERT(adr >= 0);
+                ES2PANDA_ASSERT(adr >= 0);
                 initsSwitch.Excl(adr);
                 uninitsSwitch.Incl(adr);
             }
@@ -912,7 +900,7 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
     }
 
     if (tryStmt->FinallyBlock() != nullptr) {
-        inits_ = initsTry;
+        inits_ = std::move(initsTry);
         uninits_ = uninitsTry_;
 
         PendingExitsVector exits = PendingExits();
@@ -930,8 +918,8 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
             inits_.OrSet(initsEnd);
         }
     } else {
-        inits_ = initsEnd;
-        uninits_ = uninitsEnd;
+        inits_ = std::move(initsEnd);
+        uninits_ = std::move(uninitsEnd);
 
         PendingExitsVector exits = PendingExits();
         SetPendingExits(prevPendingExits);
@@ -946,18 +934,20 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
 
 void AssignAnalyzer::AnalyzeBreak(const ir::BreakStatement *breakStmt)
 {
-    RecordExit(AssignPendingExit(breakStmt, inits_, uninits_));
+    RecordExit(AssignPendingExit(breakStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeContinue(const ir::ContinueStatement *contStmt)
 {
-    RecordExit(AssignPendingExit(contStmt, inits_, uninits_));
+    RecordExit(AssignPendingExit(contStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeReturn(const ir::ReturnStatement *retStmt)
 {
-    AnalyzeNode(retStmt->Argument());
-    RecordExit(AssignPendingExit(retStmt, inits_, uninits_));
+    if (retStmt->Argument() != nullptr) {
+        AnalyzeNode(retStmt->Argument());
+    }
+    RecordExit(AssignPendingExit(retStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throwStmt)
@@ -966,32 +956,12 @@ void AssignAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throwStmt)
     MarkDead();
 }
 
-void AssignAnalyzer::AnalyzeAssert(const ir::AssertStatement *assertStmt)
-{
-    Set initsExit = inits_;
-    Set uninitsExit = uninits_;
-
-    AnalyzeCond(assertStmt->Test());
-
-    uninitsExit.AndSet(uninitsWhenTrue_);
-
-    if (assertStmt->Second() != nullptr) {
-        inits_ = initsWhenFalse_;
-        uninits_ = uninitsWhenFalse_;
-        AnalyzeExpr(assertStmt->Second());
-    }
-
-    inits_ = initsExit;
-    uninits_ = uninitsExit;
-}
-
 void AssignAnalyzer::AnalyzeExpr(const ir::AstNode *node)
 {
-    if (node != nullptr) {
-        AnalyzeNode(node);
-        if (inits_.IsReset()) {
-            Merge();
-        }
+    ES2PANDA_ASSERT(node != nullptr);
+    AnalyzeNode(node);
+    if (inits_.IsReset()) {
+        Merge();
     }
 }
 
@@ -1004,7 +974,7 @@ void AssignAnalyzer::AnalyzeExprs(const ArenaVector<ir::Expression *> &exprs)
 
 void AssignAnalyzer::AnalyzeCond(const ir::AstNode *node)
 {
-    ASSERT(node->IsExpression());
+    ES2PANDA_ASSERT(node->IsExpression());
     const ir::Expression *expr = node->AsExpression();
 
     if (auto etype = expr->TsType();
@@ -1068,9 +1038,7 @@ void AssignAnalyzer::AnalyzeId(const ir::Identifier *id)
         }
     }
 
-    if (id->Variable() != nullptr) {
-        CheckInit(id);
-    }
+    CheckInit(id);
 }
 
 static bool IsIdentOrThisDotIdent(const ir::AstNode *node)
@@ -1103,7 +1071,7 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
     inits_ = initsWhenTrue_;
     uninits_ = uninitsWhenTrue_;
 
-    ASSERT(condExpr->Consequent()->TsType() && condExpr->Alternate()->TsType());
+    ES2PANDA_ASSERT(condExpr->Consequent()->TsType() && condExpr->Alternate()->TsType());
 
     if (condExpr->Consequent()->TsType()->IsETSBooleanType() && condExpr->Alternate()->TsType()->IsETSBooleanType()) {
         AnalyzeCond(condExpr->Consequent());
@@ -1112,8 +1080,8 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
         Set initsAfterThenWhenFalse = initsWhenFalse_;
         Set uninitsAfterThenWhenTrue = uninitsWhenTrue_;
         Set uninitsAfterThenWhenFalse = uninitsWhenFalse_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeCond(condExpr->Alternate());
 
@@ -1126,8 +1094,8 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
 
         Set initsAfterThen = inits_;
         Set uninitsAfterThen = uninits_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeExpr(condExpr->Alternate());
 
@@ -1156,7 +1124,6 @@ void AssignAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *ne
 {
     AnalyzeExpr(newClass->GetTypeRef());
     AnalyzeExprs(newClass->GetArguments());
-    AnalyzeNode(newClass->ClassDefinition());
 }
 
 void AssignAnalyzer::AnalyzeUnaryExpr(const ir::UnaryExpression *unaryExpr)
@@ -1165,12 +1132,12 @@ void AssignAnalyzer::AnalyzeUnaryExpr(const ir::UnaryExpression *unaryExpr)
 
     switch (unaryExpr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            Set t = initsWhenFalse_;
-            initsWhenFalse_ = initsWhenTrue_;
-            initsWhenTrue_ = t;
-            t = uninitsWhenFalse_;
-            uninitsWhenFalse_ = uninitsWhenTrue_;
-            uninitsWhenTrue_ = t;
+            Set ti = std::move(initsWhenFalse_);
+            initsWhenFalse_ = std::move(initsWhenTrue_);
+            initsWhenTrue_ = std::move(ti);
+            Set tu = std::move(uninitsWhenFalse_);
+            uninitsWhenFalse_ = std::move(uninitsWhenTrue_);
+            uninitsWhenTrue_ = std::move(tu);
             break;
         }
         default: {
@@ -1237,7 +1204,7 @@ util::StringView AssignAnalyzer::GetVariableType(const ir::AstNode *node) const
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return "variable";
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1249,7 +1216,7 @@ util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return node->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1321,10 +1288,30 @@ varbinder::Variable *AssignAnalyzer::GetBoundVariable(const ir::AstNode *node)
     } else if (node->IsVariableDeclarator()) {
         ret = node->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return ret;
+}
+
+static const ir::AstNode *CheckInterfaceProp(const ark::es2panda::ir::AstNode *const node,
+                                             const ir::ClassDefinition *classDef)
+{
+    util::StringView methodName = node->AsMethodDefinition()->Key()->AsIdentifier()->Name();
+    // the property from interface should start with <property> to distinguish from its getter/setter.
+    std::string interfaceProp = std::string("<property>") + std::string(methodName.Utf8());
+    for (const auto it : classDef->Body()) {
+        // Check if there is corresponding class property in the same class.
+        if (it->IsClassProperty() && !it->IsStatic()) {
+            const auto *prop = it->AsClassProperty();
+            auto *propIdentifier = prop->Key()->AsIdentifier();
+            if (propIdentifier->Name().Is(interfaceProp)) {
+                // Use property node as declNode to ensure obtaining NodeId and add it to inits.
+                return prop;
+            }
+        }
+    }
+    return nullptr;
 }
 
 const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
@@ -1343,11 +1330,8 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
             }
         }
     } else if (node->IsIdentifier()) {
-        const ir::Identifier *id = node->AsIdentifier();
-        if (id->Variable() != nullptr) {
-            if (id->Variable()->Declaration() != nullptr) {
-                ret = id->Variable()->Declaration()->Node();
-            }
+        if (auto *const variable = node->Variable(); variable != nullptr) {
+            ret = variable->Declaration()->Node();
         }
     }
 
@@ -1358,12 +1342,21 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
         }
     }
 
+    if (ret != nullptr) {
+        // if declNode is a getter/setter method, actual node initialized should be a class proterty node.
+        if ((ret->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
+            if (const auto *interfaceProp = CheckInterfaceProp(ret, classDef_); interfaceProp != nullptr) {
+                ret = interfaceProp;
+            }
+        }
+    }
+
     return ret;
 }
 
 bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     const checker::Type *type = nullptr;
     bool isNonReadonlyField = false;
@@ -1373,17 +1366,16 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         isNonReadonlyField = !node->IsReadonly();  // NOTE(pantos) readonly is true, const is not set?
     } else if (node->IsVariableDeclarator()) {
         varbinder::Variable *variable = GetBoundVariable(node);
-        if (variable != nullptr) {
-            type = variable->TsType();
-        }
+        ES2PANDA_ASSERT(variable != nullptr);
+        type = variable->TsType();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return type != nullptr &&
            (type->IsETSPrimitiveType() ||
-            (type->PossiblyETSNullish() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
-                                            (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
@@ -1450,11 +1442,6 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             return;
         }
 
-        if (declNode->Parent() == globalClass_) {
-            // NOTE(pantos) dont check global variable accesses
-            return;
-        }
-
         if (declNode->Parent() != classDef_) {
             // property of an other class
             return;
@@ -1473,12 +1460,11 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 
             std::stringstream ss;
             if (node->IsClassProperty()) {
-                ss << "Property '" << name << "' might not have been initialized.";
+                checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
                 ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
+                Warning(ss.str(), pos);
             }
-
-            Warning(ss.str(), pos);
         }
     }
 }
@@ -1501,17 +1487,13 @@ void AssignAnalyzer::Merge()
     uninits_ = uninitsWhenFalse_.AndSet(uninitsWhenTrue_);
 }
 
-void AssignAnalyzer::CheckPendingExits(bool inMethod)
+void AssignAnalyzer::CheckPendingExits()
 {
-    PendingExitsVector exits = PendingExits();
-
-    for (auto &it : exits) {
-        // NOTE(pantos) pending exits should be refactored, break/continue may stay in this
-        if (inMethod && !it.Node()->IsReturnStatement()) {
+    for (const auto &it : PendingExits()) {
+        if (!it.Node()->IsReturnStatement()) {
             continue;
         }
-
-        if (inMethod && isInitialConstructor_) {
+        if (isInitialConstructor_) {
             inits_ = it.exitInits_;
 
             for (int i = firstAdr_; i < nextAdr_; i++) {
@@ -1519,7 +1501,6 @@ void AssignAnalyzer::CheckPendingExits(bool inMethod)
             }
         }
     }
-
     ClearPendingExits();
 }
 

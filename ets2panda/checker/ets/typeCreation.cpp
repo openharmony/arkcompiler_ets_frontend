@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,30 +13,13 @@
  * limitations under the License.
  */
 
-#include <functional>
 #include "checker/ETSchecker.h"
 
-#include "checker/types/globalTypesHolder.h"
-#include "checker/types/ets/byteType.h"
-#include "checker/types/ets/charType.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
+#include "checker/types/ets/etsEnumType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
-#include "checker/types/ets/etsDynamicType.h"
-#include "checker/types/ets/etsStringType.h"
-#include "checker/types/ets/etsUnionType.h"
-#include "checker/types/ets/shortType.h"
-#include "compiler/lowering/ets/enumLowering.h"
-#include "generated/signatures.h"
-#include "ir/base/classDefinition.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsScript.h"
-#include "ir/expressions/identifier.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsEnumMember.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "checker/ets/boxingConverter.h"
-#include "util/helpers.h"
-#include "checker/types/ts/bigintType.h"
+#include "checker/types/globalTypesHolder.h"
+#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::checker {
 ByteType *ETSChecker::CreateByteType(int8_t value)
@@ -115,9 +98,9 @@ ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
     return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation(), value);
 }
 
-ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
+ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePolluting)
 {
-    auto res = arrayTypes_.find(elementType);
+    auto res = arrayTypes_.find({elementType, isCachePolluting});
     if (res != arrayTypes_.end()) {
         return res->second;
     }
@@ -126,179 +109,14 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
 
     std::stringstream ss;
     arrayType->ToAssemblerTypeWithRank(ss);
-    arrayType->SetAssemblerName(util::UString(ss.str(), Allocator()).View());
+    // arrayType->SetAssemblerName(util::UString(ss.str(), Allocator()).View());
 
-    auto it = arrayTypes_.insert({elementType, arrayType});
+    auto it = arrayTypes_.insert({{elementType, isCachePolluting}, arrayType});
     if (it.second && (!elementType->IsTypeParameter() || !elementType->IsETSTypeParameter())) {
         CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
 
     return arrayType;
-}
-
-namespace {
-[[nodiscard]] checker::ETSFunctionType *MakeProxyFunctionType(
-    checker::ETSChecker *const checker, const util::StringView &name,
-    const std::initializer_list<varbinder::LocalVariable *> &params, ir::ScriptFunction *const globalFunction,
-    checker::Type *const returnType)
-{
-    auto *const signatureInfo = checker->CreateSignatureInfo();
-    signatureInfo->params.insert(signatureInfo->params.end(), params);
-    signatureInfo->minArgCount = signatureInfo->params.size();
-
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, name);
-    signature->SetFunction(globalFunction);
-    signature->AddSignatureFlag(checker::SignatureFlags::PROXY);
-
-    return checker->CreateETSFunctionType(signature, name);
-}
-
-[[nodiscard]] checker::Signature *MakeGlobalSignature(checker::ETSChecker *const checker,
-                                                      ir::ScriptFunction *const function,
-                                                      checker::Type *const returnType)
-{
-    auto *const signatureInfo = checker->CreateSignatureInfo();
-    signatureInfo->params.reserve(function->Params().size());
-    for (const auto *const param : function->Params()) {
-        signatureInfo->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
-    }
-    signatureInfo->minArgCount = signatureInfo->params.size();
-
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, function);
-    signature->AddSignatureFlag(checker::SignatureFlags::PUBLIC | checker::SignatureFlags::STATIC);
-    function->SetSignature(signature);
-
-    return signature;
-}
-
-void SetTypesForScriptFunction(checker::ETSChecker *const checker, ir::ScriptFunction *function)
-{
-    for (auto param : function->Params()) {
-        ASSERT(param->IsETSParameterExpression());
-        auto paramType = param->AsETSParameterExpression()->TypeAnnotation()->Check(checker);
-        param->AsETSParameterExpression()->Ident()->SetTsType(paramType);
-        param->AsETSParameterExpression()->Ident()->Variable()->SetTsType(paramType);
-        param->SetTsType(paramType);
-    }
-}
-
-}  // namespace
-
-ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
-                                           bool buildPorxyParam, Type *returnType, bool buildProxy)
-{
-    auto function = FindFunction(enumDecl, name);
-    if (function == nullptr) {
-        return {};
-    }
-
-    SetTypesForScriptFunction(this, function);
-
-    if (buildPorxyParam) {
-        return {MakeGlobalSignature(this, function, returnType),
-                MakeProxyFunctionType(
-                    this, name, {function->Params()[0]->AsETSParameterExpression()->Variable()->AsLocalVariable()},
-                    function, returnType)};
-    }
-    return {MakeGlobalSignature(this, function, returnType),
-            buildProxy ? MakeProxyFunctionType(this, name, {}, function, returnType) : nullptr};
-}
-
-[[nodiscard]] ir::ScriptFunction *ETSChecker::FindFunction(ir::TSEnumDeclaration const *const enumDecl,
-                                                           const std::string_view &name)
-{
-    if (enumDecl->BoxedClass() == nullptr) {
-        return nullptr;
-    }
-
-    for (auto m : enumDecl->BoxedClass()->Body()) {
-        if (m->IsMethodDefinition()) {
-            if (m->AsMethodDefinition()->Id()->Name() == name) {
-                return m->AsMethodDefinition()->Function();
-            }
-        }
-    }
-    return nullptr;
-}
-
-template <typename EnumType>
-EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
-{
-    static_assert(std::is_same_v<EnumType, ETSIntEnumType> || std::is_same_v<EnumType, ETSStringEnumType>);
-    SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass(),
-                                     Context().ContainingSignature());
-
-    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ASSERT(enumVar != nullptr);
-
-    checker::ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<EnumType>(enumDecl, ordinal++);
-    auto *const boxedEnumType = enumDecl->BoxedClass()->TsType();
-
-    enumType->SetVariable(enumVar);
-    enumVar->SetTsType(enumType);
-
-    auto const getNameMethod =
-        MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetGetNameMethod(getNameMethod);
-
-    auto getValueOfMethod = MakeMethod(enumDecl, ETSEnumType::GET_VALUE_OF_METHOD_NAME, true, enumType);
-    enumType->SetGetValueOfMethod(getValueOfMethod);
-
-    auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
-    enumType->SetFromIntMethod(fromIntMethod);
-
-    auto const boxedFromIntMethod =
-        MakeMethod(enumDecl, ETSEnumType::BOXED_FROM_INT_METHOD_NAME, false, boxedEnumType, false);
-    enumType->SetBoxedFromIntMethod(boxedFromIntMethod);
-
-    auto const unboxMethod = MakeMethod(enumDecl, ETSEnumType::UNBOX_METHOD_NAME, false, enumType);
-    enumType->SetUnboxMethod(unboxMethod);
-
-    auto const toStringMethod =
-        MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetToStringMethod(toStringMethod);
-
-    ETSEnumType::Method valueOfMethod = toStringMethod;
-    if (std::is_same_v<EnumType, ETSIntEnumType>) {
-        valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, false, GlobalIntType());
-    }
-    enumType->SetValueOfMethod(valueOfMethod);
-
-    auto const valuesMethod =
-        MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
-    enumType->SetValuesMethod(valuesMethod);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType = Allocator()->New<EnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-        enumLiteralType->SetVariable(memberVar);
-        memberVar->SetTsType(enumLiteralType);
-
-        enumLiteralType->SetGetNameMethod(getNameMethod);
-        enumLiteralType->SetGetValueOfMethod(getValueOfMethod);
-        enumLiteralType->SetFromIntMethod(fromIntMethod);
-        enumLiteralType->SetBoxedFromIntMethod(boxedFromIntMethod);
-        enumLiteralType->SetUnboxMethod(unboxMethod);
-        enumLiteralType->SetValueOfMethod(valueOfMethod);
-        enumLiteralType->SetToStringMethod(toStringMethod);
-        enumLiteralType->SetValuesMethod(valuesMethod);
-    }
-    return enumType;
-}
-
-ETSIntEnumType *ETSChecker::CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
-{
-    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSIntEnumType>(enumDecl);
-    enumDecl->SetTsType(etsEnumType);
-    return etsEnumType;
-}
-
-ETSStringEnumType *ETSChecker::CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
-{
-    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSStringEnumType>(enumDecl);
-    enumDecl->SetTsType(etsEnumType);
-    return etsEnumType;
 }
 
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
@@ -314,6 +132,7 @@ Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
     if (newConstituentTypes.size() == 1) {
         return newConstituentTypes[0];
     }
+
     return Allocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
 }
 
@@ -323,55 +142,87 @@ ETSTypeAliasType *ETSChecker::CreateETSTypeAliasType(util::StringView name, cons
     return Allocator()->New<ETSTypeAliasType>(this, name, declNode, isRecursive);
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
+ETSFunctionType *ETSChecker::CreateETSArrowType(Signature *signature)
 {
-    auto *funcType = Allocator()->New<ETSFunctionType>(signatures[0]->Function()->Id()->Name(), Allocator());
-
-    for (auto *it : signatures) {
-        funcType->AddCallSignature(it);
-    }
-
-    return funcType;
+    return Allocator()->New<ETSFunctionType>(this, signature);
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature)
+ETSFunctionType *ETSChecker::CreateETSMethodType(util::StringView name, ArenaVector<Signature *> &&signatures)
 {
-    return Allocator()->New<ETSFunctionType>(signature->Function()->Id()->Name(), signature, Allocator());
-}
-
-ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature, util::StringView name)
-{
-    return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
-}
-
-ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature,
-                                                   util::StringView name)
-{
-    if (func->IsDynamic()) {
-        return Allocator()->New<ETSDynamicFunctionType>(name, signature, Allocator(), func->Language());
-    }
-
-    return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
-}
-
-ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, ArenaVector<Signature *> &&signatures,
-                                                   util::StringView name)
-{
-    if (func->IsDynamic()) {
-        return Allocator()->New<ETSDynamicFunctionType>(this, name, std::move(signatures), func->Language());
-    }
-
     return Allocator()->New<ETSFunctionType>(this, name, std::move(signatures));
+}
+
+ETSFunctionType *ETSChecker::CreateETSDynamicArrowType(Signature *signature, Language lang)
+{
+    return Allocator()->New<ETSDynamicFunctionType>(this, signature, lang);
+}
+
+ETSFunctionType *ETSChecker::CreateETSDynamicMethodType(util::StringView name, ArenaVector<Signature *> &&signatures,
+                                                        Language lang)
+{
+    return Allocator()->New<ETSDynamicFunctionType>(this, name, std::move(signatures), lang);
+}
+
+static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir::ScriptFunctionFlags inFunctionFlags)
+{
+    SignatureFlags outFlags = SignatureFlags::NO_OPTS;
+
+    const auto convertModifier = [&outFlags, inModifiers](ir::ModifierFlags astFlag, SignatureFlags sigFlag) {
+        if ((inModifiers & astFlag) != 0U) {
+            outFlags |= sigFlag;
+        }
+    };
+    const auto convertFlag = [&outFlags, inFunctionFlags](ir::ScriptFunctionFlags funcFlag, SignatureFlags sigFlag) {
+        if ((inFunctionFlags & funcFlag) != 0U) {
+            outFlags |= sigFlag;
+        }
+    };
+
+    convertFlag(ir::ScriptFunctionFlags::THROWS, SignatureFlags::THROWS);
+    convertFlag(ir::ScriptFunctionFlags::RETHROWS, SignatureFlags::RETHROWS);
+
+    convertFlag(ir::ScriptFunctionFlags::CONSTRUCTOR, SignatureFlags::CONSTRUCTOR);
+    convertFlag(ir::ScriptFunctionFlags::SETTER, SignatureFlags::SETTER);
+    convertFlag(ir::ScriptFunctionFlags::GETTER, SignatureFlags::GETTER);
+
+    convertModifier(ir::ModifierFlags::ABSTRACT, SignatureFlags::ABSTRACT);
+    convertModifier(ir::ModifierFlags::PROTECTED, SignatureFlags::PROTECTED);
+    convertModifier(ir::ModifierFlags::FINAL, SignatureFlags::FINAL);
+    convertModifier(ir::ModifierFlags::STATIC, SignatureFlags::STATIC);
+    convertModifier(ir::ModifierFlags::PUBLIC, SignatureFlags::PUBLIC);
+    convertModifier(ir::ModifierFlags::PRIVATE, SignatureFlags::PRIVATE);
+    convertModifier(ir::ModifierFlags::INTERNAL, SignatureFlags::INTERNAL);
+
+    return outFlags;
 }
 
 Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func)
 {
-    return Allocator()->New<Signature>(info, returnType, func);
+    if (info == nullptr) {  // #23134
+        ES2PANDA_ASSERT(IsAnyError());
+        return nullptr;
+    }
+    auto signature = Allocator()->New<Signature>(info, returnType, func);
+    auto convertedFlag = ConvertToSignatureFlags(func->Modifiers(), func->Flags());
+    func->HasReceiver() ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION | convertedFlag)
+                        : signature->AddSignatureFlag(convertedFlag);
+    return signature;
 }
 
-Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, util::StringView internalName)
+Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff,
+                                       bool hasReceiver)
 {
-    return Allocator()->New<Signature>(info, returnType, internalName);
+    if (info == nullptr) {  // #23134
+        ES2PANDA_ASSERT(IsAnyError());
+        return nullptr;
+    }
+    auto signature = Allocator()->New<Signature>(info, returnType, nullptr);
+    signature->AddSignatureFlag(ConvertToSignatureFlags(ir::ModifierFlags::NONE, sff));
+    // synthetic arrow type signature flags
+    auto extraFlags = SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC;
+    hasReceiver ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION | extraFlags)
+                : signature->AddSignatureFlag(extraFlags);
+    return signature;
 }
 
 SignatureInfo *ETSChecker::CreateSignatureInfo()
@@ -384,168 +235,94 @@ ETSTypeParameter *ETSChecker::CreateTypeParameter()
     return Allocator()->New<ETSTypeParameter>();
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView name)
-{
-    return Allocator()->New<ETSFunctionType>(name, Allocator());
-}
-
 ETSExtensionFuncHelperType *ETSChecker::CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                          ETSFunctionType *extensionFunctionType)
 {
     return Allocator()->New<ETSExtensionFuncHelperType>(classMethodType, extensionFunctionType);
 }
 
-std::map<util::StringView, GlobalTypeId> &GetNameToTypeIdMap()
+static std::pair<util::StringView, util::StringView> GetObjectTypeDeclNames(ir::AstNode *node)
 {
-    static std::map<util::StringView, GlobalTypeId> nameToTypeId = {
-        {compiler::Signatures::BUILTIN_BIGINT_CLASS, GlobalTypeId::ETS_BIG_INT_BUILTIN},
-        {compiler::Signatures::BUILTIN_STRING_CLASS, GlobalTypeId::ETS_STRING_BUILTIN},
-        {compiler::Signatures::BUILTIN_OBJECT_CLASS, GlobalTypeId::ETS_OBJECT_BUILTIN},
-        {compiler::Signatures::BUILTIN_EXCEPTION_CLASS, GlobalTypeId::ETS_EXCEPTION_BUILTIN},
-        {compiler::Signatures::BUILTIN_ERROR_CLASS, GlobalTypeId::ETS_ERROR_BUILTIN},
-        {compiler::Signatures::BUILTIN_TYPE_CLASS, GlobalTypeId::ETS_TYPE_BUILTIN},
-        {compiler::Signatures::BUILTIN_PROMISE_CLASS, GlobalTypeId::ETS_PROMISE_BUILTIN},
-        {compiler::Signatures::BUILTIN_BOX_CLASS, GlobalTypeId::ETS_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_BOOLEAN_BOX_CLASS, GlobalTypeId::ETS_BOOLEAN_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_BYTE_BOX_CLASS, GlobalTypeId::ETS_BYTE_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_CHAR_BOX_CLASS, GlobalTypeId::ETS_CHAR_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_SHORT_BOX_CLASS, GlobalTypeId::ETS_SHORT_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_INT_BOX_CLASS, GlobalTypeId::ETS_INT_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_LONG_BOX_CLASS, GlobalTypeId::ETS_LONG_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS, GlobalTypeId::ETS_FLOAT_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_DOUBLE_BOX_CLASS, GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN},
+    if (node->IsClassDefinition()) {
+        return {node->AsClassDefinition()->Ident()->Name(), node->AsClassDefinition()->InternalName()};
+    }
+    if (node->IsTSInterfaceDeclaration()) {
+        return {node->AsTSInterfaceDeclaration()->Id()->Name(), node->AsTSInterfaceDeclaration()->InternalName()};
+    }
+    return {node->AsAnnotationDeclaration()->GetBaseName()->Name(), node->AsAnnotationDeclaration()->InternalName()};
+}
+
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic, big switch case
+static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, GlobalTypeId globalId,
+                                                        ir::AstNode *declNode, ETSObjectFlags flags)
+{
+    auto const create = [checker, declNode, flags](ETSObjectFlags addFlags = ETSObjectFlags::NO_OPTS) {
+        return checker->CreateETSObjectType(declNode, flags | addFlags);
     };
 
-    return nameToTypeId;
-}
-
-std::map<util::StringView, std::function<ETSObjectType *(const ETSChecker *)>> &GetNameToGlobalTypeMap()
-{
-    static std::map<util::StringView, std::function<ETSObjectType *(const ETSChecker *)>> nameToGlobalType = {
-        {compiler::Signatures::BUILTIN_BIGINT_CLASS, &ETSChecker::GlobalBuiltinETSBigIntType},
-        {compiler::Signatures::BUILTIN_STRING_CLASS, &ETSChecker::GlobalBuiltinETSStringType},
-        {compiler::Signatures::BUILTIN_OBJECT_CLASS, &ETSChecker::GlobalETSObjectType},
-        {compiler::Signatures::BUILTIN_EXCEPTION_CLASS, &ETSChecker::GlobalBuiltinExceptionType},
-        {compiler::Signatures::BUILTIN_ERROR_CLASS, &ETSChecker::GlobalBuiltinErrorType},
-        {compiler::Signatures::BUILTIN_TYPE_CLASS, &ETSChecker::GlobalBuiltinTypeType},
-        {compiler::Signatures::BUILTIN_PROMISE_CLASS, &ETSChecker::GlobalBuiltinPromiseType},
+    auto const setType = [checker](GlobalTypeId slotId, Type *type) {
+        auto &slot = checker->GetGlobalTypesHolder()->GlobalTypes()[helpers::ToUnderlying(slotId)];
+        if (slot == nullptr) {
+            slot = type;
+        }
+        return slot;
     };
 
-    return nameToGlobalType;
+    auto *const allocator = checker->Allocator();
+
+    switch (globalId) {
+        case GlobalTypeId::ETS_OBJECT_BUILTIN: {
+            auto *objType = setType(GlobalTypeId::ETS_OBJECT_BUILTIN, create())->AsETSObjectType();
+            auto null = checker->GlobalETSNullType();
+            auto undef = checker->GlobalETSUndefinedType();
+            setType(GlobalTypeId::ETS_NULLISH_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
+            setType(GlobalTypeId::ETS_NULLISH_TYPE, checker->CreateETSUnionType({null, undef}));
+            return objType;
+        }
+        case GlobalTypeId::ETS_STRING_BUILTIN: {
+            auto *stringObj = setType(GlobalTypeId::ETS_STRING_BUILTIN,
+                                      create(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING))
+                                  ->AsETSObjectType();
+            setType(GlobalTypeId::ETS_STRING, allocator->New<ETSStringType>(allocator, stringObj, checker->Relation()));
+            return stringObj;
+        }
+        case GlobalTypeId::ETS_BIG_INT_BUILTIN: {
+            auto *bigIntObj =
+                setType(GlobalTypeId::ETS_BIG_INT_BUILTIN, create(ETSObjectFlags::BUILTIN_BIGINT))->AsETSObjectType();
+            setType(GlobalTypeId::ETS_BIG_INT, allocator->New<ETSBigIntType>(allocator, bigIntObj));
+            return bigIntObj;
+        }
+        case GlobalTypeId::ETS_BOOLEAN_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_BOOLEAN);
+        case GlobalTypeId::ETS_BYTE_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_BYTE);
+        case GlobalTypeId::ETS_CHAR_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_CHAR);
+        case GlobalTypeId::ETS_SHORT_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_SHORT);
+        case GlobalTypeId::ETS_INT_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_INT);
+        case GlobalTypeId::ETS_LONG_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_LONG);
+        case GlobalTypeId::ETS_FLOAT_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_FLOAT);
+        case GlobalTypeId::ETS_DOUBLE_BUILTIN:
+            return create(ETSObjectFlags::BUILTIN_DOUBLE);
+        default:
+            return create();
+    }
 }
 
-std::map<util::StringView, std::function<Type *(const ETSChecker *)>> &GetNameToGlobalBoxTypeMap()
+ETSObjectType *ETSChecker::CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags)
 {
-    static std::map<util::StringView, std::function<Type *(const ETSChecker *)>> nameToGlobalBoxType = {
-        {compiler::Signatures::BUILTIN_BOX_CLASS, &ETSChecker::GlobalETSObjectType},
-        {compiler::Signatures::BUILTIN_BOOLEAN_BOX_CLASS, &ETSChecker::GlobalETSBooleanType},
-        {compiler::Signatures::BUILTIN_BYTE_BOX_CLASS, &ETSChecker::GlobalByteType},
-        {compiler::Signatures::BUILTIN_CHAR_BOX_CLASS, &ETSChecker::GlobalCharType},
-        {compiler::Signatures::BUILTIN_SHORT_BOX_CLASS, &ETSChecker::GlobalShortType},
-        {compiler::Signatures::BUILTIN_INT_BOX_CLASS, &ETSChecker::GlobalIntType},
-        {compiler::Signatures::BUILTIN_LONG_BOX_CLASS, &ETSChecker::GlobalLongType},
-        {compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS, &ETSChecker::GlobalFloatType},
-        {compiler::Signatures::BUILTIN_DOUBLE_BOX_CLASS, &ETSChecker::GlobalDoubleType},
-    };
-
-    return nameToGlobalBoxType;
-}
-
-ETSObjectType *ETSChecker::UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name)
-{
-    auto nameToGlobalBoxType = GetNameToGlobalBoxTypeMap();
-    auto nameToTypeId = GetNameToTypeIdMap();
-
-    if (nameToGlobalBoxType.find(name) != nameToGlobalBoxType.end()) {
-        std::function<Type *(const ETSChecker *)> globalType = nameToGlobalBoxType[name];
-        if (GlobalBuiltinBoxType(globalType(this)) != nullptr) {
-            return GlobalBuiltinBoxType(globalType(this));
-        }
-
-        auto id = nameToTypeId.find(name);
-        if (id != nameToTypeId.end()) {
-            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(id->second)] = objType;
-        }
+    if (LIKELY(HasStatus(CheckerStatus::BUILTINS_INITIALIZED))) {
+        return CreateETSObjectType(declNode, flags);
     }
-
-    return objType;
-}
-
-ETSObjectType *ETSChecker::UpdateGlobalType(ETSObjectType *objType, util::StringView name)
-{
-    auto nameToGlobalType = GetNameToGlobalTypeMap();
-    auto nameToTypeId = GetNameToTypeIdMap();
-
-    if (nameToGlobalType.find(name) != nameToGlobalType.end()) {
-        std::function<ETSObjectType *(const ETSChecker *)> globalType = nameToGlobalType[name];
-        if (globalType(this) != nullptr) {
-            return globalType(this);
-        }
-
-        auto id = nameToTypeId.find(name);
-        if (id != nameToTypeId.end()) {
-            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(id->second)] = objType;
-        }
-
-        if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
-            auto *nullish = CreateETSUnionType({objType, GlobalETSNullType(), GlobalETSUndefinedType()});
-            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
-            nullish = CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()});
-            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_TYPE)] = nullish;
-        }
+    auto const globalId = GetGlobalTypesHolder()->NameToId(GetObjectTypeDeclNames(declNode).first);
+    if (!globalId.has_value()) {
+        return CreateETSObjectType(declNode, flags);
     }
-
-    return objType;
-}
-
-ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode,
-                                                            ETSObjectFlags flags)
-{
-    if (name == compiler::Signatures::BUILTIN_BIGINT_CLASS) {
-        if (GlobalBuiltinETSBigIntType() != nullptr) {
-            return GlobalBuiltinETSBigIntType();
-        }
-
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BIG_INT_BUILTIN)] =
-            CreateNewETSObjectType(name, declNode, flags | ETSObjectFlags::BUILTIN_BIGINT);
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BIG_INT)] =
-            Allocator()->New<ETSBigIntType>(Allocator(), GlobalBuiltinETSBigIntType());
-
-        return GlobalBuiltinETSBigIntType();
-    }
-
-    if (name == compiler::Signatures::BUILTIN_STRING_CLASS) {
-        if (GlobalBuiltinETSStringType() != nullptr) {
-            return GlobalBuiltinETSStringType();
-        }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_STRING_BUILTIN)] =
-            CreateNewETSObjectType(name, declNode, flags | ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING);
-
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_STRING)] =
-            Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation());
-        return GlobalBuiltinETSStringType();
-    }
-
-    auto *objType = CreateNewETSObjectType(name, declNode, flags);
-    auto nameToGlobalBoxType = GetNameToGlobalBoxTypeMap();
-
-    return UpdateGlobalType(objType, name);
-}
-
-ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
-{
-    auto res = primitiveWrappers_.Wrappers().find(name);
-    if (res == primitiveWrappers_.Wrappers().end()) {
-        return CreateETSObjectTypeCheckBuiltins(name, declNode, flags);
-    }
-
-    if (res->second.first != nullptr) {
-        return res->second.first;
-    }
-
-    auto *objType = CreateNewETSObjectType(name, declNode, flags | res->second.second);
-    primitiveWrappers_.Wrappers().at(name).first = objType;
-    return objType;
+    return InitializeGlobalBuiltinObjectType(this, globalId.value(), declNode, flags);
 }
 
 std::tuple<Language, bool> ETSChecker::CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName)
@@ -573,54 +350,28 @@ std::tuple<Language, bool> ETSChecker::CheckForDynamicLang(ir::AstNode *declNode
     return std::make_tuple(lang, hasDecl);
 }
 
-ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
+ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags)
 {
-    util::StringView assemblerName = name;
-    util::StringView prefix {};
+    auto const [name, internalName] = GetObjectTypeDeclNames(declNode);
 
-    auto *containingObjType = util::Helpers::GetContainingObjectType(declNode->Parent());
-
-    if (declNode->IsClassDefinition()) {
-        if (declNode->AsClassDefinition()->IsLocal()) {
-            util::UString localName(declNode->AsClassDefinition()->LocalPrefix(), Allocator());
-            localName.Append(name);
-            assemblerName = localName.View();
+    if (declNode->IsClassDefinition() && (declNode->AsClassDefinition()->IsEnumTransformed())) {
+        if (declNode->AsClassDefinition()->IsIntEnumTransformed()) {
+            return Allocator()->New<ETSIntEnumType>(Allocator(), name, internalName, declNode, Relation());
         }
-        if (declNode->AsClassDefinition()->OrigEnumDecl() != nullptr) {
-            flags |= ETSObjectFlags::BOXED_ENUM;
-        }
+        ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
+        return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, Relation());
     }
 
-    if (containingObjType != nullptr) {
-        prefix = containingObjType->AssemblerName();
-    } else if (const auto *topStatement = declNode->GetTopStatement();
-               topStatement->Type() !=
-               ir::AstNodeType::ETS_SCRIPT) {  // NOTE: should not occur, fix for TS_INTERFACE_DECLARATION
-        ASSERT(declNode->IsTSInterfaceDeclaration());
-        assemblerName = declNode->AsTSInterfaceDeclaration()->InternalName();
-    } else {
-        auto program = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program();
-        prefix = program->OmitModuleName() ? util::StringView() : program->ModuleName();
-    }
-
-    if (!prefix.Empty()) {
-        assemblerName =
-            util::UString(prefix.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() + assemblerName.Mutf8(),
-                          Allocator())
-                .View();
-    }
-
-    auto [lang, hasDecl] = CheckForDynamicLang(declNode, assemblerName);
-    if (lang.IsDynamic()) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), std::make_tuple(name, assemblerName, lang),
+    if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {
+        return Allocator()->New<ETSDynamicType>(Allocator(), std::make_tuple(name, internalName, lang),
                                                 std::make_tuple(declNode, flags, Relation()), hasDecl);
     }
 
-    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName,
+    return Allocator()->New<ETSObjectType>(Allocator(), name, internalName,
                                            std::make_tuple(declNode, flags, Relation()));
 }
 
-std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType,
+std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,
                                                                                           size_t dim)
 {
     std::stringstream ss;
@@ -649,7 +400,7 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
     return {internalName, info};
 }
 
-Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim)
+Signature *ETSChecker::CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim)
 {
     auto res = globalArraySignatures_.find(arrayType);
     if (res != globalArraySignatures_.end()) {
@@ -657,60 +408,91 @@ Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size
     }
 
     auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
-    auto *signature = CreateSignature(info, GlobalVoidType(), internalName);
+    auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE, false);
+    signature->SetInternalName(internalName);
     globalArraySignatures_.insert({arrayType, signature});
 
     return signature;
 }
 
-ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *signature)
-{
-    auto *retType = signature->ReturnType();
-    if (signature->RestVar() != nullptr) {
-        auto *functionN =
-            GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold(), signature->Function()->Flags())
-                ->AsETSObjectType();
-        auto *substitution = NewSubstitution();
-        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybeBoxType(retType));
-        return functionN->Substitute(Relation(), substitution);
-    }
-
-    // Note: FunctionN is not supported yet
-    if (signature->Params().size() >= GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
-        return nullptr;
-    }
-
-    auto *funcIface =
-        GlobalBuiltinFunctionType(signature->Params().size(), signature->Function()->Flags())->AsETSObjectType();
-    auto *substitution = NewSubstitution();
-
-    for (size_t i = 0; i < signature->Params().size(); i++) {
-        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
-                              MaybeBoxType(signature->Params()[i]->TsType()));
-    }
-    substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
-                          MaybeBoxType(signature->ReturnType()));
-    return funcIface->Substitute(Relation(), substitution);
-}
-
-Type *ETSChecker::ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatures)
-{
-    ArenaVector<Type *> types(Allocator()->Adapter());
-    for (auto *signature : signatures) {
-        types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
-    }
-    return CreateETSUnionType(std::move(types));
-}
-
 ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
 {
     ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
-    ASSERT(promiseType->TypeArguments().size() == 1);
+    ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1U);
+
     Substitution *substitution = NewSubstitution();
-    ETSChecker::EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
-                                   type);
+    EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
 
     return promiseType->Substitute(Relation(), substitution);
+}
+
+static bool IsInValidKeyofTypeNode(ir::AstNode *node)
+{
+    return (node->Modifiers() & ir::ModifierFlags::PRIVATE) != 0 ||
+           (node->Modifiers() & ir::ModifierFlags::PROTECTED) != 0;
+}
+
+void ETSChecker::ProcessTypeMembers(ETSObjectType *type, ArenaVector<Type *> &literals)
+{
+    if (type == GlobalETSObjectType()) {
+        return;
+    }
+
+    for (auto *method : type->Methods()) {
+        auto *methodDef = method->Declaration()->Node()->AsMethodDefinition();
+        for (auto *overload : methodDef->Overloads()) {
+            if (IsInValidKeyofTypeNode(overload)) {
+                continue;
+            }
+            literals.push_back(CreateETSStringLiteralType(overload->Key()->Variable()->Name()));
+        }
+        if (!IsInValidKeyofTypeNode(method->Declaration()->Node())) {
+            literals.push_back(CreateETSStringLiteralType(method->Name()));
+        }
+    }
+
+    for (auto *field : type->Fields()) {
+        if (IsInValidKeyofTypeNode(field->Declaration()->Node())) {
+            continue;
+        }
+        literals.push_back(CreateETSStringLiteralType(field->Name()));
+    }
+}
+
+Type *ETSChecker::CreateUnionFromKeyofType(ETSObjectType *const type)
+{
+    ArenaVector<Type *> stringLiterals(Allocator()->Adapter());
+    std::deque<ETSObjectType *> superTypes;
+    superTypes.push_back(type);
+    auto enqueueSupers = [&](ETSObjectType *currentType) {
+        if (currentType->SuperType() != nullptr) {
+            superTypes.push_back(currentType->SuperType());
+        }
+        for (auto interface : currentType->Interfaces()) {
+            superTypes.push_back(interface);
+        }
+    };
+
+    while (!superTypes.empty()) {
+        auto *currentType = superTypes.front();
+        superTypes.pop_front();
+
+        ProcessTypeMembers(currentType, stringLiterals);
+        enqueueSupers(currentType);
+    }
+
+    return stringLiterals.empty() ? GlobalETSNeverType() : CreateETSUnionType(std::move(stringLiterals));
+}
+
+ETSAsyncFuncReturnType *ETSChecker::CreateETSAsyncFuncReturnTypeFromPromiseType(ETSObjectType *promiseType)
+{
+    return Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
+}
+
+ETSAsyncFuncReturnType *ETSChecker::CreateETSAsyncFuncReturnTypeFromBaseType(Type *baseType)
+{
+    auto const promiseType = CreatePromiseOf(MaybeBoxType(baseType));
+    return Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
 }
 
 }  // namespace ark::es2panda::checker

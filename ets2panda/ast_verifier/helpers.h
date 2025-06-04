@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_AST_VERIFIER_HELPERS_H
 
 #include "ir/astNode.h"
+#include "ir/expressions/identifier.h"
 #include "checker/types/signature.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
@@ -38,6 +39,18 @@ bool ValidatePropertyAccessForClass(const ir::AstNode *ast, const ir::AstNode *p
                                     const ir::AstNode *objTypeDeclNode);
 bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::MemberExpression *ast);
 bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, const ir::CallExpression *ast);
+
+inline const varbinder::LocalVariable *TryGetLocalScopeVariable(const ir::Identifier *id)
+{
+    const auto *var = id->Variable();
+    if ((var != nullptr) && var->IsLocalVariable()) {
+        if (const auto *localVar = var->AsLocalVariable(); localVar->HasFlag(varbinder::VariableFlags::LOCAL)) {
+            return localVar;
+        }
+    }
+
+    return nullptr;
+}
 
 template <typename T>
 bool IsContainedIn(const T *child, const T *parent)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,46 +16,26 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H
 
+#include "checker/ETSchecker.h"
 #include "checker/types/type.h"
-#include "checker/types/ets/etsArrayType.h"
 
 namespace ark::es2panda::checker {
 
-class ETSTupleType : public ETSArrayType {
-    using TupleSizeType = int32_t;
+class ETSTupleType : public Type {
+    using TupleSizeType = std::size_t;
 
 public:
-    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType)
-    {
-        typeFlags_ |= TypeFlag::ETS_TUPLE;
-    }
-
-    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType), size_(size)
-    {
-        typeFlags_ |= TypeFlag::ETS_TUPLE;
-    }
-    explicit ETSTupleType(const ArenaVector<Type *> &typeList, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType),
+    explicit ETSTupleType(ETSChecker *checker, const ArenaVector<Type *> &typeList)
+        : Type(checker::TypeFlag::ETS_TUPLE),
           typeList_(typeList),
-          spreadType_(spreadType),
-          size_(static_cast<TupleSizeType>(typeList.size()))
+          wrapperType_(checker->GlobalBuiltinTupleType(typeList_.size())->AsETSObjectType())
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
 
     [[nodiscard]] TupleSizeType GetTupleSize() const
     {
-        return size_;
-    }
-
-    [[nodiscard]] TupleSizeType GetMinTupleSize() const
-    {
-        return size_ + (spreadType_ == nullptr ? 0 : 1);
+        return typeList_.size();
     }
 
     [[nodiscard]] ArenaVector<Type *> const &GetTupleTypesList() const
@@ -63,22 +43,17 @@ public:
         return typeList_;
     }
 
-    [[nodiscard]] bool HasSpreadType() const
+    std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        return spreadType_ != nullptr;
+        return {false, false};
     }
 
-    [[nodiscard]] Type *GetSpreadType() const
+    [[nodiscard]] ETSObjectType *GetWrapperType() const
     {
-        return spreadType_;
+        return wrapperType_;
     }
 
-    void SetSpreadType(Type *const newSpreadType)
-    {
-        spreadType_ = newSpreadType;
-    }
-
-    [[nodiscard]] Type *GetTypeAtIndex(int32_t index) const;
+    [[nodiscard]] Type *GetTypeAtIndex(TupleSizeType index) const;
 
     void ToString(std::stringstream &ss, bool precise) const override;
 
@@ -86,13 +61,17 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
+
+    void ToAssemblerType(std::stringstream &ss) const override;
+    void ToDebugInfoType(std::stringstream &ss) const override;
 
 private:
-    ArenaVector<Type *> const typeList_;
-    Type *spreadType_ {};
-    TupleSizeType size_ {0};
+    const ArenaVector<Type *> typeList_;
+    ETSObjectType *wrapperType_;
 };
 
 }  // namespace ark::es2panda::checker

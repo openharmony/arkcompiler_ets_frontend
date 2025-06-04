@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,10 +16,11 @@
 #ifndef ES2PANDA_COMPILER_CORE_COMPILE_QUEUE_H
 #define ES2PANDA_COMPILER_CORE_COMPILE_QUEUE_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "os/thread.h"
 #include "es2panda.h"
 #include "compiler/core/compileJob.h"
+#include "util/diagnostic.h"
 
 #include <condition_variable>
 #include <functional>
@@ -52,7 +53,7 @@ private:
     static void Worker(CompileQueue *queue);
 
     std::vector<os::thread::NativeHandleType> threads_;
-    std::vector<Error> errors_;
+    std::vector<util::ThrowableDiagnostic> errors_;
     std::mutex m_;
     std::condition_variable jobsAvailable_;
     std::condition_variable jobsFinished_;

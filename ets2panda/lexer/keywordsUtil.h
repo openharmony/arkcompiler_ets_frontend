@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,8 @@
 #include "lexer/keywordString.h"
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
-#include "lexer/token/tokenType.h"
-#include "macros.h"
+#include "generated/tokenType.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 #include "utils/span.h"
 
@@ -49,9 +49,10 @@ public:
         return lexer_->parserContext_;
     }
 
-    void LogSyntaxError(std::string_view msg) const
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {}) const
     {
-        lexer_->LogSyntaxError(msg);
+        lexer_->LogError(diagnostic, diagnosticParams);
     }
 
     void LogUnexpectedStrictModeReservedKeyword() const
@@ -78,7 +79,7 @@ public:
 
     inline void LogEscapedKeyword() const
     {
-        LogSyntaxError("Escape sequences are not allowed in keywords");
+        LogError(diagnostic::ESCAPE_SEQUENCES_IN_KEYWORD);
     }
 
     inline void SetKeyword(KeywordString kws) const

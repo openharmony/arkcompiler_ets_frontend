@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
 
 
 const enum Foo {
-    G = 1, 2, 3
+    G = 1, /* @@ label */2, /* @@ label1 */3
 }
 
-/* @@? 18:12 Error SyntaxError: Unexpected token in enum member  */
-/* @@? 18:15 Error SyntaxError: Unexpected token in enum member  */
+/* @@@ label Error SyntaxError: Unexpected token in enum member.  */
+/* @@@ label1 Error SyntaxError: Unexpected token in enum member.  */

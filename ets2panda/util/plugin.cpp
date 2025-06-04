@@ -41,6 +41,10 @@ Plugin::Plugin(util::StringView const &name) : name_ {name}, err_ {0}, h_ {nullp
         afterParse_ = reinterpret_cast<void (*)(es2panda_Context *)>(apRes.Value());
     }
 
+    if (auto abRes = os::library_loader::ResolveSymbol(h_, FullNameForProcedure("AfterBind")); abRes.HasValue()) {
+        afterBind_ = reinterpret_cast<void (*)(es2panda_Context *)>(abRes.Value());
+    }
+
     if (auto acRes = os::library_loader::ResolveSymbol(h_, FullNameForProcedure("AfterCheck")); acRes.HasValue()) {
         afterCheck_ = reinterpret_cast<void (*)(es2panda_Context *)>(acRes.Value());
     }

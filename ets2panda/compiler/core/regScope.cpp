@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -118,8 +118,8 @@ void FunctionRegScope::InitializeParams(const StoreParamCb &cb)
 
 FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), envScope_(pg->Allocator()->New<EnvScope>())
 {
-    ASSERT(cg_->Scope()->IsFunctionVariableScope());
-    ASSERT(cg_->NextReg().GetIndex() == VReg::REG_START);
+    ES2PANDA_ASSERT(cg_->Scope()->IsFunctionVariableScope());
+    ES2PANDA_ASSERT(cg_->NextReg().GetIndex() == VReg::REG_START);
 
     VReg lexEnv = pg->AllocReg();
     envScope_->Initialize(pg, lexEnv);

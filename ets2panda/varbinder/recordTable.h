@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_VARBINDER_RECORDTABLE_H
 #define ES2PANDA_VARBINDER_RECORDTABLE_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "utils/arena_containers.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
@@ -188,6 +188,17 @@ public:
     }
 
     util::StringView RecordName() const;
+
+    void CleanUp()
+    {
+        classDefinitions_.clear();
+        interfaceDeclarations_.clear();
+        annotationDeclarations_.clear();
+        signatures_.clear();
+        record_ = nullptr;
+        boundCtx_ = nullptr;
+        flags_ = RecordTableFlags::NONE;
+    }
 
 private:
     friend class BoundContext;

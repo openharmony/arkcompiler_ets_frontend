@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,22 +23,20 @@ class TSBinder : public TypedBinder {
 public:
     explicit TSBinder(ArenaAllocator *allocator) : TypedBinder(allocator) {}
 
+    TSBinder() = delete;
     NO_COPY_SEMANTIC(TSBinder);
     NO_MOVE_SEMANTIC(TSBinder);
     ~TSBinder() override = default;
 
-    ScriptExtension Extension() const override
+    [[nodiscard]] ScriptExtension Extension() const noexcept override
     {
         return ScriptExtension::TS;
     }
 
-    ResolveBindingOptions BindingOptions() const override
+    [[nodiscard]] ResolveBindingOptions BindingOptions() const noexcept override
     {
         return ResolveBindingOptions::ALL;
     }
-
-protected:
 };
 }  // namespace ark::es2panda::varbinder
-
 #endif

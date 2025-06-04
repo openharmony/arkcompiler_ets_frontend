@@ -6,11 +6,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-debugger-statement.js"
         },
         "end": {
           "line": 17,
-          "column": 10
+          "column": 10,
+          "program": "test-debugger-statement.js"
         }
       }
     },
@@ -19,11 +21,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-debugger-statement.js"
         },
         "end": {
           "line": 19,
-          "column": 9
+          "column": 9,
+          "program": "test-debugger-statement.js"
         }
       }
     },
@@ -35,11 +39,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 3
+              "column": 3,
+              "program": "test-debugger-statement.js"
             },
             "end": {
               "line": 22,
-              "column": 11
+              "column": 11,
+              "program": "test-debugger-statement.js"
             }
           }
         }
@@ -47,11 +53,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-debugger-statement.js"
         },
         "end": {
           "line": 23,
-          "column": 2
+          "column": 2,
+          "program": "test-debugger-statement.js"
         }
       }
     },
@@ -63,11 +71,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 3
+              "column": 3,
+              "program": "test-debugger-statement.js"
             },
             "end": {
               "line": 25,
-              "column": 11
+              "column": 11,
+              "program": "test-debugger-statement.js"
             }
           }
         }
@@ -75,11 +85,13 @@
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-debugger-statement.js"
         },
         "end": {
           "line": 25,
-          "column": 13
+          "column": 13,
+          "program": "test-debugger-statement.js"
         }
       }
     }
@@ -87,11 +99,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-debugger-statement.js"
     },
     "end": {
       "line": 26,
-      "column": 1
+      "column": 1,
+      "program": "test-debugger-statement.js"
     }
   }
 }

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 19
+              "column": 19,
+              "program": "re_export_4.ets"
             },
             "end": {
               "line": 16,
-              "column": 29
+              "column": 29,
+              "program": "re_export_4.ets"
             }
           }
         },
@@ -29,11 +31,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 9,
+                  "program": "re_export_4.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 12
+                  "column": 12,
+                  "program": "re_export_4.ets"
                 }
               }
             },
@@ -44,22 +48,26 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 9,
+                  "program": "re_export_4.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 12
+                  "column": 12,
+                  "program": "re_export_4.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "re_export_4.ets"
               },
               "end": {
                 "line": 16,
-                "column": 12
+                "column": 12,
+                "program": "re_export_4.ets"
               }
             }
           }
@@ -67,22 +75,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 8
+            "column": 8,
+            "program": "re_export_4.ets"
           },
           "end": {
             "line": 16,
-            "column": 29
+            "column": 29,
+            "program": "re_export_4.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         }
       }
     },
@@ -96,11 +108,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 19
+              "column": 19,
+              "program": "re_export_4.ets"
             },
             "end": {
               "line": 17,
-              "column": 31
+              "column": 31,
+              "program": "re_export_4.ets"
             }
           }
         },
@@ -114,11 +128,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "re_export_4.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "re_export_4.ets"
                 }
               }
             },
@@ -129,22 +145,26 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "re_export_4.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "re_export_4.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 9
+                "column": 9,
+                "program": "re_export_4.ets"
               },
               "end": {
                 "line": 17,
-                "column": 12
+                "column": 12,
+                "program": "re_export_4.ets"
               }
             }
           }
@@ -152,22 +172,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 8
+            "column": 8,
+            "program": "re_export_4.ets"
           },
           "end": {
             "line": 17,
-            "column": 31
+            "column": 31,
+            "program": "re_export_4.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         }
       }
     },
@@ -181,11 +205,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "re_export_4.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "re_export_4.ets"
             }
           }
         },
@@ -196,16 +222,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "re_export_4.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "re_export_4.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -225,11 +359,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -243,33 +379,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -278,11 +420,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "re_export_4.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "re_export_4.ets"
               }
             }
           }
@@ -290,22 +434,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "re_export_4.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "re_export_4.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "re_export_4.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "re_export_4.ets"
         }
       }
     }
@@ -313,12 +461,14 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "re_export_4.ets"
     },
     "end": {
       "line": 18,
-      "column": 1
+      "column": 1,
+      "program": "re_export_4.ets"
     }
   }
 }
-SyntaxError: Ambiguous export "foo" [re_export_4.sts:17:8]
+TypeError: Ambiguous export "foo" [re_export_4.ets:17:8]

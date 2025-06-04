@@ -1,0 +1,53 @@
+{
+  "1": [
+    {
+      "fileName": "getReferencesAtPosition1.ets",
+      "start": 613,
+      "length": 1
+    }
+  ],
+  "2": [
+    {
+      "fileName": "getReferencesAtPosition2.ets",
+      "start": 620,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition2.ets",
+      "start": 635,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition2.ets",
+      "start": 665,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition3.ets",
+      "start": 617,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition3.ets",
+      "start": 667,
+      "length": 1
+    }
+  ],
+  "3": [
+    {
+      "fileName": "getReferencesAtPosition4.ets",
+      "start": 625,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition5.ets",
+      "start": 617,
+      "length": 1
+    },
+    {
+      "fileName": "getReferencesAtPosition5.ets",
+      "start": 655,
+      "length": 1
+    }
+  ]
+}

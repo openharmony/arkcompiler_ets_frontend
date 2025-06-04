@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 183; i++) {
+for (let i = 0; i <= 344; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -57,7 +57,7 @@ cookBookTag[33] = '';
 cookBookTag[34] = 'Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)';
 cookBookTag[35] = '';
 cookBookTag[36] = '';
-cookBookTag[37] = '';
+cookBookTag[37] = 'RegExp literals are not supported (arkts-no-regexp-literals)';
 cookBookTag[38] =
   'Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)';
 cookBookTag[39] = '';
@@ -229,3 +229,82 @@ cookBookTag[183] = 'Object literal properties can only contain name-value pairs 
 cookBookTag[184] = 'Optional methods are not supported (arkts-optional-methods)';
 cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
+cookBookTag[187] =
+  'function "Math.pow()" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)';
+cookBookTag[189] = 'Numeric semantics is different for integer values (arkts-numeric-semantic)';
+cookBookTag[190] = 'Stricter assignments into variables of function type (arkts-incompatible-function-types)';
+cookBookTag[192] = 'Type "void" has no instances.(arkts-limited-void-type)';
+cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
+cookBookTag[198] = 'Class TS overloading is not supported(arkts-no-ts-overload)';
+cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
+cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
+cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
+cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
+cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
+cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
+cookBookTag[210] = 'The switch expression type must be of type number,string or enum (arkts-switch-expr)';
+cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
+cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
+cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
+cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
+cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';
+cookBookTag[234] = 'Decorators are not supported(arkts-no-ts-decorators)';
+cookBookTag[235] = 'Avoid using union types (arkts-common-union-member-access)';
+cookBookTag[236] = 'Method cant\'t override filed in interface implemented (arkts-no-method-overriding-field)';
+cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
+cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
+cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
+cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
+cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
+cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
+cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
+cookBookTag[255] = 'Extends or implements expression are not supported(arkts-no-extends-expression)';
+cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decorator)';
+cookBookTag[257] =
+  '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
+cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
+cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
+cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
+cookBookTag[263] =
+  'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
+cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
+cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
+cookBookTag[302] =
+  'Class type is not compatible with "Object" parameter in interop call (arkts-interop-call-object-param)';
+cookBookTag[303] =
+  'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-call-reflect)';
+cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
+cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-no-decorators)';
+cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-access-ts-types)';
+cookBookTag[307] = 'Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)';
+cookBookTag[308] = 'Type "void" has no instances.(arkts-sdk-limited-void-type)';
+cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-methods)';
+cookBookTag[310] =
+  'Properties in "Sendable" classes and interfaces must have a Sendable data type (sdk-no-sendable-prop-types)';
+cookBookTag[311] = 'Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)';
+cookBookTag[312] = 'Indexed access is not supported for fields (sdk-no-props-by-index)';
+cookBookTag[313] = 'Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)';
+cookBookTag[314] =
+  'Object property names must be valid identifiers.Single-quoted and hyphenated properties are not supported. (sdk-no-literal-as-property-name)';
+cookBookTag[315] =
+  'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
+cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
+cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
+cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
+cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
+cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
+cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
+cookBookTag[333] = 'Casting interop JS objects to "number" type is not allowed (arkts-no-js-number-import)';
+cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-import-typeof-js)';
+cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
+cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
+cookBookTag[337] =
+  'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';
+cookBookTag[338] =
+  '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
+cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index-import)';
+cookBookTag[340] = '"Await" operator can\'t be used with interop objects (arkts-no-import-await)';
+cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
+cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
+cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';
+cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';

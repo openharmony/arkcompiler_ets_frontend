@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void CharLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -61,22 +59,26 @@ checker::Type *CharLiteral::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<CharLiteral>(char_); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<CharLiteral>(char_);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
+}
+
+std::string CharLiteral::ToString() const
+{
+    std::string charStr;
+    util::StringView::Mutf8Encode(&charStr, char_);
+    return charStr;
 }
 }  // namespace ark::es2panda::ir

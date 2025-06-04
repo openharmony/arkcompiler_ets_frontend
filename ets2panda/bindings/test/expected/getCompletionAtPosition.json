@@ -1,0 +1,372 @@
+{
+  "1": {
+    "entries": [
+      {
+        "name": "namespace",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "native",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "never",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "new",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "null",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "num1",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 3,
+        "data": null
+      },
+      {
+        "name": "num2",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 3,
+        "data": null
+      },
+      {
+        "name": "number",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      }
+    ]
+  },
+  "2": {
+    "entries": [
+      {
+        "name": "aaa",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "abb",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 21,
+        "data": null
+      },
+      {
+        "name": "abstract",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "any",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "anyref",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "arguments",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "as",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "asserts",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "async",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "await",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "axx",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 3,
+        "data": null
+      }
+    ]
+  },
+  "3": {
+    "entries": [
+      {
+        "name": "baa",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "bbb",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "bcc",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "bigint",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "boolean",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "break",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "bxx",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 3,
+        "data": null
+      },
+      {
+        "name": "byte",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      }
+    ]
+  },
+  "4": {
+    "entries": [
+      {
+        "name": "baa",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "bbb",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 6,
+        "data": null
+      },
+      {
+        "name": "bigint",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "boolean",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "break",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      },
+      {
+        "name": "bxx",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 3,
+        "data": null
+      },
+      {
+        "name": "byte",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      }
+    ]
+  },
+  "5": {
+    "entries": [
+      {
+        "name": "myProp",
+        "sortText": "14",
+        "insertText": "",
+        "kind": 10,
+        "data": null
+      }
+    ]
+  },
+  "6": {
+    "entries": [
+      {
+        "name": "classInSpace",
+        "sortText": "13",
+        "insertText": "",
+        "kind": 7,
+        "data": null
+      }
+    ]
+  },
+  "7": {
+    "entries": [
+      {
+        "name": "Red",
+        "sortText": "13",
+        "insertText": "",
+        "kind": 20,
+        "data": null
+      }
+    ]
+  },
+  "8": {
+    "entries": []
+  },
+  "9": {
+    "entries": [
+      {
+        "name": "number",
+        "sortText": "15",
+        "insertText": "",
+        "kind": 14,
+        "data": null
+      }
+    ]
+  },
+  "10": {
+    "entries": [
+      {
+        "name": "classInSpace",
+        "sortText": "13",
+        "insertText": "",
+        "kind": 7,
+        "data": null
+      }
+    ]
+  },
+  "11": {
+    "entries": [
+      {
+        "name": "Blue",
+        "sortText": "13",
+        "insertText": "",
+        "kind": 20,
+        "data": null
+      },
+      {
+        "name": "Red",
+        "sortText": "13",
+        "insertText": "",
+        "kind": 20,
+        "data": null
+      }
+    ]
+  },
+  "12": {
+    "entries": [
+      {
+        "name": "myProp",
+        "sortText": "14",
+        "insertText": "",
+        "kind": 10,
+        "data": null
+      },
+      {
+        "name": "prop",
+        "sortText": "14",
+        "insertText": "",
+        "kind": 10,
+        "data": null
+      }
+    ]
+  },
+  "13": {
+    "entries": [
+      {
+        "name": "key",
+        "sortText": "17",
+        "insertText": "",
+        "kind": 2,
+        "data": null
+      }
+    ]
+  },
+  "14": {
+    "entries": [
+      {
+        "name": "key",
+        "sortText": "17",
+        "insertText": "",
+        "kind": 2,
+        "data": null
+      }
+    ]
+  }
+}

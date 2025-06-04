@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 9
+            "column": 9,
+            "program": "test-switch.js"
           },
           "end": {
             "line": 17,
-            "column": 12
+            "column": 12,
+            "program": "test-switch.js"
           }
         }
       },
@@ -28,11 +30,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 10
+                "column": 10,
+                "program": "test-switch.js"
               },
               "end": {
                 "line": 18,
-                "column": 15
+                "column": 15,
+                "program": "test-switch.js"
               }
             }
           },
@@ -43,11 +47,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-switch.js"
                 },
                 "end": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-switch.js"
                 }
               }
             }
@@ -55,11 +61,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-switch.js"
             },
             "end": {
               "line": 19,
-              "column": 15
+              "column": 15,
+              "program": "test-switch.js"
             }
           }
         },
@@ -73,11 +81,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-switch.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-switch.js"
                 }
               }
             }
@@ -85,11 +95,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 5
+              "column": 5,
+              "program": "test-switch.js"
             },
             "end": {
               "line": 22,
-              "column": 15
+              "column": 15,
+              "program": "test-switch.js"
             }
           }
         }
@@ -97,11 +109,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-switch.js"
         },
         "end": {
           "line": 23,
-          "column": 2
+          "column": 2,
+          "program": "test-switch.js"
         }
       }
     },
@@ -114,11 +128,13 @@
         "loc": {
           "start": {
             "line": 25,
-            "column": 9
+            "column": 9,
+            "program": "test-switch.js"
           },
           "end": {
             "line": 25,
-            "column": 13
+            "column": 13,
+            "program": "test-switch.js"
           }
         }
       },
@@ -126,11 +142,13 @@
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-switch.js"
         },
         "end": {
           "line": 25,
-          "column": 17
+          "column": 17,
+          "program": "test-switch.js"
         }
       }
     },
@@ -143,11 +161,13 @@
         "loc": {
           "start": {
             "line": 27,
-            "column": 9
+            "column": 9,
+            "program": "test-switch.js"
           },
           "end": {
             "line": 27,
-            "column": 10
+            "column": 10,
+            "program": "test-switch.js"
           }
         }
       },
@@ -159,11 +179,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 5
+              "column": 5,
+              "program": "test-switch.js"
             },
             "end": {
               "line": 28,
-              "column": 13
+              "column": 13,
+              "program": "test-switch.js"
             }
           }
         }
@@ -171,11 +193,13 @@
       "loc": {
         "start": {
           "line": 27,
-          "column": 1
+          "column": 1,
+          "program": "test-switch.js"
         },
         "end": {
           "line": 29,
-          "column": 2
+          "column": 2,
+          "program": "test-switch.js"
         }
       }
     },
@@ -188,11 +212,13 @@
         "loc": {
           "start": {
             "line": 32,
-            "column": 2
+            "column": 2,
+            "program": "test-switch.js"
           },
           "end": {
             "line": 32,
-            "column": 3
+            "column": 3,
+            "program": "test-switch.js"
           }
         }
       },
@@ -206,11 +232,13 @@
             "loc": {
               "start": {
                 "line": 35,
-                "column": 1
+                "column": 1,
+                "program": "test-switch.js"
               },
               "end": {
                 "line": 35,
-                "column": 2
+                "column": 2,
+                "program": "test-switch.js"
               }
             }
           },
@@ -218,11 +246,13 @@
           "loc": {
             "start": {
               "line": 34,
-              "column": 1
+              "column": 1,
+              "program": "test-switch.js"
             },
             "end": {
               "line": 35,
-              "column": 3
+              "column": 3,
+              "program": "test-switch.js"
             }
           }
         },
@@ -233,11 +263,13 @@
           "loc": {
             "start": {
               "line": 36,
-              "column": 1
+              "column": 1,
+              "program": "test-switch.js"
             },
             "end": {
               "line": 37,
-              "column": 2
+              "column": 2,
+              "program": "test-switch.js"
             }
           }
         }
@@ -245,11 +277,13 @@
       "loc": {
         "start": {
           "line": 31,
-          "column": 1
+          "column": 1,
+          "program": "test-switch.js"
         },
         "end": {
           "line": 38,
-          "column": 2
+          "column": 2,
+          "program": "test-switch.js"
         }
       }
     }
@@ -257,11 +291,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-switch.js"
     },
     "end": {
       "line": 38,
-      "column": 2
+      "column": 2,
+      "program": "test-switch.js"
     }
   }
 }

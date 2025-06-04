@@ -1,0 +1,253 @@
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+ignored_list:
+
+  # Which constructors should not be generated
+  constructors:
+
+    # For classes listed below constructors will not be generated
+    call_class:
+      - name: AstNode
+      - name: ClassElement
+      - name: Annotated
+      - name: AnnotationAllowed
+      - name: Typed
+      - name: Scope
+      - name: Type
+      - name: ObjectType
+      - name: VarBinder
+      - name: ETSBinder
+      - name: BoundContext
+        namespace: varbinder
+      - name: Checker
+      - name: ETSChecker
+      - name: ETSParser
+      - name: Program
+      - name: NumberLiteral
+      - name: VerifiedType
+      - name: ImportPathManager
+
+
+  # Which methods should not be generated
+  methods:
+
+    # For classes listed below methods will not be generated
+    call_class:
+      - name: Annotated
+      - name: Checker
+      - name: ETSChecker
+      - name: VarBinder
+      - name: ETSBinder
+
+  # Method will not be generated if return type is one of the following
+  return_type:
+    - name: Checker
+    - name: ETSChecker
+    - name: ArenaAllocator
+    - name: Allocator
+    - name: Tag
+    - name: ConstraintCheckRecord
+    - name: Number
+      namespace: lexer
+    - name: Property
+      namespace: AstDumper
+    - name: TSChecker
+      namespace: checker
+    - name: stringstream
+    - name: Holder
+    - name: tuple
+    - name: UnaryPredicate
+      namespace: checker
+    - name: VarBinder
+    - name: ModulesToExportedNamesWithAliases
+      namespace: varbinder
+    - name: T
+    - name: K
+    - name: ModuleEntry
+      namespace: varbinder
+    - name: ETSBinder
+    - name: Context
+      namespace: public_lib
+    - name: VariableType
+      namespace: varbinder
+    - name: Args
+      namespace: varbinder
+    - name: InsertResult
+      namespace: varbinder
+    - name: RelationHolder
+      namespace: checker
+    - name: auto
+    - name: recursive_mutex
+    - name: SmartCastArray
+    - name: SmartCastTypes
+    - name: SemanticAnalyzer
+    - name: optional
+      namespace: std
+    - name: WrapperDesc
+    - name: Language
+    - name: ScopedDebugInfoPlugin
+    - name: Args
+      namespace: parser
+    - name: ETSParser
+    - name: ScriptExtension
+    - name: function
+      namespace: std
+    - name: path
+      namespace: fs
+    - name: ImportData
+    - name: PathsMap
+    - name: Level
+      namespace: Logger
+
+
+  # Method and constructors will not be generated if c++ postfix contains any element listed below
+  postfix_contains:
+  - '= delete'
+  - override
+
+  # Methods and constructors with arguments listed below will not be generated
+  args:
+  - type:
+      name: Tag
+  - type:
+      name: Number
+      namespace: lexer
+  - type:
+      name: Property
+      namespace: AstDumper
+  - type:
+      name: TSChecker
+      namespace: checker
+  - type:
+      name: ArenaVector
+      template_args:
+        - type:
+            name: pair
+  - type:
+      name: initializer_list
+  - type:
+      name: stringstream
+  - type:
+      name: Holder
+  - type:
+      name: tuple
+  - type:
+      name: UnaryPredicate
+      namespace: checker
+  - type:
+      name: ScopedDebugInfoPlugin
+  - type:
+      name: ModulesToExportedNamesWithAliases
+      namespace: varbinder
+  - type:
+      name: ModuleEntry
+      namespace: varbinder
+  - type:
+      name: Args
+  - type:
+      name: VariableType
+      namespace: varbinder
+  - type:
+      name: Span
+  - type:
+      name: recursive_mutex
+  - type:
+      name: InsertResult
+      namespace: varbinder
+  - type:
+      name: auto
+  - type:
+      name: SmartCastArray
+  - type:
+      name: SmartCastTypes
+  - type:
+      name: ConstraintCheckRecord
+  - type:
+      name: WrapperDesc
+  - type:
+      name: optional
+      namespace: std
+  - type:
+      name: RelationHolder
+      namespace: checker
+  - type:
+      name: function
+      namespace: std
+  - type:
+      name: DiagnosticMessageParams
+      namespace: util
+  - type:
+      name: PandArgParser
+      namespace: gen
+  - type:
+      name: T
+  - type:
+      name: K
+  - name: '[N]'
+  - type:
+      name: SourceFile
+      namespace: ark::es2panda
+  - type:
+      name: ETSWarnings
+      namespace: parser
+
+  # Methods and constructors which contains templates with names listed below will not be generated
+  template_names:
+  - name: typename Invariant
+
+
+# Despite the ignored_list section, the following will be generated
+# Format: [{<class_name>: [<method_name_1, method_name_2, ...]>}, ...]
+allowed_list:
+  ETSBinder:
+    - ResolveReferenceForScope
+    - ResolveReferencesForScope
+    - ResolveReferencesForScopeWithContext
+  template_types:
+  - ETSFunctionType
+  - ETSImportDeclaration
+  - string
+  - ETSObjectType
+  - LocalVariable
+  - Statement
+  - FunctionScope
+  - Type
+  - Program
+  - ClassProperty
+  - Expression
+  - size_t
+  - Decorator
+  - ReturnStatement
+  - TSClassImplements
+  - SwitchCaseStatement
+  - Decl
+  - TSTypeParameter
+  - Variable
+  - bool
+  - VariableDeclarator
+  - AstNode
+  - TemplateElement
+  - Signature
+  - TSInterfaceDeclaration
+  - AnnotationDeclaration
+  - TSInterfaceHeritage
+  - AnnotationUsage
+  - CatchClause
+  - LabelPair
+  - ExportSpecifier
+  - ClassDefinition
+  - StringView
+  - TypeNode
+  - ArkTsConfig

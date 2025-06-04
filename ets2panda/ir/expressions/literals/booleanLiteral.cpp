@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void BooleanLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -55,21 +53,23 @@ checker::Type *BooleanLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<BooleanLiteral>(boolean_); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<BooleanLiteral>(boolean_);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
+    clone->SetRange(Range());
+    return clone;
+}
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+std::string BooleanLiteral::ToString() const
+{
+    return std::string {boolean_ ? "true" : "false"};
 }
 }  // namespace ark::es2panda::ir

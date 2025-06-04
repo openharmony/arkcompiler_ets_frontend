@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,9 +31,9 @@
 #include "varbinder/ETSBinder.h"
 #include "test/utils/panda_executable_path_getter.h"
 #include "checker/types/globalTypesHolder.h"
-#include "test/unit/globalETSObjectType_test.h"
+#include "test/utils/checker_test.h"
 
-using ark::es2panda::gtests::GlobalETSObjectTypeTest;
+using GlobalETSObjectTypeTest = test::utils::CheckerTest;
 
 namespace ark::es2panda {
 TEST_F(GlobalETSObjectTypeTest, TypeDeclNodeTest)
@@ -52,11 +52,55 @@ TEST_F(GlobalETSObjectTypeTest, TypeDeclNodeTest)
         << "         if (a.testBool) {\n"
         << "}\n}\n}" << std::endl;
 
-    InitializeChecker("_.sts", src.str());
+    InitializeChecker("_.ets", src.str());
+    auto *checker = Checker();
+    auto *globalETSObjectType = checker->GlobalETSObjectType();
+    [[maybe_unused]] auto *declNode = globalETSObjectType->Variable()->Declaration()->Node();
+    ASSERT(declNode->IsClassDefinition());
+}
+
+TEST_F(GlobalETSObjectTypeTest, ObjectPartialGenTest)
+{
+    std::stringstream src;
+    src << "class A<T> {\n"
+        << "    constructor(obj: Object) {this.testObj = obj;}"
+        << "    testObj: Object;\n}\n"
+        << "let a = new A<int>({})\n;" << std::endl;
+
+    InitializeChecker("_.ets", src.str());
     auto checker = Checker();
     ASSERT(checker);
     auto *globalETSObjectType = checker->GlobalETSObjectType();
     [[maybe_unused]] auto *declNode = globalETSObjectType->Variable()->Declaration()->Node();
     ASSERT(declNode->IsClassDefinition());
+}
+
+TEST_F(GlobalETSObjectTypeTest, ETSArrayContainGlobalETSObject)
+{
+    // The ETSArray which contains GlobalETSObject, its type is cached in the checker's ArrayTypes map
+    // We should ensure that it is not polluted by certain modifiers, such as "TypeFlag::READONLY"
+    std::stringstream src;
+    src << "class A<K> {\n"
+        << "    private readonly prop: number;\n"
+        << "    constructor() {\n"
+        << "        this.prop = 0.0;}\n"
+        << "    constructor(a: K[]) {\n"
+        << "        this.prop = 1.0;}\n}"
+        << "class B<K> {\n"
+        << "    private readonly prop: number;\n"
+        << "    constructor() {\n"
+        << "        this.prop = 0.0;}\n"
+        << "    constructor(a: readonly K[]) {\n"
+        << "        this.prop = 1.0;}\n}"
+        << "let a = new A<Object>();\n let b = new B<Object>();";
+
+    InitializeChecker("_.ets", src.str());
+    auto checker = Checker();
+    ASSERT(checker);
+    auto *globalETSObjectType = checker->GlobalETSObjectType();
+    [[maybe_unused]] auto arrayType = checker->CreateETSArrayType(globalETSObjectType, false);
+    [[maybe_unused]] auto readonlyArrayType = checker->CreateETSArrayType(globalETSObjectType, true);
+    ASSERT(!arrayType->HasTypeFlag(checker::TypeFlag::READONLY));
+    ASSERT(readonlyArrayType->HasTypeFlag(checker::TypeFlag::READONLY));
 }
 }  // namespace ark::es2panda

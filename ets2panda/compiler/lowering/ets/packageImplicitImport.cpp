@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "packageImplicitImport.h"
+#include <generated/diagnostic.h>
 
 namespace ark::es2panda::compiler {
 
@@ -41,7 +42,7 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
 {
     const auto throwErrorIfPackagesConflict = [&ctx](const parser::Program *const prog1,
                                                      const parser::Program *const prog2) {
-        if ((prog1 == prog2) || !(prog1->IsPackageModule() && prog2->IsPackageModule())) {
+        if ((prog1 == prog2) || !prog1->IsPackage() || !prog2->IsPackage()) {
             return;
         }
 
@@ -50,9 +51,9 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             //
             // Showing the full path would be more informative, but it also leaks it to the stdout, which is
             // not the best idea
-            ctx->parser->LogSyntaxError("Files '" + prog1->FileName().Mutf8() + "' and '" + prog2->FileName().Mutf8() +
-                                            "' are in the same folder, but have different package names.",
-                                        lexer::SourcePosition(0, 0));
+            ctx->parser->LogError(diagnostic::DIFFERENT_PACKAGE_NAME,
+                                  {prog1->FileName().Mutf8(), prog2->FileName().Mutf8()},
+                                  lexer::SourcePosition(0, 0, prog1));
         }
     };
 
@@ -76,10 +77,10 @@ static void ValidateImportDeclarationsSourcePath(const public_lib::Context *cons
     for (const auto *const stmt : importDeclarations) {
         const bool doesImportFromPackage =
             std::any_of(packagePrograms.cbegin(), packagePrograms.cend(), [&stmt](const parser::Program *const prog) {
-                return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource()->Str();
+                return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource();
             });
         if (doesImportFromPackage) {
-            ctx->parser->LogSyntaxError("Package module cannot import from a file in it's own package", stmt->Start());
+            ctx->parser->LogError(diagnostic::PACKAGE_MODULE_IMPORT_OWN_PACKAGE, {}, stmt->Start());
         }
     }
 }
@@ -106,7 +107,7 @@ static void ValidateNoImportComesFromSamePackage(const public_lib::Context *cons
 
 bool PackageImplicitImport::Perform(public_lib::Context *const ctx, parser::Program *const program)
 {
-    if (!program->IsPackageModule() || program->VarBinder()->IsGenStdLib()) {
+    if (!program->IsPackage() || program->VarBinder()->IsGenStdLib()) {
         // Only run for package module files
         return true;
     }

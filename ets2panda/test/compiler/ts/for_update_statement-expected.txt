@@ -13,11 +13,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "for_update_statement.ts"
               },
               "end": {
                 "line": 16,
-                "column": 6
+                "column": 6,
+                "program": "for_update_statement.ts"
               }
             }
           },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "for_update_statement.ts"
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "for_update_statement.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 5
+              "column": 5,
+              "program": "for_update_statement.ts"
             },
             "end": {
               "line": 16,
-              "column": 10
+              "column": 10,
+              "program": "for_update_statement.ts"
             }
           }
         }
@@ -51,11 +57,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "for_update_statement.ts"
         },
         "end": {
           "line": 16,
-          "column": 10
+          "column": 10,
+          "program": "for_update_statement.ts"
         }
       }
     },
@@ -74,11 +82,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 13
+                    "column": 13,
+                    "program": "for_update_statement.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 19
+                    "column": 19,
+                    "program": "for_update_statement.ts"
                   }
                 }
               },
@@ -86,11 +96,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "for_update_statement.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 11
+                  "column": 11,
+                  "program": "for_update_statement.ts"
                 }
               }
             },
@@ -100,22 +112,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 22
+                  "column": 22,
+                  "program": "for_update_statement.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 23
+                  "column": 23,
+                  "program": "for_update_statement.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 10
+                "column": 10,
+                "program": "for_update_statement.ts"
               },
               "end": {
                 "line": 18,
-                "column": 23
+                "column": 23,
+                "program": "for_update_statement.ts"
               }
             }
           }
@@ -124,11 +140,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 6
+            "column": 6,
+            "program": "for_update_statement.ts"
           },
           "end": {
             "line": 18,
-            "column": 23
+            "column": 23,
+            "program": "for_update_statement.ts"
           }
         }
       },
@@ -142,11 +160,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 25
+              "column": 25,
+              "program": "for_update_statement.ts"
             },
             "end": {
               "line": 18,
-              "column": 26
+              "column": 26,
+              "program": "for_update_statement.ts"
             }
           }
         },
@@ -156,22 +176,26 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 29
+              "column": 29,
+              "program": "for_update_statement.ts"
             },
             "end": {
               "line": 18,
-              "column": 31
+              "column": 31,
+              "program": "for_update_statement.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 25
+            "column": 25,
+            "program": "for_update_statement.ts"
           },
           "end": {
             "line": 18,
-            "column": 31
+            "column": 31,
+            "program": "for_update_statement.ts"
           }
         }
       },
@@ -186,22 +210,26 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 33
+              "column": 33,
+              "program": "for_update_statement.ts"
             },
             "end": {
               "line": 18,
-              "column": 34
+              "column": 34,
+              "program": "for_update_statement.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 33
+            "column": 33,
+            "program": "for_update_statement.ts"
           },
           "end": {
             "line": 18,
-            "column": 36
+            "column": 36,
+            "program": "for_update_statement.ts"
           }
         }
       },
@@ -220,11 +248,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 4
+                    "column": 4,
+                    "program": "for_update_statement.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 5
+                    "column": 5,
+                    "program": "for_update_statement.ts"
                   }
                 }
               },
@@ -238,11 +268,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 8
+                      "column": 8,
+                      "program": "for_update_statement.ts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 9
+                      "column": 9,
+                      "program": "for_update_statement.ts"
                     }
                   }
                 },
@@ -253,44 +285,52 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 12
+                      "column": 12,
+                      "program": "for_update_statement.ts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 13
+                      "column": 13,
+                      "program": "for_update_statement.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 8
+                    "column": 8,
+                    "program": "for_update_statement.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 13
+                    "column": 13,
+                    "program": "for_update_statement.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 4
+                  "column": 4,
+                  "program": "for_update_statement.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 13
+                  "column": 13,
+                  "program": "for_update_statement.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 4
+                "column": 4,
+                "program": "for_update_statement.ts"
               },
               "end": {
                 "line": 19,
-                "column": 13
+                "column": 13,
+                "program": "for_update_statement.ts"
               }
             }
           }
@@ -298,22 +338,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 38
+            "column": 38,
+            "program": "for_update_statement.ts"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "for_update_statement.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "for_update_statement.ts"
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 2,
+          "program": "for_update_statement.ts"
         }
       }
     }
@@ -321,11 +365,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "for_update_statement.ts"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "for_update_statement.ts"
     }
   }
 }

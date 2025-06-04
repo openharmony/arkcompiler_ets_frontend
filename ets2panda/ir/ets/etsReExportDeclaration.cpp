@@ -15,6 +15,7 @@
 
 #include "ir/ets/etsReExportDeclaration.h"
 #include "ir/astDump.h"
+#include "checker/checker.h"
 
 namespace ark::es2panda::ir {
 
@@ -49,6 +50,11 @@ void ETSReExportDeclaration::Iterate(const NodeTraverser &cb) const
 void ETSReExportDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSReExportDeclaration"}, {"ets_import_declarations", etsImportDeclarations_}});
+}
+
+checker::VerifiedType ETSReExportDeclaration::Check(checker::ETSChecker * /*checker*/)
+{
+    return {this, nullptr};
 }
 
 }  // namespace ark::es2panda::ir

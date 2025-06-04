@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,8 +23,8 @@ namespace ark::es2panda::evaluate {
 template <bool IS_PROLOGUE>
 void ScopedDebugInfoPlugin::RegisterPrologueEpilogue(ir::BlockStatement *block, ir::Statement *stmt)
 {
-    ASSERT(block);
-    ASSERT(stmt);
+    ES2PANDA_ASSERT(block);
+    ES2PANDA_ASSERT(stmt);
 
     auto iter = prologueEpilogueMap_.find(block);
     if (iter == prologueEpilogueMap_.end()) {

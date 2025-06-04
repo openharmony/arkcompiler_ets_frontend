@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 #include "varbinder/ETSBinder.h"
 #include "ir/base/classDefinition.h"
 #include "ir/expressions/identifier.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "checker/types/ets/etsObjectType.h"
@@ -55,7 +56,7 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration 
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = interfaceDecl;
     recordIdent_ = interfaceDecl->Id();
-    if (interfaceDecl->InternalName() == "") {
+    if (interfaceDecl->InternalName().Empty()) {
         interfaceDecl->SetInternalName(FormRecordName());
     }
 }
@@ -73,7 +74,7 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::AnnotationDeclaration *
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = annotationDecl;
     recordIdent_ = annotationDecl->GetBaseName();
-    if (annotationDecl->InternalName() == "") {
+    if (annotationDecl->InternalName().Empty()) {
         annotationDecl->SetInternalName(FormRecordName());
     }
 }
@@ -87,17 +88,10 @@ BoundContext::~BoundContext()
 util::StringView BoundContext::FormRecordName() const
 {
     if (prev_ == nullptr) {
-        if (recordTable_->program_->OmitModuleName()) {
-            return recordIdent_->Name();
-        }
-
-        const auto &moduleName = recordTable_->program_->ModuleName();
-
-        // concatenate the module name with the record ident
-        return util::UString(moduleName.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() +
-                                 recordIdent_->Name().Mutf8(),
-                             recordTable_->program_->Allocator())
-            .View();
+        util::UString recordName(recordTable_->program_->Allocator());
+        recordName.Append(recordTable_->program_->ModulePrefix());
+        recordName.Append(recordIdent_->Name());
+        return recordName.View();
     }
 
     util::UString recordName(recordTable_->program_->Allocator());
@@ -120,7 +114,7 @@ util::StringView RecordTable::RecordName() const
         return std::get<ir::ClassDefinition *>(record_)->InternalName();
     }
 
-    ASSERT(std::holds_alternative<ir::TSInterfaceDeclaration *>(record_));
+    ES2PANDA_ASSERT(std::holds_alternative<ir::TSInterfaceDeclaration *>(record_));
     return std::get<ir::TSInterfaceDeclaration *>(record_)->InternalName();
 }
 

@@ -66,9 +66,9 @@ checker::Type *ClassStaticBlock::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassStaticBlock::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassStaticBlock::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ir::ScriptFunction *ClassStaticBlock::Function()

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,15 +18,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
 void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -35,20 +27,36 @@ void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::
         func_->SetTransformedNode(transformationName, transformedNode);
         func_ = transformedNode->AsScriptFunction();
     }
+
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(func_);
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ArrowFunctionExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ArrowFunctionExpression"}, {"function", func_}});
+    dumper->Add({{"type", "ArrowFunctionExpression"},
+                 {"function", func_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ArrowFunctionExpression::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("(");
     if (func_->IsScriptFunction() && func_->AsScriptFunction()->IsAsyncFunc()) {
         dumper->Add("async ");
@@ -72,27 +80,35 @@ checker::Type *ArrowFunctionExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ArrowFunctionExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
-    : Expression(static_cast<Expression const &>(other))
+    : AnnotationAllowed<Expression>(static_cast<Expression const &>(other), allocator)
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
 }
 
 ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType)
@@ -100,10 +116,10 @@ ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChec
     /*
     Construct a synthetic Node with the correct ts_type_.
     */
-    ASSERT(returnType != nullptr);
+    ES2PANDA_ASSERT(returnType != nullptr);
     auto *ident = checker->AllocNode<ir::Identifier>(util::StringView(""), checker->Allocator());
-    auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
-    auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part);
+    auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident, checker->Allocator());
+    auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part, checker->Allocator());
     returnNode->SetTsType(returnType);
     return returnNode;
 }
@@ -134,10 +150,11 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     }
 
     ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
-    checker->CopyParams(Function()->Params(), params);
+    checker->CopyParams(Function()->Params(), params, nullptr);
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnNode);
-    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE,
+                                                             checker->Allocator());
     return funcType;
 }
 

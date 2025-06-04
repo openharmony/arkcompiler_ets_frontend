@@ -1,0 +1,26 @@
+LOAD SUCCESS
+PROCEED TO PARSE SUCCESS
+PROGRAM NODE: 
+
+class A {
+  public x: int = 1;
+  
+  public foo() {
+    if (true) {
+      (this).x = 2;
+    }
+  }
+  
+  public constructor() {}
+  
+}
+
+let a = new A()
+a.foo()
+assertEQ(a.x, 2)
+
+PROCEED TO BOUND SUCCESS
+PROCEED TO CHECKED SUCCESS
+PROCEED TO LOWERED SUCCESS
+PROCEED TO ASM SUCCESS
+PROCEED TO BIN SUCCESS

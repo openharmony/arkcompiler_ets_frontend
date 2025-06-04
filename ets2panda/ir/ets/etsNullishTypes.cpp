@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,39 +16,52 @@
 #include "etsNullishTypes.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 void ETSUndefinedType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                          [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSUndefinedType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSUndefinedType"}});
+    dumper->Add({{"type", "ETSUndefinedType"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSUndefinedType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("undefined");
 }
 
 void ETSUndefinedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSUndefinedType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *ETSUndefinedType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSUndefinedType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSUndefinedType::GetType([[maybe_unused]] checker::ETSChecker *checker)
@@ -59,45 +72,67 @@ checker::Type *ETSUndefinedType::GetType([[maybe_unused]] checker::ETSChecker *c
 
 ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSUndefinedType>(); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ir::ETSUndefinedType>(allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
 }
 
 void ETSNullType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                     [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSNullType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSNullType"}});
+    dumper->Add({{"type", "ETSNullType"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSNullType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("null");
 }
 
 void ETSNullType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSNullType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *ETSNullType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSNullType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSNullType::GetType([[maybe_unused]] checker::ETSChecker *checker)
@@ -108,12 +143,19 @@ checker::Type *ETSNullType::GetType([[maybe_unused]] checker::ETSChecker *checke
 
 ETSNullType *ETSNullType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSNullType>(); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ir::ETSNullType>(allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

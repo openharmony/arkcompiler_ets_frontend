@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_UPDATE_EXPRESSION_H
 
 #include "ir/expression.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
@@ -34,8 +34,8 @@ public:
     explicit UpdateExpression(Expression *const argument, lexer::TokenType const updateOperator, bool const isPrefix)
         : Expression(AstNodeType::UPDATE_EXPRESSION), argument_(argument), operator_(updateOperator), prefix_(isPrefix)
     {
-        ASSERT(updateOperator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
-               updateOperator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
+        ES2PANDA_ASSERT(updateOperator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
+                        updateOperator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
 
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -71,7 +71,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

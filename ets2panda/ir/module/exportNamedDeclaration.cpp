@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -44,7 +44,7 @@ void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb, std::s
             }
         }
 
-        for (auto *&it : specifiers_) {
+        for (auto *&it : VectorIterationGuard(specifiers_)) {
             if (auto *transformedNode = cb(it); it != transformedNode) {
                 it->SetTransformedNode(transformationName, transformedNode);
                 it = transformedNode->AsExportSpecifier();
@@ -55,7 +55,7 @@ void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb, std::s
 
 void ExportNamedDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
@@ -66,7 +66,7 @@ void ExportNamedDeclaration::Iterate(const NodeTraverser &cb) const
             cb(source_);
         }
 
-        for (auto *it : specifiers_) {
+        for (auto *it : VectorIterationGuard(specifiers_)) {
             cb(it);
         }
     }
@@ -109,8 +109,8 @@ checker::Type *ExportNamedDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ExportNamedDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ExportNamedDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,11 +26,20 @@ namespace ark::es2panda::ir {
 void TSConstructorType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     signature_.TransformChildren(cb, transformationName);
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSConstructorType::Iterate(const NodeTraverser &cb) const
 {
     signature_.Iterate(cb);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSConstructorType::Dump(ir::AstDumper *dumper) const
@@ -39,11 +48,15 @@ void TSConstructorType::Dump(ir::AstDumper *dumper) const
                  {"params", signature_.Params()},
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
                  {"returnType", signature_.ReturnType()},
-                 {"abstract", AstDumper::Optional(abstract_)}});
+                 {"abstract", AstDumper::Optional(abstract_)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSConstructorType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSConstructorType");
 }
 
@@ -66,8 +79,8 @@ checker::Type *TSConstructorType::GetType(checker::TSChecker *checker)
     return checker->CheckTypeCached(this);
 }
 
-checker::Type *TSConstructorType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSConstructorType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

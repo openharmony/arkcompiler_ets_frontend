@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_ITERATE_AST_VISITOR_H
 
 #include "AstVisitor.h"
+#include "ir/brokenTypeNode.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/blockExpression.h"
 #include "ir/ets/etsUnionType.h"
@@ -32,9 +33,9 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/dummyNode.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
-#include "ir/statements/namespaceDeclaration.h"
 
 namespace ark::es2panda::ir::visitor {
 
@@ -104,7 +105,7 @@ public:
 
     void HandleNode(ir::AstNode * /*node*/) final
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 };
 

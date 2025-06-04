@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,17 +26,31 @@ namespace ark::es2panda::ir {
 void TSBigintKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                         [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void TSBigintKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void TSBigintKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void TSBigintKeyword::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSBigIntKeyword"}});
+    dumper->Add({{"type", "TSBigIntKeyword"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSBigintKeyword::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSBigintKeyword");
 }
 
@@ -59,8 +73,8 @@ checker::Type *TSBigintKeyword::GetType([[maybe_unused]] checker::TSChecker *che
     return checker->GlobalBigintType();
 }
 
-checker::Type *TSBigintKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSBigintKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

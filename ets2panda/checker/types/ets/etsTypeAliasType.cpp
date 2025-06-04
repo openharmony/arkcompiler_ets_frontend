@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,7 +63,7 @@ void ETSTypeAliasType::ToString(std::stringstream &ss, bool precise) const
 void ETSTypeAliasType::ToAssemblerType(std::stringstream &ss) const
 {
     if (targetType_ == nullptr || recursionCount_) {
-        ss << "std.core.Object";
+        ss << compiler::Signatures::BUILTIN_OBJECT;
         return;
     }
 
@@ -75,7 +75,7 @@ void ETSTypeAliasType::ToAssemblerType(std::stringstream &ss) const
 void ETSTypeAliasType::ToAssemblerTypeWithRank(std::stringstream &ss) const
 {
     if (targetType_ == nullptr || recursionCount_) {
-        ss << "std.core.Object";
+        ss << compiler::Signatures::BUILTIN_OBJECT;
         return;
     }
 
@@ -259,7 +259,7 @@ bool ETSTypeAliasType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVec
 
 void ETSTypeAliasType::ApplySubstitution(TypeRelation *relation)
 {
-    ASSERT(base_ == nullptr);
+    ES2PANDA_ASSERT(base_ == nullptr);
 
     const util::StringView hash = relation->GetChecker()->AsETSChecker()->GetHashFromTypeArguments(typeArguments_);
     EmplaceInstantiatedType(hash, this);

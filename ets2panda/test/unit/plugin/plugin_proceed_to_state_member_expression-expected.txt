@@ -1,0 +1,25 @@
+LOAD SUCCESS
+PROCEED TO PARSE SUCCESS
+PROGRAM NODE: 
+
+class A {
+  public name: string = "xtyi";
+  
+  public age: int = 18;
+  
+  public address: string = "china";
+  
+  public constructor() {}
+  
+}
+
+let a = new A()
+a.name
+a.age
+a.address
+
+PROCEED TO BOUND SUCCESS
+PROCEED TO CHECKED SUCCESS
+PROCEED TO LOWERED SUCCESS
+PROCEED TO ASM SUCCESS
+PROCEED TO BIN SUCCESS

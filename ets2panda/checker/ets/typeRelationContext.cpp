@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,14 +14,6 @@
  */
 
 #include "typeRelationContext.h"
-#include "boxingConverter.h"
-#include "macros.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
-#include "varbinder/declaration.h"
-#include "checker/types/ets/etsUnionType.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/ts/tsTypeParameter.h"
 
 namespace ark::es2panda::checker {
 bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
@@ -34,17 +26,16 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
 
     for (uint32_t index = 0; index < node->Elements().size(); index++) {
         ir::Expression *currentArrayElem = node->Elements()[index];
-        auto *const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
+        auto const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
 
         if (!AssignmentContext(relation, currentArrayElem,
                                currentArrayElem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),
-                               currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW)
+                               currentArrayElem->Start(), std::nullopt, TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.06-CPP,G.FMT.02-CPP) project code style
                  .IsAssignable()) {
-            relation->GetChecker()->LogTypeError(
-                {"Array element at index ", index, " with type '", currentArrayElementType,
-                 "' is not compatible with the target array element type '", target->ElementType(), "'"},
-                currentArrayElem->Start());
+            relation->GetChecker()->LogError(diagnostic::ARRAY_ELEMENT_INIT_TYPE_INCOMPAT,
+                                             {index, currentArrayElementType, target->ElementType()},
+                                             currentArrayElem->Start());
             ok = false;
         }
     }
@@ -74,6 +65,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     return false;
 }
 
+// CC-OFFNXT(huge_depth[C++]) solid logic
 void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs)
 {
     ArenaVector<Type *> typeArgTypes(checker_->Allocator()->Adapter());
@@ -91,9 +83,12 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                 checker_->Relation()->SetNode(it);
 
                 auto *const boxedTypeArg = checker_->MaybeBoxInRelation(paramType);
-                ASSERT(boxedTypeArg);
-                paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                      checker_->GetGlobalTypesHolder());
+                if (boxedTypeArg != nullptr) {
+                    paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
+                                                          checker_->GetGlobalTypesHolder());
+                } else {
+                    ES2PANDA_UNREACHABLE();
+                }
             }
 
             typeArgTypes.push_back(paramType);
@@ -101,13 +96,25 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     }
 
     while (typeArgTypes.size() < type->TypeArguments().size()) {
-        auto *defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
-        typeArgTypes.push_back(defaultType);
+        Type *defaultType = nullptr;
+
+        if (type->TypeArguments().at(typeArgTypes.size())->IsETSTypeParameter()) {
+            defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
+        } else {
+            defaultType = type->TypeArguments().at(typeArgTypes.size());
+        }
+
+        if (defaultType != nullptr && !defaultType->IsTypeError()) {
+            typeArgTypes.emplace_back(defaultType);
+        } else {
+            ES2PANDA_ASSERT(checker_->IsAnyError());
+            typeArgTypes.emplace_back(checker_->GlobalETSObjectType());
+        }
     }
 
     auto pos = (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start;
     InstantiateType(type, std::move(typeArgTypes), pos);
-    ASSERT(result_->IsETSObjectType());
+    ES2PANDA_ASSERT(result_->IsETSObjectType());
     result_->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NO_OPTS);
 }
 
@@ -129,11 +136,11 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
             continue;
         }
         // NOTE(vpukhov): #19701 void refactoring
-        ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
+        ES2PANDA_ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
         if (!relation->IsAssignableTo(typeArg, constraint)) {
-            checker->LogTypeError(  // NOTE(vpukhov): refine message
-                {"Type ", typeArg, " is not assignable to", " constraint type ", constraint}, pos);
+            // NOTE(vpukhov): refine message
+            checker->LogError(diagnostic::INIT_NOT_ASSIGNABLE, {typeArg, constraint}, pos);
         }
     }
 }
@@ -164,7 +171,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
         if (!typeParams[idx]->IsETSTypeParameter()) {
             continue;
         }
-        ETSChecker::EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
+        checker_->EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
     }
 
     ConstraintCheckScope ctScope(checker_);

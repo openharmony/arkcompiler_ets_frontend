@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "typeRelation.h"
 
 #include "checker/checker.h"
+#include "checker/ETSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
@@ -71,16 +72,30 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
     return IsTrue();
 }
 
-bool TypeRelation::IsCompatibleTo(Signature *source, Signature *target)
+bool TypeRelation::SignatureIsIdenticalTo(Signature *source, Signature *target)
 {
     if (source == target) {
         return Result(true);
     }
 
-    result_ = RelationResult::FALSE;
-    target->Compatible(this, source);
+    Result(false);
+    if (target->IsSubtypeOf(this, source), IsTrue()) {
+        if (source->IsSubtypeOf(this, target), IsTrue()) {
+            return Result(true);
+        }
+    }
+    return Result(false);
+}
 
-    return result_ == RelationResult::TRUE;
+bool TypeRelation::SignatureIsSupertypeOf(Signature *super, Signature *sub)
+{
+    if (super == sub) {
+        return Result(true);
+    }
+
+    Result(false);
+    sub->IsSubtypeOf(this, super);
+    return IsTrue();
 }
 
 bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
@@ -99,6 +114,10 @@ bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
 // NOTE: applyNarrowing -> flag
 bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
+    if (source == target) {
+        return Result(true);
+    }
+
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
     if (result_ == RelationResult::CACHE_MISS) {
         // NOTE: we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
@@ -117,7 +136,6 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
         }
 
         result_ = RelationResult::FALSE;
-
         if (!source->AssignmentSource(this, target)) {
             target->AssignmentTarget(this, source);
         }
@@ -174,7 +192,8 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
 
         // NOTE: Can't cache if the node has BoxingUnboxingFlags. These flags should be stored and restored on the node
         // on cache hit.
-        if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE) {
+        if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE &&
+            !node_->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
             checker_->UncheckedCastableResult().cached.insert(
                 {{source->Id(), target->Id()}, {result_, RelationType::UNCHECKED_CASTABLE}});
         }
@@ -185,8 +204,39 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
     return result_ == RelationResult::TRUE;
 }
 
+bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
+{
+    if (!target->IsETSReferenceType() || !source->IsETSReferenceType()) {
+        return false;
+    }
+    if (!target->IsETSObjectType() || !source->IsETSObjectType()) {
+        return false;
+    }
+    if (!target->AsETSObjectType()->IsBoxedPrimitive() || !source->AsETSObjectType()->IsBoxedPrimitive()) {
+        return false;
+    }
+
+    ETSChecker *checker = this->GetChecker()->AsETSChecker();
+
+    Type *targetUnboxedType = checker->MaybeUnboxType(target);
+    Type *sourceUnboxedType = checker->MaybeUnboxType(source);
+
+    if (targetUnboxedType == nullptr || sourceUnboxedType == nullptr) {
+        return false;
+    }
+    if (!targetUnboxedType->IsETSPrimitiveType() || !sourceUnboxedType->IsETSPrimitiveType()) {
+        return false;
+    }
+
+    return this->Result(this->IsAssignableTo(sourceUnboxedType, targetUnboxedType));
+}
+
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
+    if (super == sub) {
+        return Result(true);
+    }
+
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
     if (result_ == RelationResult::CACHE_MISS) {
         if (IsIdenticalTo(super, sub)) {
@@ -194,7 +244,6 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
         }
 
         result_ = RelationResult::FALSE;
-
         if (super->IsSupertypeOf(this, sub), !IsTrue()) {
             sub->IsSubtypeOf(this, super);
         }
@@ -207,14 +256,33 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
     return result_ == RelationResult::TRUE;
 }
 
-void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
+bool TypeRelation::CheckVarianceRecursively(Type *type, VarianceFlag varianceFlag)
 {
-    checker_->LogTypeError(errMsg, loc);
+    type->CheckVarianceRecursively(this, varianceFlag);
+    return result_ == RelationResult::TRUE;
 }
 
-void TypeRelation::RaiseError(std::initializer_list<TypeErrorMessageElement> list,
+VarianceFlag TypeRelation::TransferVariant(VarianceFlag variance, VarianceFlag posVariance)
+{
+    if (posVariance == VarianceFlag::INVARIANT || variance == VarianceFlag::INVARIANT) {
+        return VarianceFlag::INVARIANT;
+    }
+
+    if (posVariance == VarianceFlag::COVARIANT) {
+        return variance;
+    }
+
+    return variance == VarianceFlag::CONTRAVARIANT ? VarianceFlag::COVARIANT : VarianceFlag::CONTRAVARIANT;
+}
+
+void TypeRelation::RaiseError(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &loc) const
+{
+    RaiseError(kind, {}, loc);
+}
+
+void TypeRelation::RaiseError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
                               const lexer::SourcePosition &loc) const
 {
-    checker_->LogTypeError(list, loc);
+    checker_->LogError(kind, list, loc);
 }
 }  // namespace ark::es2panda::checker

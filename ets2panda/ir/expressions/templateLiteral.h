@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,8 +31,12 @@ public:
     NO_COPY_SEMANTIC(TemplateLiteral);
     NO_MOVE_SEMANTIC(TemplateLiteral);
 
-    explicit TemplateLiteral(ArenaVector<TemplateElement *> &&quasis, ArenaVector<Expression *> &&expressions)
-        : Expression(AstNodeType::TEMPLATE_LITERAL), quasis_(std::move(quasis)), expressions_(std::move(expressions))
+    explicit TemplateLiteral(ArenaVector<TemplateElement *> &&quasis, ArenaVector<Expression *> &&expressions,
+                             util::StringView multilineString)
+        : Expression(AstNodeType::TEMPLATE_LITERAL),
+          quasis_(std::move(quasis)),
+          expressions_(std::move(expressions)),
+          multilineString_(multilineString)
     {
     }
 
@@ -57,7 +61,8 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    util::StringView GetMultilineString() const;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -67,6 +72,7 @@ public:
 private:
     ArenaVector<TemplateElement *> quasis_;
     ArenaVector<Expression *> expressions_;
+    util::StringView multilineString_;
 };
 }  // namespace ark::es2panda::ir
 

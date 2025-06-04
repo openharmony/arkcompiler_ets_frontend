@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,7 +46,8 @@ es2panda_AstNode *CreateNewFunction(int num, es2panda_Context *ctx)
     es2panda_AstNode *body = impl->CreateBlockStatement(ctx, nullptr, 0);
     es2panda_AstNode *scriptFunction = impl->CreateScriptFunction(
         ctx, body,
-        impl->CreateFunctionSignature(ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, PRIMITIVE_TYPE_VOID)),
+        impl->CreateFunctionSignature(ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, PRIMITIVE_TYPE_VOID),
+                                      false),
         SCRIPT_FUNCTION_FLAGS_NONE, MODIFIER_FLAGS_NONE);
     impl->AstNodeSetParent(ctx, body, scriptFunction);
     es2panda_AstNode *ident = impl->CreateIdentifier1(ctx, funcName);
@@ -91,7 +92,7 @@ void FindClass(es2panda_AstNode *ast)
 void e2p_test_plugin_ets_benchmark_test_AfterParse(es2panda_Context *ctx)
 {
     globalContext = ctx;
-    es2panda_AstNode *ast = impl->ProgramAst(impl->ContextProgram(ctx));
+    es2panda_AstNode *ast = impl->ProgramAst(ctx, impl->ContextProgram(ctx));
     impl->AstNodeIterateConst(ctx, ast, FindClass);
     puts(impl->AstNodeDumpEtsSrcConst(ctx, ast));
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,11 +17,8 @@
 
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "macros.h"
 
 namespace ark::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -30,22 +27,42 @@ void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view 
         elementType_->SetTransformedNode(transformationName, transformedNode);
         elementType_ = static_cast<TypeNode *>(transformedNode);
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSArrayType::Iterate(const NodeTraverser &cb) const
 {
     cb(elementType_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSArrayType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSArrayType"}, {"elementType", elementType_}});
+    dumper->Add({{"type", "TSArrayType"}, {"elementType", elementType_}, {"annotations", Annotations()}});
 }
 
 void TSArrayType::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(elementType_);
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+    ES2PANDA_ASSERT(elementType_);
+    if (elementType_->IsETSUnionType()) {
+        dumper->Add("(");
+    }
+
     elementType_->Dump(dumper);
+
+    if (elementType_->IsETSUnionType()) {
+        dumper->Add(")");
+    }
     dumper->Add("[]");
 }
 
@@ -69,14 +86,14 @@ checker::Type *TSArrayType::GetType([[maybe_unused]] checker::TSChecker *checker
     return checker->Allocator()->New<checker::ArrayType>(elementType_->GetType(checker));
 }
 
-checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSArrayType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    checker::Type *type = checker->CreateETSArrayType(elementType_->GetType(checker));
+    checker::Type *type = checker->CreateETSArrayType(elementType_->GetType(checker), IsReadonlyType());
     if (IsReadonlyType()) {
         type = checker->GetReadonlyType(type);
     }
@@ -87,22 +104,27 @@ checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
+    auto *const clone = allocator->New<TSArrayType>(elementTypeClone, allocator);
 
-    if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
-        clone->AddModifier(flags_);
+    clone->AddModifier(flags_);
 
-        if (elementTypeClone != nullptr) {
-            elementTypeClone->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        return clone;
+    if (elementTypeClone != nullptr) {
+        elementTypeClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
-}
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
 
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(range_);
+    return clone;
+}
 }  // namespace ark::es2panda::ir

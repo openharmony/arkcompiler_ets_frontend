@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,24 +14,19 @@
  */
 
 #include "typeNode.h"
-#include "astNode.h"
 #include "opaqueTypeNode.h"
-#include "es2panda.h"
 
 namespace ark::es2panda::ir {
 
 TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const type = TsType(); type != nullptr) {
-        if (auto *const clone = allocator->New<OpaqueTypeNode>(type); clone != nullptr) {
-            if (parent != nullptr) {
-                clone->SetParent(parent);
-            }
-            return clone;
+        auto *const clone = allocator->New<OpaqueTypeNode>(type, allocator);
+        if (parent != nullptr) {
+            clone->SetParent(parent);
         }
-        throw Error(ErrorType::GENERIC, "", "Unsuccessful allocation during cloning.");
+        return clone;
     }
-
     return this;
 }
 

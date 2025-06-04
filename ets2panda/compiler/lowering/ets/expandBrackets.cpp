@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "parser/ETSparser.h"
-#include "varbinder/ETSBinder.h"
-#include "varbinder/scope.h"
 
 namespace ark::es2panda::compiler {
 
@@ -49,7 +46,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
         dimType = unboxed;
     }
-    if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+    if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
         return newInstanceExpression;
     }
 
@@ -61,7 +58,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
     auto const identName = GenName(checker->Allocator());
-    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
     auto *const newInstanceParent = newInstanceExpression->Parent();
 
     auto *blockExpression = parser->CreateFormattedExpression(FORMAT_NEW_ARRAY_EXPRESSION, identName, exprType,
@@ -98,7 +95,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
         if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
             dimType = unboxed;
         }
-        if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
             continue;
         }
 
@@ -108,7 +105,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
             newInstanceExpression->Dimensions()[i] = castedDimension;
         } else {
             auto const identName = GenName(checker->Allocator());
-            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
 
             auto *blockExpression = parser
                                         ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, identName,
@@ -150,12 +147,12 @@ ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
     return blockExpression;
 }
 
-bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ExpandBracketsPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

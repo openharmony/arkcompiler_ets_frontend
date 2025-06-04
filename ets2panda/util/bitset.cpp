@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 #include "bitset.h"
 #include "securec.h"
 
-#include "macros.h"
+#include "util/diagnosticEngine.h"
 
 #include <cstring>
 #include <utility>
@@ -51,7 +51,7 @@ void BitSet::Set(size_t pos) noexcept
 
 void BitSet::Set(size_t pos, bool value) noexcept
 {
-    ASSERT(pos < size_);
+    ES2PANDA_ASSERT(pos < size_);
     size_t idx = pos >> SHIFT_OFFSET;
     size_t slot = pos & SHIFT_MASK;
 
@@ -64,7 +64,7 @@ void BitSet::Set(size_t pos, bool value) noexcept
 
 bool BitSet::Test(size_t pos) const noexcept
 {
-    ASSERT(pos < size_);
+    ES2PANDA_ASSERT(pos < size_);
     size_t idx = pos >> SHIFT_OFFSET;
     size_t slot = pos & SHIFT_MASK;
 

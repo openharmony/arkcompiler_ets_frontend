@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/ts/tsQualifiedName.h"
-#include "ir/ets/etsTypeReferencePart.h"
 
 namespace ark::es2panda::ir {
 void ETSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -31,11 +27,20 @@ void ETSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_
         part_->SetTransformedNode(transformationName, transformedNode);
         part_ = transformedNode->AsETSTypeReferencePart();
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSTypeReference::Iterate(const NodeTraverser &cb) const
 {
     cb(part_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 ir::Identifier *ETSTypeReference::BaseName() const
@@ -63,12 +68,15 @@ ir::Identifier *ETSTypeReference::BaseName() const
 
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}});
+    dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(part_ != nullptr);
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+    ES2PANDA_ASSERT(part_ != nullptr);
     part_->Dump(dumper);
 }
 
@@ -86,38 +94,46 @@ checker::Type *ETSTypeReference::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSTypeReference::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
-
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(part_->GetType(checker));
+    if (TsType() != nullptr) {
+        return TsType();
     }
-    return TsType();
+    auto *type = part_->GetType(checker);
+    if (IsReadonlyType()) {
+        type = checker->GetReadonlyType(type);
+    }
+    return SetTsType(type);
 }
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const partClone = part_ != nullptr ? part_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
+    auto *const clone = allocator->New<ETSTypeReference>(partClone, allocator);
 
-    if (auto *const clone = allocator->New<ETSTypeReference>(partClone); clone != nullptr) {
-        if (partClone != nullptr) {
-            partClone->SetParent(clone);
-        }
-
-        clone->flags_ = flags_;
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (partClone != nullptr) {
+        partClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->flags_ = flags_;
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

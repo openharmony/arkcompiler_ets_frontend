@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,24 +17,30 @@
 #define ES2PANDA_IR_TS_TYPE_PARAMETER_H
 
 #include "ir/expression.h"
+#include "ir/annotationAllowed.h"
 
 namespace ark::es2panda::ir {
 class Identifier;
 
-class TSTypeParameter : public Expression {
+class TSTypeParameter : public AnnotationAllowed<Expression> {
 public:
-    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType)
-        : Expression(AstNodeType::TS_TYPE_PARAMETER), name_(name), constraint_(constraint), defaultType_(defaultType)
-    {
-    }
-
-    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType, ModifierFlags flags)
-        : Expression(AstNodeType::TS_TYPE_PARAMETER, flags),
+    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType,
+                             ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(AstNodeType::TS_TYPE_PARAMETER, allocator),
           name_(name),
           constraint_(constraint),
           defaultType_(defaultType)
     {
-        ASSERT(flags == ModifierFlags::NONE || flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
+    }
+
+    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType, ModifierFlags flags,
+                             ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(AstNodeType::TS_TYPE_PARAMETER, flags, allocator),
+          name_(name),
+          constraint_(constraint),
+          defaultType_(defaultType)
+    {
+        ES2PANDA_ASSERT(flags == ModifierFlags::NONE || flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
     }
 
     const Identifier *Name() const
@@ -79,7 +85,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

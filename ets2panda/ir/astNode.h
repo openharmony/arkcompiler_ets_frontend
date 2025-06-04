@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,12 @@
 #ifndef ES2PANDA_IR_AST_NODE_H
 #define ES2PANDA_IR_AST_NODE_H
 
+#include "es2panda.h"
 #include "astNodeFlags.h"
 #include "astNodeMapping.h"
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -31,6 +32,7 @@ namespace ark::es2panda::checker {
 class TSChecker;
 class ETSChecker;
 class Type;
+class VerifiedType;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::varbinder {
@@ -62,6 +64,36 @@ enum class AstNodeType {
         AST_NODE_REINTERPRET_MAPPING(DECLARE_NODE_TYPES)
 #undef DECLARE_NODE_TYPES
 };
+
+// CC-OFFNXT(G.PRE.02) code generation
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define STRING_FROM_NODE_TYPE(nodeType, className)                          \
+    case AstNodeType::nodeType: { /* CC-OFF(G.PRE.02) qualified name part*/ \
+        return #nodeType;         /* CC-OFF(G.PRE.05) function gen */       \
+    }
+// CC-OFFNXT(G.PRE.02) code generation
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define STRING_FROM_NODE_TYPE_REINTERPRET(nodeType1, nodeType2, baseClass, reinterpretClass) \
+    case AstNodeType::nodeType1: { /* CC-OFF(G.PRE.02) qualified name part*/                 \
+        return #nodeType1;         /* CC-OFF(G.PRE.05) function gen */                       \
+    }                                                                                        \
+    case AstNodeType::nodeType2: { /* CC-OFF(G.PRE.02) qualified name part*/                 \
+        return #nodeType2;         /* CC-OFF(G.PRE.05) function gen */                       \
+    }
+
+inline std::string_view ToString(AstNodeType nodeType)
+{
+    switch (nodeType) {
+        AST_NODE_MAPPING(STRING_FROM_NODE_TYPE)
+        AST_NODE_REINTERPRET_MAPPING(STRING_FROM_NODE_TYPE_REINTERPRET)
+        default:
+            LOG(FATAL, ES2PANDA) << "Invalid 'AstNodeType'";
+            ES2PANDA_UNREACHABLE();
+    }
+}
+
+#undef STRING_FROM_NODE_TYPE
+#undef STRING_FROM_NODE_TYPE
 
 // Forward declarations
 class AstDumper;
@@ -141,14 +173,19 @@ public:
 
     Typed<AstNode> *AsTyped()
     {
-        ASSERT(IsTyped());
+        ES2PANDA_ASSERT(IsTyped());
         return reinterpret_cast<Typed<AstNode> *>(this);
     }
 
     Typed<AstNode> const *AsTyped() const
     {
-        ASSERT(IsTyped());
+        ES2PANDA_ASSERT(IsTyped());
         return reinterpret_cast<Typed<AstNode> const *>(this);
+    }
+
+    bool IsBrokenStatement() const
+    {
+        return IsEmptyStatement();
     }
 
 /* CC-OFFNXT(G.PRE.06) solid logic */
@@ -157,13 +194,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     className *As##className()                                                                        \
     {                                                                                                 \
-        ASSERT(Is##className());                                                                      \
+        ES2PANDA_ASSERT(Is##className());                                                             \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<className *>(this);                                                   \
     }                                                                                                 \
     const className *As##className() const                                                            \
     {                                                                                                 \
-        ASSERT(Is##className());                                                                      \
+        ES2PANDA_ASSERT(Is##className());                                                             \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const className *>(this);                                             \
     }
@@ -176,26 +213,26 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     baseClass *As##baseClass()                                                                        \
     {                                                                                                 \
-        ASSERT(Is##baseClass());                                                                      \
+        ES2PANDA_ASSERT(Is##baseClass());                                                             \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<baseClass *>(this);                                                   \
     }                                                                                                 \
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     baseClass *As##reinterpretClass()                                                                 \
     {                                                                                                 \
-        ASSERT(Is##reinterpretClass());                                                               \
+        ES2PANDA_ASSERT(Is##reinterpretClass());                                                      \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<baseClass *>(this);                                                   \
     }                                                                                                 \
     const baseClass *As##baseClass() const                                                            \
     {                                                                                                 \
-        ASSERT(Is##baseClass());                                                                      \
+        ES2PANDA_ASSERT(Is##baseClass());                                                             \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const baseClass *>(this);                                             \
     }                                                                                                 \
     const baseClass *As##reinterpretClass() const                                                     \
     {                                                                                                 \
-        ASSERT(Is##reinterpretClass());                                                               \
+        ES2PANDA_ASSERT(Is##reinterpretClass());                                                      \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const baseClass *>(this);                                             \
     }
@@ -204,25 +241,25 @@ public:
 
     Expression *AsExpression()
     {
-        ASSERT(IsExpression());
+        ES2PANDA_ASSERT(IsExpression());
         return reinterpret_cast<Expression *>(this);
     }
 
     const Expression *AsExpression() const
     {
-        ASSERT(IsExpression());
+        ES2PANDA_ASSERT(IsExpression());
         return reinterpret_cast<const Expression *>(this);
     }
 
     Statement *AsStatement()
     {
-        ASSERT(IsStatement());
+        ES2PANDA_ASSERT(IsStatement());
         return reinterpret_cast<Statement *>(this);
     }
 
     const Statement *AsStatement() const
     {
-        ASSERT(IsStatement());
+        ES2PANDA_ASSERT(IsStatement());
         return reinterpret_cast<const Statement *>(this);
     }
 
@@ -294,7 +331,7 @@ public:
 
     virtual void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators)
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     virtual bool CanHaveDecorator([[maybe_unused]] bool inTs) const
@@ -476,7 +513,7 @@ public:
     ir::ClassElement *AsClassElement();
     const ir::ClassElement *AsClassElement() const;
 
-    static varbinder::Scope *EnclosingScope(const ir::AstNode *expr);
+    [[nodiscard]] static varbinder::Scope *EnclosingScope(const ir::AstNode *expr) noexcept;
 
     [[nodiscard]] virtual bool IsScopeBearer() const noexcept;
     [[nodiscard]] virtual varbinder::Scope *Scope() const noexcept;
@@ -510,7 +547,7 @@ public:
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;
-    virtual checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
+    virtual checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
 
     void SetTransformedNode(std::string_view transformationName, AstNode *transformedNode);
 
@@ -526,6 +563,8 @@ public:
      */
     void SetOriginalNode(AstNode *originalNode) noexcept;
     AstNode *OriginalNode() const noexcept;
+
+    virtual void CleanUp();
 
 protected:
     AstNode(AstNode const &other);
@@ -584,6 +623,42 @@ protected:
 
 private:
     TypeNode *typeAnnotation_ {};
+};
+
+/**
+ * This class is a wrapper for vector and ensures that vector does not invalidate iterators during iteration.
+ */
+template <typename T>
+class VectorIterationGuard {
+public:
+    using ValueType = typename T::value_type;
+    static_assert(std::is_same_v<std::remove_const_t<T>, ArenaVector<ValueType>>);
+
+    explicit VectorIterationGuard(T &vector) : vector_(vector), data_(vector_.data(), vector_.size()) {}
+    NO_COPY_SEMANTIC(VectorIterationGuard);
+    NO_MOVE_SEMANTIC(VectorIterationGuard);
+
+    ~VectorIterationGuard()
+    {
+        // check that `begin` iterator remained valid
+        ES2PANDA_ASSERT(data_.begin() == vector_.data());
+        // check that there were no `push_back`s or other expansions which potentially cause reallocation
+        ES2PANDA_ASSERT(data_.size() == vector_.size());
+    }
+
+    auto begin()  // NOLINT(readability-identifier-naming)
+    {
+        return vector_.begin();
+    }
+
+    auto end()  // NOLINT(readability-identifier-naming)
+    {
+        return vector_.end();
+    }
+
+private:
+    T &vector_;
+    Span<const ValueType> data_;
 };
 
 }  // namespace ark::es2panda::ir

@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 22
+            "column": 22,
+            "program": "from-soft-keyword-2.ets"
           },
           "end": {
             "line": 16,
-            "column": 32
+            "column": 32,
+            "program": "from-soft-keyword-2.ets"
           }
         }
       },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 13
+                "column": 13,
+                "program": "from-soft-keyword-2.ets"
               },
               "end": {
                 "line": 16,
-                "column": 16
+                "column": 16,
+                "program": "from-soft-keyword-2.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "from-soft-keyword-2.ets"
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "from-soft-keyword-2.ets"
             }
           }
         }
@@ -50,11 +56,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "from-soft-keyword-2.ets"
         },
         "end": {
           "line": 16,
-          "column": 33
+          "column": 33,
+          "program": "from-soft-keyword-2.ets"
         }
       }
     },
@@ -72,11 +80,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "from-soft-keyword-2.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "from-soft-keyword-2.ets"
                 }
               }
             },
@@ -96,11 +106,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 5
+                      "column": 5,
+                      "program": "from-soft-keyword-2.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 9
+                      "column": 9,
+                      "program": "from-soft-keyword-2.ets"
                     }
                   }
                 },
@@ -118,11 +130,13 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 16
+                            "column": 16,
+                            "program": "from-soft-keyword-2.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 19
+                            "column": 19,
+                            "program": "from-soft-keyword-2.ets"
                           }
                         }
                       },
@@ -130,22 +144,26 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 10
+                          "column": 10,
+                          "program": "from-soft-keyword-2.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 19
+                          "column": 19,
+                          "program": "from-soft-keyword-2.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 10
+                        "column": 10,
+                        "program": "from-soft-keyword-2.ets"
                       },
                       "end": {
                         "line": 19,
-                        "column": 19
+                        "column": 19,
+                        "program": "from-soft-keyword-2.ets"
                       }
                     }
                   }
@@ -155,33 +173,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "from-soft-keyword-2.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 25
+                      "column": 25,
+                      "program": "from-soft-keyword-2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 9
+                    "column": 9,
+                    "program": "from-soft-keyword-2.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 25
+                    "column": 25,
+                    "program": "from-soft-keyword-2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "from-soft-keyword-2.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 25
+                  "column": 25,
+                  "program": "from-soft-keyword-2.ets"
                 }
               }
             },
@@ -190,11 +214,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "from-soft-keyword-2.ets"
               },
               "end": {
                 "line": 19,
-                "column": 26
+                "column": 26,
+                "program": "from-soft-keyword-2.ets"
               }
             }
           }
@@ -202,11 +228,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 16
+            "column": 16,
+            "program": "from-soft-keyword-2.ets"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "from-soft-keyword-2.ets"
           }
         }
       },
@@ -217,11 +245,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 11
+            "column": 11,
+            "program": "from-soft-keyword-2.ets"
           },
           "end": {
             "line": 18,
-            "column": 15
+            "column": 15,
+            "program": "from-soft-keyword-2.ets"
           }
         }
       },
@@ -229,11 +259,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "from-soft-keyword-2.ets"
         },
         "end": {
           "line": 22,
-          "column": 9
+          "column": 9,
+          "program": "from-soft-keyword-2.ets"
         }
       }
     },
@@ -247,11 +279,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "from-soft-keyword-2.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "from-soft-keyword-2.ets"
             }
           }
         },
@@ -267,11 +301,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -291,11 +327,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -309,33 +347,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -344,11 +388,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "from-soft-keyword-2.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "from-soft-keyword-2.ets"
               }
             }
           },
@@ -361,11 +407,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "from-soft-keyword-2.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 14
+                  "column": 14,
+                  "program": "from-soft-keyword-2.ets"
                 }
               }
             },
@@ -385,11 +433,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 10
+                      "column": 10,
+                      "program": "from-soft-keyword-2.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 14
+                      "column": 14,
+                      "program": "from-soft-keyword-2.ets"
                     }
                   }
                 },
@@ -402,11 +452,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 18
+                      "column": 18,
+                      "program": "from-soft-keyword-2.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 22
+                      "column": 22,
+                      "program": "from-soft-keyword-2.ets"
                     }
                   }
                 },
@@ -426,11 +478,13 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "from-soft-keyword-2.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "from-soft-keyword-2.ets"
                                 }
                               }
                             },
@@ -438,11 +492,13 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 9
+                                "column": 9,
+                                "program": "from-soft-keyword-2.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 13
+                                "column": 13,
+                                "program": "from-soft-keyword-2.ets"
                               }
                             }
                           },
@@ -452,22 +508,26 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 21
+                                "column": 21,
+                                "program": "from-soft-keyword-2.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 23
+                                "column": 23,
+                                "program": "from-soft-keyword-2.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 9
+                              "column": 9,
+                              "program": "from-soft-keyword-2.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 23
+                              "column": 23,
+                              "program": "from-soft-keyword-2.ets"
                             }
                           }
                         }
@@ -476,11 +536,13 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "from-soft-keyword-2.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 24
+                          "column": 24,
+                          "program": "from-soft-keyword-2.ets"
                         }
                       }
                     }
@@ -488,33 +550,39 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 23
+                      "column": 23,
+                      "program": "from-soft-keyword-2.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "from-soft-keyword-2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 10
+                    "column": 10,
+                    "program": "from-soft-keyword-2.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "from-soft-keyword-2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "from-soft-keyword-2.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "from-soft-keyword-2.ets"
                 }
               }
             },
@@ -523,11 +591,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 1
+                "column": 1,
+                "program": "from-soft-keyword-2.ets"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "from-soft-keyword-2.ets"
               }
             }
           }
@@ -535,22 +605,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "from-soft-keyword-2.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "from-soft-keyword-2.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "from-soft-keyword-2.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "from-soft-keyword-2.ets"
         }
       }
     }
@@ -558,11 +632,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "from-soft-keyword-2.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "from-soft-keyword-2.ets"
     }
   }
 }

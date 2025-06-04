@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb,
@@ -56,7 +54,7 @@ void ETSNewMultiDimArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 void ETSNewMultiDimArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(typeReference_);
+    ES2PANDA_ASSERT(typeReference_);
     typeReference_->Dump(dumper);
     for (auto dim : dimensions_) {
         dumper->Add("[");
@@ -79,9 +77,9 @@ checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::TSChecker *
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
@@ -100,15 +98,11 @@ ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
 ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                                     AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ETSNewMultiDimArrayInstanceExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<ETSNewMultiDimArrayInstanceExpression>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

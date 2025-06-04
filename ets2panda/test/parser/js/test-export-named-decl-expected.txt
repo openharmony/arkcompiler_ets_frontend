@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 26
+            "column": 26,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 20,
-            "column": 31
+            "column": 31,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -28,11 +30,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 20,
-                "column": 11
+                "column": 11,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -43,22 +47,26 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 15
+                "column": 15,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 20,
-                "column": 16
+                "column": 16,
+                "program": "test-export-named-decl.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 20,
-              "column": 16
+              "column": 16,
+              "program": "test-export-named-decl.js"
             }
           }
         },
@@ -71,11 +79,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 18
+                "column": 18,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -86,22 +96,26 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 18
+                "column": 18,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "test-export-named-decl.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 18
+              "column": 18,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 20,
-              "column": 19
+              "column": 19,
+              "program": "test-export-named-decl.js"
             }
           }
         }
@@ -109,11 +123,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 20,
-          "column": 20
+          "column": 20,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -125,11 +141,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 21,
-          "column": 10
+          "column": 10,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -147,11 +165,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
@@ -161,22 +181,26 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 12
+                "column": 12,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 22,
-                "column": 17
+                "column": 17,
+                "program": "test-export-named-decl.js"
               }
             }
           }
@@ -185,11 +209,13 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 22,
-            "column": 18
+            "column": 18,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -198,11 +224,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 22,
-          "column": 18
+          "column": 18,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -215,11 +243,13 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 16
+            "column": 16,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 23,
-            "column": 21
+            "column": 21,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -227,11 +257,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 23,
-          "column": 10
+          "column": 10,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -248,11 +280,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 17
+                "column": 17,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 24,
-                "column": 18
+                "column": 18,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -266,33 +300,39 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 21
+                "column": 21,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 24,
-                "column": 23
+                "column": 23,
+                "program": "test-export-named-decl.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 24,
-              "column": 8
+              "column": 8,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 24,
-              "column": 23
+              "column": 23,
+              "program": "test-export-named-decl.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 24,
-            "column": 23
+            "column": 23,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -301,11 +341,13 @@
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 24,
-          "column": 23
+          "column": 23,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -322,11 +364,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 23
+                "column": 23,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 25,
-                "column": 24
+                "column": 24,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -340,33 +384,39 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 27
+                "column": 27,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 25,
-                "column": 29
+                "column": 29,
+                "program": "test-export-named-decl.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 14
+              "column": 14,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 25,
-              "column": 29
+              "column": 29,
+              "program": "test-export-named-decl.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 14
+            "column": 14,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 25,
-            "column": 29
+            "column": 29,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -375,11 +425,13 @@
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 25,
-          "column": 29
+          "column": 29,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -396,11 +448,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 18
+                "column": 18,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 26,
-                "column": 19
+                "column": 19,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -414,33 +468,39 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 22
+                "column": 22,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 26,
-                "column": 24
+                "column": 24,
+                "program": "test-export-named-decl.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 26,
-              "column": 8
+              "column": 8,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 26,
-              "column": 24
+              "column": 24,
+              "program": "test-export-named-decl.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 26,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 26,
-            "column": 24
+            "column": 24,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -449,11 +509,13 @@
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 26,
-          "column": 24
+          "column": 24,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -469,11 +531,13 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 14
+                "column": 14,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 27,
-                "column": 15
+                "column": 15,
+                "program": "test-export-named-decl.js"
               }
             }
           },
@@ -487,12 +551,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 27,
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 27,
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
@@ -514,34 +580,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 27,
+                      "column": 16,
+                      "program": "test-export-named-decl.js"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 27,
+                      "column": 16,
+                      "program": "test-export-named-decl.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 27,
+                    "column": 16,
+                    "program": "test-export-named-decl.js"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 27,
+                    "column": 16,
+                    "program": "test-export-named-decl.js"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 27,
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 27,
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
@@ -549,12 +621,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 27,
-                "column": 17
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 27,
-                "column": 17
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -562,22 +636,26 @@
           "loc": {
             "start": {
               "line": 27,
-              "column": 15
+              "column": 15,
+              "program": "test-export-named-decl.js"
             },
             "end": {
               "line": 27,
-              "column": 17
+              "column": 18,
+              "program": "test-export-named-decl.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 27,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 27,
-            "column": 17
+            "column": 18,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -586,11 +664,13 @@
       "loc": {
         "start": {
           "line": 27,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 27,
-          "column": 17
+          "column": 18,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -599,11 +679,13 @@
       "loc": {
         "start": {
           "line": 27,
-          "column": 17
+          "column": 17,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 27,
-          "column": 18
+          "column": 18,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -621,11 +703,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 28,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
@@ -635,22 +719,26 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 28,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 28,
-                "column": 12
+                "column": 12,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 28,
-                "column": 17
+                "column": 17,
+                "program": "test-export-named-decl.js"
               }
             }
           }
@@ -659,11 +747,13 @@
         "loc": {
           "start": {
             "line": 28,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 28,
-            "column": 18
+            "column": 18,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -672,11 +762,13 @@
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 28,
-          "column": 18
+          "column": 18,
+          "program": "test-export-named-decl.js"
         }
       }
     },
@@ -694,11 +786,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 29,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
@@ -708,22 +802,26 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-export-named-decl.js"
                 },
                 "end": {
                   "line": 29,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-export-named-decl.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 29,
-                "column": 14
+                "column": 14,
+                "program": "test-export-named-decl.js"
               },
               "end": {
                 "line": 29,
-                "column": 22
+                "column": 22,
+                "program": "test-export-named-decl.js"
               }
             }
           }
@@ -732,11 +830,13 @@
         "loc": {
           "start": {
             "line": 29,
-            "column": 8
+            "column": 8,
+            "program": "test-export-named-decl.js"
           },
           "end": {
             "line": 29,
-            "column": 23
+            "column": 23,
+            "program": "test-export-named-decl.js"
           }
         }
       },
@@ -745,11 +845,13 @@
       "loc": {
         "start": {
           "line": 29,
-          "column": 1
+          "column": 1,
+          "program": "test-export-named-decl.js"
         },
         "end": {
           "line": 29,
-          "column": 23
+          "column": 23,
+          "program": "test-export-named-decl.js"
         }
       }
     }
@@ -757,11 +859,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-export-named-decl.js"
     },
     "end": {
       "line": 29,
-      "column": 23
+      "column": 23,
+      "program": "test-export-named-decl.js"
     }
   }
 }

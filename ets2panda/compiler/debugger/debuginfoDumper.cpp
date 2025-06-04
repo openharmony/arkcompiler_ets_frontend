@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 #include "debuginfoDumper.h"
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 #include <sstream>
 #include <string>
@@ -152,6 +152,52 @@ void DebugInfoDumper::WriteVariableInfo(const pandasm::debuginfo::LocalVariable 
     ss_ << "}";
 }
 
+void DebugInfoDumper::DumpFuncBody(std::string name, const pandasm::Function &func)
+{
+    indent_++;
+    Indent();
+    ss_ << "{";
+    WriteProperty("name", name);
+    ss_ << std::endl;
+
+    indent_++;
+    Indent();
+    ss_ << "\"signature\": {";
+    WriteProperty("retType", func.returnType.GetName());
+    indent_++;
+    WrapArray("params", func.params, false);
+    indent_ -= 2U;
+    ss_ << std::endl;
+    Indent();
+    ss_ << "},";
+
+    WrapArray("ins", func.ins);
+    WrapArray("variables", func.localVariableDebug);
+    WriteProperty("sourceFile", func.sourceFile);
+    WriteProperty("sourceCode", func.sourceCode);
+    // icSize - parameterLength - funcName
+    WriteMetaData(func.metadata->GetAnnotations());
+
+    indent_--;
+    Indent();
+    ss_ << "}";
+}
+
+void DebugInfoDumper::DumpFunctions(const std::map<std::string, pandasm::Function> &table)
+{
+    auto iter = table.begin();
+
+    for (; iter != table.end(); ++iter) {
+        DumpFuncBody(iter->first, iter->second);
+
+        if (std::next(iter) != table.end()) {
+            ss_ << ",";
+        }
+
+        ss_ << std::endl;
+    }
+}
+
 void DebugInfoDumper::Dump()
 {
     ss_ << "{\n";
@@ -159,43 +205,8 @@ void DebugInfoDumper::Dump()
     Indent();
     ss_ << "\"functions\": [" << std::endl;
 
-    auto iter = prog_->functionTable.begin();
-
-    for (; iter != prog_->functionTable.end(); ++iter) {
-        indent_++;
-        Indent();
-        ss_ << "{";
-        WriteProperty("name", iter->first);
-        ss_ << std::endl;
-
-        indent_++;
-        Indent();
-        ss_ << "\"signature\": {";
-        WriteProperty("retType", iter->second.returnType.GetName());
-        indent_++;
-        WrapArray("params", iter->second.params, false);
-        indent_ -= 2U;
-        ss_ << std::endl;
-        Indent();
-        ss_ << "},";
-
-        WrapArray("ins", iter->second.ins);
-        WrapArray("variables", iter->second.localVariableDebug);
-        WriteProperty("sourceFile", iter->second.sourceFile);
-        WriteProperty("sourceCode", iter->second.sourceCode);
-        // icSize - parameterLength - funcName
-        WriteMetaData(iter->second.metadata->GetAnnotations());
-
-        indent_--;
-        Indent();
-        ss_ << "}";
-
-        if (std::next(iter) != prog_->functionTable.end()) {
-            ss_ << ",";
-        }
-
-        ss_ << std::endl;
-    }
+    DumpFunctions(prog_->functionStaticTable);
+    DumpFunctions(prog_->functionInstanceTable);
 
     indent_--;
     Indent();

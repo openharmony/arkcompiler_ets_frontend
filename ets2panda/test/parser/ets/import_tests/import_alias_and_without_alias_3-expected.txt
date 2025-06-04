@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 22
+            "column": 22,
+            "program": "import_alias_and_without_alias_3.ets"
           },
           "end": {
             "line": 18,
-            "column": 71
+            "column": 71,
+            "program": "import_alias_and_without_alias_3.ets"
           }
         }
       },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 13
+                "column": 13,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 18,
-                "column": 16
+                "column": 16,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 8
+              "column": 8,
+              "program": "import_alias_and_without_alias_3.ets"
             },
             "end": {
               "line": 18,
-              "column": 16
+              "column": 16,
+              "program": "import_alias_and_without_alias_3.ets"
             }
           }
         }
@@ -50,11 +56,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "import_alias_and_without_alias_3.ets"
         },
         "end": {
           "line": 18,
-          "column": 71
+          "column": 71,
+          "program": "import_alias_and_without_alias_3.ets"
         }
       }
     },
@@ -66,11 +74,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 19
+            "column": 19,
+            "program": "import_alias_and_without_alias_3.ets"
           },
           "end": {
             "line": 16,
-            "column": 68
+            "column": 68,
+            "program": "import_alias_and_without_alias_3.ets"
           }
         }
       },
@@ -84,11 +94,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 16,
-                "column": 12
+                "column": 12,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
@@ -99,22 +111,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 16,
-                "column": 12
+                "column": 12,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 9
+              "column": 9,
+              "program": "import_alias_and_without_alias_3.ets"
             },
             "end": {
               "line": 16,
-              "column": 12
+              "column": 12,
+              "program": "import_alias_and_without_alias_3.ets"
             }
           }
         }
@@ -122,11 +138,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "import_alias_and_without_alias_3.ets"
         },
         "end": {
           "line": 16,
-          "column": 68
+          "column": 68,
+          "program": "import_alias_and_without_alias_3.ets"
         }
       }
     },
@@ -138,11 +156,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 31
+            "column": 31,
+            "program": "import_alias_and_without_alias_3.ets"
           },
           "end": {
             "line": 17,
-            "column": 80
+            "column": 80,
+            "program": "import_alias_and_without_alias_3.ets"
           }
         }
       },
@@ -156,11 +176,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 16
+                "column": 16,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 24
+                "column": 24,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
@@ -171,22 +193,26 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 9
+                "column": 9,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 12
+                "column": 12,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 9
+              "column": 9,
+              "program": "import_alias_and_without_alias_3.ets"
             },
             "end": {
               "line": 17,
-              "column": 24
+              "column": 24,
+              "program": "import_alias_and_without_alias_3.ets"
             }
           }
         }
@@ -194,11 +220,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "import_alias_and_without_alias_3.ets"
         },
         "end": {
           "line": 17,
-          "column": 80
+          "column": 80,
+          "program": "import_alias_and_without_alias_3.ets"
         }
       }
     },
@@ -212,11 +240,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "import_alias_and_without_alias_3.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "import_alias_and_without_alias_3.ets"
             }
           }
         },
@@ -232,11 +262,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -256,11 +288,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -270,391 +304,43 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "VariableDeclaration",
-                      "declarations": [
-                        {
-                          "type": "VariableDeclarator",
-                          "id": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "init": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "CallExpression",
-                                "callee": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "Class",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 3
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 3
-                                      }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "ofCaller",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 3
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 3
-                                      }
-                                    }
-                                  },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 3
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 3
-                                    }
-                                  }
-                                },
-                                "arguments": [],
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 3
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 3
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "getLinker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 3
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 3
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 3
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 3
-                                }
-                              }
-                            },
-                            "arguments": [],
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 3
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        }
-                      ],
-                      "kind": "const",
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    },
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "loadClass",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        },
-                        "arguments": [
-                          {
-                            "type": "StringLiteral",
-                            "value": "import_tests.packages.aliasWithoutAlias.import2.ETSGLOBAL",
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          {
-                            "type": "BooleanLiteral",
-                            "value": true,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          }
-                        ],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 3
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    },
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "__linker",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "loadClass",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 3
-                            }
-                          }
-                        },
-                        "arguments": [
-                          {
-                            "type": "StringLiteral",
-                            "value": "import_tests.packages.aliasWithoutAlias.import1.ETSGLOBAL",
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          },
-                          {
-                            "type": "BooleanLiteral",
-                            "value": true,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 3
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 3
-                              }
-                            }
-                          }
-                        ],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 3
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 3
-                        }
-                      }
-                    }
-                  ],
+                  "statements": [],
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -663,11 +349,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           },
@@ -680,11 +368,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "import_alias_and_without_alias_3.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 14
+                  "column": 14,
+                  "program": "import_alias_and_without_alias_3.ets"
                 }
               }
             },
@@ -704,11 +394,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 10
+                      "column": 10,
+                      "program": "import_alias_and_without_alias_3.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 14
+                      "column": 14,
+                      "program": "import_alias_and_without_alias_3.ets"
                     }
                   }
                 },
@@ -721,11 +413,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 17
+                      "column": 17,
+                      "program": "import_alias_and_without_alias_3.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 21
+                      "column": 21,
+                      "program": "import_alias_and_without_alias_3.ets"
                     }
                   }
                 },
@@ -733,248 +427,336 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "NumberLiteral",
-                          "value": 100,
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 12
+                              "column": 5,
+                              "program": "import_alias_and_without_alias_3.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 15
+                              "column": 13,
+                              "program": "import_alias_and_without_alias_3.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "test1foo",
-                            "decorators": [],
+                        "arguments": [
+                          {
+                            "type": "NumberLiteral",
+                            "value": 100,
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 19
+                                "column": 14,
+                                "program": "import_alias_and_without_alias_3.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 27
+                                "column": 17,
+                                "program": "import_alias_and_without_alias_3.ets"
                               }
                             }
                           },
-                          "arguments": [],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 19
+                          {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "test1foo",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 21,
+                                  "column": 19,
+                                  "program": "import_alias_and_without_alias_3.ets"
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "column": 27,
+                                  "program": "import_alias_and_without_alias_3.ets"
+                                }
+                              }
                             },
-                            "end": {
-                              "line": 21,
-                              "column": 29
+                            "arguments": [],
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 19,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 29,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 12
+                            "column": 5,
+                            "program": "import_alias_and_without_alias_3.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 29
+                            "column": 30,
+                            "program": "import_alias_and_without_alias_3.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "import_alias_and_without_alias_3.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 30
+                          "column": 31,
+                          "program": "import_alias_and_without_alias_3.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "NumberLiteral",
-                          "value": 200,
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 12
+                              "column": 5,
+                              "program": "import_alias_and_without_alias_3.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 15
+                              "column": 13,
+                              "program": "import_alias_and_without_alias_3.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "all",
-                              "decorators": [],
+                        "arguments": [
+                          {
+                            "type": "NumberLiteral",
+                            "value": 200,
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 14,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 17,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              }
+                            }
+                          },
+                          {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "all",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 22,
+                                    "column": 19,
+                                    "program": "import_alias_and_without_alias_3.ets"
+                                  },
+                                  "end": {
+                                    "line": 22,
+                                    "column": 22,
+                                    "program": "import_alias_and_without_alias_3.ets"
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "bar",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 22,
+                                    "column": 23,
+                                    "program": "import_alias_and_without_alias_3.ets"
+                                  },
+                                  "end": {
+                                    "line": 22,
+                                    "column": 26,
+                                    "program": "import_alias_and_without_alias_3.ets"
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "import_alias_and_without_alias_3.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 22
+                                  "column": 26,
+                                  "program": "import_alias_and_without_alias_3.ets"
                                 }
                               }
                             },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "bar",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 22,
-                                  "column": 23
-                                },
-                                "end": {
-                                  "line": 22,
-                                  "column": 26
-                                }
-                              }
-                            },
-                            "computed": false,
+                            "arguments": [],
                             "optional": false,
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 19
+                                "column": 19,
+                                "program": "import_alias_and_without_alias_3.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 26
+                                "column": 28,
+                                "program": "import_alias_and_without_alias_3.ets"
                               }
                             }
-                          },
-                          "arguments": [],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 22,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 22,
-                              "column": 28
-                            }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 12
+                            "column": 5,
+                            "program": "import_alias_and_without_alias_3.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 28
+                            "column": 29,
+                            "program": "import_alias_and_without_alias_3.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 5
+                          "column": 5,
+                          "program": "import_alias_and_without_alias_3.ets"
                         },
                         "end": {
                           "line": 22,
-                          "column": 29
+                          "column": 30,
+                          "program": "import_alias_and_without_alias_3.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "NumberLiteral",
-                          "value": 300,
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 12
+                              "column": 5,
+                              "program": "import_alias_and_without_alias_3.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 15
+                              "column": 13,
+                              "program": "import_alias_and_without_alias_3.ets"
                             }
                           }
                         },
-                        "right": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "foo",
-                            "decorators": [],
+                        "arguments": [
+                          {
+                            "type": "NumberLiteral",
+                            "value": 300,
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 19
+                                "column": 14,
+                                "program": "import_alias_and_without_alias_3.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 22
+                                "column": 17,
+                                "program": "import_alias_and_without_alias_3.ets"
                               }
                             }
                           },
-                          "arguments": [],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 19
+                          {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "foo",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 19,
+                                  "program": "import_alias_and_without_alias_3.ets"
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 22,
+                                  "program": "import_alias_and_without_alias_3.ets"
+                                }
+                              }
                             },
-                            "end": {
-                              "line": 23,
-                              "column": 24
+                            "arguments": [],
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 19,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 24,
+                                "program": "import_alias_and_without_alias_3.ets"
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 12
+                            "column": 5,
+                            "program": "import_alias_and_without_alias_3.ets"
                           },
                           "end": {
                             "line": 23,
-                            "column": 24
+                            "column": 25,
+                            "program": "import_alias_and_without_alias_3.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "import_alias_and_without_alias_3.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 25
+                          "column": 26,
+                          "program": "import_alias_and_without_alias_3.ets"
                         }
                       }
                     }
@@ -982,33 +764,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 21
+                      "column": 21,
+                      "program": "import_alias_and_without_alias_3.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "import_alias_and_without_alias_3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 10
+                    "column": 10,
+                    "program": "import_alias_and_without_alias_3.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "import_alias_and_without_alias_3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "import_alias_and_without_alias_3.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "import_alias_and_without_alias_3.ets"
                 }
               }
             },
@@ -1017,11 +805,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 1
+                "column": 1,
+                "program": "import_alias_and_without_alias_3.ets"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "import_alias_and_without_alias_3.ets"
               }
             }
           }
@@ -1029,22 +819,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "import_alias_and_without_alias_3.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "import_alias_and_without_alias_3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "import_alias_and_without_alias_3.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "import_alias_and_without_alias_3.ets"
         }
       }
     }
@@ -1052,11 +846,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "import_alias_and_without_alias_3.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "import_alias_and_without_alias_3.ets"
     }
   }
 }

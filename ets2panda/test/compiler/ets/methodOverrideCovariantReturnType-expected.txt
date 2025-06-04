@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 16,
-              "column": 17
+              "column": 17,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 14,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 17
+                      "column": 17,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -78,55 +84,65 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 21
+                          "column": 21,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 22
+                          "column": 22,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 21
+                        "column": 21,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 23
+                        "column": 23,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 21
+                      "column": 21,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 23
+                      "column": 23,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 17
+                    "column": 17,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 17
+                    "column": 17,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -135,11 +151,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 17,
-                "column": 17
+                "column": 17,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
@@ -151,12 +169,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 19,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 19,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -174,12 +194,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 19,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 19,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -192,34 +214,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 19,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 19,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 19,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 19,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 19,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 19,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -227,12 +255,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -240,22 +270,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 18
+            "column": 18,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
-            "line": 18,
-            "column": 2
+            "line": 20,
+            "column": 10,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 10
+          "column": 10,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
-          "line": 18,
-          "column": 2
+          "line": 20,
+          "column": 10,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     },
@@ -273,11 +307,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -297,11 +333,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 5
+                      "column": 5,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 8
+                      "column": 8,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -314,33 +352,39 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 12
+                      "column": 12,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 16
+                      "column": 16,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 8
+                    "column": 8,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 21,
-                    "column": 16
+                    "column": 16,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 16
+                  "column": 16,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -349,11 +393,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 21,
-                "column": 17
+                "column": 17,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           }
@@ -361,11 +407,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 13
+            "column": 13,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
             "line": 22,
-            "column": 2
+            "column": 2,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
@@ -376,11 +424,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 11
+            "column": 11,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
             "line": 20,
-            "column": 12
+            "column": 12,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
@@ -388,11 +438,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
           "line": 24,
-          "column": 6
+          "column": 6,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     },
@@ -406,11 +458,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 7
+              "column": 7,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 24,
-              "column": 8
+              "column": 8,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -425,33 +479,39 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 18
+                  "column": 18,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 17
+                "column": 17,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 24,
-                "column": 29
+                "column": 29,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 24,
-              "column": 17
+              "column": 17,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 24,
-              "column": 29
+              "column": 29,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -469,44 +529,52 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 30
+                      "column": 30,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 31
+                      "column": 31,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 30
+                    "column": 30,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 32
+                    "column": 32,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 30
+                  "column": 30,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 32
+                  "column": 32,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 30
+                "column": 30,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 24,
-                "column": 32
+                "column": 32,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           }
@@ -521,11 +589,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 14
+                  "column": 14,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -545,11 +615,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 14
+                      "column": 14,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 17
+                      "column": 17,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -568,33 +640,39 @@
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 21
+                          "column": 21,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 22
+                          "column": 22,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 25,
-                        "column": 21
+                        "column": 21,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       },
                       "end": {
                         "line": 25,
-                        "column": 24
+                        "column": 24,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 21
+                      "column": 21,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 24
+                      "column": 24,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -608,22 +686,26 @@
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 16
+                            "column": 16,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 20
+                            "column": 20,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 9
+                          "column": 9,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 21
+                          "column": 21,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     }
@@ -631,33 +713,39 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 23
+                      "column": 23,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 6
+                      "column": 6,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 17
+                    "column": 17,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 27,
-                    "column": 6
+                    "column": 6,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 6
+                  "column": 6,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -666,11 +754,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5
+                "column": 5,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 27,
-                "column": 6
+                "column": 6,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
@@ -683,11 +773,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 14
+                  "column": 14,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 28,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -707,11 +799,13 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 14
+                      "column": 14,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 28,
-                      "column": 17
+                      "column": 17,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -724,11 +818,13 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 21
+                      "column": 21,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 28,
-                      "column": 25
+                      "column": 25,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -741,11 +837,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 9
+                          "column": 9,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 29,
-                          "column": 16
+                          "column": 16,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     }
@@ -753,33 +851,39 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 26
+                      "column": 26,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 6
+                      "column": 6,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 28,
-                    "column": 17
+                    "column": 17,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 30,
-                    "column": 6
+                    "column": 6,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 6
+                  "column": 6,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -788,11 +892,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 5
+                "column": 5,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 30,
-                "column": 6
+                "column": 6,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
@@ -804,12 +910,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 32,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 32,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -827,12 +935,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 24,
+                      "column": 32,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 24,
+                      "column": 32,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -845,34 +955,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 24,
+                      "column": 32,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 24,
+                      "column": 32,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 24,
+                    "column": 32,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 24,
+                    "column": 32,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 32,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 32,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -880,12 +996,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 31,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 31,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -893,22 +1011,26 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 31
+            "column": 31,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
-            "line": 31,
-            "column": 2
+            "line": 33,
+            "column": 6,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
-          "line": 31,
-          "column": 2
+          "line": 33,
+          "column": 6,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     },
@@ -922,11 +1044,13 @@
           "loc": {
             "start": {
               "line": 33,
-              "column": 7
+              "column": 7,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 33,
-              "column": 8
+              "column": 8,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -941,12 +1065,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 33,
+                  "column": 10,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 33,
+                  "column": 10,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -964,12 +1090,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 33,
+                      "column": 10,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 33,
+                      "column": 10,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -982,34 +1110,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 33,
+                      "column": 10,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 33,
+                      "column": 10,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 33,
+                    "column": 10,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 33,
+                    "column": 10,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 33,
+                  "column": 10,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 33,
+                  "column": 10,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -1017,12 +1151,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 35,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 35,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1030,22 +1166,26 @@
         "loc": {
           "start": {
             "line": 33,
-            "column": 9
+            "column": 9,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
-            "line": 35,
-            "column": 2
+            "line": 37,
+            "column": 6,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 33,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
-          "line": 35,
-          "column": 2
+          "line": 37,
+          "column": 6,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     },
@@ -1059,11 +1199,13 @@
           "loc": {
             "start": {
               "line": 37,
-              "column": 7
+              "column": 7,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 37,
-              "column": 8
+              "column": 8,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -1078,33 +1220,39 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 37,
-                  "column": 18
+                  "column": 18,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 37,
-                "column": 17
+                "column": 17,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 37,
-                "column": 20
+                "column": 20,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 37,
-              "column": 17
+              "column": 17,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 37,
-              "column": 20
+              "column": 20,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -1119,11 +1267,13 @@
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 14
+                  "column": 14,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 38,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -1143,11 +1293,13 @@
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 14
+                      "column": 14,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 38,
-                      "column": 17
+                      "column": 17,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -1166,33 +1318,39 @@
                       "loc": {
                         "start": {
                           "line": 38,
-                          "column": 21
+                          "column": 21,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 38,
-                          "column": 22
+                          "column": 22,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 38,
-                        "column": 21
+                        "column": 21,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       },
                       "end": {
                         "line": 38,
-                        "column": 24
+                        "column": 24,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 21
+                      "column": 21,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 38,
-                      "column": 24
+                      "column": 24,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -1218,33 +1376,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 39,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     },
                                     "end": {
                                       "line": 39,
-                                      "column": 22
+                                      "column": 22,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 39,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 39,
-                                  "column": 21
+                                  "column": 21,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 },
                                 "end": {
                                   "line": 39,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 }
                               }
                             },
@@ -1252,11 +1416,13 @@
                             "loc": {
                               "start": {
                                 "line": 39,
-                                "column": 13
+                                "column": 13,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               },
                               "end": {
                                 "line": 39,
-                                "column": 19
+                                "column": 19,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               }
                             }
                           },
@@ -1273,33 +1439,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 39,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     },
                                     "end": {
                                       "line": 39,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 39,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 39,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 },
                                 "end": {
                                   "line": 39,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 }
                               }
                             },
@@ -1307,22 +1479,26 @@
                             "loc": {
                               "start": {
                                 "line": 39,
-                                "column": 25
+                                "column": 25,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               },
                               "end": {
                                 "line": 39,
-                                "column": 33
+                                "column": 33,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 39,
-                              "column": 13
+                              "column": 13,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             },
                             "end": {
                               "line": 39,
-                              "column": 33
+                              "column": 33,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             }
                           }
                         }
@@ -1331,11 +1507,13 @@
                       "loc": {
                         "start": {
                           "line": 39,
-                          "column": 9
+                          "column": 9,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 39,
-                          "column": 33
+                          "column": 33,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
@@ -1348,22 +1526,26 @@
                         "loc": {
                           "start": {
                             "line": 40,
-                            "column": 16
+                            "column": 16,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           },
                           "end": {
                             "line": 40,
-                            "column": 22
+                            "column": 22,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 40,
-                          "column": 9
+                          "column": 9,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 40,
-                          "column": 23
+                          "column": 23,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     }
@@ -1371,33 +1553,39 @@
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 23
+                      "column": 23,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 41,
-                      "column": 6
+                      "column": 6,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 38,
-                    "column": 17
+                    "column": 17,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 41,
-                    "column": 6
+                    "column": 6,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 17
+                  "column": 17,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
                   "line": 41,
-                  "column": 6
+                  "column": 6,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -1411,11 +1599,13 @@
                   "loc": {
                     "start": {
                       "line": 42,
-                      "column": 5
+                      "column": 5,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 42,
-                      "column": 8
+                      "column": 8,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -1435,11 +1625,13 @@
                       "loc": {
                         "start": {
                           "line": 42,
-                          "column": 5
+                          "column": 5,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 42,
-                          "column": 8
+                          "column": 8,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
@@ -1457,11 +1649,13 @@
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 12
+                                "column": 12,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 15
+                                "column": 15,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               }
                             }
                           },
@@ -1469,22 +1663,26 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 9
+                              "column": 9,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             },
                             "end": {
                               "line": 42,
-                              "column": 15
+                              "column": 15,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 9
+                            "column": 9,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           },
                           "end": {
                             "line": 42,
-                            "column": 15
+                            "column": 15,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           }
                         }
                       }
@@ -1500,33 +1698,39 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 18
+                              "column": 18,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             },
                             "end": {
                               "line": 42,
-                              "column": 19
+                              "column": 19,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 18
+                            "column": 18,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           },
                           "end": {
                             "line": 42,
-                            "column": 21
+                            "column": 21,
+                            "program": "methodOverrideCovariantReturnType.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 42,
-                          "column": 18
+                          "column": 18,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 42,
-                          "column": 21
+                          "column": 21,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
@@ -1552,33 +1756,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 43,
-                                          "column": 21
+                                          "column": 21,
+                                          "program": "methodOverrideCovariantReturnType.ets"
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 22
+                                          "column": 22,
+                                          "program": "methodOverrideCovariantReturnType.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "methodOverrideCovariantReturnType.ets"
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 24
+                                        "column": 24,
+                                        "program": "methodOverrideCovariantReturnType.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 43,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     },
                                     "end": {
                                       "line": 43,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     }
                                   }
                                 },
@@ -1586,11 +1796,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 43,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   },
                                   "end": {
                                     "line": 43,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   }
                                 }
                               },
@@ -1607,33 +1819,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 43,
-                                          "column": 29
+                                          "column": 29,
+                                          "program": "methodOverrideCovariantReturnType.ets"
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 30
+                                          "column": 30,
+                                          "program": "methodOverrideCovariantReturnType.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "methodOverrideCovariantReturnType.ets"
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 31
+                                        "column": 31,
+                                        "program": "methodOverrideCovariantReturnType.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 43,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     },
                                     "end": {
                                       "line": 43,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "methodOverrideCovariantReturnType.ets"
                                     }
                                   }
                                 },
@@ -1641,22 +1859,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 43,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   },
                                   "end": {
                                     "line": 43,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "methodOverrideCovariantReturnType.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 43,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 },
                                 "end": {
                                   "line": 43,
-                                  "column": 33
+                                  "column": 33,
+                                  "program": "methodOverrideCovariantReturnType.ets"
                                 }
                               }
                             }
@@ -1665,11 +1887,13 @@
                           "loc": {
                             "start": {
                               "line": 43,
-                              "column": 9
+                              "column": 9,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             },
                             "end": {
                               "line": 43,
-                              "column": 33
+                              "column": 33,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             }
                           }
                         },
@@ -1682,22 +1906,26 @@
                             "loc": {
                               "start": {
                                 "line": 44,
-                                "column": 16
+                                "column": 16,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               },
                               "end": {
                                 "line": 44,
-                                "column": 22
+                                "column": 22,
+                                "program": "methodOverrideCovariantReturnType.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 44,
-                              "column": 9
+                              "column": 9,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             },
                             "end": {
                               "line": 44,
-                              "column": 23
+                              "column": 23,
+                              "program": "methodOverrideCovariantReturnType.ets"
                             }
                           }
                         }
@@ -1705,33 +1933,39 @@
                       "loc": {
                         "start": {
                           "line": 42,
-                          "column": 20
+                          "column": 20,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         },
                         "end": {
                           "line": 45,
-                          "column": 6
+                          "column": 6,
+                          "program": "methodOverrideCovariantReturnType.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 42,
-                        "column": 8
+                        "column": 8,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       },
                       "end": {
                         "line": 45,
-                        "column": 6
+                        "column": 6,
+                        "program": "methodOverrideCovariantReturnType.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 42,
-                      "column": 8
+                      "column": 8,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
                       "line": 45,
-                      "column": 6
+                      "column": 6,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -1740,11 +1974,13 @@
                 "loc": {
                   "start": {
                     "line": 42,
-                    "column": 5
+                    "column": 5,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
                     "line": 45,
-                    "column": 6
+                    "column": 6,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               }
@@ -1753,11 +1989,13 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 5
+                "column": 5,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 41,
-                "column": 6
+                "column": 6,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           },
@@ -1769,12 +2007,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 37,
+                  "column": 20,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 37,
+                  "column": 20,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -1792,12 +2032,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 37,
+                      "column": 20,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 37,
+                      "column": 20,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
@@ -1810,34 +2052,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 37,
+                      "column": 20,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 37,
+                      "column": 20,
+                      "program": "methodOverrideCovariantReturnType.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 37,
+                    "column": 20,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 37,
+                    "column": 20,
+                    "program": "methodOverrideCovariantReturnType.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 37,
+                  "column": 20,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 37,
+                  "column": 20,
+                  "program": "methodOverrideCovariantReturnType.ets"
                 }
               }
             },
@@ -1845,12 +2093,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 46,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 46,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1858,22 +2108,26 @@
         "loc": {
           "start": {
             "line": 37,
-            "column": 19
+            "column": 19,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
-            "line": 46,
-            "column": 2
+            "line": 47,
+            "column": 1,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 37,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
-          "line": 46,
-          "column": 2
+          "line": 47,
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     },
@@ -1887,11 +2141,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "methodOverrideCovariantReturnType.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "methodOverrideCovariantReturnType.ets"
             }
           }
         },
@@ -1902,16 +2158,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "methodOverrideCovariantReturnType.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "methodOverrideCovariantReturnType.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1931,11 +2295,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1949,33 +2315,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1984,11 +2356,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "methodOverrideCovariantReturnType.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "methodOverrideCovariantReturnType.ets"
               }
             }
           }
@@ -1996,22 +2370,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "methodOverrideCovariantReturnType.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "methodOverrideCovariantReturnType.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "methodOverrideCovariantReturnType.ets"
         }
       }
     }
@@ -2019,11 +2397,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "methodOverrideCovariantReturnType.ets"
     },
     "end": {
       "line": 47,
-      "column": 1
+      "column": 1,
+      "program": "methodOverrideCovariantReturnType.ets"
     }
   }
 }

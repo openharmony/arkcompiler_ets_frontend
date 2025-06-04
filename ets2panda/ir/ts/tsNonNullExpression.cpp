@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void TSNonNullExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -43,7 +41,7 @@ void TSNonNullExpression::Dump(ir::AstDumper *dumper) const
 
 void TSNonNullExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(expr_ != nullptr);
+    ES2PANDA_ASSERT(expr_ != nullptr);
     expr_->Dump(dumper);
     dumper->Add("!");
 }
@@ -63,23 +61,21 @@ checker::Type *TSNonNullExpression::Check([[maybe_unused]] checker::TSChecker *c
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSNonNullExpression *TSNonNullExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const expr = expr_->Clone(allocator, nullptr)->AsExpression();
-
-    if (auto *const clone = allocator->New<TSNonNullExpression>(expr); clone != nullptr) {
-        expr->SetParent(clone);
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<TSNonNullExpression>(expr);
+    expr->SetParent(clone);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(range_);
+    return clone;
 }
 
 }  // namespace ark::es2panda::ir

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -36,10 +34,17 @@ void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    for (auto *&it : arguments_) {
+    for (auto *&it : VectorIterationGuard(arguments_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
+        }
+    }
+
+    if (trailingBlock_ != nullptr) {
+        if (auto *transformedNode = cb(trailingBlock_); trailingBlock_ != transformedNode) {
+            trailingBlock_->SetTransformedNode(transformationName, transformedNode);
+            trailingBlock_ = transformedNode->AsBlockStatement();
         }
     }
 }
@@ -52,7 +57,7 @@ void CallExpression::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    for (auto *it : arguments_) {
+    for (auto *it : VectorIterationGuard(arguments_)) {
         cb(it);
     }
 
@@ -68,11 +73,12 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
                  {"arguments", arguments_},
                  {"optional", IsOptional()},
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
+    // #22953: trailing block is not handled
 }
 
 void CallExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(callee_);
+    ES2PANDA_ASSERT(callee_);
     callee_->Dump(dumper);
     if (IsOptional()) {
         dumper->Add("?.");
@@ -113,14 +119,9 @@ checker::Type *CallExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-bool CallExpression::IsETSConstructorCall() const
+checker::VerifiedType CallExpression::Check(checker::ETSChecker *checker)
 {
-    return callee_->IsThisExpression() || callee_->IsSuperExpression();
-}
-
-checker::Type *CallExpression::Check(checker::ETSChecker *checker)
-{
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *const allocator)
@@ -143,16 +144,13 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
 
 CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<CallExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<CallExpression>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 void CallExpression::SetTypeParams(TSTypeParameterInstantiation *typeParams) noexcept
@@ -170,4 +168,10 @@ void CallExpression::SetTrailingBlock(ir::BlockStatement *const block) noexcept
         trailingBlock_->SetParent(this);
     }
 }
+
+bool CallExpression::IsExtensionAccessorCall()
+{
+    return (Signature() != nullptr) && (Signature()->Function()->IsExtensionAccessor());
+}
+
 }  // namespace ark::es2panda::ir

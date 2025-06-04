@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,93 +14,212 @@
  */
 
 #include "ASTVerifier.h"
-#include "ast_verifier/sequenceExpressionHasLastType.h"
-#include "ast_verifier/checkAbstractMethod.h"
-#include "ast_verifier/checkInfiniteLoop.h"
-#include "ast_verifier/checkContext.h"
-#include "ast_verifier/everyChildHasValidParent.h"
-#include "ast_verifier/everyChildInParentRange.h"
-#include "ast_verifier/getterSetterValidation.h"
-#include "ast_verifier/identifierHasVariable.h"
-#include "ast_verifier/nodeHasParent.h"
-#include "ast_verifier/nodeHasSourceRange.h"
-#include "ast_verifier/nodeHasType.h"
-#include "ast_verifier/referenceTypeAnnotationIsNull.h"
-#include "ast_verifier/variableHasScope.h"
-#include "ast_verifier/variableHasEnclosingScope.h"
-#include "ast_verifier/forLoopCorrectlyInitialized.h"
-#include "ast_verifier/modifierAccessValid.h"
-#include "ast_verifier/importExportAccessValid.h"
-#include "ast_verifier/arithmeticOperationValid.h"
-#include "ast_verifier/variableNameIdentifierNameSame.h"
-#include "ast_verifier/checkScopeDeclaration.h"
-#include "ast_verifier/checkConstProperties.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
+using AstToCheck = ArenaMap<ASTVerifier::SourcePath, const ir::AstNode *>;
+
+template <typename Inv>
+auto VerifyNode(Inv *inv, const ir::AstNode *node)
 {
-    AddInvariant<NodeHasParent>(allocator, "NodeHasParent");
-    AddInvariant<NodeHasSourceRange>(allocator, "NodeHasSourceRange");
-    AddInvariant<NodeHasType>(allocator, "NodeHasType");
-    AddInvariant<IdentifierHasVariable>(allocator, "IdentifierHasVariable");
-    AddInvariant<VariableHasScope>(allocator, "VariableHasScope");
-    AddInvariant<EveryChildHasValidParent>(allocator, "EveryChildHasValidParent");
-    AddInvariant<EveryChildInParentRange>(allocator, "EveryChildInParentRange");
-    AddInvariant<VariableHasEnclosingScope>(allocator, "VariableHasEnclosingScope");
-    AddInvariant<CheckInfiniteLoop>(allocator, "CheckInfiniteLoop");
-    AddInvariant<ForLoopCorrectlyInitialized>(allocator, "ForLoopCorrectlyInitialized");
-    AddInvariant<ModifierAccessValid>(allocator, "ModifierAccessValid");
-    AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");
-    AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
-    AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
-    AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
-    AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
-    AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
-    AddInvariant<GetterSetterValidation>(allocator, "GetterSetterValidation");
-    AddInvariant<CheckScopeDeclaration>(allocator, "CheckScopeDeclaration");
-    AddInvariant<CheckConstProperties>(allocator, "CheckConstProperties");
+    auto [res, action] = (*inv)(node);
+    if (action == CheckAction::SKIP_SUBTREE) {
+        LOG_ASTV(DEBUG, Inv::NAME << ": SKIP_SUBTREE");
+    }
+    return CheckResult {res, action};
 }
 
-Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)
+struct ASTVerifier::SinglePassVerifier {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    ASTVerifier *verifier {nullptr};
+    bool *astCorrect;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    void operator()(ir::AstNode *ncnode) const
+    {
+        const auto *node = ncnode;
+        auto enabledSave = verifier->enabled_;
+        LOG_ASTV(DEBUG, "Verify: " << ir::ToString(node->Type()));
+
+        verifier->Apply([this, node](auto &...inv) {
+            InvArray<CheckDecision> decisions {};
+            InvArray<CheckAction> actions {};
+            ((std::tie(decisions[inv.ID], actions[inv.ID]) =
+                  verifier->NeedCheckInvariant(inv) ? VerifyNode(&inv, node)
+                                                    : CheckResult {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE}),
+             ...);
+            // Temporaly disable invariant, the value should be restored after node and its childs are visited:
+            ((verifier->enabled_[inv.ID] &= (actions[inv.ID] == CheckAction::CONTINUE)), ...);
+
+            for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
+                LOG_ASTV(DEBUG, (actions[i] == CheckAction::CONTINUE ? "Enabled " : "Disabled ")
+                                    << util::gen::ast_verifier::ToString(VerifierInvariants {i}));
+            }
+
+            (*astCorrect) &= ((decisions[inv.ID] == CheckDecision::CORRECT) && ...);
+        });
+
+        node->Iterate(*this);
+        verifier->enabled_ = enabledSave;
+    }
+};
+
+static auto ExtractAst(const parser::Program &program, bool checkFullProgram)
 {
-    auto recursiveChecks = InvariantNameSet {};
-    std::copy_if(invariantsNames_.begin(), invariantsNames_.end(),
-                 std::inserter(recursiveChecks, recursiveChecks.end()),
-                 [](const std::string &s) { return s.find(RECURSIVE_SUFFIX) != s.npos; });
-    return Verify(ast, recursiveChecks);
+    auto *allocator = program.Allocator();
+    auto astToCheck = AstToCheck {allocator->Adapter()};
+    astToCheck.insert(std::make_pair(program.SourceFilePath().Utf8(), program.Ast()));
+    if (checkFullProgram) {
+        for (const auto &externalSource : program.ExternalSources()) {
+            for (auto *external : externalSource.second) {
+                ES2PANDA_ASSERT(external->Ast() != nullptr);
+                astToCheck.insert(std::make_pair(external->SourceFilePath().Utf8(), external->Ast()));
+            }
+        }
+    }
+    return astToCheck;
 }
 
-Messages ASTVerifier::Verify(const ir::AstNode *ast, const InvariantNameSet &invariantSet)
+void ASTVerifier::Verify(std::string_view phaseName)
 {
-    CheckContext ctx {};
-    const auto containsInvariants =
-        std::includes(invariantsNames_.begin(), invariantsNames_.end(), invariantSet.begin(), invariantSet.end());
-    if (!containsInvariants) {
-        auto invalidInvariants = InvariantNameSet {};
-        for (const auto &invariant : invariantSet) {
-            if (invariantsNames_.find(invariant) == invariantsNames_.end()) {
-                invalidInvariants.insert(invariant);
+    if (context_.diagnosticEngine->IsAnyError()) {
+        // NOTE(dkofanov): As for now, the policy is that ASTVerifier doesn't interrupt pipeline if there were errors
+        // reported. Should be revisited.
+        Suppress();
+    }
+    if (suppressed_) {
+        return;
+    }
+    auto astToCheck = ExtractAst(program_, Options().IsAstVerifierFullProgram());
+    for (const auto &p : astToCheck) {
+        const auto sourceName = p.first;
+        const auto *ast = p.second;
+        Apply([](auto &&...inv) { ((inv.Init()), ...); });
+
+        LOG_ASTV(INFO, "Begin traversal (" << sourceName << ')');
+
+        bool astCorrect = true;
+        // `const_cast` due to `ir::NodeTraverser` signature:
+        SinglePassVerifier {this, &astCorrect}(const_cast<ir::AstNode *>(ast));
+
+        auto reporter = [this, sourceName](auto &&inv) {
+            if (inv.HasMessages()) {
+                report_.back().second[sourceName][TreatAsError(inv.ID) ? "errors" : "warnings"][inv.ID] =
+                    std::forward<InvariantMessages>(inv).MoveMessages();
+                (TreatAsError(inv.ID) ? hasErrors_ : hasWarnings_) = true;
             }
-        }
-        for (const auto &invariant : invalidInvariants) {
-            ctx.AddCheckMessage(std::string {"Invariant was not found: "} + invariant, *ast, lexer::SourcePosition {});
+        };
+        ES2PANDA_ASSERT(astCorrect == Apply([](const auto &...inv) { return ((!inv.HasMessages()) && ...); }));
+        if (!astCorrect) {
+            if (report_.empty() || report_.back().first != phaseName) {
+                report_.emplace_back();
+                report_.back().first = phaseName;
+            }
+            Apply([&reporter](auto &...inv) { (reporter(std::move(inv)), ...); });
         }
     }
+}
 
-    for (const auto &name : invariantSet) {
-        if (const auto &found = invariantsChecks_.find(name); found != invariantsChecks_.end()) {
-            if (ast == nullptr) {
-                continue;
-            }
-
-            auto invariant = found->second;
-            ctx.SetCheckName(name.data());
-            invariant(ctx, ast);
+template <typename K, typename V>
+void JsonAddProperty(JsonObjectBuilder &outer, K k, const V &v)
+{
+    outer.AddProperty(k, [&v](JsonObjectBuilder &inner) {
+        for (const auto &[kInner, vInner] : v) {
+            JsonAddProperty(inner, kInner, vInner);
         }
+    });
+}
+
+template <>
+void JsonAddProperty<VerifierInvariants, Messages>(JsonObjectBuilder &outer, VerifierInvariants k, const Messages &v)
+{
+    outer.AddProperty(util::gen::ast_verifier::ToString(k), [&v](JsonArrayBuilder &msgsBuilder) {
+        for (const auto &msg : v) {
+            msgsBuilder.Add(msg.DumpJSON());
+        }
+    });
+}
+
+void DumpJson(const ASTVerifier::GroupedMessages &report, const std::string &filePath)
+{
+    JsonObjectBuilder reportJson {};
+    for (const auto &[phase, sourceMessages] : report) {
+        JsonAddProperty(reportJson, phase, sourceMessages);
+    }
+    auto str = std::move(reportJson).Build();
+    std::ofstream(filePath, std::ios::trunc | std::ios::out).write(str.data(), str.size());
+}
+
+template <bool IS_WARNING>
+void DumpLogMessage(VerifierInvariants id, const Messages &msgs)
+{
+    auto invaraintName = util::gen::ast_verifier::ToString(id);
+    if constexpr (IS_WARNING) {
+        LOG(WARNING, ES2PANDA) << "    " << invaraintName << ':';
+    } else {
+        LOG(ERROR, ES2PANDA) << "    " << invaraintName << ':';
     }
 
-    return ctx.GetMessages();
+    for (const auto &msg : msgs) {
+        if constexpr (IS_WARNING) {
+            LOG(WARNING, ES2PANDA) << "      " << msg.ToString();
+        } else {
+            LOG(ERROR, ES2PANDA) << "      " << msg.ToString();
+        }
+    }
+}
+
+template <Logger::Level LEVEL>
+void DumpLogAstMessages(std::string_view path, const ASTVerifier::WarningsErrors &astMessages)
+{
+    static_assert((LEVEL == Logger::Level::WARNING) || (LEVEL == Logger::Level::ERROR));
+    constexpr bool IS_WARNING = LEVEL == Logger::Level::WARNING;
+
+    auto severityStr = IS_WARNING ? "warnings" : "errors";
+    if (astMessages.find(severityStr) != astMessages.end()) {
+        if constexpr (IS_WARNING) {
+            LOG(WARNING, ES2PANDA) << "  In " << path << ':';
+        } else {
+            LOG(ERROR, ES2PANDA) << "  In " << path << ':';
+        }
+        for (const auto &[invaraintId, messages] : astMessages.at(severityStr)) {
+            DumpLogMessage<IS_WARNING>(invaraintId, messages);
+        }
+    }
+}
+
+void DumpLog(const ASTVerifier::GroupedMessages &report)
+{
+    for (const auto &[phase, sourceMessages] : report) {
+        LOG(WARNING, ES2PANDA) << "After " << phase << ':';
+        for (const auto &[path, astMessages] : sourceMessages) {
+            DumpLogAstMessages<Logger::Level::WARNING>(path, astMessages);
+            DumpLogAstMessages<Logger::Level::ERROR>(path, astMessages);
+        }
+    }
+}
+
+void ASTVerifier::DumpMessages() const
+{
+    std::string errMsg = "ASTVerifier found broken invariants.";
+    if (Options().IsAstVerifierJson()) {
+        DumpJson(report_, Options().GetAstVerifierJsonPath());
+        errMsg += " Dumped to '" + std::string(Options().GetAstVerifierJsonPath()) + "'.";
+    } else {
+        DumpLog(report_);
+        errMsg += " You may want to pass '--ast-verifier:json' option for more verbose output.";
+    }
+
+    if (hasErrors_) {
+        LOG(FATAL, ES2PANDA) << errMsg;
+    } else if (hasWarnings_) {
+        LOG(WARNING, ES2PANDA) << errMsg;
+    }
+}
+
+void InvariantMessages::AddCheckMessage(const std::string &cause, const ir::AstNode &node)
+{
+    messages_.emplace_back(cause.data(), &node);
 }
 
 }  // namespace ark::es2panda::compiler::ast_verifier

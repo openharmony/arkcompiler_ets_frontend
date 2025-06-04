@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,20 +17,11 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/base/decorator.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "util/helpers.h"
 
 namespace ark::es2panda::ir {
 ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression const &other,
@@ -55,13 +46,12 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
 
 ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 bool ArrayExpression::ConvertibleToArrayPattern()
@@ -167,14 +157,14 @@ ValidationInfo ArrayExpression::ValidateExpression()
 
 void ArrayExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : elements_) {
+    for (auto *&it : VectorIterationGuard(elements_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -191,11 +181,11 @@ void ArrayExpression::TransformChildren(const NodeTransformer &cb, std::string_v
 
 void ArrayExpression::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : elements_) {
+    for (auto *it : VectorIterationGuard(elements_)) {
         cb(it);
     }
 
@@ -246,7 +236,7 @@ checker::Type *CheckAssignmentPattern(Expression *it, checker::TSChecker *checke
     auto *assignmentPattern = it->AsAssignmentPattern();
     if (assignmentPattern->Left()->IsIdentifier()) {
         const ir::Identifier *ident = assignmentPattern->Left()->AsIdentifier();
-        ASSERT(ident->Variable());
+        ES2PANDA_ASSERT(ident->Variable());
         varbinder::Variable *bindingVar = ident->Variable();
         checker::Type *initializerType = checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
         bindingVar->SetTsType(initializerType);
@@ -258,7 +248,7 @@ checker::Type *CheckAssignmentPattern(Expression *it, checker::TSChecker *checke
         destructuringContext.Start();
         elementType = destructuringContext.InferredType();
     } else {
-        ASSERT(assignmentPattern->Left()->IsObjectPattern());
+        ES2PANDA_ASSERT(assignmentPattern->Left()->IsObjectPattern());
         auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
         auto destructuringContext = checker::ObjectDestructuringContext(
             {checker, assignmentPattern->Left()->AsObjectPattern(), false, true, nullptr, assignmentPattern->Right()});
@@ -307,7 +297,7 @@ checker::Type *CheckElementPattern(Expression *it, checker::Type *elementType, c
         }
         case ir::AstNodeType::IDENTIFIER: {
             const ir::Identifier *ident = it->AsIdentifier();
-            ASSERT(ident->Variable());
+            ES2PANDA_ASSERT(ident->Variable());
             elementType = checker->GlobalAnyType();
             ident->Variable()->SetTsType(elementType);
             memberFlag = checker::ElementFlags::REQUIRED;
@@ -315,7 +305,7 @@ checker::Type *CheckElementPattern(Expression *it, checker::Type *elementType, c
             return elementType;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -359,66 +349,93 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
     return checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
 }
 
-bool ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
-                                                  ArrayExpression *const currentElement, const bool isPreferredTuple,
-                                                  const std::size_t idx)
+bool ArrayExpression::TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker *const checker,
+                                                            ArrayExpression *const nestedArrayExpr,
+                                                            const std::size_t idx) const
 {
-    if (isPreferredTuple) {
-        currentElement->SetPreferredType(preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
+    auto doesArrayExprFitInTuple = [&checker, &nestedArrayExpr](const checker::Type *const possibleTupleType) {
+        return !possibleTupleType->IsETSTupleType() ||
+               checker->IsArrayExprSizeValidForTuple(nestedArrayExpr, possibleTupleType->AsETSTupleType());
+    };
 
-        if (currentElement->GetPreferredType()->IsETSTupleType()) {
-            if (!checker->ValidateTupleMinElementSize(currentElement,
-                                                      currentElement->GetPreferredType()->AsETSTupleType())) {
-                return false;
-            }
+    if (GetPreferredType()->IsETSTupleType()) {
+        if (idx >= preferredType_->AsETSTupleType()->GetTupleSize()) {
+            return false;
         }
+        auto *const typeInTupleAtIdx = preferredType_->AsETSTupleType()->GetTypeAtIndex(idx);
+        nestedArrayExpr->SetPreferredType(typeInTupleAtIdx);
 
-        return true;
+        return doesArrayExprFitInTuple(typeInTupleAtIdx);
     }
 
-    if (preferredType_->IsETSArrayType()) {
-        if (preferredType_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
-            if (!checker->ValidateTupleMinElementSize(
-                    // CC-OFFNXT(G.FMT.06-CPP) project code style
-                    currentElement, preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType())) {
-                return false;
-            }
-        }
+    if (GetPreferredType()->IsETSArrayType()) {
+        auto *const arrayElementType = preferredType_->AsETSArrayType()->ElementType();
+        nestedArrayExpr->SetPreferredType(arrayElementType);
 
-        currentElement->SetPreferredType(preferredType_->AsETSArrayType()->ElementType());
-        return true;
+        return doesArrayExprFitInTuple(arrayElementType);
     }
 
-    if (currentElement->GetPreferredType() == nullptr) {
-        currentElement->SetPreferredType(preferredType_);
+    if (nestedArrayExpr->GetPreferredType() == nullptr) {
+        nestedArrayExpr->SetPreferredType(preferredType_);
     }
+
     return true;
 }
 
-checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ArrayExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
-                                                    checker::TypeRelationFlag flags)
+static std::optional<checker::Type *> ExtractPossiblePreferredType(checker::Type *type)
 {
+    if (type->IsETSArrayType() || type->IsETSTupleType()) {
+        return std::make_optional(type);
+    }
+
+    if (type->IsETSUnionType()) {
+        for (checker::Type *const typeOfUnion : type->AsETSUnionType()->ConstituentTypes()) {
+            auto possiblePreferredType = ExtractPossiblePreferredType(typeOfUnion);
+            if (possiblePreferredType.has_value()) {
+                return std::make_optional(possiblePreferredType.value());
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+void ArrayExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
+                                                       checker::TypeRelationFlag flags)
+{
+    // NOTE (mmartin): This needs a complete solution
     if (preferredType_ != nullptr) {
         return;
     }
-    auto paramType = param->Check(checker);
-    if (paramType->IsETSArrayType()) {
-        auto *elementType = paramType->AsETSArrayType()->ElementType();
-        bool isAssignable = true;
-        for (auto elem : elements_) {
-            auto assignCtx =
-                checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), elementType, elem->Start(),
-                                           {""}, checker::TypeRelationFlag::NO_THROW | flags);
-            isAssignable &= assignCtx.IsAssignable();
-        }
-        if (isAssignable) {
-            preferredType_ = paramType;
-        }
+
+    auto possiblePreferredType = ExtractPossiblePreferredType(param);
+    if (!possiblePreferredType.has_value()) {
+        return;
+    }
+
+    param = possiblePreferredType.value();
+    if (param->IsETSTupleType()) {
+        preferredType_ = param;
+        return;
+    }
+
+    auto *elementType = param->AsETSArrayType()->ElementType();
+    bool isAssignable = true;
+
+    for (auto *const elem : elements_) {
+        checker->SetPreferredTypeIfPossible(elem, elementType);
+        checker::AssignmentContext assignCtx(checker->Relation(), elem, elem->Check(checker), elementType,
+                                             elem->Start(), std::nullopt, checker::TypeRelationFlag::NO_THROW | flags);
+        isAssignable &= assignCtx.IsAssignable();
+    }
+
+    if (isAssignable) {
+        preferredType_ = param;
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -101,13 +101,14 @@ void ETSDynamicType::CastTarget(TypeRelation *relation, Type *source)
 bool ETSDynamicType::IsConvertible(Type const *target)
 {
     return target->IsETSDynamicType() || target->IsETSObjectType() || target->IsETSArrayType() ||
-           target->IsETSFunctionType() ||
+           target->IsETSTupleType() || target->IsETSFunctionType() ||
            target->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 
-ETSFunctionType *ETSDynamicType::CreateETSFunctionType(const util::StringView &name) const
+ETSFunctionType *ETSDynamicType::CreateMethodTypeForProp(const util::StringView &name) const
 {
-    return Allocator()->New<ETSDynamicFunctionType>(name, Allocator(), lang_);
+    auto checker = GetRelation()->GetChecker()->AsETSChecker();
+    return checker->CreateETSDynamicMethodType(name, {{}, Allocator()->Adapter()}, lang_);
 }
 
 void ETSDynamicType::ToAssemblerType(std::stringstream &ss) const

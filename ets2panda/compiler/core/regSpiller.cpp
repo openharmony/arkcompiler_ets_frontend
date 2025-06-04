@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -86,7 +86,7 @@ IRNode *DynamicRegSpiller::MoveReg(const ir::AstNode *const node, const VReg vd,
 
 void DynamicRegSpiller::Finalize() noexcept
 {
-    ASSERT(SpillIndex() == 0);
+    ES2PANDA_ASSERT(SpillIndex() == 0);
 }
 
 RegScope StaticRegSpiller::Start(CodeGen &cg)
@@ -97,8 +97,8 @@ RegScope StaticRegSpiller::Start(CodeGen &cg)
 
 RegSpiller::SpillInfo StaticRegSpiller::Restore()
 {
-    ASSERT(spills_.size() <= VReg::REG_START);
-    ASSERT(!spills_.empty());
+    ES2PANDA_ASSERT(spills_.size() <= VReg::REG_START);
+    ES2PANDA_ASSERT(!spills_.empty());
     const auto last = spills_.back().Reversed();
     spills_.pop_back();
     return last;

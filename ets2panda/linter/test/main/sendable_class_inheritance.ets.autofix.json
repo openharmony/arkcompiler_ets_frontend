@@ -1,0 +1,203 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 31,
+            "column": 24,
+            "endLine": 31,
+            "endColumn": 43,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 38,
+            "column": 27,
+            "endLine": 38,
+            "endColumn": 49,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 59,
+            "column": 30,
+            "endLine": 59,
+            "endColumn": 41,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 30,
+            "endLine": 63,
+            "endColumn": 44,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 30,
+            "endLine": 68,
+            "endColumn": 46,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 30,
+            "endLine": 72,
+            "endColumn": 49,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 30,
+            "endLine": 81,
+            "endColumn": 47,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 30,
+            "endLine": 90,
+            "endColumn": 52,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 31,
+            "endLine": 125,
+            "endColumn": 42,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 132,
+            "column": 31,
+            "endLine": 132,
+            "endColumn": 47,
+            "problem": "SendableClassInheritance",
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 31,
+            "endLine": 139,
+            "endColumn": 45,
+            "problem": "SendableClassInheritance",
+            "autofix": [
+                {
+                    "start": 3676,
+                    "end": 3676,
+                    "replacementText": "@Sendable\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 146,
+            "column": 31,
+            "endLine": 146,
+            "endColumn": 50,
+            "problem": "SendableClassInheritance",
+            "autofix": [
+                {
+                    "start": 3890,
+                    "end": 3890,
+                    "replacementText": "@Sendable\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 155,
+            "column": 34,
+            "endLine": 155,
+            "endColumn": 56,
+            "problem": "SendableClassInheritance",
+            "autofix": [
+                {
+                    "start": 4146,
+                    "end": 4146,
+                    "replacementText": "@Sendable\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 162,
+            "column": 34,
+            "endLine": 162,
+            "endColumn": 51,
+            "problem": "SendableClassInheritance",
+            "autofix": [
+                {
+                    "start": 4396,
+                    "end": 4396,
+                    "replacementText": "@Sendable\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 169,
+            "column": 34,
+            "endLine": 169,
+            "endColumn": 61,
+            "problem": "SendableClassInheritance",
+            "autofix": [
+                {
+                    "start": 4630,
+                    "end": 4630,
+                    "replacementText": "@Sendable\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "The inheritance for \"Sendable\" classes is limited (arkts-sendable-class-inheritance)",
+            "severity": "ERROR"
+        }
+    ]
+}

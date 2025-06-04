@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 
 #include "lexer/token/letters.h"
 #include "unicode/uchar.h"
+#include "generated/diagnostic.h"
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ RegExp::RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags) : pa
 {
 }
 
-RegExpParser::RegExpParser(const RegExp &re, ArenaAllocator *allocator, const parser::ParserImpl &parser)
+RegExpParser::RegExpParser(const RegExp &re, ArenaAllocator *allocator, parser::ParserImpl *parser)
     : re_(re), allocator_ {allocator}, iter_(re_.patternStr), parser_(parser)
 {
 }
@@ -86,14 +87,14 @@ void RegExpParser::ParsePattern()
     ParseDisjunction();
 
     if (iter_.HasNext()) {
-        parser_.ThrowSyntaxError("Invalid closing parenthesis");
+        parser_->LogError(diagnostic::INVALID_CLOSING_PARENTHESIS);
     }
 
     if (!backReferences_.empty() && !groupNames_.empty()) {
         for (const auto it : backReferences_) {
             auto result = groupNames_.find(it);
             if (result == groupNames_.end()) {
-                parser_.ThrowSyntaxError("Invalid capturing group");
+                parser_->LogError(diagnostic::INVALID_CAPTURING_GROUP);
             }
         }
     }
@@ -109,7 +110,7 @@ void RegExpParser::ParseDisjunction()
         }
 
         Next();
-    };
+    }
 }
 
 void RegExpParser::ParseAlternative()
@@ -150,11 +151,11 @@ void RegExpParser::ParseAlternative()
         }
         default: {
             if (ParseBracedQuantifier()) {
-                parser_.ThrowSyntaxError("Invalid quantifier, nothing to repeat");
+                parser_->LogError(diagnostic::INVALID_QUANTIFIER);
             }
 
             if (!ParsePatternCharacter()) {
-                parser_.ThrowSyntaxError("Invalid character");
+                parser_->LogError(diagnostic::INVALID_CHAR);
             }
 
             break;
@@ -188,7 +189,7 @@ bool RegExpParser::ParseAlternativeCharLeftParen()
     }
 
     if (cp != LEX_CHAR_LESS_THAN) {
-        parser_.ThrowSyntaxError("Invalid group");
+        parser_->LogError(diagnostic::INVALID_GROUP);
     }
 
     cp = Peek();
@@ -204,7 +205,8 @@ bool RegExpParser::ParseAlternativeCharLeftParen()
 
 void RegExpParser::ParseAlternatives()
 {
-    while (true) {
+    while (iter_.HasNext()) {
+        auto saved = iter_.Save();
         switch (Peek()) {
             case util::StringView::Iterator::INVALID_CP:
             case LEX_CHAR_RIGHT_PAREN:
@@ -215,6 +217,10 @@ void RegExpParser::ParseAlternatives()
                 ParseAlternative();
             }
         }
+
+        if (saved == iter_.Save()) {
+            break;  // Avoid infinite loop in error processing.
+        }
     }
 }
 
@@ -223,7 +229,7 @@ void RegExpParser::ParseNonCapturingGroup()
     ParseDisjunction();
 
     if (Peek() != LEX_CHAR_RIGHT_PAREN) {
-        parser_.ThrowSyntaxError("Invalid non-capturing group");
+        parser_->LogError(diagnostic::INVALID_NON_CAPTURING_GROUP);
     }
 
     Next();
@@ -235,7 +241,7 @@ void RegExpParser::ParseNamedCapturingGroup()
 
     auto result = groupNames_.insert(name);
     if (!result.second) {
-        parser_.ThrowSyntaxError("Duplicate group name");
+        parser_->LogError(diagnostic::DUPLICATE_GROUP_NAME);
     }
 
     ParseCapturingGroup();
@@ -248,7 +254,7 @@ void RegExpParser::ParseCapturingGroup()
     ParseDisjunction();
 
     if (Peek() != LEX_CHAR_RIGHT_PAREN) {
-        parser_.ThrowSyntaxError("Invalid capturing group");
+        parser_->LogError(diagnostic::INVALID_CAPTURING_GROUP);
     }
 
     Next();
@@ -259,7 +265,7 @@ void RegExpParser::ParseAssertion()
     ParseDisjunction();
 
     if (Peek() != LEX_CHAR_RIGHT_PAREN) {
-        parser_.ThrowSyntaxError("Invalid assertion");
+        parser_->LogError(diagnostic::INVALID_ASSERT);
     }
 
     Next();
@@ -271,7 +277,7 @@ uint32_t RegExpParser::ParseControlEscape()
     if ((cp < LEX_CHAR_LOWERCASE_A || cp > LEX_CHAR_LOWERCASE_Z) &&
         (cp < LEX_CHAR_UPPERCASE_A || cp > LEX_CHAR_UPPERCASE_Z)) {
         if (Unicode()) {
-            parser_.ThrowSyntaxError("Invalid control escape");
+            parser_->LogError(diagnostic::INVALID_CONTROL_ESCAPE);
         }
 
         if (cp < LEX_CHAR_0 || cp > LEX_CHAR_9) {
@@ -329,7 +335,7 @@ char32_t RegExpParser::ParseClassAtomHelper(char32_t cp)
             return cp;
         default:
             if (Unicode() && !IsSyntaxCharacter(cp) && cp != LEX_CHAR_SLASH) {
-                parser_.ThrowSyntaxError("Invalid escape");
+                parser_->LogError(diagnostic::INVALID_ESCAPE);
             }
 
             return cp;
@@ -354,7 +360,7 @@ char32_t RegExpParser::ParseClassAtom()
         Next();
 
         if (IsDecimalDigit(Peek())) {
-            parser_.ThrowSyntaxError("Invalid escape");
+            parser_->LogError(diagnostic::INVALID_ESCAPE);
         }
 
         return LEX_CHAR_NULL;
@@ -376,7 +382,7 @@ void RegExpParser::ParseCharacterClass()
         Next();
     }
 
-    while (true) {
+    while (iter_.HasNext()) {
         if (Peek() == LEX_CHAR_RIGHT_SQUARE) {
             Next();
             break;
@@ -398,14 +404,14 @@ void RegExpParser::ParseCharacterClass()
         uint32_t right = ParseClassAtom();
         if ((IsClassEscape(left) || IsClassEscape(right))) {
             if (Unicode()) {
-                parser_.ThrowSyntaxError("Invalid character class");
+                parser_->LogError(diagnostic::INVALIDE_CHAR_CLASS);
             }
 
             continue;
         }
 
         if (left > right) {
-            parser_.ThrowSyntaxError("Class range out of order");
+            parser_->LogError(diagnostic::CLASS_OUT_OF_ORDER);
         }
     }
 }
@@ -493,7 +499,7 @@ void RegExpParser::ParseAtomEscapeSwitch(char32_t cp)
             cp = Peek();
             if ((cp < LEX_CHAR_LOWERCASE_A || cp > LEX_CHAR_LOWERCASE_Z) &&
                 (cp < LEX_CHAR_UPPERCASE_A || cp > LEX_CHAR_UPPERCASE_Z)) {
-                parser_.ThrowSyntaxError("Invalid control escape");
+                parser_->LogError(diagnostic::INVALID_CONTROL_ESCAPE);
             }
 
             Next();
@@ -502,7 +508,7 @@ void RegExpParser::ParseAtomEscapeSwitch(char32_t cp)
         default: {
             /* IdentityEscape */
             if (Unicode() && !IsSyntaxCharacter(cp) && cp != LEX_CHAR_SLASH) {
-                parser_.ThrowSyntaxError("Invalid escape");
+                parser_->LogError(diagnostic::INVALID_ESCAPE);
             }
         }
     }
@@ -510,7 +516,7 @@ void RegExpParser::ParseAtomEscapeSwitch(char32_t cp)
 
 uint32_t RegExpParser::ParseDecimalEscape()
 {
-    ASSERT(IsDecimalDigit(Peek()));
+    ES2PANDA_ASSERT(IsDecimalDigit(Peek()));
 
     auto digitStart = iter_;
     uint32_t decimalValue = DigitValue(Next());
@@ -521,7 +527,7 @@ uint32_t RegExpParser::ParseDecimalEscape()
         }
 
         if (Unicode()) {
-            parser_.ThrowSyntaxError("Invalid decimal escape");
+            parser_->LogError(diagnostic::INVALID_DECIMAL_ESCAPE);
         }
 
         iter_ = digitStart;
@@ -533,7 +539,7 @@ uint32_t RegExpParser::ParseDecimalEscape()
     while (IsDecimalDigit(Peek())) {
         uint32_t newValue = decimalValue * MULTIPLIER + DigitValue(Next());
         if (newValue < decimalValue) {
-            parser_.ThrowSyntaxError("Invalid decimal escape");
+            parser_->LogError(diagnostic::INVALID_DECIMAL_ESCAPE);
         }
 
         decimalValue = newValue;
@@ -544,7 +550,7 @@ uint32_t RegExpParser::ParseDecimalEscape()
     }
 
     if (Unicode()) {
-        parser_.ThrowSyntaxError("Invalid decimal escape");
+        parser_->LogError(diagnostic::INVALID_DECIMAL_ESCAPE);
     }
 
     iter_ = digitStart;
@@ -559,7 +565,7 @@ uint32_t RegExpParser::ParseDecimalEscape()
 
 uint32_t RegExpParser::ParseLegacyOctalEscape()
 {
-    ASSERT(IsOctalDigit(Peek()));
+    ES2PANDA_ASSERT(IsOctalDigit(Peek()));
     uint32_t octalValue = DigitValue(Next());
 
     if (!IsOctalDigit(Peek())) {
@@ -587,7 +593,7 @@ uint32_t RegExpParser::ParseHexEscape()
 {
     char32_t digit = Next();
     if (!IsHexDigit(digit)) {
-        parser_.ThrowSyntaxError("Invalid hex escape");
+        parser_->LogError(diagnostic::INVALID_HEX_ESCAPE);
     }
 
     constexpr auto MULTIPLIER = 16;
@@ -595,7 +601,7 @@ uint32_t RegExpParser::ParseHexEscape()
 
     digit = Next();
     if (!IsHexDigit(digit)) {
-        parser_.ThrowSyntaxError("Invalid hex escape");
+        parser_->LogError(diagnostic::INVALID_HEX_ESCAPE);
     }
 
     cpValue += HexValue(digit);
@@ -610,7 +616,8 @@ uint32_t RegExpParser::ParseUnicodeDigits()
     while ((count--) != 0U) {
         char32_t digit = Next();
         if (!IsHexDigit(digit)) {
-            parser_.ThrowSyntaxError("Invalid Unicode escape");
+            parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
+            return value;
         }
 
         constexpr auto MULTIPLIER = 16;
@@ -627,7 +634,7 @@ uint32_t RegExpParser::ParseUnicodeEscape()
     if (Peek() == LEX_CHAR_LEFT_BRACE) {
         Next();
         if (!IsHexDigit(Peek())) {
-            parser_.ThrowSyntaxError("Invalid Unicode escape");
+            parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
         }
 
         while (IsHexDigit(Peek())) {
@@ -636,15 +643,16 @@ uint32_t RegExpParser::ParseUnicodeEscape()
             constexpr uint32_t CODE_POINT_MAX = 0x10FFFF;
 
             if (value > CODE_POINT_MAX) {
-                parser_.ThrowSyntaxError("Invalid Unicode escape");
+                parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
+                break;
             }
         }
 
         if (Peek() != LEX_CHAR_RIGHT_BRACE) {
-            parser_.ThrowSyntaxError("Invalid Unicode escape");
+            parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
+        } else {  // Error processing.
+            Next();
         }
-
-        Next();
     } else {
         value = ParseUnicodeDigits();
         if (!util::StringView::IsHighSurrogate(value)) {
@@ -671,14 +679,16 @@ void RegExpParser::ParseUnicodePropertyEscape()
     }
 
     if (Peek() != LEX_CHAR_LEFT_BRACE) {
-        parser_.ThrowSyntaxError("Invalid Unicode property escape");
+        parser_->LogError(diagnostic::INVALID_UNICODE_PROP_ESCAPE);
+        return;
     }
 
     Next();
 
     while (true) {
         if (!iter_.HasNext()) {
-            parser_.ThrowSyntaxError("Unterminated Unicode property escape");
+            parser_->LogError(diagnostic::UNTERMINATED_UNICODE_PROP_ESCAPE);
+            break;
         }
 
         char32_t ch = Next();
@@ -697,7 +707,8 @@ void RegExpParser::ParseNamedBackreference()
             return;
         }
 
-        parser_.ThrowSyntaxError("Invalid named backreference");
+        parser_->LogError(diagnostic::INVALID_NAME_BACKREFERENCE);
+        return;
     }
 
     if (IsDecimalDigit(Peek())) {
@@ -719,7 +730,7 @@ void RegExpParser::ValidateNamedBackreference(bool isUnicode)
         }
 
         if (groupNames_.empty()) {
-            parser_.ThrowSyntaxError("Invalid named backreference");
+            parser_->LogError(diagnostic::INVALID_NAME_BACKREFERENCE);
         }
     }
 }
@@ -727,10 +738,10 @@ void RegExpParser::ValidateNamedBackreference(bool isUnicode)
 void RegExpParser::ValidateGroupNameElement(char32_t cp)
 {
     if (IsDecimalDigit(cp) && !backReferences_.empty()) {
-        parser_.ThrowSyntaxError("Invalid group name");
+        parser_->LogError(diagnostic::INVALID_GROUP_NAME);
     }
     if (cp == UNICODE_INVALID_CP && !groupNames_.empty()) {
-        parser_.ThrowSyntaxError("Invalid group name");
+        parser_->LogError(diagnostic::INVALID_GROUP_NAME);
     }
 }
 
@@ -810,7 +821,7 @@ bool RegExpParser::ParseBracedQuantifier()
 
         if (Peek() == LEX_CHAR_RIGHT_BRACE) {
             if (rightValue < leftValue) {
-                parser_.ThrowSyntaxError("Quantifier range out of order");
+                parser_->LogError(diagnostic::QUANTIFIER_OUT_OF_ORDER);
             }
 
             Next();
@@ -852,18 +863,18 @@ util::StringView RegExpParser::ParseIdent()
     char32_t cp = Next();
     if (cp == LEX_CHAR_BACKSLASH) {
         if (Next() != LEX_CHAR_LOWERCASE_U) {
-            parser_.ThrowSyntaxError("Invalid group name");
+            parser_->LogError(diagnostic::INVALID_GROUP_NAME);
         }
 
         if (!Unicode() && Peek() == LEX_CHAR_LEFT_BRACE) {
-            parser_.ThrowSyntaxError("Invalid Unicode escape");
+            parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
         }
 
         cp = ParseUnicodeEscape();
     }
 
     if (!IsIdStart(cp) && cp != UNICODE_INVALID_CP && backReferences_.empty()) {
-        parser_.ThrowSyntaxError("Invalid group name");
+        parser_->LogError(diagnostic::INVALID_GROUP_NAME);
     }
 
     util::UString ident(allocator_);
@@ -877,11 +888,11 @@ util::StringView RegExpParser::ParseIdent()
 
         if (cp == LEX_CHAR_BACKSLASH) {
             if (Next() != LEX_CHAR_LOWERCASE_U) {
-                parser_.ThrowSyntaxError("Invalid group name");
+                parser_->LogError(diagnostic::INVALID_GROUP_NAME);
             }
 
             if (!Unicode() && Peek() == LEX_CHAR_LEFT_BRACE) {
-                parser_.ThrowSyntaxError("Invalid Unicode escape");
+                parser_->LogError(diagnostic::INVALID_UNICODE_ESCAPE);
             }
 
             cp = ParseUnicodeEscape();
@@ -894,7 +905,7 @@ util::StringView RegExpParser::ParseIdent()
         }
 
         if (!IsIdCont(cp)) {
-            parser_.ThrowSyntaxError("Invalid group name");
+            parser_->LogError(diagnostic::INVALID_GROUP_NAME);
         }
 
         ident.Append(cp);

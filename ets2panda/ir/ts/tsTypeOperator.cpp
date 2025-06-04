@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,24 +28,35 @@ void TSTypeOperator::TransformChildren(const NodeTransformer &cb, std::string_vi
         type_->SetTransformedNode(transformationName, transformedNode);
         type_ = static_cast<TypeNode *>(transformedNode);
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSTypeOperator::Iterate(const NodeTraverser &cb) const
 {
     cb(type_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSTypeOperator::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({
-        {"type", "TSTypeOperator"},
-        {"operator", AstDumper::TypeOperatorToString(operatorType_)},
-        {"typeAnnotation", type_},
-    });
+    dumper->Add({{"type", "TSTypeOperator"},
+                 {"operator", AstDumper::TypeOperatorToString(operatorType_)},
+                 {"typeAnnotation", type_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSTypeOperator::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSTypeOperator");
 }
 
@@ -68,8 +79,8 @@ checker::Type *TSTypeOperator::GetType([[maybe_unused]] checker::TSChecker *chec
     return nullptr;
 }
 
-checker::Type *TSTypeOperator::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeOperator::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

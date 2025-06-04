@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,12 +55,13 @@ enum class ETSObjectFlags : std::uint64_t {
     BUILTIN_FLOAT = 1U << 30U,
     BUILTIN_DOUBLE = 1U << 31U,
 
-    BOXED_ENUM = 1ULL << 32U,
+    ENUM_OBJECT = 1ULL << 32U,
+    EXTENSION_FUNCTION = 1ULL << 33U,
 
     BUILTIN_NUMERIC = BUILTIN_BYTE | BUILTIN_SHORT | BUILTIN_INT | BUILTIN_LONG | BUILTIN_FLOAT | BUILTIN_DOUBLE,
     // Complete set includes null|undefined|Object
     VALUE_TYPED = BUILTIN_BOOLEAN | BUILTIN_CHAR | BUILTIN_NUMERIC | BUILTIN_BIGINT | STRING,
-    UNBOXABLE_TYPE = BUILTIN_BOOLEAN | BUILTIN_CHAR | BUILTIN_NUMERIC | BOXED_ENUM,
+    UNBOXABLE_TYPE = BUILTIN_BOOLEAN | BUILTIN_CHAR | BUILTIN_NUMERIC,
     BUILTIN_TYPE = BUILTIN_STRING | BUILTIN_BIGINT | UNBOXABLE_TYPE,
 
     GLOBAL_CLASS = CLASS | GLOBAL,
@@ -84,9 +85,8 @@ enum class PropertySearchFlags : std::uint32_t {
     IGNORE_ABSTRACT = 1U << 8U,
     ALLOW_FUNCTIONAL_INTERFACE = 1U << 9U,
     DISALLOW_SYNTHETIC_METHOD_CREATION = 1U << 10U,
-    IS_FUNCTIONAL = 1U << 11U,
-    IS_SETTER = 1U << 12U,
-    IS_GETTER = 1U << 13U,
+    IS_SETTER = 1U << 11U,
+    IS_GETTER = 1U << 12U,
 
     SEARCH_INSTANCE = SEARCH_INSTANCE_FIELD | SEARCH_INSTANCE_METHOD | SEARCH_INSTANCE_DECL,
     SEARCH_STATIC = SEARCH_STATIC_FIELD | SEARCH_STATIC_METHOD | SEARCH_STATIC_DECL,
@@ -108,8 +108,10 @@ enum class PropertyType {
 };
 
 /* Invoke method name in functional interfaces */
-constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
-constexpr char const *FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME = "invoke";
+inline std::string FunctionalInterfaceInvokeName(size_t arity, bool hasRest)
+{
+    return (hasRest ? "invokeR" : "invoke") + std::to_string(arity);
+}
 
 }  // namespace ark::es2panda::checker
 

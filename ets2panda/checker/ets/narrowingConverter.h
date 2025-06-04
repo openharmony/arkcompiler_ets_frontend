@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 
-#include "checker/ets/typeConverter.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/typeConverter.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
@@ -37,7 +37,7 @@ public:
             return;
         }
 
-        ASSERT(relation->GetNode());
+        ES2PANDA_ASSERT(relation->GetNode());
 
         switch (ETSChecker::ETSChecker::ETSType(target)) {
             case TypeFlag::BYTE: {
@@ -119,8 +119,8 @@ private:
             }
             return std::numeric_limits<To>::max();
         }
-        ASSERT(std::is_floating_point_v<From>);
-        ASSERT(std::is_integral_v<To>);
+        ES2PANDA_ASSERT(std::is_floating_point_v<From>);
+        ES2PANDA_ASSERT(std::is_integral_v<To>);
         To minInt = std::numeric_limits<To>::min();
         To maxInt = std::numeric_limits<To>::max();
         auto floatMinInt = static_cast<From>(minInt);
@@ -162,7 +162,7 @@ private:
                 return static_cast<TType>(value);
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
     }
@@ -185,9 +185,6 @@ private:
             }
 
             if (Relation()->InCastingContext() || util::Helpers::IsTargetFitInSourceRange<TType, SType>(value)) {
-                auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
-                TargetType *newType = Checker()->Allocator()->New<TargetType>(narrowedValue);
-                Relation()->GetNode()->SetTsType(newType);
                 Relation()->Result(true);
                 return;
             }

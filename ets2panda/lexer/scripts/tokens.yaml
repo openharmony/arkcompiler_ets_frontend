@@ -1,0 +1,250 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+punctuators:
+- name: PUNCTUATOR_BITWISE_AND
+  string: "&"
+  flags: [binary]
+
+- name: PUNCTUATOR_BITWISE_OR
+  string: "|"
+  flags: [binary]
+
+- name: PUNCTUATOR_MULTIPLY
+  string: "*"
+  flags: [binary]
+
+- name: PUNCTUATOR_DIVIDE
+  string: "/"
+  flags: [binary]
+
+- name: PUNCTUATOR_MINUS
+  string: "-"
+  flags: [unary, binary]
+
+- name: PUNCTUATOR_EXCLAMATION_MARK
+  string: "!"
+  flags: [unary]
+
+- name: PUNCTUATOR_TILDE
+  string: "~"
+  flags: [unary]
+
+- name: PUNCTUATOR_MINUS_MINUS
+  string: "--"
+  flags: [unary]
+
+- name: PUNCTUATOR_LEFT_SHIFT
+  string: "<<"
+  flags: [binary]
+
+- name: PUNCTUATOR_RIGHT_SHIFT
+  string: ">>"
+  flags: [binary]
+
+- name: PUNCTUATOR_LESS_THAN_EQUAL
+  string: "<="
+  flags: [binary]
+
+- name: PUNCTUATOR_GREATER_THAN_EQUAL
+  string: ">="
+  flags: [binary]
+
+- name: PUNCTUATOR_MOD
+  string: "%"
+  flags: [binary]
+
+- name: PUNCTUATOR_BITWISE_XOR
+  string: "^"
+  flags: [binary]
+
+- name: PUNCTUATOR_EXPONENTIATION
+  string: "**"
+  flags: [binary]
+
+- name: PUNCTUATOR_MULTIPLY_EQUAL
+  string: "*="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_EXPONENTIATION_EQUAL
+  string: "**="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_ARROW
+  string: "=>"
+
+- name: PUNCTUATOR_BACK_TICK
+  string: "`"
+
+- name: PUNCTUATOR_HASH_MARK
+  string: "#"
+
+- name: PUNCTUATOR_DIVIDE_EQUAL
+  string: "/="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_MOD_EQUAL
+  string: "%="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_MINUS_EQUAL
+  string: "-="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_LEFT_SHIFT_EQUAL
+  string: "<<="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_RIGHT_SHIFT_EQUAL
+  string: ">>="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_UNSIGNED_RIGHT_SHIFT
+  string: ">>>"
+  flags: [binary]
+
+- name: PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL
+  string: ">>>="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_BITWISE_AND_EQUAL
+  string: "&="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_BITWISE_OR_EQUAL
+  string: "|="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_LOGICAL_AND_EQUAL
+  string: "&&="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_NULLISH_COALESCING
+  string: "??"
+  flags: [binary]
+
+- name: PUNCTUATOR_LOGICAL_OR_EQUAL
+  string: "||="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_LOGICAL_NULLISH_EQUAL
+  string: "\\?\\?="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_BITWISE_XOR_EQUAL
+  string: "^="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_PLUS
+  string: "+"
+  flags: [unary, binary]
+
+- name: PUNCTUATOR_PLUS_PLUS
+  string: "++"
+  flags: [unary]
+
+- name: PUNCTUATOR_PLUS_EQUAL
+  string: "+="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_LESS_THAN
+  string: "<"
+  flags: [binary]
+
+- name: PUNCTUATOR_GREATER_THAN
+  string: ">"
+  flags: [binary]
+
+- name: PUNCTUATOR_EQUAL
+  string: "=="
+  flags: [binary]
+
+- name: PUNCTUATOR_NOT_EQUAL
+  string: "!="
+  flags: [binary]
+
+- name: PUNCTUATOR_STRICT_EQUAL
+  string: "==="
+  flags: [binary]
+
+- name: PUNCTUATOR_NOT_STRICT_EQUAL
+  string: "!=="
+  flags: [binary]
+
+- name: PUNCTUATOR_LOGICAL_AND
+  string: "&&"
+  flags: [binary]
+
+- name: PUNCTUATOR_LOGICAL_OR
+  string: "||"
+  flags: [binary]
+
+- name: PUNCTUATOR_SUBSTITUTION
+  string: "="
+  flags: [binary_lvalue]
+
+- name: PUNCTUATOR_QUESTION_MARK
+  string: "?"
+
+- name: PUNCTUATOR_QUESTION_DOT
+  string: "?."
+
+- name: PUNCTUATOR_AT
+  string: "@"
+
+- name: PUNCTUATOR_FORMAT
+  string: "@@"
+
+- name: PUNCTUATOR_RIGHT_PARENTHESIS
+  string: ")"
+
+- name: PUNCTUATOR_LEFT_PARENTHESIS
+  string: "("
+
+- name: PUNCTUATOR_RIGHT_SQUARE_BRACKET
+  string: "]"
+
+- name: PUNCTUATOR_LEFT_SQUARE_BRACKET
+  string: "["
+
+- name: PUNCTUATOR_RIGHT_BRACE
+  string: "}"
+
+- name: PUNCTUATOR_PERIOD
+  string: "."
+
+- name: PUNCTUATOR_PERIOD_PERIOD_PERIOD
+  string: "..."
+
+- name: PUNCTUATOR_PERIOD_QUESTION
+  string: ".?"
+
+- name: PUNCTUATOR_LEFT_BRACE
+  string: "{"
+
+- name: PUNCTUATOR_SEMI_COLON
+  string: ";"
+
+- name: PUNCTUATOR_COLON
+  string: ":"
+
+- name: PUNCTUATOR_COMMA
+  string: ","
+
+flags:
+  binary: Binary operation which doesn't modify operands
+  binary_lvalue: Binary operation which updates left hand side operand
+  unary: Unary operation
+  reserved_type_name: TypeScript reserved type name
+  definable_type_name: Words which cannot be used as user-defined type names but are not otherwise restricted
+  predefined_type: Predefined types which are hard keywords, and cannot be used as identifiers

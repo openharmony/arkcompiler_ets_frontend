@@ -1,0 +1,158 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 55,
+            "column": 10,
+            "endLine": 55,
+            "endColumn": 24,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 325,
+            "column": 27,
+            "endLine": 325,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 339,
+            "column": 25,
+            "endLine": 339,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 442,
+            "column": 10,
+            "endLine": 442,
+            "endColumn": 24,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 458,
+            "column": 10,
+            "endLine": 458,
+            "endColumn": 24,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 465,
+            "column": 24,
+            "endLine": 465,
+            "endColumn": 25,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 180,
+            "column": 24,
+            "endLine": 180,
+            "endColumn": 28,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'data' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'data' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 246,
+            "column": 17,
+            "endLine": 246,
+            "endColumn": 19,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'id' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'id' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 316,
+            "column": 39,
+            "endLine": 316,
+            "endColumn": 50,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'sharedValue' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'sharedValue' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 364,
+            "column": 26,
+            "endLine": 364,
+            "endColumn": 31,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 374,
+            "column": 42,
+            "endLine": 374,
+            "endColumn": 53,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'colorScheme' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'colorScheme' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 502,
+            "column": 12,
+            "endLine": 502,
+            "endColumn": 19,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'keyword' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'keyword' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 522,
+            "column": 24,
+            "endLine": 522,
+            "endColumn": 29,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 531,
+            "column": 25,
+            "endLine": 531,
+            "endColumn": 30,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'phase' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'phase' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
+}

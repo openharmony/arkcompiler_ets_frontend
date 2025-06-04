@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,7 @@ void ImportDeclaration::TransformChildren(const NodeTransformer &cb, std::string
         source_ = transformedNode->AsStringLiteral();
     }
 
-    for (auto *&it : specifiers_) {
+    for (auto *&it : VectorIterationGuard(specifiers_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -42,7 +42,7 @@ void ImportDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);
 
-    for (auto *it : specifiers_) {
+    for (auto *it : VectorIterationGuard(specifiers_)) {
         cb(it);
     }
 }
@@ -55,7 +55,8 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
 void ImportDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("import ");
-    if (specifiers_.size() == 1 && specifiers_[0]->IsImportNamespaceSpecifier()) {
+    if (specifiers_.size() == 1 &&
+        (specifiers_[0]->IsImportNamespaceSpecifier() || specifiers_[0]->IsImportDefaultSpecifier())) {
         specifiers_[0]->Dump(dumper);
     } else {
         dumper->Add("{ ");
@@ -89,8 +90,8 @@ checker::Type *ImportDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ImportDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ImportDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

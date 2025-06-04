@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 7
+              "column": 7,
+              "program": "test-class-definition.js"
             },
             "end": {
               "line": 17,
-              "column": 8
+              "column": 8,
+              "program": "test-class-definition.js"
             }
           }
         },
@@ -30,11 +32,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 24,
-                "column": 14
+                "column": 14,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -58,11 +62,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 24,
-                      "column": 16
+                      "column": 16,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
@@ -73,11 +79,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 24,
-                      "column": 19
+                      "column": 19,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
@@ -88,11 +96,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 24,
-                      "column": 22
+                      "column": 22,
+                      "program": "test-class-definition.js"
                     }
                   }
                 }
@@ -103,33 +113,39 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 3
+                    "column": 3,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 26,
-                    "column": 4
+                    "column": 4,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 26,
-                  "column": 4
+                  "column": 4,
+                  "program": "test-class-definition.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 14
+                "column": 14,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 26,
-                "column": 4
+                "column": 4,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -138,11 +154,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 3
+              "column": 3,
+              "program": "test-class-definition.js"
             },
             "end": {
               "line": 26,
-              "column": 4
+              "column": 4,
+              "program": "test-class-definition.js"
             }
           }
         },
@@ -156,11 +174,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -184,11 +204,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 23
+                        "column": 23,
+                        "program": "test-class-definition.js"
                       },
                       "end": {
                         "line": 18,
-                        "column": 24
+                        "column": 24,
+                        "program": "test-class-definition.js"
                       }
                     }
                   },
@@ -199,11 +221,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 26
+                        "column": 26,
+                        "program": "test-class-definition.js"
                       },
                       "end": {
                         "line": 18,
-                        "column": 27
+                        "column": 27,
+                        "program": "test-class-definition.js"
                       }
                     }
                   },
@@ -214,11 +238,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 29
+                        "column": 29,
+                        "program": "test-class-definition.js"
                       },
                       "end": {
                         "line": 18,
-                        "column": 30
+                        "column": 30,
+                        "program": "test-class-definition.js"
                       }
                     }
                   }
@@ -229,33 +255,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 32
+                      "column": 32,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 18,
-                      "column": 34
+                      "column": 34,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 22
+                    "column": 22,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 18,
-                    "column": 34
+                    "column": 34,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 34
+                  "column": 34,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -264,11 +296,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 18,
-                "column": 34
+                "column": 34,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -281,11 +315,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 3
+                  "column": 3,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 20,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -308,33 +344,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 12
+                      "column": 12,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 22,
-                      "column": 4
+                      "column": 4,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 22,
-                    "column": 4
+                    "column": 4,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 4
+                  "column": 4,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -343,11 +385,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 22,
-                "column": 4
+                "column": 4,
+                "program": "test-class-definition.js"
               }
             }
           }
@@ -355,22 +399,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 9
+            "column": 9,
+            "program": "test-class-definition.js"
           },
           "end": {
-            "line": 27,
-            "column": 2
+            "line": 29,
+            "column": 6,
+            "program": "test-class-definition.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-class-definition.js"
         },
         "end": {
-          "line": 27,
-          "column": 2
+          "line": 29,
+          "column": 6,
+          "program": "test-class-definition.js"
         }
       }
     },
@@ -384,11 +432,13 @@
           "loc": {
             "start": {
               "line": 29,
-              "column": 7
+              "column": 7,
+              "program": "test-class-definition.js"
             },
             "end": {
               "line": 29,
-              "column": 8
+              "column": 8,
+              "program": "test-class-definition.js"
             }
           }
         },
@@ -403,11 +453,13 @@
             "loc": {
               "start": {
                 "line": 34,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 34,
-                "column": 14
+                "column": 14,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -430,33 +482,39 @@
                 "loc": {
                   "start": {
                     "line": 34,
-                    "column": 16
+                    "column": 16,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 34,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 34,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 34,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-class-definition.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 34,
-                "column": 14
+                "column": 14,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 34,
-                "column": 18
+                "column": 18,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -465,11 +523,13 @@
           "loc": {
             "start": {
               "line": 34,
-              "column": 3
+              "column": 3,
+              "program": "test-class-definition.js"
             },
             "end": {
               "line": 34,
-              "column": 18
+              "column": 18,
+              "program": "test-class-definition.js"
             }
           }
         },
@@ -483,11 +543,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 30,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -510,33 +572,39 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 24
+                      "column": 24,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 30,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 22
+                    "column": 22,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 30,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 30,
-                  "column": 26
+                  "column": 26,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -545,11 +613,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 30,
-                "column": 26
+                "column": 26,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -562,11 +632,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 31,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -589,33 +661,39 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 19
+                      "column": 19,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 31,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 17
+                    "column": 17,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 31,
-                    "column": 21
+                    "column": 21,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 31,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -624,11 +702,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 31,
-                "column": 21
+                "column": 21,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -641,11 +721,13 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 32,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -668,33 +750,39 @@
                   "loc": {
                     "start": {
                       "line": 32,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 32,
-                      "column": 23
+                      "column": 23,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 19
+                    "column": 19,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 32,
-                    "column": 23
+                    "column": 23,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 32,
-                  "column": 23
+                  "column": 23,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -703,11 +791,13 @@
             "loc": {
               "start": {
                 "line": 32,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 32,
-                "column": 23
+                "column": 23,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -720,11 +810,13 @@
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 33,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -747,33 +839,39 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 23
+                      "column": 23,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 33,
-                      "column": 25
+                      "column": 25,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 21
+                    "column": 21,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 33,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 33,
-                  "column": 25
+                  "column": 25,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -782,11 +880,13 @@
             "loc": {
               "start": {
                 "line": 33,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 33,
-                "column": 25
+                "column": 25,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -798,11 +898,13 @@
               "loc": {
                 "start": {
                   "line": 35,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 35,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -826,11 +928,13 @@
                     "loc": {
                       "start": {
                         "line": 35,
-                        "column": 11
+                        "column": 11,
+                        "program": "test-class-definition.js"
                       },
                       "end": {
                         "line": 35,
-                        "column": 12
+                        "column": 12,
+                        "program": "test-class-definition.js"
                       }
                     }
                   }
@@ -841,33 +945,39 @@
                   "loc": {
                     "start": {
                       "line": 35,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 35,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 35,
-                    "column": 10
+                    "column": 10,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 35,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 35,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 35,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -876,11 +986,13 @@
             "loc": {
               "start": {
                 "line": 35,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 35,
-                "column": 15
+                "column": 15,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -892,11 +1004,13 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 36,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -919,33 +1033,39 @@
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 36,
-                      "column": 16
+                      "column": 16,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 12
+                    "column": 12,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 36,
-                    "column": 16
+                    "column": 16,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 36,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -954,11 +1074,13 @@
             "loc": {
               "start": {
                 "line": 36,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 36,
-                "column": 16
+                "column": 16,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -971,11 +1093,13 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 4
+                  "column": 4,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 37,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -998,33 +1122,39 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 7
+                      "column": 7,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 37,
-                      "column": 9
+                      "column": 9,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 37,
-                    "column": 5
+                    "column": 5,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 37,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 37,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1033,11 +1163,13 @@
             "loc": {
               "start": {
                 "line": 37,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 37,
-                "column": 9
+                "column": 9,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -1050,11 +1182,13 @@
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 38,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1077,33 +1211,39 @@
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 38,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 38,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 38,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 38,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1112,11 +1252,13 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 38,
-                "column": 15
+                "column": 15,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -1128,11 +1270,13 @@
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 39,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1155,33 +1299,39 @@
                   "loc": {
                     "start": {
                       "line": 39,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 39,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 39,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 39,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 39,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1190,11 +1340,13 @@
             "loc": {
               "start": {
                 "line": 39,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 39,
-                "column": 15
+                "column": 15,
+                "program": "test-class-definition.js"
               }
             }
           },
@@ -1206,11 +1358,13 @@
               "loc": {
                 "start": {
                   "line": 40,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 40,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1233,33 +1387,39 @@
                   "loc": {
                     "start": {
                       "line": 40,
-                      "column": 20
+                      "column": 20,
+                      "program": "test-class-definition.js"
                     },
                     "end": {
                       "line": 40,
-                      "column": 22
+                      "column": 22,
+                      "program": "test-class-definition.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 40,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-class-definition.js"
                   },
                   "end": {
                     "line": 40,
-                    "column": 22
+                    "column": 22,
+                    "program": "test-class-definition.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 40,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-class-definition.js"
                 },
                 "end": {
                   "line": 40,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-class-definition.js"
                 }
               }
             },
@@ -1268,11 +1428,13 @@
             "loc": {
               "start": {
                 "line": 40,
-                "column": 3
+                "column": 3,
+                "program": "test-class-definition.js"
               },
               "end": {
                 "line": 40,
-                "column": 22
+                "column": 22,
+                "program": "test-class-definition.js"
               }
             }
           }
@@ -1280,22 +1442,26 @@
         "loc": {
           "start": {
             "line": 29,
-            "column": 9
+            "column": 9,
+            "program": "test-class-definition.js"
           },
           "end": {
             "line": 41,
-            "column": 2
+            "column": 2,
+            "program": "test-class-definition.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 29,
-          "column": 1
+          "column": 1,
+          "program": "test-class-definition.js"
         },
         "end": {
           "line": 41,
-          "column": 2
+          "column": 2,
+          "program": "test-class-definition.js"
         }
       }
     }
@@ -1303,11 +1469,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-class-definition.js"
     },
     "end": {
       "line": 41,
-      "column": 2
+      "column": 2,
+      "program": "test-class-definition.js"
     }
   }
 }

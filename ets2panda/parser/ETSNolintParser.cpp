@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,25 +13,12 @@
  * limitations under the License.
  */
 
-#include "ETSparser.h"
 #include "ETSNolintParser.h"
 
-#include "lexer/lexer.h"
-#include "ir/module/importNamespaceSpecifier.h"
-
 namespace ark::es2panda::parser {
-ETSNolintParser::ETSNolintParser(const ParserImpl *mainParser) : parser_(mainParser)
+ETSNolintParser::ETSNolintParser(ParserImpl *mainParser) : parser_(mainParser)
 {
     line_ = parser_->Lexer()->Line();
-
-    warningsMap_ = {
-        {std::u32string(U"ets-implicit-boxing-unboxing"), ETSWarnings::IMPLICIT_BOXING_UNBOXING},
-        {std::u32string(U"ets-prohibit-top-level-statements"), ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS},
-        {std::u32string(U"ets-boost-equality-statement"), ETSWarnings::BOOST_EQUALITY_STATEMENT},
-        {std::u32string(U"ets-remove-lambda"), ETSWarnings::REMOVE_LAMBDA},
-        {std::u32string(U"ets-suggest-final"), ETSWarnings::SUGGEST_FINAL},
-        {std::u32string(U"ets-remove-async"), ETSWarnings::REMOVE_ASYNC_FUNCTIONS},
-    };
 }
 
 void ETSNolintParser::SetStartPos()
@@ -212,17 +199,14 @@ bool ETSNolintParser::IsEnd()
     return TryPeekU32String(END_CHAR32T);
 }
 
-ETSWarnings ETSNolintParser::MapETSNolintArg(const std::u32string &warningName) const
+ETSWarnings ETSNolintParser::MapETSNolintArg(const std::string &warningName) const
 {
-    const auto search = warningsMap_.find(warningName);
-    ASSERT(search != warningsMap_.end());
-
-    return search->second;
+    return util::gen::ets_warnings::FromString(warningName);
 }
 
-bool ETSNolintParser::ValidETSNolintArg(const std::u32string &warningName) const
+bool ETSNolintParser::ValidETSNolintArg(const std::string &warningName) const
 {
-    return warningsMap_.find(warningName) != warningsMap_.end();
+    return util::gen::ets_warnings::FromString(warningName) != ETSWarnings::INVALID;
 }
 
 std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
@@ -230,32 +214,33 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
     std::set<ETSWarnings> warningsCollection;
 
     if (PeekSymbol() != lexer::LEX_CHAR_LEFT_PAREN) {
-        for (const auto &it : warningsMap_) {
-            warningsCollection.insert(it.second);
+        for (std::underlying_type_t<ETSWarnings> wid = ETSWarnings::FIRST; wid <= ETSWarnings::LAST; wid++) {
+            warningsCollection.insert(ETSWarnings {wid});
         }
-
         return warningsCollection;
     }
 
     NextSymbol();
     char32_t cp = 0;
-    std::u32string warningName;
+    std::string warningName;
 
     while (cp != lexer::LEX_CHAR_SP && cp != lexer::LEX_CHAR_LF && cp != lexer::LEX_CHAR_EOS) {
         cp = PeekSymbol();
+        const lexer::SourcePosition sPos {line_ + 1, 0, parser_->GetProgram()};
         if (cp != lexer::LEX_CHAR_MINUS && cp != lexer::LEX_CHAR_COMMA && cp != lexer::LEX_CHAR_RIGHT_PAREN &&
             (cp < lexer::LEX_CHAR_LOWERCASE_A || cp > lexer::LEX_CHAR_LOWERCASE_Z)) {
-            const std::string msg = "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].";
-            throw Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), msg.c_str(), line_ + 1, 0};
+            parser_->DiagnosticEngine().LogDiagnostic(diagnostic::UNEXPECTED_CHAR_ETSNOLINT,
+                                                      util::DiagnosticMessageParams {}, sPos);
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && !ValidETSNolintArg(warningName)) {
-            const std::string msg = "Invalid argument for ETSNOLINT!";
-            throw Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), msg.c_str(), line_ + 1, 0};
+            parser_->DiagnosticEngine().LogDiagnostic(diagnostic::INVALID_ARGUMENT_ETSNOLINT,
+                                                      util::DiagnosticMessageParams {}, sPos);
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && ValidETSNolintArg(warningName)) {
             warningsCollection.insert(MapETSNolintArg(warningName));
             warningName.clear();
         } else {
+            ES2PANDA_ASSERT(cp <= std::numeric_limits<unsigned char>::max());
             warningName += cp;
         }
         if (cp == lexer::LEX_CHAR_RIGHT_PAREN) {

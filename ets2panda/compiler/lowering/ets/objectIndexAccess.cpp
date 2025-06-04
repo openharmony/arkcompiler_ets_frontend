@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,6 +26,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "parser/ETSparser.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
@@ -66,21 +67,12 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     return loweringResult;
 }
 
-bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
@@ -115,26 +107,9 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
     return true;
 }
 
-bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool ObjectIndexLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                 const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Postcondition(ctx, p)) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
         if (ast->IsMemberExpression() &&
             ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {

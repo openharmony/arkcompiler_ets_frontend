@@ -17,4 +17,5 @@
 import foo frm from
 
 
-/* @@? 21:1 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@ label */

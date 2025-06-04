@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 6
+            "column": 6,
+            "program": "tuple_types_13.ets"
           },
           "end": {
             "line": 16,
-            "column": 17
+            "column": 17,
+            "program": "tuple_types_13.ets"
           }
         }
       },
@@ -32,33 +34,39 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 21
+                    "column": 21,
+                    "program": "tuple_types_13.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 27
+                    "column": 27,
+                    "program": "tuple_types_13.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 21
+                  "column": 21,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 28
+                  "column": 28,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "tuple_types_13.ets"
               },
               "end": {
                 "line": 16,
-                "column": 28
+                "column": 28,
+                "program": "tuple_types_13.ets"
               }
             }
           },
@@ -73,33 +81,39 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 29
+                    "column": 29,
+                    "program": "tuple_types_13.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 35
+                    "column": 35,
+                    "program": "tuple_types_13.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 29
+                  "column": 29,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 36
+                  "column": 36,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 29
+                "column": 29,
+                "program": "tuple_types_13.ets"
               },
               "end": {
                 "line": 16,
-                "column": 36
+                "column": 36,
+                "program": "tuple_types_13.ets"
               }
             }
           },
@@ -114,57 +128,66 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 37
+                    "column": 37,
+                    "program": "tuple_types_13.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 43
+                    "column": 43,
+                    "program": "tuple_types_13.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 37
+                  "column": 37,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 44
+                  "column": 44,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 37
+                "column": 37,
+                "program": "tuple_types_13.ets"
               },
               "end": {
                 "line": 16,
-                "column": 44
+                "column": 44,
+                "program": "tuple_types_13.ets"
               }
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 16,
-            "column": 20
+            "column": 20,
+            "program": "tuple_types_13.ets"
           },
           "end": {
             "line": 16,
-            "column": 45
+            "column": 44,
+            "program": "tuple_types_13.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_13.ets"
         },
         "end": {
           "line": 16,
-          "column": 45
+          "column": 45,
+          "program": "tuple_types_13.ets"
         }
       }
     },
@@ -178,11 +201,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tuple_types_13.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tuple_types_13.ets"
             }
           }
         },
@@ -193,16 +218,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "tuple_types_13.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "tuple_types_13.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -222,11 +355,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -240,33 +375,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -275,11 +416,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tuple_types_13.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tuple_types_13.ets"
               }
             }
           },
@@ -292,11 +435,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 7
+                  "column": 7,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
@@ -312,11 +457,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 6
+                          "column": 6,
+                          "program": "tuple_types_13.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 8
+                          "column": 8,
+                          "program": "tuple_types_13.ets"
                         }
                       }
                     },
@@ -326,11 +473,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 10
+                          "column": 10,
+                          "program": "tuple_types_13.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 13
+                          "column": 13,
+                          "program": "tuple_types_13.ets"
                         }
                       }
                     },
@@ -340,11 +489,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 15
+                          "column": 15,
+                          "program": "tuple_types_13.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 18
+                          "column": 18,
+                          "program": "tuple_types_13.ets"
                         }
                       }
                     }
@@ -352,11 +503,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 5
+                      "column": 5,
+                      "program": "tuple_types_13.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 19
+                      "column": 19,
+                      "program": "tuple_types_13.ets"
                     }
                   }
                 }
@@ -364,11 +517,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 30
+                  "column": 30,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 2
+                  "column": 2,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
@@ -391,44 +546,53 @@
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 14
+                        "column": 14,
+                        "program": "tuple_types_13.ets"
                       },
                       "end": {
                         "line": 19,
-                        "column": 25
+                        "column": 25,
+                        "program": "tuple_types_13.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 14
+                      "column": 14,
+                      "program": "tuple_types_13.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 26
+                      "column": 26,
+                      "program": "tuple_types_13.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 14
+                    "column": 14,
+                    "program": "tuple_types_13.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 26
+                    "column": 26,
+                    "program": "tuple_types_13.ets"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 25
+                  "column": 25,
+                  "program": "tuple_types_13.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 27
+                  "column": 27,
+                  "program": "tuple_types_13.ets"
                 }
               }
             },
@@ -437,11 +601,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 7
+                "column": 7,
+                "program": "tuple_types_13.ets"
               },
               "end": {
                 "line": 21,
-                "column": 2
+                "column": 2,
+                "program": "tuple_types_13.ets"
               }
             }
           }
@@ -449,22 +615,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tuple_types_13.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tuple_types_13.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_13.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_13.ets"
         }
       }
     }
@@ -472,11 +642,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "tuple_types_13.ets"
     },
     "end": {
       "line": 22,
-      "column": 1
+      "column": 1,
+      "program": "tuple_types_13.ets"
     }
   }
 }

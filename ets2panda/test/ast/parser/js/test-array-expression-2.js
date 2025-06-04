@@ -14,6 +14,6 @@
  */
 
 
-[a;
+[a/* @@ label */;
 
-/* @@? 17:3 Error SyntaxError: Unexpected token, expected ',' or ']'  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or ']'. */

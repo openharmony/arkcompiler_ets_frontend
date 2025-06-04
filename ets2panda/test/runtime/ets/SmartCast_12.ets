@@ -30,23 +30,23 @@ function main() {
      let y: Number|String|undefined = 2;   // hides outer declaration!
      x = z; 
      let tmp: number = y;                  // smart cast is used
-     assert(tmp == 2);
+     assertEQ(tmp, 2);
   };
 
   if (x instanceof string) {
     let tmp: string = x as string;         // no smart cast!
-    assert(tmp == "test1");
+    assertEQ(tmp, "test1");
   }	
 
   lam();
 
-  assert(x == 7);
+  assertEQ(x, 7);
 
   if (y instanceof string) {
     let tmp: string = y;                   // smart cast is used
-    assert(tmp == "test2");
+    assertEQ(tmp, "test2");
   }     
 
   let w: number = z;                       // smart cast is used
-  assert(w == 7)
+  assertEQ(w, 7)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,8 @@
  */
 
 #include "localClassLowering.h"
+
 #include "checker/ETSchecker.h"
-#include "varbinder/ETSBinder.h"
 #include "../util.h"
 
 namespace ark::es2panda::compiler {
@@ -26,8 +26,7 @@ std::string_view LocalClassConstructionPhase::Name() const
 }
 
 static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, const varbinder::Variable *capturedVar,
-                                              varbinder::ClassScope *scope, size_t &idx,
-                                              const lexer::SourcePosition &pos)
+                                              varbinder::ClassScope *scope, size_t &idx)
 {
     auto *allocator = checker->Allocator();
     auto *varBinder = checker->VarBinder();
@@ -47,7 +46,7 @@ static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, cons
     fieldIdent->SetParent(field);
 
     // Add the declaration to the scope, and set the type based on the captured variable's scope
-    auto [decl, var] = varBinder->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    auto [decl, var] = varBinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->SetScope(scope->InstanceFieldScope());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     var->SetTsType(capturedVar->TsType());
@@ -87,9 +86,9 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     size_t idx = 0;
     ArenaVector<ir::AstNode *> properties(ctx->allocator->Adapter());
     for (auto var : capturedVars) {
-        ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
-        auto *property = CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()),
-                                             idx, classDef->Start());
+        ES2PANDA_ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
+        auto *property =
+            CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()), idx);
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
                              << ") for captured variable: " << var->Name();
         properties.push_back(property);
@@ -110,7 +109,7 @@ ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(checker::ET
     newParam->Ident()->SetTsType(type);
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(checker->VarBinder(), scope, false);
 
-    auto *paramVar = std::get<1>(checker->VarBinder()->AddParamDecl(newParam));
+    auto *paramVar = checker->VarBinder()->AddParamDecl(newParam);
     paramVar->SetTsType(newParam->TsType());
     newParam->Ident()->SetVariable(paramVar);
     return newParam;
@@ -132,7 +131,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
         auto &sigParams = signature->Params();
         signature->GetSignatureInfo()->minArgCount += capturedVars.size();
 
-        ASSERT(signature == constructor->Signature());
+        ES2PANDA_ASSERT(signature == constructor->Signature());
         for (auto var : capturedVars) {
             auto *newParam = CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), var->TsType());
             newParam->SetParent(constructor);
@@ -144,7 +143,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             paramScopeParams.pop_back();
 
             parameters.insert(parameters.begin(), newParam);
-            ASSERT(newParam->Variable()->Type() == varbinder::VariableType::LOCAL);
+            ES2PANDA_ASSERT(newParam->Variable()->Type() == varbinder::VariableType::LOCAL);
             sigParams.insert(sigParams.begin(), newParam->Ident()->Variable()->AsLocalVariable());
             parameterMap[var] = newParam->Ident()->Variable()->AsLocalVariable();
         }
@@ -170,8 +169,10 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             initStatement->SetParent(body);
             initStatements.push_back(initStatement);
         }
-        auto &statements = body->AsBlockStatement()->Statements();
-        statements.insert(statements.begin(), initStatements.begin(), initStatements.end());
+        if (body != nullptr && body->IsBlockStatement()) {
+            auto &statements = body->AsBlockStatement()->Statements();
+            statements.insert(statements.begin(), initStatements.begin(), initStatements.end());
+        }
     }
 }
 
@@ -206,7 +207,9 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     for (auto *signature : classType->ConstructSignatures()) {
         auto *constructor = signature->Function();
         LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: " << constructor->Id()->Name();
-        constructor->Body()->IterateRecursively(remapCapturedVariables);
+        if (constructor->Body() != nullptr) {
+            constructor->Body()->IterateRecursively(remapCapturedVariables);
+        }
     }
 }
 
@@ -230,7 +233,7 @@ void LocalClassConstructionPhase::HandleLocalClass(
     capturedVarsMap.emplace(classDef, std::move(capturedVars));
 }
 
-bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {
@@ -247,7 +250,7 @@ bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Prog
                                                                           ir::ETSNewClassInstanceExpression *newExpr) {
         LOG(DEBUG, ES2PANDA) << "Instantiating local class: " << classDef->Ident()->Name();
         auto capturedVarsIt = capturedVarsMap.find(classDef);
-        ASSERT(capturedVarsIt != capturedVarsMap.cend());
+        ES2PANDA_ASSERT(capturedVarsIt != capturedVarsMap.cend());
         auto &capturedVars = capturedVarsIt->second;
         for (auto *var : capturedVars) {
             LOG(DEBUG, ES2PANDA) << "  - Extending constructor argument with captured variable: " << var->Name();
@@ -265,10 +268,13 @@ bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Prog
         if (ast->IsETSNewClassInstanceExpression()) {
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
+
+            ES2PANDA_ASSERT(calleeType->IsETSObjectType());
             auto *calleeObj = calleeType->AsETSObjectType();
             if (!calleeObj->GetDeclNode()->IsClassDefinition()) {
                 return;
             }
+
             auto *classDef = calleeObj->GetDeclNode()->AsClassDefinition();
             if (classDef->IsLocal()) {
                 handleLocalClassInstantiation(classDef, newExpr);

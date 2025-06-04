@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,65 +18,66 @@
 #include "bytecode_optimizer/optimize_bytecode.h"
 #include "compiler/compiler_logger.h"
 #include "compiler/compiler_options.h"
+#include "util/options.h"
 
 namespace ark::es2panda::util {
 
-[[maybe_unused]] static void InitializeLogging(const util::Options *options)
+[[maybe_unused]] static void InitializeLogging(const util::Options &options)
 {
     ark::Logger::ComponentMask componentMask;
     componentMask.set(ark::Logger::Component::ASSEMBLER);
     componentMask.set(ark::Logger::Component::COMPILER);
     componentMask.set(ark::Logger::Component::BYTECODE_OPTIMIZER);
 
-    if (!ark::Logger::IsInitialized()) {
-        ark::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), componentMask);
+    if (!Logger::IsInitialized()) {
+        Logger::InitializeStdLogging(options.LogLevel(), componentMask);
     } else {
-        ark::Logger::EnableComponent(componentMask);
+        Logger::EnableComponent(componentMask);
     }
 }
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-static int OptimizeBytecode(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter,
+static int OptimizeBytecode(ark::pandasm::Program *prog, const util::Options &options, const ReporterFun &reporter,
                             std::map<std::string, size_t> *statp,
                             ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
 {
-    if (options->OptLevel() != 0) {
+    if (options.GetOptLevel() != 0) {
         InitializeLogging(options);
-        if (!ark::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
-            reporter("Failed to emit binary data: " + ark::pandasm::AsmEmitter::GetLastError());
+        if (!ark::pandasm::AsmEmitter::Emit(options.GetOutput(), *prog, statp, mapsp, true)) {
+            reporter(diagnostic::EMIT_FAILED, {ark::pandasm::AsmEmitter::GetLastError()});
             return 1;
         }
 
-        ark::bytecodeopt::g_options.SetOptLevel(options->OptLevel());
+        ark::bytecodeopt::g_options.SetOptLevel(options.GetOptLevel());
         // Set default value instead of maximum set in ark::bytecodeopt::SetCompilerOptions()
         ark::compiler::CompilerLogger::Init({"all"});
         ark::compiler::g_options.SetCompilerMaxBytecodeSize(ark::compiler::g_options.GetCompilerMaxBytecodeSize());
-        ark::bytecodeopt::OptimizeBytecode(prog, mapsp, options->CompilerOutput(), options->IsDynamic(), true);
+        ark::bytecodeopt::OptimizeBytecode(prog, mapsp, options.GetOutput(), options.IsDynamic(), true);
     }
 
     return 0;
 }
 #endif
 
-static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter,
+static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options &options, const ReporterFun &reporter,
                                std::map<std::string, size_t> *statp,
                                ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
 {
-    if (options->CompilerOptions().dumpAsm) {
+    if (options.IsDumpAssembly()) {
         es2panda::Compiler::DumpAsm(prog);
     }
 
     if (!ark::pandasm::AsmEmitter::AssignProfileInfo(prog)) {
-        reporter("AssignProfileInfo failed");
+        reporter(diagnostic::ASSIGN_PROFILE_INFO_FAILED, {});
         return 1;
     }
 
-    if (!ark::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
-        reporter("Failed to emit binary data: " + ark::pandasm::AsmEmitter::GetLastError());
+    if (!ark::pandasm::AsmEmitter::Emit(options.GetOutput(), *prog, statp, mapsp, true)) {
+        reporter(diagnostic::EMIT_FAILED, {ark::pandasm::AsmEmitter::GetLastError()});
         return 1;
     }
 
-    if (options->SizeStat()) {
+    if (options.IsDumpSizeStat()) {
         size_t totalSize = 0;
         std::cout << "Panda file size statistic:" << std::endl;
         constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
@@ -100,12 +101,12 @@ static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options 
     return 0;
 }
 
-int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter)
+int GenerateProgram(ark::pandasm::Program *prog, const util::Options &options, const ReporterFun &reporter)
 {
     std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = options->OptLevel() != 0 ? &stat : nullptr;
+    std::map<std::string, size_t> *statp = options.GetOptLevel() != 0 ? &stat : nullptr;
     ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
-    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = options->OptLevel() != 0 ? &maps : nullptr;
+    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = options.GetOptLevel() != 0 ? &maps : nullptr;
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
     if (OptimizeBytecode(prog, options, reporter, statp, mapsp) != 0) {

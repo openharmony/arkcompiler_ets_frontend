@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 class Foo {
     bar();
     bar();
-    constructor?() { };
+    /* @@ label */constructor/* @@ label1 */?() { };
 }
 
-/* @@? 19:5 Error SyntaxError: Classes may not have a field named 'constructor'  */
-/* @@? 19:16 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@@ label Error SyntaxError: Classes may not have a field named 'constructor'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected '('. */

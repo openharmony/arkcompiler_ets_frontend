@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,8 +31,8 @@ enum class AstNodeFlags {
     ALLOW_REQUIRED_INSTANTIATION = 1U << 2U,
     HAS_EXPORT_ALIAS = 1U << 3U,
     GENERATE_VALUE_OF = 1U << 4U,
-    GENERATE_GET_NAME = 1U << 5U,  // Transform the Enum[enumVar] MemberExpression to enumVar.getName() call
-    RECHECK = 1U << 6U,
+    RECHECK = 1U << 5U,
+    NOCLEANUP = 1U << 6U,
     /* do not introduce new flags. all the existing to be removed */
 };
 
@@ -98,11 +98,10 @@ enum class ScriptFunctionFlags : uint32_t {
     GETTER = 1U << 15U,
     SETTER = 1U << 16U,
     ENTRY_POINT = 1U << 17U,
-    INSTANCE_EXTENSION_METHOD = 1U << 18U,
-    HAS_RETURN = 1U << 19U,
-    ASYNC_IMPL = 1U << 20U,
-    EXTERNAL_OVERLOAD = 1U << 21U,
-    HAS_THROW = 1U << 22U,
+    HAS_RETURN = 1U << 18U,
+    ASYNC_IMPL = 1U << 19U,
+    EXTERNAL_OVERLOAD = 1U << 20U,
+    HAS_THROW = 1U << 21U,
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };
@@ -127,11 +126,10 @@ enum class BoxingUnboxingFlags : uint32_t {
     UNBOX_TO_LONG = 1U << 14U,
     UNBOX_TO_FLOAT = 1U << 15U,
     UNBOX_TO_DOUBLE = 1U << 16U,
-    UNBOX_TO_ENUM = 1U << 17U,
     BOXING_FLAG = BOX_TO_BOOLEAN | BOX_TO_BYTE | BOX_TO_SHORT | BOX_TO_CHAR | BOX_TO_INT | BOX_TO_LONG | BOX_TO_FLOAT |
                   BOX_TO_DOUBLE | BOX_TO_ENUM,
     UNBOXING_FLAG = UNBOX_TO_BOOLEAN | UNBOX_TO_BYTE | UNBOX_TO_SHORT | UNBOX_TO_CHAR | UNBOX_TO_INT | UNBOX_TO_LONG |
-                    UNBOX_TO_FLOAT | UNBOX_TO_DOUBLE | UNBOX_TO_ENUM,
+                    UNBOX_TO_FLOAT | UNBOX_TO_DOUBLE,
 };
 }  // namespace ark::es2panda::ir
 

@@ -14,5 +14,5 @@
  */
 
 
-~a b
-/* @@? 17:4 Error SyntaxError: Unexpected token 'identification literal'. */
+~a /* @@ label */b
+/* @@@ label Error SyntaxError: Unexpected token 'b'. */

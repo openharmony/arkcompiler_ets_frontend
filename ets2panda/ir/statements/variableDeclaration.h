@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,16 @@
 #ifndef ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATION_H
 #define ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATION_H
 
+#include "ir/annotationAllowed.h"
 #include "ir/statement.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/annotationUsage.h"
+#include "variableDeclarator.h"
 
 namespace ark::es2panda::ir {
 class VariableDeclarator;
 
-class VariableDeclaration : public Statement {
+class VariableDeclaration : public AnnotationAllowed<Statement> {
 private:
     struct Tag {};
 
@@ -30,7 +34,7 @@ public:
 
     explicit VariableDeclaration(VariableDeclarationKind kind, ArenaAllocator *allocator,
                                  ArenaVector<VariableDeclarator *> &&declarators)
-        : Statement(AstNodeType::VARIABLE_DECLARATION),
+        : AnnotationAllowed<Statement>(AstNodeType::VARIABLE_DECLARATION, allocator),
           kind_(kind),
           decorators_(allocator->Adapter()),
           declarators_(std::move(declarators))
@@ -52,6 +56,16 @@ public:
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
+    }
+
+    VariableDeclarator *GetDeclaratorByName(util::StringView name) const
+    {
+        for (VariableDeclarator *declarator : declarators_) {
+            if (declarator->Id()->AsIdentifier()->Name().Compare(name) == 0) {
+                return declarator;
+            }
+        }
+        return nullptr;
     }
 
     const ArenaVector<Decorator *> *DecoratorsPtr() const override
@@ -76,7 +90,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

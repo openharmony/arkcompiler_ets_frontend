@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,7 +53,7 @@ end %>::<%= name %>)0U;
 end %>::<%= name %>::<%= flag %>;
 % end
     default:
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 %end
 }
@@ -93,7 +93,7 @@ end %>::<%= name %>::<%= flag %>:
         return Es2panda<%= name %>::<%= enum.name_to_upper_snake %>_<%= flag %>;
 % end
     default:
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 % end
 }
@@ -105,7 +105,7 @@ end %>::<%= name %>::<%= flag %>:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define IS(public_name, e2p_name)                                               \
-    extern "C" bool Is##public_name(es2panda_AstNode *ast)                  \
+    extern "C" bool Is##public_name(es2panda_AstNode *ast)                      \
     {                                                                           \
         auto *node = reinterpret_cast<ir::AstNode *>(ast);                      \
         return node->Is##e2p_name();                                            \
@@ -186,7 +186,7 @@ char const *AstNodeName(es2panda_AstNode *ast)
     return "Unknown AstNode";
 }
 
-// NOLINTBEGIN(performance-for-range-copy)
+// NOLINTBEGIN(performance-for-range-copy, readability-identifier-naming)
 % Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
 % namespaceClasses&.each do |className, classData|
 
@@ -203,10 +203,19 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
 % end
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *ctxAllocator = ctx->allocator;
+% if classData.constructor_type().lib_type_to_str() == "es2panda_AstNode *"
+    auto *astNode = (<%= classData.constructor_cast["start"]
+    %><%= constructor["args"]&.map { |arg| arg.lib_cast["var_name"] }&.join(", ") %>)<%=
+        classData.constructor_cast["end"] %>;
+    astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+    return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
+               %>>(astNode);
+% elsif
     return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
     %>>(<%= classData.constructor_cast["start"]
     %><%= constructor["args"]&.map { |arg| arg.lib_cast["var_name"] }&.join(", ") %>)<%=
         classData.constructor_cast["end"] %>;
+% end
 }
 
 % if classData.updater_allowed()
@@ -230,6 +239,27 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
     newE2pNode->SetOriginalNode(e2pOriginal);
     newE2pNode->SetParent(e2pOriginal->Parent());
     newE2pNode->SetRange(e2pOriginal->Range());
+% if classData.constructor_type().lib_type_to_str() == "es2panda_AstNode *"
+    newE2pNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+% end
+% if className + constructor["overload"] == "MethodDefinition"
+    for (auto overload : e2pOriginal->AsMethodDefinition()->Overloads()) {
+        overload->SetBaseOverloadMethod(newE2pNode);
+    }
+    newE2pNode->AsMethodDefinition()->SetBaseOverloadMethod(e2pOriginal->AsMethodDefinition()->BaseOverloadMethod());
+    if (e2pOriginal->AsMethodDefinition()->BaseOverloadMethod() != nullptr) {
+        auto originalOverloads = e2pOriginal->AsMethodDefinition()->BaseOverloadMethod()->Overloads();
+        for (auto &overload : originalOverloads) {
+            if (overload == e2pOriginal) {
+                overload = newE2pNode;
+            }
+        }
+        e2pOriginal->AsMethodDefinition()->BaseOverloadMethod()->SetOverloads(std::move(originalOverloads));
+    }
+    auto oriOverloads = e2pOriginal->AsMethodDefinition()->Overloads();
+    newE2pNode->AsMethodDefinition()->SetOverloads(std::move(oriOverloads));
+    
+% end
     return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
     %>>(newE2pNode);
 }
@@ -241,8 +271,8 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
 % classData.class_methods&.each_with_index do |method_info, index|
 /* <%= method_info["raw_decl"] %> */
 extern "C" <%= method_info["return_type"].lib_type_to_str %><%= className + method_info["overload_name"]
-%>([[maybe_unused]] es2panda_Context *context<%= if classData.call_cast["call_var"]
-then ", " + classData.call_cast["call_var"] end %><%=
+%>([[maybe_unused]] es2panda_Context *context<%= if classData.call_cast["call_var_str"]
+then ", " + classData.call_cast["call_var_str"] end %><%=
 method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" then
 ", " + "[[maybe_unused]] " + arg.lib_args_to_str end}&.join("") %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
 {
@@ -261,8 +291,8 @@ method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" then
 
 % structData.struct_getters&.each_with_index do |method_info, index|
 extern "C" <%= method_info["return_type"].lib_type_to_str %><%= structName + method_info["name"]
-%>([[maybe_unused]] es2panda_Context *context<%= if structData.call_cast["call_var"]
-then structData.call_cast["call_var"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
+%>([[maybe_unused]] es2panda_Context *context<%= if structData.call_cast["call_var_str"]
+then structData.call_cast["call_var_str"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
 {
 % method_info["args"]&.each do |arg|
     <%= arg.lib_cast["expression"] %>
@@ -276,5 +306,5 @@ then structData.call_cast["call_var"] end %>/*return_args:*/<%= method_info["ret
 
 
 % Es2pandaLibApi::print_stats
-// NOLINTEND(performance-for-range-copy)
+// NOLINTEND(performance-for-range-copy, readability-identifier-naming)
 // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-non-const-parameter)

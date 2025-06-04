@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,50 +26,25 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void AssertStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
+void AssertStatement::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                        [[maybe_unused]] std::string_view const transformationName)
 {
-    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
-        test_->SetTransformedNode(transformationName, transformedNode);
-        test_ = transformedNode->AsExpression();
-    }
-
-    if (second_ != nullptr) {
-        if (auto *transformedNode = cb(second_); second_ != transformedNode) {
-            second_->SetTransformedNode(transformationName, transformedNode);
-            second_ = transformedNode->AsExpression();
-        }
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Iterate(const NodeTraverser &cb) const
+void AssertStatement::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
-    cb(test_);
-
-    if (second_ != nullptr) {
-        cb(second_);
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Dump(ir::AstDumper *dumper) const
+void AssertStatement::Dump([[maybe_unused]] ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullish(second_)}});
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Dump(ir::SrcDumper *dumper) const
+void AssertStatement::Dump([[maybe_unused]] ir::SrcDumper *dumper) const
 {
-    ASSERT(test_);
-    dumper->Add("assert(");
-    test_->Dump(dumper);
-    dumper->Add(")");
-
-    if (second_ != nullptr) {
-        dumper->Add(": ");
-        second_->Dump(dumper);
-    }
-
-    if (parent_->IsStatement()) {
-        dumper->Add(";");
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
 void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -87,8 +62,14 @@ checker::Type *AssertStatement::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+AssertStatement *AssertStatement::Clone([[maybe_unused]] ArenaAllocator *const allocator,
+                                        [[maybe_unused]] AstNode *const parent)
+{
+    ES2PANDA_UNREACHABLE();
 }
 }  // namespace ark::es2panda::ir

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "invalidInheritance3.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "invalidInheritance3.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -58,11 +62,13 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 39
+                            "column": 39,
+                            "program": "invalidInheritance3.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 42
+                            "column": 42,
+                            "program": "invalidInheritance3.ets"
                           }
                         }
                       },
@@ -70,22 +76,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 36
+                          "column": 36,
+                          "program": "invalidInheritance3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 42
+                          "column": 42,
+                          "program": "invalidInheritance3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 36
+                        "column": 36,
+                        "program": "invalidInheritance3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 42
+                        "column": 42,
+                        "program": "invalidInheritance3.ets"
                       }
                     }
                   },
@@ -99,11 +109,13 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 47
+                            "column": 47,
+                            "program": "invalidInheritance3.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 50
+                            "column": 50,
+                            "program": "invalidInheritance3.ets"
                           }
                         }
                       },
@@ -111,22 +123,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 44
+                          "column": 44,
+                          "program": "invalidInheritance3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 50
+                          "column": 50,
+                          "program": "invalidInheritance3.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 44
+                        "column": 44,
+                        "program": "invalidInheritance3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 50
+                        "column": 50,
+                        "program": "invalidInheritance3.ets"
                       }
                     }
                   }
@@ -140,11 +156,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 57
+                          "column": 57,
+                          "program": "invalidInheritance3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 63
+                          "column": 63,
+                          "program": "invalidInheritance3.ets"
                         }
                       }
                     }
@@ -152,33 +170,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 55
+                      "column": 55,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 65
+                      "column": 65,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 35
+                    "column": 35,
+                    "program": "invalidInheritance3.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 65
+                    "column": 65,
+                    "program": "invalidInheritance3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 35
+                  "column": 35,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 65
+                  "column": 65,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -201,11 +225,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 12
+                          "column": 12,
+                          "program": "invalidInheritance3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 15
+                          "column": 15,
+                          "program": "invalidInheritance3.ets"
                         }
                       }
                     },
@@ -213,22 +239,26 @@
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 9
+                        "column": 9,
+                        "program": "invalidInheritance3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 15
+                        "column": 15,
+                        "program": "invalidInheritance3.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 15
+                      "column": 15,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
@@ -242,11 +272,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 20
+                          "column": 20,
+                          "program": "invalidInheritance3.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 23
+                          "column": 23,
+                          "program": "invalidInheritance3.ets"
                         }
                       }
                     },
@@ -254,22 +286,26 @@
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 17
+                        "column": 17,
+                        "program": "invalidInheritance3.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 23
+                        "column": 23,
+                        "program": "invalidInheritance3.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 17
+                      "column": 17,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 23
+                      "column": 23,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 }
@@ -279,22 +315,26 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 28
+                    "column": 28,
+                    "program": "invalidInheritance3.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 32
+                    "column": 32,
+                    "program": "invalidInheritance3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 32
+                  "column": 32,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -303,11 +343,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "invalidInheritance3.ets"
               },
               "end": {
                 "line": 17,
-                "column": 65
+                "column": 65,
+                "program": "invalidInheritance3.ets"
               }
             }
           },
@@ -319,12 +361,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -342,12 +386,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
@@ -360,34 +406,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "invalidInheritance3.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "invalidInheritance3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -395,12 +447,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -408,22 +462,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "invalidInheritance3.ets"
           },
           "end": {
-            "line": 18,
-            "column": 2
+            "line": 20,
+            "column": 6,
+            "program": "invalidInheritance3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "invalidInheritance3.ets"
         },
         "end": {
-          "line": 18,
-          "column": 2
+          "line": 20,
+          "column": 6,
+          "program": "invalidInheritance3.ets"
         }
       }
     },
@@ -437,11 +495,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 7
+              "column": 7,
+              "program": "invalidInheritance3.ets"
             },
             "end": {
               "line": 20,
-              "column": 8
+              "column": 8,
+              "program": "invalidInheritance3.ets"
             }
           }
         },
@@ -456,33 +516,39 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 17
+                  "column": 17,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 18
+                  "column": 18,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 17
+                "column": 17,
+                "program": "invalidInheritance3.ets"
               },
               "end": {
                 "line": 20,
-                "column": 20
+                "column": 20,
+                "program": "invalidInheritance3.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 17
+              "column": 17,
+              "program": "invalidInheritance3.ets"
             },
             "end": {
               "line": 20,
-              "column": 20
+              "column": 20,
+              "program": "invalidInheritance3.ets"
             }
           }
         },
@@ -497,11 +563,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -511,11 +579,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 14
+                  "column": 14,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 15
+                  "column": 15,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -530,11 +600,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 11
+                  "column": 11,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -543,11 +615,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "invalidInheritance3.ets"
               },
               "end": {
                 "line": 21,
-                "column": 15
+                "column": 15,
+                "program": "invalidInheritance3.ets"
               }
             }
           },
@@ -559,12 +633,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 20,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 20,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -582,12 +658,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 20,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 20,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
@@ -600,34 +678,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 20,
+                      "program": "invalidInheritance3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 20,
+                      "program": "invalidInheritance3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 20,
+                    "program": "invalidInheritance3.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 20,
+                    "program": "invalidInheritance3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 20,
+                  "program": "invalidInheritance3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 20,
+                  "program": "invalidInheritance3.ets"
                 }
               }
             },
@@ -635,12 +719,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 22,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 22,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -648,22 +734,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 19
+            "column": 19,
+            "program": "invalidInheritance3.ets"
           },
           "end": {
-            "line": 22,
-            "column": 2
+            "line": 23,
+            "column": 1,
+            "program": "invalidInheritance3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "invalidInheritance3.ets"
         },
         "end": {
-          "line": 22,
-          "column": 2
+          "line": 23,
+          "column": 1,
+          "program": "invalidInheritance3.ets"
         }
       }
     },
@@ -677,11 +767,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "invalidInheritance3.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "invalidInheritance3.ets"
             }
           }
         },
@@ -692,16 +784,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "invalidInheritance3.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "invalidInheritance3.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -721,11 +921,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -739,33 +941,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -774,11 +982,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "invalidInheritance3.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "invalidInheritance3.ets"
               }
             }
           }
@@ -786,22 +996,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "invalidInheritance3.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "invalidInheritance3.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "invalidInheritance3.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "invalidInheritance3.ets"
         }
       }
     }
@@ -809,11 +1023,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "invalidInheritance3.ets"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "invalidInheritance3.ets"
     }
   }
 }

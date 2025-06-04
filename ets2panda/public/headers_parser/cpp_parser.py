@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -58,6 +58,10 @@ class CppParser:
             elif self.it.is_template():
                 self.it.end, self.template = parse_template_prefix(self.it.data, self.it.start)
 
+            elif self.it.is_using():
+                self.it.end, self.parsed = parse_using(self.it.data, self.it.start)
+                self.res_append_in_modifier("usings")
+
             elif self.it.is_namespace():
                 self.it.end, self.parsed = parse_namespace(self.it.data, self.it.start)
                 self.res_update()
@@ -69,10 +73,6 @@ class CppParser:
             elif self.it.is_struct():
                 self.it.end, self.parsed = parse_struct(self.it.data, self.it.start)
                 self.res_append("structs")
-
-            elif self.it.is_using():
-                self.it.end, self.parsed = parse_using(self.it.data, self.it.start)
-                self.res_append_in_modifier("usings")
 
             elif self.it.is_define_macro():
                 self.it.end, self.parsed = parse_define_macros(self.it.data, self.it.start)
@@ -130,10 +130,10 @@ class CppParser:
                 return
             raise RuntimeError("Unreachable")
 
-        if key not in self.res[self.current_modifier]: # CC-OFF(G.TYP.07) dict key exist
-            self.res[self.current_modifier][key] = [] # CC-OFF(G.TYP.07) dict key exist
+        if key not in self.res[self.current_modifier]:  # CC-OFF(G.TYP.07) dict key exist
+            self.res[self.current_modifier][key] = []  # CC-OFF(G.TYP.07) dict key exist
 
-        self.res[self.current_modifier][key].append(deep_copy(self.parsed)) # CC-OFF(G.TYP.07) dict key exist
+        self.res[self.current_modifier][key].append(deep_copy(self.parsed))  # CC-OFF(G.TYP.07) dict key exist
 
     def res_update(self) -> None:
         if self.parsed:
@@ -141,6 +141,9 @@ class CppParser:
             self.res.update(self.parsed)
 
     def res_append_namespace(self) -> None:
+        if not self.parsed:
+            return
+
         self.parsed["namespace"] = self.namespace
 
         if self.parent_class_name != "":
@@ -158,12 +161,15 @@ class CppParser:
             self.res[self.current_modifier] = {}
 
     def res_append_method_or_constructor(self) -> None:
+        if not self.parsed:
+            return
+
         # Constructor
-        if self.parsed["name"] == self.parent_class_name: # CC-OFF(G.TYP.07) dict key exist
+        if self.parsed["name"] == self.parent_class_name:  # CC-OFF(G.TYP.07) dict key exist
             self.res_append_in_modifier("constructors")
 
         # Destructor
-        elif self.parsed["name"] == "~" + self.parent_class_name: # CC-OFF(G.TYP.07) dict key exist
+        elif self.parsed["name"] == "~" + self.parent_class_name:  # CC-OFF(G.TYP.07) dict key exist
             self.res_append_in_modifier("destructors")
 
         # Method

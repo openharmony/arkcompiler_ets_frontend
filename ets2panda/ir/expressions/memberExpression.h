@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 
+#include "checker/checkerContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/expression.h"
 
@@ -43,6 +44,7 @@ enum class MemberExpressionKind : uint32_t {
     PROPERTY_ACCESS = 1U << 1U,
     GETTER = 1U << 2U,
     SETTER = 1U << 3U,
+    EXTENSION_ACCESSOR = 1U << 4U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -96,6 +98,12 @@ public:
     {
         object_ = object;
         object_->SetParent(this);
+    }
+
+    void SetProperty(Expression *prop) noexcept
+    {
+        property_ = prop;
+        property_->SetParent(this);
     }
 
     [[nodiscard]] Expression *Property() noexcept
@@ -154,9 +162,20 @@ public:
         return objType_;
     }
 
+    [[nodiscard]] checker::ETSFunctionType *ExtensionAccessorType() const
+    {
+        return extensionAccessorType_;
+    }
+
+    void SetExtensionAccessorType(checker::ETSFunctionType *eAccessorType)
+    {
+        ES2PANDA_ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
+        extensionAccessorType_ = eAccessorType;
+    }
+
     void SetPropVar(varbinder::LocalVariable *propVar) noexcept
     {
-        ASSERT(Property());
+        ES2PANDA_ASSERT(Property());
         Property()->SetVariable(propVar);
     }
 
@@ -183,22 +202,33 @@ public:
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+    std::optional<std::size_t> GetTupleIndexValue() const;
+    checker::Type *GetTypeOfTupleElement(checker::ETSChecker *checker, checker::Type *baseType);
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
-    bool CompileComputed(compiler::ETSGen *etsg) const;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg objReg) const;
     void CompileToRegs(compiler::PandaGen *pg, compiler::VReg object, compiler::VReg property) const;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
+
+    std::string ToString() const override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        uncheckedType_ = nullptr;
+        objType_ = nullptr;
+        extensionAccessorType_ = nullptr;
     }
 
 protected:
@@ -213,20 +243,20 @@ protected:
     }
 
 private:
-    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
-                                                                             checker::ETSEnumType *type) const;
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
-
     checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
     checker::Type *SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType);
     checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *baseType);
     checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType);
-    checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
-                                       checker::Type *commonPropType);
+    checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType);
 
     bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
-    checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType);
+
+    checker::Type *ResolveReturnTypeFromSignature(checker::ETSChecker *checker, bool isSetter,
+                                                  ArenaVector<ir::Expression *> &arguments,
+                                                  ArenaVector<checker::Signature *> &signatures,
+                                                  std::string_view const methodName);
 
     void LoadRhs(compiler::PandaGen *pg) const;
 
@@ -237,6 +267,7 @@ private:
     bool ignoreBox_ {false};
     checker::Type *uncheckedType_ {};
     checker::ETSObjectType *objType_ {};
+    checker::ETSFunctionType *extensionAccessorType_ {};
 };
 }  // namespace ark::es2panda::ir
 

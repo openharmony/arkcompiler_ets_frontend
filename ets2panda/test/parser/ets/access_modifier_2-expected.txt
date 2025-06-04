@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "access_modifier_2.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "access_modifier_2.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "access_modifier_2.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 21
+                  "column": 21,
+                  "program": "access_modifier_2.ets"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 18
+                      "column": 18,
+                      "program": "access_modifier_2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 21
+                      "column": 21,
+                      "program": "access_modifier_2.ets"
                     }
                   }
                 },
@@ -72,11 +78,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 25
+                      "column": 25,
+                      "program": "access_modifier_2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 29
+                      "column": 29,
+                      "program": "access_modifier_2.ets"
                     }
                   }
                 },
@@ -86,33 +94,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 30
+                      "column": 30,
+                      "program": "access_modifier_2.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 32
+                      "column": 32,
+                      "program": "access_modifier_2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 21
+                    "column": 21,
+                    "program": "access_modifier_2.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 32
+                    "column": 32,
+                    "program": "access_modifier_2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 21
+                  "column": 21,
+                  "program": "access_modifier_2.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 32
+                  "column": 32,
+                  "program": "access_modifier_2.ets"
                 }
               }
             },
@@ -121,11 +135,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "access_modifier_2.ets"
               },
               "end": {
                 "line": 17,
-                "column": 32
+                "column": 32,
+                "program": "access_modifier_2.ets"
               }
             }
           },
@@ -137,12 +153,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "access_modifier_2.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "access_modifier_2.ets"
                 }
               }
             },
@@ -160,12 +178,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "access_modifier_2.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "access_modifier_2.ets"
                     }
                   }
                 },
@@ -178,34 +198,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "access_modifier_2.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "access_modifier_2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "access_modifier_2.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "access_modifier_2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "access_modifier_2.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "access_modifier_2.ets"
                 }
               }
             },
@@ -213,12 +239,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -226,22 +254,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "access_modifier_2.ets"
           },
           "end": {
-            "line": 18,
-            "column": 2
+            "line": 19,
+            "column": 1,
+            "program": "access_modifier_2.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "access_modifier_2.ets"
         },
         "end": {
-          "line": 18,
-          "column": 2
+          "line": 19,
+          "column": 1,
+          "program": "access_modifier_2.ets"
         }
       }
     },
@@ -255,11 +287,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "access_modifier_2.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "access_modifier_2.ets"
             }
           }
         },
@@ -270,16 +304,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "access_modifier_2.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "access_modifier_2.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -299,11 +441,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -317,33 +461,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -352,11 +502,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "access_modifier_2.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "access_modifier_2.ets"
               }
             }
           }
@@ -364,22 +516,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "access_modifier_2.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "access_modifier_2.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "access_modifier_2.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "access_modifier_2.ets"
         }
       }
     }
@@ -387,11 +543,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "access_modifier_2.ets"
     },
     "end": {
       "line": 19,
-      "column": 1
+      "column": 1,
+      "program": "access_modifier_2.ets"
     }
   }
 }

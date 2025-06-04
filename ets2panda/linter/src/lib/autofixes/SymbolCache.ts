@@ -108,6 +108,11 @@ export class SymbolCache {
     nodes.push(node);
   }
 
+  private handleEnumMember(node: ts.Node): ts.Symbol | undefined {
+    const EnumMember = node as ts.EnumMember;
+    return this.typeChecker.getSymbolAtLocation(EnumMember.name);
+  }
+
   private readonly handlersMap = new Map([
     [ts.SyntaxKind.ElementAccessExpression, this.handleElementAccessExpression],
     [ts.SyntaxKind.EnumDeclaration, this.handleEnumDeclaration],
@@ -117,7 +122,8 @@ export class SymbolCache {
     [ts.SyntaxKind.PropertySignature, this.handlePropertySignature],
     [ts.SyntaxKind.FunctionDeclaration, this.handleFunctionDeclaration],
     [ts.SyntaxKind.CallExpression, this.handleCallExpression],
-    [ts.SyntaxKind.Identifier, this.handleIdentifier]
+    [ts.SyntaxKind.Identifier, this.handleIdentifier],
+    [ts.SyntaxKind.EnumMember, this.handleEnumMember]
   ]);
 
   private readonly cache: Map<ts.Symbol, ts.Node[]> = new Map<ts.Symbol, ts.Node[]>();

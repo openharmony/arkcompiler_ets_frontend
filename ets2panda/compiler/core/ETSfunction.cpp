@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,6 +35,8 @@
 #include "checker/types/ets/types.h"
 
 namespace ark::es2panda::compiler {
+
+// #22952: this should have been done in lowering
 void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 {
     RegScope rs(etsg);
@@ -47,12 +49,17 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
     }
 
     auto res = std::find_if(superType->ConstructSignatures().cbegin(), superType->ConstructSignatures().cend(),
-                            [](const checker::Signature *sig) { return sig->Params().empty(); });
+                            [](const checker::Signature *sig) { return sig->MinArgCount() == 0; });
     if (res == superType->ConstructSignatures().cend()) {
+        ES2PANDA_ASSERT(superType->ConstructSignatures().empty());
         return;
     }
-
-    etsg->CallExact(etsg->RootNode(), (*res)->InternalName(), etsg->GetThisReg());
+    auto sig = *res;
+    if (sig->ArgCount() == 0) {
+        etsg->CallExact(etsg->RootNode(), (*res)->InternalName(), etsg->GetThisReg());
+    } else {
+        etsg->CallRangeFillUndefined(etsg->RootNode(), *res, etsg->GetThisReg());
+    }
 }
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)
@@ -163,7 +170,7 @@ void ETSFunction::Compile(ETSGen *etsg)
     if (topScope->IsFunctionScope()) {
         CompileFunction(etsg);
     } else {
-        ASSERT(topScope->IsGlobalScope());
+        ES2PANDA_ASSERT(topScope->IsGlobalScope());
         CompileSourceBlock(etsg, etsg->RootNode()->AsBlockStatement());
     }
 

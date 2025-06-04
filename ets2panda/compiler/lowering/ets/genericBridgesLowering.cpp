@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "genericBridgesLowering.h"
 
-#include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 
@@ -54,20 +53,22 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
         auto const *const derivedParameter = derivedParameters[i];
         auto const &parameterName = derivedParameter->Name().Utf8();
         str1 += parameterName;
-        typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType()));
+        typeNodes.emplace_back(
+            checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), checker->Allocator()));
         str1 += ": @@T" + std::to_string(typeNodes.size());
 
         str2 += parameterName;
-        typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType()));
+        typeNodes.emplace_back(
+            checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), checker->Allocator()));
         str2 += " as @@T" + std::to_string(typeNodes.size());
     }
 
     typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType())));
+        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), checker->Allocator()));
     str1 += "): @@T" + std::to_string(typeNodes.size()) + ' ';
 
-    typeNodes.emplace_back(
-        checker->AllocNode<ir::OpaqueTypeNode>(const_cast<checker::Type *>(classDefinition->TsType())));
+    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(classDefinition->TsType()), checker->Allocator()));
     str2 = "{ return (this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
 
     str1 += str2;
@@ -88,6 +89,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     auto *const bridgeMethod =
         parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes)->AsMethodDefinition();
     bridgeMethod->AddModifier(methodDefinition->Modifiers());
+    bridgeMethod->ClearModifier(ir::ModifierFlags::NATIVE | ir::ModifierFlags::ABSTRACT);
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
     bridgeMethod->SetParent(const_cast<ir::ClassDefinition *>(classDefinition));
 
@@ -114,7 +116,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     auto *methodType = methodDefinition->Id()->Variable()->TsType()->AsETSFunctionType();
 
     checker->BuildFunctionSignature(bridgeMethod->Function());
-    auto *const bridgeMethodType = checker->BuildNamedFunctionType(bridgeMethod->Function());
+    auto *const bridgeMethodType = checker->BuildMethodType(bridgeMethod->Function());
     checker->CheckIdenticalOverloads(methodType, bridgeMethodType, bridgeMethod);
     bridgeMethod->SetTsType(bridgeMethodType);
     methodType->AddCallSignature(bridgeMethod->Function()->Signature());
@@ -137,8 +139,8 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
             checker, checker->Context().Status() | checker::CheckerStatus::IN_BRIDGE_TEST,
             classDefinition->TsType()->AsETSObjectType());
         checker::SavedTypeRelationFlagsContext const savedFlags(relation, checker::TypeRelationFlag::BRIDGE_CHECK);
-        return relation->IsCompatibleTo(const_cast<checker::Signature *>(source),
-                                        const_cast<checker::Signature *>(target));
+        return relation->SignatureIsSupertypeOf(const_cast<checker::Signature *>(source),
+                                                const_cast<checker::Signature *>(target));
     };
 
     //  We are not interested in functions that either don't have type parameters at all
@@ -188,11 +190,10 @@ void GenericBridgesPhase::MaybeAddGenericBridges(ir::ClassDefinition const *cons
 }
 
 void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const classDefinition,
-                                               Substitutions &substitutions) const
+                                               Substitutions &substitutions,
+                                               ArenaVector<ir::AstNode *> const &items) const
 {
     auto const &classBody = classDefinition->Body();
-    auto const *const superDefinition =
-        classDefinition->Super()->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition();
 
     //  Collect type parameters defaults/constraints in the derived class
     auto *checker = context_->checker->AsETSChecker();
@@ -206,9 +207,9 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
                                     typeParameter->GetConstraintType());
     }
 
-    for (auto *item : superDefinition->Body()) {
+    for (auto *item : items) {
         if (item->IsMethodDefinition()) {
-            // Skip `static`, `final`, `abstract` and special methods...
+            // Skip `static`, `final` and special methods...
             auto *const method = item->AsMethodDefinition();
             if (method->Kind() != ir::MethodDefinitionKind::METHOD || method->IsStatic() || method->IsFinal() ||
                 method->Id()->Name().Utf8().find("lambda$invoke$") != std::string_view::npos) {
@@ -227,31 +228,20 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
     }
 }
 
-ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefinition *const classDefinition) const
+GenericBridgesPhase::Substitutions GenericBridgesPhase::GetSubstitutions(
+    checker::ETSObjectType const *const objectType, ArenaVector<checker::Type *> const &typeParameters) const noexcept
 {
-    if (classDefinition->Super() == nullptr || classDefinition->Super()->TsType() == nullptr) {
-        return classDefinition;
-    }
-
-    //  First we need to check if the base class is a generic class.
-    auto const *const superType = classDefinition->Super()->TsType()->AsETSObjectType();
-
-    auto const &typeParameters = superType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
-    if (typeParameters.empty()) {
-        return classDefinition;
-    }
-
-    auto const &typeArguments = superType->TypeArguments();
+    auto const &typeArguments = objectType->TypeArguments();
     auto const parameterNumber = typeParameters.size();
-    ASSERT(parameterNumber == typeArguments.size());
+    ES2PANDA_ASSERT(parameterNumber == typeArguments.size());
 
     auto *checker = context_->checker->AsETSChecker();
     Substitutions substitutions {};
     substitutions.derivedSubstitutions = checker->NewSubstitution();
     substitutions.baseConstraints = checker->NewSubstitution();
 
-    //  Then we need to check if the class derived from base generic class has either explicit class type substitutions
-    //  or the type parameters with narrowing constraints.
+    //  We need to check if the class derived from base generic class (or implementing generic interface)
+    //  has either explicit class type substitutions or type parameters with narrowing constraints.
     for (std::size_t i = 0U; i < parameterNumber; ++i) {
         auto *const typeParameter = typeParameters[i]->AsETSTypeParameter();
         checker::Type *const typeArgument = typeArguments[i];
@@ -267,28 +257,62 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
         }
     }
 
-    // If it has, then probably the generic bridges should be created.
-    if (!substitutions.derivedSubstitutions->empty()) {
-        CreateGenericBridges(classDefinition, substitutions);
+    return substitutions;
+}
+
+void GenericBridgesPhase::ProcessInterfaces(ir::ClassDefinition *const classDefinition,
+                                            ArenaVector<checker::ETSObjectType *> const &interfaces) const
+{
+    for (auto const *interfaceType : interfaces) {
+        if (auto const &typeParameters = interfaceType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
+            !typeParameters.empty()) {
+            if (Substitutions substitutions = GetSubstitutions(interfaceType, typeParameters);
+                // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+                !substitutions.derivedSubstitutions->empty()) {
+                ES2PANDA_ASSERT(interfaceType->GetDeclNode()->IsTSInterfaceDeclaration());
+                auto const &interfaceBody = interfaceType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
+                CreateGenericBridges(classDefinition, substitutions, interfaceBody);
+            }
+        }
+
+        ProcessInterfaces(classDefinition, interfaceType->Interfaces());
+    }
+}
+
+ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefinition *const classDefinition) const
+{
+    //  Check class interfaces.
+    ProcessInterfaces(classDefinition, classDefinition->TsType()->AsETSObjectType()->Interfaces());
+
+    //  Check if the base class is a generic class.
+    if (classDefinition->Super() == nullptr || classDefinition->Super()->TsType() == nullptr ||
+        !classDefinition->Super()->TsType()->IsETSObjectType()) {
+        return classDefinition;
+    }
+
+    auto const *const superType = classDefinition->Super()->TsType()->AsETSObjectType();
+    auto const &typeParameters = superType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
+    if (typeParameters.empty()) {
+        return classDefinition;
+    }
+
+    //  Check if the class derived from base generic class has either explicit class type substitutions
+    //  or type parameters with narrowing constraints.
+    if (Substitutions substitutions = GetSubstitutions(superType, typeParameters);
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+        !substitutions.derivedSubstitutions->empty()) {
+        // If it has, then probably the generic bridges should be created.
+        auto const &superClassBody =
+            classDefinition->Super()->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->Body();
+        CreateGenericBridges(classDefinition, substitutions, superClassBody);
     }
 
     return classDefinition;
 }
 
-bool GenericBridgesPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool GenericBridgesPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (context_ == nullptr) {
-        context_ = ctx;
-    }
-
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
+    context_ = ctx;
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

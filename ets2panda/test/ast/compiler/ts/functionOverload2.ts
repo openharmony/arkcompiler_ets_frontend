@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,3 @@ function foo(a: bigint, b: boolean): [number, string];
 function foo(a: string | number | bigint, b: boolean | string): [number, string] {
     return [1, "foo"];
 }
-
-/* @@ label */foo + 5;
-/* @@@ label Error TypeError: operator + cannot be applied to types { (a: number, b: string): [number, string], (a: string, b: boolean): [number, string], (a: bigint, b: boolean): [number, string] } and number  */

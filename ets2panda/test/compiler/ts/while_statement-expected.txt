@@ -13,11 +13,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "while_statement.ts"
               },
               "end": {
                 "line": 16,
-                "column": 6
+                "column": 6,
+                "program": "while_statement.ts"
               }
             }
           },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "while_statement.ts"
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "while_statement.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 5
+              "column": 5,
+              "program": "while_statement.ts"
             },
             "end": {
               "line": 16,
-              "column": 10
+              "column": 10,
+              "program": "while_statement.ts"
             }
           }
         }
@@ -51,11 +57,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "while_statement.ts"
         },
         "end": {
           "line": 16,
-          "column": 10
+          "column": 10,
+          "program": "while_statement.ts"
         }
       }
     },
@@ -71,11 +79,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 8
+              "column": 8,
+              "program": "while_statement.ts"
             },
             "end": {
               "line": 18,
-              "column": 9
+              "column": 9,
+              "program": "while_statement.ts"
             }
           }
         },
@@ -85,22 +95,26 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 12
+              "column": 12,
+              "program": "while_statement.ts"
             },
             "end": {
               "line": 18,
-              "column": 13
+              "column": 13,
+              "program": "while_statement.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 8
+            "column": 8,
+            "program": "while_statement.ts"
           },
           "end": {
             "line": 18,
-            "column": 13
+            "column": 13,
+            "program": "while_statement.ts"
           }
         }
       },
@@ -119,11 +133,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 4
+                    "column": 4,
+                    "program": "while_statement.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 5
+                    "column": 5,
+                    "program": "while_statement.ts"
                   }
                 }
               },
@@ -137,11 +153,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 8
+                      "column": 8,
+                      "program": "while_statement.ts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 9
+                      "column": 9,
+                      "program": "while_statement.ts"
                     }
                   }
                 },
@@ -151,44 +169,52 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 12
+                      "column": 12,
+                      "program": "while_statement.ts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 13
+                      "column": 13,
+                      "program": "while_statement.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 8
+                    "column": 8,
+                    "program": "while_statement.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 13
+                    "column": 13,
+                    "program": "while_statement.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 4
+                  "column": 4,
+                  "program": "while_statement.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 13
+                  "column": 13,
+                  "program": "while_statement.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 4
+                "column": 4,
+                "program": "while_statement.ts"
               },
               "end": {
                 "line": 19,
-                "column": 13
+                "column": 13,
+                "program": "while_statement.ts"
               }
             }
           }
@@ -196,22 +222,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 15
+            "column": 15,
+            "program": "while_statement.ts"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "while_statement.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "while_statement.ts"
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 2,
+          "program": "while_statement.ts"
         }
       }
     }
@@ -219,11 +249,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "while_statement.ts"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "while_statement.ts"
     }
   }
 }

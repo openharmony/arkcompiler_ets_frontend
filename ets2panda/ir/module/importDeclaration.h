@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,13 +21,16 @@
 namespace ark::es2panda::ir {
 class StringLiteral;
 
-enum class ImportKinds { VALUE, TYPE };
+enum class ImportKinds { ALL, TYPES };
 
 class ImportDeclaration : public Statement {
 public:
-    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> const &specifiers,
-                               const ImportKinds importKind = ImportKinds::VALUE)
-        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(specifiers), importKind_(importKind)
+    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers,
+                               const ImportKinds importKinds = ImportKinds::ALL)
+        : Statement(AstNodeType::IMPORT_DECLARATION),
+          source_(source),
+          specifiers_(std::move(specifiers)),
+          importKinds_(importKinds)
     {
     }
 
@@ -58,7 +61,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -67,13 +70,13 @@ public:
 
     bool IsTypeKind() const
     {
-        return importKind_ == ImportKinds::TYPE;
+        return importKinds_ == ImportKinds::TYPES;
     }
 
 private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
-    ImportKinds importKind_;
+    ImportKinds importKinds_;
 };
 }  // namespace ark::es2panda::ir
 

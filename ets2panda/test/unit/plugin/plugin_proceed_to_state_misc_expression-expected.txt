@@ -1,0 +1,19 @@
+LOAD SUCCESS
+PROCEED TO PARSE SUCCESS
+PROGRAM NODE: 
+
+function add(a: number, b: number) {
+  return ((a) + (b));
+}
+
+let x = 1
+add(1, 2)
+x = 2
+((x) + (10))
+-x
+
+PROCEED TO BOUND SUCCESS
+PROCEED TO CHECKED SUCCESS
+PROCEED TO LOWERED SUCCESS
+PROCEED TO ASM SUCCESS
+PROCEED TO BIN SUCCESS

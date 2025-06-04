@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,7 +56,10 @@ void ETSNonNullishType::Cast(TypeRelation *relation, Type *target)
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
         return;
     }
-    relation->Result(relation->InCastingContext());
+
+    if (target->IsETSReferenceType()) {
+        relation->Result(relation->InCastingContext());
+    }
 }
 
 void ETSNonNullishType::CastTarget(TypeRelation *relation, Type *source)
@@ -109,6 +112,12 @@ Type *ETSNonNullishType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
                                      [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return allocator->New<ETSNonNullishType>(GetUnderlying());
+}
+
+void ETSNonNullishType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    relation->CheckVarianceRecursively(GetUnderlying(),
+                                       relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
 }
 
 }  // namespace ark::es2panda::checker

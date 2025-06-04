@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -79,17 +79,19 @@ public:
 
     void GenAnnotation() override;
     std::vector<pandasm::AnnotationData> GenCustomAnnotations(
-        const ArenaVector<ir::AnnotationUsage *> &annotationUsages, std::string &baseName);
+        const ArenaVector<ir::AnnotationUsage *> &annotationUsages, const std::string &baseName);
 
 private:
     using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
-    void GenExternalRecord(varbinder::RecordTable *recordTable);
-    void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
+    void GenExternalRecord(varbinder::RecordTable *recordTable, const parser::Program *extProg);
+    void GenGlobalArrayRecord(const checker::ETSArrayType *arrayType, checker::Signature *signature);
     std::vector<pandasm::AnnotationData> GenAnnotations(const ir::ClassDefinition *classDef);
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
     pandasm::AnnotationElement ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
                                                 const ir::Expression *init);
+    pandasm::AnnotationElement ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
+                                                  const checker::Type *type);
     pandasm::AnnotationElement GenCustomAnnotationElement(const ir::ClassProperty *prop, std::string &baseName);
     pandasm::AnnotationData GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName);
     void CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field);
@@ -109,6 +111,7 @@ private:
     void GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external);
     void GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord);
     pandasm::AnnotationData GenAnnotationSignature(const ir::ClassDefinition *classDef);
+    pandasm::AnnotationData GenAnnotationModule(const ir::ClassDefinition *classDef);
     pandasm::AnnotationData GenAnnotationEnclosingClass(std::string_view className);
     pandasm::AnnotationData GenAnnotationEnclosingMethod(const ir::MethodDefinition *methodDef);
     pandasm::AnnotationData GenAnnotationInnerClass(const ir::ClassDefinition *classDef, const ir::AstNode *parent);

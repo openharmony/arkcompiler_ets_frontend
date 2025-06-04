@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_AST_VISITOR_H
 
 #include <ir/astNodeMapping.h>
-#include "macros.h"
-
+#include "util/es2pandaMacros.h"
 #include <tuple>
 
 namespace ark::es2panda::ir {

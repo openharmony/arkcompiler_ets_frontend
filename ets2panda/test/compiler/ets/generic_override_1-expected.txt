@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 31
+            "column": 31,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 16,
-            "column": 33
+            "column": 33,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -24,11 +26,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 11
+            "column": 11,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 16,
-            "column": 23
+            "column": 23,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -45,22 +49,26 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 24
+                  "column": 24,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 29
+                  "column": 29,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 24
+                "column": 24,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 16,
-                "column": 30
+                "column": 30,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -68,22 +76,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 23
+            "column": 23,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 16,
-            "column": 30
+            "column": 30,
+            "program": "generic_override_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
           "line": 18,
-          "column": 6
+          "column": 6,
+          "program": "generic_override_1.ets"
         }
       }
     },
@@ -97,11 +109,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 7
+              "column": 7,
+              "program": "generic_override_1.ets"
             },
             "end": {
               "line": 18,
-              "column": 16
+              "column": 16,
+              "program": "generic_override_1.ets"
             }
           }
         },
@@ -117,22 +131,26 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 17
+                    "column": 17,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 22
+                    "column": 22,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 23
+                  "column": 23,
+                  "program": "generic_override_1.ets"
                 }
               }
             }
@@ -140,11 +158,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 16
+              "column": 16,
+              "program": "generic_override_1.ets"
             },
             "end": {
               "line": 18,
-              "column": 23
+              "column": 23,
+              "program": "generic_override_1.ets"
             }
           }
         },
@@ -163,11 +183,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 35
+                      "column": 35,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 47
+                      "column": 47,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -185,33 +207,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 48
+                              "column": 48,
+                              "program": "generic_override_1.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 53
+                              "column": 53,
+                              "program": "generic_override_1.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 48
+                            "column": 48,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 54
+                            "column": 54,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 48
+                          "column": 48,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 54
+                          "column": 54,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     }
@@ -219,44 +247,52 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 47
+                      "column": 47,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 54
+                      "column": 54,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 35
+                    "column": 35,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 56
+                    "column": 56,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 35
+                  "column": 35,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 56
+                  "column": 56,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 35
+                "column": 35,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 18,
-                "column": 56
+                "column": 56,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -270,12 +306,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 56,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 56,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -293,12 +331,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 56,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 56,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -311,34 +351,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 56,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 56,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 56,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 56,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 56,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 56,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -346,12 +392,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 57
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 57
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -359,22 +407,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 55
+            "column": 55,
+            "program": "generic_override_1.ets"
           },
           "end": {
-            "line": 18,
-            "column": 57
+            "line": 20,
+            "column": 10,
+            "program": "generic_override_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
-          "line": 18,
-          "column": 57
+          "line": 20,
+          "column": 10,
+          "program": "generic_override_1.ets"
         }
       }
     },
@@ -392,11 +444,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -416,11 +470,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 5
+                      "column": 5,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 8
+                      "column": 8,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -434,127 +490,113 @@
                       "type": "Identifier",
                       "name": "equivalent",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "ValueTracker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 29
-                                  },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 41
-                                  }
-                                }
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "ValueTracker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 29,
+                                "program": "generic_override_1.ets"
                               },
-                              "typeParams": {
-                                "type": "TSTypeParameterInstantiation",
-                                "params": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "Value",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 21,
-                                            "column": 42
-                                          },
-                                          "end": {
-                                            "line": 21,
-                                            "column": 47
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 21,
-                                          "column": 42
-                                        },
-                                        "end": {
-                                          "line": 21,
-                                          "column": 48
-                                        }
-                                      }
-                                    },
+                              "end": {
+                                "line": 21,
+                                "column": 41,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Value",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 42
+                                        "column": 42,
+                                        "program": "generic_override_1.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 48
+                                        "column": 47,
+                                        "program": "generic_override_1.ets"
                                       }
                                     }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 42,
+                                      "program": "generic_override_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 48,
+                                      "program": "generic_override_1.ets"
+                                    }
                                   }
-                                ],
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 41
+                                    "column": 42,
+                                    "program": "generic_override_1.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 48
+                                    "column": 48,
+                                    "program": "generic_override_1.ets"
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 29
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 49
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 29
+                                "column": 41,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 49
+                                "column": 48,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 21,
-                                "column": 26
-                              },
-                              "end": {
-                                "line": 21,
-                                "column": 27
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 29,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 49,
+                              "program": "generic_override_1.ets"
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 29
+                            "column": 29,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 49
+                            "column": 49,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
@@ -562,22 +604,26 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 16
+                          "column": 16,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 49
+                          "column": 49,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 16
+                        "column": 16,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 49
+                        "column": 49,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   },
@@ -587,127 +633,113 @@
                       "type": "Identifier",
                       "name": "tracker",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "ValueTracker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 60
-                                  },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 72
-                                  }
-                                }
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "ValueTracker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 60,
+                                "program": "generic_override_1.ets"
                               },
-                              "typeParams": {
-                                "type": "TSTypeParameterInstantiation",
-                                "params": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "Value",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 21,
-                                            "column": 73
-                                          },
-                                          "end": {
-                                            "line": 21,
-                                            "column": 78
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 21,
-                                          "column": 73
-                                        },
-                                        "end": {
-                                          "line": 21,
-                                          "column": 79
-                                        }
-                                      }
-                                    },
+                              "end": {
+                                "line": 21,
+                                "column": 72,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Value",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 73
+                                        "column": 73,
+                                        "program": "generic_override_1.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 79
+                                        "column": 78,
+                                        "program": "generic_override_1.ets"
                                       }
                                     }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 73,
+                                      "program": "generic_override_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 79,
+                                      "program": "generic_override_1.ets"
+                                    }
                                   }
-                                ],
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 72
+                                    "column": 73,
+                                    "program": "generic_override_1.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 79
+                                    "column": 79,
+                                    "program": "generic_override_1.ets"
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 60
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 80
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 60
+                                "column": 72,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 80
+                                "column": 79,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 21,
-                                "column": 57
-                              },
-                              "end": {
-                                "line": 21,
-                                "column": 58
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 60,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 80,
+                              "program": "generic_override_1.ets"
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 60
+                            "column": 60,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 80
+                            "column": 80,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
@@ -715,22 +747,26 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 50
+                          "column": 50,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 80
+                          "column": 80,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 50
+                        "column": 50,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 21,
-                        "column": 80
+                        "column": 80,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   }
@@ -746,11 +782,13 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 82
+                          "column": 82,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 94
+                          "column": 94,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
@@ -768,33 +806,39 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 95
+                                  "column": 95,
+                                  "program": "generic_override_1.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 100
+                                  "column": 100,
+                                  "program": "generic_override_1.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 95
+                                "column": 95,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 101
+                                "column": 101,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 95
+                              "column": 95,
+                              "program": "generic_override_1.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 101
+                              "column": 101,
+                              "program": "generic_override_1.ets"
                             }
                           }
                         }
@@ -802,33 +846,39 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 94
+                          "column": 94,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 101
+                          "column": 101,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 82
+                        "column": 82,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 22,
-                        "column": 2
+                        "column": 2,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 82
+                      "column": 82,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 2
+                      "column": 2,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -844,22 +894,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 9
+                            "column": 9,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 14
+                            "column": 14,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 9
+                          "column": 9,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 15
+                          "column": 15,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     }
@@ -867,669 +921,54 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 8
+                      "column": 8,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 15
+                      "column": 15,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 8
+                    "column": 8,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
                     "line": 22,
-                    "column": 2
+                    "column": 2,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 21,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 21,
-                      "column": 8
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 21,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 21,
-                          "column": 8
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [
-                      {
-                        "type": "ETSParameterExpression",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "equivalent",
-                          "typeAnnotation": {
-                            "type": "ETSUnionType",
-                            "types": [
-                              {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "ValueTracker",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 21,
-                                        "column": 29
-                                      },
-                                      "end": {
-                                        "line": 21,
-                                        "column": 41
-                                      }
-                                    }
-                                  },
-                                  "typeParams": {
-                                    "type": "TSTypeParameterInstantiation",
-                                    "params": [
-                                      {
-                                        "type": "ETSTypeReference",
-                                        "part": {
-                                          "type": "ETSTypeReferencePart",
-                                          "name": {
-                                            "type": "Identifier",
-                                            "name": "Value",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 21,
-                                                "column": 42
-                                              },
-                                              "end": {
-                                                "line": 21,
-                                                "column": 47
-                                              }
-                                            }
-                                          },
-                                          "loc": {
-                                            "start": {
-                                              "line": 21,
-                                              "column": 42
-                                            },
-                                            "end": {
-                                              "line": 21,
-                                              "column": 48
-                                            }
-                                          }
-                                        },
-                                        "loc": {
-                                          "start": {
-                                            "line": 21,
-                                            "column": 42
-                                          },
-                                          "end": {
-                                            "line": 21,
-                                            "column": 48
-                                          }
-                                        }
-                                      }
-                                    ],
-                                    "loc": {
-                                      "start": {
-                                        "line": 21,
-                                        "column": 41
-                                      },
-                                      "end": {
-                                        "line": 21,
-                                        "column": 48
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 21,
-                                      "column": 29
-                                    },
-                                    "end": {
-                                      "line": 21,
-                                      "column": 49
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 29
-                                  },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 49
-                                  }
-                                }
-                              },
-                              {
-                                "type": "ETSUndefinedType",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 16
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 49
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 1
-                          }
-                        }
-                      }
-                    ],
-                    "returnType": {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "MutableState",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 82
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 94
-                            }
-                          }
-                        },
-                        "typeParams": {
-                          "type": "TSTypeParameterInstantiation",
-                          "params": [
-                            {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Value",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 21,
-                                      "column": 95
-                                    },
-                                    "end": {
-                                      "line": 21,
-                                      "column": 100
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 95
-                                  },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 101
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 95
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 101
-                                }
-                              }
-                            }
-                          ],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 94
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 101
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 21,
-                            "column": 82
-                          },
-                          "end": {
-                            "line": 22,
-                            "column": 2
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 21,
-                          "column": 82
-                        },
-                        "end": {
-                          "line": 22,
-                          "column": 2
-                        }
-                      }
-                    },
-                    "typeParameters": {
-                      "type": "TSTypeParameterDeclaration",
-                      "params": [
-                        {
-                          "type": "TSTypeParameter",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Value",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 21,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 21,
-                                "column": 14
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 728,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 728,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 21,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 21,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 21,
-                      "column": 8
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 21,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 21,
-                          "column": 8
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "MutableState",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 82
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 94
-                            }
-                          }
-                        },
-                        "typeParams": {
-                          "type": "TSTypeParameterInstantiation",
-                          "params": [
-                            {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Value",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 21,
-                                      "column": 95
-                                    },
-                                    "end": {
-                                      "line": 21,
-                                      "column": 100
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 95
-                                  },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 101
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 95
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 101
-                                }
-                              }
-                            }
-                          ],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 94
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 101
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 21,
-                            "column": 82
-                          },
-                          "end": {
-                            "line": 22,
-                            "column": 2
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 21,
-                          "column": 82
-                        },
-                        "end": {
-                          "line": 22,
-                          "column": 2
-                        }
-                      }
-                    },
-                    "typeParameters": {
-                      "type": "TSTypeParameterDeclaration",
-                      "params": [
-                        {
-                          "type": "TSTypeParameter",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Value",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 21,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 21,
-                                "column": 14
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 728,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 728,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 21,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -1537,11 +976,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 25
+            "column": 25,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 22,
-            "column": 2
+            "column": 2,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -1552,11 +993,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 11
+            "column": 11,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 20,
-            "column": 23
+            "column": 23,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -1564,11 +1007,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
           "line": 24,
-          "column": 10
+          "column": 10,
+          "program": "generic_override_1.ets"
         }
       }
     },
@@ -1580,11 +1025,13 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 31
+            "column": 31,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 24,
-            "column": 33
+            "column": 33,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -1595,11 +1042,13 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 11
+            "column": 11,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 24,
-            "column": 23
+            "column": 23,
+            "program": "generic_override_1.ets"
           }
         }
       },
@@ -1616,22 +1065,26 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 24
+                  "column": 24,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 29
+                  "column": 29,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 24
+                "column": 24,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 24,
-                "column": 30
+                "column": 30,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -1639,22 +1092,26 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 23
+            "column": 23,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 24,
-            "column": 30
+            "column": 30,
+            "program": "generic_override_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
           "line": 26,
-          "column": 6
+          "column": 6,
+          "program": "generic_override_1.ets"
         }
       }
     },
@@ -1668,11 +1125,13 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 7
+              "column": 7,
+              "program": "generic_override_1.ets"
             },
             "end": {
               "line": 26,
-              "column": 23
+              "column": 23,
+              "program": "generic_override_1.ets"
             }
           }
         },
@@ -1691,44 +1150,52 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 35
+                      "column": 35,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 26,
-                      "column": 47
+                      "column": 47,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 35
+                    "column": 35,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
                     "line": 26,
-                    "column": 49
+                    "column": 49,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 35
+                  "column": 35,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 26,
-                  "column": 49
+                  "column": 49,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 26,
-                "column": 35
+                "column": 35,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 26,
-                "column": 49
+                "column": 49,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -1743,11 +1210,13 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 5
+                  "column": 5,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 8
+                  "column": 8,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -1767,11 +1236,13 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 5
+                      "column": 5,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 8
+                      "column": 8,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -1785,127 +1256,113 @@
                       "type": "Identifier",
                       "name": "equivalent",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "ValueTracker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 29
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 41
-                                  }
-                                }
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "ValueTracker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 27,
+                                "column": 29,
+                                "program": "generic_override_1.ets"
                               },
-                              "typeParams": {
-                                "type": "TSTypeParameterInstantiation",
-                                "params": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "Value",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 27,
-                                            "column": 42
-                                          },
-                                          "end": {
-                                            "line": 27,
-                                            "column": 47
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 27,
-                                          "column": 42
-                                        },
-                                        "end": {
-                                          "line": 27,
-                                          "column": 48
-                                        }
-                                      }
-                                    },
+                              "end": {
+                                "line": 27,
+                                "column": 41,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Value",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 42
+                                        "column": 42,
+                                        "program": "generic_override_1.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 48
+                                        "column": 47,
+                                        "program": "generic_override_1.ets"
                                       }
                                     }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 27,
+                                      "column": 42,
+                                      "program": "generic_override_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 27,
+                                      "column": 48,
+                                      "program": "generic_override_1.ets"
+                                    }
                                   }
-                                ],
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 27,
-                                    "column": 41
+                                    "column": 42,
+                                    "program": "generic_override_1.ets"
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 48
+                                    "column": 48,
+                                    "program": "generic_override_1.ets"
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 29
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 49
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 29
+                                "column": 41,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 49
+                                "column": 48,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 27
-                              },
-                              "end": {
-                                "line": 27,
-                                "column": 28
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 27,
+                              "column": 29,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 27,
+                              "column": 49,
+                              "program": "generic_override_1.ets"
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 29
+                            "column": 29,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 49
+                            "column": 49,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
@@ -1913,22 +1370,26 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 17
+                          "column": 17,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 49
+                          "column": 49,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 17
+                        "column": 17,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 27,
-                        "column": 49
+                        "column": 49,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   },
@@ -1938,127 +1399,113 @@
                       "type": "Identifier",
                       "name": "tracker",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "ValueTracker",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 59
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 71
-                                  }
-                                }
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "ValueTracker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 27,
+                                "column": 59,
+                                "program": "generic_override_1.ets"
                               },
-                              "typeParams": {
-                                "type": "TSTypeParameterInstantiation",
-                                "params": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "Value",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 27,
-                                            "column": 72
-                                          },
-                                          "end": {
-                                            "line": 27,
-                                            "column": 77
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 27,
-                                          "column": 72
-                                        },
-                                        "end": {
-                                          "line": 27,
-                                          "column": 78
-                                        }
-                                      }
-                                    },
+                              "end": {
+                                "line": 27,
+                                "column": 71,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Value",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 72
+                                        "column": 72,
+                                        "program": "generic_override_1.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 78
+                                        "column": 77,
+                                        "program": "generic_override_1.ets"
                                       }
                                     }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 27,
+                                      "column": 72,
+                                      "program": "generic_override_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 27,
+                                      "column": 78,
+                                      "program": "generic_override_1.ets"
+                                    }
                                   }
-                                ],
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 27,
-                                    "column": 71
+                                    "column": 72,
+                                    "program": "generic_override_1.ets"
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 78
+                                    "column": 78,
+                                    "program": "generic_override_1.ets"
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 59
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 79
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 59
+                                "column": 71,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 79
+                                "column": 78,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 57
-                              },
-                              "end": {
-                                "line": 27,
-                                "column": 58
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 27,
+                              "column": 59,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 27,
+                              "column": 79,
+                              "program": "generic_override_1.ets"
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 59
+                            "column": 59,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 79
+                            "column": 79,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
@@ -2066,22 +1513,26 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 50
+                          "column": 50,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 79
+                          "column": 79,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 50
+                        "column": 50,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 27,
-                        "column": 79
+                        "column": 79,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   }
@@ -2097,11 +1548,13 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 81
+                          "column": 81,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 90
+                          "column": 90,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
@@ -2119,33 +1572,39 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 91
+                                  "column": 91,
+                                  "program": "generic_override_1.ets"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 96
+                                  "column": 96,
+                                  "program": "generic_override_1.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 91
+                                "column": 91,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 97
+                                "column": 97,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 91
+                              "column": 91,
+                              "program": "generic_override_1.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 97
+                              "column": 97,
+                              "program": "generic_override_1.ets"
                             }
                           }
                         }
@@ -2153,33 +1612,39 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 90
+                          "column": 90,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 97
+                          "column": 97,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 81
+                        "column": 81,
+                        "program": "generic_override_1.ets"
                       },
                       "end": {
                         "line": 27,
-                        "column": 99
+                        "column": 99,
+                        "program": "generic_override_1.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 81
+                      "column": 81,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 99
+                      "column": 99,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -2195,22 +1660,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 9
+                            "column": 9,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 14
+                            "column": 14,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 9
+                          "column": 9,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 15
+                          "column": 15,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     }
@@ -2218,11 +1687,13 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 8
+                      "column": 8,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 15
+                      "column": 15,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -2244,11 +1715,13 @@
                               "loc": {
                                 "start": {
                                   "line": 28,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "generic_override_1.ets"
                                 },
                                 "end": {
                                   "line": 28,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "generic_override_1.ets"
                                 }
                               }
                             },
@@ -2266,33 +1739,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 28,
-                                          "column": 30
+                                          "column": 30,
+                                          "program": "generic_override_1.ets"
                                         },
                                         "end": {
                                           "line": 28,
-                                          "column": 35
+                                          "column": 35,
+                                          "program": "generic_override_1.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 28,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "generic_override_1.ets"
                                       },
                                       "end": {
                                         "line": 28,
-                                        "column": 36
+                                        "column": 36,
+                                        "program": "generic_override_1.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 28,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "generic_override_1.ets"
                                     },
                                     "end": {
                                       "line": 28,
-                                      "column": 36
+                                      "column": 36,
+                                      "program": "generic_override_1.ets"
                                     }
                                   }
                                 }
@@ -2300,33 +1779,39 @@
                               "loc": {
                                 "start": {
                                   "line": 28,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "generic_override_1.ets"
                                 },
                                 "end": {
                                   "line": 28,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "generic_override_1.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 28,
-                                "column": 20
+                                "column": 20,
+                                "program": "generic_override_1.ets"
                               },
                               "end": {
                                 "line": 28,
-                                "column": 37
+                                "column": 37,
+                                "program": "generic_override_1.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 28,
-                              "column": 20
+                              "column": 20,
+                              "program": "generic_override_1.ets"
                             },
                             "end": {
                               "line": 28,
-                              "column": 37
+                              "column": 37,
+                              "program": "generic_override_1.ets"
                             }
                           }
                         },
@@ -2334,22 +1819,26 @@
                         "loc": {
                           "start": {
                             "line": 28,
-                            "column": 16
+                            "column": 16,
+                            "program": "generic_override_1.ets"
                           },
                           "end": {
                             "line": 29,
-                            "column": 6
+                            "column": 6,
+                            "program": "generic_override_1.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 28,
-                          "column": 9
+                          "column": 9,
+                          "program": "generic_override_1.ets"
                         },
                         "end": {
                           "line": 29,
-                          "column": 6
+                          "column": 6,
+                          "program": "generic_override_1.ets"
                         }
                       }
                     }
@@ -2357,984 +1846,54 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 98
+                      "column": 98,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
                       "line": 29,
-                      "column": 6
+                      "column": 6,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 8
+                    "column": 8,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
                     "line": 29,
-                    "column": 6
+                    "column": 6,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 8
+                  "column": 8,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
                   "line": 29,
-                  "column": 6
+                  "column": 6,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 27,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 27,
-                      "column": 8
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 27,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 8
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [
-                      {
-                        "type": "ETSParameterExpression",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "equivalent",
-                          "typeAnnotation": {
-                            "type": "ETSUnionType",
-                            "types": [
-                              {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "ValueTracker",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 27,
-                                        "column": 29
-                                      },
-                                      "end": {
-                                        "line": 27,
-                                        "column": 41
-                                      }
-                                    }
-                                  },
-                                  "typeParams": {
-                                    "type": "TSTypeParameterInstantiation",
-                                    "params": [
-                                      {
-                                        "type": "ETSTypeReference",
-                                        "part": {
-                                          "type": "ETSTypeReferencePart",
-                                          "name": {
-                                            "type": "Identifier",
-                                            "name": "Value",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 27,
-                                                "column": 42
-                                              },
-                                              "end": {
-                                                "line": 27,
-                                                "column": 47
-                                              }
-                                            }
-                                          },
-                                          "loc": {
-                                            "start": {
-                                              "line": 27,
-                                              "column": 42
-                                            },
-                                            "end": {
-                                              "line": 27,
-                                              "column": 48
-                                            }
-                                          }
-                                        },
-                                        "loc": {
-                                          "start": {
-                                            "line": 27,
-                                            "column": 42
-                                          },
-                                          "end": {
-                                            "line": 27,
-                                            "column": 48
-                                          }
-                                        }
-                                      }
-                                    ],
-                                    "loc": {
-                                      "start": {
-                                        "line": 27,
-                                        "column": 41
-                                      },
-                                      "end": {
-                                        "line": 27,
-                                        "column": 48
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 27,
-                                      "column": 29
-                                    },
-                                    "end": {
-                                      "line": 27,
-                                      "column": 49
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 29
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 49
-                                  }
-                                }
-                              },
-                              {
-                                "type": "ETSUndefinedType",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 27,
-                              "column": 17
-                            },
-                            "end": {
-                              "line": 27,
-                              "column": 49
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 1
-                          }
-                        }
-                      }
-                    ],
-                    "returnType": {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "StateImpl",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 27,
-                              "column": 81
-                            },
-                            "end": {
-                              "line": 27,
-                              "column": 90
-                            }
-                          }
-                        },
-                        "typeParams": {
-                          "type": "TSTypeParameterInstantiation",
-                          "params": [
-                            {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Value",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 27,
-                                      "column": 91
-                                    },
-                                    "end": {
-                                      "line": 27,
-                                      "column": 96
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 91
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 97
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 91
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 97
-                                }
-                              }
-                            }
-                          ],
-                          "loc": {
-                            "start": {
-                              "line": 27,
-                              "column": 90
-                            },
-                            "end": {
-                              "line": 27,
-                              "column": 97
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 27,
-                            "column": 81
-                          },
-                          "end": {
-                            "line": 27,
-                            "column": 99
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 27,
-                          "column": 81
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 99
-                        }
-                      }
-                    },
-                    "typeParameters": {
-                      "type": "TSTypeParameterDeclaration",
-                      "params": [
-                        {
-                          "type": "TSTypeParameter",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Value",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 27,
-                                "column": 14
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [
-                        {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "foo",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "arguments": [
-                              {
-                                "type": "Identifier",
-                                "name": "equivalent",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 17
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 49
-                                  }
-                                }
-                              },
-                              {
-                                "type": "UndefinedLiteral",
-                                "value": "undefined",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "optional": false,
-                            "typeParameters": {
-                              "type": "TSTypeParameterInstantiation",
-                              "params": [
-                                {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "Value",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 1,
-                                          "column": 1
-                                        },
-                                        "end": {
-                                          "line": 1,
-                                          "column": 1
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 1
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 1
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 1
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 1
-                                    }
-                                  }
-                                }
-                              ],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 5
-                              },
-                              "end": {
-                                "line": 29,
-                                "column": 6
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 915,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 915,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 27,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 27,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 27,
-                      "column": 8
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 27,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 8
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "StateImpl",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 27,
-                              "column": 81
-                            },
-                            "end": {
-                              "line": 27,
-                              "column": 90
-                            }
-                          }
-                        },
-                        "typeParams": {
-                          "type": "TSTypeParameterInstantiation",
-                          "params": [
-                            {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Value",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 27,
-                                      "column": 91
-                                    },
-                                    "end": {
-                                      "line": 27,
-                                      "column": 96
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 91
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 97
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 91
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 97
-                                }
-                              }
-                            }
-                          ],
-                          "loc": {
-                            "start": {
-                              "line": 27,
-                              "column": 90
-                            },
-                            "end": {
-                              "line": 27,
-                              "column": 97
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 27,
-                            "column": 81
-                          },
-                          "end": {
-                            "line": 27,
-                            "column": 99
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 27,
-                          "column": 81
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 99
-                        }
-                      }
-                    },
-                    "typeParameters": {
-                      "type": "TSTypeParameterDeclaration",
-                      "params": [
-                        {
-                          "type": "TSTypeParameter",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Value",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 27,
-                                "column": 14
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [
-                        {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "foo",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "arguments": [
-                              {
-                                "type": "UndefinedLiteral",
-                                "value": "undefined",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              },
-                              {
-                                "type": "UndefinedLiteral",
-                                "value": "undefined",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "optional": false,
-                            "typeParameters": {
-                              "type": "TSTypeParameterInstantiation",
-                              "params": [
-                                {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "Value",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 1,
-                                          "column": 1
-                                        },
-                                        "end": {
-                                          "line": 1,
-                                          "column": 1
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 1,
-                                        "column": 1
-                                      },
-                                      "end": {
-                                        "line": 1,
-                                        "column": 1
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 1
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 1
-                                    }
-                                  }
-                                }
-                              ],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 27,
-                                "column": 5
-                              },
-                              "end": {
-                                "line": 29,
-                                "column": 6
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 915,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 915,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 27,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
                 "line": 27,
-                "column": 5
+                "column": 5,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 29,
-                "column": 6
+                "column": 6,
+                "program": "generic_override_1.ets"
               }
             }
           },
@@ -3346,12 +1905,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 26,
+                  "column": 49,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 26,
+                  "column": 49,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -3369,12 +1930,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 26,
+                      "column": 49,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 26,
+                      "column": 49,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
@@ -3387,34 +1950,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 26,
+                      "column": 49,
+                      "program": "generic_override_1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 26,
+                      "column": 49,
+                      "program": "generic_override_1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 26,
+                    "column": 49,
+                    "program": "generic_override_1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 26,
+                    "column": 49,
+                    "program": "generic_override_1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 26,
+                  "column": 49,
+                  "program": "generic_override_1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 26,
+                  "column": 49,
+                  "program": "generic_override_1.ets"
                 }
               }
             },
@@ -3422,12 +1991,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 30,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 30,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -3435,22 +2006,26 @@
         "loc": {
           "start": {
             "line": 26,
-            "column": 48
+            "column": 48,
+            "program": "generic_override_1.ets"
           },
           "end": {
-            "line": 30,
-            "column": 2
+            "line": 31,
+            "column": 1,
+            "program": "generic_override_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
-          "line": 30,
-          "column": 2
+          "line": 31,
+          "column": 1,
+          "program": "generic_override_1.ets"
         }
       }
     },
@@ -3464,11 +2039,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_override_1.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_override_1.ets"
             }
           }
         },
@@ -3479,16 +2056,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "generic_override_1.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "generic_override_1.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -3508,11 +2193,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -3526,33 +2213,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -3561,11 +2254,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_override_1.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_override_1.ets"
               }
             }
           }
@@ -3573,22 +2268,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_override_1.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_override_1.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_override_1.ets"
         }
       }
     }
@@ -3596,11 +2295,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "generic_override_1.ets"
     },
     "end": {
       "line": 31,
-      "column": 1
+      "column": 1,
+      "program": "generic_override_1.ets"
     }
   }
 }

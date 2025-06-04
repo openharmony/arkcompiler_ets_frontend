@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,10 +81,10 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
             paramVar = pg->Scope()->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
         }
 
-        ASSERT(paramVar && paramVar->IsLocalVariable());
+        ES2PANDA_ASSERT(paramVar && paramVar->IsLocalVariable());
 
         VReg paramReg = VReg(varbinder::VarBinder::MANDATORY_PARAMS_NUMBER + VReg::PARAM_START + index++);
-        ASSERT(paramVar->LexicalBound() || paramVar->AsLocalVariable()->Vreg() == paramReg);
+        ES2PANDA_ASSERT(paramVar->LexicalBound() || paramVar->AsLocalVariable()->Vreg() == paramReg);
 
         if (param->IsAssignmentPattern()) {
             RegScope rs(pg);
@@ -130,8 +130,8 @@ void Function::LoadClassContexts(const ir::AstNode *node, PandaGen *pg, VReg cto
     auto *classDef = util::Helpers::GetContainingClassDefinition(node);
 
     do {
-        auto res = pg->Scope()->Find(classDef->PrivateId());
-        ASSERT(res.variable);
+        auto res = pg->Scope()->Find(classDef->InternalName());
+        ES2PANDA_ASSERT(res.variable);
 
         if (classDef->HasMatchingPrivateKey(name)) {
             pg->LoadLexicalVar(node, res.lexLevel, res.variable->AsLocalVariable()->LexIdx());
@@ -260,7 +260,7 @@ void Function::Compile(PandaGen *pg)
     auto *topScope = pg->TopScope();
 
     if (pg->FunctionHasFinalizer()) {
-        ASSERT(topScope->IsFunctionScope());
+        ES2PANDA_ASSERT(topScope->IsFunctionScope());
 
         TryContext tryCtx(pg);
         pg->FunctionInit(tryCtx.GetCatchTable());
@@ -272,7 +272,7 @@ void Function::Compile(PandaGen *pg)
         if (topScope->IsFunctionScope()) {
             CompileFunction(pg);
         } else {
-            ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());
+            ES2PANDA_ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());
             CompileSourceBlock(pg, pg->RootNode()->AsBlockStatement());
         }
     }

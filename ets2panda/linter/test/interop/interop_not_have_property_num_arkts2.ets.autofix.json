@@ -1,0 +1,294 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 46,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 46,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 618,
+                    "end": 663,
+                    "replacementText": ""
+                },
+                {
+                    "start": 663,
+                    "end": 663,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_property_num_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 666,
+                    "end": 673,
+                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()"
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-does-not-have-num)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 666,
+                    "end": 673,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 666,
+                    "end": 673
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 676,
+                    "end": 683,
+                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()"
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-does-not-have-num)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 676,
+                    "end": 683,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 676,
+                    "end": 683
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 1,
+            "endLine": 21,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 686,
+                    "end": 693,
+                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()"
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-does-not-have-num)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 686,
+                    "end": 693,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 9,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 686,
+                    "end": 693
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 9,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 696,
+                    "end": 703,
+                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()"
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-does-not-have-num)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 696,
+                    "end": 703,
+                    "replacementText": "foo.getPropertyByName(\"num\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 9,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('num').toNumber()",
+                    "start": 696,
+                    "end": 703
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 9,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,6 +38,7 @@
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsKeyofType.h"
 #include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
@@ -45,8 +46,10 @@
 #include "ir/ets/etsPackageDeclaration.h"
 #include "ir/ets/etsParameterExpression.h"
 #include "ir/ets/etsPrimitiveType.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsStringLiteralType.h"
+#include "ir/ets/etsNeverType.h"
+#include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,7 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -44,10 +43,17 @@ void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_vie
         }
     }
 
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
+        }
+    }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 }
@@ -64,7 +70,11 @@ void ClassProperty::Iterate(const NodeTraverser &cb) const
         cb(typeAnnotation_);
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
+        cb(it);
+    }
+
+    for (auto *it : Annotations()) {
         cb(it);
     }
 }
@@ -75,7 +85,6 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"key", key_},
                  {"value", AstDumper::Optional(value_)},
                  {"accessibility", AstDumper::Optional(AstDumper::ModifierToString(flags_))},
-                 {"abstract", AstDumper::Optional(IsAbstract())},
                  {"static", IsStatic()},
                  {"readonly", IsReadonly()},
                  {"declare", IsDeclare()},
@@ -83,11 +92,21 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"computed", isComputed_},
                  {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
                  {"definite", IsDefinite()},
-                 {"decorators", decorators_}});
+                 {"decorators", decorators_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
-void ClassProperty::Dump(ir::SrcDumper *dumper) const
+void ClassProperty::DumpPrefix(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
+    if (compiler::HasGlobalClassParent(this)) {
+        dumper->Add("let ");
+        return;
+    }
+
     if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
         if (IsPrivate()) {
             dumper->Add("private ");
@@ -107,6 +126,11 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
     if (IsReadonly()) {
         dumper->Add("readonly ");
     }
+}
+
+void ClassProperty::Dump(ir::SrcDumper *dumper) const
+{
+    DumpPrefix(dumper);
 
     if (key_ != nullptr) {
         key_->Dump(dumper);
@@ -145,9 +169,9 @@ checker::Type *ClassProperty::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassProperty::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -156,27 +180,36 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
     auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeAnnotation = typeAnnotation_ != nullptr ? typeAnnotation_->Clone(allocator, nullptr) : nullptr;
 
-    if (auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
-        clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
 
-        key->SetParent(clone);
-        if (value != nullptr) {
-            value->SetParent(clone);
-        }
-        if (typeAnnotation != nullptr) {
-            typeAnnotation->SetParent(clone);
-        }
-
-        for (auto *const decorator : decorators_) {
-            clone->AddDecorator(decorator->Clone(allocator, clone));
-        }
-
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    key->SetParent(clone);
+    if (value != nullptr) {
+        value->SetTsType(value_->TsType());
+        value->SetParent(clone);
+    }
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->SetTsType(typeAnnotation->TsType());
+        typeAnnotation->SetParent(clone);
+    }
+
+    for (auto *const decorator : decorators_) {
+        clone->AddDecorator(decorator->Clone(allocator, clone));
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(range_);
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

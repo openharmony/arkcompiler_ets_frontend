@@ -1,37 +1,110 @@
 # Issue: #19440
-ast/parser/ets/iterator_override_next.sts
+ast/parser/ets/iterator_override_next.ets
 
 # Fails with Assertion. Description in Issue #19645
-ast/parser/ets/switch_readonly_member_different_enum_2.sts
-ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.sts
+ast/parser/ets/switch_readonly_member_different_enum_2.ets
+ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.ets
 
 # Issue: #20326
-ast/compiler/ets/readonlyType_6.sts
-ast/parser/ets/class_interface_enum_only_top_level_5.sts
-ast/parser/ets/generics_1.sts
-ast/parser/ets/global_scope_boolean.sts
-ast/parser/ets/global_scope_string.sts
-ast/parser/ets/lexer001.sts
-ast/parser/ets/lexer002.sts
-ast/parser/ets/method_override_throw_2.sts
-ast/parser/ets/method_override_throw_4.sts
-ast/parser/ets/method_override_throw_6.sts
-ast/parser/ets/TypeInferFunc.sts
-
-# Issue: #20167
-ast/compiler/ets/union_string_literals_6.sts
-
-# Issue: #19700
-ast/compiler/ets/returnStatementClone.sts
+ast/compiler/ets/readonlyType_6.ets
+ast/parser/ets/class_interface_enum_only_top_level_5.ets
+ast/parser/ets/generics_1.ets
+ast/parser/ets/global_scope_boolean.ets
+ast/parser/ets/global_scope_string.ets
+ast/parser/ets/lexer001.ets
+ast/parser/ets/lexer002.ets
+ast/parser/ets/TypeInferFunc.ets
 
 # Issue: #20639
-ast/parser/ets/extension_function_tests/extension_function_array1.sts
-ast/parser/ets/extension_function_tests/extension_function_array1_primitive.sts
-ast/parser/ets/extension_function_tests/extension_function_array2.sts
-ast/parser/ets/extension_function_tests/extension_function_array2_primitive.sts
-ast/parser/ets/extension_function_tests/extension_function_array3.sts
-ast/parser/ets/extension_function_tests/extension_function_array3_primitive.sts
-ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
-ast/parser/ets/extension_function_tests/extension_function_array_typealias.sts
-ast/parser/ets/extension_function_tests/extension_function_class.sts
-ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts
+ast/parser/ets/extension_function_tests/extension_function_array1.ets
+ast/parser/ets/extension_function_tests/extension_function_array1_primitive.ets
+ast/parser/ets/extension_function_tests/extension_function_array2.ets
+ast/parser/ets/extension_function_tests/extension_function_array2_primitive.ets
+ast/parser/ets/extension_function_tests/extension_function_array3.ets
+ast/parser/ets/extension_function_tests/extension_function_array3_primitive.ets
+ast/parser/ets/extension_function_tests/extension_function_array_primitive.ets
+ast/parser/ets/extension_function_tests/extension_function_array_typealias.ets
+ast/parser/ets/extension_function_tests/extension_function_class.ets
+ast/parser/ets/extension_function_tests/extension_function_class_typealias.ets
+
+# Issue: #20874
+ast/parser/ets/unexpected_token_16.ets
+ast/parser/ets/unexpected_token_17.ets
+ast/parser/ets/unexpected_token_34.ets
+ast/parser/ets/unexpected_token_54.ets
+
+# Issue: #20875
+ast/parser/js/module/import_meta_3.js
+ast/parser/js/unexpected_token_8.js
+
+# Issue: #20876
+ast/parser/js/rest_params_1.js
+
+# Issue #22140
+ast/parser/ets/InvalidLexer.ets
+ast/parser/ts/InvalidLexer.ts
+
+# Issue #22206
+ast/compiler/ets/expression/this_expression/undefined_class_for_this_1.ets
+ast/compiler/ets/expression/this_expression/undefined_class_for_this_2.ets
+
+# Issue: #22663
+ast/compiler/ets/implicit_this_method_trailing.ets
+
+# Checked only as imported modules. If these files are parsed directly, there will be
+# errors located in other files (import_type_error_in_class.ets/import_type_error_top_level.ets),
+# and such case cannot be checked in astchecker
+ast/parser/ets/import_tests/export_and_import_class.ets
+ast/parser/ets/import_tests/export_and_import_top_level.ets
+
+# Issue: #22951
+ast/compiler/ets/extension_accessor_tests/getterAsFunctionCall.ets
+ast/compiler/ets/extension_accessor_tests/getterAsMethodCall.ets
+ast/compiler/ets/extension_accessor_tests/setterAsFunctionCall.ets
+ast/compiler/ets/extension_accessor_tests/setterAsMethodCall.ets
+ast/compiler/ets/lambda_with_receiver_tests/ExtensionFunctypeUncompatible.ets
+ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated.ets
+ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated2.ets
+
+# Issue: #22951
+ast/parser/ets/this_type_lambda_definition_parameter_invalid.ets
+ast/parser/ets/this_type_lambda_definition_return_invalid.ets
+
+# Issue: #23078
+ast/compiler/ets/readonlyType_5.ets
+
+# Issue: #23068
+ast/parser/ets/InferTypeParamFromParam2.ets
+
+# Issue: #23079
+ast/parser/ets/cast_expressions10.ets
+ast/parser/ets/cast_expressions7.ets
+ast/parser/ets/cast_expressions8.ets
+ast/parser/ets/cast_expressions9.ets
+
+# Issue: #23080
+ast/parser/ets/default_parameter3.ets
+ast/parser/ets/default_parameters_multi_error.ets
+ast/parser/ets/rest_parameter_03.ets
+
+# Issue: #23074
+# inccorect context of method usage
+ast/compiler/ets/FunctionType1.ets
+ast/compiler/ets/FunctionType8.ets
+# should report return type mismatch
+ast/parser/ets/lambda-type-inference-neg2.ets
+# after the fix the test fails to detect another type error
+ast/parser/ets/unexpected_token_51.ets
+
+
+# Issue: #23134
+# Can't insert "/* TypeError: Postcondition check failed for DefaultParametersLowering */" test directive
+ast/parser/ets/InvalidExpressions.ets
+# falls to post-checker lowerings after type errors are detected!
+ast/parser/ets/lambdaWithWrongOptionalParameter.ets
+
+# Issue: #24253
+ast/compiler/ets/lambda_infer_type/lambda_param_type_cannot_be_determined.ets
+
+# Issue: #24605 incorrect column
+ast/parser/ets/named_types_2.ets

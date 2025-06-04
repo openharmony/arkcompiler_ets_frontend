@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,14 +81,14 @@ namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> ASParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext(), ErrorLogger());
+    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext(), DiagnosticEngine());
     SetLexer(lexer.get());
     return lexer;
 }
 
 ir::Decorator *ASParser::ParseDecorator()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
 
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '@'
@@ -114,7 +114,7 @@ void ASParser::AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &de
 
 ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -167,7 +167,7 @@ void ASParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
             ThrowSyntaxError("A rest parameter cannot be optional");
         }
 
-        ASSERT(returnNode->IsIdentifier());
+        ES2PANDA_ASSERT(returnNode->IsIdentifier());
         returnNode->AsIdentifier()->SetOptional(true);
 
         isOptional = true;
@@ -512,7 +512,7 @@ ir::TypeNode *ASParser::ParseFunctionType(lexer::SourcePosition startLoc)
     ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation);
-    auto funcType = AllocNode<ir::TSFunctionType>(std::move(signature));
+    auto funcType = AllocNode<ir::TSFunctionType>(std::move(signature), Allocator());
 
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
@@ -523,7 +523,7 @@ ir::TypeNode *ASParser::ParseParenthesizedOrFunctionType(bool throwError)
 {
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     const auto startPos = Lexer()->Save();
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     Lexer()->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
@@ -571,7 +571,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
 {
     auto *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     typeName->SetRange(Lexer()->GetToken().Loc());
-    type = AllocNode<ir::NamedType>(typeName);
+    type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -585,7 +585,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
 
         typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         typeName->SetRange(Lexer()->GetToken().Loc());
-        auto *next = AllocNode<ir::NamedType>(typeName);
+        auto *next = AllocNode<ir::NamedType>(typeName, Allocator());
         current->SetRange(Lexer()->GetToken().Loc());
         current->SetNext(next);
         current = next;
@@ -647,7 +647,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokens(ir::TypeNode *type, bool throw
 
     auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
     typeName->SetRange(Lexer()->GetToken().Loc());
-    type = AllocNode<ir::NamedType>(typeName);
+    type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return type;
@@ -671,7 +671,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokensBitwiseOr(ir::TypeNode *type, b
             if (type->IsTSFunctionType()) {
                 type->AsTSFunctionType()->SetNullable(isNullable);
             } else {
-                ASSERT(type->IsNamedType());
+                ES2PANDA_ASSERT(type->IsNamedType());
                 type->AsNamedType()->SetNullable(isNullable);
             }
         }
@@ -723,7 +723,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokenLeftSquareBracket(ir::TypeNode *
         params.push_back(type);
         auto *typeParamInst = AllocNode<ir::TSTypeParameterInstantiation>(std::move(params));
 
-        type = AllocNode<ir::NamedType>(typeName);
+        type = AllocNode<ir::NamedType>(typeName, Allocator());
         type->AsNamedType()->SetTypeParams(typeParamInst);
         type->AsNamedType()->SetNullable(isNullable);
         type->SetRange({startPos, Lexer()->GetToken().End()});
@@ -814,6 +814,7 @@ bool ASParser::ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir
         lexer::SourcePosition endLoc = propertyNode->End();
 
         *returnExpression = AllocNode<ir::TaggedTemplateExpression>(*returnExpression, propertyNode, typeParams);
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         (*returnExpression)->SetRange({startLoc, endLoc});
         return false;
     }
@@ -876,7 +877,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
     lexer::SourcePosition heritageEnd = Lexer()->GetToken().End();
     auto *extendsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     extendsName->SetRange(Lexer()->GetToken().Loc());
-    auto *extendsClause = AllocNode<ir::NamedType>(extendsName);
+    auto *extendsClause = AllocNode<ir::NamedType>(extendsName, Allocator());
     extendsClause->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -890,7 +891,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
 
         extendsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         extendsName->SetRange(Lexer()->GetToken().Loc());
-        auto *next = AllocNode<ir::NamedType>(extendsName);
+        auto *next = AllocNode<ir::NamedType>(extendsName, Allocator());
         current->SetRange(Lexer()->GetToken().Loc());
         current->SetNext(next);
         current = next;
@@ -1100,7 +1101,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
         const lexer::SourcePosition &implementStart = Lexer()->GetToken().Start();
         auto *implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         implementsName->SetRange(Lexer()->GetToken().Loc());
-        auto *implementsClause = AllocNode<ir::NamedType>(implementsName);
+        auto *implementsClause = AllocNode<ir::NamedType>(implementsName, Allocator());
         implementsClause->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
 
@@ -1114,7 +1115,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
 
             implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
             implementsName->SetRange(Lexer()->GetToken().Loc());
-            auto *next = AllocNode<ir::NamedType>(implementsName);
+            auto *next = AllocNode<ir::NamedType>(implementsName, Allocator());
             current->SetRange(Lexer()->GetToken().Loc());
             current->SetNext(next);
             current = next;
@@ -1417,7 +1418,7 @@ ir::Expression *ASParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
@@ -1600,7 +1601,7 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
 }
 
 class ASParser::ParseNamedExportDeclarationHelper {
-    friend ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
+    friend ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
 
 private:
     static ir::Statement *GetParsedDeclaration(ASParser *parser, lexer::TokenType type)
@@ -1649,7 +1650,7 @@ private:
     }
 };
 
-ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
+ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
         CheckDeclare();
@@ -1671,7 +1672,7 @@ ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::S
 
 ir::AstNode *ASParser::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
 {
-    ASSERT(specifiers->empty());
+    ES2PANDA_ASSERT(specifiers->empty());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         ParseImportDefaultSpecifier(specifiers);

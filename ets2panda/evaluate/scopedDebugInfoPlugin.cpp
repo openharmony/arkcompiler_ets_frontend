@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,8 +57,8 @@ std::pair<ir::VariableDeclaration *, ir::ReturnStatement *> BreakLastStatement(c
 {
     static constexpr std::string_view GENERATED_VAR_SUFFIX = "_generated_var";
 
-    ASSERT(checker);
-    ASSERT(lastStatement);
+    ES2PANDA_ASSERT(checker);
+    ES2PANDA_ASSERT(lastStatement);
     auto *allocator = checker->Allocator();
 
     auto returnVariableNameView = [methodName, allocator]() {
@@ -82,7 +82,7 @@ std::pair<ir::VariableDeclaration *, ir::ReturnStatement *> BreakLastStatement(c
 }  // namespace
 
 ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, checker::ETSChecker *checker,
-                                             const CompilerOptions &options)
+                                             const util::Options &options)
     : globalProgram_(globalProgram),
       checker_(checker),
       context_(options),
@@ -94,10 +94,8 @@ ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, che
       proxyProgramsCache_(checker->Allocator()),
       entityDeclarator_(*this)
 {
-    ASSERT(globalProgram_);
-    ASSERT(checker_);
-
-    ValidateEvaluationOptions(options);
+    ES2PANDA_ASSERT(globalProgram_);
+    ES2PANDA_ASSERT(checker_);
 
     auto isContextValid = debugInfoStorage_.FillEvaluateContext(context_);
     if (!isContextValid) {
@@ -117,7 +115,7 @@ void ScopedDebugInfoPlugin::PreCheck()
 
 void ScopedDebugInfoPlugin::PostCheck()
 {
-    ASSERT(prologueEpilogueMap_.empty());
+    ES2PANDA_ASSERT(prologueEpilogueMap_.empty());
 
     [[maybe_unused]] auto inserted = InsertReturnStatement();
     LOG(DEBUG, ES2PANDA) << "Evaluation method will return: " << std::boolalpha << inserted << std::noboolalpha;
@@ -154,7 +152,7 @@ bool ScopedDebugInfoPlugin::InsertReturnStatement()
     auto &statementsList = evalMethodStatements->Statements();
     // Omit the emplaced `DebuggerAPI.setLocal<>` calls and find the original last statement.
     auto lastStatementIter = std::find(statementsList.rbegin(), statementsList.rend(), lastStatement);
-    ASSERT(lastStatementIter != statementsList.rend());
+    ES2PANDA_ASSERT(lastStatementIter != statementsList.rend());
 
     // Break the last user's statement into variable declaration and return statement.
     auto *scope = compiler::NearestScope(lastStatement);
@@ -212,7 +210,7 @@ void ScopedDebugInfoPlugin::AddPrologueEpilogue(ir::BlockStatement *block)
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindIdentifier(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
 
     helpers::SafeStateScope s(checker_, GetETSBinder());
 
@@ -247,7 +245,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
 
     // NOTE: support "import * as X".
 
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindClass " << ident->Name();
 
     auto *importerProgram = GetETSBinder()->Program();
@@ -257,7 +255,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
     // NOTE: separate this into a method.
     auto importPath = pathResolver_.FindNamedImportAll(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (!importPath.empty()) {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
         return nullptr;
     }
 
@@ -297,7 +295,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
 {
     // Correct overload resolution requires us to create all reachable functions with the given name,
     // so that Checker later could choose the correct one.
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalFunction " << ident->Name();
 
     auto *allocator = Allocator();
@@ -332,7 +330,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
                 return deserializer->CreateIrGlobalMethods(fromImported, program, declSourcePath, declName);
             });
         if (importedVar != nullptr) {
-            ASSERT(var == nullptr || var == importedVar);
+            ES2PANDA_ASSERT(var == nullptr || var == importedVar);
             var = importedVar;
         }
     }
@@ -351,7 +349,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalVariable " << ident->Name();
 
     auto *importerProgram = GetETSBinder()->Program();
@@ -379,7 +377,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *i
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     // Search local variables only in evaluation method.
     if (helpers::GetEnclosingBlock(ident) != context_.methodStatements) {
         return nullptr;
@@ -390,13 +388,6 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *id
     // NOTE: verify that function arguments are included.
     const auto &localVariableTable = context_.extractor->GetLocalVariableTable(context_.methodId);
     return debugInfoDeserializer_.CreateIrLocalVariable(ident, localVariableTable, context_.bytecodeOffset);
-}
-
-void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const CompilerOptions &options)
-{
-    if (!options.isEtsModule) {
-        LOG(FATAL, ES2PANDA) << "Evaluation mode must be used in conjunction with ets-module option.";
-    }
 }
 
 void ScopedDebugInfoPlugin::CreateContextPrograms()
@@ -413,12 +404,12 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 
     // Checker doesn't yet have `VarBinder`, must retrieve it from `globalProgram_`.
     parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
-    auto omitModuleName = moduleName.empty();
-    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), !omitModuleName});
-    program->SetModuleInfo(moduleName, false, omitModuleName);
-    auto *etsScript =
-        allocator->New<ir::ETSScript>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()), program);
-    program->SetAst(etsScript);
+    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true, false});
+    program->SetPackageInfo(moduleName, util::ModuleKind::MODULE);
+    auto *emptyIdent = allocator->New<ir::Identifier>("", allocator);
+    auto *etsModule = allocator->New<ir::ETSModule>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()),
+                                                    emptyIdent, ir::ModuleFlag::ETSSCRIPT, program);
+    program->SetAst(etsModule);
 
     helpers::AddExternalProgram(globalProgram_, program, moduleName);
     proxyProgramsCache_.AddProgram(program);
@@ -429,14 +420,14 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 parser::Program *ScopedDebugInfoPlugin::GetProgram(util::StringView fileName)
 {
     auto *program = proxyProgramsCache_.GetProgram(fileName);
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
     return program;
 }
 
 parser::Program *ScopedDebugInfoPlugin::GetEvaluatedExpressionProgram()
 {
     auto *program = GetETSBinder()->GetContext()->parserProgram;
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
     return program;
 }
 

@@ -14,11 +14,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -26,11 +28,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 18,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -38,11 +42,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 18,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -51,11 +57,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 18,
-          "column": 15
+          "column": 15,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -72,11 +80,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -84,11 +94,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 19,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -96,11 +108,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 19,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -109,11 +123,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 19,
-          "column": 15
+          "column": 15,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -130,11 +146,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -142,11 +160,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 20,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -154,11 +174,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 20,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -167,11 +189,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 20,
-          "column": 16
+          "column": 16,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -188,11 +212,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -200,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 21,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -212,11 +240,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 21,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -225,11 +255,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 21,
-          "column": 13
+          "column": 13,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -246,11 +278,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -258,11 +292,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 22,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -270,11 +306,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 22,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -283,11 +321,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 22,
-          "column": 13
+          "column": 13,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -304,11 +344,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -316,11 +358,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 23,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -328,11 +372,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 23,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -341,11 +387,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 23,
-          "column": 18
+          "column": 18,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -362,11 +410,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -374,11 +424,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 24,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -386,11 +438,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 24,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -399,11 +453,13 @@
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 24,
-          "column": 16
+          "column": 16,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -420,11 +476,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -432,11 +490,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 25,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -444,11 +504,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 25,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -457,11 +519,13 @@
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 25,
-          "column": 14
+          "column": 14,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -478,11 +542,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -490,11 +556,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 26,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -502,11 +570,13 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 26,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -515,11 +585,13 @@
       "loc": {
         "start": {
           "line": 26,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 26,
-          "column": 12
+          "column": 12,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -536,11 +608,13 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 27,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -548,11 +622,13 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 27,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -560,11 +636,13 @@
           "loc": {
             "start": {
               "line": 27,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 27,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -573,11 +651,13 @@
       "loc": {
         "start": {
           "line": 27,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 27,
-          "column": 15
+          "column": 15,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -594,11 +674,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -606,11 +688,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 28,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -618,11 +702,13 @@
           "loc": {
             "start": {
               "line": 28,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 28,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -631,11 +717,13 @@
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 28,
-          "column": 15
+          "column": 15,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -654,22 +742,27 @@
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 31,
-                    "column": 14
+                    "column": 14,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 31,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -677,11 +770,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 31,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -689,11 +784,13 @@
           "loc": {
             "start": {
               "line": 31,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 31,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -702,11 +799,13 @@
       "loc": {
         "start": {
           "line": 31,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 31,
-          "column": 17
+          "column": 17,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -727,33 +826,41 @@
                   "loc": {
                     "start": {
                       "line": 32,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 32,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 32,
-                    "column": 16
+                    "column": 16,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 32,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -761,11 +868,13 @@
             "loc": {
               "start": {
                 "line": 32,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 32,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -773,11 +882,13 @@
           "loc": {
             "start": {
               "line": 32,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 32,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -786,11 +897,13 @@
       "loc": {
         "start": {
           "line": 32,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 32,
-          "column": 19
+          "column": 19,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -812,22 +925,27 @@
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 33,
-                        "column": 15
+                        "column": 15,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 33,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -841,33 +959,40 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 20
+                          "column": 20,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 33,
-                          "column": 22
+                          "column": 22,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 33,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 20
+                      "column": 20,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 33,
-                      "column": 24
+                      "column": 24,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -875,11 +1000,13 @@
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 33,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -887,11 +1014,13 @@
             "loc": {
               "start": {
                 "line": 33,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 33,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -899,11 +1028,13 @@
           "loc": {
             "start": {
               "line": 33,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 33,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -912,11 +1043,13 @@
       "loc": {
         "start": {
           "line": 33,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 33,
-          "column": 25
+          "column": 25,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -943,11 +1076,13 @@
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 36,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -956,11 +1091,13 @@
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 18
+                              "column": 18,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 36,
-                              "column": 24
+                              "column": 24,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         }
@@ -968,33 +1105,40 @@
                       "loc": {
                         "start": {
                           "line": 36,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 36,
-                          "column": 24
+                          "column": 24,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 36,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 36,
-                        "column": 25
+                        "column": 25,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 36,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -1006,22 +1150,26 @@
                     "loc": {
                       "start": {
                         "line": 36,
-                        "column": 30
+                        "column": 30,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 36,
-                        "column": 34
+                        "column": 34,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 36,
-                      "column": 34
+                      "column": 34,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -1046,22 +1194,27 @@
                                     "loc": {
                                       "start": {
                                         "line": 36,
-                                        "column": 39
+                                        "column": 39,
+                                        "program": "test-type-annotation.ts"
                                       },
                                       "end": {
                                         "line": 36,
-                                        "column": 48
+                                        "column": 48,
+                                        "program": "test-type-annotation.ts"
                                       }
                                     }
                                   },
+                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 36,
-                                      "column": 39
+                                      "column": 39,
+                                      "program": "test-type-annotation.ts"
                                     },
                                     "end": {
                                       "line": 36,
-                                      "column": 50
+                                      "column": 50,
+                                      "program": "test-type-annotation.ts"
                                     }
                                   }
                                 },
@@ -1070,11 +1223,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 36,
-                                      "column": 53
+                                      "column": 53,
+                                      "program": "test-type-annotation.ts"
                                     },
                                     "end": {
                                       "line": 36,
-                                      "column": 60
+                                      "column": 60,
+                                      "program": "test-type-annotation.ts"
                                     }
                                   }
                                 }
@@ -1082,33 +1237,40 @@
                               "loc": {
                                 "start": {
                                   "line": 36,
-                                  "column": 39
+                                  "column": 39,
+                                  "program": "test-type-annotation.ts"
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 60
+                                  "column": 60,
+                                  "program": "test-type-annotation.ts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 38
+                                "column": 38,
+                                "program": "test-type-annotation.ts"
                               },
                               "end": {
                                 "line": 36,
-                                "column": 61
+                                "column": 61,
+                                "program": "test-type-annotation.ts"
                               }
                             }
                           },
+                          "annotations": [],
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 38
+                              "column": 38,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 36,
-                              "column": 63
+                              "column": 63,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -1120,22 +1282,26 @@
                             "loc": {
                               "start": {
                                 "line": 36,
-                                "column": 66
+                                "column": 66,
+                                "program": "test-type-annotation.ts"
                               },
                               "end": {
                                 "line": 36,
-                                "column": 71
+                                "column": 71,
+                                "program": "test-type-annotation.ts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 36,
-                              "column": 66
+                              "column": 66,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 36,
-                              "column": 71
+                              "column": 71,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         }
@@ -1143,33 +1309,40 @@
                       "loc": {
                         "start": {
                           "line": 36,
-                          "column": 38
+                          "column": 38,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 36,
-                          "column": 71
+                          "column": 71,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 36,
-                        "column": 37
+                        "column": 37,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 36,
-                        "column": 72
+                        "column": 72,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 36,
-                      "column": 37
+                      "column": 37,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 36,
-                      "column": 74
+                      "column": 74,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -1177,11 +1350,13 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 36,
-                  "column": 74
+                  "column": 74,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -1189,11 +1364,13 @@
             "loc": {
               "start": {
                 "line": 36,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 36,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -1201,11 +1378,13 @@
           "loc": {
             "start": {
               "line": 36,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 36,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -1214,11 +1393,13 @@
       "loc": {
         "start": {
           "line": 36,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 36,
-          "column": 75
+          "column": 75,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -1245,11 +1426,13 @@
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 37,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -1258,11 +1441,13 @@
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 18
+                              "column": 18,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 37,
-                              "column": 24
+                              "column": 24,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         }
@@ -1270,33 +1455,40 @@
                       "loc": {
                         "start": {
                           "line": 37,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 37,
-                          "column": 24
+                          "column": 24,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 37,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 37,
-                        "column": 25
+                        "column": 25,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 37,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -1312,11 +1504,13 @@
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 31
+                              "column": 31,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 37,
-                              "column": 37
+                              "column": 37,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -1325,11 +1519,13 @@
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 40
+                              "column": 40,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 37,
-                              "column": 46
+                              "column": 46,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         }
@@ -1337,33 +1533,40 @@
                       "loc": {
                         "start": {
                           "line": 37,
-                          "column": 31
+                          "column": 31,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 37,
-                          "column": 46
+                          "column": 46,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 37,
-                        "column": 30
+                        "column": 30,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 37,
-                        "column": 47
+                        "column": 47,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 37,
-                      "column": 49
+                      "column": 49,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -1371,11 +1574,13 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 37,
-                  "column": 49
+                  "column": 49,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -1383,11 +1588,13 @@
             "loc": {
               "start": {
                 "line": 37,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 37,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -1395,11 +1602,13 @@
           "loc": {
             "start": {
               "line": 37,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 37,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -1408,11 +1617,13 @@
       "loc": {
         "start": {
           "line": 37,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 37,
-          "column": 50
+          "column": 50,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -1444,11 +1655,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 38,
-                                    "column": 10
+                                    "column": 10,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 16
+                                    "column": 16,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               },
@@ -1457,11 +1670,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 38,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               }
@@ -1469,33 +1684,40 @@
                             "loc": {
                               "start": {
                                 "line": 38,
-                                "column": 10
+                                "column": 10,
+                                "program": "test-type-annotation.ts"
                               },
                               "end": {
                                 "line": 38,
-                                "column": 25
+                                "column": 25,
+                                "program": "test-type-annotation.ts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 38,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 38,
-                              "column": 26
+                              "column": 26,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 38,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 38,
-                            "column": 28
+                            "column": 28,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -1511,11 +1733,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 38,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               },
@@ -1524,11 +1748,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 38,
-                                    "column": 41
+                                    "column": 41,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 47
+                                    "column": 47,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               }
@@ -1536,33 +1762,40 @@
                             "loc": {
                               "start": {
                                 "line": 38,
-                                "column": 32
+                                "column": 32,
+                                "program": "test-type-annotation.ts"
                               },
                               "end": {
                                 "line": 38,
-                                "column": 47
+                                "column": 47,
+                                "program": "test-type-annotation.ts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 38,
-                              "column": 31
+                              "column": 31,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 38,
-                              "column": 48
+                              "column": 48,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 38,
-                            "column": 31
+                            "column": 31,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 38,
-                            "column": 50
+                            "column": 50,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -1570,22 +1803,26 @@
                     "loc": {
                       "start": {
                         "line": 38,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 38,
-                        "column": 50
+                        "column": 50,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 38,
-                      "column": 51
+                      "column": 51,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -1594,11 +1831,13 @@
                   "loc": {
                     "start": {
                       "line": 38,
-                      "column": 54
+                      "column": 54,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 38,
-                      "column": 60
+                      "column": 60,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -1606,11 +1845,13 @@
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 38,
-                  "column": 60
+                  "column": 60,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -1618,11 +1859,13 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 38,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -1630,11 +1873,13 @@
           "loc": {
             "start": {
               "line": 38,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 38,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -1643,11 +1888,13 @@
       "loc": {
         "start": {
           "line": 38,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 38,
-          "column": 61
+          "column": 61,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -1674,66 +1921,79 @@
                         "loc": {
                           "start": {
                             "line": 41,
-                            "column": 12
+                            "column": 12,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 41,
-                            "column": 18
+                            "column": 18,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 41,
-                          "column": 11
+                          "column": 11,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 41,
-                          "column": 19
+                          "column": 19,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 41,
-                        "column": 10
+                        "column": 10,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 41,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 9
+                      "column": 9,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 41,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 41,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 41,
-                    "column": 22
+                    "column": 22,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 41,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -1741,11 +2001,13 @@
             "loc": {
               "start": {
                 "line": 41,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 41,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -1753,11 +2015,13 @@
           "loc": {
             "start": {
               "line": 41,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 41,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -1766,11 +2030,13 @@
       "loc": {
         "start": {
           "line": 41,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 41,
-          "column": 25
+          "column": 25,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -1800,11 +2066,13 @@
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "test-type-annotation.ts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "test-type-annotation.ts"
                                 }
                               }
                             },
@@ -1813,11 +2081,13 @@
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "test-type-annotation.ts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "test-type-annotation.ts"
                                 }
                               }
                             }
@@ -1825,22 +2095,26 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 10
+                              "column": 10,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 26
+                              "column": 26,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 42,
-                            "column": 27
+                            "column": 27,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -1857,22 +2131,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 42,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 42,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "test-type-annotation.ts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "test-type-annotation.ts"
                                 }
                               }
                             },
@@ -1884,22 +2162,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 42,
-                                    "column": 35
+                                    "column": 35,
+                                    "program": "test-type-annotation.ts"
                                   },
                                   "end": {
                                     "line": 42,
-                                    "column": 39
+                                    "column": 39,
+                                    "program": "test-type-annotation.ts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 35
+                                  "column": 35,
+                                  "program": "test-type-annotation.ts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 39
+                                  "column": 39,
+                                  "program": "test-type-annotation.ts"
                                 }
                               }
                             }
@@ -1907,22 +2189,26 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 31
+                              "column": 31,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 39
+                              "column": 39,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 30
+                            "column": 30,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 42,
-                            "column": 40
+                            "column": 40,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -1930,22 +2216,26 @@
                     "loc": {
                       "start": {
                         "line": 42,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 42,
-                        "column": 40
+                        "column": 40,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 42,
-                      "column": 8
+                      "column": 8,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 42,
-                      "column": 41
+                      "column": 41,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -1956,22 +2246,26 @@
                     "loc": {
                       "start": {
                         "line": 42,
-                        "column": 45
+                        "column": 45,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 42,
-                        "column": 49
+                        "column": 49,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 42,
-                      "column": 44
+                      "column": 44,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 42,
-                      "column": 50
+                      "column": 50,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -1979,11 +2273,13 @@
               "loc": {
                 "start": {
                   "line": 42,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 42,
-                  "column": 50
+                  "column": 50,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -1991,11 +2287,13 @@
             "loc": {
               "start": {
                 "line": 42,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 42,
-                "column": 6
+                "column": 6,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -2003,11 +2301,13 @@
           "loc": {
             "start": {
               "line": 42,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 42,
-              "column": 6
+              "column": 6,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -2016,11 +2316,13 @@
       "loc": {
         "start": {
           "line": 42,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 42,
-          "column": 51
+          "column": 51,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -2043,11 +2345,13 @@
                     "loc": {
                       "start": {
                         "line": 45,
-                        "column": 16
+                        "column": 16,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 45,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2055,11 +2359,13 @@
                   "loc": {
                     "start": {
                       "line": 45,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 45,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -2071,11 +2377,13 @@
                     "loc": {
                       "start": {
                         "line": 45,
-                        "column": 27
+                        "column": 27,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 45,
-                        "column": 33
+                        "column": 33,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2083,11 +2391,13 @@
                   "loc": {
                     "start": {
                       "line": 45,
-                      "column": 24
+                      "column": 24,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 45,
-                      "column": 25
+                      "column": 25,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -2097,22 +2407,26 @@
                 "loc": {
                   "start": {
                     "line": 45,
-                    "column": 38
+                    "column": 38,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 45,
-                    "column": 44
+                    "column": 44,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 45,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 45,
-                  "column": 44
+                  "column": 44,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -2120,11 +2434,13 @@
             "loc": {
               "start": {
                 "line": 45,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 45,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -2132,11 +2448,13 @@
           "loc": {
             "start": {
               "line": 45,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 45,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -2145,11 +2463,13 @@
       "loc": {
         "start": {
           "line": 45,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 45,
-          "column": 45
+          "column": 45,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -2177,22 +2497,27 @@
                           "loc": {
                             "start": {
                               "line": 46,
-                              "column": 16
+                              "column": 16,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 46,
-                              "column": 22
+                              "column": 22,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 46,
-                            "column": 16
+                            "column": 16,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 46,
-                            "column": 24
+                            "column": 24,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -2201,11 +2526,13 @@
                         "loc": {
                           "start": {
                             "line": 46,
-                            "column": 27
+                            "column": 27,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 46,
-                            "column": 33
+                            "column": 33,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -2213,11 +2540,13 @@
                     "loc": {
                       "start": {
                         "line": 46,
-                        "column": 16
+                        "column": 16,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 46,
-                        "column": 33
+                        "column": 33,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2225,11 +2554,13 @@
                   "loc": {
                     "start": {
                       "line": 46,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 46,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -2244,22 +2575,26 @@
                       "loc": {
                         "start": {
                           "line": 46,
-                          "column": 39
+                          "column": 39,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 46,
-                          "column": 40
+                          "column": 40,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 46,
-                        "column": 39
+                        "column": 39,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 46,
-                        "column": 40
+                        "column": 40,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2268,11 +2603,13 @@
                   "loc": {
                     "start": {
                       "line": 46,
-                      "column": 35
+                      "column": 35,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 46,
-                      "column": 36
+                      "column": 36,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -2285,11 +2622,13 @@
                     "loc": {
                       "start": {
                         "line": 46,
-                        "column": 45
+                        "column": 45,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 46,
-                        "column": 51
+                        "column": 51,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2298,11 +2637,13 @@
                     "loc": {
                       "start": {
                         "line": 46,
-                        "column": 54
+                        "column": 54,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 46,
-                        "column": 60
+                        "column": 60,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -2310,22 +2651,26 @@
                 "loc": {
                   "start": {
                     "line": 46,
-                    "column": 45
+                    "column": 45,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 46,
-                    "column": 60
+                    "column": 60,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 46,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 46,
-                  "column": 60
+                  "column": 60,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -2333,11 +2678,13 @@
             "loc": {
               "start": {
                 "line": 46,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 46,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -2345,11 +2692,13 @@
           "loc": {
             "start": {
               "line": 46,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 46,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -2358,11 +2707,13 @@
       "loc": {
         "start": {
           "line": 46,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 46,
-          "column": 61
+          "column": 61,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -2391,11 +2742,13 @@
                           "loc": {
                             "start": {
                               "line": 47,
-                              "column": 20
+                              "column": 20,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 47,
-                              "column": 26
+                              "column": 26,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -2403,11 +2756,13 @@
                         "loc": {
                           "start": {
                             "line": 47,
-                            "column": 17
+                            "column": 17,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 47,
-                            "column": 18
+                            "column": 18,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -2419,11 +2774,13 @@
                           "loc": {
                             "start": {
                               "line": 47,
-                              "column": 31
+                              "column": 31,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 47,
-                              "column": 37
+                              "column": 37,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -2431,11 +2788,13 @@
                         "loc": {
                           "start": {
                             "line": 47,
-                            "column": 28
+                            "column": 28,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 47,
-                            "column": 29
+                            "column": 29,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -2447,33 +2806,40 @@
                         "loc": {
                           "start": {
                             "line": 47,
-                            "column": 42
+                            "column": 42,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 47,
-                            "column": 48
+                            "column": 48,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
+                      "annotations": [],
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 42
+                          "column": 42,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 50
+                          "column": 50,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 47,
-                        "column": 16
+                        "column": 16,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 47,
-                        "column": 50
+                        "column": 50,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2481,11 +2847,13 @@
                   "loc": {
                     "start": {
                       "line": 47,
-                      "column": 13
+                      "column": 13,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 47,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -2499,11 +2867,13 @@
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 53
+                          "column": 53,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 54
+                          "column": 54,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -2514,11 +2884,13 @@
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 56
+                          "column": 56,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 57
+                          "column": 57,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     }
@@ -2530,33 +2902,40 @@
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 60
+                          "column": 60,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 66
+                          "column": 66,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 47,
-                        "column": 60
+                        "column": 60,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 47,
-                        "column": 68
+                        "column": 68,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 47,
-                      "column": 52
+                      "column": 52,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 47,
-                      "column": 58
+                      "column": 58,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -2572,11 +2951,13 @@
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 77
+                          "column": 77,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 83
+                          "column": 83,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -2584,11 +2965,13 @@
                     "loc": {
                       "start": {
                         "line": 47,
-                        "column": 74
+                        "column": 74,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 47,
-                        "column": 75
+                        "column": 75,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2600,11 +2983,13 @@
                       "loc": {
                         "start": {
                           "line": 47,
-                          "column": 88
+                          "column": 88,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 47,
-                          "column": 95
+                          "column": 95,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -2612,11 +2997,13 @@
                     "loc": {
                       "start": {
                         "line": 47,
-                        "column": 85
+                        "column": 85,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 47,
-                        "column": 86
+                        "column": 86,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -2629,44 +3016,52 @@
                     "loc": {
                       "start": {
                         "line": 47,
-                        "column": 100
+                        "column": 100,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 47,
-                        "column": 104
+                        "column": 104,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 47,
-                      "column": 100
+                      "column": 100,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 47,
-                      "column": 104
+                      "column": 104,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 47,
-                    "column": 73
+                    "column": 73,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 47,
-                    "column": 104
+                    "column": 104,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 47,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 47,
-                  "column": 104
+                  "column": 104,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -2674,11 +3069,13 @@
             "loc": {
               "start": {
                 "line": 47,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 47,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -2686,11 +3083,13 @@
           "loc": {
             "start": {
               "line": 47,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 47,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -2699,11 +3098,13 @@
       "loc": {
         "start": {
           "line": 47,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 47,
-          "column": 105
+          "column": 105,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -2726,11 +3127,13 @@
                     "loc": {
                       "start": {
                         "line": 50,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 50,
-                        "column": 26
+                        "column": 26,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2738,11 +3141,13 @@
                   "loc": {
                     "start": {
                       "line": 50,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 50,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -2754,11 +3159,13 @@
                     "loc": {
                       "start": {
                         "line": 50,
-                        "column": 31
+                        "column": 31,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 50,
-                        "column": 37
+                        "column": 37,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2766,11 +3173,13 @@
                   "loc": {
                     "start": {
                       "line": 50,
-                      "column": 28
+                      "column": 28,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 50,
-                      "column": 29
+                      "column": 29,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -2780,22 +3189,26 @@
                 "loc": {
                   "start": {
                     "line": 50,
-                    "column": 42
+                    "column": 42,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 50,
-                    "column": 48
+                    "column": 48,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 50,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 50,
-                  "column": 48
+                  "column": 48,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -2803,11 +3216,13 @@
             "loc": {
               "start": {
                 "line": 50,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 50,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -2815,11 +3230,13 @@
           "loc": {
             "start": {
               "line": 50,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 50,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -2828,11 +3245,13 @@
       "loc": {
         "start": {
           "line": 50,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 50,
-          "column": 49
+          "column": 49,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -2860,22 +3279,27 @@
                           "loc": {
                             "start": {
                               "line": 51,
-                              "column": 20
+                              "column": 20,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 51,
-                              "column": 26
+                              "column": 26,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 51,
-                            "column": 20
+                            "column": 20,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 51,
-                            "column": 28
+                            "column": 28,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -2884,11 +3308,13 @@
                         "loc": {
                           "start": {
                             "line": 51,
-                            "column": 31
+                            "column": 31,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 51,
-                            "column": 37
+                            "column": 37,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -2896,11 +3322,13 @@
                     "loc": {
                       "start": {
                         "line": 51,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 51,
-                        "column": 37
+                        "column": 37,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2908,11 +3336,13 @@
                   "loc": {
                     "start": {
                       "line": 51,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 51,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -2927,22 +3357,26 @@
                       "loc": {
                         "start": {
                           "line": 51,
-                          "column": 43
+                          "column": 43,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 51,
-                          "column": 44
+                          "column": 44,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 51,
-                        "column": 43
+                        "column": 43,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 51,
-                        "column": 44
+                        "column": 44,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2951,11 +3385,13 @@
                   "loc": {
                     "start": {
                       "line": 51,
-                      "column": 39
+                      "column": 39,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 51,
-                      "column": 40
+                      "column": 40,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -2968,11 +3404,13 @@
                     "loc": {
                       "start": {
                         "line": 51,
-                        "column": 49
+                        "column": 49,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 51,
-                        "column": 55
+                        "column": 55,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -2981,11 +3419,13 @@
                     "loc": {
                       "start": {
                         "line": 51,
-                        "column": 58
+                        "column": 58,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 51,
-                        "column": 64
+                        "column": 64,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -2993,22 +3433,26 @@
                 "loc": {
                   "start": {
                     "line": 51,
-                    "column": 49
+                    "column": 49,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 51,
-                    "column": 64
+                    "column": 64,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 51,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 51,
-                  "column": 64
+                  "column": 64,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -3016,11 +3460,13 @@
             "loc": {
               "start": {
                 "line": 51,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 51,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -3028,11 +3474,13 @@
           "loc": {
             "start": {
               "line": 51,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 51,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -3041,11 +3489,13 @@
       "loc": {
         "start": {
           "line": 51,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 51,
-          "column": 65
+          "column": 65,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -3074,11 +3524,13 @@
                           "loc": {
                             "start": {
                               "line": 52,
-                              "column": 24
+                              "column": 24,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 52,
-                              "column": 30
+                              "column": 30,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -3086,11 +3538,13 @@
                         "loc": {
                           "start": {
                             "line": 52,
-                            "column": 21
+                            "column": 21,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 52,
-                            "column": 22
+                            "column": 22,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -3102,11 +3556,13 @@
                           "loc": {
                             "start": {
                               "line": 52,
-                              "column": 35
+                              "column": 35,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 52,
-                              "column": 41
+                              "column": 41,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -3114,11 +3570,13 @@
                         "loc": {
                           "start": {
                             "line": 52,
-                            "column": 32
+                            "column": 32,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 52,
-                            "column": 33
+                            "column": 33,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -3130,33 +3588,40 @@
                         "loc": {
                           "start": {
                             "line": 52,
-                            "column": 46
+                            "column": 46,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 52,
-                            "column": 52
+                            "column": 52,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
+                      "annotations": [],
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 46
+                          "column": 46,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 54
+                          "column": 54,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 52,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 52,
-                        "column": 54
+                        "column": 54,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3164,11 +3629,13 @@
                   "loc": {
                     "start": {
                       "line": 52,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 52,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -3182,11 +3649,13 @@
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 57
+                          "column": 57,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 58
+                          "column": 58,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3197,11 +3666,13 @@
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 60
+                          "column": 60,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 61
+                          "column": 61,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     }
@@ -3213,33 +3684,40 @@
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 64
+                          "column": 64,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 70
+                          "column": 70,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 52,
-                        "column": 64
+                        "column": 64,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 52,
-                        "column": 72
+                        "column": 72,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 52,
-                      "column": 56
+                      "column": 56,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 52,
-                      "column": 62
+                      "column": 62,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -3255,11 +3733,13 @@
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 81
+                          "column": 81,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 87
+                          "column": 87,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3267,11 +3747,13 @@
                     "loc": {
                       "start": {
                         "line": 52,
-                        "column": 78
+                        "column": 78,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 52,
-                        "column": 79
+                        "column": 79,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3283,11 +3765,13 @@
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 92
+                          "column": 92,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 99
+                          "column": 99,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3295,11 +3779,13 @@
                     "loc": {
                       "start": {
                         "line": 52,
-                        "column": 89
+                        "column": 89,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 52,
-                        "column": 90
+                        "column": 90,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -3312,44 +3798,52 @@
                     "loc": {
                       "start": {
                         "line": 52,
-                        "column": 104
+                        "column": 104,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 52,
-                        "column": 108
+                        "column": 108,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 52,
-                      "column": 104
+                      "column": 104,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 52,
-                      "column": 108
+                      "column": 108,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 52,
-                    "column": 77
+                    "column": 77,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 52,
-                    "column": 108
+                    "column": 108,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 52,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 52,
-                  "column": 108
+                  "column": 108,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -3357,11 +3851,13 @@
             "loc": {
               "start": {
                 "line": 52,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 52,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -3369,11 +3865,13 @@
           "loc": {
             "start": {
               "line": 52,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 52,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -3382,11 +3880,13 @@
       "loc": {
         "start": {
           "line": 52,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 52,
-          "column": 109
+          "column": 109,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -3409,11 +3909,13 @@
                     "loc": {
                       "start": {
                         "line": 53,
-                        "column": 29
+                        "column": 29,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 53,
-                        "column": 35
+                        "column": 35,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3421,11 +3923,13 @@
                   "loc": {
                     "start": {
                       "line": 53,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 53,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -3437,11 +3941,13 @@
                     "loc": {
                       "start": {
                         "line": 53,
-                        "column": 40
+                        "column": 40,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 53,
-                        "column": 46
+                        "column": 46,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3449,11 +3955,13 @@
                   "loc": {
                     "start": {
                       "line": 53,
-                      "column": 37
+                      "column": 37,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 53,
-                      "column": 38
+                      "column": 38,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -3463,11 +3971,13 @@
                 "loc": {
                   "start": {
                     "line": 53,
-                    "column": 51
+                    "column": 51,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 53,
-                    "column": 57
+                    "column": 57,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
@@ -3475,11 +3985,13 @@
               "loc": {
                 "start": {
                   "line": 53,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 53,
-                  "column": 57
+                  "column": 57,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -3487,11 +3999,13 @@
             "loc": {
               "start": {
                 "line": 53,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 53,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -3499,11 +4013,13 @@
           "loc": {
             "start": {
               "line": 53,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 53,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -3512,11 +4028,13 @@
       "loc": {
         "start": {
           "line": 53,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 53,
-          "column": 58
+          "column": 58,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -3544,22 +4062,27 @@
                           "loc": {
                             "start": {
                               "line": 54,
-                              "column": 29
+                              "column": 29,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 54,
-                              "column": 35
+                              "column": 35,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 54,
-                            "column": 29
+                            "column": 29,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 54,
-                            "column": 37
+                            "column": 37,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -3568,11 +4091,13 @@
                         "loc": {
                           "start": {
                             "line": 54,
-                            "column": 40
+                            "column": 40,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 54,
-                            "column": 46
+                            "column": 46,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -3580,11 +4105,13 @@
                     "loc": {
                       "start": {
                         "line": 54,
-                        "column": 29
+                        "column": 29,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 54,
-                        "column": 46
+                        "column": 46,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3592,11 +4119,13 @@
                   "loc": {
                     "start": {
                       "line": 54,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 54,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -3611,22 +4140,26 @@
                       "loc": {
                         "start": {
                           "line": 54,
-                          "column": 52
+                          "column": 52,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 54,
-                          "column": 53
+                          "column": 53,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 54,
-                        "column": 52
+                        "column": 52,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 54,
-                        "column": 53
+                        "column": 53,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3635,11 +4168,13 @@
                   "loc": {
                     "start": {
                       "line": 54,
-                      "column": 48
+                      "column": 48,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 54,
-                      "column": 49
+                      "column": 49,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -3652,11 +4187,13 @@
                     "loc": {
                       "start": {
                         "line": 54,
-                        "column": 58
+                        "column": 58,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 54,
-                        "column": 64
+                        "column": 64,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3665,11 +4202,13 @@
                     "loc": {
                       "start": {
                         "line": 54,
-                        "column": 67
+                        "column": 67,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 54,
-                        "column": 73
+                        "column": 73,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -3677,11 +4216,13 @@
                 "loc": {
                   "start": {
                     "line": 54,
-                    "column": 58
+                    "column": 58,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 54,
-                    "column": 73
+                    "column": 73,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
@@ -3689,11 +4230,13 @@
               "loc": {
                 "start": {
                   "line": 54,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 54,
-                  "column": 73
+                  "column": 73,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -3701,11 +4244,13 @@
             "loc": {
               "start": {
                 "line": 54,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 54,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -3713,11 +4258,13 @@
           "loc": {
             "start": {
               "line": 54,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 54,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -3726,11 +4273,13 @@
       "loc": {
         "start": {
           "line": 54,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 54,
-          "column": 74
+          "column": 74,
+          "program": "test-type-annotation.ts"
         }
       }
     },
@@ -3759,11 +4308,13 @@
                           "loc": {
                             "start": {
                               "line": 55,
-                              "column": 33
+                              "column": 33,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 55,
-                              "column": 39
+                              "column": 39,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -3771,11 +4322,13 @@
                         "loc": {
                           "start": {
                             "line": 55,
-                            "column": 30
+                            "column": 30,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 55,
-                            "column": 31
+                            "column": 31,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
@@ -3787,11 +4340,13 @@
                           "loc": {
                             "start": {
                               "line": 55,
-                              "column": 44
+                              "column": 44,
+                              "program": "test-type-annotation.ts"
                             },
                             "end": {
                               "line": 55,
-                              "column": 50
+                              "column": 50,
+                              "program": "test-type-annotation.ts"
                             }
                           }
                         },
@@ -3799,11 +4354,13 @@
                         "loc": {
                           "start": {
                             "line": 55,
-                            "column": 41
+                            "column": 41,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 55,
-                            "column": 42
+                            "column": 42,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       }
@@ -3815,33 +4372,40 @@
                         "loc": {
                           "start": {
                             "line": 55,
-                            "column": 55
+                            "column": 55,
+                            "program": "test-type-annotation.ts"
                           },
                           "end": {
                             "line": 55,
-                            "column": 61
+                            "column": 61,
+                            "program": "test-type-annotation.ts"
                           }
                         }
                       },
+                      "annotations": [],
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 55
+                          "column": 55,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 63
+                          "column": 63,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 55,
-                        "column": 29
+                        "column": 29,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 55,
-                        "column": 63
+                        "column": 63,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3849,11 +4413,13 @@
                   "loc": {
                     "start": {
                       "line": 55,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 55,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
@@ -3867,11 +4433,13 @@
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 66
+                          "column": 66,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 67
+                          "column": 67,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3882,11 +4450,13 @@
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 69
+                          "column": 69,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 70
+                          "column": 70,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     }
@@ -3898,33 +4468,40 @@
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 73
+                          "column": 73,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 79
+                          "column": 79,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 55,
-                        "column": 73
+                        "column": 73,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 55,
-                        "column": 81
+                        "column": 81,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 55,
-                      "column": 65
+                      "column": 65,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 55,
-                      "column": 71
+                      "column": 71,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 }
@@ -3940,11 +4517,13 @@
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 90
+                          "column": 90,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 96
+                          "column": 96,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3952,11 +4531,13 @@
                     "loc": {
                       "start": {
                         "line": 55,
-                        "column": 87
+                        "column": 87,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 55,
-                        "column": 88
+                        "column": 88,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
@@ -3968,11 +4549,13 @@
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 101
+                          "column": 101,
+                          "program": "test-type-annotation.ts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 108
+                          "column": 108,
+                          "program": "test-type-annotation.ts"
                         }
                       }
                     },
@@ -3980,11 +4563,13 @@
                     "loc": {
                       "start": {
                         "line": 55,
-                        "column": 98
+                        "column": 98,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 55,
-                        "column": 99
+                        "column": 99,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   }
@@ -3997,33 +4582,39 @@
                     "loc": {
                       "start": {
                         "line": 55,
-                        "column": 113
+                        "column": 113,
+                        "program": "test-type-annotation.ts"
                       },
                       "end": {
                         "line": 55,
-                        "column": 117
+                        "column": 117,
+                        "program": "test-type-annotation.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 55,
-                      "column": 113
+                      "column": 113,
+                      "program": "test-type-annotation.ts"
                     },
                     "end": {
                       "line": 55,
-                      "column": 117
+                      "column": 117,
+                      "program": "test-type-annotation.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 55,
-                    "column": 86
+                    "column": 86,
+                    "program": "test-type-annotation.ts"
                   },
                   "end": {
                     "line": 55,
-                    "column": 117
+                    "column": 117,
+                    "program": "test-type-annotation.ts"
                   }
                 }
               },
@@ -4031,11 +4622,13 @@
               "loc": {
                 "start": {
                   "line": 55,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-annotation.ts"
                 },
                 "end": {
                   "line": 55,
-                  "column": 117
+                  "column": 117,
+                  "program": "test-type-annotation.ts"
                 }
               }
             },
@@ -4043,11 +4636,13 @@
             "loc": {
               "start": {
                 "line": 55,
-                "column": 5
+                "column": 5,
+                "program": "test-type-annotation.ts"
               },
               "end": {
                 "line": 55,
-                "column": 10
+                "column": 10,
+                "program": "test-type-annotation.ts"
               }
             }
           },
@@ -4055,11 +4650,13 @@
           "loc": {
             "start": {
               "line": 55,
-              "column": 5
+              "column": 5,
+              "program": "test-type-annotation.ts"
             },
             "end": {
               "line": 55,
-              "column": 10
+              "column": 10,
+              "program": "test-type-annotation.ts"
             }
           }
         }
@@ -4068,11 +4665,13 @@
       "loc": {
         "start": {
           "line": 55,
-          "column": 1
+          "column": 1,
+          "program": "test-type-annotation.ts"
         },
         "end": {
           "line": 55,
-          "column": 118
+          "column": 118,
+          "program": "test-type-annotation.ts"
         }
       }
     }
@@ -4080,11 +4679,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-type-annotation.ts"
     },
     "end": {
       "line": 55,
-      "column": 118
+      "column": 118,
+      "program": "test-type-annotation.ts"
     }
   }
 }

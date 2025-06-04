@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ namespace ark::es2panda::checker {
 ETSPartialTypeParameter::ETSPartialTypeParameter(ETSTypeParameter *const typeParam, ETSChecker *const checker)
     : Type(TypeFlag::ETS_PARTIAL_TYPE_PARAMETER), checker_(checker), typeParameter_(typeParam)
 {
-    ASSERT(typeParameter_ != nullptr && checker_ != nullptr);
+    ES2PANDA_ASSERT(typeParameter_ != nullptr && checker_ != nullptr);
 }
 
 void ETSPartialTypeParameter::ToString(std::stringstream &ss, bool precise) const
@@ -104,4 +104,11 @@ void ETSPartialTypeParameter::ToDebugInfoType(std::stringstream &ss) const
 {
     checker_->CreatePartialType(GetUnderlying()->GetConstraintType())->ToDebugInfoType(ss);
 }
+
+void ETSPartialTypeParameter::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    relation->CheckVarianceRecursively(GetUnderlying(),
+                                       relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+}
+
 }  // namespace ark::es2panda::checker

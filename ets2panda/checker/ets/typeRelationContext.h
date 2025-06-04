@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,7 @@ class AssignmentContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     AssignmentContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
+                      const lexer::SourcePosition &pos, std::optional<util::DiagnosticWithParams> diag = std::nullopt,
                       TypeRelationFlag flags = TypeRelationFlag::NONE)
     {
         flags_ |= ((flags & TypeRelationFlag::NO_BOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::BOXING;
@@ -37,8 +37,10 @@ public:
         if (target->IsETSArrayType() && node->IsArrayExpression()) {
             assignable_ =
                 ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
+            relation->Result(assignable_);
             return;
         }
+
         // CC-OFFNXT(G.FMT.02) project code style
         flags_ |= flags;
         relation->SetNode(node);
@@ -52,6 +54,11 @@ public:
         relation->SetFlags(flags_);
 
         if (!relation->IsAssignableTo(source, target)) {
+            if (relation->IsLegalBoxedPrimitiveConversion(target, source)) {
+                Type *sourceUnboxedType = etsChecker->MaybeUnboxType(source);
+                relation->GetNode()->AddBoxingUnboxingFlags(etsChecker->GetUnboxingFlag(sourceUnboxedType));
+                relation->GetNode()->AddBoxingUnboxingFlags(etsChecker->GetBoxingFlag(target));
+            }
             if (((flags_ & TypeRelationFlag::UNBOXING) != 0) && !relation->IsTrue() && source->IsETSObjectType() &&
                 !target->IsETSObjectType()) {
                 etsChecker->CheckUnboxedTypesAssignable(relation, source, target);
@@ -62,7 +69,7 @@ public:
         }
 
         if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
-            relation->RaiseError(list, pos);
+            relation->RaiseError(diag->kind, diag->params, pos);
         }
 
         relation->SetNode(nullptr);
@@ -86,7 +93,7 @@ class InvocationContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     InvocationContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
+                      const lexer::SourcePosition &pos, const std::optional<util::DiagnosticWithParams> &diag,
                       TypeRelationFlag initialFlags = TypeRelationFlag::NONE)
     {
         flags_ |=
@@ -113,10 +120,9 @@ public:
         relation->SetFlags(TypeRelationFlag::NONE);
 
         if (!relation->IsTrue()) {
+            invocable_ = false;
             if ((initialFlags & TypeRelationFlag::NO_THROW) == 0) {
-                relation->RaiseError(list, pos);
-                relation->Result(RelationResult::ERROR);
-                invocable_ = false;
+                relation->RaiseError(diag->kind, diag->params, pos);
             }
             return;
         }
@@ -139,7 +145,7 @@ public:
     explicit ConstraintCheckScope(ETSChecker *checker) : checker_(checker), isheld_(true)
     {
         size_t &counter = checker_->ConstraintCheckScopesCount();
-        ASSERT(counter != 0 || checker_->PendingConstraintCheckRecords().empty());
+        ES2PANDA_ASSERT(counter != 0 || checker_->PendingConstraintCheckRecords().empty());
         counter++;
     }
 
@@ -158,7 +164,7 @@ public:
 private:
     bool Unlock()
     {
-        ASSERT(isheld_);
+        ES2PANDA_ASSERT(isheld_);
         isheld_ = false;
         return --checker_->ConstraintCheckScopesCount() == 0;
     }

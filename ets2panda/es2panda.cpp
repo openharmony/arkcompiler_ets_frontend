@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
-#include "es2panda.h"
-
 #include "compiler/core/compilerImpl.h"
-#include "util/options.h"
-
-#include <iostream>
-#include <thread>
+#include "generated/diagnostic.h"
+#include "util/diagnostic.h"
 
 namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
+
+namespace util {
+class Options;
+}  // namespace util
 
 template <class T>
 T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())
@@ -51,8 +51,13 @@ SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m)
 {
 }
 
-SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m)
-    : filePath(fn), fileFolder(DirName(fn)), source(s), resolvedPath(DirName(rp)), isModule(m)
+SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d)
+    : filePath(fn),
+      fileFolder(DirName(fn)),
+      source(s),
+      resolvedPath(DirName(rp)),
+      isModule(m),
+      isDeclForDynamicStaticInterop(d)
 {
 }
 
@@ -70,19 +75,15 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus)
+pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options,
+                                    util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus)
 {
     try {
-        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_});
-    } catch (const class Error &e) {
+        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine});
+    } catch (const util::ThrowableDiagnostic &e) {
         error_ = e;
         return nullptr;
     }
-}
-
-bool Compiler::IsAnyError() const noexcept
-{
-    return compiler_->IsAnyError();
 }
 
 std::string Compiler::GetPhasesList() const
@@ -94,4 +95,6 @@ void Compiler::DumpAsm(const pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);
 }
+
+util::DiagnosticEngine *g_diagnosticEngine = nullptr;
 }  // namespace ark::es2panda

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "async_with_lambda.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "async_with_lambda.ets"
             }
           }
         },
@@ -26,16 +28,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "async_with_lambda.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "async_with_lambda.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "async_with_lambda.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "async_with_lambda.ets"
               }
             }
           },
@@ -125,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "async_with_lambda.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 11
+                  "column": 11,
+                  "program": "async_with_lambda.ets"
                 }
               }
             },
@@ -144,11 +266,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 13
+                  "column": 13,
+                  "program": "async_with_lambda.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 16
+                  "column": 16,
+                  "program": "async_with_lambda.ets"
                 }
               }
             },
@@ -157,11 +281,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "async_with_lambda.ets"
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 11,
+                "program": "async_with_lambda.ets"
               }
             }
           },
@@ -174,11 +300,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "async_with_lambda.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 20
+                  "column": 20,
+                  "program": "async_with_lambda.ets"
                 }
               }
             },
@@ -198,11 +326,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 16
+                      "column": 16,
+                      "program": "async_with_lambda.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 20
+                      "column": 20,
+                      "program": "async_with_lambda.ets"
                     }
                   }
                 },
@@ -220,11 +350,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 28
+                            "column": 28,
+                            "program": "async_with_lambda.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 31
+                            "column": 31,
+                            "program": "async_with_lambda.ets"
                           }
                         }
                       },
@@ -232,22 +364,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 21
+                          "column": 21,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 31
+                          "column": 31,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 21
+                        "column": 21,
+                        "program": "async_with_lambda.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 31
+                        "column": 31,
+                        "program": "async_with_lambda.ets"
                       }
                     }
                   }
@@ -263,11 +399,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 34
+                          "column": 34,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 41
+                          "column": 41,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
@@ -288,33 +426,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 18,
-                                      "column": 42
+                                      "column": 42,
+                                      "program": "async_with_lambda.ets"
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 48
+                                      "column": 48,
+                                      "program": "async_with_lambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 42
+                                    "column": 42,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 50
+                                    "column": 50,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 42
+                                  "column": 42,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 50
+                                  "column": 50,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
@@ -323,11 +467,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 51
+                                  "column": 51,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 55
+                                  "column": 55,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             }
@@ -335,11 +481,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 42
+                              "column": 42,
+                              "program": "async_with_lambda.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 55
+                              "column": 55,
+                              "program": "async_with_lambda.ets"
                             }
                           }
                         }
@@ -347,33 +495,39 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 41
+                          "column": 41,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 56
+                          "column": 56,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 34
+                        "column": 34,
+                        "program": "async_with_lambda.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 58
+                        "column": 58,
+                        "program": "async_with_lambda.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 34
+                      "column": 34,
+                      "program": "async_with_lambda.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 58
+                      "column": 58,
+                      "program": "async_with_lambda.ets"
                     }
                   }
                 },
@@ -393,11 +547,13 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
@@ -405,11 +561,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 14
+                                "column": 14,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
@@ -417,11 +575,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "async_with_lambda.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 14
+                              "column": 14,
+                              "program": "async_with_lambda.ets"
                             }
                           }
                         }
@@ -430,11 +590,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 20
+                          "column": 20,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
@@ -454,22 +616,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 27
+                                    "column": 27,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 27
+                                  "column": 27,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
@@ -477,11 +643,13 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 9
+                                "column": 9,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 15
+                                "column": 15,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
@@ -499,11 +667,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 34
+                                    "column": 34,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
@@ -519,22 +689,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 21,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 21,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 15
+                                        "column": 15,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -547,22 +721,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 15
+                                        "column": 15,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -575,22 +753,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 23,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 23,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 23,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 23,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -606,11 +788,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 24,
-                                              "column": 13
+                                              "column": 13,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 24,
-                                              "column": 14
+                                              "column": 14,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
@@ -620,22 +804,26 @@
                                           "loc": {
                                             "start": {
                                               "line": 24,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 24,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 24,
-                                            "column": 13
+                                            "column": 13,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 24,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -644,11 +832,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 24,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 19
+                                        "column": 19,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   }
@@ -656,44 +846,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 42
+                                    "column": 42,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 30
+                                "column": 30,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 6
+                                "column": 6,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 9
+                              "column": 9,
+                              "program": "async_with_lambda.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 6
+                              "column": 6,
+                              "program": "async_with_lambda.ets"
                             }
                           }
                         }
@@ -702,11 +900,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 6
+                          "column": 6,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
@@ -732,11 +932,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 36
+                                        "column": 36,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -757,33 +959,39 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 26,
-                                                    "column": 37
+                                                    "column": 37,
+                                                    "program": "async_with_lambda.ets"
                                                   },
                                                   "end": {
                                                     "line": 26,
-                                                    "column": 43
+                                                    "column": 43,
+                                                    "program": "async_with_lambda.ets"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 26,
-                                                  "column": 37
+                                                  "column": 37,
+                                                  "program": "async_with_lambda.ets"
                                                 },
                                                 "end": {
                                                   "line": 26,
-                                                  "column": 45
+                                                  "column": 45,
+                                                  "program": "async_with_lambda.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 26,
-                                                "column": 37
+                                                "column": 37,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 45
+                                                "column": 45,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
@@ -792,11 +1000,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 26,
-                                                "column": 46
+                                                "column": 46,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 50
+                                                "column": 50,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           }
@@ -804,11 +1014,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 26,
-                                            "column": 37
+                                            "column": 37,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 26,
-                                            "column": 50
+                                            "column": 50,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -816,44 +1028,52 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 36
+                                        "column": 36,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 51
+                                        "column": 51,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 26,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "async_with_lambda.ets"
                                     },
                                     "end": {
                                       "line": 26,
-                                      "column": 53
+                                      "column": 53,
+                                      "program": "async_with_lambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 53
+                                    "column": 53,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 53
+                                  "column": 53,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
@@ -861,11 +1081,13 @@
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 9
+                                "column": 9,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 21
+                                "column": 21,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
@@ -889,11 +1111,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 64
+                                        "column": 64,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 71
+                                        "column": 71,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -914,33 +1138,39 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 26,
-                                                    "column": 72
+                                                    "column": 72,
+                                                    "program": "async_with_lambda.ets"
                                                   },
                                                   "end": {
                                                     "line": 26,
-                                                    "column": 78
+                                                    "column": 78,
+                                                    "program": "async_with_lambda.ets"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 26,
-                                                  "column": 72
+                                                  "column": 72,
+                                                  "program": "async_with_lambda.ets"
                                                 },
                                                 "end": {
                                                   "line": 26,
-                                                  "column": 80
+                                                  "column": 80,
+                                                  "program": "async_with_lambda.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 26,
-                                                "column": 72
+                                                "column": 72,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 80
+                                                "column": 80,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
@@ -949,11 +1179,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 26,
-                                                "column": 81
+                                                "column": 81,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 85
+                                                "column": 85,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           }
@@ -961,11 +1193,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 26,
-                                            "column": 72
+                                            "column": 72,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 26,
-                                            "column": 85
+                                            "column": 85,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -973,33 +1207,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 71
+                                        "column": 71,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 86
+                                        "column": 86,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 26,
-                                      "column": 64
+                                      "column": 64,
+                                      "program": "async_with_lambda.ets"
                                     },
                                     "end": {
                                       "line": 26,
-                                      "column": 89
+                                      "column": 89,
+                                      "program": "async_with_lambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 64
+                                    "column": 64,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 89
+                                    "column": 89,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
@@ -1015,22 +1255,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 27,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 15
+                                        "column": 15,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1043,22 +1287,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 28,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 28,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 28,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 28,
-                                        "column": 15
+                                        "column": 15,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1071,22 +1319,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 29,
-                                          "column": 9
+                                          "column": 9,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 29,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 29,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 29,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1102,11 +1354,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 30,
-                                              "column": 13
+                                              "column": 13,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 30,
-                                              "column": 14
+                                              "column": 14,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
@@ -1116,22 +1370,26 @@
                                           "loc": {
                                             "start": {
                                               "line": 30,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 30,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 30,
-                                            "column": 13
+                                            "column": 13,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 30,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -1140,11 +1398,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 30,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 30,
-                                        "column": 19
+                                        "column": 19,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1156,22 +1416,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 31,
-                                          "column": 16
+                                          "column": 16,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 31,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   }
@@ -1179,44 +1443,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 90
+                                    "column": 90,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 32,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 60
+                                  "column": 60,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 60
+                                "column": 60,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 6
+                                "column": 6,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 9
+                              "column": 9,
+                              "program": "async_with_lambda.ets"
                             },
                             "end": {
                               "line": 32,
-                              "column": 6
+                              "column": 6,
+                              "program": "async_with_lambda.ets"
                             }
                           }
                         }
@@ -1225,11 +1497,13 @@
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 5
+                          "column": 5,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 32,
-                          "column": 6
+                          "column": 6,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
@@ -1255,11 +1529,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 28
+                                        "column": 28,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 35
+                                        "column": 35,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1277,33 +1553,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 33,
-                                                "column": 36
+                                                "column": 36,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 33,
-                                                "column": 42
+                                                "column": 42,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 33,
-                                              "column": 36
+                                              "column": 36,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 33,
-                                              "column": 43
+                                              "column": 43,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 33,
-                                            "column": 36
+                                            "column": 36,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 33,
-                                            "column": 43
+                                            "column": 43,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -1311,44 +1593,52 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 35
+                                        "column": 35,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 43
+                                        "column": 43,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "async_with_lambda.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 45
+                                      "column": 45,
+                                      "program": "async_with_lambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 28
+                                    "column": 28,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 45
+                                    "column": 45,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 45
+                                  "column": 45,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
@@ -1356,11 +1646,13 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 9
+                                "column": 9,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 20
+                                "column": 20,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
@@ -1384,11 +1676,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 56
+                                        "column": 56,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 63
+                                        "column": 63,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
@@ -1406,33 +1700,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 33,
-                                                "column": 64
+                                                "column": 64,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 33,
-                                                "column": 70
+                                                "column": 70,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 33,
-                                              "column": 64
+                                              "column": 64,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 33,
-                                              "column": 71
+                                              "column": 71,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 33,
-                                            "column": 64
+                                            "column": 64,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 33,
-                                            "column": 71
+                                            "column": 71,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       }
@@ -1440,33 +1740,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 63
+                                        "column": 63,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 71
+                                        "column": 71,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 56
+                                      "column": 56,
+                                      "program": "async_with_lambda.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 74
+                                      "column": 74,
+                                      "program": "async_with_lambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 56
+                                    "column": 56,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 74
+                                    "column": 74,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
@@ -1488,11 +1794,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 34,
-                                                "column": 20
+                                                "column": 20,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 34,
-                                                "column": 27
+                                                "column": 27,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
@@ -1510,33 +1818,39 @@
                                                     "loc": {
                                                       "start": {
                                                         "line": 34,
-                                                        "column": 28
+                                                        "column": 28,
+                                                        "program": "async_with_lambda.ets"
                                                       },
                                                       "end": {
                                                         "line": 34,
-                                                        "column": 34
+                                                        "column": 34,
+                                                        "program": "async_with_lambda.ets"
                                                       }
                                                     }
                                                   },
                                                   "loc": {
                                                     "start": {
                                                       "line": 34,
-                                                      "column": 28
+                                                      "column": 28,
+                                                      "program": "async_with_lambda.ets"
                                                     },
                                                     "end": {
                                                       "line": 34,
-                                                      "column": 35
+                                                      "column": 35,
+                                                      "program": "async_with_lambda.ets"
                                                     }
                                                   }
                                                 },
                                                 "loc": {
                                                   "start": {
                                                     "line": 34,
-                                                    "column": 28
+                                                    "column": 28,
+                                                    "program": "async_with_lambda.ets"
                                                   },
                                                   "end": {
                                                     "line": 34,
-                                                    "column": 35
+                                                    "column": 35,
+                                                    "program": "async_with_lambda.ets"
                                                   }
                                                 }
                                               }
@@ -1544,33 +1858,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 34,
-                                                "column": 27
+                                                "column": 27,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 34,
-                                                "column": 35
+                                                "column": 35,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 34,
-                                              "column": 20
+                                              "column": 20,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 34,
-                                              "column": 36
+                                              "column": 36,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 34,
-                                            "column": 20
+                                            "column": 20,
+                                            "program": "async_with_lambda.ets"
                                           },
                                           "end": {
                                             "line": 34,
-                                            "column": 36
+                                            "column": 36,
+                                            "program": "async_with_lambda.ets"
                                           }
                                         }
                                       },
@@ -1608,33 +1928,39 @@
                                                                 "loc": {
                                                                   "start": {
                                                                     "line": 34,
-                                                                    "column": 54
+                                                                    "column": 54,
+                                                                    "program": "async_with_lambda.ets"
                                                                   },
                                                                   "end": {
                                                                     "line": 34,
-                                                                    "column": 60
+                                                                    "column": 60,
+                                                                    "program": "async_with_lambda.ets"
                                                                   }
                                                                 }
                                                               },
                                                               "loc": {
                                                                 "start": {
                                                                   "line": 34,
-                                                                  "column": 54
+                                                                  "column": 54,
+                                                                  "program": "async_with_lambda.ets"
                                                                 },
                                                                 "end": {
                                                                   "line": 34,
-                                                                  "column": 61
+                                                                  "column": 61,
+                                                                  "program": "async_with_lambda.ets"
                                                                 }
                                                               }
                                                             },
                                                             "loc": {
                                                               "start": {
                                                                 "line": 34,
-                                                                "column": 54
+                                                                "column": 54,
+                                                                "program": "async_with_lambda.ets"
                                                               },
                                                               "end": {
                                                                 "line": 34,
-                                                                "column": 61
+                                                                "column": 61,
+                                                                "program": "async_with_lambda.ets"
                                                               }
                                                             }
                                                           },
@@ -1642,22 +1968,26 @@
                                                           "loc": {
                                                             "start": {
                                                               "line": 34,
-                                                              "column": 47
+                                                              "column": 47,
+                                                              "program": "async_with_lambda.ets"
                                                             },
                                                             "end": {
                                                               "line": 34,
-                                                              "column": 61
+                                                              "column": 61,
+                                                              "program": "async_with_lambda.ets"
                                                             }
                                                           }
                                                         },
                                                         "loc": {
                                                           "start": {
                                                             "line": 34,
-                                                            "column": 47
+                                                            "column": 47,
+                                                            "program": "async_with_lambda.ets"
                                                           },
                                                           "end": {
                                                             "line": 34,
-                                                            "column": 61
+                                                            "column": 61,
+                                                            "program": "async_with_lambda.ets"
                                                           }
                                                         }
                                                       }
@@ -1667,22 +1997,26 @@
                                                       "loc": {
                                                         "start": {
                                                           "line": 34,
-                                                          "column": 65
+                                                          "column": 65,
+                                                          "program": "async_with_lambda.ets"
                                                         },
                                                         "end": {
                                                           "line": 34,
-                                                          "column": 69
+                                                          "column": 69,
+                                                          "program": "async_with_lambda.ets"
                                                         }
                                                       }
                                                     },
                                                     "loc": {
                                                       "start": {
                                                         "line": 34,
-                                                        "column": 46
+                                                        "column": 46,
+                                                        "program": "async_with_lambda.ets"
                                                       },
                                                       "end": {
                                                         "line": 34,
-                                                        "column": 69
+                                                        "column": 69,
+                                                        "program": "async_with_lambda.ets"
                                                       }
                                                     }
                                                   },
@@ -1690,22 +2024,26 @@
                                                   "loc": {
                                                     "start": {
                                                       "line": 34,
-                                                      "column": 37
+                                                      "column": 37,
+                                                      "program": "async_with_lambda.ets"
                                                     },
                                                     "end": {
                                                       "line": 34,
-                                                      "column": 69
+                                                      "column": 69,
+                                                      "program": "async_with_lambda.ets"
                                                     }
                                                   }
                                                 },
                                                 "loc": {
                                                   "start": {
                                                     "line": 34,
-                                                    "column": 37
+                                                    "column": 37,
+                                                    "program": "async_with_lambda.ets"
                                                   },
                                                   "end": {
                                                     "line": 34,
-                                                    "column": 69
+                                                    "column": 69,
+                                                    "program": "async_with_lambda.ets"
                                                   }
                                                 }
                                               }
@@ -1715,11 +2053,13 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 34,
-                                                  "column": 72
+                                                  "column": 72,
+                                                  "program": "async_with_lambda.ets"
                                                 },
                                                 "end": {
                                                   "line": 34,
-                                                  "column": 76
+                                                  "column": 76,
+                                                  "program": "async_with_lambda.ets"
                                                 }
                                               }
                                             },
@@ -1737,11 +2077,13 @@
                                                       "loc": {
                                                         "start": {
                                                           "line": 35,
-                                                          "column": 13
+                                                          "column": 13,
+                                                          "program": "async_with_lambda.ets"
                                                         },
                                                         "end": {
                                                           "line": 35,
-                                                          "column": 20
+                                                          "column": 20,
+                                                          "program": "async_with_lambda.ets"
                                                         }
                                                       }
                                                     },
@@ -1759,33 +2101,39 @@
                                                               "loc": {
                                                                 "start": {
                                                                   "line": 35,
-                                                                  "column": 25
+                                                                  "column": 25,
+                                                                  "program": "async_with_lambda.ets"
                                                                 },
                                                                 "end": {
                                                                   "line": 35,
-                                                                  "column": 31
+                                                                  "column": 31,
+                                                                  "program": "async_with_lambda.ets"
                                                                 }
                                                               }
                                                             },
                                                             "loc": {
                                                               "start": {
                                                                 "line": 35,
-                                                                "column": 25
+                                                                "column": 25,
+                                                                "program": "async_with_lambda.ets"
                                                               },
                                                               "end": {
                                                                 "line": 35,
-                                                                "column": 32
+                                                                "column": 32,
+                                                                "program": "async_with_lambda.ets"
                                                               }
                                                             }
                                                           },
                                                           "loc": {
                                                             "start": {
                                                               "line": 35,
-                                                              "column": 25
+                                                              "column": 25,
+                                                              "program": "async_with_lambda.ets"
                                                             },
                                                             "end": {
                                                               "line": 35,
-                                                              "column": 32
+                                                              "column": 32,
+                                                              "program": "async_with_lambda.ets"
                                                             }
                                                           }
                                                         },
@@ -1793,11 +2141,13 @@
                                                         "loc": {
                                                           "start": {
                                                             "line": 35,
-                                                            "column": 21
+                                                            "column": 21,
+                                                            "program": "async_with_lambda.ets"
                                                           },
                                                           "end": {
                                                             "line": 35,
-                                                            "column": 34
+                                                            "column": 34,
+                                                            "program": "async_with_lambda.ets"
                                                           }
                                                         }
                                                       }
@@ -1806,22 +2156,26 @@
                                                     "loc": {
                                                       "start": {
                                                         "line": 35,
-                                                        "column": 13
+                                                        "column": 13,
+                                                        "program": "async_with_lambda.ets"
                                                       },
                                                       "end": {
                                                         "line": 35,
-                                                        "column": 34
+                                                        "column": 34,
+                                                        "program": "async_with_lambda.ets"
                                                       }
                                                     }
                                                   },
                                                   "loc": {
                                                     "start": {
                                                       "line": 35,
-                                                      "column": 13
+                                                      "column": 13,
+                                                      "program": "async_with_lambda.ets"
                                                     },
                                                     "end": {
                                                       "line": 35,
-                                                      "column": 35
+                                                      "column": 35,
+                                                      "program": "async_with_lambda.ets"
                                                     }
                                                   }
                                                 }
@@ -1829,33 +2183,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 34,
-                                                  "column": 80
+                                                  "column": 80,
+                                                  "program": "async_with_lambda.ets"
                                                 },
                                                 "end": {
                                                   "line": 36,
-                                                  "column": 10
+                                                  "column": 10,
+                                                  "program": "async_with_lambda.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 34,
-                                                "column": 36
+                                                "column": 36,
+                                                "program": "async_with_lambda.ets"
                                               },
                                               "end": {
                                                 "line": 36,
-                                                "column": 10
+                                                "column": 10,
+                                                "program": "async_with_lambda.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 34,
-                                              "column": 36
+                                              "column": 36,
+                                              "program": "async_with_lambda.ets"
                                             },
                                             "end": {
                                               "line": 36,
-                                              "column": 10
+                                              "column": 10,
+                                              "program": "async_with_lambda.ets"
                                             }
                                           }
                                         }
@@ -1863,22 +2223,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 34,
-                                          "column": 16
+                                          "column": 16,
+                                          "program": "async_with_lambda.ets"
                                         },
                                         "end": {
                                           "line": 36,
-                                          "column": 12
+                                          "column": 12,
+                                          "program": "async_with_lambda.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 34,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "async_with_lambda.ets"
                                       },
                                       "end": {
                                         "line": 36,
-                                        "column": 12
+                                        "column": 12,
+                                        "program": "async_with_lambda.ets"
                                       }
                                     }
                                   }
@@ -1886,44 +2250,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 75
+                                    "column": 75,
+                                    "program": "async_with_lambda.ets"
                                   },
                                   "end": {
                                     "line": 37,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "async_with_lambda.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 52
+                                  "column": 52,
+                                  "program": "async_with_lambda.ets"
                                 },
                                 "end": {
                                   "line": 37,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "async_with_lambda.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 52
+                                "column": 52,
+                                "program": "async_with_lambda.ets"
                               },
                               "end": {
                                 "line": 37,
-                                "column": 6
+                                "column": 6,
+                                "program": "async_with_lambda.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 9
+                              "column": 9,
+                              "program": "async_with_lambda.ets"
                             },
                             "end": {
                               "line": 37,
-                              "column": 6
+                              "column": 6,
+                              "program": "async_with_lambda.ets"
                             }
                           }
                         }
@@ -1932,11 +2304,13 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 5
+                          "column": 5,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 37,
-                          "column": 6
+                          "column": 6,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     },
@@ -1948,22 +2322,26 @@
                         "loc": {
                           "start": {
                             "line": 38,
-                            "column": 12
+                            "column": 12,
+                            "program": "async_with_lambda.ets"
                           },
                           "end": {
                             "line": 38,
-                            "column": 16
+                            "column": 16,
+                            "program": "async_with_lambda.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 38,
-                          "column": 5
+                          "column": 5,
+                          "program": "async_with_lambda.ets"
                         },
                         "end": {
                           "line": 38,
-                          "column": 17
+                          "column": 17,
+                          "program": "async_with_lambda.ets"
                         }
                       }
                     }
@@ -1971,33 +2349,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 57
+                      "column": 57,
+                      "program": "async_with_lambda.ets"
                     },
                     "end": {
                       "line": 39,
-                      "column": 2
+                      "column": 2,
+                      "program": "async_with_lambda.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 16
+                    "column": 16,
+                    "program": "async_with_lambda.ets"
                   },
                   "end": {
                     "line": 39,
-                    "column": 2
+                    "column": 2,
+                    "program": "async_with_lambda.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "async_with_lambda.ets"
                 },
                 "end": {
                   "line": 39,
-                  "column": 2
+                  "column": 2,
+                  "program": "async_with_lambda.ets"
                 }
               }
             },
@@ -2006,11 +2390,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "async_with_lambda.ets"
               },
               "end": {
                 "line": 39,
-                "column": 2
+                "column": 2,
+                "program": "async_with_lambda.ets"
               }
             }
           }
@@ -2018,22 +2404,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "async_with_lambda.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "async_with_lambda.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "async_with_lambda.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "async_with_lambda.ets"
         }
       }
     }
@@ -2041,11 +2431,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "async_with_lambda.ets"
     },
     "end": {
       "line": 40,
-      "column": 1
+      "column": 1,
+      "program": "async_with_lambda.ets"
     }
   }
 }

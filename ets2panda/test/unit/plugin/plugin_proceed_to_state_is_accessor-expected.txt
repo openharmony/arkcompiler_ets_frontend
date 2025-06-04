@@ -1,0 +1,17 @@
+LOAD SUCCESS
+PROCEED TO PARSE SUCCESS
+SETTER: 
+public set member(value: number) {
+  (this).m = value;
+}
+
+GETTER: 
+public get member() {
+  return (this).m;
+}
+
+PROCEED TO BOUND SUCCESS
+PROCEED TO CHECKED SUCCESS
+PROCEED TO LOWERED SUCCESS
+PROCEED TO ASM SUCCESS
+PROCEED TO BIN SUCCESS

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,9 +14,11 @@
  */
 
 
-function f{}
+function f/* @@ label */{/* @@ label1 */}
 
-/* @@? 17:11 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 17:12 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 23:1 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected '('. */
+/* @@@ label1 Error SyntaxError: Unexpected token. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected '{'. */
+/* @@@ label2 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@ label2 */

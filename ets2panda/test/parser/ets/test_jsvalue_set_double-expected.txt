@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_jsvalue_set_double.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_jsvalue_set_double.ets"
             }
           }
         },
@@ -26,16 +28,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "test_jsvalue_set_double.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "test_jsvalue_set_double.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_set_double.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_set_double.ets"
               }
             }
           },
@@ -125,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "test_jsvalue_set_double.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 12
+                  "column": 12,
+                  "program": "test_jsvalue_set_double.ets"
                 }
               }
             },
@@ -149,11 +271,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 12
+                      "column": 12,
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
@@ -166,11 +290,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 16
+                      "column": 16,
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 20
+                      "column": 20,
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
@@ -196,33 +322,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 12
+                                      "column": 12,
+                                      "program": "test_jsvalue_set_double.ets"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "test_jsvalue_set_double.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 12
+                                    "column": 12,
+                                    "program": "test_jsvalue_set_double.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "test_jsvalue_set_double.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "test_jsvalue_set_double.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "test_jsvalue_set_double.ets"
                                 }
                               }
                             },
@@ -230,11 +362,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "test_jsvalue_set_double.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 10
+                                "column": 10,
+                                "program": "test_jsvalue_set_double.ets"
                               }
                             }
                           },
@@ -242,11 +376,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 10
+                              "column": 10,
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         }
@@ -255,11 +391,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "test_jsvalue_set_double.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 20
+                          "column": 20,
+                          "program": "test_jsvalue_set_double.ets"
                         }
                       }
                     },
@@ -275,11 +413,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 5
+                              "column": 5,
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 6
+                              "column": 6,
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         },
@@ -289,33 +429,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 9
+                              "column": 9,
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 14
+                              "column": 14,
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 5
+                            "column": 5,
+                            "program": "test_jsvalue_set_double.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 14
+                            "column": 14,
+                            "program": "test_jsvalue_set_double.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 5
+                          "column": 5,
+                          "program": "test_jsvalue_set_double.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 15
+                          "column": 15,
+                          "program": "test_jsvalue_set_double.ets"
                         }
                       }
                     }
@@ -323,33 +469,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 21
+                      "column": 21,
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 2
+                      "column": 2,
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "test_jsvalue_set_double.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 2
+                    "column": 2,
+                    "program": "test_jsvalue_set_double.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "test_jsvalue_set_double.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 2
+                  "column": 2,
+                  "program": "test_jsvalue_set_double.ets"
                 }
               }
             },
@@ -358,11 +510,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_set_double.ets"
               },
               "end": {
                 "line": 19,
-                "column": 2
+                "column": 2,
+                "program": "test_jsvalue_set_double.ets"
               }
             }
           }
@@ -370,22 +524,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_jsvalue_set_double.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_jsvalue_set_double.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_jsvalue_set_double.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_jsvalue_set_double.ets"
         }
       }
     }
@@ -393,11 +551,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_jsvalue_set_double.ets"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "test_jsvalue_set_double.ets"
     }
   }
 }

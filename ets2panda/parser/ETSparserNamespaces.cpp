@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,107 +14,101 @@
  */
 
 #include "ETSparser.h"
-#include "ETSNolintParser.h"
-#include <utility>
-
-#include "macros.h"
-#include "parser/parserFlags.h"
-#include "parser/parserStatusContext.h"
-#include "util/helpers.h"
-#include "util/language.h"
-#include "utils/arena_containers.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
-#include "lexer/ETSLexer.h"
 #include "ir/astNode.h"
-
-#include "ir/statements/namespaceDeclaration.h"
+#include "ir/ets/etsModule.h"
+#include "utils/arena_containers.h"
+#include "util/errorRecovery.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
-class FunctionContext;
 
 using namespace std::literals::string_literals;
 
-ir::NamespaceDeclaration *ETSParser::ParseNamespaceDeclaration(ir::ModifierFlags flags)
+ir::ETSModule *ETSParser::ParseNamespaceStatement(ir::ModifierFlags memberModifiers)
+{
+    auto modifiers = ir::ModifierFlags::NONE;
+    if (((memberModifiers & ir::ModifierFlags::EXPORT) != 0)) {
+        modifiers |= ir::ModifierFlags::EXPORT;
+    }
+    if (((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0)) {
+        modifiers |= ir::ModifierFlags::DEFAULT_EXPORT;
+    }
+    if ((memberModifiers & ir::ModifierFlags::DECLARE) != 0 || InAmbientContext()) {
+        modifiers |= ir::ModifierFlags::DECLARE;
+        GetContext().Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
+    }
+    GetContext().Status() |= ParserStatus::IN_NAMESPACE;
+    IncrementNamespaceNestedRank();
+
+    ir::ETSModule *result = ParseNamespace(modifiers);
+
+    DecrementNamespaceNestedRank();
+    if (GetNamespaceNestedRank() == 0) {
+        GetContext().Status() &= ~ParserStatus::IN_NAMESPACE;
+    }
+    if ((memberModifiers & ir::ModifierFlags::DECLARE) != 0) {
+        GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
+    }
+    return result;
+}
+
+ir::ETSModule *ETSParser::ParseNamespace(ir::ModifierFlags flags)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
-        LogSyntaxError("Namespace not enabled in here.");
+        LogError(diagnostic::NAMESPACE_ONLY_TOP_OR_IN_NAMESPACE);
     }
-
-    const lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    auto modifiers = ir::ClassDefinitionModifiers::NONE;
-    if (IsExternal()) {
-        modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
-    }
-
-    ir::NamespaceDefinition *namespaceDefinition = ParseNamespaceDefinition(modifiers, flags);
-
-    auto *namespaceDecl = AllocNode<ir::NamespaceDeclaration>(namespaceDefinition);
-
-    namespaceDecl->SetRange({startLoc, Lexer()->GetToken().End()});
-    return namespaceDecl;
+    auto start = Lexer()->GetToken().Start();
+    ir::ETSModule *ns = ParseNamespaceImp(flags);
+    ns->SetRange({start, Lexer()->GetToken().Start()});
+    return ns;
 }
 
-ir::NamespaceDefinition *ETSParser::ParseNamespaceDefinition(ir::ClassDefinitionModifiers modifiers,
-                                                             ir::ModifierFlags flags)
+ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
 {
     Lexer()->NextToken();
-    flags |= ir::ModifierFlags::DECLARE;
-    ir::Identifier *identNode = ParseClassIdent(modifiers);
-
-    ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
-    ir::MethodDefinition *ctor = nullptr;
-    lexer::SourceRange bodyRange;
-
-    std::tie(ctor, properties, bodyRange) = ParseNamespaceBody(modifiers, flags);
-
-    auto def =
-        AllocNode<ir::NamespaceDefinition>(identNode, std::move(properties), ctor, flags, GetContext().GetLanguage());
-    def->SetRange(bodyRange);
-    return def;
-}
-
-ETSParser::NamespaceBody ETSParser::ParseNamespaceBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
-{
-    auto savedCtx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&GetContext());
-
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-
-    ir::MethodDefinition *ctor = nullptr;
-    ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
-
-    SavedClassPrivateContext classContext(this);
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
-        Lexer()->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
-        properties = std::move(ParseAstNodesArrayFormatPlaceholder());
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            LogSyntaxError("Expected a '}'");
-            UNREACHABLE();
+    auto *result = AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()),
+                                            ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, globalProgram_);
+    ir::ETSModule *parent = result;
+    ir::ETSModule *child = nullptr;
+    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+        Lexer()->NextToken();
+        auto start = Lexer()->GetToken().Start();
+        child = AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()),
+                                         ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, globalProgram_);
+        child->SetParent(parent);
+        child->SetRange({start, Lexer()->GetToken().Start()});
+        child->AddModifier(ir::ModifierFlags::EXPORT);
+        if ((flags & ir::ModifierFlags::DECLARE) != 0) {
+            child->AddModifier(ir::ModifierFlags::DECLARE);
         }
+        parent->Statements().emplace_back(child);
+        parent = child;
+    }
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
+        if (Lexer()->GetToken().Type() == lexer::TokenType::EOS) {
+            LogError(diagnostic::UNEXPECTED_TOKEN);
+            break;
+        }
+        if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SEMI_COLON)) {
+            continue;
+        }
+        auto st = ParseTopLevelStatement();
+        statements.emplace_back(st);
+    }
+    Lexer()->NextToken();
+    if (child != nullptr) {
+        child->SetNamespaceChainLastNode();
+        child->SetStatements(std::move(statements));
     } else {
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-                Lexer()->NextToken();
-                continue;
-            }
-
-            ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
-
-            if (CheckClassElement(property, ctor, properties)) {
-                continue;
-            }
-
-            properties.push_back(property);
-        }
+        result->SetNamespaceChainLastNode();
+        result->SetStatements(std::move(statements));
     }
-
-    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
-    Lexer()->NextToken();
-
-    return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
+    result->AddModifier(flags);
+    return result;
 }
 
 }  // namespace ark::es2panda::parser

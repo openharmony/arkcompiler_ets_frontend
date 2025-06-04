@@ -18,13 +18,13 @@
 
 namespace test::utils {
 
-std::string PandaExecutablePathGetter::Get() const
+const std::array<const char *, 1> &PandaExecutablePathGetter::Get()
 {
 #ifdef BUILD_FOLDER
-    return BUILD_FOLDER + std::string("/bin/es2panda test");
+    static constexpr std::array<const char *, 1> ARGS = {BUILD_FOLDER "/bin/es2panda"};
+    return ARGS;
 #else
-    ASSERT_PRINT(false, "BUILD FOLDER not set");
-    return std::string {};
+    LOG(FATAL, ES2PANDA) << "BUILD FOLDER not set";
 #endif
 }
 

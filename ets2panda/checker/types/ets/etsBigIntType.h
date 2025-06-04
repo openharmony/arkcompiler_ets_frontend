@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,25 +22,25 @@ namespace ark::es2panda::checker {
 class ETSBigIntType : public ETSObjectType {
 public:
     explicit ETSBigIntType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super)
-        : ETSObjectType(allocator,
+        : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_BIGINT, nullptr,
                         ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER)
     {
         SetSuperType(super);
-        SetAssemblerName(compiler::Signatures::BUILTIN_BIGINT);
     }
 
     explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
                            util::StringView value)
-        : ETSObjectType(allocator,
-                        ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER,
-                        relation),
+        : ETSObjectType(
+              allocator, "", compiler::Signatures::BUILTIN_BIGINT,
+              std::make_tuple(nullptr,
+                              ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER,
+                              relation)),
           value_(value)
     {
         SetSuperType(super);
         AddTypeFlag(TypeFlag::CONSTANT);
         AddTypeFlag(TypeFlag::BIGINT_LITERAL);
         variable_ = super->Variable();
-        SetAssemblerName(compiler::Signatures::BUILTIN_BIGINT);
     }
 
     void Identical(TypeRelation *relation, Type *other) override;

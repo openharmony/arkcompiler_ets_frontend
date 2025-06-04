@@ -1,0 +1,102 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ExportNamedDeclaration",
+      "declaration": {
+        "type": "FunctionDeclaration",
+        "function": {
+          "type": "ScriptFunction",
+          "id": {
+            "type": "Identifier",
+            "name": "TestFunction",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 17
+              },
+              "end": {
+                "line": 16,
+                "column": 29
+              }
+            }
+          },
+          "generator": false,
+          "async": false,
+          "expression": false,
+          "params": [],
+          "returnType": {
+            "type": "TSVoidKeyword",
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 33
+              },
+              "end": {
+                "line": 16,
+                "column": 37
+              }
+            }
+          },
+          "body": {
+            "type": "BlockStatement",
+            "statements": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 38
+              },
+              "end": {
+                "line": 16,
+                "column": 40
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 8
+            },
+            "end": {
+              "line": 16,
+              "column": 40
+            }
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 8
+          },
+          "end": {
+            "line": 16,
+            "column": 40
+          }
+        }
+      },
+      "source": null,
+      "specifiers": [],
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 16,
+          "column": 40
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 17,
+      "column": 1
+    }
+  }
+}

@@ -115,15 +115,8 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
     return newClassInstExpr;
 }
 
-bool StringConstructorLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool StringConstructorLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {

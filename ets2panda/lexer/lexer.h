@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +28,7 @@ class ETSNolintParser;
 
 namespace ark::es2panda::lexer {
 class Keywords;
+class KeywordsUtil;
 
 using ENUMBITOPS_OPERATORS;
 
@@ -114,7 +115,8 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine,
+                   bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -126,6 +128,7 @@ public:
     Token &GetToken();
     const Token &GetToken() const;
     size_t Line() const;
+    const parser::Program *GetProgram() const;
 
     bool TryEatTokenType(lexer::TokenType type)
     {
@@ -137,9 +140,19 @@ public:
         return false;
     }
 
-    const util::ErrorLogger *ErrorLogger()
+    bool TryEatTokenFromKeywordType(lexer::TokenType type)
     {
-        return errorLogger_;
+        auto token = GetToken();
+        if (token.KeywordType() == type) {
+            NextToken();
+            return true;
+        }
+        return false;
+    }
+
+    util::DiagnosticEngine &DiagnosticEngine()
+    {
+        return diagnosticEngine_;
     }
 
     std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
@@ -176,11 +189,12 @@ public:
     std::tuple<bool, bool, LexerTemplateString> ScanTemplateStringCpHelper(char32_t cp,
                                                                            LexerTemplateString templateStr);
     LexerTemplateString ScanTemplateString();
+    util::StringView ScanMultilineString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
     void LogUnexpectedStrictModeReservedKeyword() const
     {
-        LogSyntaxError("Unexpected strict mode reserved keyword");
+        LogError(diagnostic::UNEXPECTED_STRICT_MODE_RESERVED_KEYWORD);
     }
 
     enum class ConversionResult : uint8_t {
@@ -235,6 +249,11 @@ public:
 
     util::StringView SourceView(size_t begin, size_t end) const;
 
+    lexer::SourcePosition GetPositionForDiagnostic() const
+    {
+        return GetToken().Start();
+    }
+
 protected:
     void NextToken(Keywords *kws);
     ArenaAllocator *Allocator();
@@ -242,9 +261,12 @@ protected:
     bool ScanRegExpPattern();
     RegExpFlags ScanRegExpFlags();
 
-    void LogSyntaxError(std::string_view const errorMessage) const;
-    void LogSyntaxError(std::string_view const errorMessage, const lexer::SourcePosition &pos) const;
     void LogUnexpectedToken(lexer::TokenType const tokenType) const;
+
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {}) const;
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos) const;
 
     void SetTokenStart();
     void SetTokenEnd();
@@ -279,7 +301,7 @@ protected:
     void ScanMinusPunctuator();
     void ScanSlashPunctuator();
     void ScanPercentPunctuator();
-    void ScanDotPunctuator();
+    void ScanDotPunctuator(KeywordsUtil &kwu);
     void ScanColonPunctuator();
     virtual bool ScanDollarPunctuator();
     void ScanAtPunctuator();
@@ -321,6 +343,7 @@ protected:
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
+    virtual void CheckNumberLiteralEndForIdentifier();
     void CheckOctal();
 
     inline static uint32_t HexValue(char32_t ch);
@@ -343,7 +366,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
-    util::ErrorLogger *const errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 
 class TemplateLiteralParserContext {
@@ -389,13 +412,13 @@ void Lexer::ScanString()
         const char32_t cp = Iterator().Peek();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
-                LogSyntaxError("Unterminated string");
+                LogError(diagnostic::UNTERMINATED_STRING);
                 break;
             }
             case LEX_CHAR_CR:
             case LEX_CHAR_LF: {
                 if constexpr (END != LEX_CHAR_BACK_TICK) {
-                    LogSyntaxError("Newline is not allowed in strings");
+                    LogError(diagnostic::NEWLINE_NOT_ALLOWED_IN_STRING);
                     break;
                 }
                 HandleNewlineHelper(&str, &escapeEnd);
@@ -449,7 +472,7 @@ char32_t Lexer::ScanHexEscape()
         Iterator().Forward(1);
 
         if (!IsHexDigit(cp)) {
-            LogSyntaxError("Invalid unicode escape sequence");
+            LogError(diagnostic::INVALID_UNICODE_ESCAPE);
             return UNICODE_INVALID_CP;
         }
 
@@ -528,7 +551,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
     auto cp = Iterator().Peek();
     if (!RANGE_CHECK(cp)) {
-        LogSyntaxError("Invalid digit");
+        LogError(diagnostic::INVALID_DIGIT);
     }
 
     bool allowNumericOnNext = true;
@@ -549,7 +572,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (cp == LEX_CHAR_UNDERSCORE) {
             if (!allowNumericSeparator || !allowNumericOnNext) {
-                LogSyntaxError("Invalid numeric separator");
+                LogError(diagnostic::INVALID_NUMERIC_SEP);
             }
 
             GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
@@ -560,7 +583,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (!allowNumericOnNext) {
             Iterator().Backward(1);
-            LogSyntaxError("Numeric separators are not allowed at the end of numeric literals");
+            LogError(diagnostic::INVALID_NUMERIC_SEP_AT_END_OF_NUM);
         }
 
         break;

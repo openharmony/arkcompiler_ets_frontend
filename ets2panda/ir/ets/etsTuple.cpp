@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
 
 #include "etsTuple.h"
 
+#include "checker/ETSchecker.h"
 #include "checker/types/ets/etsTupleType.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 
@@ -29,10 +29,10 @@ void ETSTuple::TransformChildren(const NodeTransformer &cb, std::string_view con
         }
     }
 
-    if (HasSpreadType()) {
-        if (auto *transformedNode = cb(spreadType_); spreadType_ != transformedNode) {
-            spreadType_->SetTransformedNode(transformationName, transformedNode);
-            spreadType_ = static_cast<TypeNode *>(transformedNode);
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 }
@@ -43,8 +43,8 @@ void ETSTuple::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
-    if (HasSpreadType()) {
-        cb(spreadType_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
     }
 }
 
@@ -52,21 +52,20 @@ void ETSTuple::Dump(ir::AstDumper *const dumper) const
 {
     dumper->Add({{"type", "ETSTuple"},
                  {"types", AstDumper::Optional(typeAnnotationList_)},
-                 {"spreadType", AstDumper::Nullish(spreadType_)}});
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSTuple::Dump(ir::SrcDumper *const dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("[");
     for (const auto *const typeAnnot : typeAnnotationList_) {
         typeAnnot->Dump(dumper);
-        if ((typeAnnot != typeAnnotationList_.back()) || (spreadType_ != nullptr)) {
+        if (typeAnnot != typeAnnotationList_.back()) {
             dumper->Add(", ");
         }
-    }
-    if (spreadType_ != nullptr) {
-        dumper->Add("...");
-        spreadType_->Dump(dumper);
     }
     dumper->Add("]");
 }
@@ -79,44 +78,28 @@ checker::Type *ETSTuple::Check([[maybe_unused]] checker::TSChecker *const checke
     return nullptr;
 }
 
-checker::Type *ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const checker)
+checker::VerifiedType ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const checker)
 {
-    return GetType(checker);
+    return {this, GetType(checker)};
 }
 
-checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,
-                                              ArenaVector<checker::Type *> &typeList, checker::Type **spreadTypePtr)
+checker::Type *ETSTuple::GetHolderTypeForTuple(checker::ETSChecker *const checker,
+                                               ArenaVector<checker::Type *> &typeList)
 {
-    auto &spreadType = *spreadTypePtr;
     if (typeList.empty()) {
-        return spreadType == nullptr ? checker->GlobalETSObjectType() : spreadType;
+        return checker->GlobalETSObjectType();
     }
 
-    bool allElementsAreSame = std::all_of(typeList.begin(), typeList.end(), [&checker, &typeList](auto *element) {
+    const bool allElementsAreSame = std::all_of(typeList.begin(), typeList.end(), [&checker, &typeList](auto *element) {
         return checker->Relation()->IsIdenticalTo(typeList[0], element);
     });
-
-    if (spreadType != nullptr) {
-        allElementsAreSame = allElementsAreSame && checker->Relation()->IsIdenticalTo(typeList[0], spreadType);
-    }
-
-    // If only one type present in the tuple, that will be the holder array type. If any two not identical types
-    // present, primitives will be boxed, and LUB is calculated for all of them.
-    // That makes it possible to assign eg. `[int, int, ...int[]]` tuple type to `int[]` array type. Because a
-    // `short[]` array already isn't assignable to `int[]` array, that preserve that the `[int, short, ...int[]]`
-    // tuple type's element type will be calculated to `Object[]`, which is not assignable to `int[]` array either.
     if (allElementsAreSame) {
         return typeList[0];
     }
-    // Other case - promote element types
-    // NOTE(vpukhov): #15570 normalization happens or not?
+
     std::for_each(typeList.begin(), typeList.end(), [checker](auto &t) { t = checker->MaybeBoxType(t); });
 
     auto ctypes = typeList;
-    if (spreadType != nullptr) {
-        spreadType = checker->MaybeBoxType(spreadType);
-        ctypes.push_back(spreadType);
-    }
     return checker->CreateETSUnionType(std::move(ctypes));
 }
 
@@ -124,6 +107,14 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 {
     if (TsType() != nullptr) {
         return TsType();
+    }
+    checker->CheckAnnotations(Annotations());
+
+    // NOTE (smartin): Remove, when TupleN is handled in codegen
+    constexpr uint8_t MAX_TUPLE_ARITY = 16;
+    if (GetTupleTypeAnnotationsList().size() > MAX_TUPLE_ARITY) {
+        checker->LogError(diagnostic::TUPLEN_NOT_IMPLEMENTED, {}, Start());
+        return checker->InvalidateType(this);
     }
 
     ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
@@ -133,50 +124,43 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         typeList.emplace_back(checkedType);
     }
 
-    if (HasSpreadType()) {
-        ASSERT(spreadType_->IsTSArrayType());
-        auto *const arrayType = spreadType_->GetType(checker);
-        ASSERT(arrayType->IsETSArrayType());
-        spreadType_->SetTsType(arrayType->AsETSArrayType()->ElementType());
-    }
-
-    auto *spreadElementType = spreadType_ != nullptr ? spreadType_->TsType() : nullptr;
-
-    checker::Type *tupleType = checker->Allocator()->New<checker::ETSTupleType>(
-        typeList, CalculateLUBForTuple(checker, typeList, &spreadElementType), spreadElementType);
+    auto *tupleType = checker->Allocator()->New<checker::ETSTupleType>(checker, typeList);
 
     if (IsReadonlyType()) {
-        tupleType = checker->GetReadonlyType(tupleType);
+        tupleType = checker->GetReadonlyType(tupleType)->AsETSTupleType();
     }
+
     SetTsType(tupleType);
     return TsType();
 }
 
 ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ETSTuple>(allocator, size_); clone != nullptr) {
-        clone->AddModifier(flags_);
+    auto *const clone = allocator->New<ETSTuple>(allocator, size_);
 
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    clone->AddModifier(flags_);
 
-        if (spreadType_ != nullptr) {
-            auto *const spreadType = spreadType_->Clone(allocator, clone)->AsTypeNode();
-            clone->SetSpreadType(spreadType);
-        }
-
-        ArenaVector<TypeNode *> typeList(allocator->Adapter());
-        for (auto *const type : typeAnnotationList_) {
-            auto *const t = type->Clone(allocator, clone);
-            typeList.push_back(t);
-        }
-
-        clone->SetTypeAnnotationsList(std::move(typeList));
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    ArenaVector<TypeNode *> typeList(allocator->Adapter());
+    for (auto *const type : typeAnnotationList_) {
+        auto *const t = type->Clone(allocator, clone);
+        typeList.push_back(t);
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+    clone->SetTypeAnnotationsList(std::move(typeList));
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 }  // namespace ark::es2panda::ir

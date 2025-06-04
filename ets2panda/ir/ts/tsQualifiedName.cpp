@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,17 +19,21 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
+TSQualifiedName::TSQualifiedName(Expression *left, Identifier *right, ArenaAllocator *allocator)
+    : Expression(AstNodeType::TS_QUALIFIED_NAME), left_(left), right_(right), allocator_(allocator)
+{
+    ES2PANDA_ASSERT(left_ != nullptr && right_ != nullptr);
+}
+
 TSQualifiedName::TSQualifiedName([[maybe_unused]] Tag const tag, TSQualifiedName const &other,
                                  ArenaAllocator *allocator)
     : Expression(static_cast<Expression const &>(other))
 {
-    left_ = other.left_ != nullptr ? other.left_->Clone(allocator, this)->AsExpression() : nullptr;
-    right_ = other.right_ != nullptr ? other.right_->Clone(allocator, this)->AsIdentifier() : nullptr;
+    left_ = other.left_->Clone(allocator, this)->AsExpression();
+    right_ = other.right_->Clone(allocator, this)->AsIdentifier();
+    allocator_ = allocator;
 }
 
 void TSQualifiedName::Iterate(const NodeTraverser &cb) const
@@ -58,7 +62,9 @@ void TSQualifiedName::Dump(ir::AstDumper *dumper) const
 
 void TSQualifiedName::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TSQualifiedName");
+    left_->Dump(dumper);
+    dumper->Add(".");
+    right_->Dump(dumper);
 }
 
 void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -75,14 +81,14 @@ checker::Type *TSQualifiedName::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSQualifiedName::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSQualifiedName::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
+util::StringView TSQualifiedName::Name() const
 {
-    util::UString packageName(allocator);
+    util::UString packageName(allocator_);
 
     const auto *iter = this;
 
@@ -93,29 +99,6 @@ util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
     packageName.Append(iter->Left()->AsIdentifier()->Name());
 
     const ir::AstNode *parent = iter;
-
-    while (parent != nullptr && parent->IsTSQualifiedName()) {
-        packageName.Append('.');
-        packageName.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
-        parent = parent->Parent();
-    }
-
-    return packageName.View();
-}
-
-util::StringView TSQualifiedName::BaseToString(ArenaAllocator *allocator) const
-{
-    util::UString packageName(allocator);
-
-    const auto *iter = this;
-
-    while (iter->Left()->IsTSQualifiedName()) {
-        iter = iter->Left()->AsTSQualifiedName();
-    }
-
-    packageName.Append(iter->Left()->AsIdentifier()->Name());
-
-    const ir::AstNode *parent = iter->Parent();
 
     while (parent != nullptr && parent->IsTSQualifiedName()) {
         packageName.Append('.');
@@ -150,15 +133,11 @@ const ir::TSQualifiedName *TSQualifiedName::ResolveLeftMostQualifiedName() const
 
 TSQualifiedName *TSQualifiedName::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<TSQualifiedName>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<TSQualifiedName>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

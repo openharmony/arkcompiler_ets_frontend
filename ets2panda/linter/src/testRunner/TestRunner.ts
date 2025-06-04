@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,9 +47,9 @@ const RESULTS_DIR = 'results';
 
 const ARGS_CONFIG_EXT = '.args.json';
 const DIFF_EXT = '.diff';
-const TEST_EXTENSION_STS = '.sts';
-const TEST_EXTENSION_STSX = '.stsx';
-const TEST_EXTENSION_D_STS = '.d.sts';
+const TEST_EXTENSION_ETS = '.ets';
+const TEST_EXTENSION_ETSX = '.etsx';
+const TEST_EXTENSION_D_ETS = '.d.ets';
 
 interface TestStatistics {
   passed: number;
@@ -59,7 +59,8 @@ interface TestStatistics {
 enum TestMode {
   DEFAULT,
   AUTOFIX,
-  ARKTS2
+  ARKTS2,
+  MIGRATE
 }
 
 interface CreateTestConfigurationOptions {
@@ -84,7 +85,7 @@ interface RunTestFileOptions {
 interface TestModeProperties {
   resultFileExt: string;
   mode: TestMode;
-  modeOpts: LinterOptions /* Options that enable specific mode */;
+  modeOpts: LinterOptions;
 }
 
 const DEFAULT_MODE_PROPERTIES: TestModeProperties = {
@@ -104,6 +105,16 @@ const ARKTS2_MODE_PROPERTIES: TestModeProperties = {
   mode: TestMode.ARKTS2,
   modeOpts: {
     arkts2: true
+  }
+};
+
+const MIGRATE_MODE_PROPERTIES: TestModeProperties = {
+  resultFileExt: '.migrate.json',
+  mode: TestMode.MIGRATE,
+  modeOpts: {
+    arkts2: true,
+    migratorMode: true,
+    ideMode: false
   }
 };
 
@@ -212,8 +223,8 @@ function runTests(): boolean {
         x.trimEnd().endsWith(ts.Extension.Ts) && !x.trimEnd().endsWith(ts.Extension.Dts) ||
         x.trimEnd().endsWith(ts.Extension.Tsx) ||
         x.trimEnd().endsWith(ts.Extension.Ets) ||
-        x.trimEnd().endsWith(TEST_EXTENSION_STS) && !x.trimEnd().endsWith(TEST_EXTENSION_D_STS) ||
-        x.trimEnd().endsWith(TEST_EXTENSION_STSX)
+        x.trimEnd().endsWith(TEST_EXTENSION_ETS) && !x.trimEnd().endsWith(TEST_EXTENSION_D_ETS) ||
+        x.trimEnd().endsWith(TEST_EXTENSION_ETSX)
       );
     });
     runTestFiles(testFiles, testDir, testRunnerOpts, testStats);
@@ -244,17 +255,7 @@ function runTestFiles(
 ): void {
   for (const testFile of testFiles) {
     try {
-      let renamed = false;
-      let tsName = testFile;
-      if (testFile.includes(TEST_EXTENSION_STS)) {
-        renamed = true;
-        tsName = testFile.replace(TEST_EXTENSION_STS, ts.Extension.Ts);
-        fs.renameSync(path.join(testDir, testFile), path.join(testDir, tsName));
-      }
-      runTestFile({ testDir, testFile: tsName, testRunnerOpts }, testStats);
-      if (renamed) {
-        fs.renameSync(path.join(testDir, tsName), path.join(testDir, testFile));
-      }
+      runTestFile({ testDir, testFile, testRunnerOpts }, testStats);
     } catch (error) {
       Logger.info(`Test ${testFile} failed:\n${TAB}` + (error as Error).message);
       testStats.failed++;
@@ -284,6 +285,12 @@ function runTestFile(runTestFileOpts: RunTestFileOptions, testStats: TestStatist
       runTestFileOpts,
       testModeProps: ARKTS2_MODE_PROPERTIES,
       testModeArgs: testArgs.mode?.arkts2,
+      testCommonOpts
+    });
+    addTestConfiguration(testConfigs, {
+      runTestFileOpts,
+      testModeProps: MIGRATE_MODE_PROPERTIES,
+      testModeArgs: testArgs.mode?.migrate,
       testCommonOpts
     });
   } else {

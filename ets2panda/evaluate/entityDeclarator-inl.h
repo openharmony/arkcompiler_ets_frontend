@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +29,7 @@ varbinder::Variable *EntityDeclarator::ImportGlobalEntity(util::StringView pathT
                                                           parser::Program *importerProgram,
                                                           util::StringView importedName, F &&irCreator)
 {
-    ASSERT(importerProgram);
+    ES2PANDA_ASSERT(importerProgram);
     parser::Program *program = debugInfoPlugin_.GetProxyProgramsCache()->GetProgram(pathToDeclSource);
 
     helpers::SafeStateScope s(debugInfoPlugin_.GetIrCheckHelper()->GetChecker(), debugInfoPlugin_.GetETSBinder());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -99,94 +99,6 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLa
     pg->BranchIfFalse(expr, falseLabel);
 }
 
-Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr)
-{
-    const auto resultingExpression = [](const ir::Expression *e) {
-        if (e->IsBinaryExpression() && e->AsBinaryExpression()->IsLogicalExtended()) {
-            return e->AsBinaryExpression()->Result();
-        }
-        if (e->IsAssignmentExpression() && e->AsAssignmentExpression()->IsLogicalExtended()) {
-            return e->AsAssignmentExpression()->Result();
-        }
-        return e;
-    }(expr);
-    if (resultingExpression == nullptr) {
-        return Result::UNKNOWN;
-    }
-
-    if (etsg->Checker()->IsNullLikeOrVoidExpression(resultingExpression)) {
-        return Result::CONST_FALSE;
-    }
-
-    auto exprRes = resultingExpression->TsType()->ResolveConditionExpr();
-    if (std::get<0>(exprRes)) {
-        return std::get<1>(exprRes) ? Result::CONST_TRUE : Result::CONST_FALSE;
-    }
-
-    return Result::UNKNOWN;
-}
-
-void Condition::CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
-{
-    auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
-    RegScope rs(etsg);
-    VReg lhs = etsg->AllocReg();
-    VReg rhs = etsg->AllocReg();
-    auto *returnLeftLabel = etsg->AllocLabel();
-    auto *returnRightTrueLabel = etsg->AllocLabel();
-    auto *returnRightFalseLabel = etsg->AllocLabel();
-
-    binExpr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
-    etsg->ResolveConditionalResultIfTrue(binExpr->Left(), returnLeftLabel);
-    etsg->BranchIfTrue(binExpr, returnLeftLabel);
-
-    binExpr->Right()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(binExpr->Right(), rhs, binExpr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(binExpr->Right(), returnRightFalseLabel);
-    etsg->BranchIfFalse(binExpr, returnRightFalseLabel);
-    etsg->LoadAccumulator(binExpr, rhs);
-    etsg->Branch(binExpr, returnRightTrueLabel);
-
-    etsg->SetLabel(binExpr, returnRightFalseLabel);
-    etsg->LoadAccumulator(binExpr, rhs);
-    etsg->Branch(binExpr, falseLabel);
-    etsg->SetLabel(binExpr, returnLeftLabel);
-    etsg->LoadAccumulator(binExpr, lhs);
-    etsg->SetLabel(binExpr, returnRightTrueLabel);
-}
-
-void Condition::CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
-{
-    auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
-    RegScope rs(etsg);
-    VReg lhs = etsg->AllocReg();
-    VReg rhs = etsg->AllocReg();
-    auto *returnLeftLabel = etsg->AllocLabel();
-    auto *returnRightTrueLabel = etsg->AllocLabel();
-    auto *returnRightFalseLabel = etsg->AllocLabel();
-
-    binExpr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(binExpr->Left(), returnLeftLabel);
-    etsg->BranchIfFalse(binExpr, returnLeftLabel);
-
-    binExpr->Right()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(binExpr->Right(), rhs, binExpr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(binExpr->Right(), returnRightFalseLabel);
-    etsg->BranchIfFalse(binExpr, returnRightFalseLabel);
-    etsg->LoadAccumulator(binExpr, rhs);
-    etsg->Branch(binExpr, returnRightTrueLabel);
-
-    etsg->SetLabel(binExpr, returnLeftLabel);
-    etsg->LoadAccumulator(binExpr, lhs);
-    etsg->Branch(binExpr, falseLabel);
-    etsg->SetLabel(binExpr, returnRightFalseLabel);
-    etsg->LoadAccumulator(binExpr, rhs);
-    etsg->Branch(binExpr, falseLabel);
-    etsg->SetLabel(binExpr, returnRightTrueLabel);
-}
-
 bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *expr, Label *falseLabel)
 {
     if ((expr->Left()->TsType() == nullptr) || (expr->Right()->TsType() == nullptr)) {
@@ -237,9 +149,38 @@ bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpress
 
 void Condition::CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    ASSERT(binExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
+    ES2PANDA_ASSERT(binExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
     binExpr->Compile(etsg);
     etsg->BranchIfFalse(binExpr, falseLabel);
+}
+
+void Condition::CompileLogical(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
+{
+    ES2PANDA_ASSERT(binExpr->IsLogicalExtended());
+
+    // If the Result is given, we can optimize the process.
+    if (binExpr->Result() != nullptr) {
+        if (binExpr->Result() != binExpr->Left()) {
+            ES2PANDA_ASSERT(binExpr->Result() == binExpr->Right());
+            etsg->CompileAndCheck(binExpr->Left());
+        }
+        Compile(etsg, binExpr->Result(), falseLabel);
+        return;
+    }
+
+    compiler::RegScope rs(etsg);
+    auto *endLabel = etsg->AllocLabel();
+
+    if (binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        Compile(etsg, binExpr->Left(), falseLabel);
+    } else {
+        ES2PANDA_ASSERT(binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+        etsg->CompileAndCheck(binExpr->Left());
+        etsg->BranchConditionalIfTrue(binExpr->Left(), endLabel);
+    }
+
+    Compile(etsg, binExpr->Right(), falseLabel);
+    etsg->SetLabel(binExpr, endLabel);
 }
 
 bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
@@ -264,12 +205,9 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binE
             etsg->Condition(binExpr, binExpr->OperatorType(), lhs, falseLabel);
             return true;
         }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            CompileLogicalAndExpr(etsg, binExpr, falseLabel);
-            return true;
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            CompileLogicalOrExpr(etsg, binExpr, falseLabel);
+            CompileLogical(etsg, binExpr, falseLabel);
             return true;
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
@@ -293,11 +231,11 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
         expr->AsUnaryExpression()->Argument()->Compile(etsg);
         etsg->ApplyConversion(expr->AsUnaryExpression()->Argument(), etsg->Checker()->GlobalETSBooleanType());
-        etsg->ResolveConditionalResultIfTrue(expr, falseLabel);
+        etsg->ResolveConditionalResultIfTrue<false, false>(expr, falseLabel);
         etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
-    ASSERT(expr->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
     etsg->ResolveConditionalResultIfFalse(expr, falseLabel);

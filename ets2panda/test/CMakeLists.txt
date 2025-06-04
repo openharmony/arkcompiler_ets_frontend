@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,7 +19,7 @@ if (PANDA_TARGET_ARM32)
               --build-dir ${PANDA_BINARY_ROOT}
               --arm32-qemu
               --ets-runtime
-              --test-file PunctuatorAnyEqual.sts
+              --test-file PunctuatorAnyEqual.ets
   )
 endif()
 
@@ -30,6 +30,13 @@ if(PANDA_TARGET_ARM32 OR PANDA_ARM64_TESTS_WITH_SANITIZER)
 endif()
 
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
+add_custom_target(es2panda_gtests COMMENT "Running es2panda gtest suites")
+set(DEFAULT_TEST_GROUP ets_tests)
+
+# List for accumulation of all ets gtests binary paths.
+# It's used by CI to archive these binaries into a single artifact
+# and send it to second stage where unit tests will use them.
+set_property(GLOBAL PROPERTY ets_stash_list "")
 
 function(ets2panda_add_gtest TARGET)
     # Parse arguments
@@ -42,19 +49,28 @@ function(ets2panda_add_gtest TARGET)
     )
 
     panda_add_gtest(
+            TEST_GROUP es2panda_gtests
+            STASH_LIST ets_stash_list
             NAME ${TARGET}
             SOURCES
+                ${ES2PANDA_ROOT}/test/utils/asm_test.cpp
+                ${ES2PANDA_ROOT}/test/utils/ast_verifier_test.cpp
+                ${ES2PANDA_ROOT}/test/utils/checker_test.cpp
+                ${ES2PANDA_ROOT}/test/utils/scope_init_test.cpp
+                ${ES2PANDA_ROOT}/test/utils/plugin_conversion_rule_test.cpp
                 ${ARG_CPP_SOURCES}
             LIBRARIES
                 es2panda-public
                 es2panda-lib
                 arkassembler
                 arkbytecodeopt
+                ${LSP_LIB}
             INCLUDE_DIRS
                 ${ES2PANDA_PATH}
                 ${ES2PANDA_BINARY_ROOT}
             SANITIZERS
                 ${PANDA_SANITIZERS_LIST}
+            ${ARG_UNPARSED_ARGUMENTS}
     )
 endfunction(ets2panda_add_gtest)
 
@@ -70,3 +86,4 @@ endif()
 add_subdirectory(tsconfig)
 add_subdirectory(options)
 add_subdirectory(unit)
+add_subdirectory(depanalyzer)

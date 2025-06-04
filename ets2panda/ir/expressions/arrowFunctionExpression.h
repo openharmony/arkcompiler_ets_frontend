@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_ARROW_FUNCTION_EXPRESSION_H
 
 #include "ir/expression.h"
+#include "ir/annotationAllowed.h"
 
 namespace ark::es2panda::compiler {
 class ETSCompiler;
@@ -25,7 +26,7 @@ class ETSCompiler;
 namespace ark::es2panda::ir {
 class ScriptFunction;
 
-class ArrowFunctionExpression : public Expression {
+class ArrowFunctionExpression : public AnnotationAllowed<Expression> {
 public:
     ArrowFunctionExpression() = delete;
     ~ArrowFunctionExpression() override = default;
@@ -33,12 +34,12 @@ public:
     NO_COPY_SEMANTIC(ArrowFunctionExpression);
     NO_MOVE_SEMANTIC(ArrowFunctionExpression);
 
-    explicit ArrowFunctionExpression(ScriptFunction *const func)
-        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func)
+    explicit ArrowFunctionExpression(ScriptFunction *const func, ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(AstNodeType::ARROW_FUNCTION_EXPRESSION, allocator), func_(func)
     {
     }
 
-    explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *allocator);
+    explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator);
 
     [[nodiscard]] const ScriptFunction *Function() const noexcept
     {
@@ -50,6 +51,16 @@ public:
         return func_;
     }
 
+    void SetPreferredType(checker::Type *preferredType) noexcept
+    {
+        preferredType_ = preferredType;
+    }
+
+    [[nodiscard]] checker::Type *GetPreferredType() noexcept
+    {
+        return preferredType_;
+    }
+
     [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -59,10 +70,9 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
-    void AddChildLambda(ArrowFunctionExpression *childLambda);
     bool IsVarFromSubscope(const varbinder::Variable *var) const;
 
     void Accept(ASTVisitorT *v) override
@@ -72,6 +82,7 @@ public:
 
 private:
     ScriptFunction *func_;
+    checker::Type *preferredType_ {};
 };
 }  // namespace ark::es2panda::ir
 

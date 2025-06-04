@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "tuple_types_19.ets"
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "tuple_types_19.ets"
             }
           }
         },
@@ -31,22 +33,26 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 17
+                    "column": 17,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 18
+                    "column": 18,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 17
+                  "column": 17,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 19
+                  "column": 19,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -59,22 +65,26 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 20
+                    "column": 20,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 21
+                    "column": 21,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 20
+                  "column": 20,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 22
+                  "column": 22,
+                  "program": "tuple_types_19.ets"
                 }
               }
             }
@@ -82,11 +92,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "tuple_types_19.ets"
             },
             "end": {
               "line": 16,
-              "column": 22
+              "column": 22,
+              "program": "tuple_types_19.ets"
             }
           }
         },
@@ -102,11 +114,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -130,33 +144,39 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 11
+                          "column": 11,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 12
+                          "column": 12,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 11
+                        "column": 11,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 13
+                        "column": 13,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 11
+                      "column": 11,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 13
+                      "column": 13,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -171,46 +191,53 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 14
+                          "column": 14,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 15
+                          "column": 15,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 14
+                        "column": 14,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 16
+                        "column": 16,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 16
+                      "column": 16,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 }
               ],
-              "spreadType": null,
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 10
+                  "column": 10,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
-                  "line": 18,
-                  "column": 16
+                  "line": 17,
+                  "column": 16,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -219,11 +246,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
-                "line": 18,
-                "column": 16
+                "line": 17,
+                "column": 16,
+                "program": "tuple_types_19.ets"
               }
             }
           },
@@ -236,11 +265,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -260,11 +291,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -291,33 +324,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 27
+                                  "column": 27,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 25
+                                "column": 25,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 27
+                                "column": 27,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -332,46 +371,53 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 28
+                                    "column": 28,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 28
+                                  "column": 28,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 28
+                                "column": 28,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 30
+                                "column": 30,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           }
                         ],
-                        "spreadType": null,
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 24
+                            "column": 24,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 31
+                            "column": 30,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
@@ -379,22 +425,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 17
+                          "column": 17,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 31
+                          "column": 30,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 17
+                        "column": 17,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 31
+                        "column": 30,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   }
@@ -414,11 +464,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 34
+                                "column": 34,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 38
+                                "column": 38,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -429,11 +481,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 39
+                                "column": 39,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 42
+                                "column": 42,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -442,11 +496,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 34
+                              "column": 34,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 42
+                              "column": 42,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -457,33 +513,39 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 45
+                              "column": 45,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 50
+                              "column": 50,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 34
+                            "column": 34,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 50
+                            "column": 50,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 34
+                          "column": 34,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 51
+                          "column": 51,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
@@ -491,33 +553,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 32
+                      "column": 32,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 52
+                      "column": 52,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 16
+                    "column": 16,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 52
+                    "column": 52,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 52
+                  "column": 52,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -526,11 +594,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 18,
-                "column": 52
+                "column": 52,
+                "program": "tuple_types_19.ets"
               }
             }
           },
@@ -543,11 +613,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 19
+                  "column": 19,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -567,11 +639,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 12
+                      "column": 12,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 19
+                      "column": 19,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -593,33 +667,39 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 24
+                              "column": 24,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 25
+                              "column": 25,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 24
+                            "column": 24,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 26
+                            "column": 26,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 24
+                          "column": 24,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 26
+                          "column": 26,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
@@ -634,46 +714,53 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 27
+                              "column": 27,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 28
+                              "column": 28,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 27
+                            "column": 27,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 29
+                            "column": 29,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 27
+                          "column": 27,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 29
+                          "column": 29,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
                   ],
-                  "spreadType": null,
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 23
+                      "column": 23,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 31
+                      "column": 29,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -689,11 +776,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 39
+                              "column": 39,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 43
+                              "column": 43,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -704,11 +793,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 44
+                              "column": 44,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 47
+                              "column": 47,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -717,22 +808,26 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 39
+                            "column": 39,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 47
+                            "column": 47,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 32
+                          "column": 32,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 48
+                          "column": 48,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
@@ -740,33 +835,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 30
+                      "column": 30,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 50
+                      "column": 50,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 19
+                    "column": 19,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 50
+                    "column": 50,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 19
+                  "column": 19,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 50
+                  "column": 50,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -775,11 +876,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 19,
-                "column": 50
+                "column": 50,
+                "program": "tuple_types_19.ets"
               }
             }
           }
@@ -787,22 +890,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 23
+            "column": 23,
+            "program": "tuple_types_19.ets"
           },
           "end": {
-            "line": 20,
-            "column": 2
+            "line": 22,
+            "column": 6,
+            "program": "tuple_types_19.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_19.ets"
         },
         "end": {
-          "line": 20,
-          "column": 2
+          "line": 22,
+          "column": 6,
+          "program": "tuple_types_19.ets"
         }
       }
     },
@@ -816,11 +923,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 7
+              "column": 7,
+              "program": "tuple_types_19.ets"
             },
             "end": {
               "line": 22,
-              "column": 20
+              "column": 20,
+              "program": "tuple_types_19.ets"
             }
           }
         },
@@ -836,22 +945,26 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 21
+                    "column": 21,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 22,
-                    "column": 22
+                    "column": 22,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 21
+                  "column": 21,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 23
+                  "column": 23,
+                  "program": "tuple_types_19.ets"
                 }
               }
             }
@@ -859,11 +972,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 20
+              "column": 20,
+              "program": "tuple_types_19.ets"
             },
             "end": {
               "line": 22,
-              "column": 23
+              "column": 23,
+              "program": "tuple_types_19.ets"
             }
           }
         },
@@ -879,11 +994,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 5
+                  "column": 5,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 9
+                  "column": 9,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -907,33 +1024,39 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 12
+                          "column": 12,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 13
+                          "column": 13,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 12
+                        "column": 12,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 23,
-                        "column": 14
+                        "column": 14,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 12
+                      "column": 12,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 14
+                      "column": 14,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -948,46 +1071,53 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 15
+                          "column": 15,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 16
+                          "column": 16,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 15
+                        "column": 15,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 23,
-                        "column": 17
+                        "column": 17,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 15
+                      "column": 15,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 17
+                      "column": 17,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 }
               ],
-              "spreadType": null,
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 11
+                  "column": 11,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 18
+                  "column": 17,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -996,11 +1126,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 23,
-                "column": 18
+                "column": 17,
+                "program": "tuple_types_19.ets"
               }
             }
           },
@@ -1013,11 +1145,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1037,11 +1171,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1068,33 +1204,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 27
+                                  "column": 27,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 25
+                                "column": 25,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 27
+                                "column": 27,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -1109,46 +1251,53 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 28
+                                    "column": 28,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 28
+                                  "column": 28,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 28
+                                "column": 28,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 30
+                                "column": 30,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           }
                         ],
-                        "spreadType": null,
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 24
+                            "column": 24,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 31
+                            "column": 30,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
@@ -1156,22 +1305,26 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 17
+                          "column": 17,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 31
+                          "column": 30,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 17
+                        "column": 17,
+                        "program": "tuple_types_19.ets"
                       },
                       "end": {
                         "line": 24,
-                        "column": 31
+                        "column": 30,
+                        "program": "tuple_types_19.ets"
                       }
                     }
                   }
@@ -1191,11 +1344,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 34
+                                "column": 34,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 38
+                                "column": 38,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -1206,11 +1361,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 39
+                                "column": 39,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 43
+                                "column": 43,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -1219,11 +1376,13 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 34
+                              "column": 34,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 24,
-                              "column": 43
+                              "column": 43,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -1234,33 +1393,39 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 46
+                              "column": 46,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 24,
-                              "column": 51
+                              "column": 51,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 34
+                            "column": 34,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 51
+                            "column": 51,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 34
+                          "column": 34,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 52
+                          "column": 52,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
@@ -1268,33 +1433,39 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 32
+                      "column": 32,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 53
+                      "column": 53,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 16
+                    "column": 16,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 53
+                    "column": 53,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 16
+                  "column": 16,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 53
+                  "column": 53,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -1303,11 +1474,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 24,
-                "column": 53
+                "column": 53,
+                "program": "tuple_types_19.ets"
               }
             }
           },
@@ -1320,11 +1493,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 12
+                  "column": 12,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 19
+                  "column": 19,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -1344,11 +1519,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 12
+                      "column": 12,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 19
+                      "column": 19,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -1370,33 +1547,39 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 24
+                              "column": 24,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 25
+                              "column": 25,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 24
+                            "column": 24,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 26
+                            "column": 26,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 24
+                          "column": 24,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 26
+                          "column": 26,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
@@ -1411,46 +1594,53 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 27
+                              "column": 27,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 28
+                              "column": 28,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 27
+                            "column": 27,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 29
+                            "column": 29,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 27
+                          "column": 27,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 29
+                          "column": 29,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
                   ],
-                  "spreadType": null,
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 23
+                      "column": 23,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 31
+                      "column": 29,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -1466,11 +1656,13 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 39
+                              "column": 39,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 43
+                              "column": 43,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -1481,11 +1673,13 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 44
+                              "column": 44,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 48
+                              "column": 48,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         },
@@ -1494,22 +1688,26 @@
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 39
+                            "column": 39,
+                            "program": "tuple_types_19.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 48
+                            "column": 48,
+                            "program": "tuple_types_19.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 32
+                          "column": 32,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 49
+                          "column": 49,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
@@ -1517,33 +1715,39 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 30
+                      "column": 30,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 25,
-                      "column": 51
+                      "column": 51,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 19
+                    "column": 19,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 25,
-                    "column": 51
+                    "column": 51,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 19
+                  "column": 19,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 25,
-                  "column": 51
+                  "column": 51,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -1552,11 +1756,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5
+                "column": 5,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 25,
-                "column": 51
+                "column": 51,
+                "program": "tuple_types_19.ets"
               }
             }
           }
@@ -1564,22 +1770,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 24
+            "column": 24,
+            "program": "tuple_types_19.ets"
           },
           "end": {
-            "line": 26,
-            "column": 2
+            "line": 28,
+            "column": 9,
+            "program": "tuple_types_19.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_19.ets"
         },
         "end": {
-          "line": 26,
-          "column": 2
+          "line": 28,
+          "column": 9,
+          "program": "tuple_types_19.ets"
         }
       }
     },
@@ -1593,11 +1803,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tuple_types_19.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tuple_types_19.ets"
             }
           }
         },
@@ -1608,16 +1820,124 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "tuple_types_19.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "tuple_types_19.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
               "name": "_$init$_",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1637,11 +1957,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1655,33 +1977,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1690,11 +2018,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tuple_types_19.ets"
               }
             }
           },
@@ -1707,11 +2037,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 10
+                  "column": 10,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 28,
-                  "column": 13
+                  "column": 13,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -1731,11 +2063,13 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 10
+                      "column": 10,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 28,
-                      "column": 13
+                      "column": 13,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
@@ -1768,33 +2102,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 29,
-                                          "column": 22
+                                          "column": 22,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 29,
-                                          "column": 28
+                                          "column": 28,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 29,
-                                        "column": 22
+                                        "column": 22,
+                                        "program": "tuple_types_19.ets"
                                       },
                                       "end": {
                                         "line": 29,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "tuple_types_19.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 29,
-                                      "column": 22
+                                      "column": 22,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 29,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
@@ -1809,46 +2149,53 @@
                                       "loc": {
                                         "start": {
                                           "line": 29,
-                                          "column": 30
+                                          "column": 30,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 29,
-                                          "column": 36
+                                          "column": 36,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 29,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "tuple_types_19.ets"
                                       },
                                       "end": {
                                         "line": 29,
-                                        "column": 37
+                                        "column": 37,
+                                        "program": "tuple_types_19.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 29,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 29,
-                                      "column": 37
+                                      "column": 37,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 }
                               ],
-                              "spreadType": null,
                               "loc": {
                                 "start": {
                                   "line": 29,
-                                  "column": 21
+                                  "column": 21,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 39
+                                  "column": 37,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
@@ -1856,11 +2203,13 @@
                             "loc": {
                               "start": {
                                 "line": 29,
-                                "column": 9
+                                "column": 9,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 29,
-                                "column": 19
+                                "column": 19,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -1873,11 +2222,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 29,
-                                    "column": 41
+                                    "column": 41,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 45
+                                    "column": 45,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
@@ -1887,11 +2238,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 29,
-                                    "column": 47
+                                    "column": 47,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 51
+                                    "column": 51,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               }
@@ -1899,22 +2252,26 @@
                             "loc": {
                               "start": {
                                 "line": 29,
-                                "column": 40
+                                "column": 40,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 29,
-                                "column": 52
+                                "column": 52,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 29,
-                              "column": 9
+                              "column": 9,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 29,
-                              "column": 52
+                              "column": 52,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         }
@@ -1923,11 +2280,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 5
+                          "column": 5,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 29,
-                          "column": 53
+                          "column": 53,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
@@ -1950,11 +2309,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 30,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 30,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
@@ -1972,33 +2333,39 @@
                                           "loc": {
                                             "start": {
                                               "line": 30,
-                                              "column": 27
+                                              "column": 27,
+                                              "program": "tuple_types_19.ets"
                                             },
                                             "end": {
                                               "line": 30,
-                                              "column": 33
+                                              "column": 33,
+                                              "program": "tuple_types_19.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 30,
-                                            "column": 27
+                                            "column": 27,
+                                            "program": "tuple_types_19.ets"
                                           },
                                           "end": {
                                             "line": 30,
-                                            "column": 34
+                                            "column": 34,
+                                            "program": "tuple_types_19.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 30,
-                                          "column": 27
+                                          "column": 27,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 30,
-                                          "column": 34
+                                          "column": 34,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     }
@@ -2006,33 +2373,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 30,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 30,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 30,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 30,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
@@ -2040,11 +2413,13 @@
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 9
+                                "column": 9,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 11
+                                "column": 11,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -2061,11 +2436,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 30,
-                                      "column": 41
+                                      "column": 41,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 30,
-                                      "column": 54
+                                      "column": 54,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
@@ -2083,33 +2460,39 @@
                                           "loc": {
                                             "start": {
                                               "line": 30,
-                                              "column": 55
+                                              "column": 55,
+                                              "program": "tuple_types_19.ets"
                                             },
                                             "end": {
                                               "line": 30,
-                                              "column": 61
+                                              "column": 61,
+                                              "program": "tuple_types_19.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 30,
-                                            "column": 55
+                                            "column": 55,
+                                            "program": "tuple_types_19.ets"
                                           },
                                           "end": {
                                             "line": 30,
-                                            "column": 62
+                                            "column": 62,
+                                            "program": "tuple_types_19.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 30,
-                                          "column": 55
+                                          "column": 55,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 30,
-                                          "column": 62
+                                          "column": 62,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     }
@@ -2117,33 +2500,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 30,
-                                      "column": 54
+                                      "column": 54,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 30,
-                                      "column": 62
+                                      "column": 62,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 30,
-                                    "column": 41
+                                    "column": 41,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 30,
-                                    "column": 63
+                                    "column": 63,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 41
+                                  "column": 41,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 63
+                                  "column": 63,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
@@ -2155,11 +2544,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 30,
-                                    "column": 63
+                                    "column": 63,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 30,
-                                    "column": 73
+                                    "column": 73,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               }
@@ -2167,22 +2558,26 @@
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 37
+                                "column": 37,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 75
+                                "column": 75,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 9
+                              "column": 9,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 30,
-                              "column": 75
+                              "column": 75,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         }
@@ -2191,11 +2586,13 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 5
+                          "column": 5,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 30,
-                          "column": 75
+                          "column": 75,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     },
@@ -2221,33 +2618,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 31,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 31,
-                                          "column": 24
+                                          "column": 24,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "tuple_types_19.ets"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "tuple_types_19.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 25
+                                      "column": 25,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 },
@@ -2262,46 +2665,53 @@
                                       "loc": {
                                         "start": {
                                           "line": 31,
-                                          "column": 26
+                                          "column": 26,
+                                          "program": "tuple_types_19.ets"
                                         },
                                         "end": {
                                           "line": 31,
-                                          "column": 32
+                                          "column": 32,
+                                          "program": "tuple_types_19.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 26
+                                        "column": 26,
+                                        "program": "tuple_types_19.ets"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 33
+                                        "column": 33,
+                                        "program": "tuple_types_19.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "tuple_types_19.ets"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 33
+                                      "column": 33,
+                                      "program": "tuple_types_19.ets"
                                     }
                                   }
                                 }
                               ],
-                              "spreadType": null,
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 35
+                                  "column": 33,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
@@ -2309,11 +2719,13 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 9
+                                "column": 9,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 15
+                                "column": 15,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
@@ -2328,11 +2740,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 31,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
@@ -2343,11 +2757,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 31,
-                                    "column": 39
+                                    "column": 39,
+                                    "program": "tuple_types_19.ets"
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 46
+                                    "column": 46,
+                                    "program": "tuple_types_19.ets"
                                   }
                                 }
                               },
@@ -2356,11 +2772,13 @@
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "tuple_types_19.ets"
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 46
+                                  "column": 46,
+                                  "program": "tuple_types_19.ets"
                                 }
                               }
                             },
@@ -2369,22 +2787,26 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 36
+                                "column": 36,
+                                "program": "tuple_types_19.ets"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 48
+                                "column": 48,
+                                "program": "tuple_types_19.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 31,
-                              "column": 9
+                              "column": 9,
+                              "program": "tuple_types_19.ets"
                             },
                             "end": {
                               "line": 31,
-                              "column": 48
+                              "column": 48,
+                              "program": "tuple_types_19.ets"
                             }
                           }
                         }
@@ -2393,11 +2815,13 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 5
+                          "column": 5,
+                          "program": "tuple_types_19.ets"
                         },
                         "end": {
                           "line": 31,
-                          "column": 49
+                          "column": 49,
+                          "program": "tuple_types_19.ets"
                         }
                       }
                     }
@@ -2405,33 +2829,39 @@
                   "loc": {
                     "start": {
                       "line": 28,
-                      "column": 16
+                      "column": 16,
+                      "program": "tuple_types_19.ets"
                     },
                     "end": {
                       "line": 32,
-                      "column": 2
+                      "column": 2,
+                      "program": "tuple_types_19.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 28,
-                    "column": 10
+                    "column": 10,
+                    "program": "tuple_types_19.ets"
                   },
                   "end": {
                     "line": 32,
-                    "column": 2
+                    "column": 2,
+                    "program": "tuple_types_19.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 10
+                  "column": 10,
+                  "program": "tuple_types_19.ets"
                 },
                 "end": {
                   "line": 32,
-                  "column": 2
+                  "column": 2,
+                  "program": "tuple_types_19.ets"
                 }
               }
             },
@@ -2440,11 +2870,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 1
+                "column": 1,
+                "program": "tuple_types_19.ets"
               },
               "end": {
                 "line": 32,
-                "column": 2
+                "column": 2,
+                "program": "tuple_types_19.ets"
               }
             }
           }
@@ -2452,22 +2884,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tuple_types_19.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tuple_types_19.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_19.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tuple_types_19.ets"
         }
       }
     }
@@ -2475,11 +2911,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "tuple_types_19.ets"
     },
     "end": {
       "line": 33,
-      "column": 1
+      "column": 1,
+      "program": "tuple_types_19.ets"
     }
   }
 }

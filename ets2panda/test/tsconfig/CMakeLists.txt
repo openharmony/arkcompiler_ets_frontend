@@ -17,3 +17,4 @@ endif()
 
 add_subdirectory(test-config)
 add_subdirectory(test-build)
+add_subdirectory(test-decl)

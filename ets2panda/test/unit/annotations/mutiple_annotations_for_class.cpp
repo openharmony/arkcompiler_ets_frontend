@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,17 +47,17 @@ public:
                 {"reviewers", "ETSGLOBAL$Anno2$reviewers$1"},
             },
         };
-        CheckAnnoDecl(program, annoName, expectedAnnotations);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName, expectedAnnotations);
     }
 
     void CheckClassAnnotations(pandasm::Program *program)
     {
-        const std::string className = "A";
+        const std::string recordName = "A";
         const AnnotationMap expectedClassAnnotations = {
             {"Anno1",
              {
                  {"authorName", "Mike"},
-                 {"authorAge", "18"},
+                 {"authorAge", "18.000000"},
                  {"testBool", "1"},
              }},
             {"Anno2",
@@ -73,7 +73,7 @@ public:
                  {"mutiArray", "A$Anno3$mutiArray$9"},
              }},
         };
-        AnnotationEmitTest::CheckClassAnnotations(program, className, expectedClassAnnotations);
+        AnnotationEmitTest::CheckRecordAnnotations(program, recordName, expectedClassAnnotations);
     }
 
     void CheckLiteralArrayTable(pandasm::Program *program)
@@ -116,14 +116,14 @@ TEST_F(MutipleAnnotationsforClass, mutiple_annotations_for_class)
 
         @interface Anno2 {
             favorColor: Color = Color.BLUE
-            color: Color[] = [Color.RED, Color.BLUE]
-            reviewers: string[] = ["Bob", "Jim", "Tom"]
+            color: FixedArray<Color> = [Color.RED, Color.BLUE]
+            reviewers: FixedArray<string> = ["Bob", "Jim", "Tom"]
         }
 
         @interface Anno3 {
-            reviewersAge: number[]
-            testBools: boolean[]
-            mutiArray: number[][]
+            reviewersAge: FixedArray<number>
+            testBools: FixedArray<boolean>
+            mutiArray: FixedArray<FixedArray<number>>
         }
 
         @Anno1({

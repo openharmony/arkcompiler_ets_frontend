@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@
 
 #include "assembly-ins.h"
 #include "assembly-program.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::debuginfo {
 
@@ -42,6 +42,8 @@ private:
     void WritePosInfo(const pandasm::debuginfo::Ins &posInfo);
     void WriteVariableInfo(const pandasm::debuginfo::LocalVariable &localVariableDebug);
     void Indent();
+    void DumpFunctions(const std::map<std::string, pandasm::Function> &table);
+    void DumpFuncBody(std::string name, const pandasm::Function &func);
 
     const pandasm::Program *prog_;
     std::stringstream ss_;

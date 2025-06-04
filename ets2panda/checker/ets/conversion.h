@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,7 @@ void WideningReference(TypeRelation *relation, ETSArrayType *source, ETSArrayTyp
 void NarrowingReference(TypeRelation *relation, ETSObjectType *source, ETSObjectType *target);
 void NarrowingReference(TypeRelation *relation, ETSObjectType *source, ETSArrayType *target);
 void NarrowingReference(TypeRelation *relation, ETSArrayType *source, ETSArrayType *target);
+void NarrowingReference(TypeRelation *relation, ETSObjectType *source, ETSTupleType *target);
 
 ETSObjectType *Boxing(TypeRelation *relation, Type *source);
 Type *Unboxing(TypeRelation *relation, ETSObjectType *source);
