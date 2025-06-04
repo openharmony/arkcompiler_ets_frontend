@@ -693,3 +693,14 @@ interface goodPerson extends IPerson {
        return new MyObj2()
     }
  }
+
+ async function foo1(): Promise<boolean>{
+
+  return new Promise<boolean>(()=>{
+
+  });
+}
+
+function foo2(rule:Record<string,string|Object>){
+  let b:Array<string> = rule['123'] as Array<string>
+}

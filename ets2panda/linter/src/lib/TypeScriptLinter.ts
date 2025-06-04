@@ -5164,6 +5164,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.options.arkts2 &&
       this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, tsAsExpr.expression, true)
     ) {
+      if (this.isExemptedAsExpression(tsAsExpr)) {
+        return;
+      }
       if (!this.tsUtils.isObject(exprType)) {
         this.incrementCounters(node, FaultID.StructuralIdentity);
       }
@@ -5171,6 +5174,41 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleAsExpressionImport(tsAsExpr);
     this.handleNoTuplesArrays(node, targetType, exprType);
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
+  }
+  
+  private isExemptedAsExpression(node: ts.AsExpression): boolean {
+    if (!ts.isElementAccessExpression(node.expression)) {
+      return false;
+    }
+
+    const sourceType = this.tsTypeChecker.getTypeAtLocation(node.expression);
+    const targetType = this.tsTypeChecker.getTypeAtLocation(node.type);
+    const isRecordIndexAccess = (): boolean => {
+      const exprType = this.tsTypeChecker.getTypeAtLocation(node.expression);
+      const hasNumberIndex = !!exprType.getNumberIndexType();
+      const hasStringIndex = !!exprType.getStringIndexType();
+      const hasBooleanIndex = !!exprType.getProperty('true') || !!exprType.getProperty('false');
+
+      return hasNumberIndex || hasStringIndex || hasBooleanIndex;
+    };
+
+    if (isRecordIndexAccess()) {
+      const targetSymbol = targetType.getSymbol();
+      if (targetSymbol && targetSymbol.getName() === 'Array') {
+        return true;
+      }
+    }
+    const primitiveFlags = ts.TypeFlags.Number | ts.TypeFlags.String | ts.TypeFlags.Boolean;
+    const objectFlag = ts.TypeFlags.Object;
+    return (
+      sourceType.isUnion() &&
+      sourceType.types.some((t) => {
+        return t.flags & primitiveFlags;
+      }) &&
+      sourceType.types.some((t) => {
+        return t.flags & objectFlag;
+      })
+    );
   }
 
   private handleAsExpressionImport(tsAsExpr: ts.AsExpression): void {
@@ -5958,6 +5996,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (this.tsUtils.needToDeduceStructuralIdentity(lhsType, rhsType, rhsExpr, isStrict)) {
+      if (ts.isNewExpression(rhsExpr) && ts.isIdentifier(rhsExpr.expression) && rhsExpr.expression.text === 'Promise') {
+        const isReturnStatement = ts.isReturnStatement(rhsExpr.parent);
+        const enclosingFunction = ts.findAncestor(rhsExpr, ts.isFunctionLike);
+        const isAsyncFunction = enclosingFunction && (enclosingFunction.modifiers?.some(m => m.kind === ts.SyntaxKind.AsyncKeyword) || false);
+        if (isReturnStatement && isAsyncFunction) {
+          return;
+        }
+      }
       this.incrementCounters(field, FaultID.StructuralIdentity);
     }
   }
