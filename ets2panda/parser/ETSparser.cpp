@@ -1590,6 +1590,16 @@ bool ETSParser::IsFixedArrayTypeNode(ir::AstNode *node)
 
 ir::Expression *ETSParser::ParseFunctionParameter()
 {
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::KEYW_PRIVATE:
+        case lexer::TokenType::KEYW_PUBLIC:
+        case lexer::TokenType::KEYW_PROTECTED:
+            LogError(diagnostic::FIELD_IN_PARAM);
+            Lexer()->NextToken();
+        default:
+            break;
+    }
+
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
         return ParseFunctionParameterAnnotations();
     }

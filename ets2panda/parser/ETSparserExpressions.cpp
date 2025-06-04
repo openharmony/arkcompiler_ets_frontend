@@ -359,9 +359,13 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         }
         case lexer::TokenType::KEYW_TYPE: {
             LogError(diagnostic::TYPE_ALIAS_ONLY_TOP_LEVEL);
-            const auto &rangeToken = Lexer()->GetToken().Loc();
             ParseTypeAliasDeclaration();  // Try to parse type alias and drop the result.
-            return AllocBrokenExpression(rangeToken);
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        }
+        case lexer::TokenType::KEYW_FUNCTION: {
+            LogError(diagnostic::FUNC_EXPR);
+            ParseFunctionDeclaration(true, ir::ModifierFlags::NONE);
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             return ParseExpressionFormatPlaceholder();

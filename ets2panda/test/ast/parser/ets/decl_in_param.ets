@@ -13,9 +13,12 @@
  * limitations under the License.
  */
 
-declare namespace this {
-
+function f(public x: number){
 }
-
-/* @@? 16:19 Error SyntaxError: Hard keyword 'this' cannot be used as identifier */
-/* @@? 16:19 Error SyntaxError: Identifier expected, got 'this'. */
+class C{
+    constructor(public m:number) {}
+    m(public x:number) {}
+}
+/* @@? 16:12 Error SyntaxError: Declaring fields in parameter list is not supported */
+/* @@? 19:17 Error SyntaxError: Declaring fields in parameter list is not supported */
+/* @@? 20:7 Error SyntaxError: Declaring fields in parameter list is not supported */

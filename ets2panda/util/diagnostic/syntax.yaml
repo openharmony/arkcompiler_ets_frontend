@@ -1279,3 +1279,11 @@ syntax:
 - name: NOT_AS_OBJECT
   id: 318
   message: "{} cannot be used as object."
+
+- name: FIELD_IN_PARAM
+  id: 319
+  message: "Declaring fields in parameter list is not supported"
+
+- name: FUNC_EXPR
+  id: 320
+  message: "Function expressions are not supported, use arrow functions instead"
