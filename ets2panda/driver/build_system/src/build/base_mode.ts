@@ -31,7 +31,6 @@ import {
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
-  BUILD_MODE,
   DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
   DEPENDENCY_JSON_FILE,
@@ -63,6 +62,8 @@ import {
   ArkTS,
   ArkTSGlobal,
   BuildConfig,
+  BUILD_MODE,
+  OHOS_MODULE_TYPE,
   CompileFileInfo,
   DependencyFileConfig,
   DependentModuleConfig,
@@ -97,6 +98,7 @@ export abstract class BaseMode {
   isDebug: boolean;
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath: string | undefined;
+  declgenV2OutPath: string | undefined;
   declgenBridgeCodePath: string | undefined;
   hasMainModule: boolean;
   abcFiles: Set<string>;
@@ -106,6 +108,7 @@ export abstract class BaseMode {
   dependencyFileMap: DependencyFileConfig | null;
   isBuildConfigModified: boolean | undefined;
   hasCleanWorker: boolean;
+  byteCodeHar: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -118,6 +121,7 @@ export abstract class BaseMode {
     this.sourceRoots = buildConfig.sourceRoots as string[];
     this.moduleRootPath = buildConfig.moduleRootPath as string;
     this.moduleType = buildConfig.moduleType as string;
+    this.byteCodeHar = buildConfig.byteCodeHar as boolean;
     this.dependentModuleList = buildConfig.dependentModuleList;
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
     this.hasMainModule = buildConfig.hasMainModule;
@@ -130,6 +134,7 @@ export abstract class BaseMode {
 
     this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
     this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
+    this.declgenV2OutPath = buildConfig.declgenV2OutPath as string | undefined;
     this.declgenBridgeCodePath = buildConfig.declgenBridgeCodePath as string | undefined;
 
     this.moduleInfos = new Map<string, ModuleInfo>();
@@ -174,13 +179,13 @@ export abstract class BaseMode {
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, true);
 
       let ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, true);
 
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
@@ -240,21 +245,34 @@ export abstract class BaseMode {
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState parsed');
       let ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
       this.logger.printInfo('plugin parsed finished');
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState checked');
+      
+      if (this.hasMainModule && (this.byteCodeHar || this.moduleType === OHOS_MODULE_TYPE.SHARED)) {
+        let filePathFromModuleRoot: string = path.relative(this.moduleRootPath, fileInfo.filePath);
+        let declEtsOutputPath: string = changeFileExtension(
+          path.join(this.declgenV2OutPath as string, this.packageName, filePathFromModuleRoot),
+          DECL_ETS_SUFFIX
+        );
+        ensurePathExists(declEtsOutputPath);
+
+        // Generate 1.2 declaration files(a temporary solution while binary import not pushed)
+        arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
+      }
+
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
       this.logger.printInfo('plugin checked finished');
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda bin generated');
     } catch (error) {
       errorStatus = true;
@@ -388,10 +406,13 @@ export abstract class BaseMode {
         dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
         staticDepModuleInfos: new Map<string, ModuleInfo>(),
         declgenV1OutPath: module.declgenV1OutPath,
+        declgenV2OutPath: module.declgenV2OutPath,
         declgenBridgeCodePath: module.declgenBridgeCodePath,
         language: module.language,
         declFilesPath: module.declFilesPath,
-        dependencies: module.dependencies
+        dependencies: module.dependencies,
+        byteCodeHar: module.byteCodeHar,
+        abcPath: module.abcPath
       };
       this.moduleInfos.set(module.packageName, moduleInfo);
     });
@@ -411,7 +432,9 @@ export abstract class BaseMode {
         staticDepModuleInfos: new Map<string, ModuleInfo>(),
         compileFileInfos: [],
         declgenV1OutPath: this.declgenV1OutPath,
-        declgenBridgeCodePath: this.declgenBridgeCodePath
+        declgenV2OutPath: this.declgenV2OutPath,
+        declgenBridgeCodePath: this.declgenBridgeCodePath,
+        byteCodeHar: this.byteCodeHar
     };
   }
 
@@ -570,9 +593,16 @@ export abstract class BaseMode {
       return;
     }
     this.entryFiles.forEach((file: string) => {
+      // Skip the declaration files when compiling abc
+      if (file.endsWith(DECL_ETS_SUFFIX)) {
+        return;
+      }
       for (const [packageName, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
           continue;
+        }
+        if (moduleInfo.moduleType === OHOS_MODULE_TYPE.HAR && moduleInfo.byteCodeHar) {
+          return;
         }
         let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
         let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
@@ -598,6 +628,30 @@ export abstract class BaseMode {
       );
       this.logger.printError(logData);
     });
+
+    this.collectAbcFileFromByteCodeHar();
+  }
+
+  protected collectAbcFileFromByteCodeHar(): void {
+    // the abc of the dependent bytecode har needs to be included When compiling hsp/hap
+    // but it's not required when compiling har
+    if (this.buildConfig.moduleType !== OHOS_MODULE_TYPE.HAR) {
+      return;
+    }
+    for (const [packageName, moduleInfo] of this.moduleInfos) {
+      if (!(moduleInfo.moduleType === OHOS_MODULE_TYPE.HAR && moduleInfo.byteCodeHar)) {
+        continue;
+      }
+      if (!moduleInfo.abcPath) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_ABC_FILE_MISSING_IN_BCHAR,
+          `abc file not found in bytecode har ${packageName}. `
+        );
+        this.logger.printError(logData);
+        continue;
+      }
+      this.abcFiles.add(moduleInfo.abcPath);
+    }
   }
 
   protected generateModuleInfos(): void {
