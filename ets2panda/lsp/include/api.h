@@ -28,11 +28,13 @@
 #include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "user_preferences.h"
 #include "class_hierarchies.h"
 #include "find_references.h"
 #include "find_rename_locations.h"
 #include "class_hierarchy_info.h"
 #include "completions.h"
+#include "refactors/refactor_types.h"
 #include "applicable_refactors.h"
 #include "todo_comments.h"
 #include "types.h"
@@ -256,22 +258,6 @@ public:
     bool operator!=(const DocTagInfo &other) const
     {
         return !(*this == other);
-    }
-};
-
-struct RefactorEditInfo {
-private:
-    std::vector<FileTextChanges> fileTextChanges_;
-
-public:
-    explicit RefactorEditInfo(std::vector<FileTextChanges> fileTextChanges = {})
-        : fileTextChanges_(std::move(fileTextChanges))
-    {
-    }
-
-    std::vector<FileTextChanges> &GetFileTextChanges()
-    {
-        return fileTextChanges_;
     }
 };
 
@@ -502,8 +488,8 @@ struct CodeFixOptions {
 
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
-    ark::es2panda::lsp::ApplicableRefactorInfo (*getApplicableRefactors)(es2panda_Context *context, const char *kind,
-                                                                         size_t position);
+    std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(
+        const ark::es2panda::lsp::RefactorContext *context);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
     bool (*isPackageModule)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
@@ -543,8 +529,8 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
     ark::es2panda::lsp::ClassHierarchy (*getClassHierarchyInfo)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
-    RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
-                                                const std::vector<std::string> &properties);
+    ark::es2panda::lsp::RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
+                                                                    const std::vector<std::string> &properties);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(

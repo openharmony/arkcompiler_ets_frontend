@@ -338,9 +338,9 @@ LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t pos
 
 // Returns type of refactoring and action that can be performed based
 // on the input kind information and cursor position
-ApplicableRefactorInfo GetApplicableRefactors(es2panda_Context *context, const char *kind, size_t position)
+std::vector<ApplicableRefactorInfo> GetApplicableRefactors(const RefactorContext *context)
 {
-    auto result = GetApplicableRefactorsImpl(context, kind, position);
+    auto result = GetApplicableRefactorsImpl(context);
     return result;
 }
 
