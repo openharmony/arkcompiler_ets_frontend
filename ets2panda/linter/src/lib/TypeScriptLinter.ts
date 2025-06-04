@@ -8969,15 +8969,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    const autofix = this.autofixer?.fixPropDecorator(decorators[0], decoratorName);
     switch (decoratorName) {
       case PropDecoratorName.Prop:
-        this.incrementCounters(node, FaultID.PropDecoratorNotSupported);
+        this.incrementCounters(node, FaultID.PropDecoratorNotSupported, autofix);
         break;
       case PropDecoratorName.StorageProp:
-        this.incrementCounters(node, FaultID.StoragePropDecoratorNotSupported);
+        this.incrementCounters(node, FaultID.StoragePropDecoratorNotSupported, autofix);
         break;
       case PropDecoratorName.LocalStorageProp:
-        this.incrementCounters(node, FaultID.LocalStoragePropDecoratorNotSupported);
+        this.incrementCounters(node, FaultID.LocalStoragePropDecoratorNotSupported, autofix);
         break;
       default:
     }

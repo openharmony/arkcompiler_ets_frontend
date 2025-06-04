@@ -20,6 +20,17 @@
             "endLine": 18,
             "endColumn": 18,
             "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 654,
+                    "end": 655,
+                    "replacementText": "0.0",
+                    "line": 18,
+                    "column": 17,
+                    "endLine": 18,
+                    "endColumn": 18
+                }
+            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
@@ -30,6 +41,17 @@
             "endLine": 24,
             "endColumn": 33,
             "problem": "PropDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 704,
+                    "end": 709,
+                    "replacementText": "@PropRef",
+                    "line": 24,
+                    "column": 3,
+                    "endLine": 24,
+                    "endColumn": 33
+                }
+            ],
             "suggest": "",
             "rule": "\"@Prop\" decorator is not supported (arkui-no-prop-decorator)",
             "severity": "ERROR"
@@ -40,6 +62,17 @@
             "endLine": 34,
             "endColumn": 49,
             "problem": "StoragePropDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 895,
+                    "end": 916,
+                    "replacementText": "@StoragePropRef",
+                    "line": 34,
+                    "column": 3,
+                    "endLine": 34,
+                    "endColumn": 49
+                }
+            ],
             "suggest": "",
             "rule": "\"@StorageProp\" decorator is not supported (arkui-no-storageprop-decorator)",
             "severity": "ERROR"
@@ -50,6 +83,17 @@
             "endLine": 35,
             "endColumn": 54,
             "problem": "LocalStoragePropDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 944,
+                    "end": 970,
+                    "replacementText": "@LocalStoragePropRef",
+                    "line": 35,
+                    "column": 3,
+                    "endLine": 35,
+                    "endColumn": 54
+                }
+            ],
             "suggest": "",
             "rule": "\"@LocalStorageProp\" decorator is not supported (arkui-no-localstorageprop-decorator)",
             "severity": "ERROR"
@@ -60,6 +104,17 @@
             "endLine": 21,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "line": 32,
+                    "column": 2,
+                    "endLine": 32,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -70,6 +125,17 @@
             "endLine": 22,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "line": 32,
+                    "column": 2,
+                    "endLine": 32,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -80,6 +146,17 @@
             "endLine": 25,
             "endColumn": 15,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "line": 32,
+                    "column": 2,
+                    "endLine": 32,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -90,6 +167,17 @@
             "endLine": 26,
             "endColumn": 20,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "line": 32,
+                    "column": 2,
+                    "endLine": 32,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -100,6 +188,17 @@
             "endLine": 32,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "line": 32,
+                    "column": 2,
+                    "endLine": 32,
+                    "endColumn": 11
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
