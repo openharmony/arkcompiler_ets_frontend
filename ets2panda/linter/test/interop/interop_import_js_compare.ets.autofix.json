@@ -13,31 +13,31 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-"result": [
+    "result": [
         {
-            "line": 15,
+            "line": 17,
             "column": 1,
-            "endLine": 15,
-            "endColumn": 53,
+            "endLine": 17,
+            "endColumn": 57,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 604,
-                    "end": 656,
+                    "start": 607,
+                    "end": 663,
                     "replacementText": "",
-                    "line": 15,
+                    "line": 17,
                     "column": 1,
-                    "endLine": 15,
-                    "endColumn": 53
+                    "endLine": 17,
+                    "endColumn": 57
                 },
                 {
-                    "start": 656,
-                    "end": 656,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./binary_operation_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet m = GeneratedImportVar_1.getPropertyByName('m');\nlet n = GeneratedImportVar_1.getPropertyByName('n');\n",
-                    "line": 15,
+                    "start": 663,
+                    "end": 663,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_compare_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet m = GeneratedImportVar_1.getPropertyByName('m');\nlet n = GeneratedImportVar_1.getPropertyByName('n');\n",
+                    "line": 17,
                     "column": 1,
-                    "endLine": 15,
-                    "endColumn": 53
+                    "endLine": 17,
+                    "endColumn": 57
                 }
             ],
             "suggest": "",
@@ -45,19 +45,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 16,
+            "line": 18,
             "column": 9,
-            "endLine": 16,
+            "endLine": 18,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 670,
+                    "start": 672,
+                    "end": 677,
                     "replacementText": "foo.getPropertyByName(\"a\")",
-                    "line": 16,
+                    "line": 18,
                     "column": 9,
-                    "endLine": 16,
+                    "endLine": 18,
                     "endColumn": 14
                 }
             ],
@@ -66,19 +66,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 19,
             "column": 9,
-            "endLine": 17,
+            "endLine": 19,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 679,
-                    "end": 684,
+                    "start": 686,
+                    "end": 691,
                     "replacementText": "foo.getPropertyByName(\"b\")",
-                    "line": 17,
+                    "line": 19,
                     "column": 9,
-                    "endLine": 17,
+                    "endLine": 19,
                     "endColumn": 14
                 }
             ],
@@ -87,99 +87,15 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 2,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 665,
-                    "end": 670,
-                    "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 2
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 5,
-            "endLine": 18,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 679,
-                    "end": 684,
-                    "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
-                    "line": 18,
-                    "column": 5,
-                    "endLine": 18,
-                    "endColumn": 6
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 2,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 665,
-                    "end": 670,
-                    "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
-                    "line": 19,
-                    "column": 1,
-                    "endLine": 19,
-                    "endColumn": 2
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 679,
-                    "end": 684,
-                    "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
-                    "line": 19,
-                    "column": 5,
-                    "endLine": 19,
-                    "endColumn": 6
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 1,
             "endLine": 20,
             "endColumn": 2,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 670,
+                    "start": 672,
+                    "end": 677,
                     "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
                     "line": 20,
                     "column": 1,
@@ -188,7 +104,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -196,11 +112,11 @@
             "column": 5,
             "endLine": 20,
             "endColumn": 6,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 679,
-                    "end": 684,
+                    "start": 686,
+                    "end": 691,
                     "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
                     "line": 20,
                     "column": 5,
@@ -209,7 +125,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -217,11 +133,11 @@
             "column": 1,
             "endLine": 21,
             "endColumn": 2,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 670,
+                    "start": 672,
+                    "end": 677,
                     "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
                     "line": 21,
                     "column": 1,
@@ -230,7 +146,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -238,11 +154,11 @@
             "column": 5,
             "endLine": 21,
             "endColumn": 6,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 679,
-                    "end": 684,
+                    "start": 686,
+                    "end": 691,
                     "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
                     "line": 21,
                     "column": 5,
@@ -251,7 +167,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -259,11 +175,11 @@
             "column": 1,
             "endLine": 22,
             "endColumn": 2,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 670,
+                    "start": 672,
+                    "end": 677,
                     "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
                     "line": 22,
                     "column": 1,
@@ -272,28 +188,28 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
             "line": 22,
-            "column": 5,
+            "column": 6,
             "endLine": 22,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
+            "endColumn": 7,
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 679,
-                    "end": 684,
+                    "start": 686,
+                    "end": 691,
                     "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
                     "line": 22,
-                    "column": 5,
+                    "column": 6,
                     "endLine": 22,
-                    "endColumn": 6
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -301,11 +217,11 @@
             "column": 1,
             "endLine": 23,
             "endColumn": 2,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 670,
+                    "start": 672,
+                    "end": 677,
                     "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
                     "line": 23,
                     "column": 1,
@@ -314,7 +230,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -322,11 +238,11 @@
             "column": 6,
             "endLine": 23,
             "endColumn": 7,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 679,
-                    "end": 684,
+                    "start": 686,
+                    "end": 691,
                     "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
                     "line": 23,
                     "column": 6,
@@ -335,70 +251,28 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 3,
-            "endLine": 23,
-            "endColumn": 5,
-            "problem": "ExponentOp",
-            "autofix": [
-                {
-                    "replacementText": "Math.pow(a, b)",
-                    "start": 715,
-                    "end": 721,
-                    "line": 23,
-                    "column": 3,
-                    "endLine": 23,
-                    "endColumn": 5
-                }
-            ],
-            "suggest": "",
-            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 1,
-            "endLine": 25,
-            "endColumn": 2,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 723,
-                    "end": 724,
-                    "replacementText": "m.toNumber()",
-                    "line": 25,
-                    "column": 1,
-                    "endLine": 25,
-                    "endColumn": 2
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
+            "line": 24,
             "column": 5,
-            "endLine": 25,
+            "endLine": 24,
             "endColumn": 6,
-            "problem": "BinaryOperations",
+            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 727,
-                    "end": 728,
-                    "replacementText": "n.toNumber()",
-                    "line": 25,
+                    "start": 722,
+                    "end": 723,
+                    "replacementText": "1.0",
+                    "line": 24,
                     "column": 5,
-                    "endLine": 25,
+                    "endLine": 24,
                     "endColumn": 6
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -406,32 +280,32 @@
             "column": 1,
             "endLine": 26,
             "endColumn": 2,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
+            "autofix": [
+                {
+                    "start": 725,
+                    "end": 726,
+                    "replacementText": "m.toNumber()",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 2
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 6,
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
                     "start": 729,
                     "end": 730,
-                    "replacementText": "m.toNumber()",
-                    "line": 26,
-                    "column": 1,
-                    "endLine": 26,
-                    "endColumn": 2
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 5,
-            "endLine": 26,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 733,
-                    "end": 734,
                     "replacementText": "n.toNumber()",
                     "line": 26,
                     "column": 5,
@@ -440,70 +314,28 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
             "line": 27,
-            "column": 1,
+            "column": 5,
             "endLine": 27,
-            "endColumn": 2,
-            "problem": "BinaryOperations",
+            "endColumn": 6,
+            "problem": "NumericSemantics",
             "autofix": [
                 {
                     "start": 735,
                     "end": 736,
-                    "replacementText": "m.toNumber()",
+                    "replacementText": "1.0",
                     "line": 27,
-                    "column": 1,
+                    "column": 5,
                     "endLine": 27,
-                    "endColumn": 2
+                    "endColumn": 6
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 6,
-            "endLine": 27,
-            "endColumn": 7,
-            "problem": "BinaryOperations",
-            "autofix": [
-                {
-                    "start": 740,
-                    "end": 741,
-                    "replacementText": "n.toNumber()",
-                    "line": 27,
-                    "column": 6,
-                    "endLine": 27,
-                    "endColumn": 7
-                }
-            ],
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 3,
-            "endLine": 27,
-            "endColumn": 5,
-            "problem": "ExponentOp",
-            "autofix": [
-                {
-                    "replacementText": "Math.pow(m, n)",
-                    "start": 735,
-                    "end": 741,
-                    "line": 27,
-                    "column": 3,
-                    "endLine": 27,
-                    "endColumn": 5
-                }
-            ],
-            "suggest": "",
-            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -514,8 +346,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 747,
-                    "end": 752,
+                    "start": 742,
+                    "end": 747,
                     "replacementText": "x: number = 1",
                     "line": 29,
                     "column": 5,
@@ -535,8 +367,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 751,
-                    "end": 752,
+                    "start": 746,
+                    "end": 747,
                     "replacementText": "1.0",
                     "line": 29,
                     "column": 9,
@@ -556,8 +388,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 754,
-                    "end": 759,
+                    "start": 749,
+                    "end": 754,
                     "replacementText": "y: number = 2",
                     "line": 29,
                     "column": 12,
@@ -577,8 +409,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 758,
-                    "end": 759,
+                    "start": 753,
+                    "end": 754,
                     "replacementText": "2.0",
                     "line": 29,
                     "column": 16,
@@ -591,27 +423,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
-            "column": 3,
-            "endLine": 33,
-            "endColumn": 5,
-            "problem": "ExponentOp",
-            "autofix": [
-                {
-                    "replacementText": "Math.pow(x, y)",
-                    "start": 782,
-                    "end": 788,
-                    "line": 33,
-                    "column": 3,
-                    "endLine": 33,
-                    "endColumn": 5
-                }
-            ],
-            "suggest": "",
-            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 35,
             "column": 11,
             "endLine": 35,
@@ -619,8 +430,8 @@
             "problem": "ObjectLiteralNoContextType",
             "autofix": [
                 {
-                    "start": 791,
-                    "end": 791,
+                    "start": 787,
+                    "end": 787,
                     "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a: number;\n    b: number;\n}\n",
                     "line": 35,
                     "column": 11,
@@ -628,8 +439,8 @@
                     "endColumn": 12
                 },
                 {
-                    "start": 798,
-                    "end": 798,
+                    "start": 794,
+                    "end": 794,
                     "replacementText": ": GeneratedObjectLiteralInterface_1",
                     "line": 35,
                     "column": 11,
@@ -649,8 +460,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 806,
-                    "end": 807,
+                    "start": 802,
+                    "end": 803,
                     "replacementText": "1.0",
                     "line": 35,
                     "column": 16,
@@ -670,8 +481,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 812,
-                    "end": 813,
+                    "start": 808,
+                    "end": 809,
                     "replacementText": "2.0",
                     "line": 35,
                     "column": 22,
@@ -691,8 +502,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 822,
-                    "end": 832,
+                    "start": 818,
+                    "end": 828,
                     "replacementText": "x2: number = bar.a",
                     "line": 37,
                     "column": 5,
@@ -712,8 +523,8 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 834,
-                    "end": 844,
+                    "start": 830,
+                    "end": 840,
                     "replacementText": "y2: number = bar.b",
                     "line": 37,
                     "column": 17,
@@ -726,36 +537,15 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 4,
-            "endLine": 41,
-            "endColumn": 6,
-            "problem": "ExponentOp",
-            "autofix": [
-                {
-                    "replacementText": "Math.pow(x2, y2)",
-                    "start": 873,
-                    "end": 881,
-                    "line": 41,
-                    "column": 4,
-                    "endLine": 41,
-                    "endColumn": 6
-                }
-            ],
-            "suggest": "",
-            "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
-            "severity": "ERROR"
-        },
-        {
             "line": 43,
             "column": 1,
             "endLine": 43,
             "endColumn": 6,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 884,
-                    "end": 889,
+                    "start": 881,
+                    "end": 886,
                     "replacementText": "foo.getPropertyByName(\"a\").toNumber()",
                     "line": 43,
                     "column": 1,
@@ -764,7 +554,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -772,11 +562,11 @@
             "column": 9,
             "endLine": 43,
             "endColumn": 14,
-            "problem": "BinaryOperations",
+            "problem": "InterOpImportJsDataCompare",
             "autofix": [
                 {
-                    "start": 892,
-                    "end": 897,
+                    "start": 889,
+                    "end": 894,
                     "replacementText": "foo.getPropertyByName(\"b\").toNumber()",
                     "line": 43,
                     "column": 9,
@@ -785,7 +575,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         }
     ]

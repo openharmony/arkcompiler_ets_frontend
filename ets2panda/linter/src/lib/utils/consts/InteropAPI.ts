@@ -22,6 +22,7 @@ export const LENGTH = 'length';
 export const INVOKE = 'invoke';
 export const INVOKE_METHOD = 'invokeMethod';
 export const TO_PROMISE = 'toPromise';
+export const IS_INSTANCE_OF = 'isInstanceOf';
 
 export const REFLECT_PROPERTIES = [
   'get',
@@ -58,7 +59,8 @@ export const OBJECT_PROPERTIES = [
   'isFrozen',
   'isSealed'
 ];
-export const USE_STATIC = '\'use static\'';
+
+export const USE_STATIC = "'use static'";
 export const OBJECT_LITERAL = 'Object';
 export const REFLECT_LITERAL = 'Reflect';
 export const NONE = 'none';
@@ -80,4 +82,9 @@ export enum InteropType {
 export type IdentifierAndArguments = {
   ident: undefined | ts.Identifier;
   args: ts.NodeArray<ts.Expression> | undefined;
+};
+
+export type IncrementDecrementNodeInfo = {
+  varAssignText: string;
+  addOrDecrOperation: ts.BinaryExpression;
 };

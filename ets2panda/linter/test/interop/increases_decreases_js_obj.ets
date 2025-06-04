@@ -18,3 +18,8 @@ a = foo.num++
 a = ++foo.num
 a = foo.num--
 a = --foo.num
+
+foo.num++
+++foo.num
+foo.num--
+--foo.num

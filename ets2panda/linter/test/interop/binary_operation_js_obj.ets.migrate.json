@@ -35,19 +35,29 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 5,
+            "endLine": 17,
+            "endColumn": 52,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 5,
             "endLine": 18,
-            "endColumn": 35,
+            "endColumn": 52,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 5,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
@@ -55,10 +65,50 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 21,
+            "column": 5,
+            "endLine": 21,
+            "endColumn": 35,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
             "column": 1,
-            "endLine": 25,
+            "endLine": 27,
             "endColumn": 15,
+            "problem": "MathPow",
+            "suggest": "",
+            "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "endLine": 31,
+            "endColumn": 37,
+            "problem": "MathPow",
+            "suggest": "",
+            "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 1,
+            "endLine": 37,
+            "endColumn": 15,
+            "problem": "MathPow",
+            "suggest": "",
+            "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 1,
+            "endLine": 49,
+            "endColumn": 17,
             "problem": "MathPow",
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
