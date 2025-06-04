@@ -251,3 +251,4 @@ faultDesc[FaultID.StoragePropDecoratorNotSupported] = '"@StorageProp" decorator 
 faultDesc[FaultID.LocalStoragePropDecoratorNotSupported] = '"@LocalStorageProp" decorator is not supported';
 faultDesc[FaultID.PropFunctionNotSupported] = '"prop" function is not supported';
 faultDesc[FaultID.SetAndPropFunctionNotSupported] = '"setAndProp" function is not supported';
+faultDesc[FaultID.PropNeedCallMethodForDeepCopy] = 'Deep copy needs to call the specific method';

@@ -1642,6 +1642,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handlePropertyAssignment(node: ts.PropertyAssignment): void {
     this.handleDollarBind(node);
+    this.handlePropertyAssignmentForProp(node);
 
     this.handleQuotedHyphenPropsDeprecated(node);
     const propName = node.name;
@@ -8911,6 +8912,78 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return targetTypes.includes(storageType.getText());
+  }
+
+  private handlePropertyAssignmentForProp(node: ts.PropertyAssignment): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const callExpr = node.parent.parent;
+    if (!ts.isCallExpression(callExpr)) {
+      return;
+    }
+
+    const structDecl = TsUtils.getDeclaration(this.tsTypeChecker.getSymbolAtLocation(callExpr.expression));
+    if (!structDecl || !ts.isStructDeclaration(structDecl) || !structDecl.name) {
+      return;
+    }
+
+    const variable = node.name;
+    if (!ts.isIdentifier(variable)) {
+      return;
+    }
+
+    const targetNode = TypeScriptLinter.findVariableChangeNodeInStruct(variable, structDecl);
+    if (!targetNode) {
+      return;
+    }
+
+    const targetDecl = TsUtils.getDeclaration(this.tsTypeChecker.getSymbolAtLocation(targetNode));
+    if (!targetDecl || !ts.isPropertyDeclaration(targetDecl)) {
+      return;
+    }
+
+    const decorators = ts.getDecorators(targetDecl);
+    if (!decorators || decorators.length === 0) {
+      return;
+    }
+
+    const decorator = decorators[0];
+    const decoratorName = TsUtils.getDecoratorName(decorator);
+    if (decoratorName === PropDecoratorName.Prop) {
+      this.incrementCounters(node, FaultID.PropNeedCallMethodForDeepCopy);
+    }
+  }
+
+  private static findVariableChangeNodeInStruct(
+    variable: ts.Identifier,
+    structDecl: ts.StructDeclaration
+  ): ts.MemberName | undefined {
+    let changeNode: ts.MemberName | undefined;
+
+    function traverse(node: ts.Node): void {
+      if (changeNode) {
+        return;
+      }
+
+      if (ts.isPropertyAccessExpression(node)) {
+        if (
+          node.expression.kind === ts.SyntaxKind.ThisKeyword &&
+          node.name.getText() === variable.getText() &&
+          (ts.findAncestor(node, ts.isPostfixUnaryExpression) ||
+            ts.findAncestor(node, ts.isPrefixUnaryExpression) ||
+            ts.findAncestor(node, ts.isBinaryExpression))
+        ) {
+          changeNode = node.name;
+        }
+      }
+
+      ts.forEachChild(node, traverse);
+    }
+
+    traverse(structDecl);
+    return changeNode;
   }
 
   private getIdentifierForAwaitExpr(awaitExpr: ts.AwaitExpression): IdentifierAndArguments {
