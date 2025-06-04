@@ -1258,6 +1258,74 @@ KInt impl_getTypeFromTypeHierarchies(KNativePointer infoPtr)
 }
 TS_INTEROP_1(getTypeFromTypeHierarchies, KInt, KNativePointer)
 
+KNativePointer impl_getCodeFixesAtPosition(KNativePointer context, KInt startPosition, KInt endPosition,
+                                           KInt *errorCodesPtr, KInt codeLength)
+{
+    CodeFixOptions emptyOptions;
+    std::vector<int> errorCodesInt;
+    if (errorCodesPtr != nullptr && codeLength > 0) {
+        // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic,-warnings-as-errors)
+        errorCodesInt = std::vector<int>(reinterpret_cast<int *>(errorCodesPtr),
+                                         reinterpret_cast<int *>(errorCodesPtr) + codeLength);
+        // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic,-warnings-as-errors)
+    }
+    LSPAPI const *ctx = GetImpl();
+    auto autofix = ctx->getCodeFixesAtPosition(reinterpret_cast<es2panda_Context *>(context), startPosition,
+                                               endPosition, errorCodesInt, emptyOptions);
+    return new std::vector<CodeFixActionInfo>(autofix);
+}
+TS_INTEROP_5(getCodeFixesAtPosition, KNativePointer, KNativePointer, KInt, KInt, KInt *, KInt)
+
+KNativePointer impl_getCodeFixActionInfos(KNativePointer codeFixActionInfoListPtr)
+{
+    auto *getCodeFixActionInfoList = reinterpret_cast<CodeFixActionInfoList *>(codeFixActionInfoListPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : getCodeFixActionInfoList->infos_) {
+        ptrs.push_back(new CodeFixActionInfo(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getCodeFixActionInfos, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileTextChangesFromCodeActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeActionInfo *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->changes_) {
+        ptrs.push_back(new FileTextChanges(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFileTextChangesFromCodeActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDescriptionFromCodeActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeActionInfo *>(infoPtr);
+    return new std::string(info->description_);
+}
+TS_INTEROP_1(getDescriptionFromCodeActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixNameFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixName_);
+}
+TS_INTEROP_1(getFixNameFromCodeFixActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixIdFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixId_);
+}
+TS_INTEROP_1(getFixIdFromCodeFixActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixAllDescriptionFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixAllDescription_);
+}
+TS_INTEROP_1(getFixAllDescriptionFromCodeFixActionInfo, KNativePointer, KNativePointer)
+
 KNativePointer impl_getSpanOfEnclosingComment(KNativePointer context, KInt position, KBoolean onlyMultiLine)
 {
     LSPAPI const *ctx = GetImpl();

@@ -510,14 +510,25 @@ std::string GetOwnerId(ir::AstNode *node)
 DiagnosticSeverity GetSeverity(util::DiagnosticType errorType)
 {
     ES2PANDA_ASSERT(errorType != util::DiagnosticType::INVALID);
-    if (errorType == util::DiagnosticType::WARNING) {
+    if (errorType == util::DiagnosticType::WARNING || errorType == util::DiagnosticType::PLUGIN_WARNING) {
         return DiagnosticSeverity::Warning;
     }
     if (errorType == util::DiagnosticType::SYNTAX || errorType == util::DiagnosticType::SEMANTIC ||
-        errorType == util::DiagnosticType::FATAL || errorType == util::DiagnosticType::ARKTS_CONFIG_ERROR) {
+        errorType == util::DiagnosticType::FATAL || errorType == util::DiagnosticType::ARKTS_CONFIG_ERROR ||
+        errorType == util::DiagnosticType::PLUGIN_ERROR) {
         return DiagnosticSeverity::Error;
     }
     throw std::runtime_error("Unknown error type!");
+}
+
+// Temp design only support UI Plugin Diag.
+int CreateCodeForDiagnostic(const util::DiagnosticBase *error)
+{
+    const int uiCode = 4000;
+    if (error->Type() == util::DiagnosticType::PLUGIN_ERROR || error->Type() == util::DiagnosticType::PLUGIN_WARNING) {
+        return uiCode;
+    }
+    return 1;
 }
 
 Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::DiagnosticBase &error)
@@ -543,7 +554,7 @@ Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::Diagn
     auto range = Range(Position(sourceStartLocation.line, sourceStartLocation.col),
                        Position(sourceEndLocation.line, sourceEndLocation.col));
     auto severity = GetSeverity(error.Type());
-    auto code = 1;
+    auto code = CreateCodeForDiagnostic(&error);
     std::string message = error.Message();
     auto codeDescription = CodeDescription("test code description");
     auto tags = std::vector<DiagnosticTag>();
