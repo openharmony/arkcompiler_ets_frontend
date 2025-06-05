@@ -27,6 +27,7 @@ import { InteropObjectLiteralCheck } from '../../checker/migration/InteropDynami
 import { InteropAssignCheck } from '../../checker/migration/InteropAssignCheck';
 import { InteropJSModifyPropertyCheck } from '../../checker/migration/InteropJSModifyPropertyCheck';
 import { NoTSLikeAsCheck } from '../../checker/migration/NoTSLikeAsCheck';
+import { InteropS2DObjectLiteralCheck } from '../../checker/migration/InteropS2DObjectLiteralsCheck';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
@@ -38,6 +39,7 @@ export const fileRules = {
     '@migration/arkui-custombuilder-passing': CustomBuilderCheck,
     '@migration/no-method-overriding-field-check': NoMethodOverridingFieldCheck,
     '@migration/interop-boxed-type-check': InteropBoxedTypeCheck,
+    '@migration/arkts-interop-s2d-object-literal': InteropS2DObjectLiteralCheck,
 };
 
 export const projectRules = {
