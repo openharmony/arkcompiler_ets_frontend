@@ -710,12 +710,12 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
 {
     ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
+    auto checker = GetRelation()->GetChecker()->AsETSChecker();
 
     // NOTE(vpukhov): this is still better than to retain any "functional" state in ETSObjectType
-    auto [foundArity, hasRest] = [this]() {
-        auto checker = GetRelation()->GetChecker()->AsETSChecker();
+    auto [foundArity, hasRest] = [this, checker]() {
         auto baseType = GetConstOriginalBaseType();
-        for (size_t arity = 0; arity < checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold(); ++arity) {
+        for (size_t arity = 0; arity <= checker->GlobalBuiltinFunctionTypeVariadicThreshold(); ++arity) {
             if (auto itf = checker->GlobalBuiltinFunctionType(arity, false); itf == baseType) {
                 return std::make_pair(arity, false);
             }
@@ -726,8 +726,9 @@ ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
         ES2PANDA_UNREACHABLE();
     }();
 
-    std::string invokeName = FunctionalInterfaceInvokeName(foundArity, hasRest);
-    auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(util::StringView(invokeName));
+    std::string invokeName = checker->FunctionalInterfaceInvokeName(foundArity, hasRest);
+    auto *invoke = GetProperty(util::StringView(invokeName),
+                               PropertySearchFlags::SEARCH_INSTANCE_METHOD | PropertySearchFlags::SEARCH_IN_INTERFACES);
     ES2PANDA_ASSERT(invoke != nullptr && invoke->TsType() != nullptr && invoke->TsType()->IsETSFunctionType());
     return invoke->TsType()->AsETSFunctionType();
 }

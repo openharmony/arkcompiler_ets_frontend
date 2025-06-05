@@ -56,9 +56,8 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
 }
 
 // #22951: proper this type implementation
-static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface, size_t arity)
+static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface, std::string &invokeName)
 {
-    auto invokeName = FunctionalInterfaceInvokeName(arity, false);
     auto *property = interface->AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
         util::StringView(invokeName));
     ES2PANDA_ASSERT(property != nullptr);
@@ -79,6 +78,11 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         auto sigParamsSize = signature->Params().size();
         auto nPosParams = arity < sigParamsSize ? arity : sigParamsSize;
         auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true);
+
+        if (nPosParams >= checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
+            return functionN;
+        }
+
         auto substitution = Substitution {};
         for (size_t i = 0; i < nPosParams; i++) {
             substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
@@ -98,14 +102,12 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
 
     ES2PANDA_ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
 
-    // Note: FunctionN is not supported yet
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     if (arity >= checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
-        return nullptr;
+        return funcIface;
     }
 
-    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     auto substitution = Substitution {};
-
     for (size_t i = 0; i < arity; i++) {
         substitution.emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
                              checker->MaybeBoxType(signature->Params()[i]->TsType()));
@@ -115,7 +117,8 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     auto result = funcIface->Substitute(checker->Relation(), &substitution, true, isExtensionHack);
 
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
-        HackThisParameterInExtensionFunctionInvoke(result, arity);
+        auto invokeName = checker->FunctionalInterfaceInvokeName(arity, false);
+        HackThisParameterInExtensionFunctionInvoke(result, invokeName);
     }
 
     result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);

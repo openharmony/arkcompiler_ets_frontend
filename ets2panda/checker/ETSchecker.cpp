@@ -258,7 +258,7 @@ static void IntializeFunctionInterfaces(GlobalTypesHolder *typeHolder)
         return typeHolder->GlobalFunctionBuiltinType(arity, hasRest)->AsETSObjectType();
     };
 
-    for (size_t arity = 0; arity < typeHolder->VariadicFunctionTypeThreshold(); arity++) {
+    for (size_t arity = 0; arity <= typeHolder->VariadicFunctionTypeThreshold(); arity++) {
         getItf(arity, false)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
         getItf(arity, true)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     }
@@ -807,6 +807,15 @@ bool ETSChecker::TypeHasDefaultValue(Type *tp) const
 {
     return tp->IsBuiltinNumeric() || tp->IsETSBooleanType() || tp->IsETSCharType() ||
            Relation()->IsSupertypeOf(GlobalETSUndefinedType(), tp);
+}
+
+/* Invoke method name in functional interfaces */
+std::string ETSChecker::FunctionalInterfaceInvokeName(size_t arity, bool hasRest)
+{
+    if (arity < GlobalBuiltinFunctionTypeVariadicThreshold()) {
+        return (hasRest ? "invokeR" : "invoke") + std::to_string(arity);
+    }
+    return "unsafeCall";
 }
 
 }  // namespace ark::es2panda::checker

@@ -586,6 +586,7 @@ public:
     void ReplaceScope(ir::AstNode *root, ir::AstNode *oldNode, varbinder::Scope *newScope);
 
     // Helpers
+    std::string FunctionalInterfaceInvokeName(size_t arity, bool hasRest);
     static std::string GetAsyncImplName(const util::StringView &name);
     static std::string GetAsyncImplName(ir::MethodDefinition *asyncMethod);
     static bool IsAsyncImplMethod(ir::MethodDefinition const *method);
