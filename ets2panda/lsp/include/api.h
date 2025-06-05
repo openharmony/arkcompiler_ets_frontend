@@ -543,6 +543,7 @@ typedef struct LSPAPI {
                                                              CodeFixOptions &codeFixOptions);
     CombinedCodeActionsInfo (*getCombinedCodeFix)(const char *fileName, const std::string &fixId,
                                                   CodeFixOptions &codeFixOptions);
+    TextSpan *(*GetNameOrDottedNameSpan)(es2panda_Context *context, int startPos);
 } LSPAPI;
 CAPI_EXPORT LSPAPI const *GetImpl();
 // NOLINTEND
