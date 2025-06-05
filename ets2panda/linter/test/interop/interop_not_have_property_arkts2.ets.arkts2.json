@@ -15,9 +15,19 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 17,
             "column": 1,
-            "endLine": 16,
+            "endLine": 17,
+            "endColumn": 59,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
             "endColumn": 59,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -25,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 19,
             "column": 1,
-            "endLine": 18,
+            "endLine": 19,
             "endColumn": 9,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -35,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 1,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 17,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -45,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 1,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 16,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -55,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 14,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 16,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -65,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 1,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 21,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -75,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 16,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 17,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -85,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 19,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -95,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 23,
             "column": 1,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 13,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -105,10 +115,50 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 23,
             "column": 11,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 9,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "InstantiatedJsOjbect",
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
+            "endColumn": 11,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 9,
+            "endLine": 26,
+            "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",

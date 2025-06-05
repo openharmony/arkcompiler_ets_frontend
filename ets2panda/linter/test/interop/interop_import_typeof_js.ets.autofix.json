@@ -398,6 +398,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 35,
+            "column": 11,
+            "endLine": 35,
+            "endColumn": 22,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1136,
+                    "end": 1147,
+                    "replacementText": "person.getPropertyByName(\"name\")",
+                    "line": 35,
+                    "column": 11,
+                    "endLine": 35,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 36,
             "column": 12,
             "endLine": 36,

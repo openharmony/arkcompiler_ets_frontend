@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static'
 let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 let person = GeneratedImportVar_1.getPropertyByName('person');
@@ -23,3 +24,6 @@ foo.setPropertyByName("name", ESValue.wrap("456"))
 person.setPropertyByName("age", ESValue.wrap(23.0))
 person.setPropertyByName("male", ESValue.wrap([2.0, 3.0]))
 foo.setPropertyByName("age", ESValue.wrap(12.0))
+
+let a = foo.instantiate()
+a.setPropertyByName("age", ESValue.wrap(12.0))

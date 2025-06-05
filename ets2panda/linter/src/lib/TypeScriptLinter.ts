@@ -1412,6 +1412,36 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private isJsRelated(node: ts.Expression): boolean  {
+    if (this.tsUtils.isJsImport(node)) {
+      return true;
+    }
+
+    if (ts.isNewExpression(node)) {
+      return this.tsUtils.isJsImport(node.expression);
+    }
+
+    if (ts.isIdentifier(node)) {
+      const symbol = this.tsUtils.trueSymbolAtLocation(node);
+      if (!symbol) {
+        return false;
+      }
+
+      const declarations = symbol.getDeclarations();
+      if (!declarations || declarations.length === 0) {
+        return false;
+      }
+
+      for (const declaration of declarations) {
+        if (ts.isVariableDeclaration(declaration) && declaration.initializer) {
+          return this.isJsRelated(declaration.initializer);
+        }
+      }
+    }
+
+    return false;
+  }
+
   propertyAccessExpressionForInterop(propertyAccessNode: ts.PropertyAccessExpression): void {
     if (!this.useStatic || !this.options.arkts2) {
       return;
@@ -1424,10 +1454,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       return current;
-    };
-
+    }
+    
     const firstObjNode = getFirstObjectNode(propertyAccessNode);
-    if (!this.tsUtils.isJsImport(firstObjNode)) {
+    const isJsObject = this.isJsRelated(firstObjNode);
+    if (!isJsObject) {
       return;
     }
 

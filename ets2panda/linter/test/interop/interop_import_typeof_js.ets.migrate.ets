@@ -42,7 +42,7 @@ const aClass:ClassA = ClassA.instantiate()
 ClassA.instantiate().typeOf() //error
 typeof aClass;
 let person:Person = Person.instantiate();
-let name =person.name
+let name =person.getPropertyByName("name")
 let name2 =person.invokeMethod("getName")
 function getPersonInfo(){
   typeof person;

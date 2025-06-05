@@ -15,28 +15,38 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 17,
             "column": 1,
-            "endLine": 16,
+            "endLine": 17,
+            "endColumn": 59,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
             "endColumn": 59,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 605,
-                    "end": 663,
+                    "start": 618,
+                    "end": 676,
                     "replacementText": "",
-                    "line": 16,
+                    "line": 17,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 17,
                     "endColumn": 59
                 },
                 {
-                    "start": 663,
-                    "end": 663,
+                    "start": 676,
+                    "end": 676,
                     "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n",
-                    "line": 16,
+                    "line": 17,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 17,
                     "endColumn": 59
                 }
             ],
@@ -45,19 +55,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 19,
             "column": 1,
-            "endLine": 18,
+            "endLine": 19,
             "endColumn": 9,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 673,
+                    "start": 678,
+                    "end": 686,
                     "replacementText": "foo.getPropertyByName(\"name\")",
-                    "line": 18,
+                    "line": 19,
                     "column": 1,
-                    "endLine": 18,
+                    "endLine": 19,
                     "endColumn": 9
                 }
             ],
@@ -66,19 +76,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 20,
             "column": 1,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 17,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 674,
-                    "end": 690,
+                    "start": 687,
+                    "end": 703,
                     "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))",
-                    "line": 19,
+                    "line": 20,
                     "column": 1,
-                    "endLine": 19,
+                    "endLine": 20,
                     "endColumn": 17
                 }
             ],
@@ -87,19 +97,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 1,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 16,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 691,
-                    "end": 706,
+                    "start": 704,
+                    "end": 719,
                     "replacementText": "person.setPropertyByName(\"age\", ESValue.wrap(23))",
-                    "line": 20,
+                    "line": 21,
                     "column": 1,
-                    "endLine": 20,
+                    "endLine": 21,
                     "endColumn": 16
                 }
             ],
@@ -108,19 +118,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 14,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 16,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 704,
-                    "end": 706,
+                    "start": 717,
+                    "end": 719,
                     "replacementText": "23.0",
-                    "line": 20,
+                    "line": 21,
                     "column": 14,
-                    "endLine": 20,
+                    "endLine": 21,
                     "endColumn": 16
                 }
             ],
@@ -129,19 +139,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 1,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 21,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 707,
-                    "end": 727,
+                    "start": 720,
+                    "end": 740,
                     "replacementText": "person.setPropertyByName(\"male\", ESValue.wrap([2, 3]))",
-                    "line": 21,
+                    "line": 22,
                     "column": 1,
-                    "endLine": 21,
+                    "endLine": 22,
                     "endColumn": 21
                 }
             ],
@@ -150,19 +160,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 16,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 17,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 722,
-                    "end": 723,
+                    "start": 735,
+                    "end": 736,
                     "replacementText": "2.0",
-                    "line": 21,
+                    "line": 22,
                     "column": 16,
-                    "endLine": 21,
+                    "endLine": 22,
                     "endColumn": 17
                 }
             ],
@@ -171,19 +181,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 19,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 725,
-                    "end": 726,
+                    "start": 738,
+                    "end": 739,
                     "replacementText": "3.0",
-                    "line": 21,
+                    "line": 22,
                     "column": 19,
-                    "endLine": 21,
+                    "endLine": 22,
                     "endColumn": 20
                 }
             ],
@@ -192,19 +202,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 23,
             "column": 1,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 13,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 728,
-                    "end": 740,
+                    "start": 741,
+                    "end": 753,
                     "replacementText": "foo.setPropertyByName(\"age\", ESValue.wrap(12))",
-                    "line": 22,
+                    "line": 23,
                     "column": 1,
-                    "endLine": 22,
+                    "endLine": 23,
                     "endColumn": 13
                 }
             ],
@@ -213,20 +223,93 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 23,
             "column": 11,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 13,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 738,
-                    "end": 740,
+                    "start": 751,
+                    "end": 753,
                     "replacementText": "12.0",
-                    "line": 22,
+                    "line": 23,
                     "column": 11,
-                    "endLine": 22,
+                    "endLine": 23,
                     "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 9,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 763,
+                    "end": 772,
+                    "replacementText": "foo.instantiate()",
+                    "line": 25,
+                    "column": 9,
+                    "endLine": 25,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
+            "endColumn": 11,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 773,
+                    "end": 783,
+                    "replacementText": "a.setPropertyByName(\"age\", ESValue.wrap(12))",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 9,
+            "endLine": 26,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 781,
+                    "end": 783,
+                    "replacementText": "12.0",
+                    "line": 26,
+                    "column": 9,
+                    "endLine": 26,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
