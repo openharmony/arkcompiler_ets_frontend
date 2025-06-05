@@ -1718,18 +1718,22 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
     expr->Expr()->Compile(etsg);
 
     if (etsg->GetAccumulatorType()->PossiblyETSNullish()) {
-        auto arg = etsg->AllocReg();
-        etsg->StoreAccumulator(expr, arg);
-        etsg->LoadAccumulator(expr, arg);
+        if (!etsg->GetAccumulatorType()->PossiblyETSNull()) {
+            etsg->EmitNullcheck(expr);
+            etsg->SetAccumulatorType(expr->OriginalType());
+        } else {
+            auto arg = etsg->AllocReg();
+            etsg->StoreAccumulator(expr, arg);
 
-        auto endLabel = etsg->AllocLabel();
+            auto endLabel = etsg->AllocLabel();
 
-        etsg->BranchIfNotNullish(expr, endLabel);
-        etsg->EmitNullishException(expr);
+            etsg->BranchIfNotNullish(expr, endLabel);
+            etsg->EmitNullishException(expr);
 
-        etsg->SetLabel(expr, endLabel);
-        etsg->LoadAccumulator(expr, arg);
-        etsg->AssumeNonNullish(expr, expr->OriginalType());
+            etsg->SetLabel(expr, endLabel);
+            etsg->LoadAccumulator(expr, arg);
+            etsg->AssumeNonNullish(expr, expr->OriginalType());
+        }
     }
 
     ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->OriginalType()));

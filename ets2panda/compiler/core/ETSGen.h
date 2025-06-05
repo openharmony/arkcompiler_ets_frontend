@@ -96,6 +96,15 @@ public:
     void IsInstanceDynamic(const ir::BinaryExpression *node, VReg srcReg, VReg tgtReg);
     void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
 
+    void EmitNullcheck([[maybe_unused]] const ir::AstNode *node)
+    {
+#ifdef PANDA_WITH_ETS
+        Sa().Emit<EtsNullcheck>(node);
+#else
+        ES2PANDA_UNREACHABLE();
+#endif  // PANDA_WITH_ETS
+    }
+
     void BinaryLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void BinaryArithmLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
