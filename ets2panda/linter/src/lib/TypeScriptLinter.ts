@@ -173,6 +173,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   static missingAttributeSet: Set<string>;
   static literalAsPropertyNameTypeSet: Set<ApiListItem>;
   private localApiListItem: ApiListItem | undefined = undefined;
+  static constructorFuncsSet: Set<ApiListItem>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -248,6 +249,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private static addSdkConstructorFuncsSetData(item: ApiListItem): void {
+    if (item.api_info.problem === SdkProblem.ConstructorFuncs) {
+      TypeScriptLinter.constructorFuncsSet.add(item);
+    }
+  }
+
   private static addGlobalApiInfosCollocetionData(item: ApiListItem): void {
     const problemType = item.api_info.problem;
     const isGlobal = item.is_global;
@@ -263,6 +270,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private static initSdkWhitelist(): void {
     TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
     TypeScriptLinter.literalAsPropertyNameTypeSet = new Set<ApiListItem>();
+    TypeScriptLinter.constructorFuncsSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
@@ -274,6 +282,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         });
         TypeScriptLinter.addSdkIndexedTypeSetData(item);
         TypeScriptLinter.addSdkliteralAsPropertyNameTypeSetData(item);
+        TypeScriptLinter.addSdkConstructorFuncsSetData(item);
         TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
       }
     }
@@ -5353,6 +5362,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     this.checkNoEnumProp(typeRef);
+    if (ts.isQualifiedName(typeRef.typeName)) {
+      this.handleSdkForConstructorFuncs(typeRef.typeName);
+    }
   }
 
   private checkNoEnumProp(typeRef: ts.TypeReferenceNode): void {
@@ -7451,21 +7463,49 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isFunctionExpression(node);
   }
 
-  private handleSdkForConstructorFuncs(node: ts.PropertyAccessExpression): void {
-    if (!this.options.arkts2 || !node) {
-      return;
+  private static isThirdPartyBySymbol(symbol: ts.Symbol | undefined, apiList: ApiListItem): boolean {
+    if (!symbol) {
+      return false;
     }
-    const sdkInfos = this.interfaceMap.get(node.expression.getText());
-    if (!sdkInfos || sdkInfos.size === 0) {
-      return;
-    }
-
-    for (const sdkInfo of sdkInfos) {
-      const propertyName = node.name.getText();
-      if (propertyName === sdkInfo.api_name) {
-        this.incrementCounters(node.name, FaultID.ConstructorTypesDeprecated);
+    const declaration = symbol.getDeclarations()?.[0];
+    if (declaration && ts.isImportClause(declaration)) {
+      const importDecl = declaration.parent;
+      const importPath = TsUtils.removeOrReplaceQuotes(importDecl.moduleSpecifier.getText(), false);
+      const import_path = TypeScriptLinter.getLocalApiListItemByKey(SdkNameInfo.ImportPath, apiList);
+      if (import_path.includes(importPath)) {
+        return true;
       }
     }
+    return false;
+  }
+
+  private static getLocalApiListItemByKey(key: string, apiList: ApiListItem): string | string[] {
+    if (!apiList) {
+      return '';
+    }
+    if (SdkNameInfo.ImportPath === key) {
+      return apiList.import_path;
+    }
+    return '';
+  }
+
+  private handleSdkForConstructorFuncs(node: ts.PropertyAccessExpression | ts.QualifiedName): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const rightNode = ts.isPropertyAccessExpression(node) ? node.name : node.right;
+    const leftNode = ts.isPropertyAccessExpression(node) ? node.expression : node.left;
+    const constructorFuncsInfos = Array.from(TypeScriptLinter.constructorFuncsSet);
+    constructorFuncsInfos.some((constructorFuncsInfo) => {
+      const api_name = constructorFuncsInfo.api_info.api_name;
+      if (api_name !== rightNode.getText()) {
+        return;
+      }
+      const parentSym = this.tsTypeChecker.getSymbolAtLocation(leftNode);
+      if (TypeScriptLinter.isThirdPartyBySymbol(parentSym, constructorFuncsInfo)) {
+        this.incrementCounters(rightNode, FaultID.ConstructorTypesDeprecated);
+      }
+    });
   }
 
   private handleQuotedHyphenPropsDeprecated(node: ts.PropertyAccessExpression | ts.PropertyAssignment): void {
