@@ -500,10 +500,7 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         ctx->parser->ParseScript(*ctx->sourceFile,
                                  ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
     }
-    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
-    if (ctx->state == ES2PANDA_STATE_ERROR) {
-        ctx->diagnosticEngine->FlushDiagnostic();
-    }
+    ctx->state = ES2PANDA_STATE_PARSED;
     ctx->phaseManager->SetCurrentPhaseIdToAfterParse();
     return ctx;
 }
@@ -535,7 +532,6 @@ __attribute__((unused)) static Context *Check(Context *ctx)
     }
 
     if (ctx->state == ES2PANDA_STATE_ERROR) {
-        ctx->diagnosticEngine->FlushDiagnostic();
         return ctx;
     }
 
@@ -579,7 +575,6 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
     }
 
     if (ctx->state == ES2PANDA_STATE_ERROR) {
-        ctx->diagnosticEngine->FlushDiagnostic();
         return ctx;
     }
 
@@ -688,9 +683,6 @@ extern "C" __attribute__((unused)) es2panda_Context *ProceedToState(es2panda_Con
             break;
     }
 
-    if (ctx->state == ES2PANDA_STATE_ERROR) {
-        ctx->diagnosticEngine->FlushDiagnostic();
-    }
     return reinterpret_cast<es2panda_Context *>(ctx);
 }
 
