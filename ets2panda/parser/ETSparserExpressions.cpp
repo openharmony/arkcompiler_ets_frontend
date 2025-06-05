@@ -767,6 +767,15 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
         return ParsePotentialExpressionSequence(yieldExpr, flags);
     }
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        ir::Expression *expr = ParseGenericArrowFunction(true);
+        if (expr == nullptr) {
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        }
+
+        return expr;
+    }
+
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
     if ((flags & ExpressionParseFlags::INSTANCEOF) != 0) {
         ValidateInstanceOfExpression(unaryExpressionNode);

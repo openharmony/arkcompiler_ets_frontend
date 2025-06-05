@@ -97,6 +97,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    TSTypeParameterDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void Accept(ASTVisitorT *v) override
     {

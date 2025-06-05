@@ -92,6 +92,21 @@ TSTypeParameterDeclaration *TSTypeParameterDeclaration::Construct(ArenaAllocator
     return allocator->New<TSTypeParameterDeclaration>(std::move(params), 0);
 }
 
+TSTypeParameterDeclaration *TSTypeParameterDeclaration::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    ArenaVector<TSTypeParameter *> params(allocator->Adapter());
+    for (auto *param : params_) {
+        params.push_back(param->Clone(allocator, this)->AsTSTypeParameter());
+    }
+
+    auto *const clone = allocator->New<TSTypeParameterDeclaration>(std::move(params), requiredParams_);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    clone->SetRange(range_);
+    return clone;
+}
+
 void TSTypeParameterDeclaration::CopyTo(AstNode *other) const
 {
     auto otherImpl = other->AsTSTypeParameterDeclaration();

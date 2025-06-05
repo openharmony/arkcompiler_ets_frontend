@@ -256,7 +256,8 @@ private:
     ir::TypeNode *ParseUnionType(ir::TypeNode *firstType);
     ir::TypeNode *GetTypeAnnotationOfPrimitiveType(lexer::TokenType tokenType, TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
-    ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options,
+                                    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
@@ -268,9 +269,12 @@ private:
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
     void ReportIfVarDeclaration(VariableParsingFlags flags) override;
-    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
+                                               ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
-    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options);
+    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options);
+    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(
+        TypeAnnotationParsingOptions *options, ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
                                lexer::LexerPosition savedPos);

@@ -150,7 +150,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         }
     }
 
-    if (LookupInDebugInfoPlugin(ident)) {
+    if (ident->Variable() != nullptr || LookupInDebugInfoPlugin(ident)) {
         return;
     }
 

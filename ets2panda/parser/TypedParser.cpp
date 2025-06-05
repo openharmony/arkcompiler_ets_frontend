@@ -221,7 +221,7 @@ ir::Statement *TypedParser::ParseModuleDeclaration([[maybe_unused]] StatementPar
     return ParseModuleOrNamespaceDeclaration(startLoc);
 }
 
-ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
+ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction(bool isThrowError)
 {
     ArrowFunctionContext arrowFunctionContext(this, false);
 
@@ -232,6 +232,10 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseTypeParameterDeclaration(&typeParamDeclOptions);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        if (isThrowError) {
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM,
+                     {TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)});
+        }
         return nullptr;
     }
 
@@ -251,6 +255,9 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        if (isThrowError) {
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(lexer::TokenType::PUNCTUATOR_ARROW)});
+        }
         return nullptr;
     }
 

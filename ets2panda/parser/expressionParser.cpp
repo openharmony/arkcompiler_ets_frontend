@@ -328,7 +328,10 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
         endLoc = body->End();
     }
-
+    if ((GetContext().Status() & ParserStatus::FUNCTION_HAS_RETURN_STATEMENT) != 0) {
+        arrowFunctionContext->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+        GetContext().Status() ^= ParserStatus::FUNCTION_HAS_RETURN_STATEMENT;
+    }
     // clang-format off
     funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
@@ -572,6 +575,10 @@ ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
 ir::Expression *ParserImpl::CreateBinaryAssignmentExpression(ir::Expression *assignmentExpression,
                                                              ir::Expression *lhsExpression, lexer::TokenType tokenType)
 {
+    if (assignmentExpression == nullptr) {
+        assignmentExpression = AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
+
     auto *binaryAssignmentExpression =
         AllocNode<ir::AssignmentExpression>(lhsExpression, assignmentExpression, tokenType);
 

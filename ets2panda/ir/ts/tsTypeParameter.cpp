@@ -152,6 +152,24 @@ TSTypeParameter *TSTypeParameter::Construct(ArenaAllocator *allocator)
     return allocator->New<TSTypeParameter>(nullptr, nullptr, nullptr, allocator);
 }
 
+TSTypeParameter *TSTypeParameter::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    auto *clone = allocator->New<TSTypeParameter>(
+        name_->Clone(allocator, this), constraint_ == nullptr ? nullptr : constraint_->Clone(allocator, this),
+        defaultType_ == nullptr ? nullptr : defaultType_->Clone(allocator, this), allocator);
+    clone->SetParent(parent);
+    clone->SetRange(range_);
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+    return clone;
+}
+
 void TSTypeParameter::CopyTo(AstNode *other) const
 {
     auto otherImpl = other->AsTSTypeParameter();

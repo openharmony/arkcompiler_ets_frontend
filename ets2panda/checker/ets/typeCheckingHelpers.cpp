@@ -930,18 +930,19 @@ void ETSChecker::CheckFunctionSignatureAnnotations(const ArenaVector<ir::Express
                                                    ir::TSTypeParameterDeclaration *typeParams,
                                                    ir::TypeNode *returnTypeAnnotation)
 {
+    if (typeParams != nullptr) {
+        for (auto *typeParam : typeParams->Params()) {
+            std::ignore = SetUpParameterType(typeParam);
+            CheckAnnotations(typeParam->Annotations());
+        }
+    }
+
     for (auto *param : params) {
         if (param->IsETSParameterExpression()) {
             CheckAnnotations(param->AsETSParameterExpression()->Annotations());
             if (param->AsETSParameterExpression()->TypeAnnotation() != nullptr) {
                 param->AsETSParameterExpression()->TypeAnnotation()->Check(this);
             }
-        }
-    }
-
-    if (typeParams != nullptr) {
-        for (auto *typeParam : typeParams->Params()) {
-            CheckAnnotations(typeParam->Annotations());
         }
     }
 

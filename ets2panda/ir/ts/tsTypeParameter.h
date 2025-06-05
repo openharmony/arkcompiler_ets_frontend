@@ -119,6 +119,7 @@ public:
     }
 
     TSTypeParameter *Construct(ArenaAllocator *allocator) override;
+    TSTypeParameter *Clone(ArenaAllocator *allocator, AstNode *parent) override;
     void CopyTo(AstNode *other) const override;
 
 private:

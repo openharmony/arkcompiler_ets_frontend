@@ -56,7 +56,13 @@ void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    dumper->Add("((");
+    dumper->Add("(");
+    if (TypeParams() != nullptr) {
+        dumper->Add("<");
+        TypeParams()->Dump(dumper);
+        dumper->Add(">");
+    }
+    dumper->Add("(");
     for (auto *param : Params()) {
         param->Dump(dumper);
         if (param != Params().back()) {
@@ -64,10 +70,6 @@ void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
-
-    if (TypeParams() != nullptr) {
-        TypeParams()->Dump(dumper);
-    }
 
     if (ReturnType() != nullptr) {
         dumper->Add("=> ");
