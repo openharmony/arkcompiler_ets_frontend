@@ -171,7 +171,8 @@ export class ArkTSConfigGenerator {
       }
       const entryFilePath = moduleInfo.entryFile;
       const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
-      if (firstLine.includes('use static')) {
+      // If the file is an ArkTS 1.2 implementation, configure the path in pathSection.
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 || moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID && firstLine.includes('use static')) {
         this.pathSection[moduleInfo.packageName] = [
           path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
         ];
@@ -254,7 +255,7 @@ export class ArkTSConfigGenerator {
       }
     };
 
-    if (moduleInfo.entryFile) {
+    if (moduleInfo.entryFile && moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
       const entryFilePath = moduleInfo.entryFile;
       const stat = fs.statSync(entryFilePath);
       if (fs.existsSync(entryFilePath) && stat.isFile()) {
