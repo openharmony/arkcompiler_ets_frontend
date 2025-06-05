@@ -8928,21 +8928,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (!ts.isIdentifier(node.expression) || !ts.isNumericLiteral(node.argumentExpression)) {
-      return;
-    }
-
     const symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
     if (!symbol?.declarations) {
       return;
     }
 
     for (const decl of symbol.declarations) {
-      if (ts.isEnumDeclaration(decl)) {
+      if (ts.isEnumDeclaration(decl) && this.shouldIncrementCounters(node)) {
         this.incrementCounters(node, FaultID.UnsupportPropNameFromValue);
         return;
       }
     }
+  }
+  private shouldIncrementCounters(node: ts.ElementAccessExpression): boolean {
+    const indexExpr = node.argumentExpression;
+    if (!indexExpr) {
+        return false;
+    }
+    if (ts.isStringLiteral(indexExpr) || ts.isNumericLiteral(indexExpr)) {
+        return true;
+    }
+    const type = this.tsTypeChecker.getTypeAtLocation(indexExpr);
+    const typeString = this.tsTypeChecker.typeToString(type);
+    return typeString === 'number' || typeString === 'string';
   }
 
   private handleMakeObserved(node: ts.PropertyAccessExpression): void {

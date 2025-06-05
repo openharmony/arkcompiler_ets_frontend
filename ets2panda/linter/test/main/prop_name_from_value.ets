@@ -20,6 +20,31 @@ enum TEST {
 }
 const arr = ['a', 'b', 'c'];
 
-const val = TEST[1]; 
-const value: number = TEST.A; //legal
-const arrVal = arr[1]; //legal
+const val = TEST[1]; //error
+const value: number = TEST.A;
+const arrVal = arr[1];
+let a = 1;
+let b = 2.3;
+let c = "str";
+let d3 = TEST[TEST.A];
+let d4 = TEST[a]; //error
+let d5 = TEST[b]; //error
+let d2 = TEST['A']; //error
+enum E { A, B, C }
+console.log(E[E.A]);
+function foo(e: E) {
+  console.log(E[e]);
+}
+foo(E.B);
+console.log(E[2 as E]);
+enum Color { Red, Green = 10, Blue }
+enum E1 { One = 1, one = 1, oNe = 1 }
+console.log(E1[1 as E1])
+let c1: Color = Color.Green;
+console.log(c1.toString())
+console.log(Color[c1]);
+enum G {
+  A = 1,
+  B = 2
+}
+console.log(G[G.A]);
