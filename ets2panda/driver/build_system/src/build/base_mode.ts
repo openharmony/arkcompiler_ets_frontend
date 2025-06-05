@@ -338,8 +338,7 @@ export abstract class BaseMode {
         if (module.isMainModule) {
           return;
         }
-        module.language === LANGUAGE_VERSION.ARKTS_1_2 ?
-          staticDepModules.set(packageName, module) : dynamicDepModules.set(packageName, module);
+        this.collectDependencyModules(packageName, module, dynamicDepModules, staticDepModules);
       });
       return [dynamicDepModules, staticDepModules];
     }
@@ -354,17 +353,32 @@ export abstract class BaseMode {
           );
           this.logger.printErrorAndExit(logData);
         } else {
-          depModuleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 ?
-            staticDepModules.set(packageName, depModuleInfo) : dynamicDepModules.set(packageName, depModuleInfo);
+          this.collectDependencyModules(packageName, depModuleInfo, dynamicDepModules, staticDepModules);
         }
       });
     }
     return [dynamicDepModules, staticDepModules];
   }
 
+  private collectDependencyModules(
+    packageName: string,
+    module: ModuleInfo,
+    dynamicDepModules: Map<string, ModuleInfo>,
+    staticDepModules: Map<string, ModuleInfo>
+  ): void {
+    if (module.language === LANGUAGE_VERSION.ARKTS_1_2) {
+      staticDepModules.set(packageName, module);
+    } else if (module.language === LANGUAGE_VERSION.ARKTS_1_1) {
+      dynamicDepModules.set(packageName, module);
+    } else if (module.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      staticDepModules.set(packageName, module);
+      dynamicDepModules.set(packageName, module);
+    }
+  }
+
   protected generateArkTSConfigForModules(): void {
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
-      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo);
+      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts);
     });
   }
 

@@ -64,10 +64,10 @@ function compileAbc(jobInfo: JobInfo): void {
     }
     ets2pandaCmd.push(fileInfo.filePath);
 
-    let config = arkts.Config.create(ets2pandaCmd).peer;
-    arktsGlobal.config = config;
+    let arkConfig = arkts.Config.create(ets2pandaCmd).peer;
+    arktsGlobal.config = arkConfig;
 
-    let context = arkts.Context.createCacheContextFromFile(config, fileInfo.filePath, jobInfo.globalContextPtr, false).peer;
+    let context = arkts.Context.createCacheContextFromFile(arkConfig, fileInfo.filePath, jobInfo.globalContextPtr, false).peer;
 
     PluginDriver.getInstance().getPluginContext().setContextPtr(context);
 
@@ -130,10 +130,10 @@ function compileExternalProgram(jobInfo: JobInfo): void {
     }
     ets2pandaCmd.push(fileInfo.filePath);
 
-    let config = arkts.Config.create(ets2pandaCmd).peer;
-    arktsGlobal.config = config;
+    let arkConfig = arkts.Config.create(ets2pandaCmd).peer;
+    arktsGlobal.config = arkConfig;
 
-    let context = arkts.Context.createCacheContextFromFile(config, fileInfo.filePath, jobInfo.globalContextPtr, true).peer;
+    let context = arkts.Context.createCacheContextFromFile(arkConfig, fileInfo.filePath, jobInfo.globalContextPtr, true).peer;
 
     PluginDriver.getInstance().getPluginContext().setContextPtr(context);
 
