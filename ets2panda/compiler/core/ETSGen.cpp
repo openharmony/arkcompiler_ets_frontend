@@ -1198,12 +1198,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
 
 void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *const targetType, const bool unchecked)
 {
-    const auto *const sourceType = GetAccumulatorType();
-    ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
-
-    if (targetType->IsETSStringType() && !sourceType->IsETSStringType()) {
-        CastToString(node);
-    }
+    ES2PANDA_ASSERT(GetAccumulatorType()->IsETSReferenceType());
 
     if (!unchecked) {
         CheckedReferenceNarrowing(node, targetType);
@@ -1214,18 +1209,6 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
                     !targetType->IsETSPartialTypeParameter());
     CheckedReferenceNarrowing(node, targetType);
     SetAccumulatorType(targetType);
-}
-
-void ETSGen::CastToString(const ir::AstNode *const node)
-{
-    const auto *const sourceType = GetAccumulatorType();
-    if (sourceType->IsETSStringType()) {
-        return;
-    }
-    ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
-    // caller must ensure parameter is not null
-    Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
-    SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
 }
 
 void ETSGen::ToBinaryResult(const ir::AstNode *node, Label *ifFalse)
