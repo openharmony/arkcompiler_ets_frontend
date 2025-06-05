@@ -651,6 +651,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
      * e.g. there is no element which is untyped object literals
      */
     const arrayLitElements = arrayLitNode.elements;
+    if (this.options.arkts2 && !arrayLitType && arrayLitElements.length === 0) {
+      this.incrementCounters(node, FaultID.NosparseArray);
+    }
     for (const element of arrayLitElements) {
       const elementContextType = this.tsTypeChecker.getContextualType(element);
       if (ts.isObjectLiteralExpression(element)) {
