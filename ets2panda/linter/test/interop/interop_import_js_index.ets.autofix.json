@@ -15,6 +15,36 @@
     ],
     "result": [
         {
+            "line": 15,
+            "column": 1,
+            "endLine": 15,
+            "endColumn": 51,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 604,
+                    "end": 654,
+                    "replacementText": "",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 51
+                },
+                {
+                    "start": 703,
+                    "end": 703,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_1.getPropertyByName('ff3');\n",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 51
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
+        },
+        {
             "line": 16,
             "column": 1,
             "endLine": 16,
@@ -22,8 +52,8 @@
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 606,
-                    "end": 654,
+                    "start": 655,
+                    "end": 703,
                     "replacementText": "",
                     "line": 16,
                     "column": 1,
@@ -31,9 +61,9 @@
                     "endColumn": 49
                 },
                 {
-                    "start": 654,
-                    "end": 654,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "start": 703,
+                    "end": 703,
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_2.getPropertyByName('foo');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -52,8 +82,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 665,
-                    "end": 672,
+                    "start": 714,
+                    "end": 721,
                     "replacementText": "foo.getPropertyByName(\"arr\")",
                     "line": 17,
                     "column": 11,
@@ -80,32 +110,11 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 7,
-            "problem": "InteropJsObjectTraverseJsInstance",
-            "autofix": [
-                {
-                    "replacementText": "arr.getPropertyByIndex(1).toNumber()",
-                    "start": 673,
-                    "end": 679,
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 7
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 7,
             "problem": "InterOpImportJsIndex",
             "autofix": [
                 {
-                    "start": 673,
-                    "end": 679,
+                    "start": 722,
+                    "end": 728,
                     "replacementText": "arr.getPropertyByIndex(1)",
                     "line": 18,
                     "column": 1,
@@ -131,33 +140,12 @@
             "line": 19,
             "column": 1,
             "endLine": 19,
-            "endColumn": 7,
-            "problem": "InteropJsObjectTraverseJsInstance",
-            "autofix": [
-                {
-                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
-                    "start": 680,
-                    "end": 690,
-                    "line": 19,
-                    "column": 1,
-                    "endLine": 19,
-                    "endColumn": 7
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
             "endColumn": 11,
             "problem": "InterOpImportJsIndex",
             "autofix": [
                 {
-                    "start": 680,
-                    "end": 690,
+                    "start": 729,
+                    "end": 739,
                     "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
                     "line": 19,
                     "column": 1,
@@ -177,13 +165,326 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 689,
-                    "end": 690,
+                    "start": 738,
+                    "end": 739,
                     "replacementText": "4.0",
                     "line": 19,
                     "column": 10,
                     "endLine": 19,
                     "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 12,
+            "endLine": 21,
+            "endColumn": 19,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 752,
+                    "end": 759,
+                    "replacementText": "ff3.getPropertyByName(\"arr\")",
+                    "line": 21,
+                    "column": 12,
+                    "endLine": 21,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 10,
+            "endLine": 23,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 801,
+                    "end": 806,
+                    "replacementText": "i: number = 0",
+                    "line": 23,
+                    "column": 10,
+                    "endLine": 23,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 14,
+            "endLine": 23,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 805,
+                    "end": 806,
+                    "replacementText": "0.0",
+                    "line": 23,
+                    "column": 14,
+                    "endLine": 23,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 17,
+            "endLine": 24,
+            "endColumn": 24,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 17,
+            "endLine": 24,
+            "endColumn": 24,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "autofix": [
+                {
+                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "start": 848,
+                    "end": 855,
+                    "line": 24,
+                    "column": 17,
+                    "endLine": 24,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 17,
+            "endLine": 24,
+            "endColumn": 24,
+            "problem": "InterOpImportJsIndex",
+            "autofix": [
+                {
+                    "start": 848,
+                    "end": 855,
+                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "line": 24,
+                    "column": 17,
+                    "endLine": 24,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 13,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 13,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "autofix": [
+                {
+                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "start": 882,
+                    "end": 889,
+                    "line": 25,
+                    "column": 13,
+                    "endLine": 25,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 13,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "InterOpImportJsIndex",
+            "autofix": [
+                {
+                    "start": 882,
+                    "end": 889,
+                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "line": 25,
+                    "column": 13,
+                    "endLine": 25,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 12,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "autofix": [
+                {
+                    "replacementText": "arr1.setPropertyByIndex(i, ESValue.wrap(0 //error\n))",
+                    "start": 903,
+                    "end": 914,
+                    "line": 26,
+                    "column": 5,
+                    "endLine": 26,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 16,
+            "problem": "InterOpImportJsIndex",
+            "autofix": [
+                {
+                    "start": 903,
+                    "end": 914,
+                    "replacementText": "arr1.setPropertyByIndex(i, ESValue.wrap(0))",
+                    "line": 26,
+                    "column": 5,
+                    "endLine": 26,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 15,
+            "endLine": 26,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 913,
+                    "end": 914,
+                    "replacementText": "0.0",
+                    "line": 26,
+                    "column": 15,
+                    "endLine": 26,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 17,
+            "endLine": 27,
+            "endColumn": 24,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 17,
+            "endLine": 27,
+            "endColumn": 24,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "autofix": [
+                {
+                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "start": 940,
+                    "end": 947,
+                    "line": 27,
+                    "column": 17,
+                    "endLine": 27,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 17,
+            "endLine": 27,
+            "endColumn": 24,
+            "problem": "InterOpImportJsIndex",
+            "autofix": [
+                {
+                    "start": 940,
+                    "end": 947,
+                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "line": 27,
+                    "column": 17,
+                    "endLine": 27,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 34,
+            "endColumn": 2,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 18,
+            "endLine": 31,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1019,
+                    "end": 1020,
+                    "replacementText": "8.0",
+                    "line": 31,
+                    "column": 18,
+                    "endLine": 31,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",

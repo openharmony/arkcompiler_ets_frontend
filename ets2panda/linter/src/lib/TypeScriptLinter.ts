@@ -8041,7 +8041,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-
+    if (!TypeScriptLinter.isInForLoopBody(elementAccessExpr)) {
+      return;
+    }
     const variableDeclaration = ts.isIdentifier(elementAccessExpr.expression) ?
       this.tsUtils.findVariableDeclaration(elementAccessExpr.expression) :
       undefined;
@@ -8063,6 +8065,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const autofix = this.autofixer?.fixJsImportElementAccessExpression(elementAccessExpr);
 
     this.incrementCounters(elementAccessExpr, FaultID.InteropJsObjectTraverseJsInstance, autofix);
+  }
+
+  private static isInForLoopBody(node: ts.Node): boolean {
+    let current: ts.Node | undefined = node.parent;
+    while (current) {
+      if (ts.isForStatement(current) || ts.isForInStatement(current) || ts.isForOfStatement(current)) {
+        return true;
+      }
+      current = current.parent;
+    }
+    return false;
   }
 
   private handleTaskPoolDeprecatedUsages(node: ts.CallExpression): void {
