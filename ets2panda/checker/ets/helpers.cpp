@@ -99,11 +99,13 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
          varbinder::VariableFlags::TYPE))) {
         case varbinder::VariableFlags::CLASS:
             identCategoryName = "Class";
-            break;
+            LogError(diagnostic::NOT_AS_OBJECT, {identCategoryName}, ident->Start());
+            return;
 
         case varbinder::VariableFlags::NAMESPACE:
             identCategoryName = "Namespace";
-            break;
+            LogError(diagnostic::NOT_AS_OBJECT, {identCategoryName}, ident->Start());
+            return;
 
         case varbinder::VariableFlags::METHOD:
             identCategoryName = "Function";

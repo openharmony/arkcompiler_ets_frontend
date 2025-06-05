@@ -1297,6 +1297,6 @@ TypeError: A is abstract therefore cannot be instantiated. [abstractNewClassInst
 SyntaxError: Unexpected token '{'. [abstractNewClassInstanceExpression.ets:26:22]
 TypeError: Method foo(): void in B not overriding any method [abstractNewClassInstanceExpression.ets:27:21]
 SyntaxError: Label must be followed by a loop statement. [abstractNewClassInstanceExpression.ets:32:11]
-TypeError: Class name 'H' used in the wrong context [abstractNewClassInstanceExpression.ets:32:11]
+SyntaxError: Class cannot be used as object. [abstractNewClassInstanceExpression.ets:32:11]
 SyntaxError: Unexpected token '{'. [abstractNewClassInstanceExpression.ets:32:23]
 SyntaxError: Unexpected token '}'. [abstractNewClassInstanceExpression.ets:35:1]

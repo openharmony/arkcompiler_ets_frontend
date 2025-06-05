@@ -25,7 +25,7 @@ let y: G<{a:String}, B> // Error
 /* @@? 19:10 Error SyntaxError: Unexpected token '>'. */
 /* @@? 19:11 Error SyntaxError: Unexpected token 'a'. */
 /* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 19:13 Error TypeError: Class name 'String' used in the wrong context */
+/* @@? 19:13 Error SyntaxError: Class cannot be used as object. */
 /* @@? 19:19 Error SyntaxError: Unexpected token '}'. */
 /* @@? 19:20 Error SyntaxError: Unexpected token ','. */
 /* @@? 19:22 Error SyntaxError: Unexpected token 'B'. */

@@ -1275,3 +1275,7 @@ syntax:
 - name: HARD_KEYWORD_IDENT
   id: 316
   message: "Hard keyword '{}' cannot be used as identifier"
+
+- name: NOT_AS_OBJECT
+  id: 318
+  message: "{} cannot be used as object."
