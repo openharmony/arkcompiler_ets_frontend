@@ -30,7 +30,7 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
     if (!hasRestVar) {
         for (size_t idx = 0; idx < maxArg; ++idx) {
             auto *id = Gensym(allocator);
-            auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSNullishObjectType(), allocator);
+            auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSAnyType(), allocator);
             id->SetTsTypeAnnotation(typeAnnotation);
             typeAnnotation->SetParent(id);
             auto *param = ctx->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
@@ -42,7 +42,7 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
 
     auto *restIdent = Gensym(allocator);
     auto *spread = ctx->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
-    auto *arr = checker->CreateETSArrayType(checker->GlobalETSNullishObjectType(), false);
+    auto *arr = checker->CreateETSArrayType(checker->GlobalETSAnyType(), false);
     auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
@@ -68,7 +68,7 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     GenerateOverloadHelperParams(ctx, minArg, maxArg, hasRestVar, params);
 
-    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSNullishObjectType();
+    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSAnyType();
     auto *returnAnno = ctx->AllocNode<ir::OpaqueTypeNode>(returnType, allocator);
 
     ir::ScriptFunctionFlags functionFlag = method->Function()->Flags();

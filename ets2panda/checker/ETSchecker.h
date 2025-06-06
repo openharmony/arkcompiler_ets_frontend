@@ -111,15 +111,12 @@ public:
     NO_COPY_SEMANTIC(ETSChecker);
     NO_MOVE_SEMANTIC(ETSChecker);
 
-    [[nodiscard]] static inline TypeFlag ETSType(const Type *const type) noexcept
+    [[nodiscard]] static TypeFlag ETSType(const Type *const type) noexcept
     {
-        return static_cast<TypeFlag>(type->TypeFlags() & TypeFlag::ETS_TYPE);
+        return ETSChecker::TypeKind(type);
     }
 
-    [[nodiscard]] static inline TypeFlag TypeKind(const Type *const type) noexcept
-    {
-        return static_cast<checker::TypeFlag>(type->TypeFlags() & checker::TypeFlag::ETS_TYPE);
-    }
+    [[nodiscard]] static TypeFlag TypeKind(const Type *const type) noexcept;
 
     Type *GlobalByteType() const;
     Type *GlobalShortType() const;
@@ -132,6 +129,7 @@ public:
     Type *GlobalVoidType() const;
     Type *GlobalETSNullType() const;
     Type *GlobalETSUndefinedType() const;
+    Type *GlobalETSAnyType() const;
     Type *GlobalETSNeverType() const;
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalETSBigIntType() const;
@@ -147,8 +145,8 @@ public:
     Type *GlobalETSBooleanBuiltinType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
-    ETSUnionType *GlobalETSNullishType() const;
-    ETSUnionType *GlobalETSNullishObjectType() const;
+    ETSUnionType *GlobalETSUnionUndefinedNull() const;
+    ETSUnionType *GlobalETSUnionUndefinedNullObject() const;
     ETSObjectType *GlobalBuiltinETSResizableArrayType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;

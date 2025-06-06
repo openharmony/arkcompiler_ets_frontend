@@ -24,9 +24,7 @@ class B extends A {
     }
 }
 
-type __T = object | null | undefined
-
-function test(f: Function, action: (f: Function) => __T, v: __T) {
+function test(f: Function, action: (f: Function) => Any, v: Any) {
     assertEQ(action(f), v)
 }
 

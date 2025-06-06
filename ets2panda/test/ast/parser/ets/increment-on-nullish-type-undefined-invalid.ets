@@ -19,4 +19,3 @@
 /* @@@ label Error SyntaxError: Unexpected token '~'. */
 /* @@@ label1 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
 /* @@@ label2 Error SyntaxError: Unexpected token ';'. */
-/* @@@ label2 Error TypeError: Bad operand type, the type of the operand must be boolean type. */

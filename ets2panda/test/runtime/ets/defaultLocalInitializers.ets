@@ -13,7 +13,7 @@
 * limitations under the License.
 */
 
-function erase<T>(v: T): object | null | undefined { return v }
+function erase<T>(v: T): Any { return v }
 
 assertTrue(erase((() => {
     let r: boolean | undefined;

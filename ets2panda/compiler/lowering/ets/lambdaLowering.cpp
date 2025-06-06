@@ -389,7 +389,7 @@ static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFun
     auto calleeName = lambda->Function()->IsAsyncFunc()
                           ? (util::UString {checker::ETSChecker::GetAsyncImplName(info->name), allocator}).View()
                           : info->name;
-    auto *forcedReturnType = lambda->Function()->IsAsyncFunc() ? checker->GlobalETSNullishObjectType() : nullptr;
+    auto *forcedReturnType = lambda->Function()->IsAsyncFunc() ? checker->GlobalETSAnyType() : nullptr;
 
     CalleeMethodInfo cmInfo;
     cmInfo.calleeName = calleeName;
@@ -538,10 +538,9 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
                    << "}";
         args = parser->CreateFormattedStatement(
             statements.str(), restParameterIndex, tmpArray, elementType, elementType, lciInfo->restParameterIdentifier,
-            lciInfo->restArgumentIdentifier, tmpArray, elementType, spreadArrIterator,
-            checker->GlobalETSNullishObjectType(), lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier,
-            restParameterIndex, spreadArrIterator, checker->MaybeBoxType(elementType), elementType, restParameterIndex,
-            restParameterIndex);
+            lciInfo->restArgumentIdentifier, tmpArray, elementType, spreadArrIterator, checker->GlobalETSAnyType(),
+            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
+            checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
     } else {
         ES2PANDA_ASSERT(restParameterSubstituteType->IsETSResizableArrayType());
         auto *typeNode = allocator->New<ir::OpaqueTypeNode>(
@@ -559,7 +558,7 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
                    << "}";
         args = parser->CreateFormattedStatement(
             statements.str(), restParameterIndex, lciInfo->restArgumentIdentifier, typeNode,
-            lciInfo->restParameterIdentifier, spreadArrIterator, checker->GlobalETSNullishObjectType(),
+            lciInfo->restParameterIdentifier, spreadArrIterator, checker->GlobalETSAnyType(),
             lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
             checker->MaybeBoxType(elementType), restParameterIndex, restParameterIndex);
     }
@@ -572,14 +571,13 @@ static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClas
 {
     auto *allocator = ctx->allocator;
     auto *checker = ctx->GetChecker()->AsETSChecker();
-    auto *anyType = checker->GlobalETSNullishObjectType();
 
     auto *restIdent = Gensym(allocator);
     lciInfo->restParameterIdentifier = restIdent->Name();
     auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
     auto *arr = lciInfo->lambdaSignature->RestVar()->TsType()->IsETSTupleType()
                     ? lciInfo->lambdaSignature->RestVar()->TsType()
-                    : checker->CreateETSArrayType(anyType);
+                    : checker->CreateETSArrayType(checker->GlobalETSAnyType());
     auto *typeAnnotation = allocator->New<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
@@ -680,7 +678,7 @@ static ir::BlockStatement *CreateLambdaClassInvokeBody(public_lib::Context *ctx,
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
     auto *checker = ctx->GetChecker()->AsETSChecker();
-    auto *anyType = checker->GlobalETSNullishObjectType();
+    auto *anyType = checker->GlobalETSAnyType();
 
     auto *call = CreateCallForLambdaClassInvoke(ctx, info, lciInfo, wrapToObject);
     auto bodyStmts = CreateRestArgumentsArrayReallocation(ctx, lciInfo);
@@ -708,7 +706,7 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
 {
     auto *allocator = ctx->allocator;
     auto *checker = ctx->GetChecker()->AsETSChecker();
-    auto *anyType = checker->GlobalETSNullishObjectType();
+    auto *anyType = checker->GlobalETSAnyType();
 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     for (size_t idx = 0; idx < lciInfo->arity; ++idx) {

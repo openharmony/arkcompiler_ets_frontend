@@ -62,7 +62,7 @@ public:
     template <typename TargetType>
     static Type *ConvertConstantType(Type *source, ArenaAllocator *allocator)
     {
-        switch (static_cast<TypeFlag>(source->TypeFlags() & TypeFlag::ETS_TYPE)) {
+        switch (static_cast<TypeFlag>(source->TypeFlags() & (TypeFlag::ETS_NUMERIC | TypeFlag::CHAR))) {
             case TypeFlag::INT:
                 return ConvertConstant<IntType, TargetType>(source->AsIntType(), allocator);
 
@@ -95,7 +95,7 @@ public:
     {
         ES2PANDA_ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType() && source->IsConstantType());
 
-        switch (static_cast<TypeFlag>(target->TypeFlags() & TypeFlag::ETS_TYPE)) {
+        switch (static_cast<TypeFlag>(target->TypeFlags() & (TypeFlag::ETS_NUMERIC | TypeFlag::CHAR))) {
             case TypeFlag::INT:
                 return ConvertConstantType<IntType>(source, allocator);
 
