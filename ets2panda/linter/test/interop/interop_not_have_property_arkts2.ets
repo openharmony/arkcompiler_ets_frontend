@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static'
 import {foo, person} from "./interop_not_have_property_js"
 
 foo.name
@@ -20,3 +21,6 @@ foo.name = "456"
 person.age = 23
 person.male = [2, 3]
 foo.age = 12
+
+let a = new foo()
+a.age = 12
