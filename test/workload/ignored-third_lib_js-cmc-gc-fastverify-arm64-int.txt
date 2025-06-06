@@ -1,0 +1,10 @@
+# Known failures list for  third_lib_js-cmc-gc-fastverify-arm64-int
+
+#26315
+jBox2d_test
+jsDiff_test
+crypto-js_test
+brotli_test
+memory-cache_test
+mathjs_test
+lodash_test
