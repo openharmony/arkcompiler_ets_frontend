@@ -37,6 +37,7 @@ export interface ArkTSGlobal {
   };
   es2panda: {
     _DestroyContext: Function;
+    _SetUpSoPath: Function;
   }
 }
 

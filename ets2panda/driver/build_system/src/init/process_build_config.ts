@@ -139,4 +139,5 @@ function initKoalaWrapper(buildConfig: BuildConfig): void {
   const { arkts, arktsGlobal } = require(koalaWrapperPath);
   buildConfig.arkts = arkts;
   buildConfig.arktsGlobal = arktsGlobal;
+  buildConfig.arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
 }
