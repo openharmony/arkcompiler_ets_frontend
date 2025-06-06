@@ -113,8 +113,6 @@ lambda_with_restparameter_optinal.ets
 overload-primitive-and-object.ets
 lambda_with_restparameter_optinal_fixedarray.ets
 finallyTryAbruptedByReturn.ets
-generic_lambda_3.ets
-generic_lambda_6.ets
 Recursive_Parameter_2.ets
 Recursive_Parameter_3.ets
 
