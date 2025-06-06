@@ -4582,6 +4582,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleTaskPoolDeprecatedUsages(tsCallExpr);
     this.handleSdkDuplicateDeclName(tsCallExpr);
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
+    this.checkRestrictedAPICall(tsCallExpr)
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -4761,6 +4762,37 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
+  private checkRestrictedAPICall(node: ts.Node): void {
+    if (ts.isCallExpression(node)) {
+      if (TypeScriptLinter.isReflectAPICall(node)) {
+        this.incrementCounters(node.parent, FaultID.InteropCallReflect);
+        return;
+      }
+
+      const signature = this.tsTypeChecker.getResolvedSignature(node);
+      if (signature) {
+        this.checkForForbiddenAPIs(signature, node);
+      }
+    }
+  }
+
+  static isReflectAPICall(callExpr: ts.CallExpression): boolean {
+    if (ts.isPropertyAccessExpression(callExpr.expression)) {
+      const expr = callExpr.expression.expression;
+      if (ts.isIdentifier(expr) && expr.text === REFLECT_LITERAL) {
+        return true;
+      }
+    }
+
+    if (ts.isElementAccessExpression(callExpr.expression)) {
+      const expr = callExpr.expression.expression;
+      if (ts.isIdentifier(expr) && expr.text === REFLECT_LITERAL) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private checkForForbiddenAPIs(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
     if (!callSignature.declaration) {
       return;
@@ -4775,6 +4807,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!TypeScriptLinter.isFunctionLike(functionDeclaration)) {
       return;
     }
+
     switch (TypeScriptLinter.containsForbiddenAPI(functionDeclaration)) {
       case REFLECT_LITERAL:
         this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
@@ -4782,8 +4815,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       case OBJECT_LITERAL:
         this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallObjectParam);
         break;
-      default:
-        break;
+      default: break;
     }
   }
 
