@@ -180,7 +180,11 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
         realCallee->Compile(pg);
     }
 
-    pg->StoreAccumulator(this, callee);
+    if (realCallee->IsMemberExpression()) {
+        pg->StoreAccumulator(realCallee->AsMemberExpression()->Property(), callee);
+    } else {
+        pg->StoreAccumulator(this, callee);
+    }
     pg->GetOptionalChain()->CheckNullish(optional_, callee);
 
     if (containsSpread) {
@@ -202,6 +206,16 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     }
 
     if (hasThis) {
+        /*
+         * To obtain more accurate line number information in the MemberExpression scenario,
+         * bind CallThis to the property node instead of the entire callee.
+         * especially for cases involving async stack tracing.
+         */
+        if (realCallee->IsMemberExpression()) {
+            pg->CallThis(realCallee->AsMemberExpression()->Property(), callee,
+                         static_cast<int64_t>(arguments_.size() + 1));
+            return;
+        }
         pg->CallThis(this, callee, static_cast<int64_t>(arguments_.size() + 1));
         return;
     }
