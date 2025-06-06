@@ -58,6 +58,7 @@ export interface ArkTSGlobal {
     _MemFinalize: Function;
     _CreateGlobalContext: Function;
     _DestroyGlobalContext: Function;
+    _SetUpSoPath: Function;
   }
 }
 
