@@ -220,6 +220,8 @@ defines:
   - name: 'InterfaceObjectLiteral'
     ref: INTERFACE_OBJ_LITERAL
     comment: ETS annotation type
+  - name: 'use static'
+    ref: STATIC_PROGRAM_FLAG
 
 packages:
   - name: 'std.core'

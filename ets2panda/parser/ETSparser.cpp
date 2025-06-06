@@ -121,6 +121,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     }
 
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    ParseFileHeaderFlag(startLoc, &statements);
     auto decl = ParsePackageDeclaration();
     if (decl != nullptr) {
         statements.emplace_back(decl);
@@ -145,6 +146,23 @@ void ETSParser::ParseProgram(ScriptKind kind)
     }
 
     GetProgram()->SetAst(script);
+}
+
+void ETSParser::ParseFileHeaderFlag(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> *statements)
+{
+    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::LITERAL_STRING ||
+        Lexer()->GetToken().String() != compiler::Signatures::STATIC_PROGRAM_FLAG) {
+        return;
+    }
+
+    ir::Expression *fileHeaderFlag = ParseStringLiteral();
+    auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(fileHeaderFlag);
+
+    exprStatementNode->SetRange({startLoc, fileHeaderFlag->End()});
+    ConsumeSemicolon(exprStatementNode);
+    if (statements != nullptr) {
+        statements->push_back(exprStatementNode);
+    }
 }
 
 ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
@@ -398,6 +416,7 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
     Lexer()->NextToken();
 
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    ParseFileHeaderFlag(startLoc, nullptr);
     auto decl = ParsePackageDeclaration();
     ir::ETSModule *script = nullptr;
     if (decl != nullptr) {
