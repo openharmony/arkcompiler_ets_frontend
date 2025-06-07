@@ -90,7 +90,7 @@ function getTypescript(detectedOS) {
         fs.mkdirSync(third_party);
     }
 
-    let branch = process.env.TYPESCRIPT_BRANCH ?? 'OpenHarmony_feature_20250328'
+    let branch = process.env.TYPESCRIPT_BRANCH ?? 'master'
 
     if (detectedOS === 'Linux' || detectedOS === 'macOS') {
         let timeToWait = 5000
