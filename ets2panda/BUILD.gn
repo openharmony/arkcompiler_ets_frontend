@@ -1300,3 +1300,41 @@ ark_gen("gen_es2panda_compiler") {
   destination = "$target_gen_dir/generated"
   api = [ "compiler/scripts/signatures.rb" ]
 }
+
+template("panda_code_fix_gen") {
+  code_fix_api = "$ark_es2panda_root/lsp/code_fix_register.rb"
+  api_list = []
+  foreach(i, invoker.data) {
+    api_list += [ code_fix_api ]
+  }
+
+  ark_gen("$target_name") {
+    data = invoker.data
+    template_files = invoker.template_files
+    sources = invoker.sources
+    destination = invoker.destination
+    api = api_list
+    if (defined(invoker.requires)) {
+        requires = invoker.requires
+    }
+    if (defined(invoker.extra_dependencies)) {
+        extra_dependencies = invoker.extra_dependencies
+    }
+  }
+}
+
+panda_code_fix_gen("es2panda_lsp_code_fix_register_gen") {
+  data = [
+    "util/diagnostic/syntax.yaml",
+    "util/diagnostic/semantic.yaml",
+    "util/diagnostic/warning.yaml",
+    "util/diagnostic/fatal.yaml",
+    "declgen_ets2ts/declgen_ets2ts_error.yaml",
+    "declgen_ets2ts/declgen_ets2ts_warning.yaml",
+    "declgen_ets2ts/isolated_declgen.yaml",
+    "util/diagnostic/arktsconfig_error.yaml",
+  ]
+  template_files = [ "code_fix_register.h.erb" ]
+  sources = "lsp"
+  destination = "$target_gen_dir/generated"
+}

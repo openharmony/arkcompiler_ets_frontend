@@ -242,3 +242,7 @@ ets2panda_add_gtest(lsp_api_test_fix_abstract_member CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_get_name_or_dotted_name_span CPP_SOURCES
     get_name_or_dotted_name_span_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_test_fix_convert_const_to_let CPP_SOURCES
+    fix_convert_const_to_let_test.cpp
+)

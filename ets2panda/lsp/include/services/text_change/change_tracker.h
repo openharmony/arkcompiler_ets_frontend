@@ -246,6 +246,8 @@ public:
                                       std::vector<ir::AstNode *> &namedImports, size_t index);
     void CreateNewFile(SourceFile *oldFile, const std::string &fileName,
                        std::vector<const ir::Statement *> &statements);
+    void RfindNearestKeyWordTextRange(const es2panda_Context *context, const size_t pos,
+                                      const std::string_view &keywordStr, TextRange &range);
 };
 
 }  // namespace ark::es2panda::lsp

@@ -74,6 +74,7 @@ public:
     virtual ~DiagnosticBase() = default;
 
     virtual DiagnosticType Type() const = 0;
+    virtual uint32_t GetId() const = 0;
     virtual std::string Message() const = 0;
 
     bool operator<(const DiagnosticBase &rhs) const;
@@ -166,6 +167,11 @@ public:
         return message_;
     }
 
+    uint32_t GetId() const override
+    {
+        return 0;
+    }
+
 private:
     DiagnosticType type_ {DiagnosticType::INVALID};
     std::string message_ {};
@@ -193,6 +199,8 @@ public:
 
     DiagnosticType Type() const override;
 
+    uint32_t GetId() const override;
+
 private:
     const diagnostic::DiagnosticKind *kind_;
     const std::string substitutionCode_;
@@ -218,6 +226,7 @@ public:
     ~Diagnostic() override = default;
 
     DiagnosticType Type() const override;
+    uint32_t GetId() const override;
     std::string Message() const override;
 
     bool HasSuggestions() const

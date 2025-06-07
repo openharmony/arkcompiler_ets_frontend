@@ -136,6 +136,10 @@ std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *cont
 CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
                                                CodeFixOptions &codeFixOptions);
 ir::Identifier *GetIdentFromNewClassExprPart(const ir::Expression *value);
+varbinder::Decl *FindDeclInFunctionScope(varbinder::Scope *scope, const util::StringView &name);
+varbinder::Decl *FindDeclInGlobalScope(varbinder::Scope *scope, const util::StringView &name);
+varbinder::Decl *FindDeclInScopeWithFallback(varbinder::Scope *scope, const util::StringView &name);
+
 }  // namespace ark::es2panda::lsp
 
 #endif

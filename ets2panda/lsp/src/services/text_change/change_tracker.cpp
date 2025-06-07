@@ -60,6 +60,21 @@ size_t ChangeTracker::GetStartPositionOfLine(size_t line, const es2panda_Context
     }
     return 0;
 }
+
+void ChangeTracker::RfindNearestKeyWordTextRange(const es2panda_Context *context, const size_t pos,
+                                                 const std::string_view &keywordStr, TextRange &range)
+{
+    auto ctx = reinterpret_cast<ark::es2panda::public_lib::Context *>(const_cast<es2panda_Context *>(context));
+    const std::string_view &sourceCode = ctx->parserProgram->SourceCode().Utf8();
+    auto start = sourceCode.rfind(keywordStr, pos);
+    if (start == std::string_view::npos) {
+        return;
+    }
+
+    range.pos = start;
+    range.end = start + keywordStr.length();
+}
+
 bool ChangeTracker::RangeContainsPosition(TextRange r, size_t pos)
 {
     return r.pos <= pos && pos <= r.end;

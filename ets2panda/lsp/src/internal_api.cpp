@@ -20,6 +20,7 @@
 #include "api.h"
 #include "internal_api.h"
 #include "checker/types/type.h"
+#include "code_fixes/code_fix_types.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
 #include "lexer/token/sourceLocation.h"
@@ -30,7 +31,7 @@
 #include "formatting/formatting.h"
 #include "code_fix_provider.h"
 #include "get_class_property_info.h"
-#include "code_fixes/code_fix_types.h"
+#include "generated/code_fix_register.h"
 
 namespace ark::es2panda::lsp {
 
@@ -528,7 +529,8 @@ int CreateCodeForDiagnostic(const util::DiagnosticBase *error)
     if (error->Type() == util::DiagnosticType::PLUGIN_ERROR || error->Type() == util::DiagnosticType::PLUGIN_WARNING) {
         return uiCode;
     }
-    return 1;
+    auto code = static_cast<const util::Diagnostic *>(error)->GetId();
+    return static_cast<int>(error->Type()) * codefixes::DiagnosticCode::DIAGNOSTIC_CODE_MULTIPLIER + code;
 }
 
 Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::DiagnosticBase &error)
@@ -793,6 +795,50 @@ CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const 
     auto fixes = CodeFixProvider::Instance().GetAllFixes(codeFixAllContent);
 
     return CreateCombinedCodeActionsInfo(fixes);
+}
+
+varbinder::Decl *FindDeclInGlobalScope(varbinder::Scope *scope, const util::StringView &name)
+{
+    const auto *scopeIter = scope;
+    varbinder::Decl *resolved = nullptr;
+    while (scopeIter != nullptr && !scopeIter->IsGlobalScope()) {
+        bool isModule = scopeIter->Node() != nullptr && scopeIter->Node()->IsClassDefinition() &&
+                        scopeIter->Node()->AsClassDefinition()->IsModule();
+        if (isModule) {
+            resolved = scopeIter->FindDecl(name);
+            if (resolved != nullptr) {
+                break;
+            }
+        }
+        scopeIter = scopeIter->Parent();
+    }
+    if (resolved == nullptr && scopeIter != nullptr && scopeIter->IsGlobalScope()) {
+        resolved = scopeIter->FindDecl(name);
+    }
+    return resolved;
+}
+
+varbinder::Decl *FindDeclInFunctionScope(varbinder::Scope *scope, const util::StringView &name)
+{
+    const auto *scopeIter = scope;
+    while (scopeIter != nullptr && !scopeIter->IsGlobalScope()) {
+        if (!scopeIter->IsClassScope()) {
+            if (auto *const resolved = scopeIter->FindDecl(name); resolved != nullptr) {
+                return resolved;
+            }
+        }
+        scopeIter = scopeIter->Parent();
+    }
+
+    return nullptr;
+}
+
+varbinder::Decl *FindDeclInScopeWithFallback(varbinder::Scope *scope, const util::StringView &name)
+{
+    if (auto *decl = FindDeclInFunctionScope(scope, name)) {
+        return decl;
+    }
+    return FindDeclInGlobalScope(scope, name);
 }
 
 }  // namespace ark::es2panda::lsp

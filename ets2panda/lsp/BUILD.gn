@@ -82,6 +82,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/references.cpp",
     "src/register_code_fix/add_missing_declare_property.cpp",
     "src/register_code_fix/fix_class_doesnt_implement_inherited_abstract_member.cpp",
+    "src/register_code_fix/convert_const_to_let.cpp",
     "src/register_code_fix/fix_missing_call_parantheses.cpp",
     "src/register_code_fix/fix_nan_equality.cpp",
     "src/register_code_fix/forgetten_this_property_access.cpp",
@@ -110,6 +111,7 @@ ohos_source_set("libes2panda_lsp_static") {
   ]
 
   deps = [
+    "../:es2panda_lsp_code_fix_register_gen_code_fix_register_h",
     "../:libes2panda_frontend_static",
     "../:libes2panda_public_frontend_static",
   ]
