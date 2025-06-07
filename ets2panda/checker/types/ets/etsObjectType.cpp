@@ -146,11 +146,18 @@ bool ETSObjectType::IsDescendantOf(const ETSObjectType *ascendant) const
     return this->SuperType()->IsDescendantOf(ascendant);
 }
 
+static bool HasAccessor(const PropertySearchFlags &flags, const ETSFunctionType *funcType)
+{
+    if ((flags & (PropertySearchFlags::IS_GETTER | PropertySearchFlags::IS_SETTER)) != 0) {
+        return true;
+    }
+    return funcType->HasTypeFlag(TypeFlag::GETTER) || funcType->HasTypeFlag(TypeFlag::SETTER);
+}
+
 static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, const ETSFunctionType *funcType,
                                              const PropertySearchFlags &flags)
 {
-    if ((flags & (PropertySearchFlags::IS_GETTER | PropertySearchFlags::IS_SETTER)) == 0 ||
-        res->Declaration() != nullptr) {
+    if (!HasAccessor(flags, funcType) || res->Declaration() != nullptr) {
         return;
     }
     auto var = funcType->CallSignatures().front()->OwnerVar();
@@ -334,20 +341,40 @@ std::vector<varbinder::LocalVariable *> ETSObjectType::Fields() const
 std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties() const
 {
     std::vector<const varbinder::LocalVariable *> foreignProps;
-    std::unordered_set<util::StringView> ownProps;
+
+    // spec 9.3: all names in static and, separately, non-static class declaration scopes must be unique.
+    std::unordered_set<util::StringView> ownInstanceProps;
+    std::unordered_set<util::StringView> ownStaticProps;
 
     EnsurePropertiesInstantiated();
-    ownProps.reserve(properties_.size());
+    ownInstanceProps.reserve(properties_.size());
+    ownStaticProps.reserve(properties_.size());
 
     for (const auto *prop : GetAllProperties()) {
-        ownProps.insert(prop->Name());
+        if (prop->HasFlag(varbinder::VariableFlags::STATIC)) {
+            ownStaticProps.insert(prop->Name());
+        } else {
+            ownInstanceProps.insert(prop->Name());
+        }
     }
 
-    std::map<util::StringView, const varbinder::LocalVariable *> allProps {};
-    Iterate([&allProps](const varbinder::LocalVariable *var) { allProps.emplace(var->Name(), var); });
+    std::map<util::StringView, const varbinder::LocalVariable *> allInstanceProps {};
+    std::map<util::StringView, const varbinder::LocalVariable *> allStaticProps {};
+    Iterate([&allInstanceProps, &allStaticProps](const varbinder::LocalVariable *var) {
+        if (var->HasFlag(varbinder::VariableFlags::STATIC)) {
+            allStaticProps.emplace(var->Name(), var);
+        } else {
+            allInstanceProps.emplace(var->Name(), var);
+        }
+    });
 
-    for (const auto &[name, var] : allProps) {
-        if (ownProps.find(name) == ownProps.end()) {
+    for (const auto &[name, var] : allInstanceProps) {
+        if (ownInstanceProps.find(name) == ownInstanceProps.end()) {
+            foreignProps.push_back(var);
+        }
+    }
+    for (const auto &[name, var] : allStaticProps) {
+        if (ownStaticProps.find(name) == ownStaticProps.end()) {
             foreignProps.push_back(var);
         }
     }

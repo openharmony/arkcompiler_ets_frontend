@@ -7,15 +7,11 @@
     "pack": "npm pack"
   },
   "dependencies": {
-    "commander": "11.0.0",
-    "fs-extra": "11.2.0"
-  },
-  "devDependencies": {
-    "@types/fs-extra": "9.0.13",
-    "ts-node": "10.9.1",
-    "typedoc": "^0.25.13",
-    "vite-tsconfig-paths": "4.3.1",
-    "vitest": "1.5.1"
+    "arkanalyzer": "file:../arkanalyzer",
+    "commander": "^9.4.0",
+    "fs-extra": "11.2.0",
+    "log4js": "^6.4.0",
+    "json5": "2.2.3"
   },
   "name": "homecheck",
   "version": "0.9.11-arkts1.2",

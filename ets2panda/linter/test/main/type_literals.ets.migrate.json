@@ -1,0 +1,238 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 171,
+            "column": 5,
+            "endLine": 171,
+            "endColumn": 25,
+            "problem": "CallSignature",
+            "suggest": "",
+            "rule": "Use \"class\" instead of a type with call signature (arkts-no-call-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 172,
+            "column": 5,
+            "endLine": 172,
+            "endColumn": 24,
+            "problem": "ConstructorIface",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 5,
+            "endLine": 173,
+            "endColumn": 28,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 20,
+            "endLine": 173,
+            "endColumn": 27,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 185,
+            "column": 5,
+            "endLine": 185,
+            "endColumn": 25,
+            "problem": "CallSignature",
+            "suggest": "",
+            "rule": "Use \"class\" instead of a type with call signature (arkts-no-call-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 186,
+            "column": 5,
+            "endLine": 186,
+            "endColumn": 24,
+            "problem": "ConstructorIface",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 187,
+            "column": 5,
+            "endLine": 187,
+            "endColumn": 28,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 187,
+            "column": 20,
+            "endLine": 187,
+            "endColumn": 27,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 192,
+            "column": 49,
+            "endLine": 192,
+            "endColumn": 50,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 11,
+            "endLine": 193,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 199,
+            "column": 11,
+            "endLine": 199,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 199,
+            "column": 30,
+            "endLine": 199,
+            "endColumn": 31,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 201,
+            "column": 25,
+            "endLine": 201,
+            "endColumn": 26,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 204,
+            "column": 11,
+            "endLine": 204,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 204,
+            "column": 12,
+            "endLine": 204,
+            "endColumn": 17,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 11,
+            "endLine": 207,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 31,
+            "endLine": 207,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 11,
+            "endLine": 209,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 17,
+            "endLine": 209,
+            "endColumn": 23,
+            "problem": "TypeQuery",
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 211,
+            "column": 11,
+            "endLine": 211,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 211,
+            "column": 17,
+            "endLine": 211,
+            "endColumn": 23,
+            "problem": "TypeQuery",
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 213,
+            "column": 10,
+            "endLine": 213,
+            "endColumn": 11,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        }
+    ]
+}

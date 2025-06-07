@@ -21,7 +21,17 @@
             "endColumn": 4,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-sdk-limited-void-type)",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +51,7 @@
             "endColumn": 34,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-sdk-limited-void-type)",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
             "severity": "ERROR"
         },
         {
@@ -52,6 +62,116 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 3,
+            "endLine": 30,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 3,
+            "endLine": 34,
+            "endColumn": 4,
+            "problem": "OptionalMethodFromSdk",
+            "suggest": "",
+            "rule": "API no longer supports optional methods (sdk-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 3,
+            "endLine": 34,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 28,
+            "endLine": 28,
+            "endColumn": 32,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 26,
+            "endLine": 32,
+            "endColumn": 30,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 10,
+            "endLine": 54,
+            "endColumn": 37,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 10,
+            "endLine": 57,
+            "endColumn": 21,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 20,
+            "endLine": 60,
+            "endColumn": 45,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 21,
+            "endLine": 61,
+            "endColumn": 30,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 41,
+            "endLine": 44,
+            "endColumn": 59,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 43,
+            "endLine": 48,
+            "endColumn": 61,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

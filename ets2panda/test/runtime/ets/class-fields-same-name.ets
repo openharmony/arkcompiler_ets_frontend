@@ -23,9 +23,29 @@ class D extends C {
     public foo: int = 40
 }
 
+class E {
+    public static foo: int = 50
+}
+
+class F extends E {
+    public foo: int = 60
+}
+
+class G {
+    public foo: int = 70
+}
+
+class H extends G {
+    public static foo: int = 80
+}
+
 function main(): void {
     assertEQ(C.foo, 10)
     assertEQ(new C().foo, 20)
     assertEQ(D.foo, 30)
     assertEQ(new D().foo, 40)
+    assertEQ(F.foo, 50)
+    assertEQ(new F().foo, 60)
+    assertEQ(H.foo, 80)
+    assertEQ(new H().foo, 70)
 }

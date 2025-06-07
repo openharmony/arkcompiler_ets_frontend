@@ -24,7 +24,5 @@ class B {
 }
 
 function foo(x: A|B) {
-    /* @@ label */x.foo("123")
+    x.foo("123")
 }
-
-/* @@@ label Error TypeError: Union constituent types should have only one common method signature. */

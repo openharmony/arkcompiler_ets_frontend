@@ -402,11 +402,11 @@ bool Helpers::IsPattern(const ir::AstNode *node)
     return node->IsArrayPattern() || node->IsObjectPattern() || node->IsAssignmentPattern();
 }
 
-static void CollectBindingName(ir::AstNode *node, std::vector<ir::Identifier *> *bindings)
+static void CollectBindingName(varbinder::VarBinder *vb, ir::AstNode *node, std::vector<ir::Identifier *> *bindings)
 {
     switch (node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            if (!Helpers::IsGlobalIdentifier(node->AsIdentifier()->Name())) {
+            if (!vb->IsGlobalIdentifier(node->AsIdentifier()->Name())) {
                 bindings->push_back(node->AsIdentifier());
             }
 
@@ -414,26 +414,26 @@ static void CollectBindingName(ir::AstNode *node, std::vector<ir::Identifier *> 
         }
         case ir::AstNodeType::OBJECT_PATTERN: {
             for (auto *prop : node->AsObjectPattern()->Properties()) {
-                CollectBindingName(prop, bindings);
+                CollectBindingName(vb, prop, bindings);
             }
             break;
         }
         case ir::AstNodeType::ARRAY_PATTERN: {
             for (auto *element : node->AsArrayPattern()->Elements()) {
-                CollectBindingName(element, bindings);
+                CollectBindingName(vb, element, bindings);
             }
             break;
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-            CollectBindingName(node->AsAssignmentPattern()->Left(), bindings);
+            CollectBindingName(vb, node->AsAssignmentPattern()->Left(), bindings);
             break;
         }
         case ir::AstNodeType::PROPERTY: {
-            CollectBindingName(node->AsProperty()->Value(), bindings);
+            CollectBindingName(vb, node->AsProperty()->Value(), bindings);
             break;
         }
         case ir::AstNodeType::REST_ELEMENT: {
-            CollectBindingName(node->AsRestElement()->Argument(), bindings);
+            CollectBindingName(vb, node->AsRestElement()->Argument(), bindings);
             break;
         }
         default:
@@ -441,10 +441,10 @@ static void CollectBindingName(ir::AstNode *node, std::vector<ir::Identifier *> 
     }
 }
 
-std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::Expression *node)
+std::vector<ir::Identifier *> Helpers::CollectBindingNames(varbinder::VarBinder *vb, ir::Expression *node)
 {
     std::vector<ir::Identifier *> bindings;
-    CollectBindingName(node, &bindings);
+    CollectBindingName(vb, node, &bindings);
     return bindings;
 }
 

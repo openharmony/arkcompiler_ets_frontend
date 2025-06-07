@@ -74,6 +74,9 @@ public:
         return std::all_of(constituentTypes_.cbegin(), constituentTypes_.cend(), p);
     }
 
+    checker::Type *HandleNumericPrecedence(checker::ETSChecker *checker, checker::ETSObjectType *objectType,
+                                           checker::Type *sourceType,
+                                           std::map<std::uint32_t, checker::Type *> &numericTypes) const noexcept;
     [[nodiscard]] checker::Type *GetAssignableType(ETSChecker *checker, checker::Type *sourceType) const noexcept;
     [[nodiscard]] std::pair<checker::Type *, checker::Type *> GetComplimentaryType(ETSChecker *checker,
                                                                                    checker::Type *sourceType);

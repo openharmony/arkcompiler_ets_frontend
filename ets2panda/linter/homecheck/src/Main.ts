@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,21 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Logger, { LOG_MODULE_TYPE } from "arkanalyzer/lib/utils/logger";
-import { processAfterCheck } from "./utils/common/AfterCheck";
-import { CheckEntry, checkEntryBuilder, getSelectFileList } from "./utils/common/CheckEntry";
-import { ConfigUtils } from "./utils/common/ConfigUtils";
-import { defaultMessage } from "./model/Message";
-import { Utils } from "./utils/common/Utils";
+import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
+import { processAfterCheck } from './utils/common/AfterCheck';
+import { CheckEntry, checkEntryBuilder, getSelectFileList } from './utils/common/CheckEntry';
+import { ConfigUtils } from './utils/common/ConfigUtils';
+import { DefaultMessage } from './model/Message';
+import { Utils } from './utils/common/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Main');
 
 export async function start(checkEntry: CheckEntry): Promise<boolean> {
     // 外部没有建立消息通道，使用默认通道
     if (!checkEntry.message) {
-        checkEntry.message = new defaultMessage();
+        checkEntry.message = new DefaultMessage();
     }
-    
+
     // 前处理
     if (!await checkEntryBuilder(checkEntry)) {
         return false;

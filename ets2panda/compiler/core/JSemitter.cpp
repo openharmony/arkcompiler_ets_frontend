@@ -51,6 +51,19 @@ void JSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &
     variableDebug.signatureType = "any";
 }
 
+void JSFunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
+{
+    func->sourceFile = std::string {Cg()->VarBinder()->Program()->RelativeFilePath()};
+
+    if (!Cg()->IsDebug()) {
+        return;
+    }
+
+    if (Cg()->RootNode()->IsProgram()) {
+        func->sourceCode = SourceCode().EscapeSymbol<util::StringView::Mutf8Encode>();
+    }
+}
+
 void JSFunctionEmitter::GenFunctionAnnotations(pandasm::Function *func)
 {
     pandasm::AnnotationData funcAnnotationData("_ESAnnotation");

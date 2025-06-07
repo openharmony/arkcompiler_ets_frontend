@@ -32,10 +32,12 @@ export enum LOG_MODULE_TYPE {
 }
 
 export default class ConsoleLogger {
-    public static configure(logFilePath: string,
-                            arkanalyzer_level: LOG_LEVEL = LOG_LEVEL.ERROR,
-                            tool_level: LOG_LEVEL = LOG_LEVEL.INFO,
-                            use_console: boolean = false): void {
+    public static configure(
+        logFilePath: string,
+        arkanalyzer_level: LOG_LEVEL = LOG_LEVEL.ERROR,
+        tool_level: LOG_LEVEL = LOG_LEVEL.INFO,
+        use_console: boolean = false
+    ): void {
         let appendersTypes: string[] = [];
         if (logFilePath) {
             appendersTypes.push('file');

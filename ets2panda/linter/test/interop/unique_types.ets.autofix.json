@@ -15,58 +15,86 @@
     ],
     "result": [
         {
-            "line": 24,
+            "line": 17,
             "column": 1,
-            "endLine": 24,
+            "endLine": 23,
+            "endColumn": 38,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
             "endColumn": 23,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 731,
-                    "end": 762,
-                    "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))"
+                    "start": 744,
+                    "end": 775,
+                    "replacementText": "objectLiteralType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-access-ts-types)",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 27,
             "column": 1,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 22,
             "problem": "InteropDirectAccessToTSTypes",
             "autofix": [
                 {
-                    "start": 764,
-                    "end": 794,
-                    "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))"
+                    "start": 777,
+                    "end": 807,
+                    "replacementText": "intersectionType.setPropertyByName('name',ESObject.wrap(\"test\"))",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 22
                 }
             ],
             "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-access-ts-types)",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
-            "endColumn": 13,
-            "problem": "InteropTSFunctionInvoke",
-            "suggest": "",
-            "rule": "Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)",
-            "severity": "ERROR"
-       },
-       {
             "line": 30,
             "column": 1,
             "endLine": 30,
+            "endColumn": 13,
+            "problem": "InteropTSFunctionInvoke",
+            "suggest": "",
+            "rule": "Trying to catch typescript errors is not permitted (arkts-interop-ts2s-ts-exception)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 3,
+            "endLine": 32,
+            "endColumn": 2,
+            "problem": "TsLikeCatchType",
+            "suggest": "",
+            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 1,
+            "endLine": 34,
             "endColumn": 20,
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-access-ts-types)",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
             "severity": "ERROR"
-       }
+        }
     ]
 }

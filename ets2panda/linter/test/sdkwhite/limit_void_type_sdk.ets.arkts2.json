@@ -15,19 +15,49 @@
     ],
     "result": [
         {
-            "line": 19,
+            "line": 41,
             "column": 3,
-            "endLine": 21,
+            "endLine": 43,
             "endColumn": 4,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-sdk-limited-void-type)",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 22,
+            "column": 3,
+            "endLine": 24,
+            "endColumn": 4,
+            "problem": "OptionalMethodFromSdk",
+            "suggest": "",
+            "rule": "API no longer supports optional methods (sdk-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 3,
+            "endLine": 24,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 26,
+            "endLine": 22,
+            "endColumn": 30,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
             "column": 28,
-            "endLine": 19,
+            "endLine": 41,
             "endColumn": 32,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -35,13 +65,63 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 45,
             "column": 29,
-            "endLine": 23,
+            "endLine": 45,
             "endColumn": 33,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 3,
+            "endLine": 53,
+            "endColumn": 12,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 5,
+            "endLine": 72,
+            "endColumn": 28,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 10,
+            "endLine": 76,
+            "endColumn": 19,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 7,
+            "endLine": 78,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 17,
+            "endLine": 78,
+            "endColumn": 32,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         }
     ]

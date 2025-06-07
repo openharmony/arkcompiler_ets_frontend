@@ -14,6 +14,9 @@
  */
  'use static'
 
- import {foo} from "./interop_convert_import_js.js"
+ import {foo, foo2, foo3, foo4} from "./interop_convert_import_js.js"
 
  let a: number = foo.num as number
+ let a: boolean = foo2.bool  as boolean
+ let a: string = foo3.str  as string
+ let a: bigint = foo4.big  as bigint"

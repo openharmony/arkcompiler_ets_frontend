@@ -18,4 +18,6 @@
  }
 
  /* @@? 17:3 Warning Warning: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'. */
- /* @@? 17:3 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
+ /* @@? 17:3 Error TypeError: Cannot cast 'null' or 'undefined' to non-nullish type. */
+ /* @@? 17:3 Error TypeError: Type 'Double' cannot be assigned to type 'undefined' */
+

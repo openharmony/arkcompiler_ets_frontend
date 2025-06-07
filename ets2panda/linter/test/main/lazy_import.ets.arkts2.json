@@ -23,6 +23,16 @@
             "suggest": "",
             "rule": "Lazy import is not supported(arkts-no-lazy-import)",
             "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 8,
+            "endLine": 18,
+            "endColumn": 12,
+            "problem": "ImportLazyIdentifier",
+            "suggest": "",
+            "rule": "Lazy import is not supported(arkts-no-lazy-import)",
+            "severity": "ERROR"
         }
     ]
 }

@@ -542,7 +542,7 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
             paramExpr->Ident()->SetTsTypeAnnotation(unionType);
             unionType->SetParent(paramExpr->Ident());
 
-            auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), paramExpr);
+            auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), VarBinder(), paramExpr);
             if (node != nullptr) {
                 VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
             }

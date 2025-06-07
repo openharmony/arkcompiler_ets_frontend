@@ -1,4 +1,3 @@
-
 {
     "copyright": [
         "Copyright (c) 2025 Huawei Device Co., Ltd.",
@@ -33,18 +32,18 @@
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 632,
-                    "end": 678,
+                    "start": 617,
+                    "end": 663,
                     "replacementText": ""
                 },
                 {
-                    "start": 678,
-                    "end": 678,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');"
+                    "start": 663,
+                    "end": 663,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
                 }
             ],
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -52,19 +51,9 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 13,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 13,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
             "severity": "ERROR"
         },
         {
@@ -74,7 +63,7 @@
             "endColumn": 13,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         }
     ]

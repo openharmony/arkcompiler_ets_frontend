@@ -19,7 +19,7 @@ import { NodeID } from '../../core/graph/BaseExplicitGraph';
 
 export enum PtaAnalysisScale {
     WholeProgram = 0,
-    MethodLevel = 1
+    MethodLevel = 1,
 }
 
 export class PointerAnalysisConfig {
@@ -36,11 +36,17 @@ export class PointerAnalysisConfig {
 
     /*
      * Note: DO NOT use `new PointerAnalysisConfig` to initialize ptaconfig
-     *       Use PointerAnalysisConfig.create() for singleton pattern 
+     *       Use PointerAnalysisConfig.create() for singleton pattern
      */
-    constructor(kLimit: number, outputDirectory: string, detectTypeDiff: boolean = false,
-        dotDump: boolean = false, unhandledFuncDump: boolean = false, 
-        analysisScale: PtaAnalysisScale = PtaAnalysisScale.WholeProgram, ptsCoType = PtsCollectionType.Set) {
+    constructor(
+        kLimit: number,
+        outputDirectory: string,
+        detectTypeDiff: boolean = false,
+        dotDump: boolean = false,
+        unhandledFuncDump: boolean = false,
+        analysisScale: PtaAnalysisScale = PtaAnalysisScale.WholeProgram,
+        ptsCoType = PtsCollectionType.Set
+    ) {
         if (kLimit > 5) {
             throw new Error('K Limit too large');
         }
@@ -58,16 +64,27 @@ export class PointerAnalysisConfig {
         }
     }
 
-
     /*
      * Create Singleton instance
      * The instance can be created multi-times and be overwrited
      */
-    public static create(kLimit: number, outputDirectory: string, detectTypeDiff: boolean = false,
-        dotDump: boolean = false, unhandledFuncDump: boolean = false, 
-        analysisScale: PtaAnalysisScale = PtaAnalysisScale.WholeProgram, ptsCoType = PtsCollectionType.Set): PointerAnalysisConfig {
+    public static create(
+        kLimit: number,
+        outputDirectory: string,
+        detectTypeDiff: boolean = false,
+        dotDump: boolean = false,
+        unhandledFuncDump: boolean = false,
+        analysisScale: PtaAnalysisScale = PtaAnalysisScale.WholeProgram,
+        ptsCoType = PtsCollectionType.Set
+    ): PointerAnalysisConfig {
         PointerAnalysisConfig.instance = new PointerAnalysisConfig(
-            kLimit, outputDirectory, detectTypeDiff, dotDump, unhandledFuncDump, analysisScale, ptsCoType
+            kLimit,
+            outputDirectory,
+            detectTypeDiff,
+            dotDump,
+            unhandledFuncDump,
+            analysisScale,
+            ptsCoType
         );
         return PointerAnalysisConfig.instance;
     }

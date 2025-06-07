@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,8 +46,8 @@ export interface ViewTreeNode {
     /**
      * Custom component value transfer
      * - key: ArkField, child custom component class stateValue field.
-     * - value: ArkField | ArkMethod, parent component transfer value.  
-     *     key is BuilderParam, the value is Builder ArkMethod.  
+     * - value: ArkField | ArkMethod, parent component transfer value.
+     *     key is BuilderParam, the value is Builder ArkMethod.
      *     Others, the value is parent class stateValue field.
      */
     stateValuesTransfer?: Map<ArkField, ArkField | ArkMethod>;
@@ -59,10 +59,10 @@ export interface ViewTreeNode {
     builder?: MethodSignature;
 
     /**
-     * walk node and node's children 
+     * walk node and node's children
      * @param selector Node selector function, return true skipping the follow-up nodes.
-     * @returns 
-     *  - true: There are nodes that meet the selector. 
+     * @returns
+     *  - true: There are nodes that meet the selector.
      *  - false: does not exist.
      */
     walk(selector: (item: ViewTreeNode) => boolean): boolean;
@@ -86,49 +86,49 @@ export interface ViewTreeNode {
  * // Component Class get ViewTree
  * let arkClas: ArkClass = ...;
  * let viewtree = arkClas.getViewTree();
- * 
+ *
  * // get viewtree root node
  * let root: ViewTreeNode = viewtree.getRoot();
- * 
+ *
  * // get viewtree stateValues Map
  * let stateValues: Map<ArkField, Set<ViewTreeNode>> = viewtree.getStateValues();
- * 
+ *
  * // walk all nodes
  * root.walk((node) => {
  *   // check node is builder
  *   if (node.isBuilder()) {
  *      xx
- *   } 
- *   
+ *   }
+ *
  *   // check node is sub CustomComponent
  *   if (node.isCustomComponent()) {
  *      xx
  *   }
- *   
+ *
  *   if (xxx) {
  *      // Skip the remaining nodes and end the traversal
  *      return true;
  *   }
- *      
+ *
  *   return false;
  * })
- * 
+ *
  * @category core/graph
  */
 export interface ViewTree {
     /**
-     * @deprecated Use {@link getStateValues} instead. 
+     * @deprecated Use {@link getStateValues} instead.
      */
     isClassField(name: string): boolean;
 
     /**
-     * @deprecated Use {@link getStateValues} instead. 
+     * @deprecated Use {@link getStateValues} instead.
      */
     getClassFieldType(name: string): Decorator | Type | undefined;
 
     /**
      * Map of the component controlled by the state variable
-     * @returns 
+     * @returns
      */
     getStateValues(): Map<ArkField, Set<ViewTreeNode>>;
 

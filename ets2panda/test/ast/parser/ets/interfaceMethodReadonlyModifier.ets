@@ -14,7 +14,11 @@
  */
 
 interface I {
-    /* @@ label */readonly foo()
+    readonly foo()
 }
 
-/* @@@ label Error SyntaxError: Modifier 'readonly' cannot be applied to an interface method.  */
+/* @@? 17:17 Error SyntaxError: Interface fields must have type annotation. */
+/* @@? 17:18 Error SyntaxError: Invalid Type. */
+/* @@? 17:18 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 17:18 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 18:1 Error SyntaxError: Identifier expected. */

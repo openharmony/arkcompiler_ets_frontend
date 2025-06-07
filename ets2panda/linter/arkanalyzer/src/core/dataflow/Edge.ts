@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,21 +16,21 @@
 import { Stmt } from '../base/Stmt';
 
 export class PathEdgePoint<D> {
-    public node:Stmt;
-    public fact:D;
+    public node: Stmt;
+    public fact: D;
 
-    constructor(node:Stmt, fact:D){
+    constructor(node: Stmt, fact: D) {
         this.node = node;
         this.fact = fact;
     }
 }
 
 export class PathEdge<D> {
-    public edgeStart:PathEdgePoint<D>;
-    public edgeEnd:PathEdgePoint<D>;
+    public edgeStart: PathEdgePoint<D>;
+    public edgeEnd: PathEdgePoint<D>;
 
-    constructor(start:PathEdgePoint<D>, end:PathEdgePoint<D>) {
-        this.edgeStart=start;
-        this.edgeEnd=end;
+    constructor(start: PathEdgePoint<D>, end: PathEdgePoint<D>) {
+        this.edgeStart = start;
+        this.edgeEnd = end;
     }
 }

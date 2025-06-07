@@ -39,20 +39,17 @@ export class ArkIRNamespacePrinter extends BasePrinter {
         const commentsMetadata = this.ns.getMetadata(ArkMetadataKind.LEADING_COMMENTS);
         if (commentsMetadata instanceof CommentsMetadata) {
             const comments = commentsMetadata.getComments();
-            comments.forEach((comment) => {
+            comments.forEach(comment => {
                 this.printer.writeIndent().writeLine(comment.content);
             });
         }
-        this.printer.writeIndent().writeSpace(this.modifiersToString(this.ns.getModifiers()))
-            .writeLine(`namespace ${this.ns.getName()} {`);
+        this.printer.writeIndent().writeSpace(this.modifiersToString(this.ns.getModifiers())).writeLine(`namespace ${this.ns.getName()} {`);
         this.printer.incIndent();
 
         let items: Dump[] = [];
         // print class
         for (let cls of this.ns.getClasses()) {
-            
             items.push(new ArkIRClassPrinter(cls, this.printer.getIndent()));
-            
         }
         // print namespace
         for (let childNs of this.ns.getNamespaces()) {
@@ -60,9 +57,7 @@ export class ArkIRNamespacePrinter extends BasePrinter {
         }
         // print exportInfos
         for (let exportInfo of this.ns.getExportInfos()) {
-            items.push(
-                new ExportPrinter(exportInfo, this.printer.getIndent())
-            );
+            items.push(new ExportPrinter(exportInfo, this.printer.getIndent()));
         }
 
         items.sort((a, b) => a.getLine() - b.getLine());

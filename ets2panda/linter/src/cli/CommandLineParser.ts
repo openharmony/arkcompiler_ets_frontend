@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 import { Logger } from '../lib/Logger';
 import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
 import type { OptionValues } from 'commander';
 import { Command, Option } from 'commander';
 import * as ts from 'typescript';
@@ -25,6 +26,7 @@ import * as path from 'node:path';
 const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
 const ETS_EXT = '.ets';
+const JS_EXT = '.js';
 
 interface CommanderParseOptions {
   exitOnFail?: boolean;
@@ -43,6 +45,9 @@ interface ParsedCommand {
 
 const getFiles = (dir: string): string[] => {
   const resultFiles: string[] = [];
+  if (dir.includes(ARKTS_IGNORE_DIRS_OH_MODULES)) {
+    return [];
+  }
 
   const files = fs.readdirSync(dir);
   for (let i = 0; i < files.length; ++i) {
@@ -51,7 +56,7 @@ const getFiles = (dir: string): string[] => {
       resultFiles.push(...getFiles(name));
     } else {
       const extension = path.extname(name);
-      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT) {
+      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT || extension === JS_EXT) {
         resultFiles.push(name);
       }
     }
@@ -87,18 +92,36 @@ function parseCommand(program: Command, cmdArgs: string[]): ParsedCommand {
   };
 }
 
-function formOptionPaths(cmdlOptions: CommandLineOptions, options: OptionValues): CommandLineOptions {
-  const opts = cmdlOptions;
-  if (options.sdkExternalApiPath) {
-    opts.sdkExternalApiPath = options.sdkExternalApiPath;
+function formSdkOptions(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.sdkExternalApiPath) {
+    cmdOptions.sdkExternalApiPath = commanderOpts.sdkExternalApiPath;
   }
-  if (options.sdkDefaultApiPath) {
-    opts.sdkDefaultApiPath = options.sdkDefaultApiPath;
+  if (commanderOpts.sdkDefaultApiPath) {
+    cmdOptions.sdkDefaultApiPath = commanderOpts.sdkDefaultApiPath;
   }
-  if (options.arktsWholeProjectPath) {
-    opts.arktsWholeProjectPath = options.arktsWholeProjectPath;
+  if (commanderOpts.arktsWholeProjectPath) {
+    cmdOptions.arktsWholeProjectPath = commanderOpts.arktsWholeProjectPath;
   }
-  return opts;
+}
+
+function formMigrateOptions(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.migrate) {
+    cmdOptions.linterOptions.migratorMode = true;
+    cmdOptions.linterOptions.enableAutofix = true;
+  }
+  if (commanderOpts.migrationBackupFile === false) {
+    cmdOptions.linterOptions.noMigrationBackupFile = true;
+  }
+  if (commanderOpts.migrationMaxPass) {
+    const num = Number(commanderOpts.migrationMaxPass);
+    cmdOptions.linterOptions.migrationMaxPass = isNaN(num) ? 0 : num;
+  }
+  if (commanderOpts.migrationReport) {
+    cmdOptions.linterOptions.migrationReport = true;
+  }
+  if (commanderOpts.arktsWholeProjectPath) {
+    cmdOptions.linterOptions.wholeProjectPath = commanderOpts.arktsWholeProjectPath;
+  }
 }
 
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
@@ -114,7 +137,7 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
     opts.logTscErrors = true;
   }
   if (options.devecoPluginMode) {
-    opts.linterOptions.ideMode = true;
+    opts.devecoPluginModeDeprecated = true;
   }
   if (options.checkTsAsSource !== undefined) {
     opts.linterOptions.checkTsAsSource = options.checkTsAsSource;
@@ -140,14 +163,15 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.ideInteractive) {
     opts.linterOptions.ideInteractive = true;
   }
-  if (options.migrate !== undefined) {
-    opts.linterOptions.migratorMode = options.migrate;
-    opts.linterOptions.enableAutofix = true;
+  if (options.checkTsAndJs) {
+    opts.linterOptions.checkTsAndJs = true;
   }
   if (options.homecheck) {
     opts.homecheck = true;
   }
-  return formOptionPaths(opts, options);
+  formSdkOptions(opts, options);
+  formMigrateOptions(opts, options);
+  return opts;
 }
 
 function createCommand(): Command {
@@ -161,7 +185,6 @@ function createCommand(): Command {
   program.
     option('-E, --TSC_Errors', 'show error messages from Tsc').
     option('--check-ts-as-source', 'check TS files as source files').
-    option('--deveco-plugin-mode', 'run as IDE plugin').
     option('-p, --project <project_file>', 'path to TS project config file').
     option(
       '-f, --project-folder <project_folder>',
@@ -178,6 +201,10 @@ function createCommand(): Command {
     option('-w, --arkts-whole-project-path <path>', 'path to whole project').
     option('--migrate', 'run as ArkTS migrator').
     option('--homecheck', 'added homecheck rule validation').
+    option('--no-migration-backup-file', 'Disable the backup files in migration mode').
+    option('--migration-max-pass <num>', 'Maximum number of migration passes').
+    option('--migration-report', 'Generate migration report').
+    option('--check-ts-and-js', 'check ts and js files').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).

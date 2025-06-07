@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-import { ArkClass, ArkMethod} from "arkanalyzer";
+import { ArkClass, ArkMethod } from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
-import { BaseChecker, BaseMetaData } from "../BaseChecker";
-import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher } from "../../Index";
-import { IssueReport } from "../../model/Defects";
+import { BaseChecker, BaseMetaData } from '../BaseChecker';
+import { Rule, Defects, MatcherTypes, MatcherCallback, ClassMatcher } from '../../Index';
+import { IssueReport } from '../../model/Defects';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'NoOptionalMethodCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
-    ruleDocPath: "",
-    description: ''
+    ruleDocPath: '',
+    description: '',
 };
 
 export class NoOptionalMethodCheck implements BaseChecker {
@@ -33,32 +33,48 @@ export class NoOptionalMethodCheck implements BaseChecker {
     public issues: IssueReport[] = [];
 
     private classMetcher: ClassMatcher = {
-        matcherType: MatcherTypes.CLASS
+        matcherType: MatcherTypes.CLASS,
     };
 
     public registerMatchers(): MatcherCallback[] {
         const classCb: MatcherCallback = {
             matcher: this.classMetcher,
-            callback: this.check
-        }
+            callback: this.check,
+        };
         return [classCb];
     }
 
-    public check = (target: ArkClass) => {
-        target.getMethods().filter(m => m.getQuestionToken()).forEach(m => {
-            const posInfo = this.getMethodPos(m);
-            this.addIssueReport(posInfo);
-        });
-    }
+    public check = (target: ArkClass): void => {
+        target
+            .getMethods()
+            .filter(m => m.getQuestionToken())
+            .forEach(m => {
+                const posInfo = this.getMethodPos(m);
+                this.addIssueReport(posInfo);
+            });
+    };
 
-    private addIssueReport(warnInfo: { line: number; startCol: number; endCol: number; filePath: string; }) {
+    private addIssueReport(warnInfo: { line: number; startCol: number; endCol: number; filePath: string }): void {
+        const problem = '';
         const severity = this.rule.alert ?? this.metaData.severity;
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
-            warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
+        let defects = new Defects(
+            warnInfo.line,
+            warnInfo.startCol,
+            warnInfo.endCol,
+            problem,
+            this.metaData.description,
+            severity,
+            this.rule.ruleId,
+            warnInfo.filePath,
+            this.metaData.ruleDocPath,
+            true,
+            false,
+            false
+        );
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private getMethodPos(cls: ArkMethod): { line: number; startCol: number; endCol: number; filePath: string; } {
+    private getMethodPos(cls: ArkMethod): { line: number; startCol: number; endCol: number; filePath: string } {
         const line = cls.getLineCol() ?? -1;
         const startCol = cls.getColumn() ?? -1;
         const endCol = startCol;

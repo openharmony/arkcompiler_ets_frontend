@@ -20,8 +20,8 @@ import { Utils } from '../../utils/common/Utils';
 import { CheckerStorage } from '../../utils/common/CheckerStorage';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { FileUtils } from '../../utils/common/FileUtils';
-import { defaultMessage } from '../../model/Message';
-import { exportIssues, ProblemInfo } from './ExportIssue';
+import { DefaultMessage } from '../../model/Message';
+import { FileIssues } from "../../model/Defects";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'MigrationTool');
 
@@ -37,10 +37,12 @@ export class MigrationTool {
     }
 
     public async buildCheckEntry(): Promise<Boolean> {
-        logger.info(`buildCheckEntry start`);
         // 日志配置
         const logPath = this.checkEntry.projectConfig.logPath;
-        Utils.setLogPath(logPath.length === 0 ? './HomeCheck.log' : logPath);
+        Utils.setLogConfig(logPath.length === 0 ? './HomeCheck.log' : logPath,
+            this.checkEntry.projectConfig.arkAnalyzerLogLevel,
+            this.checkEntry.projectConfig.logLevel);
+        logger.info(`buildCheckEntry start`);
         // api版本配置
         CheckerStorage.getInstance().setApiVersion(this.checkEntry.projectConfig.apiVersion);
         // product配置
@@ -50,7 +52,7 @@ export class MigrationTool {
 
         // 外部没有建立消息通道，使用默认通道
         if (!this.checkEntry.message) {
-            this.checkEntry.message = new defaultMessage();
+            this.checkEntry.message = new DefaultMessage();
         }
 
         // 前处理
@@ -61,11 +63,11 @@ export class MigrationTool {
         return true;
     }
 
-    public async start(): Promise<Map<string, ProblemInfo[]>> {
+    public async start(): Promise<FileIssues[]> {
         logger.info(`MigrationTool run start`);
         await this.checkEntry.runAll();
 
-        let result = await exportIssues(this.checkEntry);
+        let result = this.checkEntry.sortIssues();
         logger.info(`MigrationTool run end`);
         return result;
     }

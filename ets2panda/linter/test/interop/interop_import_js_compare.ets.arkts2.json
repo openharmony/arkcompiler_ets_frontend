@@ -31,7 +31,7 @@
             "endColumn": 57,
             "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 14,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 14,
             "problem": "BinaryOperations",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 6,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 6,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 7,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -161,7 +161,7 @@
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -171,17 +171,7 @@
             "endColumn": 7,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 1,
-            "endLine": 25,
-            "endColumn": 2,
-            "problem": "InterOpImportJsDataCompare",
-            "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -191,7 +181,7 @@
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -201,17 +191,7 @@
             "endColumn": 6,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
-            "endColumn": 2,
-            "problem": "InterOpImportJsDataCompare",
-            "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-js-data-compare)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -262,6 +242,86 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 6,
+            "problem": "InterOpImportJsDataCompare",
+            "suggest": "",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 9,
+            "endLine": 44,
+            "endColumn": 14,
+            "problem": "InterOpImportJsDataCompare",
+            "suggest": "",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 6,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 6,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 6,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 9,
+            "endLine": 44,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 9,
+            "endLine": 44,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 9,
+            "endLine": 44,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

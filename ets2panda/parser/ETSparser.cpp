@@ -654,6 +654,9 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
+    if (typeAnnotation == nullptr) {
+        return nullptr;
+    }
     typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
     typeAnnotation->SetParent(typeAliasDecl);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
@@ -1145,6 +1148,25 @@ bool ETSParser::IsDefaultImport()
     return false;
 }
 
+bool TypedParser::IsPrimitiveType(const lexer::TokenType &tokenType)
+{
+    switch (tokenType) {
+        case lexer::TokenType::KEYW_BIGINT:
+        case lexer::TokenType::KEYW_BOOLEAN:
+        case lexer::TokenType::KEYW_BYTE:
+        case lexer::TokenType::KEYW_CHAR:
+        case lexer::TokenType::KEYW_DOUBLE:
+        case lexer::TokenType::KEYW_FLOAT:
+        case lexer::TokenType::KEYW_INT:
+        case lexer::TokenType::KEYW_LONG:
+        case lexer::TokenType::KEYW_SHORT:
+        case lexer::TokenType::KEYW_VOID:
+            return true;
+        default:
+            return false;
+    }
+}
+
 void ETSParser::ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                                  const std::string &fileName)
 {
@@ -1590,7 +1612,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
 ir::Statement *ETSParser::ParseExportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
     LogUnexpectedToken(lexer::TokenType::KEYW_EXPORT);
-    return nullptr;
+    return AllocBrokenStatement(Lexer()->GetToken().Start());
 }
 
 ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type,
@@ -1847,7 +1869,8 @@ void ETSParser::CheckDeclare()
         case lexer::TokenType::KEYW_FINAL:
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_TYPE:
-        case lexer::TokenType::KEYW_ASYNC: {
+        case lexer::TokenType::KEYW_ASYNC:
+        case lexer::TokenType::KEYW_STRUCT: {
             return;
         }
         default: {
@@ -1952,11 +1975,11 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
 
 void ETSParser::AddPackageSourcesToParseList()
 {
-    importPathManager_->AddImplicitPackageImportToParseList(GetProgram()->SourceFileFolder(),
+    importPathManager_->AddImplicitPackageImportToParseList(GetProgram()->SourceFile().GetAbsoluteParentFolder(),
                                                             Lexer()->GetToken().Start());
 
     // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
-    importPathManager_->MarkAsParsed(globalProgram_->SourceFilePath());
+    importPathManager_->MarkAsParsed(globalProgram_->SourceFile().GetAbsolutePath());
 }
 
 //================================================================================================//

@@ -30,7 +30,7 @@ export async function build(projectConfig: BuildConfig): Promise<void> {
 
   if (projectConfig.enableDeclgenEts2Ts === true) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
-    buildMode.generateDeclaration();
+    await buildMode.generateDeclaration();
   } else if (projectConfig.buildType === BUILD_TYPE_BUILD) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     await buildMode.run();

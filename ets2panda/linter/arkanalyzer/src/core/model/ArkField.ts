@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,6 @@ import { ArkBaseModel, ModifierType } from './ArkBaseModel';
 import { ArkError } from '../common/ArkError';
 import { Language } from './ArkFile';
 
-
 export enum FieldCategory {
     PROPERTY_DECLARATION = 0,
     PROPERTY_ASSIGNMENT = 1,
@@ -39,7 +38,7 @@ export enum FieldCategory {
  * @category core/model
  */
 export class ArkField extends ArkBaseModel {
-    private code: string = "";
+    private code: string = '';
     private category!: FieldCategory;
 
     private declaringClass!: ArkClass;
@@ -62,11 +61,11 @@ export class ArkField extends ArkBaseModel {
         return this.getDeclaringArkClass().getLanguage();
     }
 
-    public getDeclaringArkClass() {
+    public getDeclaringArkClass(): ArkClass {
         return this.declaringClass;
     }
 
-    public setDeclaringArkClass(declaringClass: ArkClass) {
+    public setDeclaringArkClass(declaringClass: ArkClass): void {
         this.declaringClass = declaringClass;
     }
 
@@ -74,11 +73,11 @@ export class ArkField extends ArkBaseModel {
      * Returns the codes of field as a **string.**
      * @returns the codes of field.
      */
-    public getCode() {
+    public getCode(): string {
         return this.code;
     }
 
-    public setCode(code: string) {
+    public setCode(code: string): void {
         this.code = code;
     }
 
@@ -90,11 +89,11 @@ export class ArkField extends ArkBaseModel {
         this.category = category;
     }
 
-    public getName() {
+    public getName(): string {
         return this.fieldSignature.getFieldName();
     }
 
-    public getType():Type {
+    public getType(): Type {
         return this.fieldSignature.getType();
     }
 
@@ -102,7 +101,7 @@ export class ArkField extends ArkBaseModel {
         return this.fieldSignature;
     }
 
-    public setSignature(fieldSig: FieldSignature) {
+    public setSignature(fieldSig: FieldSignature): void {
         this.fieldSignature = fieldSig;
     }
 
@@ -114,27 +113,27 @@ export class ArkField extends ArkBaseModel {
         return this.initializer;
     }
 
-    public setInitializer(initializer: Stmt[]) {
+    public setInitializer(initializer: Stmt[]): void {
         this.initializer = initializer;
     }
 
-    public setQuestionToken(questionToken: boolean) {
+    public setQuestionToken(questionToken: boolean): void {
         this.questionToken = questionToken;
     }
 
-    public setExclamationToken(exclamationToken: boolean) {
+    public setExclamationToken(exclamationToken: boolean): void {
         this.exclamationToken = exclamationToken;
     }
 
-    public getQuestionToken() {
+    public getQuestionToken(): boolean {
         return this.questionToken;
     }
 
-    public getExclamationToken() {
+    public getExclamationToken(): boolean {
         return this.exclamationToken;
     }
 
-    public setOriginPosition(position: LineColPosition) {
+    public setOriginPosition(position: LineColPosition): void {
         this.originPosition = position;
     }
 
@@ -152,10 +151,12 @@ export class ArkField extends ArkBaseModel {
 
     // For class field, it is default public if there is not any access modify
     public isPublic(): boolean {
-        if (!this.containsModifier(ModifierType.PUBLIC) &&
+        if (
+            !this.containsModifier(ModifierType.PUBLIC) &&
             !this.containsModifier(ModifierType.PRIVATE) &&
             !this.containsModifier(ModifierType.PROTECTED) &&
-            this.getDeclaringArkClass().getCategory() === ClassCategory.CLASS) {
+            this.getDeclaringArkClass().getCategory() === ClassCategory.CLASS
+        ) {
             return true;
         }
         return this.containsModifier(ModifierType.PUBLIC);

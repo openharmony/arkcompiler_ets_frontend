@@ -2633,7 +2633,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
     paramExpression->SetRange(paramIdent->Range());
 
-    auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), paramExpression);
+    auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), VarBinder(), paramExpression);
     if (node != nullptr) {
         VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
     }
@@ -3084,7 +3084,8 @@ checker::ETSFunctionType *ETSChecker::IntersectSignatureSets(const checker::ETSF
 {
     auto sameSig = [this](checker::Signature *leftSig, checker::Signature *rightSig) {
         auto relation = Relation();
-        if (leftSig->Flags() != rightSig->Flags()) {
+        if ((leftSig->Flags() & ~checker::SignatureFlags::FINAL) !=
+            (rightSig->Flags() & ~checker::SignatureFlags::FINAL)) {
             return false;
         }
         return relation->SignatureIsIdenticalTo(rightSig, leftSig);

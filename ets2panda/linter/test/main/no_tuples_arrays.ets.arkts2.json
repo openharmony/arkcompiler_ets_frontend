@@ -35,6 +35,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 25,
+            "column": 13,
+            "endLine": 25,
+            "endColumn": 59,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 39,
             "column": 13,
             "endLine": 39,
@@ -42,6 +52,16 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 13,
+            "endLine": 39,
+            "endColumn": 62,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -55,6 +75,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 65,
+            "column": 7,
+            "endLine": 65,
+            "endColumn": 42,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 67,
             "column": 7,
             "endLine": 67,
@@ -62,6 +92,16 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 7,
+            "endLine": 67,
+            "endColumn": 53,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -75,6 +115,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 68,
+            "column": 7,
+            "endLine": 68,
+            "endColumn": 53,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 70,
             "column": 5,
             "endLine": 70,
@@ -82,6 +132,16 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 5,
+            "endLine": 70,
+            "endColumn": 53,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -95,6 +155,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 73,
+            "column": 5,
+            "endLine": 73,
+            "endColumn": 43,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 74,
             "column": 5,
             "endLine": 74,
@@ -105,10 +175,120 @@
             "severity": "ERROR"
         },
         {
+            "line": 74,
+            "column": 5,
+            "endLine": 74,
+            "endColumn": 48,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 75,
             "column": 5,
             "endLine": 75,
             "endColumn": 50,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 5,
+            "endLine": 75,
+            "endColumn": 50,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array types follow the principle of invariance (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 35,
+            "endLine": 78,
+            "endColumn": 62,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 35,
+            "endLine": 79,
+            "endColumn": 64,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 47,
+            "endLine": 81,
+            "endColumn": 87,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 42,
+            "endLine": 83,
+            "endColumn": 76,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 17,
+            "endLine": 85,
+            "endColumn": 99,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 44,
+            "endLine": 85,
+            "endColumn": 45,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 86,
+            "column": 34,
+            "endLine": 86,
+            "endColumn": 62,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 34,
+            "endLine": 89,
+            "endColumn": 62,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 27,
+            "endLine": 90,
+            "endColumn": 54,
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",

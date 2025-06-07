@@ -475,8 +475,11 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
         if (classDef->IsAbstract()) {
             classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
-    } else {
+    } else if (var->TsType()->IsETSObjectType()) {
         classType = var->TsType()->AsETSObjectType();
+    } else {
+        ES2PANDA_ASSERT(IsAnyError());
+        return GlobalTypeError();
     }
 
     classDef->SetTsType(classType);
@@ -1701,7 +1704,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
             ->Callee()
             ->IsThisExpression()) {
         auto *constructorCall = funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->AsCallExpression();
-        if (constructorCall->TsType()->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+        if (constructorCall->TsType() == nullptr || constructorCall->TsType()->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
             LogError(diagnostic::NO_SUCH_CTOR_SIG, {}, constructorCall->Start());
             return;
         }
@@ -2291,8 +2294,8 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
                  interfaceFound->GetDeclNode()->Start());
         return;
     }
-    LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()},
-             classDef->Super()->Start());
+    auto pos = classDef->Super() == nullptr ? classDef->Ident()->Start() : classDef->Super()->Start();
+    LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()}, pos);
 }
 
 void ETSChecker::CheckReadonlyClassPropertyInImplementedInterface(ETSObjectType *classType,

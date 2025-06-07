@@ -190,7 +190,8 @@ ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options
 {
     auto startLoc = Lexer()->GetToken().Start();
     auto params = ParseFunctionParams();
-    bool hasReceiver = !params.empty() && params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
+    bool hasReceiver = !params.empty() && params[0]->IsETSParameterExpression() &&
+                       params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_ARROW)) {
         if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
@@ -309,15 +310,17 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
-    switch (Lexer()->GetToken().Type()) {
-        case lexer::TokenType::LITERAL_IDENT: {
-            auto typeAnnotation = ParseLiteralIdent(options);
-            if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
-                (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
-                return std::make_pair(typeAnnotation, false);
-            }
-            return std::make_pair(typeAnnotation, true);
+    auto tokenType = Lexer()->GetToken().Type();
+    if (IsPrimitiveType(Lexer()->GetToken().KeywordType()) || tokenType == lexer::TokenType::LITERAL_IDENT) {
+        auto typeAnnotation = ParseLiteralIdent(options);
+        if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
+            (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
+            return std::make_pair(typeAnnotation, false);
         }
+        return std::make_pair(typeAnnotation, true);
+    }
+
+    switch (tokenType) {
         case lexer::TokenType::LITERAL_NULL: {
             auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
@@ -506,11 +509,15 @@ bool ETSParser::ParseReadonlyInTypeAnnotation()
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *typeAnnotation = nullptr;
-    auto startPos = Lexer()->GetToken().Start();
+    const auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
     if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
-        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        const auto beforeTypeAnnotation = Lexer()->GetToken().Loc();
+        auto typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        if (typeAnnotation == nullptr) {
+            LogError(diagnostic::INVALID_TYPE);
+            return AllocBrokenType(beforeTypeAnnotation);
+        }
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
             !(typeAnnotation->IsETSTypeReference() &&
               typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
@@ -522,10 +529,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
-    } else {
-        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        return typeAnnotation;
     }
-    return typeAnnotation;
+    return ParseTypeAnnotationNoPreferParam(options);
 }
 
 ir::TypeNode *ETSParser::ParseMultilineString()

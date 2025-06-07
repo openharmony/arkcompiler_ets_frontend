@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 import type * as ts from 'typescript';
-import { LinterConfig } from '../../TypeScriptLinterConfig';
+import { TypeScriptLinterConfig } from '../../TypeScriptLinterConfig';
 
 export function isStruct(symbol: ts.Symbol): boolean {
   if (!symbol.declarations) {
@@ -29,7 +29,7 @@ export function isStruct(symbol: ts.Symbol): boolean {
 }
 
 export function isStructDeclarationKind(kind: ts.SyntaxKind): boolean {
-  return LinterConfig.tsSyntaxKindNames[kind] === 'StructDeclaration';
+  return TypeScriptLinterConfig.tsSyntaxKindNames[kind] === 'StructDeclaration';
 }
 
 export function isStructDeclaration(node: ts.Node): boolean {

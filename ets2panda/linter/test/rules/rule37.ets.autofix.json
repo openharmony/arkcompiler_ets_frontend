@@ -234,6 +234,74 @@
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
             "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 20,
+            "endLine": 69,
+            "endColumn": 44,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1968,
+                    "end": 1992,
+                    "replacementText": "new RegExp('dawfgr' + '12345')"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 20,
+            "endLine": 71,
+            "endColumn": 176,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 2013,
+                    "end": 2169,
+                    "replacementText": "new RegExp('.∗?(?:(?:元宵|三八|妇女|母亲|父亲|七夕|重阳|情人|儿童|六一' + '|愚人|复活|青年|护士|建军|教师|建党|万圣|感恩|秘书|七一|五四|八一|腊八|光棍|植树|中元)节|除夕|大年三十|大年30|七夕' + '|平安夜|六一|七一|五四|八一|三八|腊八|双十一|双十二).∗')"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 24,
+            "endLine": 73,
+            "endColumn": 56,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 2195,
+                    "end": 2227,
+                    "replacementText": "new RegExp('dawfgr'.concat('12345'))"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 21,
+            "endLine": 75,
+            "endColumn": 53,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 2250,
+                    "end": 2282,
+                    "replacementText": "new RegExp('dawfgr' + '12345' + '789')"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
         }
     ]
 }

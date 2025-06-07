@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@ import { AliasType } from '../base/Type';
 import { Trap } from '../base/Trap';
 import { Value } from '../base/Value';
 import { ArkAliasTypeDefineStmt } from '../base/Stmt';
+import { LocalSignature } from './ArkSignature';
 
 export class ArkBody {
     private locals: Map<string, Local>;
@@ -27,8 +28,7 @@ export class ArkBody {
     private aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>;
     private traps?: Trap[];
 
-    constructor(locals: Set<Local>, cfg: Cfg, aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>,
-                traps?: Trap[]) {
+    constructor(locals: Set<Local>, cfg: Cfg, aliasTypeMap?: Map<string, [AliasType, ArkAliasTypeDefineStmt]>, traps?: Trap[]) {
         this.cfg = cfg;
         this.aliasTypeMap = aliasTypeMap;
         this.locals = new Map<string, Local>();
@@ -81,5 +81,14 @@ export class ArkBody {
 
     public getTraps(): Trap[] | undefined {
         return this.traps;
+    }
+
+    public getExportLocalByName(name: string): Local | null {
+        const local = this.locals?.get(name);
+        if (local) {
+            local.setSignature(new LocalSignature(name, this.cfg.getDeclaringMethod().getSignature()));
+            return local;
+        }
+        return null;
     }
 }

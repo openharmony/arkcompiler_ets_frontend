@@ -25,16 +25,18 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'SwitchBuilder');
  * Builder for switch statement in CFG
  */
 export class SwitchBuilder {
-    public buildSwitch(blockBuilderToCfgBlock: Map<BlockBuilder, BasicBlock>,
-                       blockBuildersContainSwitch: BlockBuilder[],
-                       valueAndStmtsOfSwitchAndCasesAll: ValueAndStmts[][], arkIRTransformer: ArkIRTransformer,
-                       basicBlockSet: Set<BasicBlock>): void {
+    public buildSwitch(
+        blockBuilderToCfgBlock: Map<BlockBuilder, BasicBlock>,
+        blockBuildersContainSwitch: BlockBuilder[],
+        valueAndStmtsOfSwitchAndCasesAll: ValueAndStmts[][],
+        arkIRTransformer: ArkIRTransformer,
+        basicBlockSet: Set<BasicBlock>
+    ): void {
         for (let i = 0; i < blockBuildersContainSwitch.length; i++) {
             const blockBuilderContainSwitch = blockBuildersContainSwitch[i];
 
             if (!blockBuilderToCfgBlock.has(blockBuilderContainSwitch)) {
-                logger.error(
-                    `can't find basicBlock corresponding to the blockBuilder.`);
+                logger.error(`can't find basicBlock corresponding to the blockBuilder.`);
                 continue;
             }
 
@@ -50,7 +52,8 @@ export class SwitchBuilder {
             const cases = switchStmtBuilder.cases;
             let nonEmptyCaseCnt = 0;
             for (const currCase of cases) {
-                if (currCase.stmt.block) { // there are stmts after this case
+                if (currCase.stmt.block) {
+                    // there are stmts after this case
                     nonEmptyCaseCnt++;
                 }
             }
@@ -59,16 +62,24 @@ export class SwitchBuilder {
             }
 
             const caseCnt = cases.length;
-            const caseIfBlocks = this.generateIfBlocksForCases(valueAndStmtsOfSwitchAndCasesAll[i], caseCnt,
-                blockContainSwitch, basicBlockSet, arkIRTransformer);
-            this.linkIfBlockAndCaseBlock(blockContainSwitch, caseIfBlocks, switchStmtBuilder,
-                blockBuilderToCfgBlock);
+            const caseIfBlocks = this.generateIfBlocksForCases(
+                valueAndStmtsOfSwitchAndCasesAll[i],
+                caseCnt,
+                blockContainSwitch,
+                basicBlockSet,
+                arkIRTransformer
+            );
+            this.linkIfBlockAndCaseBlock(blockContainSwitch, caseIfBlocks, switchStmtBuilder, blockBuilderToCfgBlock);
         }
     }
 
-    private generateIfBlocksForCases(valueAndStmtsOfSwitchAndCases: ValueAndStmts[], caseCnt: number,
-                                     blockContainSwitch: BasicBlock, basicBlockSet: Set<BasicBlock>,
-                                     arkIRTransformer: ArkIRTransformer): BasicBlock[] {
+    private generateIfBlocksForCases(
+        valueAndStmtsOfSwitchAndCases: ValueAndStmts[],
+        caseCnt: number,
+        blockContainSwitch: BasicBlock,
+        basicBlockSet: Set<BasicBlock>,
+        arkIRTransformer: ArkIRTransformer
+    ): BasicBlock[] {
         const valueAndStmtsOfSwitch = valueAndStmtsOfSwitchAndCases[0];
         const valueOfSwitch = valueAndStmtsOfSwitch.value;
         const caseIfBlocks: BasicBlock[] = [];
@@ -89,9 +100,12 @@ export class SwitchBuilder {
             caseStmts.forEach((stmt: Stmt) => {
                 caseIfBlock.addStmt(stmt);
             });
-            const caseIfStmts = arkIRTransformer.generateIfStmtForValues(valueOfSwitch,
-                valueAndStmtsOfSwitch.valueOriginalPositions, caseValue,
-                caseValueAndStmts.valueOriginalPositions);
+            const caseIfStmts = arkIRTransformer.generateIfStmtForValues(
+                valueOfSwitch,
+                valueAndStmtsOfSwitch.valueOriginalPositions,
+                caseValue,
+                caseValueAndStmts.valueOriginalPositions
+            );
             caseIfStmts.forEach((stmt: Stmt) => {
                 caseIfBlock.addStmt(stmt);
             });
@@ -99,9 +113,12 @@ export class SwitchBuilder {
         return caseIfBlocks;
     }
 
-    private linkIfBlockAndCaseBlock(blockContainSwitch: BasicBlock, caseIfBlocks: BasicBlock[],
-                                    switchStmtBuilder: SwitchStatementBuilder,
-                                    blockBuilderToCfgBlock: Map<BlockBuilder, BasicBlock>): boolean {
+    private linkIfBlockAndCaseBlock(
+        blockContainSwitch: BasicBlock,
+        caseIfBlocks: BasicBlock[],
+        switchStmtBuilder: SwitchStatementBuilder,
+        blockBuilderToCfgBlock: Map<BlockBuilder, BasicBlock>
+    ): boolean {
         const successorsOfBlockContainSwitch = Array.from(blockContainSwitch.getSuccessors());
         const expectedSuccessorsOfCaseIfBlock: BasicBlock[] = [];
         const defaultStmtBuilder = switchStmtBuilder.default;
@@ -121,13 +138,14 @@ export class SwitchBuilder {
             const currCase = switchStmtBuilder.cases[i];
             if (currCase.stmt.block) {
                 expectedSuccessorsOfCaseIfBlock.push(...successorsOfBlockContainSwitch.splice(-1, 1));
-            } else { // if there are no stmts after this case, reuse the successor of the next case
+            } else {
+                // if there are no stmts after this case, reuse the successor of the next case
                 expectedSuccessorsOfCaseIfBlock.push(...expectedSuccessorsOfCaseIfBlock.slice(-1));
             }
         }
         expectedSuccessorsOfCaseIfBlock.reverse();
 
-        blockContainSwitch.getSuccessors().forEach((successor) => {
+        blockContainSwitch.getSuccessors().forEach(successor => {
             successor.getPredecessors().splice(0, 1);
         });
         blockContainSwitch.getSuccessors().splice(0);
@@ -135,7 +153,8 @@ export class SwitchBuilder {
             const caseIfBlock = caseIfBlocks[j];
             caseIfBlock.addSuccessorBlock(expectedSuccessorsOfCaseIfBlock[j]);
             expectedSuccessorsOfCaseIfBlock[j].addPredecessorBlock(caseIfBlock);
-            if (j === caseCnt - 1) { // the false branch of last case should be default or block after switch statement
+            if (j === caseCnt - 1) {
+                // the false branch of last case should be default or block after switch statement
                 caseIfBlock.addSuccessorBlock(expectedSuccessorsOfCaseIfBlock[j + 1]);
                 expectedSuccessorsOfCaseIfBlock[j + 1].addPredecessorBlock(caseIfBlock);
             } else {

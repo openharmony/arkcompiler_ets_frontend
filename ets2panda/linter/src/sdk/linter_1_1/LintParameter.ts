@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,16 +14,15 @@
  */
 
 import type * as ts from 'typescript';
-import type { InteropTypescriptLinter } from '../../lib/InteropTypescriptLinter';
-import type { TypeScriptLinter } from '../../lib/TypeScriptLinter';
 import type { IncrementalLinterState } from './IncrementalLinter';
+import type { SdkOptions } from './SdkOptions';
 
 export interface LintParameter {
   incrementalLinterState: IncrementalLinterState;
-  typeScriptLinter: TypeScriptLinter;
-  interopTypescriptLinter: InteropTypescriptLinter;
   tscStrictDiagnostics: Map<string, ts.Diagnostic[]>;
   diagnostics: ts.Diagnostic[];
   etsLoaderPath?: string;
   tsImportSendableEnable?: boolean;
+  program: ts.Program;
+  sdkOptions?: SdkOptions;
 }

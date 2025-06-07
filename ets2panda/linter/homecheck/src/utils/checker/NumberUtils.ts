@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
-import { AbstractExpr, ArkAssignStmt, ArkFile, ArkNormalBinopExpr, ArkStaticFieldRef, ArkUnopExpr, ClassSignature, Constant, ImportInfo, Local, NumberType, Stmt, Value } from "arkanalyzer";
-import { VarInfo } from "../../model/VarInfo";
-import { CheckerStorage } from "../common/CheckerStorage";
-import { NumberValue, ValueType } from "../../model/NumberValue";
-import { StmtExt } from "../../model/StmtExt";
+import { AbstractExpr, ArkAssignStmt, ArkFile, ArkNormalBinopExpr, ArkStaticFieldRef, ArkUnopExpr, ClassSignature, Constant, ImportInfo, Local, NumberType, Stmt, Value } from 'arkanalyzer';
+import { VarInfo } from '../../model/VarInfo';
+import { CheckerStorage } from '../common/CheckerStorage';
+import { NumberValue, ValueType } from '../../model/NumberValue';
+import { StmtExt } from '../../model/StmtExt';
 
 export class NumberUtils {
-    public static readonly mBinopList: string[] = ["+", "-", "*", "/", "%", "<<", ">>", "&", "|", "^", ">>>"];
+    public static readonly mBinopList: string[] = ['+', '-', '*', '/', '%', '<<', '>>', '&', '|', '^', '>>>'];
 
-    private static isSupportOperator(operator: string) {
+    private static isSupportOperator(operator: string): boolean {
         return this.mBinopList.includes(operator);
     }
 
@@ -39,12 +39,12 @@ export class NumberUtils {
         } else if (value instanceof AbstractExpr && value.getType() instanceof NumberType) {
             return NumberUtils.isExprSupportCalculate(arkFile, valueStmtInfo, value);
         } else if (value instanceof ArkStaticFieldRef && value.getType() instanceof NumberType) {
-            return true
+            return true;
         }
         return false;
     }
 
-    private static isExprSupportCalculate(arkFile: ArkFile, valueStmtInfo: VarInfo, value: AbstractExpr) {
+    private static isExprSupportCalculate(arkFile: ArkFile, valueStmtInfo: VarInfo, value: AbstractExpr): boolean {
         if (value instanceof ArkNormalBinopExpr && this.isSupportOperator(value.getOperator())) {
             return NumberUtils.isValueSupportCalculation(arkFile, valueStmtInfo, value.getOp1()) &&
                 NumberUtils.isValueSupportCalculation(arkFile, valueStmtInfo, value.getOp2());
@@ -94,7 +94,7 @@ export class NumberUtils {
         return false;
     }
 
-    private static isImportValueSupportCalculate(arkFile: ArkFile, importInfo: ImportInfo, value: Local) {
+    private static isImportValueSupportCalculate(arkFile: ArkFile, importInfo: ImportInfo, value: Local): boolean {
         let exportInfo = importInfo.getLazyExportInfo();
         let importArkFile = exportInfo?.getDeclaringArkFile();
         if (!importArkFile) {
@@ -106,7 +106,7 @@ export class NumberUtils {
         }
         for (let varDef of scope.defList) {
             if (varDef.getName() !== value.getName()) {
-                continue
+                continue;
             }
             let stmt = varDef.defStmt;
             if (stmt instanceof ArkAssignStmt) {
@@ -118,10 +118,10 @@ export class NumberUtils {
         return false;
     }
 
-    private static getValueImportInfo(arkFile: ArkFile, value: Local) {
+    private static getValueImportInfo(arkFile: ArkFile, value: Local): any {
         let importInfos = arkFile.getImportInfos();
         for (let importInfo of importInfos) {
-            if (importInfo.getImportClauseName() == value.getName()) {
+            if (importInfo.getImportClauseName() === value.getName()) {
                 return importInfo;
             }
         }
@@ -133,21 +133,21 @@ export class NumberUtils {
             let valueStr = value.getValue();
             let numberValue = Number(valueStr);
             if (valueStr.includes('.')) {
-                return new NumberValue(numberValue, ValueType.DOUBLE)
+                return new NumberValue(numberValue, ValueType.DOUBLE);
             } else {
-                return new NumberValue(numberValue, ValueType.INT)
+                return new NumberValue(numberValue, ValueType.INT);
             }
         } else if (value instanceof Local) {
             let importInfo = this.getValueImportInfo(arkFile, value);
             if (importInfo) {
-                return this.getImportNumberValue(arkFile, importInfo, value)
+                return this.getImportNumberValue(arkFile, importInfo, value);
             } else {
-                return this.getMethodNumberValue(arkFile, valueStmtInfo, value)
+                return this.getMethodNumberValue(arkFile, valueStmtInfo, value);
             }
         } else if (value instanceof AbstractExpr && value.getType() instanceof NumberType) {
-            return this.getExprNumberValue(arkFile, valueStmtInfo, value)
+            return this.getExprNumberValue(arkFile, valueStmtInfo, value);
         } else if (value instanceof ArkStaticFieldRef && value.getType() instanceof NumberType) {
-            return this.getStaticNumberValue(arkFile, valueStmtInfo, value)
+            return this.getStaticNumberValue(arkFile, valueStmtInfo, value);
         }
         return new NumberValue(0, ValueType.UNKNOWN);
     }
@@ -170,7 +170,7 @@ export class NumberUtils {
             if (stmt instanceof ArkAssignStmt) {
                 let defStmtInfo = new VarInfo(stmt, scope);
                 let rightOp = stmt.getRightOp();
-                return this.getNumberByScope(importArkFile, defStmtInfo, rightOp)
+                return this.getNumberByScope(importArkFile, defStmtInfo, rightOp);
             }
         }
         return new NumberValue(0, ValueType.UNKNOWN);
@@ -204,18 +204,18 @@ export class NumberUtils {
             let stmt = nearReDefStmtInfo.stmt;
             if (stmt instanceof ArkAssignStmt) {
                 let rightOp = stmt.getRightOp();
-                return this.getNumberByScope(arkFile, nearReDefStmtInfo, rightOp)
+                return this.getNumberByScope(arkFile, nearReDefStmtInfo, rightOp);
             }
         }
 
         if (!hasFind && scope.parentScope != null) {
             let defStmtInfo = new VarInfo(valueStmt, scope.parentScope);
-            return this.getNumberByScope(arkFile, defStmtInfo, value)
+            return this.getNumberByScope(arkFile, defStmtInfo, value);
         }
         return new NumberValue(0, ValueType.UNKNOWN);
     }
 
-    private static getExprNumberValue(arkFile: ArkFile, stmeInfo: VarInfo, value: AbstractExpr) {
+    private static getExprNumberValue(arkFile: ArkFile, stmeInfo: VarInfo, value: AbstractExpr): NumberValue {
         if (value instanceof ArkNormalBinopExpr) {
             if (this.isSupportOperator(value.getOperator())) {
                 let valueOfOp1 = this.getNumberByScope(arkFile, stmeInfo, value.getOp1());
@@ -258,7 +258,7 @@ export class NumberUtils {
         return new NumberValue(0, ValueType.UNKNOWN);
     }
 
-    private static getStaticNumberValue(arkFile: ArkFile, valueStmtInfo: VarInfo, value: ArkStaticFieldRef) {
+    private static getStaticNumberValue(arkFile: ArkFile, valueStmtInfo: VarInfo, value: ArkStaticFieldRef): NumberValue {
         let classSignature = value.getFieldSignature().getDeclaringSignature();
         if (!(classSignature instanceof ClassSignature)) {
             return new NumberValue(0, ValueType.UNKNOWN);
@@ -284,7 +284,7 @@ export class NumberUtils {
             }
 
             let stmt = stmts[0];
-            new VarInfo(stmt, (stmt as StmtExt).scope)
+            new VarInfo(stmt, (stmt as StmtExt).scope);
             if (!(stmt instanceof ArkAssignStmt)) {
                 return new NumberValue(0, ValueType.UNKNOWN);
             }
@@ -298,7 +298,7 @@ export class NumberUtils {
     public static getOriginalValueText(stmt: Stmt, value: Value): string {
         let valStr = '';
         if (value instanceof Constant) {
-            valStr = value.toString()
+            valStr = value.toString();
         } else if (value instanceof Local) {
             if (!value.toString().includes('%')) {
                 valStr = value.toString();
@@ -314,13 +314,13 @@ export class NumberUtils {
             } else {
                 let originalPosition = stmt.getOperandOriginalPosition(value);
                 if (!originalPosition) {
-                    return this.getOriginalValueText(stmt, value.getOp1()) + ' ' + value.getOperator() + ' '
-                        + this.getOriginalValueText(stmt, value.getOp2());
+                    return this.getOriginalValueText(stmt, value.getOp1()) + ' ' + value.getOperator() + ' ' +
+                        this.getOriginalValueText(stmt, value.getOp2());
                 }
                 const text = stmt.getOriginalText();
                 if (!text || text.length === 0) {
-                    return this.getOriginalValueText(stmt, value.getOp1()) + ' ' + value.getOperator() + ' '
-                        + this.getOriginalValueText(stmt, value.getOp2());
+                    return this.getOriginalValueText(stmt, value.getOp1()) + ' ' + value.getOperator() + ' ' +
+                        this.getOriginalValueText(stmt, value.getOp2());
                 }
                 let startColum = stmt.getOriginPositionInfo().getColNo();
                 return text.substring(originalPosition.getFirstCol() - startColum, originalPosition.getLastCol() - startColum);

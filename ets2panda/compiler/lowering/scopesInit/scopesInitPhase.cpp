@@ -233,7 +233,7 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
 void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
 {
     auto init = varDecl->Id();
-    std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
+    std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(VarBinder(), init);
     for (auto *binding : bindings) {
         auto [decl, var] = AddOrGetVarDecl(varDecl->Flag(), binding);
         BindVarDecl(binding, init, decl, var);

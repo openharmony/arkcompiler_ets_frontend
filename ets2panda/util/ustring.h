@@ -234,6 +234,10 @@ public:
 
     class Constants {
     public:
+        static constexpr uint16_t UTF8_2BYTE_REQUIRED = 2;
+        static constexpr uint16_t UTF8_3BYTE_REQUIRED = 3;
+        static constexpr uint16_t UTF8_4BYTE_REQUIRED = 4;
+
         static constexpr uint16_t UTF8_1BYTE_LIMIT = 0x80;
         static constexpr uint16_t UTF8_2BYTE_LIMIT = 0x800;
         static constexpr uint32_t UTF8_3BYTE_LIMIT = 0x10000;
@@ -375,22 +379,25 @@ char32_t StringView::Iterator::DecodeCP([[maybe_unused]] size_t *cpSize) const
     }
 
     const auto *iterNext = iter_;
+    const auto remain = static_cast<size_t>(sv_.end() - iterNext);
 
     char32_t cu0 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     char32_t res {};
 
     if (cu0 < Constants::UTF8_1BYTE_LIMIT) {
         res = cu0;
-    } else if ((cu0 & Constants::UTF8_3BYTE_HEADER) == Constants::UTF8_2BYTE_HEADER) {
+    } else if ((cu0 & Constants::UTF8_3BYTE_HEADER) == Constants::UTF8_2BYTE_HEADER &&
+               remain >= Constants::UTF8_2BYTE_REQUIRED) {
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         res = ((cu0 & Constants::UTF8_2BYTE_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu1 & Constants::UTF8_CONT_MASK);
-    } else if ((cu0 & Constants::UTF8_4BYTE_HEADER) == Constants::UTF8_3BYTE_HEADER) {
+    } else if ((cu0 & Constants::UTF8_4BYTE_HEADER) == Constants::UTF8_3BYTE_HEADER &&
+               remain >= Constants::UTF8_3BYTE_REQUIRED) {
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         char32_t cu2 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         res = ((cu0 & Constants::UTF8_3BYTE_MASK) << Constants::UTF8_3BYTE_SHIFT) |
               ((cu1 & Constants::UTF8_CONT_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu2 & Constants::UTF8_CONT_MASK);
     } else if (((cu0 & Constants::UTF8_DECODE_4BYTE_MASK) == Constants::UTF8_4BYTE_HEADER) &&
-               (cu0 <= Constants::UTF8_DECODE_4BYTE_LIMIT)) {
+               cu0 <= Constants::UTF8_DECODE_4BYTE_LIMIT && remain >= Constants::UTF8_4BYTE_REQUIRED) {
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         char32_t cu2 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         char32_t cu3 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)

@@ -1191,3 +1191,7 @@ syntax:
 - name: PREDEFINED_TYPE_AS_IDENTIFIER
   id: 295
   message: "{} is a predefined type, cannot be used as an identifier"
+
+- name: DEEP_NESTING
+  id: 306
+  message: "Maximum allowed nesting level exceeded."

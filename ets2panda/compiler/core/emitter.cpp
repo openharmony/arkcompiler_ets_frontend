@@ -280,19 +280,6 @@ void FunctionEmitter::GenFunctionCatchTables(pandasm::Function *func)
     }
 }
 
-void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
-{
-    func->sourceFile = std::string {cg_->VarBinder()->Program()->RelativeFilePath()};
-
-    if (!cg_->IsDebug()) {
-        return;
-    }
-
-    if (cg_->RootNode()->IsProgram()) {
-        func->sourceCode = SourceCode().EscapeSymbol<util::StringView::Mutf8Encode>();
-    }
-}
-
 static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebug, varbinder::Variable *var,
                                  std::tuple<uint32_t, uint32_t, uint32_t> info, ScriptExtension extension)
 {

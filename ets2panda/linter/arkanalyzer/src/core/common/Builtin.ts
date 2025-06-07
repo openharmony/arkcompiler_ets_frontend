@@ -56,8 +56,10 @@ export class Builtin {
 
     // constants for string
     public static TO_STRING = 'toString';
-    public static TO_STRING_METHOD_SIGNATURE = new MethodSignature(ClassSignature.DEFAULT,
-        new MethodSubSignature(this.TO_STRING, [], StringType.getInstance(), false));
+    public static TO_STRING_METHOD_SIGNATURE = new MethodSignature(
+        ClassSignature.DEFAULT,
+        new MethodSubSignature(this.TO_STRING, [], StringType.getInstance(), false)
+    );
 
     private static buildBuiltInClasses(): Set<string> {
         const builtInClasses = new Set<string>();

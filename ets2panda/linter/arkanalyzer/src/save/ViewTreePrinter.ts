@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,11 +49,7 @@ export class ViewTreePrinter extends Printer {
         return this.printer.toString();
     }
 
-    private walk(
-        item: ViewTreeNode,
-        parent: ViewTreeNode | null,
-        map: Map<ViewTreeNode | ClassSignature | MethodSignature, string> = new Map()
-    ): void {
+    private walk(item: ViewTreeNode, parent: ViewTreeNode | null, map: Map<ViewTreeNode | ClassSignature | MethodSignature, string> = new Map()): void {
         let skipChildren = this.writeNode(item, parent, map);
         if (skipChildren) {
             return;
@@ -68,18 +64,12 @@ export class ViewTreePrinter extends Printer {
         const PRE_FIX_LEN = 5;
         let label = content.join('|');
         if (label.length > MAX_LABEL_LEN) {
-            return (
-                label.substring(0, PRE_FIX_LEN) + '...' + label.substring(label.length - MAX_LABEL_LEN + PRE_FIX_LEN)
-            );
+            return label.substring(0, PRE_FIX_LEN) + '...' + label.substring(label.length - MAX_LABEL_LEN + PRE_FIX_LEN);
         }
         return label;
     }
 
-    private writeNode(
-        item: ViewTreeNode,
-        parent: ViewTreeNode | null,
-        map: Map<ViewTreeNode | ClassSignature | MethodSignature, string>
-    ): boolean {
+    private writeNode(item: ViewTreeNode, parent: ViewTreeNode | null, map: Map<ViewTreeNode | ClassSignature | MethodSignature, string>): boolean {
         let id = `Node${map.size}`;
         let hasSameNode = map.has(item) || map.has(item.signature!);
 
@@ -119,7 +109,7 @@ export class ViewTreePrinter extends Printer {
         if (item.stateValues.size > 0) {
             let stateValuesId = `${id}val`;
             let content: string[] = [];
-            item.stateValues.forEach((value) => {
+            item.stateValues.forEach(value => {
                 content.push(value.getName());
             });
 
@@ -156,9 +146,7 @@ export class ViewTreePrinter extends Printer {
             let signatureId = `${id}signature`;
             let content = [item.signature.toString()];
             this.printer.write(
-                `    ${signatureId} [shape=ellipse label="signature\n${this.escapeDotLabel(
-                    content
-                )}" fontsize=10 height=.1 style=filled color=".7 .3 1.0" ]\n`
+                `    ${signatureId} [shape=ellipse label="signature\n${this.escapeDotLabel(content)}" fontsize=10 height=.1 style=filled color=".7 .3 1.0" ]\n`
             );
             this.printer.write(`    ${id} -> ${signatureId}\n`);
         }

@@ -542,9 +542,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3320,
-                    "end": 3447,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp4: boolean = true;"
+                    "start": 3439,
+                    "end": 3439,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -559,9 +559,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3447,
-                    "end": 3469,
-                    "replacementText": "numberProp4: number = 42;"
+                    "start": 3463,
+                    "end": 3463,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -576,9 +576,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3469,
-                    "end": 3496,
-                    "replacementText": "stringProp4: string = \"Hello\";"
+                    "start": 3485,
+                    "end": 3485,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -593,9 +593,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3496,
-                    "end": 3524,
-                    "replacementText": "arrayProp4: number[] = [1, 2, 3];"
+                    "start": 3511,
+                    "end": 3511,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -610,9 +610,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3524,
-                    "end": 3560,
-                    "replacementText": "tupleProp4: (string | number)[] = [\"typescript\", 4];"
+                    "start": 3539,
+                    "end": 3539,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -627,9 +627,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3560,
-                    "end": 3589,
-                    "replacementText": "enumProp4: Color = Color.Green;"
+                    "start": 3574,
+                    "end": 3574,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -676,9 +676,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3622,
-                    "end": 3649,
-                    "replacementText": "voidProp4: undefined = undefined;"
+                    "start": 3636,
+                    "end": 3636,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -693,9 +693,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3649,
-                    "end": 3671,
-                    "replacementText": "nullProp4: null = null;"
+                    "start": 3663,
+                    "end": 3663,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -710,9 +710,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3671,
-                    "end": 3703,
-                    "replacementText": "undefinedProp4: undefined = undefined;"
+                    "start": 3690,
+                    "end": 3690,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -759,9 +759,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3748,
-                    "end": 3790,
-                    "replacementText": "sendableClass4: SendableClass = new SendableClass();"
+                    "start": 3767,
+                    "end": 3767,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -776,9 +776,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3790,
-                    "end": 3836,
-                    "replacementText": "noSendableClass4: NoSendableClass = new NoSendableClass();"
+                    "start": 3811,
+                    "end": 3811,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -793,9 +793,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3836,
-                    "end": 3964,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp5?: boolean | undefined = true;"
+                    "start": 3956,
+                    "end": 3956,
+                    "replacementText": ": boolean | undefined"
                 }
             ],
             "suggest": "",
@@ -810,9 +810,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3964,
-                    "end": 3987,
-                    "replacementText": "numberProp5?: number | undefined = 42;"
+                    "start": 3981,
+                    "end": 3981,
+                    "replacementText": ": number | undefined"
                 }
             ],
             "suggest": "",
@@ -827,9 +827,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 3987,
-                    "end": 4015,
-                    "replacementText": "stringProp5?: string | undefined = \"Hello\";"
+                    "start": 4004,
+                    "end": 4004,
+                    "replacementText": ": string | undefined"
                 }
             ],
             "suggest": "",
@@ -844,9 +844,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4015,
-                    "end": 4044,
-                    "replacementText": "arrayProp5?: number[] | undefined = [1, 2, 3];"
+                    "start": 4031,
+                    "end": 4031,
+                    "replacementText": ": number[] | undefined"
                 }
             ],
             "suggest": "",
@@ -861,9 +861,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4044,
-                    "end": 4081,
-                    "replacementText": "tupleProp5?: (string | number)[] | undefined = [\"typescript\", 4];"
+                    "start": 4060,
+                    "end": 4060,
+                    "replacementText": ": (string | number)[] | undefined"
                 }
             ],
             "suggest": "",
@@ -878,9 +878,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4081,
-                    "end": 4111,
-                    "replacementText": "enumProp5?: Color | undefined = Color.Green;"
+                    "start": 4096,
+                    "end": 4096,
+                    "replacementText": ": Color | undefined"
                 }
             ],
             "suggest": "",
@@ -927,9 +927,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4145,
-                    "end": 4173,
-                    "replacementText": "voidProp5?: undefined = undefined;"
+                    "start": 4160,
+                    "end": 4160,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -944,9 +944,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4173,
-                    "end": 4196,
-                    "replacementText": "nullProp5?: null | undefined = null;"
+                    "start": 4188,
+                    "end": 4188,
+                    "replacementText": ": null | undefined"
                 }
             ],
             "suggest": "",
@@ -961,9 +961,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4196,
-                    "end": 4229,
-                    "replacementText": "undefinedProp5?: undefined = undefined;"
+                    "start": 4216,
+                    "end": 4216,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -1010,9 +1010,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4275,
-                    "end": 4318,
-                    "replacementText": "sendableClass5?: SendableClass | undefined = new SendableClass();"
+                    "start": 4295,
+                    "end": 4295,
+                    "replacementText": ": SendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -1027,9 +1027,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4318,
-                    "end": 4365,
-                    "replacementText": "noSendableClass5?: NoSendableClass | undefined = new NoSendableClass();"
+                    "start": 4340,
+                    "end": 4340,
+                    "replacementText": ": NoSendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -1044,9 +1044,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4365,
-                    "end": 4502,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\npublic optBooleanProp6: boolean = true;"
+                    "start": 4494,
+                    "end": 4494,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -1061,9 +1061,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4502,
-                    "end": 4534,
-                    "replacementText": "public optNumberProp6: number = 42;"
+                    "start": 4528,
+                    "end": 4528,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -1078,9 +1078,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4534,
-                    "end": 4571,
-                    "replacementText": "public optStringProp6: string = \"Hello\";"
+                    "start": 4560,
+                    "end": 4560,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -1095,9 +1095,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4571,
-                    "end": 4609,
-                    "replacementText": "public optArrayProp6: number[] = [1, 2, 3];"
+                    "start": 4596,
+                    "end": 4596,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -1112,9 +1112,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4609,
-                    "end": 4655,
-                    "replacementText": "public optTupleProp6: (string | number)[] = [\"typescript\", 4];"
+                    "start": 4634,
+                    "end": 4634,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -1129,9 +1129,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4655,
-                    "end": 4694,
-                    "replacementText": "public optEnumProp6: Color = Color.Green;"
+                    "start": 4679,
+                    "end": 4679,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -1178,9 +1178,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4737,
-                    "end": 4774,
-                    "replacementText": "public optVoidProp6: undefined = undefined;"
+                    "start": 4761,
+                    "end": 4761,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -1195,9 +1195,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4774,
-                    "end": 4806,
-                    "replacementText": "public optNullProp6: null = null;"
+                    "start": 4798,
+                    "end": 4798,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -1212,9 +1212,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4806,
-                    "end": 4848,
-                    "replacementText": "public optUndefinedProp6: undefined = undefined;"
+                    "start": 4835,
+                    "end": 4835,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -1261,9 +1261,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4903,
-                    "end": 4955,
-                    "replacementText": "public optSendableClass6: SendableClass = new SendableClass();"
+                    "start": 4932,
+                    "end": 4932,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -1278,9 +1278,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 4955,
-                    "end": 5011,
-                    "replacementText": "public optNoSendableClass6: NoSendableClass = new NoSendableClass();"
+                    "start": 4986,
+                    "end": 4986,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -1295,9 +1295,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5011,
-                    "end": 5150,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nreadonly optBooleanProp7: true = true;"
+                    "start": 5142,
+                    "end": 5142,
+                    "replacementText": ": true"
                 }
             ],
             "suggest": "",
@@ -1312,9 +1312,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5150,
-                    "end": 5184,
-                    "replacementText": "readonly optNumberProp7: 42 = 42;"
+                    "start": 5178,
+                    "end": 5178,
+                    "replacementText": ": 42"
                 }
             ],
             "suggest": "",
@@ -1329,9 +1329,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5184,
-                    "end": 5223,
-                    "replacementText": "readonly optStringProp7: \"Hello\" = \"Hello\";"
+                    "start": 5212,
+                    "end": 5212,
+                    "replacementText": ": \"Hello\""
                 }
             ],
             "suggest": "",
@@ -1346,9 +1346,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5223,
-                    "end": 5263,
-                    "replacementText": "readonly optArrayProp7: number[] = [1, 2, 3];"
+                    "start": 5250,
+                    "end": 5250,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -1363,9 +1363,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5263,
-                    "end": 5311,
-                    "replacementText": "readonly optTupleProp7: (string | number)[] = [\"typescript\", 4];"
+                    "start": 5290,
+                    "end": 5290,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -1380,9 +1380,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5311,
-                    "end": 5352,
-                    "replacementText": "readonly optEnumProp7: Color.Green = Color.Green;"
+                    "start": 5337,
+                    "end": 5337,
+                    "replacementText": ": Color.Green"
                 }
             ],
             "suggest": "",
@@ -1429,9 +1429,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5397,
-                    "end": 5436,
-                    "replacementText": "readonly optVoidProp7: undefined = undefined;"
+                    "start": 5423,
+                    "end": 5423,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -1446,9 +1446,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5436,
-                    "end": 5470,
-                    "replacementText": "readonly optNullProp7: null = null;"
+                    "start": 5462,
+                    "end": 5462,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -1463,9 +1463,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5470,
-                    "end": 5514,
-                    "replacementText": "readonly optUndefinedProp7: undefined = undefined;"
+                    "start": 5501,
+                    "end": 5501,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -1512,9 +1512,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5571,
-                    "end": 5625,
-                    "replacementText": "readonly optSendableClass7: SendableClass = new SendableClass();"
+                    "start": 5602,
+                    "end": 5602,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -1529,9 +1529,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 5625,
-                    "end": 5683,
-                    "replacementText": "readonly optNoSendableClass7: NoSendableClass = new NoSendableClass();"
+                    "start": 5658,
+                    "end": 5658,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -2066,9 +2066,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8256,
-                    "end": 8383,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp4: boolean = true;"
+                    "start": 8375,
+                    "end": 8375,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -2083,9 +2083,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8383,
-                    "end": 8405,
-                    "replacementText": "numberProp4: number = 42;"
+                    "start": 8399,
+                    "end": 8399,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -2100,9 +2100,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8405,
-                    "end": 8432,
-                    "replacementText": "stringProp4: string = \"Hello\";"
+                    "start": 8421,
+                    "end": 8421,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -2117,9 +2117,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8432,
-                    "end": 8460,
-                    "replacementText": "arrayProp4: number[] = [1, 2, 3];"
+                    "start": 8447,
+                    "end": 8447,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -2134,9 +2134,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8460,
-                    "end": 8496,
-                    "replacementText": "tupleProp4: (string | number)[] = [\"typescript\", 4];"
+                    "start": 8475,
+                    "end": 8475,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -2151,9 +2151,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8496,
-                    "end": 8525,
-                    "replacementText": "enumProp4: Color = Color.Green;"
+                    "start": 8510,
+                    "end": 8510,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -2200,9 +2200,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8558,
-                    "end": 8585,
-                    "replacementText": "voidProp4: undefined = undefined;"
+                    "start": 8572,
+                    "end": 8572,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2217,9 +2217,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8585,
-                    "end": 8607,
-                    "replacementText": "nullProp4: null = null;"
+                    "start": 8599,
+                    "end": 8599,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -2234,9 +2234,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8607,
-                    "end": 8639,
-                    "replacementText": "undefinedProp4: undefined = undefined;"
+                    "start": 8626,
+                    "end": 8626,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2283,9 +2283,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8684,
-                    "end": 8726,
-                    "replacementText": "sendableClass4: SendableClass = new SendableClass();"
+                    "start": 8703,
+                    "end": 8703,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -2300,9 +2300,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8726,
-                    "end": 8772,
-                    "replacementText": "noSendableClass4: NoSendableClass = new NoSendableClass();"
+                    "start": 8747,
+                    "end": 8747,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -2317,9 +2317,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8772,
-                    "end": 8900,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp5?: boolean | undefined = true;"
+                    "start": 8892,
+                    "end": 8892,
+                    "replacementText": ": boolean | undefined"
                 }
             ],
             "suggest": "",
@@ -2334,9 +2334,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8900,
-                    "end": 8923,
-                    "replacementText": "numberProp5?: number | undefined = 42;"
+                    "start": 8917,
+                    "end": 8917,
+                    "replacementText": ": number | undefined"
                 }
             ],
             "suggest": "",
@@ -2351,9 +2351,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8923,
-                    "end": 8951,
-                    "replacementText": "stringProp5?: string | undefined = \"Hello\";"
+                    "start": 8940,
+                    "end": 8940,
+                    "replacementText": ": string | undefined"
                 }
             ],
             "suggest": "",
@@ -2368,9 +2368,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8951,
-                    "end": 8980,
-                    "replacementText": "arrayProp5?: number[] | undefined = [1, 2, 3];"
+                    "start": 8967,
+                    "end": 8967,
+                    "replacementText": ": number[] | undefined"
                 }
             ],
             "suggest": "",
@@ -2385,9 +2385,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 8980,
-                    "end": 9017,
-                    "replacementText": "tupleProp5?: (string | number)[] | undefined = [\"typescript\", 4];"
+                    "start": 8996,
+                    "end": 8996,
+                    "replacementText": ": (string | number)[] | undefined"
                 }
             ],
             "suggest": "",
@@ -2402,9 +2402,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9017,
-                    "end": 9047,
-                    "replacementText": "enumProp5?: Color | undefined = Color.Green;"
+                    "start": 9032,
+                    "end": 9032,
+                    "replacementText": ": Color | undefined"
                 }
             ],
             "suggest": "",
@@ -2451,9 +2451,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9081,
-                    "end": 9109,
-                    "replacementText": "voidProp5?: undefined = undefined;"
+                    "start": 9096,
+                    "end": 9096,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2468,9 +2468,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9109,
-                    "end": 9132,
-                    "replacementText": "nullProp5?: null | undefined = null;"
+                    "start": 9124,
+                    "end": 9124,
+                    "replacementText": ": null | undefined"
                 }
             ],
             "suggest": "",
@@ -2485,9 +2485,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9132,
-                    "end": 9165,
-                    "replacementText": "undefinedProp5?: undefined = undefined;"
+                    "start": 9152,
+                    "end": 9152,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2534,9 +2534,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9211,
-                    "end": 9254,
-                    "replacementText": "sendableClass5?: SendableClass | undefined = new SendableClass();"
+                    "start": 9231,
+                    "end": 9231,
+                    "replacementText": ": SendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -2551,9 +2551,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9254,
-                    "end": 9301,
-                    "replacementText": "noSendableClass5?: NoSendableClass | undefined = new NoSendableClass();"
+                    "start": 9276,
+                    "end": 9276,
+                    "replacementText": ": NoSendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -2568,9 +2568,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9301,
-                    "end": 9438,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\npublic optBooleanProp6: boolean = true;"
+                    "start": 9430,
+                    "end": 9430,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -2585,9 +2585,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9438,
-                    "end": 9470,
-                    "replacementText": "public optNumberProp6: number = 42;"
+                    "start": 9464,
+                    "end": 9464,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -2602,9 +2602,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9470,
-                    "end": 9507,
-                    "replacementText": "public optStringProp6: string = \"Hello\";"
+                    "start": 9496,
+                    "end": 9496,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -2619,9 +2619,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9507,
-                    "end": 9545,
-                    "replacementText": "public optArrayProp6: number[] = [1, 2, 3];"
+                    "start": 9532,
+                    "end": 9532,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -2636,9 +2636,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9545,
-                    "end": 9591,
-                    "replacementText": "public optTupleProp6: (string | number)[] = [\"typescript\", 4];"
+                    "start": 9570,
+                    "end": 9570,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -2653,9 +2653,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9591,
-                    "end": 9630,
-                    "replacementText": "public optEnumProp6: Color = Color.Green;"
+                    "start": 9615,
+                    "end": 9615,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -2702,9 +2702,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9673,
-                    "end": 9710,
-                    "replacementText": "public optVoidProp6: undefined = undefined;"
+                    "start": 9697,
+                    "end": 9697,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2719,9 +2719,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9710,
-                    "end": 9742,
-                    "replacementText": "public optNullProp6: null = null;"
+                    "start": 9734,
+                    "end": 9734,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -2736,9 +2736,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9742,
-                    "end": 9784,
-                    "replacementText": "public optUndefinedProp6: undefined = undefined;"
+                    "start": 9771,
+                    "end": 9771,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2785,9 +2785,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9839,
-                    "end": 9891,
-                    "replacementText": "public optSendableClass6: SendableClass = new SendableClass();"
+                    "start": 9868,
+                    "end": 9868,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -2802,9 +2802,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9891,
-                    "end": 9947,
-                    "replacementText": "public optNoSendableClass6: NoSendableClass = new NoSendableClass();"
+                    "start": 9922,
+                    "end": 9922,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -2819,9 +2819,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 9947,
-                    "end": 10086,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nreadonly optBooleanProp7: true = true;"
+                    "start": 10078,
+                    "end": 10078,
+                    "replacementText": ": true"
                 }
             ],
             "suggest": "",
@@ -2836,9 +2836,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10086,
-                    "end": 10120,
-                    "replacementText": "readonly optNumberProp7: 42 = 42;"
+                    "start": 10114,
+                    "end": 10114,
+                    "replacementText": ": 42"
                 }
             ],
             "suggest": "",
@@ -2853,9 +2853,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10120,
-                    "end": 10159,
-                    "replacementText": "readonly optStringProp7: \"Hello\" = \"Hello\";"
+                    "start": 10148,
+                    "end": 10148,
+                    "replacementText": ": \"Hello\""
                 }
             ],
             "suggest": "",
@@ -2870,9 +2870,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10159,
-                    "end": 10199,
-                    "replacementText": "readonly optArrayProp7: number[] = [1, 2, 3];"
+                    "start": 10186,
+                    "end": 10186,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -2887,9 +2887,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10199,
-                    "end": 10247,
-                    "replacementText": "readonly optTupleProp7: (string | number)[] = [\"typescript\", 4];"
+                    "start": 10226,
+                    "end": 10226,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -2904,9 +2904,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10247,
-                    "end": 10288,
-                    "replacementText": "readonly optEnumProp7: Color.Green = Color.Green;"
+                    "start": 10273,
+                    "end": 10273,
+                    "replacementText": ": Color.Green"
                 }
             ],
             "suggest": "",
@@ -2953,9 +2953,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10333,
-                    "end": 10372,
-                    "replacementText": "readonly optVoidProp7: undefined = undefined;"
+                    "start": 10359,
+                    "end": 10359,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -2970,9 +2970,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10372,
-                    "end": 10406,
-                    "replacementText": "readonly optNullProp7: null = null;"
+                    "start": 10398,
+                    "end": 10398,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -2987,9 +2987,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10406,
-                    "end": 10450,
-                    "replacementText": "readonly optUndefinedProp7: undefined = undefined;"
+                    "start": 10437,
+                    "end": 10437,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -3036,9 +3036,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10507,
-                    "end": 10561,
-                    "replacementText": "readonly optSendableClass7: SendableClass = new SendableClass();"
+                    "start": 10538,
+                    "end": 10538,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -3053,9 +3053,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 10561,
-                    "end": 10619,
-                    "replacementText": "readonly optNoSendableClass7: NoSendableClass = new NoSendableClass();"
+                    "start": 10594,
+                    "end": 10594,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -3590,9 +3590,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13165,
-                    "end": 13292,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp4: boolean = true;"
+                    "start": 13284,
+                    "end": 13284,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -3607,9 +3607,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13292,
-                    "end": 13314,
-                    "replacementText": "numberProp4: number = 42;"
+                    "start": 13308,
+                    "end": 13308,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -3624,9 +3624,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13314,
-                    "end": 13341,
-                    "replacementText": "stringProp4: string = \"Hello\";"
+                    "start": 13330,
+                    "end": 13330,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -3641,9 +3641,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13341,
-                    "end": 13369,
-                    "replacementText": "arrayProp4: number[] = [1, 2, 3];"
+                    "start": 13356,
+                    "end": 13356,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -3658,9 +3658,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13369,
-                    "end": 13405,
-                    "replacementText": "tupleProp4: (string | number)[] = [\"typescript\", 4];"
+                    "start": 13384,
+                    "end": 13384,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -3675,9 +3675,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13405,
-                    "end": 13434,
-                    "replacementText": "enumProp4: Color = Color.Green;"
+                    "start": 13419,
+                    "end": 13419,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -3724,9 +3724,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13467,
-                    "end": 13494,
-                    "replacementText": "voidProp4: undefined = undefined;"
+                    "start": 13481,
+                    "end": 13481,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -3741,9 +3741,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13494,
-                    "end": 13516,
-                    "replacementText": "nullProp4: null = null;"
+                    "start": 13508,
+                    "end": 13508,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -3758,9 +3758,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13516,
-                    "end": 13548,
-                    "replacementText": "undefinedProp4: undefined = undefined;"
+                    "start": 13535,
+                    "end": 13535,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -3807,9 +3807,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13593,
-                    "end": 13635,
-                    "replacementText": "sendableClass4: SendableClass = new SendableClass();"
+                    "start": 13612,
+                    "end": 13612,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -3824,9 +3824,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13635,
-                    "end": 13681,
-                    "replacementText": "noSendableClass4: NoSendableClass = new NoSendableClass();"
+                    "start": 13656,
+                    "end": 13656,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -3841,9 +3841,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13681,
-                    "end": 13809,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nbooleanProp5?: boolean | undefined = true;"
+                    "start": 13801,
+                    "end": 13801,
+                    "replacementText": ": boolean | undefined"
                 }
             ],
             "suggest": "",
@@ -3858,9 +3858,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13809,
-                    "end": 13832,
-                    "replacementText": "numberProp5?: number | undefined = 42;"
+                    "start": 13826,
+                    "end": 13826,
+                    "replacementText": ": number | undefined"
                 }
             ],
             "suggest": "",
@@ -3875,9 +3875,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13832,
-                    "end": 13860,
-                    "replacementText": "stringProp5?: string | undefined = \"Hello\";"
+                    "start": 13849,
+                    "end": 13849,
+                    "replacementText": ": string | undefined"
                 }
             ],
             "suggest": "",
@@ -3892,9 +3892,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13860,
-                    "end": 13889,
-                    "replacementText": "arrayProp5?: number[] | undefined = [1, 2, 3];"
+                    "start": 13876,
+                    "end": 13876,
+                    "replacementText": ": number[] | undefined"
                 }
             ],
             "suggest": "",
@@ -3909,9 +3909,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13889,
-                    "end": 13926,
-                    "replacementText": "tupleProp5?: (string | number)[] | undefined = [\"typescript\", 4];"
+                    "start": 13905,
+                    "end": 13905,
+                    "replacementText": ": (string | number)[] | undefined"
                 }
             ],
             "suggest": "",
@@ -3926,9 +3926,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13926,
-                    "end": 13956,
-                    "replacementText": "enumProp5?: Color | undefined = Color.Green;"
+                    "start": 13941,
+                    "end": 13941,
+                    "replacementText": ": Color | undefined"
                 }
             ],
             "suggest": "",
@@ -3975,9 +3975,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 13990,
-                    "end": 14018,
-                    "replacementText": "voidProp5?: undefined = undefined;"
+                    "start": 14005,
+                    "end": 14005,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -3992,9 +3992,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14018,
-                    "end": 14041,
-                    "replacementText": "nullProp5?: null | undefined = null;"
+                    "start": 14033,
+                    "end": 14033,
+                    "replacementText": ": null | undefined"
                 }
             ],
             "suggest": "",
@@ -4009,9 +4009,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14041,
-                    "end": 14074,
-                    "replacementText": "undefinedProp5?: undefined = undefined;"
+                    "start": 14061,
+                    "end": 14061,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -4058,9 +4058,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14120,
-                    "end": 14163,
-                    "replacementText": "sendableClass5?: SendableClass | undefined = new SendableClass();"
+                    "start": 14140,
+                    "end": 14140,
+                    "replacementText": ": SendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -4075,9 +4075,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14163,
-                    "end": 14210,
-                    "replacementText": "noSendableClass5?: NoSendableClass | undefined = new NoSendableClass();"
+                    "start": 14185,
+                    "end": 14185,
+                    "replacementText": ": NoSendableClass | undefined"
                 }
             ],
             "suggest": "",
@@ -4092,9 +4092,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14210,
-                    "end": 14347,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\npublic optBooleanProp6: boolean = true;"
+                    "start": 14339,
+                    "end": 14339,
+                    "replacementText": ": boolean"
                 }
             ],
             "suggest": "",
@@ -4109,9 +4109,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14347,
-                    "end": 14379,
-                    "replacementText": "public optNumberProp6: number = 42;"
+                    "start": 14373,
+                    "end": 14373,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -4126,9 +4126,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14379,
-                    "end": 14416,
-                    "replacementText": "public optStringProp6: string = \"Hello\";"
+                    "start": 14405,
+                    "end": 14405,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -4143,9 +4143,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14416,
-                    "end": 14454,
-                    "replacementText": "public optArrayProp6: number[] = [1, 2, 3];"
+                    "start": 14441,
+                    "end": 14441,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -4160,9 +4160,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14454,
-                    "end": 14500,
-                    "replacementText": "public optTupleProp6: (string | number)[] = [\"typescript\", 4];"
+                    "start": 14479,
+                    "end": 14479,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -4177,9 +4177,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14500,
-                    "end": 14539,
-                    "replacementText": "public optEnumProp6: Color = Color.Green;"
+                    "start": 14524,
+                    "end": 14524,
+                    "replacementText": ": Color"
                 }
             ],
             "suggest": "",
@@ -4226,9 +4226,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14582,
-                    "end": 14619,
-                    "replacementText": "public optVoidProp6: undefined = undefined;"
+                    "start": 14606,
+                    "end": 14606,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -4243,9 +4243,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14619,
-                    "end": 14651,
-                    "replacementText": "public optNullProp6: null = null;"
+                    "start": 14643,
+                    "end": 14643,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -4260,9 +4260,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14651,
-                    "end": 14693,
-                    "replacementText": "public optUndefinedProp6: undefined = undefined;"
+                    "start": 14680,
+                    "end": 14680,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -4309,9 +4309,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14748,
-                    "end": 14800,
-                    "replacementText": "public optSendableClass6: SendableClass = new SendableClass();"
+                    "start": 14777,
+                    "end": 14777,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -4326,9 +4326,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14800,
-                    "end": 14856,
-                    "replacementText": "public optNoSendableClass6: NoSendableClass = new NoSendableClass();"
+                    "start": 14831,
+                    "end": 14831,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",
@@ -4343,9 +4343,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14856,
-                    "end": 14995,
-                    "replacementText": "// Error, Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)\nreadonly optBooleanProp7: true = true;"
+                    "start": 14987,
+                    "end": 14987,
+                    "replacementText": ": true"
                 }
             ],
             "suggest": "",
@@ -4360,9 +4360,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 14995,
-                    "end": 15029,
-                    "replacementText": "readonly optNumberProp7: 42 = 42;"
+                    "start": 15023,
+                    "end": 15023,
+                    "replacementText": ": 42"
                 }
             ],
             "suggest": "",
@@ -4377,9 +4377,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15029,
-                    "end": 15068,
-                    "replacementText": "readonly optStringProp7: \"Hello\" = \"Hello\";"
+                    "start": 15057,
+                    "end": 15057,
+                    "replacementText": ": \"Hello\""
                 }
             ],
             "suggest": "",
@@ -4394,9 +4394,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15068,
-                    "end": 15108,
-                    "replacementText": "readonly optArrayProp7: number[] = [1, 2, 3];"
+                    "start": 15095,
+                    "end": 15095,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",
@@ -4411,9 +4411,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15108,
-                    "end": 15156,
-                    "replacementText": "readonly optTupleProp7: (string | number)[] = [\"typescript\", 4];"
+                    "start": 15135,
+                    "end": 15135,
+                    "replacementText": ": (string | number)[]"
                 }
             ],
             "suggest": "",
@@ -4428,9 +4428,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15156,
-                    "end": 15197,
-                    "replacementText": "readonly optEnumProp7: Color.Green = Color.Green;"
+                    "start": 15182,
+                    "end": 15182,
+                    "replacementText": ": Color.Green"
                 }
             ],
             "suggest": "",
@@ -4477,9 +4477,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15242,
-                    "end": 15281,
-                    "replacementText": "readonly optVoidProp7: undefined = undefined;"
+                    "start": 15268,
+                    "end": 15268,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -4494,9 +4494,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15281,
-                    "end": 15315,
-                    "replacementText": "readonly optNullProp7: null = null;"
+                    "start": 15307,
+                    "end": 15307,
+                    "replacementText": ": null"
                 }
             ],
             "suggest": "",
@@ -4511,9 +4511,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15315,
-                    "end": 15359,
-                    "replacementText": "readonly optUndefinedProp7: undefined = undefined;"
+                    "start": 15346,
+                    "end": 15346,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -4560,9 +4560,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15416,
-                    "end": 15470,
-                    "replacementText": "readonly optSendableClass7: SendableClass = new SendableClass();"
+                    "start": 15447,
+                    "end": 15447,
+                    "replacementText": ": SendableClass"
                 }
             ],
             "suggest": "",
@@ -4577,9 +4577,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 15470,
-                    "end": 15528,
-                    "replacementText": "readonly optNoSendableClass7: NoSendableClass = new NoSendableClass();"
+                    "start": 15503,
+                    "end": 15503,
+                    "replacementText": ": NoSendableClass"
                 }
             ],
             "suggest": "",

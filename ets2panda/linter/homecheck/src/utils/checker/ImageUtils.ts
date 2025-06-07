@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +42,7 @@ const keys = Object.keys(typeHandlers) as imageType[];
 
 export function readImageInfo(filePath: string): ImageInfo | undefined {
     const input = readFileSync(filePath);
-    if (!input) return undefined;
+    if (!input) { return undefined; }
     const type = detector(input);
     if (typeof type === 'undefined') {
         return undefined;
@@ -91,7 +91,7 @@ function detector(input: Uint8Array): imageType | undefined {
                 return type;
             }
         }
-        const finder = (key: imageType) => typeHandlers[key].validate(input);
+        const finder = (key: imageType): boolean => typeHandlers[key].validate(input);
         return keys.find(finder);
     } catch (error) {
         return undefined;
