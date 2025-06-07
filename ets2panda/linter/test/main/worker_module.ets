@@ -13,12 +13,28 @@
  * limitations under the License.
  */
 
-import { worker, MessageEvents } from '@kit.ArkTS';
+import { worker } from './oh_modules/@ohos.worker';
 
-import { process } from '@kit.ArkTS'; //legal
+import { worker as workerAlias } from './oh_modules/@ohos.worker';
 
-import { worker as workerAlias } from '@ohos.worker';
-
-import { worker as kitWorker } from '@kit.ArkTS';
+import { worker as kitWorker } from './oh_modules/@kit.ArkTS';
 
 import { worker as definedWorker } from 'user_defined_worker'; //legal
+
+export { worker } from './oh_modules/@ohos.worker';
+
+function testWorkerUsage() {
+
+  const worker1: worker.ThreadWorker = new worker.ThreadWorker('script.js');
+
+  const worker2 = new workerAlias.ThreadWorker('script.js');
+
+  const worker3 = new kitWorker.ThreadWorker('script.js');
+
+  let worker4: workerAlias.ThreadWorker('script.js');
+
+  const worker5: workerAlias.ThreadWorker = new workerAlias.ThreadWorker('script.js');
+
+  let worker6: definedWorker.ThreadWorker('script.js'); // legal
+
+}

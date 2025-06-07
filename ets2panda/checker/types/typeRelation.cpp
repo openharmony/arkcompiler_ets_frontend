@@ -33,6 +33,9 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
         return result_;
     }
 
+    ES2PANDA_ASSERT(source != nullptr);
+    ES2PANDA_ASSERT(target != nullptr);
+
     RelationKey relationKey {source->Id(), target->Id()};
     auto res = holder.cached.find(relationKey);
     if (res == holder.cached.end()) {
@@ -235,6 +238,10 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
     if (super == sub) {
         return Result(true);
+    }
+
+    if (sub == nullptr) {
+        return false;
     }
 
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);

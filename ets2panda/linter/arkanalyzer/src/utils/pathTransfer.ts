@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,14 +15,6 @@
 
 import path from 'path';
 
-export function transfer2UnixPath(path2Do: string) {
+export function transfer2UnixPath(path2Do: string): string {
     return path.posix.join(...path2Do.split(/\\/));
-}
-
-export function getArkAnalyzerModulePath(moduleName: string): string | null {
-    try {
-        return path.dirname(path.dirname(require.resolve(moduleName)));
-    } catch (e) {
-        return null;
-    }
 }

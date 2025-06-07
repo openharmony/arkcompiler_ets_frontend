@@ -174,8 +174,8 @@ function main(): void {
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
-/* @@? 39:24 Error TypeError: Unresolved reference int */
-/* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
 /* @@? 39:31 Error SyntaxError: return keyword should be used in function body. */
@@ -195,12 +195,13 @@ function main(): void {
 /* @@? 51:43 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 51:43 Error TypeError: Unresolved reference FixedArray */
 /* @@? 51:58 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
+/* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
-/* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
-/* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
-/* @@? 51:65 Error SyntaxError: Unexpected token '{'. */
+/* @@? 51:61 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 51:61 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 52:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
@@ -226,6 +227,10 @@ function main(): void {
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 115:32 Error TypeError: Unresolved reference U */
@@ -284,4 +289,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 288:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 293:1 Error SyntaxError: Expected '}', got 'eos'. */

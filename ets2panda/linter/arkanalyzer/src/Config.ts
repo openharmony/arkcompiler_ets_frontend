@@ -35,7 +35,6 @@ export interface TsConfig {
             [key: string]: string[];
         };
     };
-
 }
 
 export type SceneOptionsValue = string | number | boolean | (string | number)[] | string[] | null | undefined;
@@ -43,7 +42,7 @@ export interface SceneOptions {
     supportFileExts?: string[];
     ignoreFileNames?: string[];
     enableLeadingComments?: boolean;
-    enableTrailingComments?:boolean
+    enableTrailingComments?: boolean;
     tsconfig?: string;
     isScanAbc?: boolean;
     sdkGlobalFolders?: string[];
@@ -84,12 +83,7 @@ export class SceneConfig {
      * @param sdks - sdks used in this scene.
      * @param fullFilePath - the full file path.
      */
-    public buildConfig(
-        targetProjectName: string,
-        targetProjectDirectory: string,
-        sdks: Sdk[],
-        fullFilePath?: string[]
-    ) {
+    public buildConfig(targetProjectName: string, targetProjectDirectory: string, sdks: Sdk[], fullFilePath?: string[]): void {
         this.targetProjectName = targetProjectName;
         this.targetProjectDirectory = targetProjectDirectory;
         this.sdksObj = sdks;
@@ -111,18 +105,19 @@ export class SceneConfig {
     sceneConfig.buildFromProjectDir(projectDir);
     ```
      */
-    public buildFromProjectDir(targetProjectDirectory: string) {
+    public buildFromProjectDir(targetProjectDirectory: string): void {
         this.targetProjectDirectory = targetProjectDirectory;
         this.targetProjectName = path.basename(targetProjectDirectory);
-        this.projectFiles = getAllFiles(
-            targetProjectDirectory,
-            this.options.supportFileExts!,
-            this.options.ignoreFileNames
-        );
+        this.projectFiles = getAllFiles(targetProjectDirectory, this.options.supportFileExts!, this.options.ignoreFileNames);
     }
 
-    public buildFromProjectFiles(projectName: string, projectDir: string, filesAndDirectorys: string[], sdks?: Sdk[],
-                                 languageTags?: Map<string, Language>): void {
+    public buildFromProjectFiles(
+        projectName: string,
+        projectDir: string,
+        filesAndDirectorys: string[],
+        sdks?: Sdk[],
+        languageTags?: Map<string, Language>
+    ): void {
         if (sdks) {
             this.sdksObj = sdks;
         }
@@ -140,13 +135,13 @@ export class SceneConfig {
 
     private processFilePaths(fileOrDirectory: string, projectDir: string): void {
         let absoluteFilePath = '';
-        if (fileOrDirectory.includes(projectDir)) {
+        if (path.isAbsolute(fileOrDirectory)) {
             absoluteFilePath = fileOrDirectory;
         } else {
             absoluteFilePath = path.join(projectDir, fileOrDirectory);
         }
         if (fs.statSync(absoluteFilePath).isDirectory()) {
-            getAllFiles(absoluteFilePath, this.getOptions().supportFileExts!, this.options.ignoreFileNames).forEach((filePath) => {
+            getAllFiles(absoluteFilePath, this.getOptions().supportFileExts!, this.options.ignoreFileNames).forEach(filePath => {
                 if (!this.projectFiles.includes(filePath)) {
                     this.projectFiles.push(filePath);
                 }
@@ -158,22 +153,21 @@ export class SceneConfig {
 
     private setLanguageTagForFiles(fileOrDirectory: string, projectDir: string, languageTag: Language): void {
         let absoluteFilePath = '';
-        if (fileOrDirectory.includes(projectDir)) {
+        if (path.isAbsolute(fileOrDirectory)) {
             absoluteFilePath = fileOrDirectory;
         } else {
             absoluteFilePath = path.join(projectDir, fileOrDirectory);
         }
         if (fs.statSync(absoluteFilePath).isDirectory()) {
-            getAllFiles(absoluteFilePath, this.getOptions().supportFileExts!, this.options.ignoreFileNames)
-                .forEach((filePath) => {
-                    this.fileLanguages.set(filePath, languageTag);
-                });
+            getAllFiles(absoluteFilePath, this.getOptions().supportFileExts!, this.options.ignoreFileNames).forEach(filePath => {
+                this.fileLanguages.set(filePath, languageTag);
+            });
         } else {
             this.fileLanguages.set(absoluteFilePath, languageTag);
         }
     }
 
-    public buildFromJson(configJsonPath: string) {
+    public buildFromJson(configJsonPath: string): void {
         if (fs.existsSync(configJsonPath)) {
             let configurationsText: string;
             try {
@@ -193,9 +187,7 @@ export class SceneConfig {
             }
 
             const targetProjectName: string = configurations.targetProjectName ? configurations.targetProjectName : '';
-            const targetProjectDirectory: string = configurations.targetProjectDirectory
-                ? configurations.targetProjectDirectory
-                : '';
+            const targetProjectDirectory: string = configurations.targetProjectDirectory ? configurations.targetProjectDirectory : '';
             const sdks: Sdk[] = configurations.sdks ? configurations.sdks : [];
 
             if (configurations.options) {
@@ -208,15 +200,15 @@ export class SceneConfig {
         }
     }
 
-    public getTargetProjectName() {
+    public getTargetProjectName(): string {
         return this.targetProjectName;
     }
 
-    public getTargetProjectDirectory() {
+    public getTargetProjectDirectory(): string {
         return this.targetProjectDirectory;
     }
 
-    public getProjectFiles() {
+    public getProjectFiles(): string[] {
         return this.projectFiles;
     }
 
@@ -224,19 +216,19 @@ export class SceneConfig {
         return this.fileLanguages;
     }
 
-    public getSdkFiles() {
+    public getSdkFiles(): string[] {
         return this.sdkFiles;
     }
 
-    public getSdkFilesMap() {
+    public getSdkFilesMap(): Map<string[], string> {
         return this.sdkFilesMap;
     }
 
-    public getEtsSdkPath() {
+    public getEtsSdkPath(): string {
         return this.etsSdkPath;
     }
 
-    public getSdksObj() {
+    public getSdksObj(): Sdk[] {
         return this.sdksObj;
     }
 

@@ -1,0 +1,103 @@
+{
+  "copyright": [
+    "Copyright (c) 2025 Huawei Device Co., Ltd.",
+    "Licensed under the Apache License, Version 2.0 (the 'License');",
+    "you may not use this file except in compliance with the License.",
+    "You may obtain a copy of the License at",
+    "",
+    "http://www.apache.org/licenses/LICENSE-2.0",
+    "",
+    "Unless required by applicable law or agreed to in writing, software",
+    "distributed under the License is distributed on an 'AS IS' BASIS,",
+    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+    "See the License for the specific language governing permissions and",
+    "limitations under the License."
+  ],
+  "result": [
+    {
+      "line": 16,
+      "column": 15,
+      "endLine": 16,
+      "endColumn": 32,
+      "problem": "SharedArrayBufferDeprecated",
+      "autofix": [
+        {
+          "replacementText": "ArrayBuffer",
+          "start": 624,
+          "end": 641
+        }
+      ],
+      "suggest": "",
+      "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 10,
+      "endLine": 17,
+      "endColumn": 27,
+      "problem": "SharedArrayBufferDeprecated",
+      "autofix": [
+        {
+          "replacementText": "ArrayBuffer",
+          "start": 661,
+          "end": 678
+        }
+      ],
+      "suggest": "",
+      "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 34,
+      "endLine": 17,
+      "endColumn": 51,
+      "problem": "SharedArrayBufferDeprecated",
+      "autofix": [
+        {
+          "replacementText": "ArrayBuffer",
+          "start": 685,
+          "end": 702
+        }
+      ],
+      "suggest": "",
+      "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 19,
+      "column": 20,
+      "endLine": 19,
+      "endColumn": 37,
+      "problem": "SharedArrayBufferDeprecated",
+      "autofix": [
+        {
+          "replacementText": "ArrayBuffer",
+          "start": 737,
+          "end": 754
+        }
+      ],
+      "suggest": "",
+      "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 22,
+      "column": 28,
+      "endLine": 22,
+      "endColumn": 45,
+      "problem": "SharedArrayBufferDeprecated",
+      "autofix": [
+        {
+          "replacementText": "ArrayBuffer",
+          "start": 853,
+          "end": 870
+        }
+      ],
+      "suggest": "",
+      "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
+      "severity": "ERROR"
+    }
+  ]
+}

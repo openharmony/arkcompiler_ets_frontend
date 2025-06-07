@@ -33,12 +33,7 @@ import Logger, { LOG_MODULE_TYPE } from '../../../utils/logger';
 import { ArkClass } from '../ArkClass';
 import { ArkMethod } from '../ArkMethod';
 import { Decorator } from '../../base/Decorator';
-import {
-    ArrayBindingPatternParameter,
-    buildArkMethodFromArkClass,
-    MethodParameter,
-    ObjectBindingPatternParameter,
-} from './ArkMethodBuilder';
+import { ArrayBindingPatternParameter, buildArkMethodFromArkClass, MethodParameter, ObjectBindingPatternParameter } from './ArkMethodBuilder';
 import { buildNormalArkClassFromArkMethod } from './ArkClassBuilder';
 import { Builtin } from '../../common/Builtin';
 import { modifierKind2Enum } from '../ArkBaseModel';
@@ -47,12 +42,14 @@ import { KeyofTypeExpr, TypeQueryExpr } from '../../base/TypeExpr';
 import {
     ANY_KEYWORD,
     BIGINT_KEYWORD,
-    BOOLEAN_KEYWORD, NEVER_KEYWORD,
+    BOOLEAN_KEYWORD,
+    NEVER_KEYWORD,
     NULL_KEYWORD,
     NUMBER_KEYWORD,
     STRING_KEYWORD,
     THIS_NAME,
-    UNDEFINED_KEYWORD, VOID_KEYWORD,
+    UNDEFINED_KEYWORD,
+    VOID_KEYWORD,
 } from '../../common/TSConst';
 import { ArkSignatureBuilder } from './ArkSignatureBuilder';
 import { ArkInstanceFieldRef } from '../../base/Ref';
@@ -89,7 +86,7 @@ export function handlePropertyAccessExpression(node: ts.PropertyAccessExpression
 
 export function buildDecorators(node: ts.Node, sourceFile: ts.SourceFile): Set<Decorator> {
     let decorators: Set<Decorator> = new Set();
-    ts.getAllDecorators(node).forEach((decoratorNode) => {
+    ts.getAllDecorators(node).forEach(decoratorNode => {
         let decorator = parseDecorator(decoratorNode);
         if (decorator) {
             decorator.setContent(decoratorNode.expression.getText(sourceFile));
@@ -128,7 +125,7 @@ export function buildModifiers(node: ts.Node): number {
     let modifiers: number = 0;
 
     if (ts.canHaveModifiers(node)) {
-        ts.getModifiers(node)?.forEach((modifier) => {
+        ts.getModifiers(node)?.forEach(modifier => {
             modifiers |= modifierKind2Enum(modifier.kind);
         });
     }
@@ -138,8 +135,8 @@ export function buildModifiers(node: ts.Node): number {
 
 export function buildHeritageClauses(heritageClauses?: ts.NodeArray<HeritageClause>): Map<string, string> {
     let heritageClausesMap: Map<string, string> = new Map<string, string>();
-    heritageClauses?.forEach((heritageClause) => {
-        heritageClause.types.forEach((type) => {
+    heritageClauses?.forEach(heritageClause => {
+        heritageClause.types.forEach(type => {
             let heritageClauseName: string = '';
             if (type.typeArguments) {
                 heritageClauseName = type.getText();
@@ -156,8 +153,11 @@ export function buildHeritageClauses(heritageClauses?: ts.NodeArray<HeritageClau
     return heritageClausesMap;
 }
 
-export function buildTypeParameters(typeParameters: ts.NodeArray<TypeParameterDeclaration>,
-                                    sourceFile: ts.SourceFile, arkInstance: ArkMethod | ArkClass): GenericType[] {
+export function buildTypeParameters(
+    typeParameters: ts.NodeArray<TypeParameterDeclaration>,
+    sourceFile: ts.SourceFile,
+    arkInstance: ArkMethod | ArkClass
+): GenericType[] {
     const genericTypes: GenericType[] = [];
     let index = 0;
     if (arkInstance instanceof ArkMethod) {
@@ -166,7 +166,7 @@ export function buildTypeParameters(typeParameters: ts.NodeArray<TypeParameterDe
             index = len;
         }
     }
-    typeParameters.forEach((typeParameter) => {
+    typeParameters.forEach(typeParameter => {
         const genericType = tsNode2Type(typeParameter, sourceFile, arkInstance);
         if (genericType instanceof GenericType) {
             genericType.setIndex(index++);
@@ -187,7 +187,7 @@ export function buildTypeParameters(typeParameters: ts.NodeArray<TypeParameterDe
 function buildObjectBindingPatternParam(methodParameter: MethodParameter, paramNameNode: ts.ObjectBindingPattern): void {
     methodParameter.setName('ObjectBindingPattern');
     let elements: ObjectBindingPatternParameter[] = [];
-    paramNameNode.elements.forEach((element) => {
+    paramNameNode.elements.forEach(element => {
         let paraElement = new ObjectBindingPatternParameter();
         if (element.propertyName) {
             if (ts.isIdentifier(element.propertyName)) {
@@ -246,7 +246,7 @@ function buildBindingElementOfBindingPatternParam(element: ts.BindingElement, pa
 function buildArrayBindingPatternParam(methodParameter: MethodParameter, paramNameNode: ts.ArrayBindingPattern): void {
     methodParameter.setName('ArrayBindingPattern');
     let elements: ArrayBindingPatternParameter[] = [];
-    paramNameNode.elements.forEach((element) => {
+    paramNameNode.elements.forEach(element => {
         let paraElement = new ArrayBindingPatternParameter();
         if (ts.isBindingElement(element)) {
             buildBindingElementOfBindingPatternParam(element, paraElement);
@@ -260,7 +260,7 @@ function buildArrayBindingPatternParam(methodParameter: MethodParameter, paramNa
 
 export function buildParameters(params: ts.NodeArray<ParameterDeclaration>, arkInstance: ArkMethod | ArkField, sourceFile: ts.SourceFile): MethodParameter[] {
     let parameters: MethodParameter[] = [];
-    params.forEach((parameter) => {
+    params.forEach(parameter => {
         let methodParameter = new MethodParameter();
 
         // name
@@ -317,7 +317,10 @@ export function buildGenericType(type: Type, arkInstance: ArkMethod | ArkField |
                 gType = arkInstance.getGenericTypes()?.find(f => f.getName() === typeName);
             }
             if (!gType) {
-                gType = arkInstance.getDeclaringArkClass().getGenericsTypes()?.find(f => f.getName() === typeName);
+                gType = arkInstance
+                    .getDeclaringArkClass()
+                    .getGenericsTypes()
+                    ?.find(f => f.getName() === typeName);
             }
         }
         if (gType) {
@@ -359,7 +362,7 @@ export function buildGenericType(type: Type, arkInstance: ArkMethod | ArkField |
     return type;
 }
 
-export function buildReturnType(node: TypeNode, sourceFile: ts.SourceFile, method: ArkMethod) {
+export function buildReturnType(node: TypeNode, sourceFile: ts.SourceFile, method: ArkMethod): Type {
     if (node) {
         return tsNode2Type(node, sourceFile, method);
     } else {
@@ -367,8 +370,11 @@ export function buildReturnType(node: TypeNode, sourceFile: ts.SourceFile, metho
     }
 }
 
-export function tsNode2Type(typeNode: ts.TypeNode | ts.TypeParameterDeclaration, sourceFile: ts.SourceFile,
-                            arkInstance: ArkMethod | ArkClass | ArkField): Type {
+export function tsNode2Type(
+    typeNode: ts.TypeNode | ts.TypeParameterDeclaration,
+    sourceFile: ts.SourceFile,
+    arkInstance: ArkMethod | ArkClass | ArkField
+): Type {
     if (ts.isTypeReferenceNode(typeNode)) {
         const genericTypes: Type[] = [];
         if (typeNode.typeArguments) {
@@ -389,7 +395,7 @@ export function tsNode2Type(typeNode: ts.TypeNode | ts.TypeParameterDeclaration,
         }
     } else if (ts.isUnionTypeNode(typeNode) || ts.isIntersectionTypeNode(typeNode)) {
         let multipleTypePara: Type[] = [];
-        typeNode.types.forEach((tmpType) => {
+        typeNode.types.forEach(tmpType => {
             multipleTypePara.push(tsNode2Type(tmpType, sourceFile, arkInstance));
         });
         if (ts.isUnionTypeNode(typeNode)) {
@@ -464,7 +470,7 @@ export function tsNode2Type(typeNode: ts.TypeNode | ts.TypeParameterDeclaration,
     }
 }
 
-export function buildTypeFromPreStr(preStr: string) {
+export function buildTypeFromPreStr(preStr: string): Type {
     let postStr = '';
     switch (preStr) {
         case 'BooleanKeyword':
@@ -515,21 +521,20 @@ export function buildTypeFromPreStr(preStr: string) {
     return TypeInference.buildTypeFromStr(postStr);
 }
 
-function buildTypeFromTypeOperator(typeOperatorNode: ts.TypeOperatorNode, sourceFile: ts.SourceFile,
-                                   arkInstance: ArkMethod | ArkClass | ArkField): Type {
+function buildTypeFromTypeOperator(typeOperatorNode: ts.TypeOperatorNode, sourceFile: ts.SourceFile, arkInstance: ArkMethod | ArkClass | ArkField): Type {
     const typeNode = typeOperatorNode.type;
     let type = tsNode2Type(typeNode, sourceFile, arkInstance);
 
     switch (typeOperatorNode.operator) {
-        case (ts.SyntaxKind.ReadonlyKeyword): {
+        case ts.SyntaxKind.ReadonlyKeyword: {
             if (type instanceof ArrayType || type instanceof TupleType) {
                 type.setReadonlyFlag(true);
             }
             return type;
         }
-        case (ts.SyntaxKind.KeyOfKeyword):
+        case ts.SyntaxKind.KeyOfKeyword:
             return new KeyofTypeExpr(type);
-        case (ts.SyntaxKind.UniqueKeyword):
+        case ts.SyntaxKind.UniqueKeyword:
             return UnknownType.getInstance();
         default:
             return UnknownType.getInstance();
@@ -543,21 +548,27 @@ function buildTypeFromTypeQuery(typeQueryNode: ts.TypeQueryNode, sourceFile: ts.
         if (exprNameNode.left.getText(sourceFile) === THIS_NAME) {
             const fieldName = exprNameNode.right.getText(sourceFile);
             if (arkInstance instanceof ArkMethod) {
-                const fieldSignature = arkInstance.getDeclaringArkClass().getFieldWithName(fieldName)?.getSignature() ??
+                const fieldSignature =
+                    arkInstance.getDeclaringArkClass().getFieldWithName(fieldName)?.getSignature() ??
                     ArkSignatureBuilder.buildFieldSignatureFromFieldName(fieldName);
-                const baseLocal = arkInstance.getBody()?.getLocals().get(THIS_NAME) ??
-                    new Local(THIS_NAME, new ClassType(arkInstance.getDeclaringArkClass().getSignature(),
-                        arkInstance.getDeclaringArkClass().getGenericsTypes()));
+                const baseLocal =
+                    arkInstance.getBody()?.getLocals().get(THIS_NAME) ??
+                    new Local(
+                        THIS_NAME,
+                        new ClassType(arkInstance.getDeclaringArkClass().getSignature(), arkInstance.getDeclaringArkClass().getGenericsTypes())
+                    );
                 opValue = new ArkInstanceFieldRef(baseLocal, fieldSignature);
             } else if (arkInstance instanceof ArkClass) {
-                const fieldSignature = arkInstance.getFieldWithName(fieldName)?.getSignature() ??
-                    ArkSignatureBuilder.buildFieldSignatureFromFieldName(fieldName);
+                const fieldSignature =
+                    arkInstance.getFieldWithName(fieldName)?.getSignature() ?? ArkSignatureBuilder.buildFieldSignatureFromFieldName(fieldName);
                 const baseLocal = new Local(THIS_NAME, new ClassType(arkInstance.getSignature(), arkInstance.getGenericsTypes()));
                 opValue = new ArkInstanceFieldRef(baseLocal, fieldSignature);
             } else {
                 const fieldSignature = arkInstance.getSignature();
-                const baseLocal = new Local(THIS_NAME, new ClassType(arkInstance.getDeclaringArkClass().getSignature(),
-                    arkInstance.getDeclaringArkClass().getGenericsTypes()));
+                const baseLocal = new Local(
+                    THIS_NAME,
+                    new ClassType(arkInstance.getDeclaringArkClass().getSignature(), arkInstance.getDeclaringArkClass().getGenericsTypes())
+                );
                 opValue = new ArkInstanceFieldRef(baseLocal, fieldSignature);
             }
         } else {

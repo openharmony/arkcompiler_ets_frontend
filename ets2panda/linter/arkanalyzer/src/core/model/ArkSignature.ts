@@ -24,18 +24,11 @@ import {
     UNKNOWN_CLASS_NAME,
     UNKNOWN_FILE_NAME,
     UNKNOWN_NAMESPACE_NAME,
-    UNKNOWN_PROJECT_NAME
+    UNKNOWN_PROJECT_NAME,
 } from '../common/Const';
 import { CryptoUtils } from '../../utils/crypto_utils';
 
-export type Signature =
-    FileSignature
-    | NamespaceSignature
-    | ClassSignature
-    | MethodSignature
-    | FieldSignature
-    | LocalSignature
-    | AliasTypeSignature;
+export type Signature = FileSignature | NamespaceSignature | ClassSignature | MethodSignature | FieldSignature | LocalSignature | AliasTypeSignature;
 
 export interface ArkSignature {
     getSignature(): Signature;
@@ -57,11 +50,11 @@ export class FileSignature {
         this.hashcode = CryptoUtils.hashcode(this.toString());
     }
 
-    public getProjectName() {
+    public getProjectName(): string {
         return this.projectName;
     }
 
-    public getFileName() {
+    public getFileName(): string {
         return this.fileName;
     }
 
@@ -79,25 +72,23 @@ export class NamespaceSignature {
     private declaringFileSignature: FileSignature;
     private declaringNamespaceSignature: NamespaceSignature | null;
 
-    public static readonly DEFAULT: NamespaceSignature = new NamespaceSignature(UNKNOWN_NAMESPACE_NAME,
-        FileSignature.DEFAULT, null);
+    public static readonly DEFAULT: NamespaceSignature = new NamespaceSignature(UNKNOWN_NAMESPACE_NAME, FileSignature.DEFAULT, null);
 
-    constructor(namespaceName: string, declaringFileSignature: FileSignature,
-                declaringNamespaceSignature: NamespaceSignature | null = null) {
+    constructor(namespaceName: string, declaringFileSignature: FileSignature, declaringNamespaceSignature: NamespaceSignature | null = null) {
         this.namespaceName = namespaceName;
         this.declaringFileSignature = declaringFileSignature;
         this.declaringNamespaceSignature = declaringNamespaceSignature;
     }
 
-    public getNamespaceName() {
+    public getNamespaceName(): string {
         return this.namespaceName;
     }
 
-    public getDeclaringFileSignature() {
+    public getDeclaringFileSignature(): FileSignature {
         return this.declaringFileSignature;
     }
 
-    public getDeclaringNamespaceSignature() {
+    public getDeclaringNamespaceSignature(): NamespaceSignature | null {
         return this.declaringNamespaceSignature;
     }
 
@@ -123,11 +114,9 @@ export class ClassSignature {
     private declaringNamespaceSignature: NamespaceSignature | null;
     private className: string;
 
-    public static readonly DEFAULT: ClassSignature = new ClassSignature(UNKNOWN_CLASS_NAME, FileSignature.DEFAULT,
-        null);
+    public static readonly DEFAULT: ClassSignature = new ClassSignature(UNKNOWN_CLASS_NAME, FileSignature.DEFAULT, null);
 
-    constructor(className: string, declaringFileSignature: FileSignature,
-                declaringNamespaceSignature: NamespaceSignature | null = null) {
+    constructor(className: string, declaringFileSignature: FileSignature, declaringNamespaceSignature: NamespaceSignature | null = null) {
         this.className = className;
         this.declaringFileSignature = declaringFileSignature;
         this.declaringNamespaceSignature = declaringNamespaceSignature;
@@ -137,7 +126,7 @@ export class ClassSignature {
      * Returns the declaring file signature.
      * @returns The declaring file signature.
      */
-    public getDeclaringFileSignature() {
+    public getDeclaringFileSignature(): FileSignature {
         return this.declaringFileSignature;
     }
 
@@ -145,7 +134,7 @@ export class ClassSignature {
      * Get the declaring namespace's signature.
      * @returns the declaring namespace's signature.
      */
-    public getDeclaringNamespaceSignature() {
+    public getDeclaringNamespaceSignature(): NamespaceSignature | null {
         return this.declaringNamespaceSignature;
     }
 
@@ -153,7 +142,7 @@ export class ClassSignature {
      * Get the **string** name of class from the the class signature. The default value is `""`.
      * @returns The name of this class.
      */
-    public getClassName() {
+    public getClassName(): string {
         return this.className;
     }
 
@@ -172,7 +161,7 @@ export class ClassSignature {
         return this.className;
     }
 
-    public setClassName(className: string) {
+    public setClassName(className: string): void {
         this.className = className;
     }
 
@@ -238,16 +227,15 @@ export class FieldSignature {
         this.staticFlag = staticFlag;
     }
 
-    public getDeclaringSignature() {
+    public getDeclaringSignature(): BaseSignature {
         return this.declaringSignature;
     }
 
-    public getBaseName() {
-        return this.declaringSignature instanceof ClassSignature ? this.declaringSignature.getClassName()
-            : this.declaringSignature.getNamespaceName();
+    public getBaseName(): string {
+        return this.declaringSignature instanceof ClassSignature ? this.declaringSignature.getClassName() : this.declaringSignature.getNamespaceName();
     }
 
-    public getFieldName() {
+    public getFieldName(): string {
         return this.fieldName;
     }
 
@@ -291,17 +279,17 @@ export class MethodSubSignature {
         this.staticFlag = staticFlag;
     }
 
-    public getMethodName() {
+    public getMethodName(): string {
         return this.methodName;
     }
 
-    public getParameters() {
+    public getParameters(): MethodParameter[] {
         return this.parameters;
     }
 
     public getParameterTypes(): Type[] {
         const parameterTypes: Type[] = [];
-        this.parameters.forEach((parameter) => {
+        this.parameters.forEach(parameter => {
             parameterTypes.push(parameter.getType());
         });
         return parameterTypes;
@@ -320,9 +308,9 @@ export class MethodSubSignature {
     }
 
     public toString(ptrName?: string): string {
-        let paraStr = "";
-        this.getParameterTypes().forEach((parameterType) => {
-            paraStr += parameterType.toString() + ", ";
+        let paraStr = '';
+        this.getParameterTypes().forEach(parameterType => {
+            paraStr += parameterType.toString() + ', ';
         });
         paraStr = paraStr.replace(/, $/, '');
         let tmpSig = `${ptrName ?? this.getMethodName()}(${paraStr})`;
@@ -348,8 +336,10 @@ export class MethodSignature {
     /**
      * Return the declaring class signature.
      * A {@link ClassSignature} includes:
-     * - File Signature: including the **string** names of the project and file, respectively. The default value of project's name is "%unk" and the default value of file's name is "%unk".
-     * - Namespace Signature | **null**:  it may be a namespace signature or **null**. A namespace signature can indicate its **string** name of namespace and its file signature.
+     * - File Signature: including the **string** names of the project and file, respectively.
+     * The default value of project's name is "%unk" and the default value of file's name is "%unk".
+     * - Namespace Signature | **null**:  it may be a namespace signature or **null**.
+     * A namespace signature can indicate its **string** name of namespace and its file signature.
      * - Class Name: the **string** name of this class.
      * @returns The declaring class signature.
      * @example
@@ -361,7 +351,7 @@ export class MethodSignature {
      ```
      *
      */
-    public getDeclaringClassSignature() {
+    public getDeclaringClassSignature(): ClassSignature {
         return this.declaringClassSignature;
     }
 
@@ -371,7 +361,7 @@ export class MethodSignature {
      * identify the name of the method, its parameters and the return value type.
      * @returns The sub-signature of this method signature.
      */
-    public getMethodSubSignature() {
+    public getMethodSubSignature(): MethodSubSignature {
         return this.methodSubSignature;
     }
 
@@ -388,12 +378,11 @@ export class MethodSignature {
     }
 
     public isMatch(signature: MethodSignature): boolean {
-        return ((this.toString() === signature.toString()) && (this.getType().toString() === signature.getType().toString()));
+        return this.toString() === signature.toString() && this.getType().toString() === signature.getType().toString();
     }
 
     public getParamLength(): number {
-        return this.methodSubSignature.getParameters()
-            .filter(p => !p.getName().startsWith(LEXICAL_ENV_NAME_PREFIX)).length;
+        return this.methodSubSignature.getParameters().filter(p => !p.getName().startsWith(LEXICAL_ENV_NAME_PREFIX)).length;
     }
 }
 
@@ -443,45 +432,48 @@ export class AliasTypeSignature {
 
 //TODO, reconstruct
 export function fieldSignatureCompare(leftSig: FieldSignature, rightSig: FieldSignature): boolean {
-    if (leftSig.getDeclaringSignature().toString() === rightSig.getDeclaringSignature().toString() &&
-        (leftSig.getFieldName() === rightSig.getFieldName())) {
+    if (leftSig.getDeclaringSignature().toString() === rightSig.getDeclaringSignature().toString() && leftSig.getFieldName() === rightSig.getFieldName()) {
         return true;
     }
     return false;
 }
 
 export function methodSignatureCompare(leftSig: MethodSignature, rightSig: MethodSignature): boolean {
-    if (classSignatureCompare(leftSig.getDeclaringClassSignature(), rightSig.getDeclaringClassSignature()) &&
-        methodSubSignatureCompare(leftSig.getMethodSubSignature(), rightSig.getMethodSubSignature())) {
+    if (
+        classSignatureCompare(leftSig.getDeclaringClassSignature(), rightSig.getDeclaringClassSignature()) &&
+        methodSubSignatureCompare(leftSig.getMethodSubSignature(), rightSig.getMethodSubSignature())
+    ) {
         return true;
     }
     return false;
 }
 
 export function methodSubSignatureCompare(leftSig: MethodSubSignature, rightSig: MethodSubSignature): boolean {
-    if ((leftSig.getMethodName() === rightSig.getMethodName()) && arrayCompare(leftSig.getParameterTypes(),
-        rightSig.getParameterTypes()) && leftSig.getReturnType() === rightSig.getReturnType()) {
+    if (
+        leftSig.getMethodName() === rightSig.getMethodName() &&
+        arrayCompare(leftSig.getParameterTypes(), rightSig.getParameterTypes()) &&
+        leftSig.getReturnType() === rightSig.getReturnType()
+    ) {
         return true;
     }
     return false;
 }
 
 export function classSignatureCompare(leftSig: ClassSignature, rightSig: ClassSignature): boolean {
-    if ((fileSignatureCompare(leftSig.getDeclaringFileSignature(), rightSig.getDeclaringFileSignature())) &&
-        (leftSig.getClassName() === rightSig.getClassName())) {
+    if (fileSignatureCompare(leftSig.getDeclaringFileSignature(), rightSig.getDeclaringFileSignature()) && leftSig.getClassName() === rightSig.getClassName()) {
         return true;
     }
     return false;
 }
 
 export function fileSignatureCompare(leftSig: FileSignature, rightSig: FileSignature): boolean {
-    if ((leftSig.getFileName() === rightSig.getFileName()) && (leftSig.getProjectName() === rightSig.getProjectName())) {
+    if (leftSig.getFileName() === rightSig.getFileName() && leftSig.getProjectName() === rightSig.getProjectName()) {
         return true;
     }
     return false;
 }
 
-function arrayCompare(leftArray: any[], rightArray: any[]) {
+function arrayCompare(leftArray: any[], rightArray: any[]): boolean {
     if (leftArray.length !== rightArray.length) {
         return false;
     }

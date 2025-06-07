@@ -22,9 +22,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 647,
-                    "end": 673,
-                    "replacementText": "// fixable\na: number = 0;"
+                    "start": 668,
+                    "end": 668,
+                    "replacementText": ": number"
                 }
             ],
             "suggest": "",
@@ -39,9 +39,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 673,
-                    "end": 693,
-                    "replacementText": "static b: string = ' ';"
+                    "start": 686,
+                    "end": 686,
+                    "replacementText": ": string"
                 }
             ],
             "suggest": "",
@@ -56,9 +56,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 693,
-                    "end": 720,
-                    "replacementText": "private c: undefined = undefined;"
+                    "start": 707,
+                    "end": 707,
+                    "replacementText": ": undefined"
                 }
             ],
             "suggest": "",
@@ -73,9 +73,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 720,
-                    "end": 751,
-                    "replacementText": "public static d: A = new A();"
+                    "start": 740,
+                    "end": 740,
+                    "replacementText": ": A"
                 }
             ],
             "suggest": "",
@@ -90,9 +90,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 751,
-                    "end": 764,
-                    "replacementText": "e?: number | undefined = 10;"
+                    "start": 758,
+                    "end": 758,
+                    "replacementText": ": number | undefined"
                 }
             ],
             "suggest": "",
@@ -107,9 +107,9 @@
             "problem": "SendableExplicitFieldType",
             "autofix": [
                 {
-                    "start": 764,
-                    "end": 783,
-                    "replacementText": "f: number[] = [1, 2, 3];"
+                    "start": 770,
+                    "end": 770,
+                    "replacementText": ": number[]"
                 }
             ],
             "suggest": "",

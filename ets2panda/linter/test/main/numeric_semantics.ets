@@ -141,3 +141,65 @@ export class G{
 }
 
 const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
+
+private doCloseFolderBackgroundAnimation(): void {
+    openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
+    openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
+
+    let pos = [-1, -1];
+    pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder());
+    let editModeTranslateY = this.getEditModeTranslateY(pos);
+    if (pos.length > 1) {
+      let translateXForScreenSplit: number = AppStorage.get<number>('translateXForScreenSplit') ?? 0 as number;
+      let screenWidth: number = AppStorage.get<number>('screenWidth') as number;
+      let screenHeight: number = AppStorage.get<number>('screenHeight') as number;
+      if (screenWidth > screenHeight) {
+        log.showInfo('doCloseFolderBackgroundAnimation screenWidth: ' + screenWidth + ', height: ' + screenHeight);
+        screenWidth = screenHeight;
+      }
+      openFolderLayout.getGridSwiperLayout().bgTranslateX = pos[0] - screenWidth / 2 + translateXForScreenSplit;
+      openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
+        openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
+    }
+}
+
+let f = 0.0;
+let b5: number = 0;
+f = b5; // OK
+
+let e = 0.0;
+let g1: number = 0;
+
+e += g1; // OK
+e -= g1; // OK
+e *= g1; // OK
+e /= g1; // OK
+e <<= g1; // OK
+e >>= g1; // OK
+e &= g1; // OK
+e = e & 3; // OK
+e = e | 3; // OK
+let arr1 = [1,2,3]
+e += arr1[0]; // OK
+
+let a = 0.0;
+a = fun1();
+a = fun2()!;
+
+function fun1():number{
+  return 1;
+}
+
+function fun2():number|undefined{
+  return 1;
+}
+
+import { ArrayList } from "@kit.ArkTS";
+
+let arr = new ArrayList<number>()
+for (let i:number = 0; i < 100; i++) {
+  arr.add(i)
+}
+let cancelIds:ArrayList<number> = arr.subArrayList(6, 86)
+let a: Array<number> = Array.from(cancelIds)
+let arr1: Array<number> = Array.from(new ArrayList<number>())

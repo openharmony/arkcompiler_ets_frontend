@@ -40,3 +40,10 @@ export const SET_PROPERTY_BY_NAME = 'setPropertyByName';
 export const GET_PROPERTY_BY_INDEX = 'getPropertyByIndex';
 export const SET_PROPERTY_BY_INDEX = 'setPropertyByIndex';
 export const TO_NUMBER = 'toNumber';
+
+export enum InteropType {
+  TS = 'TS',
+  JS = 'JS',
+  LEGACY = '1.0',
+  NONE = 'none'
+}

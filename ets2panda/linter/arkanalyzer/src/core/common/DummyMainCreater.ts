@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,14 +16,7 @@
 import { Scene } from '../../Scene';
 import { COMPONENT_LIFECYCLE_METHOD_NAME, getCallbackMethodFromStmt, LIFECYCLE_METHOD_NAME } from '../../utils/entryMethodUtils';
 import { Constant } from '../base/Constant';
-import {
-    AbstractInvokeExpr,
-    ArkConditionExpr,
-    ArkInstanceInvokeExpr,
-    ArkNewExpr,
-    ArkStaticInvokeExpr,
-    RelationalBinaryOperator,
-} from '../base/Expr';
+import { AbstractInvokeExpr, ArkConditionExpr, ArkInstanceInvokeExpr, ArkNewExpr, ArkStaticInvokeExpr, RelationalBinaryOperator } from '../base/Expr';
 import { Local } from '../base/Local';
 import { ArkAssignStmt, ArkIfStmt, ArkInvokeStmt, ArkReturnVoidStmt } from '../base/Stmt';
 import { ClassType, NumberType, Type } from '../base/Type';
@@ -38,7 +31,6 @@ import { ArkSignatureBuilder } from '../model/builder/ArkSignatureBuilder';
 import { CONSTRUCTOR_NAME } from './TSConst';
 import { checkAndUpdateMethod } from '../model/builder/ArkMethodBuilder';
 import { ValueUtil } from './ValueUtil';
-
 
 /**
 收集所有的onCreate，onStart等函数，构造一个虚拟函数，具体为：
@@ -65,7 +57,6 @@ return
  */
 
 export class DummyMainCreater {
-
     private entryMethods: ArkMethod[] = [];
     private classLocalMap: Map<ArkMethod, Local | null> = new Map();
     private dummyMain: ArkMethod = new ArkMethod();
@@ -81,7 +72,6 @@ export class DummyMainCreater {
         this.entryMethods.push(...this.getCallbackMethods());
     }
 
-
     public setEntryMethods(methods: ArkMethod[]): void {
         this.entryMethods = methods;
     }
@@ -89,21 +79,23 @@ export class DummyMainCreater {
     public createDummyMain(): void {
         const dummyMainFile = new ArkFile(Language.UNKNOWN);
         dummyMainFile.setScene(this.scene);
-        const dummyMainFileSignature = new FileSignature(this.scene.getProjectName(), '@dummyFile')
-        dummyMainFile.setFileSignature(dummyMainFileSignature)
+        const dummyMainFileSignature = new FileSignature(this.scene.getProjectName(), '@dummyFile');
+        dummyMainFile.setFileSignature(dummyMainFileSignature);
         this.scene.setFile(dummyMainFile);
         const dummyMainClass = new ArkClass();
         dummyMainClass.setDeclaringArkFile(dummyMainFile);
-        const dummyMainClassSignature = new ClassSignature('@dummyClass',
-            dummyMainClass.getDeclaringArkFile().getFileSignature(), dummyMainClass.getDeclaringArkNamespace()?.getSignature() || null);
+        const dummyMainClassSignature = new ClassSignature(
+            '@dummyClass',
+            dummyMainClass.getDeclaringArkFile().getFileSignature(),
+            dummyMainClass.getDeclaringArkNamespace()?.getSignature() || null
+        );
         dummyMainClass.setSignature(dummyMainClassSignature);
         dummyMainFile.addArkClass(dummyMainClass);
 
         this.dummyMain = new ArkMethod();
         this.dummyMain.setDeclaringArkClass(dummyMainClass);
         const methodSubSignature = ArkSignatureBuilder.buildMethodSubSignatureFromMethodName('@dummyMain');
-        const methodSignature = new MethodSignature(this.dummyMain.getDeclaringArkClass().getSignature(),
-            methodSubSignature);
+        const methodSignature = new MethodSignature(this.dummyMain.getDeclaringArkClass().getSignature(), methodSubSignature);
         this.dummyMain.setImplementationSignature(methodSignature);
         this.dummyMain.setLineCol(0);
         checkAndUpdateMethod(this.dummyMain, dummyMainClass);
@@ -134,8 +126,8 @@ export class DummyMainCreater {
         }
         const localSet = new Set(Array.from(this.classLocalMap.values()).filter((value): value is Local => value !== null));
         const dummyBody = new ArkBody(localSet, this.createDummyMainCfg());
-        this.dummyMain.setBody(dummyBody)
-        this.addCfg2Stmt()
+        this.dummyMain.setBody(dummyBody);
+        this.addCfg2Stmt();
         this.scene.addToMethodsMap(this.dummyMain);
     }
 
@@ -191,6 +183,7 @@ export class DummyMainCreater {
             paramLocals.push(paramLocal);
             if (paramType instanceof ClassType) {
                 const assStmt = new ArkAssignStmt(paramLocal, new ArkNewExpr(paramType));
+                paramLocal.setDeclaringStmt(assStmt);
                 invokeBlock.addStmt(assStmt);
             }
             paramIdx++;
@@ -264,7 +257,7 @@ export class DummyMainCreater {
         return dummyCfg;
     }
 
-    private addCfg2Stmt() {
+    private addCfg2Stmt(): void {
         const cfg = this.dummyMain.getCfg();
         if (!cfg) {
             return;
@@ -283,7 +276,8 @@ export class DummyMainCreater {
     private getEntryMethodsFromComponents(): ArkMethod[] {
         const COMPONENT_BASE_CLASSES = ['CustomComponent', 'ViewPU'];
         let methods: ArkMethod[] = [];
-        this.scene.getClasses()
+        this.scene
+            .getClasses()
             .filter(cls => {
                 if (COMPONENT_BASE_CLASSES.includes(cls.getSuperClassName())) {
                     return true;
@@ -316,26 +310,30 @@ export class DummyMainCreater {
 
     public getMethodsFromAllAbilities(): ArkMethod[] {
         let methods: ArkMethod[] = [];
-        this.scene.getClasses()
+        this.scene
+            .getClasses()
             .filter(cls => this.classInheritsAbility(cls))
             .forEach(cls => {
                 methods.push(...cls.getMethods().filter(mtd => LIFECYCLE_METHOD_NAME.includes(mtd.getName())));
             });
         return methods;
     }
-    
+
     public getCallbackMethods(): ArkMethod[] {
         const callbackMethods: ArkMethod[] = [];
         this.scene.getMethods().forEach(method => {
             if (!method.getCfg()) {
                 return;
             }
-            method.getCfg()!.getStmts().forEach(stmt => {
-                const cbMethod = getCallbackMethodFromStmt(stmt, this.scene);
-                if (cbMethod && !callbackMethods.includes(cbMethod)) {
-                    callbackMethods.push(cbMethod);
-                }
-            });
+            method
+                .getCfg()!
+                .getStmts()
+                .forEach(stmt => {
+                    const cbMethod = getCallbackMethodFromStmt(stmt, this.scene);
+                    if (cbMethod && !callbackMethods.includes(cbMethod)) {
+                        callbackMethods.push(cbMethod);
+                    }
+                });
         });
         return callbackMethods;
     }

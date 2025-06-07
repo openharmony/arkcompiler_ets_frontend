@@ -58,7 +58,7 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         return this.getDeclaringArkFile().getLanguage();
     }
 
-    public addNamespace(namespace: ArkNamespace) {
+    public addNamespace(namespace: ArkNamespace): void {
         this.namespaces.set(namespace.getName(), namespace);
     }
 
@@ -79,23 +79,23 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         this.namespaceSignature = namespaceSignature;
     }
 
-    public getSignature() {
+    public getSignature(): NamespaceSignature {
         return this.namespaceSignature;
     }
 
-    public getNamespaceSignature() {
+    public getNamespaceSignature(): NamespaceSignature {
         return this.namespaceSignature;
     }
 
-    public getName() {
+    public getName(): string {
         return this.namespaceSignature.getNamespaceName();
     }
 
-    public getCode() {
+    public getCode(): string {
         return this.sourceCodes[0];
     }
 
-    public setCode(sourceCode: string) {
+    public setCode(sourceCode: string): void {
         this.sourceCodes[0] = sourceCode;
     }
 
@@ -118,19 +118,19 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         this.sourceCodes.push(sourceCode);
     }
 
-    public getLine() {
+    public getLine(): number {
         return getLineNo(this.lineCols[0]);
     }
 
-    public setLine(line: number) {
+    public setLine(line: number): void {
         this.lineCols[0] = setLine(this.lineCols[0], line);
     }
 
-    public getColumn() {
+    public getColumn(): number {
         return getColNo(this.lineCols[0]);
     }
 
-    public setColumn(column: number) {
+    public setColumn(column: number): void {
         this.lineCols[0] = setCol(this.lineCols[0], column);
     }
 
@@ -149,33 +149,32 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         });
     }
 
-    public getDeclaringInstance() {
+    public getDeclaringInstance(): ArkNamespace | ArkFile {
         return this.declaringInstance;
     }
 
-    public setDeclaringInstance(declaringInstance: ArkFile | ArkNamespace) {
+    public setDeclaringInstance(declaringInstance: ArkFile | ArkNamespace): void {
         this.declaringInstance = declaringInstance;
     }
 
-    public getDeclaringArkFile() {
+    public getDeclaringArkFile(): ArkFile {
         return this.declaringArkFile;
     }
 
-    public setDeclaringArkFile(declaringArkFile: ArkFile) {
+    public setDeclaringArkFile(declaringArkFile: ArkFile): void {
         this.declaringArkFile = declaringArkFile;
     }
 
-    public getDeclaringArkNamespace() {
+    public getDeclaringArkNamespace(): ArkNamespace | null {
         return this.declaringArkNamespace;
     }
 
-    public setDeclaringArkNamespace(declaringArkNamespace: ArkNamespace) {
+    public setDeclaringArkNamespace(declaringArkNamespace: ArkNamespace): void {
         this.declaringArkNamespace = declaringArkNamespace;
     }
 
     public getClass(classSignature: ClassSignature): ArkClass | null {
-        const className = classSignature instanceof AliasClassSignature ? classSignature.getOriginName()
-            : classSignature.getClassName();
+        const className = classSignature instanceof AliasClassSignature ? classSignature.getOriginName() : classSignature.getClassName();
         return this.getClassWithName(className);
     }
 
@@ -187,7 +186,7 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         return Array.from(this.classes.values());
     }
 
-    public addArkClass(arkClass: ArkClass) {
+    public addArkClass(arkClass: ArkClass): void {
         this.classes.set(arkClass.getName(), arkClass);
     }
 
@@ -205,24 +204,24 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         return this.exportInfos.get(name);
     }
 
-    public addExportInfo(exportInfo: ExportInfo) {
+    public addExportInfo(exportInfo: ExportInfo): void {
         this.exportInfos.set(exportInfo.getExportClauseName(), exportInfo);
     }
 
-    public getDefaultClass() {
+    public getDefaultClass(): ArkClass {
         return this.defaultClass;
     }
 
-    public setDefaultClass(defaultClass: ArkClass) {
+    public setDefaultClass(defaultClass: ArkClass): void {
         this.defaultClass = defaultClass;
     }
 
     public getAllMethodsUnderThisNamespace(): ArkMethod[] {
         let methods: ArkMethod[] = [];
-        this.classes.forEach((cls) => {
+        this.classes.forEach(cls => {
             methods.push(...cls.getMethods());
         });
-        this.namespaces.forEach((ns) => {
+        this.namespaces.forEach(ns => {
             methods.push(...ns.getAllMethodsUnderThisNamespace());
         });
         return methods;
@@ -231,7 +230,7 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
     public getAllClassesUnderThisNamespace(): ArkClass[] {
         let classes: ArkClass[] = [];
         classes.push(...this.classes.values());
-        this.namespaces.forEach((ns) => {
+        this.namespaces.forEach(ns => {
             classes.push(...ns.getAllClassesUnderThisNamespace());
         });
         return classes;
@@ -240,13 +239,13 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
     public getAllNamespacesUnderThisNamespace(): ArkNamespace[] {
         let namespaces: ArkNamespace[] = [];
         namespaces.push(...this.namespaces.values());
-        this.namespaces.forEach((ns) => {
+        this.namespaces.forEach(ns => {
             namespaces.push(...ns.getAllNamespacesUnderThisNamespace());
         });
         return namespaces;
     }
 
-    public getAnonymousClassNumber() {
+    public getAnonymousClassNumber(): number {
         return this.anonymousClassNumber++;
     }
 
@@ -270,4 +269,3 @@ export class ArkNamespace extends ArkBaseModel implements ArkExport {
         return this.validateFields(['declaringArkFile', 'declaringInstance', 'namespaceSignature', 'defaultClass']);
     }
 }
-

@@ -14,19 +14,19 @@
  */
 
 class A {
-    short(v: string): void {}
+    shorting(v: string): void {}
     ordinary(a: int, b: int, c: int): void {}
     range(a: int, b: int, c: int, d: int, e: int, f: int): void {}
 }
 
 class B {
-    short(v: string): void {}
+    shorting(v: string): void {}
     ordinary(a: int, b: int, c: int): void {}
     range(a: int, b: int, c: int, d: int, e: int, f: int): void {}
 }
 
-function short(x: A|B) {
-    x.short("123")
+function shorting(x: A|B) {
+    x.shorting("123")
 }
 
 function ordinary(x: A|B) {

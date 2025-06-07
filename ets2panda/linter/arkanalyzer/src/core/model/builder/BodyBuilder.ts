@@ -23,16 +23,7 @@ import { MethodParameter } from './ArkMethodBuilder';
 import { LEXICAL_ENV_NAME_PREFIX, NAME_DELIMITER, NAME_PREFIX } from '../../common/Const';
 import { ArkParameterRef, ArkStaticFieldRef, ClosureFieldRef, GlobalRef } from '../../base/Ref';
 import { ArkAliasTypeDefineStmt, ArkAssignStmt, ArkInvokeStmt, ArkReturnStmt } from '../../base/Stmt';
-import {
-    AliasType,
-    ArrayType,
-    ClosureType,
-    FunctionType,
-    LexicalEnvType,
-    Type,
-    UnclearReferenceType,
-    UnionType,
-} from '../../base/Type';
+import { AliasType, ArrayType, ClosureType, FunctionType, LexicalEnvType, Type, UnclearReferenceType, UnionType } from '../../base/Type';
 import { AbstractInvokeExpr, ArkPtrInvokeExpr } from '../../base/Expr';
 
 type NestedMethodChain = {
@@ -121,7 +112,7 @@ export class BodyBuilder {
      * 4. Recursively do this for all nested method level by level.
      */
     private buildLexicalEnv(childrenChain: NestedMethodChain, baseLocals: Map<string, Local>, index: number): number {
-        let usedClosures = this.findClosuresUsedInNested(childrenChain, baseLocals, new Map<string, Local>);
+        let usedClosures = this.findClosuresUsedInNested(childrenChain, baseLocals, new Map<string, Local>());
         const nestedMethod = childrenChain.parent;
         const nestedSignature = nestedMethod.getImplementationSignature();
         if (nestedSignature !== null && usedClosures !== null && usedClosures.length > 0) {
@@ -259,11 +250,14 @@ export class BodyBuilder {
 
     private generateNestedMethodChains(outerMethod: ArkMethod): NestedMethodChain {
         let candidateMethods: ArkMethod[] = [];
-        outerMethod.getDeclaringArkClass().getMethods().forEach(method => {
-            if (method.getName().startsWith(NAME_PREFIX) && method.getName().endsWith(`${NAME_DELIMITER}${outerMethod.getName()}`)) {
-                candidateMethods.push(method);
-            }
-        });
+        outerMethod
+            .getDeclaringArkClass()
+            .getMethods()
+            .forEach(method => {
+                if (method.getName().startsWith(NAME_PREFIX) && method.getName().endsWith(`${NAME_DELIMITER}${outerMethod.getName()}`)) {
+                    candidateMethods.push(method);
+                }
+            });
         const childrenChains = this.getNestedChildrenChains(outerMethod, candidateMethods);
         if (childrenChains.length > 0) {
             return { parent: outerMethod, children: childrenChains };
@@ -278,9 +272,9 @@ export class BodyBuilder {
             if (outerMethodSignature !== undefined && methodSignatureCompare(parentMethod.getSignature(), outerMethodSignature)) {
                 const childrenChains = this.getNestedChildrenChains(method, candidateMethods);
                 if (childrenChains.length > 0) {
-                    nestedMethodChain.push({parent: method, children: childrenChains});
+                    nestedMethodChain.push({ parent: method, children: childrenChains });
                 } else {
-                    nestedMethodChain.push({parent: method, children: null});
+                    nestedMethodChain.push({ parent: method, children: null });
                 }
             }
         }
@@ -344,7 +338,7 @@ export class BodyBuilder {
         }
     }
 
-    private updateNestedMethodUsedInOuter(nestedChain: NestedMethodChain) : void {
+    private updateNestedMethodUsedInOuter(nestedChain: NestedMethodChain): void {
         const nestedMethod = nestedChain.parent;
         const outerMethod = nestedMethod.getOuterMethod();
         if (outerMethod === undefined) {
@@ -353,8 +347,10 @@ export class BodyBuilder {
         const outerLocals = outerMethod.getBody()?.getLocals();
         if (outerLocals !== undefined) {
             for (let local of outerLocals.values()) {
-                if (local.getType() instanceof LexicalEnvType &&
-                    methodSignatureCompare((local.getType() as LexicalEnvType).getNestedMethod(), nestedMethod.getSignature())) {
+                if (
+                    local.getType() instanceof LexicalEnvType &&
+                    methodSignatureCompare((local.getType() as LexicalEnvType).getNestedMethod(), nestedMethod.getSignature())
+                ) {
                     this.updateOuterMethodWithClosures(outerMethod, nestedMethod, local);
                     break;
                 }
@@ -369,8 +365,9 @@ export class BodyBuilder {
             const fieldSignature = new FieldSignature(
                 nestedMethodName,
                 nestedMethod.getDeclaringArkClass().getSignature(),
-                new FunctionType(nestedMethod.getSignature()));
-            callGlobal.setRef(new ArkStaticFieldRef((fieldSignature)));
+                new FunctionType(nestedMethod.getSignature())
+            );
+            callGlobal.setRef(new ArkStaticFieldRef(fieldSignature));
         }
 
         const childrenChains = nestedChain.children;
@@ -452,8 +449,9 @@ export class BodyBuilder {
         const fieldSignature = new FieldSignature(
             methodSignature.getMethodSubSignature().getMethodName(),
             methodSignature.getDeclaringClassSignature(),
-            new ClosureType(lexicalEnv, methodSignature));
-        globalRef.setRef(new ArkStaticFieldRef((fieldSignature)));
+            new ClosureType(lexicalEnv, methodSignature)
+        );
+        globalRef.setRef(new ArkStaticFieldRef(fieldSignature));
         this.updateAbstractInvokeExprWithClosures(globalRef, outerMethod.getSignature(), nestedMethod.getSignature(), closuresLocal);
     }
 
@@ -481,8 +479,12 @@ export class BodyBuilder {
 
     // 更新所有stmt中调用内层函数处的AbstractInvokeExpr中的函数签名和实参args，加入闭包参数
     // 更新所有stmt中定义的函数指针的usedStmt中的函数签名和实参args，加入闭包参数
-    private updateAbstractInvokeExprWithClosures(value: Local | GlobalRef, outerMethodSignature: MethodSignature,
-                                                 nestedMethodSignature: MethodSignature, closuresLocal: Local): void {
+    private updateAbstractInvokeExprWithClosures(
+        value: Local | GlobalRef,
+        outerMethodSignature: MethodSignature,
+        nestedMethodSignature: MethodSignature,
+        closuresLocal: Local
+    ): void {
         for (const usedStmt of value.getUsedStmts()) {
             if (usedStmt instanceof ArkInvokeStmt) {
                 this.updateSignatureAndArgsInArkInvokeExpr(usedStmt, nestedMethodSignature, closuresLocal);
@@ -515,12 +517,7 @@ export class BodyBuilder {
         closuresParam.setName(closuresLocal.getName());
         closuresParam.setType(closuresLocal.getType());
         params.unshift(closuresParam);
-        let newSubSignature = new MethodSubSignature(
-            oldSubSignature.getMethodName(),
-            params,
-            oldSubSignature.getReturnType(),
-            oldSubSignature.isStatic()
-        );
+        let newSubSignature = new MethodSubSignature(oldSubSignature.getMethodName(), params, oldSubSignature.getReturnType(), oldSubSignature.isStatic());
         return new MethodSignature(oldSignature.getDeclaringClassSignature(), newSubSignature);
     }
 
@@ -577,7 +574,7 @@ export class BodyBuilder {
         stmts.splice(index, 0, assignStmt);
         closuresLocal.setDeclaringStmt(assignStmt);
 
-        oldParamRefs?.forEach((paramRef) => {
+        oldParamRefs?.forEach(paramRef => {
             index++;
             paramRef.setIndex(index);
         });

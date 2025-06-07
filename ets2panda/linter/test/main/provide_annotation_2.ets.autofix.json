@@ -22,8 +22,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -39,8 +39,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -56,8 +56,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -73,8 +73,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -90,8 +90,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -107,8 +107,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -124,8 +124,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -141,8 +141,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],
@@ -158,8 +158,8 @@
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
-                    "start": 616,
-                    "end": 616,
+                    "start": 603,
+                    "end": 603,
                     "replacementText": "\n\nimport { Component, Provide, Column } from '@kit.ArkUI';"
                 }
             ],

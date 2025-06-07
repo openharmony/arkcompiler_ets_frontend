@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-import { Engine } from "../model/Engine";
-import { FixMode } from "../model/Fix";
-import { AIFixEngine } from "./engines/AIFixEngine";
-import { EsLintFixEngine } from "./engines/EsLintFixEngine";
-import { HomeCheckFixEngine } from "./engines/HomeCheckFixEngine";
+import { Engine } from '../model/Engine';
+import { FixMode } from '../model/Fix';
+import { AIFixEngine } from './engines/AIFixEngine';
+import { EsLintFixEngine } from './engines/EsLintFixEngine';
+import { HomeCheckFixEngine } from './engines/HomeCheckFixEngine';
 
 export class FixEngine {
     public getEngine(mode: FixMode): Engine {

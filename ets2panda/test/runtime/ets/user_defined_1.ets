@@ -20,11 +20,8 @@ class B <T> {
     a: boolean;
 }
 
-let boolean: int = 3;
-
 let x: B<boolean> = new B<boolean>(true);
 
 function main() {
     assertEQ(x.a, true)
-    assertEQ(boolean, 3)
 }

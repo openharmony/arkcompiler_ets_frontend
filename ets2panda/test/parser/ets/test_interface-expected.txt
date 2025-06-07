@@ -913,7 +913,7 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 5,
+                    "column": 13,
                     "program": "test_interface.ets"
                   },
                   "end": {

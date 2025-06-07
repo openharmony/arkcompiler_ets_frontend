@@ -32,9 +32,10 @@ function cardStyle1()
 struct MyCard1 {
     build() {
         Column() {
-
+            Text("TestStyles").cardStyle1()
         }
         .cardStyle1()
+        .backgroundColor(Color.Red)
     }
 }
 

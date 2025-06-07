@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import { ConfigUtils } from "./utils/common/ConfigUtils";
-import { Utils } from "./utils/common/Utils";
-import { MigrationTool } from "./tools/migrationTool/MigrationTool";
+import { ConfigUtils } from './utils/common/ConfigUtils';
+import { Utils } from './utils/common/Utils';
+import { MigrationTool } from './tools/migrationTool/MigrationTool';
 
 async function run(): Promise<boolean> {
     const argvObj = Utils.parseCliOptions(process.argv);

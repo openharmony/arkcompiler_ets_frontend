@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@ import { ArkClass, ArkFile } from 'arkanalyzer';
 import { isMatchedFile, isMatchedNamespace, isMatchedClass, FieldMatcher, isMatchedField } from '../Matchers';
 
 
-export function matchFields(arkFiles: ArkFile[], matcher: FieldMatcher, callback: Function) {
+export function matchFields(arkFiles: ArkFile[], matcher: FieldMatcher, callback: Function): void {
     for (let arkFile of arkFiles) {
         if (matcher.file && !isMatchedFile(arkFile, matcher.file)) {
             continue;
@@ -32,7 +32,7 @@ export function matchFields(arkFiles: ArkFile[], matcher: FieldMatcher, callback
     }
 }
 
-function matchFieldsInClasses(matcher: FieldMatcher, classes: ArkClass[], callback: Function) {
+function matchFieldsInClasses(matcher: FieldMatcher, classes: ArkClass[], callback: Function): void {
     for (const arkClass of classes) {
         if (matcher.class && !isMatchedClass(arkClass, matcher.class)) {
             continue;

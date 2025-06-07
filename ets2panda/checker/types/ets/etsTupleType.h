@@ -70,6 +70,8 @@ public:
     void ToDebugInfoType(std::stringstream &ss) const override;
 
 private:
+    bool CheckElementsIdentical(TypeRelation *relation, const ETSTupleType *other) const;
+
     const ArenaVector<Type *> typeList_;
     ETSObjectType *wrapperType_;
 };

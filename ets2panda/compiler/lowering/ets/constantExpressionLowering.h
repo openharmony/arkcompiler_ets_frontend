@@ -106,7 +106,7 @@ private:
 
     ir::AstNode *FindNameInEnumMember(ArenaVector<ir::AstNode *> *members, util::StringView targetName);
 
-    ir::AstNode *FindAndReplaceEnumMember(ir::MemberExpression *expr, ir::AstNode *node);
+    ir::AstNode *FindAndReplaceEnumMember(ir::AstNode *expr, ir::AstNode *constantNode);
 
     ir::AstNode *UnfoldConstIdentifiers(ir::AstNode *constantNode);
 

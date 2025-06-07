@@ -49,9 +49,9 @@
             "column": 3,
             "endLine": 32,
             "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
+            "problem": "LiteralAsPropertyName",
             "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
@@ -59,16 +59,6 @@
             "column": 3,
             "endLine": 33,
             "endColumn": 8,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 3,
-            "endLine": 32,
-            "endColumn": 4,
             "problem": "LiteralAsPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
@@ -119,19 +109,9 @@
             "column": 10,
             "endLine": 57,
             "endColumn": 16,
-            "problem": "ObjectLiteralProperty",
+            "problem": "LiteralAsPropertyName",
             "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 57,
-            "column": 22,
-            "endLine": 57,
-            "endColumn": 23,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
@@ -209,9 +189,9 @@
             "column": 3,
             "endLine": 80,
             "endColumn": 4,
-            "problem": "ObjectLiteralProperty",
+            "problem": "LiteralAsPropertyName",
             "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
@@ -219,29 +199,9 @@
             "column": 3,
             "endLine": 81,
             "endColumn": 8,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 80,
-            "column": 3,
-            "endLine": 80,
-            "endColumn": 4,
             "problem": "LiteralAsPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 84,
-            "column": 36,
-            "endLine": 84,
-            "endColumn": 37,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,20 +21,32 @@ import { AppStorageGetCheck } from '../../checker/migration/AppStorageGetCheck';
 import { ModifyStateVarCheck } from '../../checker/migration/ModifyStateVarCheck';
 import { NoMethodOverridingFieldCheck } from '../../checker/migration/NoMethodOverridingFieldCheck';
 import { CustomBuilderCheck } from '../../checker/migration/CustomBuilderCheck';
+import { InteropBackwardDFACheck } from '../../checker/migration/InteropBackwardDFACheck';
+import { InteropBoxedTypeCheck } from '../../checker/migration/InteropBoxedTypeCheck';
+import { InteropObjectLiteralCheck } from '../../checker/migration/InteropDynamicObjectLiteralsCheck';
+import { InteropAssignCheck } from '../../checker/migration/InteropAssignCheck';
+import { InteropJSModifyPropertyCheck } from '../../checker/migration/InteropJSModifyPropertyCheck';
+import { NoTSLikeAsCheck } from '../../checker/migration/NoTSLikeAsCheck';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CheckerIndex');
 
 export const fileRules = {
-    "@migration/arkts-instance-method-bind-this": ThisBindCheck,
-    "@migration/arkui-data-observation-2": ObservedDecoratorCheck,
-    "@migration/arkui-stateful-appstorage": AppStorageGetCheck,
-    "@migration/arkui-no-update-in-rending": ModifyStateVarCheck,
-    "@migration/arkui-custombuiler": CustomBuilderCheck,
-    "@migration/no-method-overriding-field-check": NoMethodOverridingFieldCheck,
+    '@migration/arkts-instance-method-bind-this': ThisBindCheck,
+    '@migration/arkui-data-observation': ObservedDecoratorCheck,
+    '@migration/arkui-stateful-appstorage': AppStorageGetCheck,
+    '@migration/arkui-no-update-in-build': ModifyStateVarCheck,
+    '@migration/arkui-custombuilder-passing': CustomBuilderCheck,
+    '@migration/no-method-overriding-field-check': NoMethodOverridingFieldCheck,
+    '@migration/interop-boxed-type-check': InteropBoxedTypeCheck,
 };
 
 export const projectRules = {
-    "@migration/arkts-obj-literal-generate-class-instance": ObjectLiteralCheck,
+    '@migration/arkts-obj-literal-generate-class-instance': ObjectLiteralCheck,
+    '@migration/interop-backward-dfa': InteropBackwardDFACheck,
+    '@migration/interop-assign': InteropAssignCheck,
+    '@migration/interop-js-modify-property': InteropJSModifyPropertyCheck,
+    '@migration/interop-dynamic-object-literals': InteropObjectLiteralCheck,
+    '@migration/arkts-no-ts-like-as': NoTSLikeAsCheck,
 };
 
 // 新增文件级的checker，需要在此处注册
@@ -43,7 +55,7 @@ export const file2CheckRuleMap: Map<string, any> = new Map(Object.entries(fileRu
 export const project2CheckRuleMap: Map<string, any> = new Map(Object.entries(projectRules));
 
 export class ProxyChecker {
-    static getClass(ruleId: string) {
+    static getClass(ruleId: string): any {
         const checker = file2CheckRuleMap.get(ruleId) ?? project2CheckRuleMap.get(ruleId);
         if (!checker) {
             logger.error(`${ruleId} is not matched to any checker`);

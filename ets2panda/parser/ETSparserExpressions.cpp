@@ -15,11 +15,16 @@
 
 #include "ETSparser.h"
 
+#include "generated/tokenType.h"
 #include "lexer/lexer.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
+#include "macros.h"
+#include "parserFlags.h"
 #include "util/errorRecovery.h"
 #include "generated/diagnostic.h"
+#include "parserImpl.h"
+#include "util/recursiveGuard.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -47,11 +52,11 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
 static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::StringView::Iterator &lexerPos)
 {
     std::string value = lexer->SourceView(lexerPos.Index(), lexer->Save().Iterator().Index()).Mutf8();
-    while (value.back() == ' ') {
+    while (!value.empty() && value.back() == ' ') {
         value.pop_back();
     }
 
-    if (value.back() == ')' || value.back() == ',') {
+    if (!value.empty() && (value.back() == ')' || value.back() == ',')) {
         value.pop_back();
     }
 
@@ -302,12 +307,26 @@ ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFla
     }
 }
 
+// This function is used to handle the left parenthesis in the expression parsing.
+ir::Expression *HandleLeftParanthesis(ETSParser *parser, ExpressionParseFlags flags)
+{
+    TrackRecursive trackRecursive(parser->recursiveCtx_);
+    if (!trackRecursive) {
+        parser->LogError(diagnostic::DEEP_NESTING);
+        while (parser->Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            parser->Lexer()->NextToken();
+        }
+        return parser->AllocBrokenExpression(parser->Lexer()->GetToken().Loc());
+    }
+    return parser->ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
 {
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
+            return HandleLeftParanthesis(this, flags);
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisExpression();
@@ -370,13 +389,13 @@ bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
 }
 
 // This function was created to reduce the size of `EatArrowFunctionParams`.
-static bool IsValidTokenTypeOfArrowFunctionStart(lexer::TokenType tokenType)
+bool TypedParser::IsValidTokenTypeOfArrowFunctionStart(lexer::TokenType tokenType)
 {
-    return (tokenType == lexer::TokenType::LITERAL_IDENT ||
+    return (tokenType == lexer::TokenType::LITERAL_IDENT || IsPrimitiveType(tokenType) ||
             tokenType == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD || tokenType == lexer::TokenType::KEYW_THIS);
 }
 
-static bool EatArrowFunctionParams(lexer::Lexer *lexer)
+bool TypedParser::EatArrowFunctionParams(lexer::Lexer *lexer)
 {
     ES2PANDA_ASSERT(lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer->NextToken();

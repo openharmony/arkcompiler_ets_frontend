@@ -1473,4 +1473,9 @@ void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_v
     GetContext()->diagnosticEngine->LogSemanticError(msg, pos);
 }
 
+bool ETSBinder::IsGlobalIdentifier([[maybe_unused]] const util::StringView &str) const
+{
+    return false;
+}
+
 }  // namespace ark::es2panda::varbinder

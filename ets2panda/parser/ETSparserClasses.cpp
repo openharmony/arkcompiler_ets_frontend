@@ -430,6 +430,10 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
 ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
 {
+    if (typeAnno == nullptr) {
+        return nullptr;
+    }
+
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     if (!typeAnno->IsETSUnionType()) {
         ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
@@ -470,6 +474,11 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     }
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         typeAnnotation = ParseTypeAnnotation(&options);
+        if (typeAnnotation == nullptr) {
+            LogError(diagnostic::ID_EXPECTED);
+            return;
+        }
+
         endLoc = typeAnnotation->End();
     }
 
@@ -1031,13 +1040,18 @@ ir::AstNode *ETSParser::ParseAnnotationsInInterfaceBody()
     return result;
 }
 
+bool ETSParser::IsFieldStartToken(lexer::TokenType tokenType)
+{
+    return tokenType == lexer::TokenType::LITERAL_IDENT ||
+           tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET ||
+           tokenType == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS;
+}
+
 ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
         return ParseAnnotationsInInterfaceBody();
     }
-
-    auto startLoc = Lexer()->GetToken().Start();
 
     if (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN && Lexer()->Lookahead() != lexer::LEX_CHAR_LESS_THAN &&
         (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
@@ -1045,39 +1059,33 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
         return ParseInterfaceGetterSetterMethod(ir::ModifierFlags::PUBLIC);
     }
 
-    if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_READONLY)) {
-        char32_t nextCp = Lexer()->Lookahead();
-        if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
-            LogError(diagnostic::READONLY_INTERFACE_METHOD, {}, startLoc);
-            ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
-            auto *method = ParseInterfaceMethod(modfiers, ir::MethodDefinitionKind::METHOD);
-            method->SetStart(startLoc);
-            return method;
-        }
-        auto *field = ParseInterfaceField();
-        field->SetStart(startLoc);
-        field->AddModifier(ir::ModifierFlags::READONLY);
-        return field;
-    }
-
-    ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
-        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
-        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        LogError(diagnostic::ID_EXPECTED);
-        return AllocBrokenExpression(Lexer()->GetToken().Loc());
-    }
-
+    ir::ModifierFlags modifiers = ParseInterfaceMethodModifiers();
     char32_t nextCp = Lexer()->Lookahead();
+    auto startLoc = Lexer()->GetToken().Start();
+    auto readonlyTok = Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_READONLY);
+    bool isReadonly = readonlyTok.has_value();
+
     if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
-        auto *method = ParseInterfaceMethod(modfiers, ir::MethodDefinitionKind::METHOD);
+        if (isReadonly) {
+            LogError(diagnostic::READONLY_INTERFACE_METHOD, {}, startLoc);
+        }
+        auto *method = ParseInterfaceMethod(modifiers, ir::MethodDefinitionKind::METHOD);
         method->SetStart(startLoc);
         return method;
+    }
+
+    auto tok = Lexer()->GetToken().Type();
+    if (!IsFieldStartToken(tok)) {
+        LogError(diagnostic::ID_EXPECTED, {}, startLoc);
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     auto *field = ParseInterfaceField();
     if (field != nullptr) {
         field->SetStart(startLoc);
+        if (isReadonly) {
+            field->AddModifier(ir::ModifierFlags::READONLY);
+        }
         return field;
     }
 

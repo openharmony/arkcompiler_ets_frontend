@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 import * as ts from 'typescript';
-import { LinterConfig } from '../TypeScriptLinterConfig';
+import { TypeScriptLinterConfig } from '../TypeScriptLinterConfig';
 import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { isStructDeclaration } from '../utils/functions/IsStruct';
 import type { TsUtils } from '../utils/TsUtils';
@@ -39,7 +39,7 @@ export class SymbolCache {
     };
 
     const stopCondition = (node: ts.Node): boolean => {
-      return !node || LinterConfig.terminalTokens.has(node.kind);
+      return !node || TypeScriptLinterConfig.terminalTokens.has(node.kind);
     };
 
     forEachNodeInSubtree(sourceFile, callback, stopCondition);

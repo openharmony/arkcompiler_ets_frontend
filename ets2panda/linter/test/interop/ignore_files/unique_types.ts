@@ -30,5 +30,7 @@ export let mixedEnumType: X;
 export let intersectionType: SomeType & X;
 export let templateLiteralType: TemplateLiteralType;
 
-export function tsFunction() {};
+export function tsFunction() {
+    throw 123;
+};
 export let stringType: string;

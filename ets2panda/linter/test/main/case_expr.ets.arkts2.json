@@ -61,7 +61,7 @@
             "endColumn": 12,
             "problem": "SwitchExpression",
             "suggest": "",
-            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "rule": "The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)",
             "severity": "ERROR"
         },
         {

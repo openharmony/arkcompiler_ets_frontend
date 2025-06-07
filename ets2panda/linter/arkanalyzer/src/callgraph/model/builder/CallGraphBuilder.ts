@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 import { CallGraph, CallGraphNode, CallGraphNodeKind, Method } from '../CallGraph';
 import { Scene } from '../../../Scene';
-import { AbstractInvokeExpr, ArkInstanceInvokeExpr, ArkStaticInvokeExpr } from "../../../core/base/Expr";
+import { AbstractInvokeExpr, ArkInstanceInvokeExpr, ArkStaticInvokeExpr } from '../../../core/base/Expr';
 import { NodeID } from '../../../core/graph/BaseExplicitGraph';
 import { ClassHierarchyAnalysis } from '../../algorithm/ClassHierarchyAnalysis';
 import { RapidTypeAnalysis } from '../../algorithm/RapidTypeAnalysis';
@@ -29,7 +29,6 @@ export class CallGraphBuilder {
         this.cg = c;
         this.scene = s;
     }
-
 
     public buildDirectCallGraphForScene(): void {
         const methods = this.scene.getMethods();
@@ -70,8 +69,11 @@ export class CallGraphBuilder {
                 // abstract method will also be added into direct cg
                 if (callee && invokeExpr instanceof ArkStaticInvokeExpr) {
                     this.cg.addDirectOrSpecialCallEdge(method.getSignature(), callee, stmt);
-                } else if (callee && (invokeExpr instanceof ArkInstanceInvokeExpr && (
-                    this.isConstructor(callee) || this.scene.getMethod(callee)?.isGenerated()))) {
+                } else if (
+                    callee &&
+                    invokeExpr instanceof ArkInstanceInvokeExpr &&
+                    (this.isConstructor(callee) || this.scene.getMethod(callee)?.isGenerated())
+                ) {
                     this.cg.addDirectOrSpecialCallEdge(method.getSignature(), callee, stmt, false);
                 } else {
                     this.cg.addDynamicCallInfo(stmt, method.getSignature(), callee);
@@ -84,18 +86,23 @@ export class CallGraphBuilder {
         let cgEntries: NodeID[] = [];
         entries.forEach((entry: Method) => {
             cgEntries.push(this.cg.getCallGraphNodeByMethod(entry).getID());
-        })
+        });
         this.cg.setEntries(cgEntries);
 
         let classHierarchyAnalysis: ClassHierarchyAnalysis = new ClassHierarchyAnalysis(this.scene, this.cg);
         classHierarchyAnalysis.start(displayGeneratedMethod);
     }
 
+    public buildCHA4WholeProject(displayGeneratedMethod: boolean = false): void {
+        let classHierarchyAnalysis: ClassHierarchyAnalysis = new ClassHierarchyAnalysis(this.scene, this.cg);
+        classHierarchyAnalysis.projectStart(displayGeneratedMethod);
+    }
+
     public buildRapidTypeCallGraph(entries: Method[], displayGeneratedMethod: boolean = false): void {
         let cgEntries: NodeID[] = [];
         entries.forEach((entry: Method) => {
             cgEntries.push(this.cg.getCallGraphNodeByMethod(entry).getID());
-        })
+        });
         this.cg.setEntries(cgEntries);
 
         let rapidTypeAnalysis: RapidTypeAnalysis = new RapidTypeAnalysis(this.scene, this.cg);
@@ -114,8 +121,7 @@ export class CallGraphBuilder {
     public setEntries(): void {
         let nodesIter = this.cg.getNodesIter();
         let entries = Array.from(nodesIter)
-            .filter(node => !node.hasIncomingEdges() && node.getKind() === CallGraphNodeKind.real
-                && !(node as CallGraphNode).isBlankMethod)
+            .filter(node => !node.hasIncomingEdges() && node.getKind() === CallGraphNodeKind.real && !(node as CallGraphNode).isBlankMethod)
             .map(node => node.getID());
         this.cg.setEntries(entries);
     }

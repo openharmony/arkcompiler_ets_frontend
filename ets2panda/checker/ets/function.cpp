@@ -126,18 +126,26 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     return true;
 }
 
+bool ETSChecker::ValidateTypeSubstitution(const ArenaVector<Type *> &typeParams, Type *ctype, Type *argumentType,
+                                          Substitution *substitution)
+{
+    if (!EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution)) {
+        return false;
+    }
+    return !ctype->IsETSTypeParameter() ||
+           (substitution->count(ctype->AsETSTypeParameter()) > 0 &&
+            Relation()->IsAssignableTo(argumentType, substitution->at(ctype->AsETSTypeParameter())));
+}
+
 bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
                                              Type *argumentType, Substitution *substitution)
 {
     if (!argumentType->IsETSUnionType()) {
-        return std::any_of(
-            paramUn->ConstituentTypes().begin(), paramUn->ConstituentTypes().end(),
-            [this, typeParams, argumentType, substitution](Type *ctype) {
-                return EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution) &&
-                       (!ctype->IsETSTypeParameter() ||
-                        (substitution->find(ctype->AsETSTypeParameter()) != substitution->end() &&
-                         Relation()->IsAssignableTo(argumentType, substitution->at(ctype->AsETSTypeParameter()))));
-            });
+        bool foundValid = false;
+        for (Type *ctype : paramUn->ConstituentTypes()) {
+            foundValid |= ValidateTypeSubstitution(typeParams, ctype, argumentType, substitution);
+        }
+        return foundValid;
     }
     auto *const argUn = argumentType->AsETSUnionType();
 
@@ -166,6 +174,70 @@ bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typePara
     return true;
 }
 
+bool ETSChecker::ProcessUntypedParameter(ir::AstNode *declNode, size_t paramIndex, Signature *paramSig,
+                                         Signature *argSig, Substitution *substitution)
+{
+    if (!declNode->IsETSParameterExpression() || !HasStatus(CheckerStatus::IN_TYPE_INFER)) {
+        return false;
+    }
+
+    auto *paramExpr = declNode->AsETSParameterExpression();
+    if (paramExpr->Ident()->TypeAnnotation() != nullptr) {
+        return false;
+    }
+
+    Type *paramType = paramSig->Params()[paramIndex]->TsType();
+    Type *inferredType = paramType->Substitute(Relation(), substitution);
+
+    varbinder::Variable *argParam = argSig->Params()[paramIndex];
+    argParam->SetTsType(inferredType);
+    paramExpr->Ident()->SetTsType(inferredType);
+
+    return true;
+}
+
+static void RemoveInvalidTypeMarkers(ir::AstNode *node) noexcept
+{
+    std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *nn) {
+        if (nn->IsTyped() && !(nn->IsExpression() && nn->AsExpression()->IsTypeNode()) &&
+            nn->AsTyped()->TsType() != nullptr && nn->AsTyped()->TsType()->IsTypeError()) {
+            nn->AsTyped()->SetTsType(nullptr);
+        }
+        if (nn->IsIdentifier() && nn->AsIdentifier()->TsType() != nullptr &&
+            nn->AsIdentifier()->TsType()->IsTypeError()) {
+            nn->AsIdentifier()->SetVariable(nullptr);
+        }
+        if (!nn->IsETSTypeReference()) {
+            nn->Iterate([&](ir::AstNode *child) { doNode(child); });
+        }
+    };
+
+    doNode(node);
+}
+
+static void ResetInferredNode(ETSChecker *checker)
+{
+    auto relation = checker->Relation();
+    auto resetFuncState = [](ir::ArrowFunctionExpression *expr) {
+        auto *func = expr->Function();
+        func->SetSignature(nullptr);
+        func->ReturnStatements().clear();
+        expr->SetTsType(nullptr);
+    };
+
+    const bool hasValidNode = relation->GetNode() != nullptr && relation->GetNode()->IsArrowFunctionExpression();
+    if (!checker->HasStatus(CheckerStatus::IN_TYPE_INFER) || !hasValidNode) {
+        return;
+    }
+
+    auto *arrowFunc = relation->GetNode()->AsArrowFunctionExpression();
+    relation->SetNode(nullptr);
+
+    RemoveInvalidTypeMarkers(arrowFunc);
+    resetFuncState(arrowFunc);
+    arrowFunc->Check(checker);
+}
+
 bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
                                                 Type *argumentType, Substitution *substitution)
 {
@@ -173,32 +245,36 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
         return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution);
     };
 
-    if (argumentType->IsETSFunctionType()) {
-        auto parameterSignature = paramType->ArrowSignature();
-        auto argumentSignature = argumentType->AsETSFunctionType()->ArrowSignature();
-        // NOTE(gogabr): handle rest parameter for argumentSignature
-        if (parameterSignature->MinArgCount() < argumentSignature->MinArgCount()) {
-            return false;
-        }
-        bool res = true;
-        size_t const commonArity = std::min(argumentSignature->ArgCount(), parameterSignature->ArgCount());
-        for (size_t idx = 0; idx < commonArity; idx++) {
-            auto *declNode = argumentSignature->Params()[idx]->Declaration()->Node();
-            if (declNode->IsETSParameterExpression() &&
-                declNode->AsETSParameterExpression()->Ident()->TypeAnnotation() == nullptr) {
-                continue;
-            }
-            res &= enhance(parameterSignature->Params()[idx]->TsType(), argumentSignature->Params()[idx]->TsType());
-        }
-
-        if (argumentSignature->HasRestParameter() && parameterSignature->HasRestParameter()) {
-            res &= enhance(parameterSignature->RestVar()->TsType(), argumentSignature->RestVar()->TsType());
-        }
-        res &= enhance(parameterSignature->ReturnType(), argumentSignature->ReturnType());
-        return res;
+    if (!argumentType->IsETSFunctionType()) {
+        return true;
     }
 
-    return true;
+    auto *paramSig = paramType->ArrowSignature();
+    auto *argSig = argumentType->AsETSFunctionType()->ArrowSignature();
+
+    if (paramSig->MinArgCount() < argSig->MinArgCount()) {
+        return false;
+    }
+
+    bool res = true;
+    const size_t commonArity = std::min(argSig->ArgCount(), paramSig->ArgCount());
+
+    for (size_t idx = 0; idx < commonArity; idx++) {
+        auto *declNode = argSig->Params()[idx]->Declaration()->Node();
+        if (ProcessUntypedParameter(declNode, idx, paramSig, argSig, substitution)) {
+            continue;
+        }
+        res &= enhance(paramSig->Params()[idx]->TsType(), argSig->Params()[idx]->TsType());
+    }
+
+    ResetInferredNode(this);
+
+    if (argSig->HasRestParameter() && paramSig->HasRestParameter()) {
+        res &= enhance(paramSig->RestVar()->TsType(), argSig->RestVar()->TsType());
+    }
+    res &= enhance(paramSig->ReturnType(), argSig->ReturnType());
+
+    return res;
 }
 
 // Try to find the base type somewhere in object subtypes. Incomplete, yet safe
@@ -607,7 +683,8 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
 {
     std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
-    Signature *mostSpecificSignature = ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, pos);
+    Signature *mostSpecificSignature =
+        ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, arguments, pos);
 
     if (mostSpecificSignature == nullptr) {
         LogError(diagnostic::AMBIGUOUS_FUNC_REF, {compatibleSignatures.front()->Function()->Id()->Name()}, pos);
@@ -773,9 +850,43 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
     }
 }
 
-static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
-                                                      ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter)
+void ETSChecker::CollectSuitableSignaturesForTypeInference(
+    size_t paramIdx, ArenaVector<Signature *> &signatures,
+    ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter, const ArenaVector<ir::Expression *> &arguments)
 {
+    // For lambda parameters, attempt to obtain the most matching signature through the number of lambda parameters
+    ES2PANDA_ASSERT(arguments.at(paramIdx)->IsArrowFunctionExpression());
+    [[maybe_unused]] size_t paramCount =
+        arguments.at(paramIdx)->AsArrowFunctionExpression()->Function()->Params().size();
+    size_t minMatchArgCount = SIZE_MAX;
+
+    for (auto *sig : signatures) {
+        auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        if (!sigParamType->IsETSFunctionType()) {
+            continue;
+        }
+
+        auto sigParamArgCount = sigParamType->AsETSFunctionType()->ArrowSignature()->ArgCount();
+        ES2PANDA_ASSERT(sigParamArgCount >= paramCount);
+
+        minMatchArgCount = std::min(minMatchArgCount, sigParamArgCount);
+    }
+
+    for (auto *sig : signatures) {
+        auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        if (!sigParamType->IsETSFunctionType()) {
+            continue;
+        }
+
+        if (sigParamType->AsETSFunctionType()->ArrowSignature()->ArgCount() == minMatchArgCount) {
+            bestSignaturesForParameter.insert({paramIdx, sig});
+        }
+    }
+
+    if (bestSignaturesForParameter.find(paramIdx) != bestSignaturesForParameter.end()) {
+        return;
+    }
+
     for (auto *sig : signatures) {
         if (paramIdx >= sig->Params().size() || !sig->Params().at(paramIdx)->TsType()->IsETSObjectType() ||
             !sig->Params().at(paramIdx)->TsType()->AsETSObjectType()->IsGlobalETSObjectType()) {
@@ -786,7 +897,7 @@ static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVect
 
 ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter(
     const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
-    const lexer::SourcePosition &pos)
+    const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos)
 {
     // Collect which signatures are most specific for each parameter.
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
@@ -795,8 +906,14 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
                                                                           TypeRelationFlag::ONLY_CHECK_WIDENING);
 
     for (size_t i = 0; i < paramCount; ++i) {
-        if (i >= argTypeInferenceRequired.size() || argTypeInferenceRequired[i]) {
-            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter);
+        if (i >= argTypeInferenceRequired.size()) {
+            for (auto *sig : signatures) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+            continue;
+        }
+        if (argTypeInferenceRequired[i]) {
+            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter, arguments);
             continue;
         }
         // 1st step: check which is the most specific parameter type for i. parameter.
@@ -823,6 +940,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
 
 Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                                    const std::vector<bool> &argTypeInferenceRequired,
+                                                   const ArenaVector<ir::Expression *> &arguments,
                                                    const lexer::SourcePosition &pos, size_t argumentsSize)
 {
     ES2PANDA_ASSERT(signatures.empty() == false);
@@ -861,7 +979,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     }
 
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter =
-        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, pos);
+        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, arguments, pos);
     // Find the signature that are most specific for all parameters.
     Signature *mostSpecificSignature = FindMostSpecificSignature(signatures, bestSignaturesForParameter, paramCount);
 

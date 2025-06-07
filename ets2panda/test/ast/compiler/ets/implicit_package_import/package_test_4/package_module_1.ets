@@ -19,5 +19,4 @@ import {myvar} from "./package_module_2"
 // compiling this file will fail with import from it's own package
 
 /* @@? 17:1 Error SyntaxError: Package module cannot import from a file in it's own package. */
-/* @@? package_module_2.ets:18:12 Error TypeError: Variable 'myvar' has already been declared. */
 /* @@? 17:21 Error TypeError: Cannot find import: ./package_module_2 */

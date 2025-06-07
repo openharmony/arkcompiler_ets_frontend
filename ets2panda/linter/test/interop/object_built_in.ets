@@ -12,9 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use static'
 
-import { foo } from "./oh_modules/object_built_in"
+import { X } from "./oh_modules/object_built_in"
 
-class X { a = 1 };
+export function foo(prx: Object) {
+    Object.assign({}, prx);
+    Object.entries(prx);
+    Object.keys(prx);
+    Object.values(prx);
+    prx.hasOwnProperty("a");
+}
 
 foo(new X()); // Illegal

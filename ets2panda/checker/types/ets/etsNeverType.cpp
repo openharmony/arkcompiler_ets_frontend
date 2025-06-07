@@ -22,7 +22,7 @@
 namespace ark::es2panda::checker {
 void ETSNeverType::Identical(TypeRelation *relation, Type *other)
 {
-    relation->Result(other->IsNeverType());
+    relation->Result(other->IsETSNeverType());
 }
 
 void ETSNeverType::AssignmentTarget(TypeRelation *relation, Type *source)
