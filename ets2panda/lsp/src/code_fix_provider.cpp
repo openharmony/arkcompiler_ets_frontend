@@ -28,9 +28,8 @@ namespace ark::es2panda::lsp {
 
 void CodeFixProvider::RegisterCodeFix(const std::string &aliasName, std::unique_ptr<CodeFixRegistration> registration)
 {
-    if (aliasName.empty()) {
-        ASSERT("Alias name cannot be empty");
-    }
+    (void)aliasName;
+    ASSERT(!aliasName.empty());
     auto shared = std::shared_ptr<CodeFixRegistration>(std::move(registration));
 
     for (auto error : shared->GetErrorCodes()) {
