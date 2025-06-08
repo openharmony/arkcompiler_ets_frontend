@@ -196,6 +196,7 @@ export class CGStat extends StatTraits {
     numVirtual: number = 0;
     numIntrinsic: number = 0;
     numConstructor: number = 0;
+    numBlank: number = 0;
 
     public startStat(): void {
         this.startTime = new Date().getTime();
@@ -221,6 +222,7 @@ export class CGStat extends StatTraits {
                 this.numIntrinsic++;
                 break;
             default:
+                this.numBlank++;
         }
         this.numTotalNode++;
     }
@@ -232,7 +234,8 @@ export class CGStat extends StatTraits {
         output = output + `Real function\t\t${this.numReal}\n`;
         output = output + `Intrinsic function\t${this.numIntrinsic}\n`;
         output = output + `Constructor function\t${this.numConstructor}\n`;
-        output = output + `Blank function\t\t${this.numVirtual}\n`;
+        output = output + `Virtual function\t\t${this.numVirtual}\n`;
+        output = output + `Blank function\t\t${this.numBlank}\n`;
         output = output + `Total\t\t\t${this.numTotalNode}\n`;
         return output;
     }

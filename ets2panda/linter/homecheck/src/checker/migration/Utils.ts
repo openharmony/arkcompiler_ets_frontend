@@ -13,7 +13,18 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, ArkMethod, CallGraph, CallGraphBuilder, Local, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
+import {
+    ArkAssignStmt,
+    ArkMethod,
+    CallGraph,
+    CallGraphBuilder,
+    Local,
+    LOG_MODULE_TYPE,
+    Logger,
+    Scene,
+    Stmt,
+    Value,
+} from 'arkanalyzer/lib';
 import { WarnInfo } from '../../utils/common/Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
@@ -25,6 +36,10 @@ export const CALL_DEPTH_LIMIT = 2;
 export class CallGraphHelper {
     private static cgInstance: CallGraph | null = null;
 
+    public static dispose(): void {
+        this.cgInstance = null;
+    }
+
     public static getCGInstance(scene: Scene): CallGraph {
         if (!this.cgInstance) {
             this.cgInstance = new CallGraph(scene);
@@ -35,6 +50,10 @@ export class CallGraphHelper {
 
 export class GlobalCallGraphHelper {
     private static cgInstance: CallGraph | null = null;
+
+    public static dispose(): void {
+        this.cgInstance = null;
+    }
 
     public static getCGInstance(scene: Scene): CallGraph {
         if (!this.cgInstance) {
@@ -50,6 +69,14 @@ export class DVFGHelper {
     private static dvfgInstance: DVFG;
     private static dvfgBuilder: DVFGBuilder;
     private static built: Set<ArkMethod> = new Set();
+
+    public static dispose(): void {
+        // @ts-ignore
+        this.dvfgInstance = null;
+        // @ts-ignore
+        this.dvfgBuilder = null;
+        this.built.clear();
+    }
 
     private static createDVFGInstance(scene: Scene): void {
         if (!this.dvfgInstance) {
@@ -117,7 +144,7 @@ export function getLanguageStr(language: Language): string {
 }
 
 export function getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-    const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+    const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
     const originPosition = stmt.getOperandOriginalPosition(operand);
     if (arkFile && originPosition) {
         const originPath = arkFile.getFilePath();
@@ -126,7 +153,7 @@ export function getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
         const endCol = startCol;
         return { line, startCol, endCol, filePath: originPath };
     } else {
-        logger.debug('ArkFile is null.');
+        logger.debug('ArkFile or operand position is null.');
     }
     return { line: -1, startCol: -1, endCol: -1, filePath: '' };
 }

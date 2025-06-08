@@ -65,6 +65,15 @@ export class PointerAnalysisConfig {
     }
 
     /*
+     * Set static field to be null, then all related objects could be freed by GC.
+     * Class PointerAnalysisConfig has been exported by ArkAnalyzer, the dispose method should be called by users themselves before free this class.
+     */
+    public static dispose(): void {
+        // @ts-ignore
+        this.instance = null;
+    }
+
+    /*
      * Create Singleton instance
      * The instance can be created multi-times and be overwrited
      */

@@ -41,6 +41,8 @@ import { ImportInfo } from './core/model/ArkImport';
 import { ALL, CONSTRUCTOR_NAME, TSCONFIG_JSON } from './core/common/TSConst';
 import { BUILD_PROFILE_JSON5, OH_PACKAGE_JSON5 } from './core/common/EtsConst';
 import { SdkUtils } from './core/common/SdkUtils';
+import { PointerAnalysisConfig } from './callgraph/pointerAnalysis/PointerAnalysisConfig';
+import { ValueUtil } from './core/common/ValueUtil';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'Scene');
 
@@ -98,6 +100,17 @@ export class Scene {
     private unhandledSdkFilePaths: string[] = [];
 
     constructor() {}
+
+    /*
+     * Set all static field to be null, then all related objects could be freed by GC.
+     * This method could be called before drop Scene.
+     */
+    public dispose(): void {
+        PointerAnalysisConfig.dispose();
+        SdkUtils.dispose();
+        ValueUtil.dispose();
+        ModelUtils.dispose();
+    }
 
     public getOptions(): SceneOptions {
         return this.options;
@@ -322,12 +335,13 @@ export class Scene {
             }
         }
 
+        ModelUtils.dispose();
         this.buildStage = SceneBuildStage.METHOD_DONE;
     }
 
     private genArkFiles(): void {
         this.projectFiles.forEach(file => {
-            logger.info('=== parse file:', file);
+            logger.trace('=== parse file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.fileLanguages));
                 arkFile.setScene(this);
@@ -469,9 +483,11 @@ export class Scene {
     }
 
     private findDependenciesByRule(originPath: string, arkFile: ArkFile): void {
-        const extNameArray = ['.ets', '.ts', '.d.ets', '.d.ts', '.js'];
-        if (!this.findFilesByPathArray(originPath, this.indexPathArray, arkFile) && !this.findFilesByExtNameArray(originPath, extNameArray, arkFile)) {
-            logger.info(originPath + 'module mapperInfo is not found!');
+        if (
+            !this.findFilesByPathArray(originPath, this.indexPathArray, arkFile) &&
+            !this.findFilesByExtNameArray(originPath, this.options.supportFileExts!, arkFile)
+        ) {
+            logger.trace(originPath + 'module mapperInfo is not found!');
         }
     }
 
@@ -542,7 +558,7 @@ export class Scene {
                 this.addFileNode2DependencyGrap(originPath, arkFile);
             }
             if (!this.findFilesByPathArray(originPath, this.indexPathArray, arkFile)) {
-                logger.info(originPath + 'module mapperInfo is not found!');
+                logger.trace(originPath + 'module mapperInfo is not found!');
             }
         }
     }
@@ -574,7 +590,7 @@ export class Scene {
     private buildSdk(sdkName: string, sdkPath: string): void {
         const allFiles = getAllFiles(sdkPath, this.options.supportFileExts!, this.options.ignoreFileNames);
         allFiles.forEach(file => {
-            logger.info('=== parse sdk file:', file);
+            logger.trace('=== parse sdk file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.fileLanguages));
                 arkFile.setScene(this);
@@ -1044,6 +1060,7 @@ export class Scene {
             this.getMethodsMap(true);
             this.buildStage = SceneBuildStage.TYPE_INFERRED;
         }
+        SdkUtils.dispose();
     }
 
     /**
@@ -1458,7 +1475,7 @@ export class ModuleScene {
 
     private genArkFiles(supportFileExts: string[]): void {
         getAllFiles(this.modulePath, supportFileExts, this.projectScene.getOptions().ignoreFileNames).forEach(file => {
-            logger.info('=== parse file:', file);
+            logger.trace('=== parse file:', file);
             try {
                 const arkFile: ArkFile = new ArkFile(FileUtils.getFileLanguage(file, this.projectScene.getFileLanguages()));
                 arkFile.setScene(this.projectScene);

@@ -21,6 +21,14 @@ export class ValueUtil {
     private static readonly NumberConstantCache: Map<number, Constant> = new Map();
     public static readonly EMPTY_STRING_CONSTANT = new StringConstant(EMPTY_STRING);
 
+    /*
+     * Set static field to be null, then all related objects could be freed by GC.
+     * Class SdkUtils is only internally used by ArkAnalyzer, the dispose method should be called by users themselves before drop Scene.
+     */
+    public static dispose(): void {
+        this.NumberConstantCache.clear();
+    }
+
     public static getOrCreateNumberConst(n: number): Constant {
         let constant = this.NumberConstantCache.get(n);
         if (constant === undefined) {

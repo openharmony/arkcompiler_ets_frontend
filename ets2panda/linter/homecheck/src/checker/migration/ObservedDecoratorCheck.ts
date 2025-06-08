@@ -266,7 +266,7 @@ export class ObservedDecoratorCheck implements BaseChecker {
         canFindAllTargets: boolean = true
     ): string {
         if (issueClass === null || !canFindAllTargets) {
-            return `can not find all classes, please check this field manually`;
+            return `can not find all classes, please check this field manually (arkui-data-observation)`;
         }
         const fieldLine = field.getOriginPosition().getLineNo();
         const fieldColumn = field.getOriginPosition().getColNo();
@@ -275,10 +275,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
         const issueClassSig = issueClass.getDeclaringArkFile().getFileSignature();
         let res = `but it's not be annotated by @Observed (arkui-data-observation)`;
         if (fileSignatureCompare(fieldFileSig, issueClassSig)) {
-            res = `The class is used by state property in [${fieldLine}, ${fieldColumn}], ` + res;
+            res = `Class ${issueClass.getName()} is used by state property in [${fieldLine}, ${fieldColumn}], ` + res;
         } else {
             const filePath = path.normalize(fieldFileSig.getFileName());
-            res = `The class is used by state property in file ${filePath} [${fieldLine}, ${fieldColumn}], ` + res;
+            res = `Class ${issueClass.getName()} is used by state property in file ${filePath} [${fieldLine}, ${fieldColumn}], ` + res;
         }
         return res;
     }

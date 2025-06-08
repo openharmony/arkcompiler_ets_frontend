@@ -47,9 +47,8 @@ export class PointerAnalysis extends AbstractAnalysis {
     private config: PointerAnalysisConfig;
 
     constructor(p: Pag, cg: CallGraph, s: Scene, config: PointerAnalysisConfig) {
-        super(s);
+        super(s, cg);
         this.pag = p;
-        this.cg = cg;
         this.ptd = new DiffPTData<NodeID, NodeID, IPtsCollection<NodeID>>(config.ptsCollectionCtor);
         this.pagBuilder = new PagBuilder(this.pag, this.cg, s, config.kLimit, config.analysisScale);
         this.cgBuilder = new CallGraphBuilder(this.cg, s);

@@ -46,7 +46,6 @@ import { DEFAULT, PROMISE } from './TSConst';
 import { buildGenericType, buildModifiers, buildTypeParameters } from '../model/builder/builderUtils';
 import { ArkValueTransformer } from './ArkValueTransformer';
 import { ImportInfo } from '../model/ArkImport';
-import { TypeInference } from './TypeInference';
 import { AbstractTypeExpr } from '../base/TypeExpr';
 import { buildNormalArkClassFromArkMethod } from '../model/builder/ArkClassBuilder';
 import { ArkClass } from '../model/ArkClass';
@@ -339,12 +338,6 @@ export class ArkIRTransformer {
         let expr: AliasTypeExpr;
         if (ts.isImportTypeNode(rightOp)) {
             expr = this.resolveImportTypeNode(rightOp);
-            const typeObject = expr.getOriginalObject();
-            if (typeObject instanceof ImportInfo && typeObject.getLazyExportInfo() !== null) {
-                const arkExport = typeObject.getLazyExportInfo()!.getArkExport();
-                rightType = TypeInference.parseArkExport2Type(arkExport) ?? UnknownType.getInstance();
-                aliasType.setOriginalType(rightType);
-            }
         } else if (ts.isTypeQueryNode(rightOp)) {
             const localName = rightOp.exprName.getText(this.sourceFile);
             const originalLocal = Array.from(this.arkValueTransformer.getLocals()).find(local => local.getName() === localName);
@@ -402,8 +395,6 @@ export class ArkIRTransformer {
         importInfo.build(importClauseName, importType, importFrom, LineColPosition.buildFromNode(importTypeNode, this.sourceFile), 0);
         importInfo.setDeclaringArkFile(this.declaringMethod.getDeclaringArkFile());
 
-        // Function getLazyExportInfo will automatically try to infer the export info if it's undefined at the beginning.
-        importInfo.getLazyExportInfo();
         return new AliasTypeExpr(importInfo, importTypeNode.isTypeOf);
     }
 

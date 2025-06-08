@@ -63,8 +63,7 @@ import {
     ArkArrayRef,
     ArkInstanceFieldRef,
     ArkParameterRef,
-    ArkStaticFieldRef,
-    GlobalRef
+    ArkStaticFieldRef
 } from '../base/Ref';
 import { Value } from '../base/Value';
 import { Constant } from '../base/Constant';
@@ -130,6 +129,7 @@ export class IRInference {
                 }
                 return 0;
             });
+            arkClass.getAllHeritageClasses();
             methods.forEach(arkMethod => TypeInference.inferTypeInMethod(arkMethod));
         });
         this.inferExportInfos(file);
@@ -283,6 +283,11 @@ export class IRInference {
     private static inferBase(instance: ArkInstanceFieldRef | ArkInstanceInvokeExpr, arkMethod: ArkMethod): void {
         const base = instance.getBase();
         if (base.getName() === THIS_NAME) {
+            const name = instance instanceof ArkInstanceFieldRef ? instance.getFieldName() :
+                instance.getMethodSignature().getMethodSubSignature().getMethodName();
+            if (name.includes('.')) {
+                return;
+            }
             const declaringArkClass = arkMethod.getDeclaringArkClass();
             if (declaringArkClass.isAnonymousClass()) {
                 let newBase = this.inferThisLocal(arkMethod);
@@ -293,14 +298,6 @@ export class IRInference {
                 base.setType(new ClassType(declaringArkClass.getSignature(), declaringArkClass.getRealTypes()));
             }
         } else {
-            const value = arkMethod.getBody()?.getUsedGlobals()?.get(base.getName());
-            if (value instanceof GlobalRef && !value.getRef()) {
-                const arkExport = ModelUtils.findGlobalRef(base.getName(), arkMethod);
-                if (arkExport instanceof Local) {
-                    arkExport.getUsedStmts().push(...base.getUsedStmts());
-                    value.setRef(arkExport);
-                }
-            }
             this.inferLocal(instance.getBase(), arkMethod);
         }
     }
@@ -686,7 +683,7 @@ export class IRInference {
 
     private static assignAnonMethod(anonMethod: ArkMethod | null, declaredMethod: ArkMethod | null): void {
         if (declaredMethod && anonMethod) {
-            anonMethod.setImplementationSignature(declaredMethod.matchMethodSignature(anonMethod.getSubSignature().getParameters()));
+            anonMethod.setDeclareSignatures(declaredMethod.matchMethodSignature(anonMethod.getSubSignature().getParameters()));
         }
     }
 
@@ -815,7 +812,8 @@ export class IRInference {
     public static inferParameterRef(ref: ArkParameterRef, arkMethod: ArkMethod): AbstractRef {
         const paramType = ref.getType();
         if (paramType instanceof UnknownType || paramType instanceof UnclearReferenceType) {
-            const type1 = arkMethod.getSignature().getMethodSubSignature().getParameters()[ref.getIndex()]?.getType();
+            const signature = arkMethod.getDeclareSignatures()?.at(0) ?? arkMethod.getSignature();
+            const type1 = signature.getMethodSubSignature().getParameters()[ref.getIndex()]?.getType();
             if (!TypeInference.isUnclearType(type1)) {
                 ref.setType(type1);
                 return ref;

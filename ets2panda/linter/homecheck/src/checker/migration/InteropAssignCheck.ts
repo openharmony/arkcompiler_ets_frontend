@@ -98,7 +98,7 @@ export class InteropAssignCheck implements BaseChecker {
         callsites.forEach(cs => {
             let hasTargetArg = false;
             const invoke = cs.getInvokeExpr()!;
-            const csMethod = cs.getCfg()?.getDeclaringMethod();
+            const csMethod = cs.getCfg().getDeclaringMethod();
             invoke.getArgs().forEach(arg => {
                 const argTy = arg.getType();
                 if (argTy instanceof PrimitiveType || this.isBoxedType(argTy)) {
@@ -149,7 +149,7 @@ export class InteropAssignCheck implements BaseChecker {
             const desc = `${this.metaData.description} (${RULE_ID})`;
             const severity = this.metaData.severity;
             const ruleId = this.rule.ruleId;
-            const filePath = assign.getCfg()?.getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
+            const filePath = assign.getCfg().getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
             const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
             this.issues.push(new IssueReport(defeats, undefined));
         });
@@ -265,8 +265,6 @@ export class InteropAssignCheck implements BaseChecker {
         }
         if (file) {
             return file.getLanguage();
-        } else {
-            logger.error(`fail to identify which file the type definition ${type.toString()} is in.`);
         }
         return undefined;
     }
