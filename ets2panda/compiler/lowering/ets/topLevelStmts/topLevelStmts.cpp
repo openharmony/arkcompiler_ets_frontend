@@ -56,7 +56,7 @@ static void AddExportModifierForInterface(ir::AstNode *const ast)
             it->AsTSInterfaceDeclaration()->AddModifier(ir::ModifierFlags::EXPORT);
         }
     }
-};
+}
 
 static void DeclareNamespaceExportAdjust(parser::Program *program, const std::string_view &name)
 {
