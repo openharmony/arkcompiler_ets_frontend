@@ -45,6 +45,10 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _GetAllErrorMessages(context: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _AstNodeDumpModifiers(context: KPtr, node: KPtr): KPtr {
     throw new Error('Not implemented');
   }

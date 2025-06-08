@@ -277,6 +277,23 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     delete cfg;
 }
 
+extern "C" __attribute__((unused)) char const *GetAllErrorMessages(es2panda_Context *context)
+{
+    auto *ctx = reinterpret_cast<Context *>(context);
+    ES2PANDA_ASSERT(ctx != nullptr);
+    ES2PANDA_ASSERT(ctx->config != nullptr);
+    ES2PANDA_ASSERT(ctx->allocator != nullptr);
+    auto *cfg = reinterpret_cast<ConfigImpl *>(ctx->config);
+    ES2PANDA_ASSERT(cfg != nullptr);
+    ES2PANDA_ASSERT(cfg->diagnosticEngine != nullptr);
+    auto allMessages = cfg->diagnosticEngine->PrintAndFlushErrorDiagnostic();
+    size_t bufferSize = allMessages.length() + 1;
+    char *cStringMessages = reinterpret_cast<char *>(ctx->allocator->Alloc(bufferSize));
+    [[maybe_unused]] auto err = memcpy_s(cStringMessages, bufferSize, allMessages.c_str(), bufferSize);
+    ES2PANDA_ASSERT(err == EOK);
+    return cStringMessages;
+}
+
 extern "C" const es2panda_Options *ConfigGetOptions(es2panda_Config *config)
 {
     auto options = reinterpret_cast<ConfigImpl *>(config)->options;
@@ -1047,6 +1064,7 @@ es2panda_Impl g_impl = {
 
     CreateConfig,
     DestroyConfig,
+    GetAllErrorMessages,
     ConfigGetOptions,
     CreateContextFromFile,
     CreateContextFromString,

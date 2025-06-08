@@ -19,18 +19,9 @@ import * as path from 'path';
 import { ensurePathExists } from '../utils';
 import { KOALA_WRAPPER_PATH_FROM_SDK } from '../pre_define';
 import { PluginDriver, PluginHook } from '../plugins/plugins_driver';
-import {
-  BuildConfig,
-} from '../types';
-import {
-  BUILD_MODE
-} from '../pre_define';
-import {
-  LogData,
-  LogDataFactory,
-  Logger
-} from '../logger';
-import { ErrorCode } from '../error_code';
+import { BuildConfig } from '../types';
+import { BUILD_MODE } from '../pre_define';
+import { Logger } from '../logger';
 
 process.on('message', (message: {
   taskList: CompileFileInfo[];
@@ -80,18 +71,12 @@ process.on('message', (message: {
     } catch (error) {
       errorStatus = true;
       if (error instanceof Error) {
-        const logData: LogData = LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
-          'Compile abc files failed.',
-          error.message
-        );
-        Logger.getInstance().printError(logData);
+        process.send({
+          success: false,
+          filePath: fileInfo.filePath,
+          error: 'Compile abc files failed.\n' + error.message
+        });
       }
-      process.send({
-        success: false,
-        filePath: fileInfo.filePath,
-        error: 'Compile abc files failed.'
-      });
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.
