@@ -139,6 +139,7 @@ import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 import type { ArrayAccess, UncheckedIdentifier, CheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
 import { CheckResult } from './utils/consts/RuntimeCheckAPI';
 import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
+import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -690,7 +691,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
     this.handleInvalidIdentifier(tsParam);
-    this.handleSdkDuplicateDeclName(tsParam);
+    this.handleSdkGlobalApi(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
@@ -1651,7 +1652,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
     this.handlePropertyDeclarationForProp(node);
-    this.handleSdkDuplicateDeclName(node);
+    this.handleSdkGlobalApi(node);
     this.handleObjectLiteralAssignmentToClass(node);
   }
 
@@ -2174,7 +2175,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkAssignmentMatching(tsBinaryExpr, leftOperandType, tsRhsExpr);
         this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
         this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
-        this.handleSdkDuplicateDeclName(tsBinaryExpr);
+        this.handleSdkGlobalApi(tsBinaryExpr);
         this.checkArrayTypeImmutable(tsBinaryExpr);
         break;
       case ts.SyntaxKind.AmpersandAmpersandEqualsToken:
@@ -2620,7 +2621,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
     this.handleObjectLiteralAssignment(tsVarDecl);
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
-    this.handleSdkDuplicateDeclName(tsVarDecl);
+    this.handleSdkGlobalApi(tsVarDecl);
     this.checkArrayTypeImmutable(tsVarDecl);
   }
 
@@ -3540,6 +3541,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.checkDefaultParamBeforeRequired(tsMethodDecl);
     this.handleMethodInherit(tsMethodDecl);
+    this.handleSdkGlobalApi(tsMethodDecl);
   }
 
   private checkDefaultParamBeforeRequired(node: ts.FunctionLikeDeclarationBase): void {
@@ -4580,7 +4582,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNoTsLikeFunctionCall(tsCallExpr);
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
     this.handleTaskPoolDeprecatedUsages(tsCallExpr);
-    this.handleSdkDuplicateDeclName(tsCallExpr);
+    this.handleSdkGlobalApi(tsCallExpr);
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
     this.checkRestrictedAPICall(tsCallExpr)
   }
@@ -5182,7 +5184,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.checkForInterfaceInitialization(tsNewExpr);
     this.handleSharedArrayBuffer(tsNewExpr);
-    this.handleSdkDuplicateDeclName(tsNewExpr);
+    this.handleSdkGlobalApi(tsNewExpr);
     this.checkCreatingPrimitiveTypes(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
@@ -5440,7 +5442,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     this.handleBuiltinCtorCallSignature(typeRef);
     this.handleSharedArrayBuffer(typeRef);
-    this.handleSdkDuplicateDeclName(typeRef);
+    this.handleSdkGlobalApi(typeRef);
 
     this.handleSdkConstructorIface(typeRef);
 
@@ -5576,7 +5578,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(tsTypeExpr, faultId);
     }
-    this.handleSdkDuplicateDeclName(tsTypeExpr);
+    this.handleSdkGlobalApi(tsTypeExpr);
   }
 
   private handleComputedPropertyName(node: ts.Node): void {
@@ -6279,10 +6281,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   // Helper function to check if a call is recursive
   private static isRecursiveCall(callExpr: ts.CallExpression, fn: ts.FunctionLikeDeclaration): boolean {
-    return ts.isIdentifier(callExpr.expression) && 
-           ts.isFunctionDeclaration(fn) && 
-           !!fn.name && 
-           fn.name.text === callExpr.expression.text;
+    return (
+      ts.isIdentifier(callExpr.expression) &&
+      ts.isFunctionDeclaration(fn) &&
+      !!fn.name &&
+      fn.name.text === callExpr.expression.text
+    );
   }
 
   private handleArrayType(arrayType: ts.Node): void {
@@ -7845,8 +7849,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return undefined;
   }
 
-  private processApiNodeSdkDuplicateDeclName(apiName: string, errorNode: ts.Node): void {
-    const setApiListItem = TypeScriptLinter.globalApiInfo.get(SdkProblem.DeclWithDuplicateName);
+  private processApiNodeSdkGlobalApi(apiName: string, errorNode: ts.Node): void {
+    for (const [key, value] of globalApiAssociatedInfo) {
+      this.doProcessApiNodeSdkGlobalApi(apiName, errorNode, key, value);
+    }
+  }
+
+  private doProcessApiNodeSdkGlobalApi(apiName: string, errorNode: ts.Node, key: string, faultId: number): void {
+    const setApiListItem = TypeScriptLinter.globalApiInfo.get(key);
     if (!setApiListItem) {
       return;
     }
@@ -7869,11 +7879,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
 
     if (matchedApi) {
-      this.incrementCounters(errorNode, FaultID.DuplicateDeclNameFromSdk);
+      this.incrementCounters(errorNode, faultId);
     }
   }
 
-  private handleSdkDuplicateDeclName(
+  private handleSdkGlobalApi(
     node:
       | ts.TypeReferenceNode
       | ts.NewExpression
@@ -7884,75 +7894,86 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       | ts.BinaryExpression
       | ts.ExpressionWithTypeArguments
       | ts.Identifier
+      | ts.MethodDeclaration
   ): void {
     if (!this.options.arkts2) {
       return;
     }
     switch (node.kind) {
       case ts.SyntaxKind.TypeReference:
-        this.checkTypeReferenceForSdkDuplicateDeclName(node);
+        this.checkTypeReferenceForSdkGlobalApi(node);
         break;
       case ts.SyntaxKind.NewExpression:
-        this.checkNewExpressionForSdkDuplicateDeclName(node);
+        this.checkNewExpressionForSdkGlobalApi(node);
         break;
       case ts.SyntaxKind.Identifier:
-        this.checkHeritageClauseForSdkDuplicateDeclName(node);
+        this.checkHeritageClauseForSdkGlobalApi(node);
         break;
       case ts.SyntaxKind.VariableDeclaration:
       case ts.SyntaxKind.PropertyDeclaration:
       case ts.SyntaxKind.Parameter:
-        this.checkDeclarationForSdkDuplicateDeclName(node);
+        this.checkDeclarationForSdkGlobalApi(node);
         break;
       case ts.SyntaxKind.CallExpression:
-        this.checkCallExpressionForSdkDuplicateDeclName(node);
+        this.checkCallExpressionForSdkGlobalApi(node);
         break;
       case ts.SyntaxKind.BinaryExpression:
-        this.checkBinaryExpressionForSdkDuplicateDeclName(node);
+        this.checkBinaryExpressionForSdkGlobalApi(node);
+        break;
+      case ts.SyntaxKind.MethodDeclaration:
+        this.checkMethodDeclarationForSdkGlobalApi(node);
         break;
       default:
     }
   }
 
-  private checkTypeReferenceForSdkDuplicateDeclName(node: ts.TypeReferenceNode): void {
+  private checkTypeReferenceForSdkGlobalApi(node: ts.TypeReferenceNode): void {
     const typeName = node.typeName;
     if (ts.isIdentifier(typeName)) {
-      this.processApiNodeSdkDuplicateDeclName(typeName.text, node);
+      this.processApiNodeSdkGlobalApi(typeName.text, node);
     }
   }
 
-  private checkNewExpressionForSdkDuplicateDeclName(node: ts.NewExpression): void {
+  private checkNewExpressionForSdkGlobalApi(node: ts.NewExpression): void {
     const expression = node.expression;
     if (ts.isIdentifier(expression)) {
-      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+      this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
 
-  private checkHeritageClauseForSdkDuplicateDeclName(node: ts.Identifier): void {
+  private checkHeritageClauseForSdkGlobalApi(node: ts.Identifier): void {
     if (ts.isIdentifier(node)) {
-      this.processApiNodeSdkDuplicateDeclName(node.text, node);
+      this.processApiNodeSdkGlobalApi(node.text, node);
     }
   }
 
-  private checkDeclarationForSdkDuplicateDeclName(
+  private checkDeclarationForSdkGlobalApi(
     node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
   ): void {
     const expression = node.initializer;
     if (expression && ts.isIdentifier(expression)) {
-      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+      this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
 
-  private checkCallExpressionForSdkDuplicateDeclName(node: ts.CallExpression): void {
+  private checkCallExpressionForSdkGlobalApi(node: ts.CallExpression): void {
     if (ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
       const expression = node.expression.expression;
-      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+      this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
 
-  private checkBinaryExpressionForSdkDuplicateDeclName(node: ts.BinaryExpression): void {
+  private checkBinaryExpressionForSdkGlobalApi(node: ts.BinaryExpression): void {
     const expression = node.right;
     if (ts.isIdentifier(expression)) {
-      this.processApiNodeSdkDuplicateDeclName(expression.text, expression);
+      this.processApiNodeSdkGlobalApi(expression.text, expression);
+    }
+  }
+
+  private checkMethodDeclarationForSdkGlobalApi(node: ts.MethodDeclaration): void {
+    const expression = node.name;
+    if (ts.isIdentifier(expression)) {
+      this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
 
@@ -7965,7 +7986,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.handleSharedArrayBuffer(type);
         const expr = type.expression;
         if (ts.isIdentifier(expr)) {
-          this.processApiNodeSdkDuplicateDeclName(expr.text, expr);
+          this.processApiNodeSdkGlobalApi(expr.text, expr);
         }
       });
     }
