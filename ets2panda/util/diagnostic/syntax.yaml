@@ -1239,3 +1239,7 @@ syntax:
 - name: ERROR_ARKTS_NO_EXPORT_ASSIGNMENT
   id: 307
   message: "'export = ...' syntax is not supported, use regular import/export instead!"
+
+- name: ERROR_ARKTS_NO_AMBIENT_DECLS
+  id: 308
+  message: "Ambient module declaration is not supported!"
