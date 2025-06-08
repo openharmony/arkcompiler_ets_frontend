@@ -14,7 +14,7 @@
  */
 
 import { Stmt } from './Stmt';
-import { ClassType, Type, UnknownType } from './Type';
+import { ClassType, FunctionType, Type, UnknownType } from './Type';
 import { Value } from './Value';
 import { TypeInference } from '../common/TypeInference';
 import { ArkExport, ExportType } from '../model/ArkExport';
@@ -54,10 +54,16 @@ export class Local implements Value, ArkExport {
             const declaringArkClass = arkMethod.getDeclaringArkClass();
             this.type = new ClassType(declaringArkClass.getSignature(), declaringArkClass.getRealTypes());
         } else if (TypeInference.isUnclearType(this.type)) {
-            const type = TypeInference.inferBaseType(this.name, arkMethod.getDeclaringArkClass()) ?? ModelUtils.findDeclaredLocal(this, arkMethod)?.getType();
+            const type = TypeInference.inferBaseType(this.name, arkMethod.getDeclaringArkClass()) ??
+                ModelUtils.findDeclaredLocal(this, arkMethod)?.getType();
             if (type) {
                 this.type = type;
             }
+        }
+        if (this.type instanceof FunctionType) {
+            this.type.getMethodSignature().getMethodSubSignature().getParameters()
+                .forEach(p => TypeInference.inferParameterType(p, arkMethod));
+            TypeInference.inferSignatureReturnType(this.type.getMethodSignature(), arkMethod);
         }
         return this;
     }

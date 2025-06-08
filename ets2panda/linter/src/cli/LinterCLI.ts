@@ -58,9 +58,10 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
 
   if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
-    const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
+    let migrationTool: MigrationTool | null = new MigrationTool(ruleConfigInfo, projectConfigInfo);
     await migrationTool.buildCheckEntry();
     const result = await migrationTool.start();
+    migrationTool = null;
 
     homeCheckResult = transferIssues2ProblemInfo(result);
     for (const [filePath, problems] of homeCheckResult) {

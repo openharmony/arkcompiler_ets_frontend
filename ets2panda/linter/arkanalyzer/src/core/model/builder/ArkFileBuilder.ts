@@ -110,7 +110,7 @@ function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile): void {
         }
         // TODO: Check
         else if (ts.isMethodDeclaration(child)) {
-            logger.warn('This is a MethodDeclaration in ArkFile.');
+            logger.trace('This is a MethodDeclaration in ArkFile.');
             let mthd: ArkMethod = new ArkMethod();
 
             buildArkMethodFromArkClass(child, arkFile.getDefaultClass(), mthd, astRoot);
@@ -143,7 +143,7 @@ function buildArkFile(arkFile: ArkFile, astRoot: ts.SourceFile): void {
         } else if (ts.isExpressionStatement(child) && ts.isStringLiteral(child.expression)) {
             child.expression.text.trim() === ARKTS_STATIC_MARK && arkFile.setLanguage(Language.ARKTS1_2);
         } else {
-            logger.info('Child joined default method of arkFile: ', ts.SyntaxKind[child.kind]);
+            logger.trace('Child joined default method of arkFile: ', ts.SyntaxKind[child.kind]);
         }
     });
 

@@ -16,7 +16,14 @@
 import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { AbstractExpr, ArkInstanceInvokeExpr, ArkPtrInvokeExpr, ArkStaticInvokeExpr } from '../base/Expr';
 import { Local } from '../base/Local';
-import { AbstractFieldRef, AbstractRef, ArkArrayRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef } from '../base/Ref';
+import {
+    AbstractFieldRef,
+    AbstractRef,
+    ArkArrayRef,
+    ArkInstanceFieldRef,
+    ArkParameterRef,
+    ArkStaticFieldRef, GlobalRef
+} from '../base/Ref';
 import { ArkAliasTypeDefineStmt, ArkAssignStmt, ArkReturnStmt, Stmt } from '../base/Stmt';
 import {
     AliasType,
@@ -54,7 +61,7 @@ import {
     ANY_KEYWORD,
     BIGINT_KEYWORD,
     BOOLEAN_KEYWORD,
-    CONSTRUCTOR_NAME,
+    CONSTRUCTOR_NAME, DEFAULT,
     GLOBAL_THIS_NAME,
     NEVER_KEYWORD,
     NULL_KEYWORD,
@@ -157,7 +164,7 @@ export class TypeInference {
                 type = leftOpType;
             }
         } else if (leftOpType instanceof AnnotationNamespaceType) {
-            type = this.inferUnclearRefName(leftOpType.getOriginType(), declaringArkClass);
+            type = this.inferBaseType(leftOpType.getOriginType(), declaringArkClass);
         } else if (leftOpType instanceof UnclearReferenceType) {
             type = this.inferUnclearRefType(leftOpType, declaringArkClass);
         }
@@ -185,6 +192,15 @@ export class TypeInference {
             signatures.forEach(s => this.inferSignatureReturnType(s, arkMethod));
             return;
         }
+        body.getUsedGlobals()?.forEach((value, key) => {
+            if (value instanceof GlobalRef && !value.getRef()) {
+                const arkExport = ModelUtils.findGlobalRef(key, arkMethod);
+                if (arkExport instanceof Local) {
+                    arkExport.getUsedStmts().push(...value.getUsedStmts());
+                    value.setRef(arkExport);
+                }
+            }
+        });
         const cfg = body.getCfg();
         for (const block of cfg.getBlocks()) {
             for (const stmt of block.getStmts()) {
@@ -387,7 +403,8 @@ export class TypeInference {
 
     public static isUnclearType(type: Type | null | undefined): boolean {
         // TODO: For UnionType, IntersectionType and TupleType, it should recurse check every item of them.
-        if (!type || type instanceof UnknownType || type instanceof UnclearReferenceType || type instanceof NullType || type instanceof UndefinedType) {
+        if (!type || type instanceof UnknownType || type instanceof UnclearReferenceType || type instanceof NullType ||
+            type instanceof UndefinedType || type instanceof GenericType) {
             return true;
         } else if (
             type instanceof ClassType &&
@@ -488,7 +505,7 @@ export class TypeInference {
         return value.getType();
     }
 
-    private static inferParameterType(param: MethodParameter, arkMethod: ArkMethod): void {
+    public static inferParameterType(param: MethodParameter, arkMethod: ArkMethod): void {
         let pType = param.getType();
         const arkClass = arkMethod.getDeclaringArkClass();
         let type;
@@ -703,7 +720,7 @@ export class TypeInference {
                 }
                 propertyType = new EnumValueType(property.getSignature(), constant);
             } else {
-                propertyType = property.getType();
+                propertyType = this.replaceTypeWithReal(property.getType(), baseType.getRealGenericTypes());
             }
         } else if (property) {
             propertyType = this.parseArkExport2Type(property);
@@ -728,6 +745,8 @@ export class TypeInference {
     public static inferBaseType(baseName: string, arkClass: ArkClass): Type | null {
         if (SUPER_NAME === baseName) {
             return this.parseArkExport2Type(arkClass.getSuperClass());
+        } else if (DEFAULT === baseName) {
+            return this.parseArkExport2Type(arkClass.getDeclaringArkFile().getExportInfoBy(DEFAULT)?.getArkExport());
         }
         const field = ModelUtils.getDefaultClass(arkClass)?.getDefaultArkMethod()?.getBody()?.getLocals()?.get(baseName);
         if (field && !this.isUnclearType(field.getType())) {
@@ -750,14 +769,12 @@ export class TypeInference {
             ModelUtils.getClassWithName(typeName, arkClass) ??
             ModelUtils.getDefaultClass(arkClass)?.getDefaultArkMethod()?.getBody()?.getAliasTypeByName(typeName) ??
             ModelUtils.getArkExportInImportInfoWithName(typeName, arkClass.getDeclaringArkFile());
-        if (arkExport instanceof ArkClass || arkExport instanceof AliasType) {
-            return this.parseArkExport2Type(arkExport);
-        }
-        if (!arkClass.getDeclaringArkFile().getImportInfoBy(typeName)) {
+        if (!arkExport && !arkClass.getDeclaringArkFile().getImportInfoBy(typeName)) {
             arkExport = arkClass.getDeclaringArkFile().getScene().getSdkGlobal(typeName);
         }
-        if (arkExport instanceof ArkClass || arkExport instanceof AliasType) {
-            return this.parseArkExport2Type(arkExport);
+        const type = this.parseArkExport2Type(arkExport);
+        if (type instanceof ClassType || type instanceof AliasType) {
+            return type;
         }
         return null;
     }
@@ -860,12 +877,14 @@ export class TypeInference {
             .getParameters()
             .filter(p => !p.getName().startsWith(LEXICAL_ENV_NAME_PREFIX))
             .forEach((p, i) => {
-                let type = params?.[i]?.getType();
-                if (type instanceof GenericType && realTypes) {
-                    type = realTypes?.[type.getIndex()];
-                }
-                if (type) {
-                    p.setType(type);
+                if (this.isUnclearType(p.getType())) {
+                    let type = params?.[i]?.getType();
+                    if (type instanceof GenericType && realTypes) {
+                        type = realTypes?.[type.getIndex()];
+                    }
+                    if (type) {
+                        p.setType(type);
+                    }
                 }
             });
     }

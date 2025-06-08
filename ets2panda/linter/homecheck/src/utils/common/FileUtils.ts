@@ -232,7 +232,7 @@ export class FileUtils {
     }
 
     private static shouldSkipFile(fileName: string): boolean {
-        return ['oh_modules', 'node_modules', 'hvigorfile.ts', 'ohosTest'].includes(fileName);
+        return ['oh_modules', 'node_modules', 'hvigorfile.ts', 'hvigorfile.js', 'hvigor-wrapper.js', 'ohosTest'].includes(fileName);
     }
 
     private static shouldAddFile(filePath: string, exts: string[]): boolean {

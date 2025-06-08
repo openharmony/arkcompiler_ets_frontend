@@ -214,7 +214,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
 
     private reportIssue(objDefInfo: ObjDefInfo, apiLang: Language, isReflect: boolean) {
         const problemStmt = objDefInfo.problemStmt;
-        const problemStmtMtd = problemStmt.getCfg()?.getDeclaringMethod();
+        const problemStmtMtd = problemStmt.getCfg().getDeclaringMethod();
         const problemStmtLang = problemStmtMtd?.getLanguage();
         const objLanguage = objDefInfo.objLanguage;
         if (objLanguage === Language.UNKNOWN || problemStmtLang === Language.UNKNOWN) {

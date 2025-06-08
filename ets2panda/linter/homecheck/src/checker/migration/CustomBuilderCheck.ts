@@ -208,7 +208,7 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();
@@ -229,7 +229,7 @@ export class CustomBuilderCheck implements BaseChecker {
             fixPosition.endLine = endPosition.line;
             fixPosition.endCol = endPosition.col;
         }
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const sourceFile = AstTreeUtils.getASTNode(arkFile.getName(), arkFile.getCode());
         const range = FixUtils.getRangeWithAst(sourceFile, fixPosition);
         ruleFix.range = range;
