@@ -203,3 +203,7 @@ interface testB{
   u:void;  // Error
   fooIf():void;
 }
+
+function foo1():void{
+    return foo(); // No Error
+}

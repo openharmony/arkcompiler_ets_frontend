@@ -6168,12 +6168,42 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const signature = this.tsTypeChecker.getResolvedSignature(node);
-    if (signature) {
-      const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signature);
-      if (this.tsTypeChecker.typeToString(returnType) === 'void') {
+    if (!signature) {
+      return;
+    }
+
+    const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signature);
+    if (this.tsTypeChecker.typeToString(returnType) !== 'void') {
+      return;
+    }
+
+    if (ts.isReturnStatement(node.parent)) {
+      const functionLike = TypeScriptLinter.findContainingFunction(node);
+      if (functionLike && TypeScriptLinter.isRecursiveCall(node, functionLike)) {
         this.incrementCounters(node, FaultID.LimitedVoidType);
       }
+      return;
     }
+
+    this.incrementCounters(node, FaultID.LimitedVoidType);
+  }
+
+  private static findContainingFunction(node: ts.Node): ts.FunctionLikeDeclaration | undefined {
+    while (node) {
+      if (ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)) {
+        return node;
+      }
+      node = node.parent;
+    }
+    return undefined;
+  }
+
+  // Helper function to check if a call is recursive
+  private static isRecursiveCall(callExpr: ts.CallExpression, fn: ts.FunctionLikeDeclaration): boolean {
+    return ts.isIdentifier(callExpr.expression) && 
+           ts.isFunctionDeclaration(fn) && 
+           !!fn.name && 
+           fn.name.text === callExpr.expression.text;
   }
 
   private handleArrayType(arrayType: ts.Node): void {
