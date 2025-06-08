@@ -18,6 +18,12 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { DECL_ETS_SUFFIX } from './pre_define';
+import {
+  Logger,
+  LogData,
+  LogDataFactory
+} from './logger';
+import { ErrorCode } from './error_code';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -81,4 +87,19 @@ export function readFirstLineSync(filePath: string): string | null {
   const firstLine = content.split(/\r?\n/, 1)[0].trim();
 
   return firstLine;
+}
+
+export function safeRealpath(path: string, logger: Logger): string {
+  try {
+    return fs.realpathSync(path);
+  } catch(error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    const logData: LogData = LogDataFactory.newInstance(
+      ErrorCode.BUILDSYSTEM_PATH_RESOLVE_FAIL,
+      `Error resolving path "${path}".`,
+      msg
+    );
+    logger.printError(logData);
+    throw logData;
+  }
 }

@@ -13,7 +13,9 @@
     "mixed_hap:gen_abc": "node ./dist/entry.js test/demo_mix_hap/build_config.json",
     "mixed_hap:run": "npm run mixed_hap:gen_decl && npm run mixed_hap:gen_abc",
 
-    "demo_hap:gen_abc": "npm run build && node ./dist/entry.js test/demo_hap/build_config.json"
+    "demo_hap:gen_abc": "npm run build && node ./dist/entry.js test/demo_hap/build_config.json",
+
+    "ut_test": "jest test/ut"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
