@@ -6211,8 +6211,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const autofix = this.autofixer?.fixDebuggerStatement(node as ts.DebuggerStatement);
-    this.incrementCounters(node, FaultID.DebuggerStatement, autofix);
+
+    this.incrementCounters(node, FaultID.DebuggerStatement);
   }
 
   private handleTSOverload(decl: ts.FunctionDeclaration | ts.MethodDeclaration | ts.ConstructorDeclaration): void {
