@@ -633,8 +633,13 @@ export abstract class BaseMode {
       return;
     }
     this.entryFiles.forEach((file: string) => {
-      for (const [_, moduleInfo] of this.moduleInfos) {
-        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+      // Skip the declaration files when compiling abc
+      if (file.endsWith(DECL_ETS_SUFFIX)) {
+        return;
+      }
+      for (const [packageName, moduleInfo] of this.moduleInfos) {
+        const relativePath = path.relative(moduleInfo.moduleRootPath, file);
+        if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
           continue;
         }
         const filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
