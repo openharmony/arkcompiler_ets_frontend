@@ -1424,7 +1424,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private isJsRelated(node: ts.Expression): boolean  {
+  private isJsRelated(node: ts.Expression): boolean {
     if (this.tsUtils.isJsImport(node)) {
       return true;
     }
@@ -1466,8 +1466,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       return current;
-    }
-    
+    };
+
     const firstObjNode = getFirstObjectNode(propertyAccessNode);
     const isJsObject = this.isJsRelated(firstObjNode);
     if (!isJsObject) {
@@ -3161,12 +3161,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   ): boolean {
     const apiParamCout = sdkFuncArgs.length;
     const memberParamCout = memberParams.length;
-    if (apiParamCout > memberParamCout && sdkFuncArgs[memberParamCout + 1]) {
+    if (apiParamCout > memberParamCout && sdkFuncArgs[memberParamCout]) {
       return false;
     }
 
     for (let i = 0; i < apiParamCout; i++) {
-      const typeName = memberParams[i].type?.getText();
+      const typeName = memberParams[i]?.type?.getText();
       if (!typeName?.match(sdkFuncArgs[i].type)) {
         return false;
       }
@@ -5218,7 +5218,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNoTuplesArrays(node, targetType, exprType);
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
   }
-  
+
   private isExemptedAsExpression(node: ts.AsExpression): boolean {
     if (!ts.isElementAccessExpression(node.expression)) {
       return false;
@@ -6045,7 +6045,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (ts.isNewExpression(rhsExpr) && ts.isIdentifier(rhsExpr.expression) && rhsExpr.expression.text === 'Promise') {
         const isReturnStatement = ts.isReturnStatement(rhsExpr.parent);
         const enclosingFunction = ts.findAncestor(rhsExpr, ts.isFunctionLike);
-        const isAsyncFunction = enclosingFunction && (enclosingFunction.modifiers?.some(m => m.kind === ts.SyntaxKind.AsyncKeyword) || false);
+        const isAsyncFunction =
+          enclosingFunction &&
+          (enclosingFunction.modifiers?.some((m) => {
+            return m.kind === ts.SyntaxKind.AsyncKeyword;
+          }) ||
+            false);
         if (isReturnStatement && isAsyncFunction) {
           return;
         }
@@ -7617,7 +7622,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (ts.isPropertySignature(node)) {
-      return this.tsTypeChecker.getTypeAtLocation(node.type!).getSymbol();
+      return this.tsTypeChecker.getSymbolAtLocation(node);
     }
 
     const nodesWithResolvableType = [
@@ -7655,38 +7660,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isTypeReferenceNode(typeNode)) {
       return undefined;
     }
-    const symbol = this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
-    if (!symbol) {
-      return this.resolveTypeNoSymbol(typeNode);
-    }
-    const declarations = symbol.getDeclarations();
-    if (declarations && declarations.length > 0) {
-      const declaration = declarations[0];
-      if (ts.isTypeAliasDeclaration(declaration)) {
-        return this.resolveTypeNodeSymbol(declaration.type);
-      } else if (ts.isInterfaceDeclaration(declaration)) {
-        const heritageSymbol = this.processQuotedHyphenPropsDeprecatedOnInterfaceDeclaration(declaration);
-        return heritageSymbol;
-      }
-    }
-    return this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
+    return this.resolveTypeNoSymbol(typeNode);
   }
 
   private resolveTypeNoSymbol(typeNode: ts.TypeReferenceNode): ts.Symbol | undefined {
     if (!typeNode.typeName) {
       return undefined;
     }
+
     if (ts.isQualifiedName(typeNode.typeName)) {
       return this.tsTypeChecker.getSymbolAtLocation(typeNode.typeName.right);
     }
-    const sym = this.tsUtils.trueSymbolAtLocation(typeNode.typeName);
-    if (sym) {
-      const globalDeclaration = sym.getDeclarations()?.[0];
-      if (globalDeclaration && ts.isTypeAliasDeclaration(globalDeclaration)) {
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(typeNode.typeName);
+    if (symbol?.declarations && symbol.declarations.length > 0) {
+      const globalDeclaration = symbol.declarations[0];
+      if (ts.isTypeAliasDeclaration(globalDeclaration)) {
         return this.resolveTypeNodeSymbol(globalDeclaration.type);
+      } else if (ts.isInterfaceDeclaration(globalDeclaration)) {
+        return this.processQuotedHyphenPropsDeprecatedOnInterfaceDeclaration(globalDeclaration);
       }
     }
-
     return this.tsTypeChecker.getTypeAtLocation(typeNode).getSymbol();
   }
 
