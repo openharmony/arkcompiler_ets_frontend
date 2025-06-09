@@ -39,7 +39,8 @@ import {
   GET_LOCAL_STORAGE_FUNC_NAME,
   PROVIDE_DECORATOR_NAME,
   PROVIDE_ALIAS_PROPERTY_NAME,
-  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
+  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME,
+  NEW_PROP_DECORATOR_SUFFIX
 } from '../utils/consts/ArkuiConstants';
 import { ES_VALUE } from '../utils/consts/ESObject';
 import type { IncrementDecrementNodeInfo } from '../utils/consts/InteropAPI';
@@ -4815,5 +4816,14 @@ export class Autofixer {
   fixNumericLiteralIntToNumber(node: ts.NumericLiteral): Autofix[] | undefined {
     void this;
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: `${node.getText()}.0` }];
+  }
+
+  fixPropDecorator(node: ts.Decorator, decoratorName: string): Autofix[] {
+    const newDecorator = ts.factory.createDecorator(
+      ts.factory.createIdentifier(decoratorName + NEW_PROP_DECORATOR_SUFFIX)
+    );
+
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, node.getSourceFile());
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
 }

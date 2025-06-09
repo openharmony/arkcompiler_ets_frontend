@@ -25,6 +25,7 @@ export const VALUE_IDENTIFIER = 'value';
 export const INDENT_STEP = 2;
 export const MAKE_OBSERVED = 'makeObserved';
 export const ARKUI_STATE_MANAGEMENT = '@ohos.arkui.StateManagement';
+export const NEW_PROP_DECORATOR_SUFFIX = 'Ref';
 
 export enum CustomDecoratorName {
   Extend = 'Extend',
@@ -70,7 +71,10 @@ export const skipImportDecoratorName: Set<string> = new Set([
   'Styles',
   'Sendable',
   'Concurrent',
-  'LocalBuilder'
+  'LocalBuilder',
+  'Prop',
+  'StorageProp',
+  'LocalStorageProp'
 ]);
 
 export const customLayoutFunctionName: Set<string> = new Set(['onMeasureSize', 'onPlaceChildren']);
