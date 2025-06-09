@@ -47,7 +47,6 @@ import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyH
 import {
   CONCURRENT_DECORATOR,
   ISCONCURRENT,
-  TASKPOOL,
   SENDABLE_DECORATOR,
   SENDABLE_DECORATOR_NODES,
   SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12,
@@ -1499,36 +1498,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isCallExpression(node.parent)) {
       return;
     }
-
     const methodName = node.name.getText();
 
     if (methodName !== ISCONCURRENT) {
       return;
     }
-
-    const symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
-    if (!symbol) {
+    const moduleSpecifier = this.findModuleSpecifierforDepricatedIsConcurrent(node);
+    if (!moduleSpecifier || !ts.isStringLiteral(moduleSpecifier)) {
       return;
     }
-
-    if (symbol.name === TASKPOOL) {
-      const decl = TsUtils.getDeclaration(symbol);
-
-      if (!decl) {
-        return;
-      }
-
-      const sourceFile = decl.getSourceFile();
-      const fileName = path.basename(sourceFile.fileName);
-
-      if (
-        TASKPOOL_MODULES.some((moduleName) => {
-          return fileName.startsWith(moduleName);
-        })
-      ) {
-        this.incrementCounters(node.name, FaultID.IsConcurrentDeprecated);
-      }
+    if (
+      TASKPOOL_MODULES.some((moduleName) => {
+        return TsUtils.removeOrReplaceQuotes(moduleSpecifier.getText(), false) === moduleName;
+      })
+    ) {
+      this.incrementCounters(node.name, FaultID.IsConcurrentDeprecated);
     }
+  }
+
+  findModuleSpecifierforDepricatedIsConcurrent(node: ts.PropertyAccessExpression): ts.Expression | undefined {
+    let symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
+    if (symbol && 'unknown' === symbol.name) {
+      symbol = this.tsTypeChecker.getSymbolAtLocation(node.expression);
+    }
+    const importDecl = ts.findAncestor(TsUtils.getDeclaration(symbol), ts.isImportDeclaration);
+    return importDecl?.moduleSpecifier;
   }
 
   checkFunctionProperty(
