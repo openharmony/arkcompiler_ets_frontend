@@ -787,6 +787,48 @@
             "suggest": "",
             "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 1,
+            "endLine": 43,
+            "endColumn": 6,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 884,
+                    "end": 889,
+                    "replacementText": "foo.getPropertyByName(\"a\")",
+                    "line": 43,
+                    "column": 1,
+                    "endLine": 43,
+                    "endColumn": 6
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 9,
+            "endLine": 43,
+            "endColumn": 14,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 892,
+                    "end": 897,
+                    "replacementText": "foo.getPropertyByName(\"b\")",
+                    "line": 43,
+                    "column": 9,
+                    "endLine": 43,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
         }
     ]
 }

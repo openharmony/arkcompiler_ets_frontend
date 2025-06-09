@@ -66,6 +66,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 2,
+            "endLine": 17,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 657,
+                    "end": 664,
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 17,
+                    "column": 2,
+                    "endLine": 17,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 1,
             "endLine": 18,
@@ -84,6 +105,27 @@
             ],
             "suggest": "",
             "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 2,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 667,
+                    "end": 674,
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 18,
+                    "column": 2,
+                    "endLine": 18,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -108,6 +150,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 677,
+                    "end": 684,
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 19,
+                    "column": 2,
+                    "endLine": 19,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 20,
             "column": 1,
             "endLine": 20,
@@ -126,6 +189,27 @@
             ],
             "suggest": "",
             "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 687,
+                    "end": 694,
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 20,
+                    "column": 2,
+                    "endLine": 20,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         }
     ]

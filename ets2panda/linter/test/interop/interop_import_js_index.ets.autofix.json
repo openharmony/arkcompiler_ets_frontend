@@ -200,6 +200,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 22,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 770,
+                    "end": 781,
+                    "replacementText": "arr1.getPropertyByName(\"length\")",
+                    "line": 22,
+                    "column": 11,
+                    "endLine": 22,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 10,
             "endLine": 23,
@@ -239,6 +260,27 @@
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 21,
+            "endLine": 23,
+            "endColumn": 32,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 812,
+                    "end": 823,
+                    "replacementText": "arr1.getPropertyByName(\"length\")",
+                    "line": 23,
+                    "column": 21,
+                    "endLine": 23,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {

@@ -379,6 +379,27 @@
             "column": 5,
             "endLine": 32,
             "endColumn": 15,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1098,
+                    "end": 1108,
+                    "replacementText": "foo.getPropertyByName(\"isGood\")",
+                    "line": 32,
+                    "column": 5,
+                    "endLine": 32,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 5,
+            "endLine": 32,
+            "endColumn": 15,
             "problem": "InteropJsObjectConditionJudgment",
             "autofix": [
                 {
@@ -414,6 +435,27 @@
             ],
             "suggest": "",
             "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 5,
+            "endLine": 34,
+            "endColumn": 11,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1118,
+                    "end": 1124,
+                    "replacementText": "ff1.getPropertyByName(\"f1\")",
+                    "line": 34,
+                    "column": 5,
+                    "endLine": 34,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -534,6 +576,27 @@
                     "column": 11,
                     "endLine": 50,
                     "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 11,
+            "endLine": 51,
+            "endColumn": 21,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1362,
+                    "end": 1372,
+                    "replacementText": "arr.getPropertyByName(\"length\")",
+                    "line": 51,
+                    "column": 11,
+                    "endLine": 51,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -1007,6 +1070,27 @@
             ],
             "suggest": "",
             "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 5,
+            "endLine": 84,
+            "endColumn": 24,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1831,
+                    "end": 1850,
+                    "replacementText": "orange.getPropertyByName(\"isVegetable1\")",
+                    "line": 84,
+                    "column": 5,
+                    "endLine": 84,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {

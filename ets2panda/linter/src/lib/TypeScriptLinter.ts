@@ -1471,19 +1471,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (
-      ts.isBinaryExpression(propertyAccessNode.parent) &&
-      propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken
-    ) {
-      if (!ts.isExpressionStatement(propertyAccessNode.parent.parent)) {
-        return;
-      }
-      const autofix = this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent);
-      this.incrementCounters(propertyAccessNode.parent, FaultID.InteropObjectProperty, autofix);
-    } else if (
-      ts.isExpressionStatement(propertyAccessNode.parent) ||
-      ts.isVariableDeclaration(propertyAccessNode.parent)
-    ) {
+    if (ts.isBinaryExpression(propertyAccessNode.parent)) {
+      const isAssignment = propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken;
+      const autofix = isAssignment ?
+        this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent) :
+        this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
+
+      this.incrementCounters(
+        isAssignment ? propertyAccessNode.parent : propertyAccessNode,
+        FaultID.InteropObjectProperty,
+        autofix
+      );
+    } else {
       const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
       this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
     }

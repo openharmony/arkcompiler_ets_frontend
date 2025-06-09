@@ -23,8 +23,8 @@ arr.getPropertyByIndex(1.0)
 arr.setPropertyByIndex(3.0, ESValue.wrap(4.0))
 
 let arr1 = ff3.getPropertyByName("arr")
-let len: number = arr1.length as number
-for (let i: number = 0.0; i < arr1.length; ++i) {
+let len: number = arr1.getPropertyByName("length") as number
+for (let i: number = 0.0; i < arr1.getPropertyByName("length"); ++i) {
     console.log(arr1.getPropertyByIndex(i).toNumber()+'');  //error
     let x = arr1.getPropertyByIndex(i).toNumber()  //error
     arr1.setPropertyByIndex(i, ESValue.wrap(0.0 //error

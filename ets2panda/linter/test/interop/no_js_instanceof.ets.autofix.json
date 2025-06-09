@@ -307,6 +307,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 72,
+            "column": 36,
+            "endLine": 72,
+            "endColumn": 51,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1296,
+                    "end": 1311,
+                    "replacementText": "MyNamespace.getPropertyByName(\"Dog\")",
+                    "line": 72,
+                    "column": 36,
+                    "endLine": 72,
+                    "endColumn": 51
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 74,
             "column": 5,
             "endLine": 74,
@@ -325,6 +346,27 @@
             ],
             "suggest": "",
             "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-interop-js2s-instanceof-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 22,
+            "endLine": 74,
+            "endColumn": 37,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1344,
+                    "end": 1359,
+                    "replacementText": "MyNamespace.getPropertyByName(\"Dog\")",
+                    "line": 74,
+                    "column": 22,
+                    "endLine": 74,
+                    "endColumn": 37
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
