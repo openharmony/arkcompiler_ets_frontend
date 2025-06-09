@@ -110,6 +110,11 @@ function mergeLintProblems(
       return onlyArkts2SyntaxRules.has(problem.ruleTag);
     });
   }
+  if (cmdOptions.scanWholeProjectInHomecheck && !cmdOptions.inputFiles.includes(filePath)) {
+    filteredProblems = problems.filter((problem) => {
+      return problem.rule.includes('s2d');
+    });
+  }
   mergedProblems.get(filePath)!.push(...filteredProblems);
 }
 
