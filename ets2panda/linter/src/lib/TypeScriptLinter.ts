@@ -3586,41 +3586,72 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const classType = this.tsTypeChecker.getTypeAtLocation(classDecl);
-    const baseTypes = classType.getBaseTypes();
-    if (!baseTypes || baseTypes.length === 0) {
+    const allBaseTypes = this.getAllBaseTypes(classType, classDecl);
+    if (!allBaseTypes || allBaseTypes.length === 0) {
       return;
     }
 
     const methodName = node.name.text;
 
-    for (const baseType of baseTypes) {
+    for (const baseType of allBaseTypes) {
       const baseMethod = baseType.getProperty(methodName);
       if (!baseMethod) {
         continue;
       }
 
-      const baseMethodDecl = baseMethod.declarations?.find(ts.isMethodDeclaration);
+      const baseMethodDecl = baseMethod.declarations?.find((d) => {
+        return ts.isMethodDeclaration(d) || ts.isMethodSignature(d);
+      }) as ts.MethodDeclaration | ts.MethodSignature | undefined;
+
       if (!baseMethodDecl) {
         continue;
       }
 
-      // Check parameter compatibility
       this.checkMethodParameters(node, baseMethodDecl);
 
-      // Check return type compatibility
       this.checkMethodReturnType(node, baseMethodDecl);
 
       break;
     }
   }
 
+  private getAllBaseTypes(type: ts.Type, classDecl: ts.ClassDeclaration): ts.Type[] | undefined {
+    const baseClasses = type.getBaseTypes() || [];
+    if (!classDecl.heritageClauses) {
+      return baseClasses;
+    }
+    const interfaces: ts.Type[] = [];
+    for (const clause of classDecl.heritageClauses) {
+      if (clause.token !== ts.SyntaxKind.ImplementsKeyword) {
+        continue;
+      }
+      for (const typeNode of clause.types) {
+        const interfaceType = this.tsTypeChecker.getTypeAtLocation(typeNode);
+        interfaces.push(interfaceType);
+        const parentInterfaces = interfaceType.getBaseTypes();
+        if (parentInterfaces) {
+          interfaces.push(...parentInterfaces);
+        }
+      }
+    }
+    return [...baseClasses, ...interfaces];
+  }
+
   /**
-   * Checks if child parameters accept at least as many types as parent parameters.
-   * (Child parameter type should be same or wider than parent.)
+   * Checks method parameter compatibility
+   * Derived parameter types must be same or wider than base (contravariance principle)
    */
-  private checkMethodParameters(derivedMethod: ts.MethodDeclaration, baseMethod: ts.MethodDeclaration): void {
+  private checkMethodParameters(
+    derivedMethod: ts.MethodDeclaration,
+    baseMethod: ts.MethodDeclaration | ts.MethodSignature
+  ): void {
     const derivedParams = derivedMethod.parameters;
     const baseParams = baseMethod.parameters;
+
+    if (derivedParams.length !== baseParams.length) {
+      this.incrementCounters(derivedMethod.name, FaultID.MethodInheritRule);
+      return;
+    }
 
     const paramCount = Math.min(derivedParams.length, baseParams.length);
 
@@ -3635,10 +3666,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   /**
-   * Checks return type covariance between base and derived methods.
-   * (Derived return type must be assignable to base return type.)
+   * Checks return type compatibility
+   * Derived return type must be same or narrower than base (covariance principle)
    */
-  private checkMethodReturnType(derivedMethod: ts.MethodDeclaration, baseMethod: ts.MethodDeclaration): void {
+  private checkMethodReturnType(
+    derivedMethod: ts.MethodDeclaration,
+    baseMethod: ts.MethodDeclaration | ts.MethodSignature
+  ): void {
+    if (
+      this.IsVoidTypeOnActualReturnType(baseMethod) &&
+      derivedMethod.type &&
+      !this.IsVoidTypeOnActualReturnType(derivedMethod)
+    ) {
+      this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
+      return;
+    }
+
     if (!baseMethod.type || !derivedMethod.type) {
       return;
     }
@@ -3649,6 +3692,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.isTypeAssignable(derivedReturnType, baseReturnType)) {
       this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
     }
+  }
+
+  private IsVoidTypeOnActualReturnType(method: ts.MethodDeclaration | ts.MethodSignature): boolean | undefined {
+    let type: ts.Type | undefined;
+    if (method.type) {
+      type = this.tsTypeChecker.getTypeAtLocation(method.type);
+    } else {
+      const signature = this.tsTypeChecker.getSignatureFromDeclaration(method);
+      if (signature) {
+        type = this.tsTypeChecker.getReturnTypeOfSignature(signature);
+      }
+    }
+    return type && TsUtils.isVoidType(type);
   }
 
   /**
