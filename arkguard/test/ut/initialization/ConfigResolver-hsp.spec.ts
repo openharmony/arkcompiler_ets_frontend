@@ -259,6 +259,7 @@ describe('hsp support consumerFiles', () => {
           localHspConfig.dependencies.hars.push(remoteHarObfFile);  
           const hspResolver = new ObConfigResolver({ obfuscationOptions: localHspConfig, compileHar: false, compileShared: true }, printObfLogger);
           hspResolver.resolveObfuscationConfigs();
+          hspResolver.emitConsumerConfigFiles();
 
           const hspObfuscationContent = fs.readFileSync(localHspConfig.exportRulePath, 'utf-8');  
           expect(hspObfuscationContent).not.to.include('-disable-obfuscation');
@@ -334,6 +335,7 @@ describe('hsp support consumerFiles', () => {
           localHarConfig.dependencies.hspLibraries?.push(localHspConfig.selfConfig);
           const localHarResolver = new ObConfigResolver({ obfuscationOptions: localHarConfig, compileHar: true, compileShared: false }, printObfLogger);
           localHarResolver.resolveObfuscationConfigs();
+          localHarResolver.emitConsumerConfigFiles();
 
           const localHarObfuscationContent = fs.readFileSync(localHarConfig.exportRulePath, 'utf-8');
 
@@ -412,6 +414,7 @@ describe('hsp support consumerFiles', () => {
           localHarConfig.dependencies.hsps?.push(remoteHspObfFile);
           const localHarResolver = new ObConfigResolver({ obfuscationOptions: localHarConfig, compileHar: true, compileShared: false }, printObfLogger);
           localHarResolver.resolveObfuscationConfigs();
+          localHarResolver.emitConsumerConfigFiles();
 
           const localHarObfuscationContent = fs.readFileSync(localHarConfig.exportRulePath, 'utf-8');
 
@@ -589,6 +592,8 @@ describe('hsp support consumerFiles', () => {
           localMainHspConfig.dependencies.hsps?.push(remoteHspObfFile);
           const localMainHspResolver = new ObConfigResolver({ obfuscationOptions: localMainHspConfig, compileHar: false, compileShared: true }, printObfLogger);
           localMainHspResolver.resolveObfuscationConfigs();
+          localMainHspResolver.emitConsumerConfigFiles();
+
           const localMainHspObfuscationContent = fs.readFileSync(localMainHspConfig.exportRulePath, 'utf-8');
 
           expect(localMainHspObfuscationContent).not.to.include('-enable-filename-obfuscation');

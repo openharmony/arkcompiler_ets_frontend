@@ -140,7 +140,7 @@ export interface FileKeepInfo {
   exported: KeepInfo; // Exported names and properties.
   enumProperties: Set<string>; // Enum properties.
   stringProperties: Set<string>; // String properties.
-  arkUIKeepInfo: KeepInfo; // Collecting classes and members
+  arkUIKeepInfo?: KeepInfo; // Collecting classes and members
 }
 
 export interface FileReservedInfo {
@@ -339,10 +339,12 @@ export class ProjectWhiteListManager {
           },
           enumProperties: arrayToSet(parsed[key].fileKeepInfo.enumProperties),
           stringProperties: arrayToSet(parsed[key].fileKeepInfo.stringProperties),
-          arkUIKeepInfo: {
-            propertyNames: arrayToSet(parsed[key].fileKeepInfo.arkUIKeepInfo.propertyNames),
-            globalNames: arrayToSet(parsed[key].fileKeepInfo.arkUIKeepInfo.globalNames),
-          },
+          arkUIKeepInfo: parsed[key].fileKeepInfo.arkUIKeepInfo
+            ? {
+                propertyNames: arrayToSet(parsed[key].fileKeepInfo.arkUIKeepInfo.propertyNames),
+                globalNames: arrayToSet(parsed[key].fileKeepInfo.arkUIKeepInfo.globalNames),
+              }
+            : undefined,
         };
 
         const fileReservedInfo: FileReservedInfo = {
@@ -383,10 +385,12 @@ export class ProjectWhiteListManager {
           },
           enumProperties: setToArray(value.fileKeepInfo.enumProperties),
           stringProperties: setToArray(value.fileKeepInfo.stringProperties),
-          arkUIKeepInfo: {
-            propertyNames: setToArray(value.fileKeepInfo.arkUIKeepInfo.propertyNames),
-            globalNames: setToArray(value.fileKeepInfo.arkUIKeepInfo.globalNames),
-          },
+          arkUIKeepInfo: value.fileKeepInfo.arkUIKeepInfo
+            ? {
+                propertyNames: setToArray(value.fileKeepInfo.arkUIKeepInfo.propertyNames),
+                globalNames: setToArray(value.fileKeepInfo.arkUIKeepInfo.globalNames),
+              }
+            : undefined,
         },
         fileReservedInfo: {
           enumProperties: setToArray(value.fileReservedInfo.enumProperties),
@@ -506,11 +510,11 @@ export class ProjectWhiteListManager {
       });
 
       // Collect arkUIKeepInfo
-      fileWhiteList.fileKeepInfo.arkUIKeepInfo.globalNames.forEach((globalName) => {
+      fileWhiteList.fileKeepInfo.arkUIKeepInfo?.globalNames.forEach((globalName) => {
         projectKeepInfo.globalNames.add(globalName);
         AtIntentCollections.globalNames.add(globalName);
       });
-      fileWhiteList.fileKeepInfo.arkUIKeepInfo.propertyNames.forEach((propertyName) => {
+      fileWhiteList.fileKeepInfo.arkUIKeepInfo?.propertyNames.forEach((propertyName) => {
         projectKeepInfo.propertyNames.add(propertyName);
         AtIntentCollections.propertyNames.add(propertyName);
       });
@@ -575,8 +579,10 @@ export class ProjectWhiteListManager {
       addToSet(UnobfuscationCollections.reservedExportName, fileWhiteList.fileKeepInfo.exported.globalNames);
       addToSet(UnobfuscationCollections.reservedExportNameAndProp, fileWhiteList.fileKeepInfo.exported.propertyNames);
       addToSet(UnobfuscationCollections.reservedStrProp, fileWhiteList.fileKeepInfo.stringProperties);
-      addToSet(AtIntentCollections.propertyNames, fileWhiteList.fileKeepInfo.arkUIKeepInfo.propertyNames);
-      addToSet(AtIntentCollections.globalNames, fileWhiteList.fileKeepInfo.arkUIKeepInfo.globalNames);
+      if (fileWhiteList.fileKeepInfo.arkUIKeepInfo) {
+        addToSet(AtIntentCollections.propertyNames, fileWhiteList.fileKeepInfo.arkUIKeepInfo.propertyNames);
+        addToSet(AtIntentCollections.globalNames, fileWhiteList.fileKeepInfo.arkUIKeepInfo.globalNames);
+      }
       addToSet(ApiExtractor.mConstructorPropertySet, fileWhiteList.fileReservedInfo.propertyParams);
       addToSet(ApiExtractor.mEnumMemberSet, fileWhiteList.fileReservedInfo.enumProperties);
       const decoratorMap = fileWhiteList.bytecodeObfuscateKeepInfo?.decoratorMap;
