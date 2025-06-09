@@ -1372,6 +1372,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(node as ts.PropertyAccessExpression);
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
     this.propertyAccessExpressionForBuiltin(node as ts.PropertyAccessExpression);
+    this.checkConstrutorAccess(node as ts.PropertyAccessExpression);
 
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
@@ -5137,17 +5138,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
   }
 
-  private checkConstrutorAccess(newExpr: ts.NewExpression): void {
+  private checkConstrutorAccess(propertyAccessExpr: ts.PropertyAccessExpression): void {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
 
-    if (!ts.isPropertyAccessExpression(newExpr.parent)) {
-      return;
-    }
-
-    if (newExpr.parent.name.text === 'constructor') {
-      this.incrementCounters(newExpr.parent, FaultID.NoConstructorOnClass);
+    if (propertyAccessExpr.name.text === 'constructor') {
+      this.incrementCounters(propertyAccessExpr, FaultID.NoConstructorOnClass);
     }
   }
 
@@ -5187,7 +5184,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkForInterfaceInitialization(tsNewExpr);
     this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkDuplicateDeclName(tsNewExpr);
-    this.checkConstrutorAccess(tsNewExpr);
     this.checkCreatingPrimitiveTypes(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
