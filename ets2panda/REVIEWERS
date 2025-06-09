@@ -58,7 +58,6 @@
 /ets2panda/varbinder/ @lirismankarina @akmaevaleksey ^Ekkoruse ^zelentsovdmitry ^igelhaus ^Prof1983
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
 /ets2panda/checker/ets/ @lirismankarina ^igelhaus ^Prof1983
-/ets2panda/checker/ets/dynamic.cpp @lirismankarina ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/ets/function.cpp @gogabr ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/ets/helpers.cpp @xuxjeeee @zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/checker/ets/object.cpp @xuxjeeee @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
@@ -84,7 +83,6 @@
 /ets2panda/test/unit/public @mbolshov ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/Nullish.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsA* @xuxjeeee ^gogabr ^igelhaus ^Prof1983
-/ets2panda/checker/types/ets/etsDynamicType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsE* @ziziziiziziz ^zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsFunctionType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsN* @ziziziiziziz ^zelentsovdmitry ^igelhaus ^Prof1983
