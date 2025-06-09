@@ -67,19 +67,10 @@ public:
         propertiesInstantiated_ = true;
     }
 
-    void AddInterface(ETSObjectType *interfaceType)
-    {
-        if (std::find(interfaces_.begin(), interfaces_.end(), interfaceType) == interfaces_.end()) {
-            interfaces_.push_back(interfaceType);
-        }
-    }
+    void AddInterface(ETSObjectType *interfaceType);
+    void SetSuperType(ETSObjectType *super);
 
     ETSChecker *GetETSChecker();
-
-    void SetSuperType(ETSObjectType *super)
-    {
-        superType_ = super;
-    }
 
     void SetTypeArguments(ArenaVector<Type *> &&typeArgs)
     {
@@ -415,6 +406,7 @@ private:
           reExportAlias_(allocator->Adapter()),
           flags_(std::get<ETSObjectFlags>(info)),
           typeArguments_(allocator->Adapter()),
+          transitiveSupertypes_(allocator->Adapter()),
           relation_(std::get<TypeRelation *>(info)),
           constructSignatures_(allocator->Adapter()),
           properties_ {(void(IS), PropertyMap {allocator->Adapter()})...}
@@ -448,6 +440,8 @@ private:
     bool TryCastFloating(TypeRelation *const relation, Type *const target);
     bool TryCastUnboxable(TypeRelation *const relation, Type *const target);
 
+    void CacheSupertypeTransitive(ETSObjectType *type);
+
     ir::TSTypeParameterDeclaration *GetTypeParams() const;
 
     ThreadSafeArenaAllocator *const allocator_;
@@ -462,6 +456,9 @@ private:
     ETSObjectType *superType_ {};
     ETSObjectType *enclosingType_ {};
     ETSObjectType *baseType_ {};
+
+    // optimized subtyping
+    ArenaSet<ETSObjectType *> transitiveSupertypes_;
 
     // for lazy properties instantiation
     TypeRelation *relation_ = nullptr;

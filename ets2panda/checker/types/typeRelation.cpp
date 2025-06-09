@@ -256,11 +256,13 @@ bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
 
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
-    if (super == sub) {
+    if (LIKELY(super == sub)) {
         return Result(true);
     }
-
     if (sub == nullptr) {
+        return false;
+    }
+    if (super->IsETSPrimitiveType() != sub->IsETSPrimitiveType()) {
         return false;
     }
 

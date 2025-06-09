@@ -125,120 +125,6 @@ AstNode *AstNode::Clone([[maybe_unused]] ArenaAllocator *const allocator, [[mayb
     ES2PANDA_UNREACHABLE();
 }
 
-void AstNode::TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName)
-{  // post-order, but use when you don't care about the order
-    TransformChildrenRecursivelyPostorder(cb, transformationName);
-}
-
-void AstNode::TransformChildrenRecursively(const NodeTransformer &pre, const NodeTraverser &post,
-                                           std::string_view transformationName)
-{
-    TransformChildren(
-        [&pre, &post, transformationName](AstNode *child) {
-            auto *childReplacement = pre(child);
-            childReplacement->TransformChildrenRecursively(pre, post, transformationName);
-            post(childReplacement);
-            return childReplacement;
-        },
-        transformationName);
-}
-
-void AstNode::TransformChildrenRecursively(const NodeTraverser &pre, const NodeTransformer &post,
-                                           std::string_view transformationName)
-{
-    TransformChildren(
-        [&pre, &post, transformationName](AstNode *child) {
-            pre(child);
-            child->TransformChildrenRecursively(pre, post, transformationName);
-            return post(child);
-        },
-        transformationName);
-}
-
-void AstNode::TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, std::string_view transformationName)
-{
-    TransformChildren(
-        [&cb, transformationName](AstNode *child) {
-            auto *res = cb(child);
-            res->TransformChildrenRecursivelyPreorder(cb, transformationName);
-            return res;
-        },
-        transformationName);
-}
-
-void AstNode::TransformChildrenRecursivelyPostorder(const NodeTransformer &cb, std::string_view transformationName)
-{
-    TransformChildren(
-        [&cb, transformationName](AstNode *child) {
-            child->TransformChildrenRecursivelyPostorder(cb, transformationName);
-            return cb(child);
-        },
-        transformationName);
-}
-
-void AstNode::IterateRecursively(const NodeTraverser &cb) const
-{  // pre-order, use when you don't care
-    IterateRecursivelyPreorder(cb);
-}
-
-void AstNode::IterateRecursivelyPreorder(const NodeTraverser &cb) const
-{
-    Iterate([&cb](AstNode *child) {
-        cb(child);
-        child->IterateRecursivelyPreorder(cb);
-    });
-}
-
-void AstNode::IterateRecursivelyPostorder(const NodeTraverser &cb) const
-{
-    Iterate([&cb](AstNode *child) {
-        child->IterateRecursivelyPostorder(cb);
-        cb(child);
-    });
-}
-
-void AnyChildHelper(bool *found, const NodePredicate &cb, AstNode *ast)
-{
-    if (*found) {
-        return;
-    }
-
-    if (cb(ast)) {
-        *found = true;
-        return;
-    }
-
-    ast->Iterate([&cb, found](AstNode *child) { AnyChildHelper(found, cb, child); });
-}
-
-bool AstNode::IsAnyChild(const NodePredicate &cb) const
-{
-    bool found = false;
-    Iterate([&found, cb](AstNode *child) { AnyChildHelper(&found, cb, child); });
-    return found;
-}
-
-void FindChildHelper(AstNode *&found, const NodePredicate &cb, AstNode *ast)
-{
-    if (found != nullptr) {
-        return;
-    }
-
-    if (cb(ast)) {
-        found = ast;
-        return;
-    }
-
-    ast->Iterate([&found, cb](AstNode *child) { FindChildHelper(found, cb, child); });
-}
-
-AstNode *AstNode::FindChild(const NodePredicate &cb) const
-{
-    AstNode *found = nullptr;
-    Iterate([&found, cb](AstNode *child) { FindChildHelper(found, cb, child); });
-    return found;
-}
-
 varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr) noexcept
 {
     while (expr != nullptr && !expr->IsScopeBearer()) {
@@ -381,17 +267,15 @@ compiler::PhaseId AstNode::GetFirstCreated() const
     return history_->FirstCreated();
 }
 
-AstNode *AstNode::GetHistoryNode() const
+AstNode *AstNode::GetFromExistingHistory() const
 {
-    AstNode *node = nullptr;
-
-    if (HistoryInitialized()) {
-        node = history_->Get(compiler::GetPhaseManager()->CurrentPhaseId());
-    } else {
-        node = const_cast<AstNode *>(this);
+    ES2PANDA_ASSERT(HistoryInitialized());
+    auto node = history_->Get(compiler::GetPhaseManager()->CurrentPhaseId());
+    if (UNLIKELY(node == nullptr)) {
+        // the callee assumes the nullptr might be returned, but
+        // the caller asserts it is not possible, so the explicit check is inserted
+        ES2PANDA_UNREACHABLE();
     }
-
-    ES2PANDA_ASSERT(node != nullptr);
     return node;
 }
 

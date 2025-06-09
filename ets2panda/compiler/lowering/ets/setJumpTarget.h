@@ -20,7 +20,7 @@
 
 namespace ark::es2panda::compiler {
 
-class SetJumpTargetPhase : public PhaseForDeclarations {
+class SetJumpTargetPhase : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {

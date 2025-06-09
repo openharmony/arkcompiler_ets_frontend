@@ -535,22 +535,118 @@ public:
     virtual void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
 
-    void TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName);
-    void TransformChildrenRecursively(const NodeTransformer &pre, const NodeTraverser &post,
-                                      std::string_view transformationName);
-    void TransformChildrenRecursively(const NodeTraverser &pre, const NodeTransformer &post,
-                                      std::string_view transformationName);
-    // CC-OFFNXT(C_RULE_ID_FUNCTION_HEADER, G.CMT.04) false positive
-    // Keep these for perf reasons:
-    void TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, std::string_view transformationName);
-    void TransformChildrenRecursivelyPostorder(const NodeTransformer &cb, std::string_view transformationName);
+    template <typename F>
+    void TransformChildrenRecursively(const F &cb, std::string_view transformationName)
+    {
+        TransformChildrenRecursivelyPostorder(cb, transformationName);
+    }
 
-    void IterateRecursively(const NodeTraverser &cb) const;
-    void IterateRecursivelyPreorder(const NodeTraverser &cb) const;
-    void IterateRecursivelyPostorder(const NodeTraverser &cb) const;
+    // Preserved for the API bindings
+    void TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName)
+    {
+        return TransformChildrenRecursively<NodeTransformer>(cb, transformationName);
+    }
 
-    bool IsAnyChild(const NodePredicate &cb) const;
-    AstNode *FindChild(const NodePredicate &cb) const;
+    template <typename F>
+    void TransformChildrenRecursivelyPreorder(const F &cb, std::string_view transformationName)
+    {
+        std::function<AstNode *(AstNode *)> hcb = [&](AstNode *child) {
+            AstNode *res = cb(child);
+            res->TransformChildren(hcb, transformationName);
+            return res;
+        };
+        TransformChildren(hcb, transformationName);
+    }
+
+    template <typename F>
+    void TransformChildrenRecursivelyPostorder(const F &cb, std::string_view transformationName)
+    {
+        std::function<AstNode *(AstNode *)> hcb = [&](AstNode *child) {
+            child->TransformChildren(hcb, transformationName);
+            return cb(child);
+        };
+        TransformChildren(hcb, transformationName);
+    }
+
+    template <typename F1, typename F2>
+    void PreTransformChildrenRecursively(const F1 &pre, const F2 &post, std::string_view transformationName)
+    {
+        std::function<AstNode *(AstNode *)> hcb = [&](AstNode *child) {
+            AstNode *upd = pre(child);
+            upd->TransformChildren(hcb, transformationName);
+            post(upd);
+            return upd;
+        };
+        TransformChildren(hcb, transformationName);
+    }
+
+    template <typename F1, typename F2>
+    void PostTransformChildrenRecursively(const NodeTraverser &pre, const NodeTransformer &post,
+                                          std::string_view transformationName)
+    {
+        std::function<AstNode *(AstNode *)> hcb = [&](AstNode *child) {
+            pre(child);
+            child->TransformChildren(hcb, transformationName);
+            return post(child);
+        };
+        TransformChildren(hcb, transformationName);
+    }
+
+    template <typename F>
+    void IterateRecursively(const F &cb) const
+    {
+        IterateRecursivelyPreorder(cb);
+    }
+
+    template <typename F>
+    void IterateRecursivelyPreorder(const F &cb) const
+    {
+        std::function<void(AstNode *)> hcb = [&](AstNode *child) {
+            cb(child);
+            child->Iterate(hcb);
+        };
+        Iterate(hcb);
+    }
+
+    template <typename F>
+    void IterateRecursivelyPostorder(const F &cb) const
+    {
+        std::function<void(AstNode *)> hcb = [&](AstNode *child) {
+            child->Iterate(hcb);
+            cb(child);
+        };
+        Iterate(hcb);
+    }
+
+    template <typename F>
+    AstNode *FindChild(const F &cb) const
+    {
+        AstNode *found = nullptr;
+        std::function<void(AstNode *)> hcb = [&](AstNode *child) {
+            if (found != nullptr) {
+                return;
+            }
+            if (cb(child)) {
+                found = child;
+                return;
+            }
+            child->Iterate(hcb);
+        };
+        Iterate(hcb);
+        return found;
+    }
+
+    template <typename F>
+    bool IsAnyChild(const F &cb) const
+    {
+        return FindChild(cb) != nullptr;
+    }
+
+    // Preserved for the API bindings
+    bool IsAnyChild(const NodePredicate &cb) const
+    {
+        return IsAnyChild<NodePredicate>(cb);
+    }
 
     std::string DumpJSON() const;
     std::string DumpEtsSrc() const;
@@ -585,7 +681,14 @@ public:
 
     bool IsValidInCurrentPhase() const;
 
-    AstNode *GetHistoryNode() const;
+    AstNode *GetHistoryNode() const
+    {
+        if (UNLIKELY(history_ != nullptr)) {
+            return GetFromExistingHistory();
+        }
+        return const_cast<AstNode *>(this);
+    }
+
     AstNode *GetOrCreateHistoryNode() const;
 
 protected:
@@ -604,6 +707,8 @@ protected:
 
     void InitHistory();
     bool HistoryInitialized() const;
+
+    AstNode *GetFromExistingHistory() const;
 
     template <typename T>
     T *GetHistoryNodeAs() const

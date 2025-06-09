@@ -44,6 +44,35 @@ void ETSObjectType::Iterate(const PropertyTraverser &cb) const
     }
 }
 
+void ETSObjectType::AddInterface(ETSObjectType *interfaceType)
+{
+    if (std::find(interfaces_.begin(), interfaces_.end(), interfaceType) == interfaces_.end()) {
+        interfaces_.push_back(interfaceType);
+        CacheSupertypeTransitive(interfaceType);
+    }
+}
+
+void ETSObjectType::SetSuperType(ETSObjectType *super)
+{
+    superType_ = super;
+    if (super == nullptr) {
+        return;
+    }
+    CacheSupertypeTransitive(super);
+}
+
+void ETSObjectType::CacheSupertypeTransitive(ETSObjectType *type)
+{
+    auto const insertType = [this](ETSObjectType *t) {
+        return transitiveSupertypes_.insert(t->GetOriginalBaseType()).second;
+    };
+    if (insertType(type)) {
+        for (auto &t : type->transitiveSupertypes_) {
+            insertType(t);
+        }
+    }
+}
+
 varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(util::StringView name, PropertySearchFlags flags) const
 {
     varbinder::LocalVariable *res {};
@@ -67,35 +96,51 @@ varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(util::StringView name
 
 varbinder::LocalVariable *ETSObjectType::GetProperty(util::StringView name, PropertySearchFlags flags) const
 {
-    varbinder::LocalVariable *res = SearchFieldsDecls(name, flags);
-    if (res == nullptr && (flags & PropertySearchFlags::SEARCH_METHOD) != 0) {
-        if ((flags & PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION) != 0) {
-            if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
-                res = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
+    auto const searchOwnMethod = [this, flags, name]() -> varbinder::LocalVariable * {
+        if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
+            if (auto res = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name); res != nullptr) {
+                return res;
             }
-
-            if (res == nullptr && ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0)) {
-                res = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
-            }
-        } else {
-            res = CreateSyntheticVarFromEverySignature(name, flags);
         }
+        if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
+            if (auto res = GetOwnProperty<PropertyType::STATIC_METHOD>(name); res != nullptr) {
+                return res;
+            }
+        }
+        return nullptr;
+    };
+
+    if (auto res = SearchFieldsDecls(name, flags); res != nullptr) {
+        return res;
     }
 
-    if (res == nullptr && (flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
-        for (auto *interface : interfaces_) {
-            res = interface->GetProperty(name, flags);
-            if (res != nullptr) {
+    if ((flags & PropertySearchFlags::SEARCH_METHOD) != 0) {
+        if ((flags & PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION) != 0) {
+            if (auto res = searchOwnMethod(); res != nullptr) {
+                return res;
+            }
+        } else {
+            if (auto res = CreateSyntheticVarFromEverySignature(name, flags)) {
                 return res;
             }
         }
     }
 
-    if (res == nullptr && superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        res = superType_->GetProperty(name, flags);
+    if (((flags & PropertySearchFlags::SEARCH_INSTANCE) != 0 || (flags & PropertySearchFlags::SEARCH_STATIC) == 0) &&
+        (flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
+        for (auto *interface : interfaces_) {
+            if (auto res = interface->GetProperty(name, flags); res != nullptr) {
+                return res;
+            }
+        }
     }
 
-    return res;
+    if ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0 && superType_ != nullptr) {
+        return superType_->GetProperty(name, flags);
+    }
+
+    return nullptr;
 }
 
 bool ETSObjectType::IsPropertyInherited(const varbinder::Variable *var)
@@ -264,6 +309,10 @@ static void CollectSignaturesForSyntheticType(ETSObjectType const *owner,
             ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
             AddSignatureToSignatureSet(signatureSet, found, owner->GetRelation(), flags);
         }
+    }
+
+    if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) == 0) {
+        return;
     }
 
     if (owner->SuperType() != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
@@ -803,6 +852,14 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 
 void ETSObjectType::IsSubtypeOf(TypeRelation *relation, Type *target)
 {
+    if (target->IsETSObjectType()) {
+        auto &transitives = transitiveSupertypes_;
+        if (transitives.find(target->AsETSObjectType()->GetOriginalBaseType()) == transitives.end()) {
+            relation->Result(false);
+            return;
+        }
+    }
+
     if (auto super = SuperType(); super != nullptr) {
         if (relation->IsSupertypeOf(target, super)) {
             return;

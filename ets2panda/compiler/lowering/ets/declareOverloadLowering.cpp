@@ -115,27 +115,27 @@ void UpdateCallSignature(public_lib::Context *ctx, ir::CallExpression *expr)
 bool DeclareOverloadLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     // Note: Generate helper overload method
-    program->Ast()->TransformChildrenRecursively(
-        [ctx](ir::AstNode *ast) {
-            if (ast->IsMethodDefinition() && ast->AsMethodDefinition()->GetOverloadInfo().needHelperOverload) {
-                BuildOverloadHelperFunction(ctx, ast->AsMethodDefinition());
-            }
-            return ast;
-        },
-        Name());
+    auto const transformMethodDef = [ctx](ir::AstNode *ast) {
+        if (ast->IsMethodDefinition() && ast->AsMethodDefinition()->GetOverloadInfo().needHelperOverload) {
+            BuildOverloadHelperFunction(ctx, ast->AsMethodDefinition());
+        }
+        return ast;
+    };
 
     // Note: Update signature for call expression
-    program->Ast()->TransformChildrenRecursively(
-        [ctx](ir::AstNode *ast) {
-            if (!ast->IsCallExpression() || ast->AsCallExpression()->Signature() == nullptr) {
-                return ast;
-            }
-
-            if (ast->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM)) {
-                UpdateCallSignature(ctx, ast->AsCallExpression());
-            }
-
+    auto const transformCallExpr = [ctx](ir::AstNode *ast) {
+        if (!ast->IsCallExpression() || ast->AsCallExpression()->Signature() == nullptr) {
             return ast;
+        }
+        if (ast->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM)) {
+            UpdateCallSignature(ctx, ast->AsCallExpression());
+        }
+        return ast;
+    };
+
+    program->Ast()->TransformChildrenRecursively(
+        [transformMethodDef, transformCallExpr](ir::AstNode *ast) {
+            return transformMethodDef(transformCallExpr(ast));
         },
         Name());
     return true;
