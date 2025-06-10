@@ -754,7 +754,7 @@ export class LspSafeDeleteLocation extends LspNode {
   readonly safeDeleteLocationInfos: LspSafeDeleteLocationInfo[];
 }
 
-export class LspRefactorAction extends LspNode {
+export class RefactorAction extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.name = unpackString(global.es2panda._getRefactorActionName(peer));
@@ -766,17 +766,30 @@ export class LspRefactorAction extends LspNode {
   readonly kind: String;
 }
 
-export class LspApplicableRefactorInfo extends LspNode {
+export class ApplicableRefactorItemInfo extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.name = unpackString(global.es2panda._getApplicableRefactorName(peer));
     this.description = unpackString(global.es2panda._getApplicableRefactorDescription(peer));
-    this.action = new LspRefactorAction(global.es2panda._getRefactorAction(peer));
+    this.action = new RefactorAction(global.es2panda._getApplicableRefactorAction(peer));
   }
 
   readonly name: String;
   readonly description: String;
-  readonly action: LspRefactorAction;
+  readonly action: RefactorAction;
+}
+
+export class LspApplicableRefactorInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.applicableRefactorInfo = new NativePtrDecoder()
+      .decode(global.es2panda._getApplicableRefactorInfoList(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ApplicableRefactorItemInfo(elPeer);
+      });
+  }
+
+  readonly applicableRefactorInfo: ApplicableRefactorItemInfo[];
 }
 
 export class LspTypeHierarchies extends LspNode {
