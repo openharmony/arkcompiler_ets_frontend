@@ -11,10 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# expected values changed after primitives refactoring
-#ets2panda_add_gtest(es2panda_annotations_emit_standard_test
-#    CPP_SOURCES standard_test.cpp
-#)
+ets2panda_add_gtest(es2panda_annotations_emit_standard_test
+    CPP_SOURCES standard_test.cpp
+)
 ets2panda_add_gtest(es2panda_mutiple_annotations_for_class
     CPP_SOURCES mutiple_annotations_for_class.cpp    
 )

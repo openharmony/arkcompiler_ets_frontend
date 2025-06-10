@@ -2670,6 +2670,10 @@ static bool CheckIfLiteralValueIsAppropriate(ETSChecker *checker, Type *type, ir
         if (relation->IsIdenticalTo(type, checker->GlobalIntBuiltinType())) {
             return val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max();
         }
+    } else if (relation->IsIdenticalTo(type, checker->GlobalCharBuiltinType())) {
+        auto val = number.GetValueAndCastTo<int64_t>();
+        return !number.IsReal() && val >= std::numeric_limits<uint16_t>::min() &&
+               val <= std::numeric_limits<uint16_t>::max();
     } else if (number.IsDouble()) {
         return relation->IsIdenticalTo(checker->GlobalDoubleBuiltinType(), type);
     }
