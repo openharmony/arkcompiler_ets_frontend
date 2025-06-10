@@ -335,6 +335,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 102,
+            "column": 13,
+            "endLine": 102,
+            "endColumn": 23,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 114,
+            "column": 18,
+            "endLine": 114,
+            "endColumn": 25,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "severity": "ERROR"
+        },
+        {
             "line": 116,
             "column": 10,
             "endLine": 116,
