@@ -2,3 +2,4 @@
 
 #26315
 test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
+test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
