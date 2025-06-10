@@ -49,10 +49,10 @@ struct TextRange {
 };
 
 struct RefactorContext {
-    ark::es2panda::lsp::CancellationToken *cancellationToken;
-    ark::es2panda::lsp::UserPreferences *preferences;
-    TextRange span;
-    es2panda_Context *context;
+    ark::es2panda::lsp::CancellationToken *cancellationToken = nullptr;
+    ark::es2panda::lsp::UserPreferences *preferences = nullptr;
+    TextRange span = {0, 0};
+    es2panda_Context *context = nullptr;
     std::string kind;
 };
 
@@ -76,10 +76,16 @@ using ApplicableRefactorInfo = struct ApplicableRefactorInfo {
 
 namespace refactor_name {
 constexpr std::string_view CONVERT_FUNCTION_REFACTOR_NAME = "Convert arrow function or function expression";
+constexpr std::string_view CONVERT_EXPORT_REFACTOR_NAME = "Convert export";
+constexpr std::string_view CONVERT_IMPORT_REFACTOR_NAME = "Convert import";
+constexpr std::string_view CONVERT_TEMPLATE_REFACTOR_NAME = "Convert to template string";
+constexpr std::string_view CONVERT_CHAIN_REFACTOR_NAME = "Convert to optional chain expression";
 }  // namespace refactor_name
 
 namespace refactor_description {
 constexpr std::string_view CONVERT_FUNCTION_REFACTOR_DESC = "Convert arrow function or function expression";
+constexpr std::string_view CONVERT_TEMPLATE_REFACTOR_DESC = "Convert to template string";
+constexpr std::string_view CONVERT_CHAIN_REFACTOR_DESC = "Convert to optional chain expression";
 }  // namespace refactor_description
 
 class Refactor {

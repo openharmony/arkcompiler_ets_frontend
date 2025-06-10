@@ -492,8 +492,9 @@ struct CodeFixOptions {
 
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
-    std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(
-        const ark::es2panda::lsp::RefactorContext *context);
+    std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(es2panda_Context *context,
+                                                                                      const char *kind,
+                                                                                      size_t position);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
     bool (*isPackageModule)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);

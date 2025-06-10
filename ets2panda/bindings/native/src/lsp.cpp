@@ -817,6 +817,68 @@ KNativePointer impl_getClassHierarchies(KNativePointer context, KStringPtr &file
 }
 TS_INTEROP_3(getClassHierarchies, KNativePointer, KNativePointer, KStringPtr, KInt)
 
+KNativePointer impl_getApplicableRefactors(KNativePointer context, KStringPtr &kindPtr, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *result = new std::vector<ark::es2panda::lsp::ApplicableRefactorInfo>(ctx->getApplicableRefactors(
+        reinterpret_cast<es2panda_Context *>(context), GetStringCopy(kindPtr), static_cast<std::size_t>(position)));
+    return result;
+}
+TS_INTEROP_3(getApplicableRefactors, KNativePointer, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getApplicableRefactorInfoList(KNativePointer infosPtr)
+{
+    auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> *>(infosPtr);
+    std::vector<void *> ptrs;
+    for (auto &info : *infos) {
+        ptrs.push_back(new ark::es2panda::lsp::ApplicableRefactorInfo(info));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getApplicableRefactorInfoList, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionName(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->name);
+}
+TS_INTEROP_1(getRefactorActionName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionDescription(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->description);
+}
+TS_INTEROP_1(getRefactorActionDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionKind(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->kind);
+}
+TS_INTEROP_1(getRefactorActionKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorName(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->name);
+}
+TS_INTEROP_1(getApplicableRefactorName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorDescription(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->description);
+}
+TS_INTEROP_1(getApplicableRefactorDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorAction(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new ark::es2panda::lsp::RefactorAction(applRefsInfo->action);
+}
+TS_INTEROP_1(getApplicableRefactorAction, KNativePointer, KNativePointer)
+
 KNativePointer impl_getClassHierarchyList(KNativePointer infosPtr)
 {
     auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> *>(infosPtr);

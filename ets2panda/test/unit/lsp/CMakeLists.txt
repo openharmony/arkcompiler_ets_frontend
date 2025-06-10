@@ -99,6 +99,26 @@ ets2panda_add_gtest(lsp_api_test_class_hierarchies CPP_SOURCES
     class_hierarchys_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_refactors_convert_chain CPP_SOURCES
+    refactors_convert_chain_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_test_refactors_convert_export CPP_SOURCES
+    refactors_convert_export_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_test_refactors_convert_function CPP_SOURCES
+    refactors_convert_function_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_test_refactors_convert_import CPP_SOURCES
+    refactors_convert_import_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_test_refactors_convert_template CPP_SOURCES
+    refactors_convert_template_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_diagnostics_test CPP_SOURCES
     get_compiler_options_diagnostics_test.cpp
     get_diagnostics.cpp

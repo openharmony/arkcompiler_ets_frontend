@@ -30,6 +30,7 @@ import {
   LspLineAndCharacter,
   LspReferenceData,
   LspClassConstructorInfo,
+  ApplicableRefactorItemInfo,
   LspApplicableRefactorInfo,
   CompletionEntryDetails,
   LspFileTextChanges,
@@ -495,7 +496,7 @@ export class Lsp {
     return new CompletionEntryDetails(ptr);
   }
 
-  getApplicableRefactors(filename: String, kind: String, offset: number): LspApplicableRefactorInfo {
+  getApplicableRefactors(filename: String, kind: String, offset: number): ApplicableRefactorItemInfo[] {
     let lspDriverHelper = new LspDriverHelper();
     let filePath = path.resolve(filename.valueOf());
     let arktsconfig = this.fileNameToArktsconfig[filePath];
@@ -507,11 +508,14 @@ export class Lsp {
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let result: ApplicableRefactorItemInfo[] = [];
     let ptr = global.es2panda._getApplicableRefactors(localCtx, kind, offset);
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
-    return new LspApplicableRefactorInfo(ptr);
+    let refs = new LspApplicableRefactorInfo(ptr);
+    result.push(...refs.applicableRefactorInfo);
+    return Array.from(new Set(result));
   }
 
   getClassConstructorInfo(filename: String, offset: number, properties: string[]): LspClassConstructorInfo {
