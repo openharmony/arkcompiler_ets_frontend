@@ -1340,17 +1340,27 @@ bool Lexer::SkipWhiteSpacesHelperDefault(const char32_t &cp)
 
     size_t cpSize {};
 
-    switch (Iterator().PeekCp(&cpSize)) {
+    char32_t ch = Iterator().PeekCp(&cpSize);
+    switch (ch) {
         case LEX_CHAR_LS:
         case LEX_CHAR_PS:
             pos_.nextTokenLine_++;
             [[fallthrough]];
         case LEX_CHAR_NBSP:
         case LEX_CHAR_ZWNBSP:
+        case LEX_CHAR_OGHAM:
+        case LEX_CHAR_NARROW_NO_BREAK_SP:
+        case LEX_CHAR_MATHEMATICAL_SP:
+        case LEX_CHAR_IDEOGRAPHIC_SP:
             Iterator().Forward(cpSize);
             return true;
         default:
-            return false;
+            if (ch >= LEX_CHAR_ENQUAD && ch <= LEX_CHAR_ZERO_WIDTH_SP) {
+                Iterator().Forward(cpSize);
+                return true;
+            } else {
+                return false;
+            }
     }
 }
 
@@ -1376,6 +1386,7 @@ void Lexer::SkipWhiteSpaces()
             case LEX_CHAR_FF:
             case LEX_CHAR_SP:
             case LEX_CHAR_TAB:
+            case LEX_CHAR_NEXT_LINE:
                 Iterator().Forward(1);
                 continue;
             case LEX_CHAR_SLASH:
