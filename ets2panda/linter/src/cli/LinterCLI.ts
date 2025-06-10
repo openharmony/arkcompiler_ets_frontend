@@ -25,8 +25,6 @@ import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
 import { logStatistics } from '../lib/statistics/StatisticsLogger';
 import { arkts2Rules } from '../lib/utils/consts/ArkTS2Rules';
-import { MigrationTool } from 'homecheck';
-import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -55,21 +53,7 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
   const compileOptions = compileLintOptions(cmdOptions);
   let homeCheckResult = new Map<string, ProblemInfo[]>();
   const mergedProblems = new Map<string, ProblemInfo[]>();
-
-  if (cmdOptions.homecheck === true) {
-    const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
-    const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
-    await migrationTool.buildCheckEntry();
-    const result = await migrationTool.start();
-
-    homeCheckResult = transferIssues2ProblemInfo(result);
-    for (const [filePath, problems] of homeCheckResult) {
-      if (!mergedProblems.has(filePath)) {
-        mergedProblems.set(filePath, []);
-      }
-      mergedProblems.get(filePath)!.push(...problems);
-    }
-  }
+  
   const result = lint(compileOptions, getEtsLoaderPath(compileOptions), homeCheckResult);
 
   for (const [filePath, problems] of result.problemsInfos) {
