@@ -586,7 +586,7 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 21,
+                                "column": 25,
                                 "program": "BitopsNSieveBits.ets"
                               },
                               "end": {
@@ -2259,7 +2259,7 @@
                               "loc": {
                                 "start": {
                                   "line": 37,
-                                  "column": 34,
+                                  "column": 47,
                                   "program": "BitopsNSieveBits.ets"
                                 },
                                 "end": {
@@ -3559,43 +3559,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "BitopsNSieveBits",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 19,
-                                  "program": "BitopsNSieveBits.ets"
-                                },
-                                "end": {
-                                  "line": 53,
-                                  "column": 35,
-                                  "program": "BitopsNSieveBits.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 36,
-                                  "program": "BitopsNSieveBits.ets"
-                                },
-                                "end": {
-                                  "line": 53,
-                                  "column": 44,
-                                  "program": "BitopsNSieveBits.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": -1286749544853,
                             "loc": {
                               "start": {
                                 "line": 53,

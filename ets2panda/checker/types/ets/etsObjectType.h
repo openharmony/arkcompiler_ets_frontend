@@ -241,12 +241,12 @@ public:
 
     bool IsDescendantOf(const ETSObjectType *ascendant) const;
 
-    const util::StringView &Name() const
+    util::StringView Name() const
     {
         return name_;
     }
 
-    const util::StringView &AssemblerName() const
+    util::StringView AssemblerName() const
     {
         return internalName_;
     }
@@ -294,10 +294,10 @@ public:
         return typeParams->Scope();
     }
 
-    void InsertInstantiationMap(const util::StringView &key, ETSObjectType *value);
+    void InsertInstantiationMap(const util::StringView key, ETSObjectType *value);
 
     template <PropertyType TYPE>
-    varbinder::LocalVariable *GetOwnProperty(const util::StringView &name) const
+    varbinder::LocalVariable *GetOwnProperty(const util::StringView name) const
     {
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(TYPE)].find(name);
@@ -345,17 +345,14 @@ public:
     }
 
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
-    varbinder::LocalVariable *GetProperty(const util::StringView &name, PropertySearchFlags flags) const;
+    varbinder::LocalVariable *GetProperty(util::StringView name, PropertySearchFlags flags) const;
     std::vector<varbinder::LocalVariable *> GetAllProperties() const;
     varbinder::LocalVariable *CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
                                            TypeRelation *relation, GlobalTypesHolder *globalTypes);
     std::vector<varbinder::LocalVariable *> Methods() const;
     std::vector<varbinder::LocalVariable *> Fields() const;
-    varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
+    varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(util::StringView name,
                                                                    PropertySearchFlags flags) const;
-    varbinder::LocalVariable *CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
-                                                                const util::StringView &name,
-                                                                PropertySearchFlags flags) const;
     bool CheckIdenticalFlags(ETSObjectType *other) const;
     ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     void Iterate(const PropertyTraverser &cb) const;
@@ -393,11 +390,6 @@ public:
         return allocator_;
     }
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {false, false};
-    }
-
     [[nodiscard]] static std::uint32_t GetPrecedence(checker::ETSChecker *checker, ETSObjectType const *type) noexcept;
 
     bool IsPropertiesInstantiated() const
@@ -406,7 +398,7 @@ public:
     }
 
 protected:
-    virtual ETSFunctionType *CreateMethodTypeForProp(const util::StringView &name) const;
+    virtual ETSFunctionType *CreateMethodTypeForProp(util::StringView name) const;
 
 private:
     template <size_t... IS>
@@ -438,15 +430,14 @@ private:
             propertiesInstantiated_ = true;
         }
     }
-    bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
-                               TypeFlag narrowingFlags);
+    bool CastWidening(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags);
     void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
     void SubstitutePartialTypes(TypeRelation *relation, Type *other);
     void IsGenericSupertypeOf(TypeRelation *relation, ETSObjectType *source);
     void UpdateTypeProperty(varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);
 
-    varbinder::LocalVariable *SearchFieldsDecls(const util::StringView &name, PropertySearchFlags flags) const;
+    varbinder::LocalVariable *SearchFieldsDecls(util::StringView name, PropertySearchFlags flags) const;
 
     void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &&newTypeArgs,
                                  ETSObjectType *base);

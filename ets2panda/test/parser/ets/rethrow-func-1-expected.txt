@@ -817,40 +817,8 @@
                                           }
                                         },
                                         "init": {
-                                          "type": "BinaryExpression",
-                                          "operator": "/",
-                                          "left": {
-                                            "type": "NumberLiteral",
-                                            "value": 1,
-                                            "loc": {
-                                              "start": {
-                                                "line": 26,
-                                                "column": 17,
-                                                "program": "rethrow-func-1.ets"
-                                              },
-                                              "end": {
-                                                "line": 26,
-                                                "column": 18,
-                                                "program": "rethrow-func-1.ets"
-                                              }
-                                            }
-                                          },
-                                          "right": {
-                                            "type": "NumberLiteral",
-                                            "value": 0,
-                                            "loc": {
-                                              "start": {
-                                                "line": 26,
-                                                "column": 21,
-                                                "program": "rethrow-func-1.ets"
-                                              },
-                                              "end": {
-                                                "line": 26,
-                                                "column": 22,
-                                                "program": "rethrow-func-1.ets"
-                                              }
-                                            }
-                                          },
+                                          "type": "NumberLiteral",
+                                          "value": 2147483647,
                                           "loc": {
                                             "start": {
                                               "line": 26,
@@ -1307,3 +1275,4 @@
     }
   }
 }
+SyntaxError: Division by zero is not allowed. [rethrow-func-1.ets:26:17]

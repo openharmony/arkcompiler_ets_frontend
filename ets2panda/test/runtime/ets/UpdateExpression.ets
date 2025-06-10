@@ -81,16 +81,16 @@ function main(): void {
 
   {
     let b: byte = 127;
-    assertEQ(++b as int, -128)
-    assertEQ(--b as int, 127)
+    assertEQ(Byte.toInt(++b), -128)
+    assertEQ(Byte.toInt(--b), 127)
 
     let c: char = 65535;
-    assertEQ(++c as int, 0)
-    assertEQ(--c as int, 65535)
+    assertEQ(Char.toInt(++c), 0)
+    assertEQ(Char.toInt(--c), 65535)
 
     let s: short = 32767;
-    assertEQ(++s as int, -32768)
-    assertEQ(--s as int, 32767)
+    assertEQ(Short.toInt(++s), -32768)
+    assertEQ(Short.toInt(--s), 32767)
   }
 
   {

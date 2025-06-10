@@ -21,7 +21,7 @@
 namespace ark::es2panda::compiler {
 class CheckerPhase : public Phase {
 public:
-    static constexpr std::string_view NAME = "CheckerPhase";
+    static constexpr std::string_view const NAME = "CheckerPhase";
     std::string_view Name() const override
     {
         return NAME;

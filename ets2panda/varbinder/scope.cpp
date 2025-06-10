@@ -236,7 +236,10 @@ Variable *Scope::AddLocalTypeAliasVariable(ArenaAllocator *allocator, Decl *newD
 Variable *Scope::AddLocalClassVariable(ArenaAllocator *allocator, Decl *newDecl)
 {
     auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
-    VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
+    auto isEnumTransformed = newDecl->Node()->AsClassDefinition()->IsEnumTransformed();
+    VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE
+                         : isEnumTransformed    ? VariableFlags::ENUM_LITERAL
+                                                : VariableFlags::CLASS;
     auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)}).first->second;
     newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
     return var;

@@ -26,7 +26,7 @@ export declare const int_17 = 12345
 export declare const int_18: number = 12345
 declare const x1: int = 5
 declare const x2: int = -5
-declare const y1: float = 5.55
+declare const y1: float = 5.55f
 declare const y2: double = -5.55
 declare const x3: int = 0x5
 declare const x4: int = 0b101
@@ -50,7 +50,6 @@ declare const x51 = "abc"
 /* @@? 18:38 Error TypeError: Initializers are not allowed in ambient contexts: byte_13  */
 /* @@? 18:70 Error TypeError: Initializers are not allowed in ambient contexts: byte_23  */
 /* @@? 19:38 Error TypeError: Initializers are not allowed in ambient contexts: byte_14  */
-/* @@? 20:30 Error TypeError: A 'const' initializer in an ambient context must be a string or numeric literal: int_1  */
 /* @@? 22:31 Error TypeError: A 'const' initializer in an ambient context must be a string or numeric literal: int_12  */
 /* @@? 24:36 Error TypeError: Initializers are not allowed in ambient contexts: int_16  */
 /* @@? 26:39 Error TypeError: Initializers are not allowed in ambient contexts: int_18  */

@@ -861,7 +861,7 @@
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 12,
+                            "column": 17,
                             "program": "default_parameter5.ets"
                           },
                           "end": {

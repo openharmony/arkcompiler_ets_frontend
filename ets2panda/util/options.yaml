@@ -376,5 +376,5 @@ options:
 
 - name: perm-arena
   type: bool
-  default: true
+  default: false
   description: Place AST trees in permanent arena

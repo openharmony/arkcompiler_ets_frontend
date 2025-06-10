@@ -193,11 +193,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) co
     ES2PANDA_UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::BrokenTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();

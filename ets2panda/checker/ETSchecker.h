@@ -212,8 +212,7 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const Type *type);
-    lexer::Number ExtractNumericValue(Type const *const indexType);
-    std::optional<std::size_t> GetTupleElementAccessValue(const Type *type);
+    std::optional<std::size_t> GetTupleElementAccessValue(const ir::Expression *expr);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
     bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr, bool reportError = true);
     bool ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple, ir::MemberExpression *expr);
@@ -296,6 +295,8 @@ public:
 
     void VariableTypeFromInitializer(varbinder::Variable *variable, Type *annotationType, Type *initType);
 
+    bool TypeHasDefaultValue(Type *tp) const;
+
     // Type creation
     ByteType *CreateByteType(int8_t value);
     ETSBooleanType *CreateETSBooleanType(bool value);
@@ -340,7 +341,6 @@ public:
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,
                                                                                   size_t dim);
     Signature *CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim);
-    IntType *CreateIntTypeFromType(Type *type);
     std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
     ETSObjectType *CreatePromiseOf(Type *type);
 
@@ -349,7 +349,6 @@ public:
     SignatureInfo *CreateSignatureInfo();
 
     // Arithmetic
-    Type *NegateNumericType(Type *type, ir::Expression *node);
     bool CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::TokenType op);
     [[nodiscard]] bool CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
                                                                   const ir::Expression *left,
@@ -365,12 +364,9 @@ public:
     checker::Type *CheckBinaryOperatorMulDivMod(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
-    checker::Type *CheckBinaryOperatorForIntEnums(const checker::Type *const leftType,
-                                                  const checker::Type *const rightType);
+
     checker::Type *CheckBinaryBitwiseOperatorForIntEnums(const checker::Type *const leftType,
                                                          const checker::Type *const rightType);
-    checker::Type *CheckBinaryOperatorPlusForEnums(const checker::Type *const leftType,
-                                                   const checker::Type *const rightType);
     checker::Type *CheckBinaryOperatorPlus(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
@@ -381,9 +377,8 @@ public:
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::BinaryExpression *expr,
-                                              checker::Type *leftType, checker::Type *rightType, Type *unboxedL,
-                                              Type *unboxedR);
+    checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, checker::Type *leftType,
+                                              checker::Type *rightType, Type *unboxedL, Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::TokenType operationType,
                                                               lexer::SourcePosition pos, checker::Type *leftType,
                                                               checker::Type *rightType);
@@ -396,15 +391,12 @@ public:
                                                              checker::Type *rightType);
     checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir::Expression *right,
                                                         lexer::SourcePosition pos);
+    bool CheckIfNumeric(Type *type);
     bool AdjustNumberLiteralType(ir::NumberLiteral *literal, Type *literalType, Type *otherType);
 
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
-    Type *HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
-    void FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression);
-    template <typename ValueType>
-    Type *PerformArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
-
-    Type *HandleRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
+    void SetGenerateValueOfFlags(std::tuple<checker::Type *, checker::Type *, Type *, Type *> types,
+                                 std::tuple<ir::Expression *, ir::Expression *> nodes);
     template <typename TargetType>
     Type *PerformRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
 
@@ -420,7 +412,7 @@ public:
     bool TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments);
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
-    bool CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
+    bool CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param, ir::ArrowFunctionExpression *arrowFuncExpr,
                                    Type *parameterType, TypeRelationFlag flags);
     bool CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
                           Type *const subParameterType);
@@ -507,6 +499,7 @@ public:
     Signature *ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpression *callExpr,
                                                           ArenaVector<Signature *> const &signatures,
                                                           ArenaVector<ir::Expression *> &arguments);
+    Signature *MakeSignatureInvocable(Signature *sig, ir::CallExpression *callExpr);
     Signature *ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                       ir::CallExpression *callExpr, const lexer::SourcePosition &pos,
                                                       TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
@@ -527,8 +520,8 @@ public:
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
     bool CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
-                                 const ir::MethodDefinition *currentFunc, bool omitSameAsm = false);
-    static bool CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept;
+                                 const ir::MethodDefinition *currentFunc, bool omitSameAsm = false,
+                                 TypeRelationFlag relationFlags = TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     static bool HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept;
     static bool HasSameAssemblySignatures(ETSFunctionType const *const func1,
                                           ETSFunctionType const *const func2) noexcept;
@@ -594,9 +587,6 @@ public:
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
-    bool ValidateAnnotationPropertyType(checker::Type *tsType);
-    void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
-                               ir::AnnotationUsage *st, ETSChecker *checker) const;
     void CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
                                            ir::TSTypeParameterDeclaration *typeParams,
                                            ir::TypeNode *returnTypeAnnotation);
@@ -617,15 +607,11 @@ public:
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                      checker::Type *unboxedR);
-    Type *ApplyUnaryOperatorPromotion(Type *type, bool createConst = true, bool doPromotion = true,
-                                      bool isCondExpr = false);
+    Type *ApplyUnaryOperatorPromotion(Type *type, bool isCondExpr = false);
+    Type *GetUnaryOperatorPromotedType(Type *type, const bool doPromotion = true);
     Type *HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType);
 
-    bool HandleLogicalPotentialResult(ir::Expression *left, ir::Expression *right, ir::BinaryExpression *expr,
-                                      checker::Type *leftType);
-
-    checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
-                                           ir::Expression *init);
+    checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags);
     void CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName);
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
@@ -657,11 +643,7 @@ public:
     Type *MaybeUnboxInRelation(Type *objectType);
     Type *MaybeUnboxConditionalInRelation(Type *objectType);
     Type *MaybeBoxInRelation(Type *objectType);
-    void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
-    ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
-    ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     Type *MaybeBoxExpression(ir::Expression *expr);
-    Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybeBoxType(Type *type) const;
     Type *MaybeUnboxType(Type *type) const;
     Type const *MaybeBoxType(Type const *type) const;
@@ -671,7 +653,6 @@ public:
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
     void CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expression *compareCase,
                                    const lexer::SourcePosition &pos);
-    std::string GetStringFromLiteral(ir::Expression *caseTest) const;
     varbinder::Variable *FindVariableInFunctionScope(util::StringView name);
     std::pair<varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *classType);
@@ -684,8 +665,6 @@ public:
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
     void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
     bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
-    void MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target);
-    void MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self);
     void CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target, Type *self);
     void CheckUnboxedTypesAssignable(TypeRelation *relation, Type *source, Type *target);
     void CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target);
@@ -710,7 +689,7 @@ public:
     bool IsExtensionAccessorFunctionType(const checker::Type *type);
     bool IsArrayExprSizeValidForTuple(const ir::ArrayExpression *arrayExpr, const ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
-    Type *SelectGlobalIntegerTypeForNumeric(Type *type);
+    Type *SelectGlobalIntegerTypeForNumeric(Type *type) const noexcept;
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(const std::string &className);
@@ -730,7 +709,6 @@ public:
     void ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType);
     ir::CallExpression *CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,
                                                     ArenaVector<ir::Expression *> &&args);
-    static void SetPreferredTypeIfPossible(ir::Expression *expr, Type *targetType);
     Signature *FindRelativeExtensionGetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
     Signature *FindRelativeExtensionSetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
     Type *GetExtensionAccessorReturnType(ir::MemberExpression *expr);
@@ -789,7 +767,8 @@ public:
     static NamedAccessMeta FormNamedAccessMetadata(varbinder::Variable const *prop);
 
     // Smart cast support
-    [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
+    [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType,
+                                                  std::optional<double> value = std::nullopt);
     [[nodiscard]] std::pair<Type *, Type *> CheckTestNullishCondition(Type *testedType, Type *actualType, bool strict);
     [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSObjectType *testedType, Type *actualType,
                                                                      bool strict);
@@ -922,6 +901,11 @@ public:
         return arrowToFuncInterfaces_;
     }
 
+    void ClearApparentTypes() noexcept
+    {
+        apparentTypes_.clear();
+    }
+
     void CleanUp() override
     {
         Checker::CleanUp();
@@ -1045,15 +1029,6 @@ private:
     Type *ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&apparentTypes);
 
     bool ComputeSuperType(ETSObjectType *type);
-
-    template <typename UType>
-    UType HandleModulo(UType leftValue, UType rightValue);
-
-    template <typename FloatOrIntegerType, typename IntegerType = FloatOrIntegerType>
-    Type *HandleBitWiseArithmetic(Type *leftValue, Type *rightValue, lexer::TokenType operationType);
-
-    template <typename TargetType>
-    typename TargetType::UType GetOperand(Type *type);
 
     template <typename... Args>
     ETSObjectType *AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)(Args...), Args... args) const;

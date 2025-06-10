@@ -2453,7 +2453,7 @@
                             "loc": {
                               "start": {
                                 "line": 35,
-                                "column": 19,
+                                "column": 40,
                                 "program": "tuple_types_1.ets"
                               },
                               "end": {

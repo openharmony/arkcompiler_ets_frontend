@@ -22,7 +22,7 @@ function foo1(a: Char) : Char {
 }
 
 function foo2() : Char {
-    return c'd' - 1
+    return Int.toChar(Char.toInt(c'd') - 1)
 }
 
 function main() {
@@ -30,7 +30,7 @@ function main() {
     let val : Char = foo()
     assertEQ(val, c)
 
-    let val1 : Char = foo1("c"[0])
+    let val1 : Char = foo1(c'c')
     assertEQ(val1, c)
 
     let val2 : Char = foo2()

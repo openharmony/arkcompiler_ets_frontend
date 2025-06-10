@@ -409,7 +409,7 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 9,
+                            "column": 17,
                             "program": "infer_imported_function_return_type_lib.ets"
                           },
                           "end": {

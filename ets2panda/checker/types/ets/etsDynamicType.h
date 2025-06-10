@@ -57,7 +57,7 @@ public:
         return hasDecl_;
     }
 
-    ETSFunctionType *CreateMethodTypeForProp(const util::StringView &name) const override;
+    ETSFunctionType *CreateMethodTypeForProp(util::StringView name) const override;
 
     void ToAssemblerType(std::stringstream &ss) const override;
 

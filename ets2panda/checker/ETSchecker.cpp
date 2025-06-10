@@ -746,19 +746,20 @@ void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 
-Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
+Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type) const noexcept
 {
-    switch (ETSType(type)) {
-        case checker::TypeFlag::FLOAT: {
-            return GlobalIntType();
+    if (type->IsETSObjectType()) {
+        auto const *objectType = type->AsETSObjectType();
+
+        if (objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
+            return GlobalIntBuiltinType();
         }
-        case checker::TypeFlag::DOUBLE: {
-            return GlobalLongType();
-        }
-        default: {
-            return type;
+
+        if (objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
+            return GlobalLongBuiltinType();
         }
     }
+    return type;
 }
 
 Signature *ETSChecker::FindExtensionSetterInMap(util::StringView name, ETSObjectType *type)
@@ -780,4 +781,11 @@ void ETSChecker::InsertExtensionGetterToMap(util::StringView name, ETSObjectType
 {
     GetGlobalTypesHolder()->InsertExtensionGetterToMap(name, type, sig);
 }
+
+bool ETSChecker::TypeHasDefaultValue(Type *tp) const
+{
+    return tp->IsBuiltinNumeric() || tp->IsETSBooleanType() || tp->IsETSCharType() ||
+           Relation()->IsSupertypeOf(GlobalETSUndefinedType(), tp);
+}
+
 }  // namespace ark::es2panda::checker

@@ -43,8 +43,12 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node);
 
+// Note: run varbinder on the new node generated in lowering phases
+void BindLoweredNode(varbinder::ETSBinder *varBinder, ir::AstNode *node);
+
 // Note: run varbinder and checker on the new node generated in lowering phases
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
+
 bool IsAnonymousClassType(const checker::Type *type);
 bool ClassDefinitionIsEnumTransformed(const ir::AstNode *node);
 }  // namespace ark::es2panda::compiler

@@ -1111,7 +1111,7 @@
                                       "loc": {
                                         "start": {
                                           "line": 29,
-                                          "column": 11,
+                                          "column": 15,
                                           "program": "labeledForStatement.ets"
                                         },
                                         "end": {

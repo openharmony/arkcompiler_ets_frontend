@@ -19,7 +19,6 @@ for await (let k: int /* @@ label1 */= 0; /* @@ label2 */k < d.length; k++) {
 
 /* @@@ label1 Error SyntaxError: for-await-of loop variable declaration may not have an initializer. */
 /* @@@ label2 Error SyntaxError: Unexpected token 'k'. */
-/* @@? 16:58 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 16:62 Error TypeError: Unresolved reference d */
 /* @@? 17:5 Error TypeError: Cannot reference 'this' in this context. */
 /* @@? 17:10 Error TypeError: Property '$_set_unsafe' does not exist on type 'Error' */

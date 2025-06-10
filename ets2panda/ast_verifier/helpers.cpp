@@ -55,8 +55,7 @@ bool IsBooleanType(const ir::AstNode *ast)
         return false;
     }
 
-    if (typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_OBJECT) &&
-        ast->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
+    if (typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_OBJECT)) {
         return typedAst->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_BOOLEAN);
     }
 
@@ -89,8 +88,7 @@ bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
         return true;
     }
 
-    if (typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_OBJECT) &&
-        ast->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
+    if (typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_OBJECT)) {
         return typedAst->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_TYPE) &&
                !typedAst->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_BOOLEAN);
     }

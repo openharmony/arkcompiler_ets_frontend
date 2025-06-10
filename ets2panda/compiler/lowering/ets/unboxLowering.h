@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,23 @@
  * limitations under the License.
  */
 
-#include "narrowingConverter.h"
+#ifndef ES2PANDA_COMPILER_LOWERING_UNBOX_LOWERING_H
+#define ES2PANDA_COMPILER_LOWERING_UNBOX_LOWERING_H
 
-namespace ark::es2panda::checker {
-}  // namespace ark::es2panda::checker
+#include "compiler/lowering/phase.h"
+
+namespace ark::es2panda::compiler {
+
+class UnboxPhase : public PhaseForBodies {
+public:
+    std::string_view Name() const override
+    {
+        return "Unbox";
+    }
+
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+};
+
+}  // namespace ark::es2panda::compiler
+
+#endif

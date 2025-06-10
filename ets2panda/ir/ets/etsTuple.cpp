@@ -92,10 +92,8 @@ checker::Type *ETSTuple::GetHolderTypeForTuple(checker::ETSChecker *const checke
         return typeList[0];
     }
 
-    std::for_each(typeList.begin(), typeList.end(), [checker](auto &t) { t = checker->MaybeBoxType(t); });
-
-    auto ctypes = typeList;
-    return checker->CreateETSUnionType(std::move(ctypes));
+    /* NOTE(gogabr): if we compute a union type, we'll lose smaller numeric types, so just return Object */
+    return checker->GlobalETSAnyType();
 }
 
 checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)

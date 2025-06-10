@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,14 @@
  * limitations under the License.
  */
 
-function main() {
-    let a ?: number = 1
-    assertEQ(a, 1)
+function main() : void {
+    let div_int : int  = /* @@ label1 */1 / 0;
+    let div_long: long = /* @@ label2 */1 / 0;
+    let mod_int : int  = /* @@ label3 */1 % 0;
+    let mod_long: long = /* @@ label4 */1 % 0;
 }
 
-/* @@? 17:12 Error SyntaxError: Optional variable is deprecated and no longer supported.  */
+/* @@@ label1 Error SyntaxError: Division by zero is not allowed. */
+/* @@@ label2 Error SyntaxError: Division by zero is not allowed. */
+/* @@@ label3 Error SyntaxError: Division by zero is not allowed. */
+/* @@@ label4 Error SyntaxError: Division by zero is not allowed. */

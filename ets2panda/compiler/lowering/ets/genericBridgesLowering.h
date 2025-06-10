@@ -54,7 +54,7 @@ private:
                                ir::MethodDefinition *derivedMethod, Substitutions const &substitutions) const;
 
     void AddGenericBridge(ir::ClassDefinition const *classDefinition, ir::MethodDefinition *methodDefinition,
-                          checker::Signature const *baseSignature, ir::ScriptFunction const *derivedFunction) const;
+                          checker::Signature const *baseSignature, ir::ScriptFunction *derivedFunction) const;
 
     std::string CreateMethodDefinitionString(ir::ClassDefinition const *classDefinition,
                                              checker::Signature const *baseSignature,

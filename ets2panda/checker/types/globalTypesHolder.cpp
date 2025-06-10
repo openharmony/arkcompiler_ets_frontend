@@ -168,6 +168,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Int", GlobalTypeId::ETS_INT_BUILTIN);
     builtinNameMappings_.emplace("Integral", GlobalTypeId::ETS_INTEGRAL_BUILTIN);
     builtinNameMappings_.emplace("Long", GlobalTypeId::ETS_LONG_BUILTIN);
+    builtinNameMappings_.emplace("Numeric", GlobalTypeId::ETS_NUMERIC_BUILTIN);
     builtinNameMappings_.emplace("Object", GlobalTypeId::ETS_OBJECT_BUILTIN);
     builtinNameMappings_.emplace("Runtime", GlobalTypeId::ETS_RUNTIME_BUILTIN);
     builtinNameMappings_.emplace("RuntimeLinker", GlobalTypeId::ETS_RUNTIME_LINKER_BUILTIN);
@@ -489,6 +490,11 @@ Type *GlobalTypesHolder::GlobalIntegralBuiltinType()
 Type *GlobalTypesHolder::GlobalLongBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LONG_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalNumericBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NUMERIC_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalMapBuiltinType()

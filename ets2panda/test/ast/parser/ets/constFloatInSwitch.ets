@@ -31,5 +31,5 @@ function main(): void {
     }
 }
 
-/* @@@ label1 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'int' */
-/* @@@ label2 Error TypeError: Unexpected type double */
+/* @@@ label1 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int' */
+/* @@? 25:33 Error TypeError: Switch case type 'double' is not comparable to discriminant type 'int' */

@@ -277,7 +277,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
   compiler/lowering/ets/arrayLiteralLowering.cpp
-  compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/cfgBuilderPhase.cpp
@@ -319,9 +318,12 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/typeFromLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
+  compiler/lowering/ets/enumPropertiesInAnnotationsLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp
   compiler/lowering/ets/annotationCopyLowering.cpp
   compiler/lowering/ets/annotationCopyPostLowering.cpp
+  compiler/lowering/ets/primitiveConversionPhase.cpp
+  compiler/lowering/ets/unboxLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
@@ -556,8 +558,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/validateHelpers.cpp
   checker/ets/typeCheckingHelpers.cpp
   checker/ets/helpers.cpp
-  checker/ets/narrowingConverter.cpp
-  checker/ets/narrowingWideningConverter.cpp
   checker/ets/object.cpp
   checker/ets/typeConverter.cpp
   checker/ets/typeCreation.cpp

@@ -40,7 +40,7 @@ function main(): void {
   assertTrue(intArr instanceof FixedArray<int>)
   assertTrue(intArr instanceof Object)
   assertTrue(!(intArr instanceof Long))
-  assertTrue(!(intArr instanceof FixedArray<Int>))
+  assertTrue((intArr instanceof FixedArray<Int>))
   assertTrue(!(intArr instanceof Int))
 
   let integerArr: FixedArray<Int> = new Int[10];
@@ -48,7 +48,7 @@ function main(): void {
   assertTrue(integerArr instanceof FixedArray<Int>)
   assertTrue(integerArr instanceof Object)
   assertTrue(!(intArr instanceof FixedArray<Number>))
-  assertTrue(!(integerArr instanceof FixedArray<int>))
+  assertTrue((integerArr instanceof FixedArray<int>))
   assertTrue(!(integerArr instanceof Int))
 
   let integerArrArr: FixedArray<FixedArray<int>> = [[10], [20]];

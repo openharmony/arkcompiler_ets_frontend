@@ -1948,43 +1948,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "Bitops3BitBitsInByte",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 37,
-                                  "column": 19,
-                                  "program": "Bitops3BitBitsInByte.ets"
-                                },
-                                "end": {
-                                  "line": 37,
-                                  "column": 39,
-                                  "program": "Bitops3BitBitsInByte.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 37,
-                                  "column": 40,
-                                  "program": "Bitops3BitBitsInByte.ets"
-                                },
-                                "end": {
-                                  "line": 37,
-                                  "column": 48,
-                                  "program": "Bitops3BitBitsInByte.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 512000,
                             "loc": {
                               "start": {
                                 "line": 37,

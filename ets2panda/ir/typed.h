@@ -55,6 +55,16 @@ public:
         return tsType;
     }
 
+    [[nodiscard]] checker::Type *PreferredType() const noexcept
+    {
+        return preferredType_;
+    }
+
+    checker::Type *SetPreferredType(checker::Type *type) noexcept
+    {
+        return (preferredType_ = type);
+    }
+
     bool IsTyped() const override
     {
         return true;
@@ -71,12 +81,14 @@ protected:
     {
         auto otherImpl = static_cast<Typed<T> *>(other);
         otherImpl->tsType_ = tsType_;
+        otherImpl->preferredType_ = preferredType_;
         T::CopyTo(other);
     }
 
 private:
     friend class SizeOfNodeTest;
     checker::Type *tsType_ {};
+    checker::Type *preferredType_ {};  // used by the checker to supply information from context
 };
 
 class TypedAstNode : public Typed<AstNode> {

@@ -34,7 +34,7 @@ function main(): void {
     const k: long = 2;
     const l: float = 2.0f;
     const m: double = 2.0;
-    const n: byte[] = [h, i, j, k, Float.toByte(l), Double.toByte(m)];
+    const n: byte[] = [h, Short.toByte(i), j, Long.toByte(k), Float.toByte(l), Double.toByte(m)];
     assertEQ(n[0], 2)
     assertEQ(n[1], 2)
     assertEQ(n[2], 2)

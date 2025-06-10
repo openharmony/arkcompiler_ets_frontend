@@ -681,43 +681,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "BitopsBitwiseAnd",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 26,
-                                  "column": 31,
-                                  "program": "BitopsBitwiseAnd.ets"
-                                },
-                                "end": {
-                                  "line": 26,
-                                  "column": 47,
-                                  "program": "BitopsBitwiseAnd.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 26,
-                                  "column": 48,
-                                  "program": "BitopsBitwiseAnd.ets"
-                                },
-                                "end": {
-                                  "line": 26,
-                                  "column": 56,
-                                  "program": "BitopsBitwiseAnd.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 0,
                             "loc": {
                               "start": {
                                 "line": 26,

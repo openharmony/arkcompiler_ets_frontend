@@ -67,7 +67,7 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
         if (spaId->TsType() != nullptr && spaId->TsType()->IsETSTupleType()) {
             lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleSize() << ") + ";
         } else {
-            lengthString << "(@@I" << (argumentCount++) << ".length as int) + ";
+            lengthString << "(@@I" << (argumentCount++) << ".length.toInt()) + ";
             nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
         }
     }
@@ -96,7 +96,8 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
     //       as arrayType" should be added after cast Expression is implemented completely.
     //       Related issue: #issue20162
-    if (checker::ETSChecker::IsReferenceType(arrayElementType)) {
+    if (checker->IsReferenceType(arrayElementType) &&
+        !(arrayElementType->IsETSObjectType() && arrayElementType->AsETSObjectType()->IsBoxedPrimitive())) {
         arrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSUndefinedType()});
     }
 

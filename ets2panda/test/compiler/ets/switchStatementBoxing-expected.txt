@@ -308,9 +308,8 @@
                         {
                           "type": "SwitchCase",
                           "test": {
-                            "type": "Identifier",
-                            "name": "b",
-                            "decorators": [],
+                            "type": "NumberLiteral",
+                            "value": 20,
                             "loc": {
                               "start": {
                                 "line": 21,

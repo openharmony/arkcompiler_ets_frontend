@@ -1673,7 +1673,7 @@
                             "loc": {
                               "start": {
                                 "line": 43,
-                                "column": 15,
+                                "column": 24,
                                 "program": "function_implicit_return_type9.ets"
                               },
                               "end": {
@@ -1838,7 +1838,7 @@
                             "loc": {
                               "start": {
                                 "line": 44,
-                                "column": 15,
+                                "column": 24,
                                 "program": "function_implicit_return_type9.ets"
                               },
                               "end": {
@@ -2003,7 +2003,7 @@
                             "loc": {
                               "start": {
                                 "line": 45,
-                                "column": 15,
+                                "column": 24,
                                 "program": "function_implicit_return_type9.ets"
                               },
                               "end": {

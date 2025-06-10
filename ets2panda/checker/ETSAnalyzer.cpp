@@ -29,6 +29,8 @@
 
 namespace ark::es2panda::checker {
 
+static Type *GetAppropriatePreferredType(Type *originalType, std::function<bool(Type *)> const &predicate);
+
 ETSChecker *ETSAnalyzer::GetETSChecker() const
 {
     return static_cast<ETSChecker *>(GetChecker());
@@ -437,17 +439,20 @@ static bool NeedCreateETSResizableArrayType(ETSChecker *checker, Type *type)
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 {
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
     ETSChecker *checker = GetETSChecker();
 
     auto *elementType = expr->TypeReference()->GetType(checker);
     checker->ValidateArrayIndex(expr->Dimension(), true);
 
     CheckArrayElementType(checker, expr);
-    GetUnionPreferredType(expr, expr->GetPreferredType());
+    auto *preferredType = GetAppropriatePreferredType(
+        expr->PreferredType(), [](Type *tp) -> bool { return tp->IsETSArrayType() || tp->IsETSResizableArrayType(); });
 
-    auto *preferredType = expr->GetPreferredType();
-
-    if (NeedCreateETSResizableArrayType(checker, expr->GetPreferredType()) ||
+    if (NeedCreateETSResizableArrayType(checker, expr->PreferredType()) || preferredType == nullptr ||
         preferredType->IsETSResizableArrayType()) {
         expr->SetTsType(checker->CreateETSResizableArrayType(elementType));
     } else {
@@ -538,6 +543,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
     ETSChecker *checker = GetETSChecker();
 
     CheckArrayElementType(checker, expr);
@@ -548,11 +556,10 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *exp
         checker->ValidateArrayIndex(dim, true);
         fixedArrayType = checker->CreateETSArrayType(fixedArrayType);
     }
-    GetUnionPreferredType(expr, expr->GetPreferredType());
+    auto *preferredType = GetAppropriatePreferredType(
+        expr->PreferredType(), [](Type *tp) -> bool { return tp->IsETSArrayType() || tp->IsETSResizableArrayType(); });
 
-    auto *preferredType = expr->GetPreferredType();
-    if (NeedCreateETSResizableArrayType(checker, expr->GetPreferredType()) ||
-        preferredType->IsETSResizableArrayType()) {
+    if (NeedCreateETSResizableArrayType(checker, preferredType) || preferredType->IsETSResizableArrayType()) {
         expr->SetTsType(checker->CreateETSMultiDimResizableArrayType(elementType, expr->Dimensions().size()));
     } else {
         expr->SetTsType(fixedArrayType);
@@ -665,11 +672,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSKeyofType *node) const
 
 // compile methods for EXPRESSIONS in alphabetical order
 
-checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
-{
-    return expr->preferredType_;
-}
-
 static void AddSpreadElementTypes(ETSChecker *checker, ir::SpreadElement *const element,
                                   ArenaVector<std::pair<Type *, ir::Expression *>> &elementTypes)
 {
@@ -709,7 +711,12 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSCheck
 {
     ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes(checker->ProgramAllocator()->Adapter());
 
-    for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
+    auto *const exprPreferredType = expr->PreferredType();
+    auto *const exprTupleType = exprPreferredType->IsETSTupleType() ? exprPreferredType->AsETSTupleType() : nullptr;
+    checker::Type *elemPreferredType =
+        exprPreferredType->IsETSTupleType() ? nullptr : checker->GetElementTypeOfArray(exprPreferredType);
+
+    for (std::size_t idx = 0U; idx < expr->Elements().size(); ++idx) {
         ir::Expression *const element = expr->Elements()[idx];
 
         if (element->IsSpreadElement()) {
@@ -717,23 +724,16 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSCheck
             continue;
         }
 
-        auto *const exprPreferredType = expr->GetPreferredType();
-
-        if (expr->GetPreferredType()->IsETSTupleType() &&
-            idx < expr->GetPreferredType()->AsETSTupleType()->GetTupleSize() &&
-            !ValidArrayExprSizeForTupleSize(checker, exprPreferredType->AsETSTupleType()->GetTypeAtIndex(idx),
-                                            element)) {
-            elementTypes.emplace_back(checker->GlobalTypeError(), element);
-            continue;
+        if (exprTupleType != nullptr && exprPreferredType->IsETSTupleType()) {
+            if (idx >= exprTupleType->GetTupleSize() ||
+                !ValidArrayExprSizeForTupleSize(checker, exprTupleType->GetTypeAtIndex(idx), element)) {
+                elementTypes.emplace_back(element->SetTsType(checker->GlobalTypeError()), element);
+                continue;
+            }
+            elemPreferredType = exprTupleType->GetTypeAtIndex(idx);
         }
 
-        if (element->IsArrayExpression() || element->IsObjectExpression()) {
-            auto *const targetPreferredType = exprPreferredType->IsETSTupleType()
-                                                  ? exprPreferredType->AsETSTupleType()->GetTypeAtIndex(idx)
-                                                  : checker->GetElementTypeOfArray(exprPreferredType);
-            ETSChecker::SetPreferredTypeIfPossible(element, targetPreferredType);
-        }
-
+        element->SetPreferredType(elemPreferredType);
         elementTypes.emplace_back(element->Check(checker), element);
     }
 
@@ -843,41 +843,43 @@ static bool CheckArrayExpressionElements(ETSChecker *checker, ir::ArrayExpressio
                                               [](auto &pair) { return pair.first->IsTypeError(); });
 
     for (std::size_t idx = 0; idx < arrayExprElementTypes.size(); ++idx) {
-        allElementsAssignable &= CheckElement(checker, arrayExpr->GetPreferredType(), arrayExprElementTypes, idx);
+        allElementsAssignable &= CheckElement(checker, arrayExpr->PreferredType(), arrayExprElementTypes, idx);
     }
 
     return allElementsAssignable;
 }
 
-static bool IsPossibleArrayExpressionType(Type const *type)
+static Type *GetAppropriatePreferredType(Type *originalType, std::function<bool(Type *)> const &predicate)
 {
-    return type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType();
-}
-
-void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType) const
-{
-    if (originalType == nullptr || !originalType->IsETSUnionType()) {
-        return;
+    if (originalType == nullptr) {
+        return nullptr;
     }
-    checker::Type *preferredType = nullptr;
+
+    while (originalType->IsETSTypeAliasType()) {
+        if (predicate(originalType)) {
+            return originalType;
+        }
+        originalType = originalType->AsETSTypeAliasType()->GetTargetType();
+    }
+
+    if (predicate(originalType)) {
+        return originalType;
+    }
+
+    if (!originalType->IsETSUnionType()) {
+        return nullptr;
+    }
+
+    Type *preferredType = nullptr;
     for (auto &type : originalType->AsETSUnionType()->ConstituentTypes()) {
-        if (IsPossibleArrayExpressionType(type)) {
+        if (predicate(type)) {
             if (preferredType != nullptr) {
-                preferredType = nullptr;
-                break;
+                return nullptr;  // ambiguity
             }
             preferredType = type;
         }
     }
-    if (expr->IsArrayExpression()) {
-        expr->AsArrayExpression()->SetPreferredType(preferredType);
-    } else if (expr->IsETSNewArrayInstanceExpression()) {
-        expr->AsETSNewArrayInstanceExpression()->SetPreferredType(preferredType);
-    } else if (expr->IsETSNewMultiDimArrayInstanceExpression()) {
-        expr->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(preferredType);
-    } else {
-        ES2PANDA_UNREACHABLE();
-    }
+    return preferredType;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
@@ -887,43 +889,35 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         return expr->TsType();
     }
 
-    if (expr->GetPreferredType() != nullptr) {
-        if (expr->GetPreferredType()->IsETSTypeAliasType()) {
-            expr->SetPreferredType(expr->GetPreferredType()->AsETSTypeAliasType()->GetTargetType());
-        }
+    auto *preferredType = GetAppropriatePreferredType(expr->PreferredType(), [](Type *tp) -> bool {
+        return tp->IsETSArrayType() || tp->IsETSResizableArrayType() || tp->IsETSTupleType();
+    });
 
-        if (expr->GetPreferredType()->IsETSUnionType()) {
-            GetUnionPreferredType(expr, expr->GetPreferredType());
-        }
-
-        if (expr->GetPreferredType() != nullptr && !IsPossibleArrayExpressionType(expr->GetPreferredType())) {
-            expr->SetPreferredType(nullptr);
-        }
-    }
-
-    if (!IsArrayExpressionValidInitializerForType(checker, expr->GetPreferredType())) {
-        checker->LogError(diagnostic::UNEXPECTED_ARRAY, {expr->GetPreferredType()}, expr->Start());
+    if (!IsArrayExpressionValidInitializerForType(checker, preferredType)) {
+        checker->LogError(diagnostic::UNEXPECTED_ARRAY, {expr->PreferredType()}, expr->Start());
         return checker->InvalidateType(expr);
     }
 
     if (!expr->Elements().empty()) {
-        if (expr->GetPreferredType() == nullptr || expr->GetPreferredType() == checker->GlobalETSObjectType()) {
-            expr->SetPreferredType(InferPreferredTypeFromElements(checker, expr));
+        if (preferredType == nullptr || preferredType == checker->GlobalETSObjectType()) {
+            preferredType = InferPreferredTypeFromElements(checker, expr);
         }
+
+        expr->SetPreferredType(preferredType);
 
         if (!CheckArrayExpressionElements(checker, expr)) {
             return checker->InvalidateType(expr);
         }
     }
 
-    if (expr->GetPreferredType() == nullptr) {
+    if (preferredType == nullptr) {
         return checker->TypeError(expr, diagnostic::UNRESOLVABLE_ARRAY, expr->Start());
     }
 
-    expr->SetTsType(expr->GetPreferredType());
-    if (!expr->GetPreferredType()->IsETSResizableArrayType() && !expr->TsType()->IsETSTupleType()) {
-        ES2PANDA_ASSERT(expr->TsType()->IsETSArrayType());
-        const auto *const arrayType = expr->TsType()->AsETSArrayType();
+    expr->SetTsType(preferredType);
+    if (!preferredType->IsETSResizableArrayType() && !preferredType->IsETSTupleType()) {
+        ES2PANDA_ASSERT(preferredType->IsETSArrayType());
+        const auto *const arrayType = preferredType->AsETSArrayType();
         checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
     return expr->TsType();
@@ -1060,7 +1054,10 @@ checker::Type *ETSAnalyzer::GetSmartType(ir::AssignmentExpression *expr, checker
     if (expr->Left()->IsIdentifier() && expr->Target() != nullptr) {
         //  Now try to define the actual type of Identifier so that smart cast can be used in further checker
         //  processing
-        smartType = checker->ResolveSmartType(rightType, leftType);
+        auto const value = expr->Right()->IsNumberLiteral()
+                               ? std::make_optional(expr->Right()->AsNumberLiteral()->Number().GetDouble())
+                               : std::nullopt;
+        smartType = checker->ResolveSmartType(rightType, leftType, value);
         auto const *const variable = expr->Target();
 
         //  Add/Remove/Modify smart cast for identifier
@@ -1144,22 +1141,15 @@ static checker::Type *HandleSubstitution(ETSChecker *checker, ir::AssignmentExpr
                                        leftType->IsETSTupleType() || leftType->IsETSUnionType();
     if (expr->Right()->IsArrayExpression() && possibleInferredTypeOfArray) {
         checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
-    }
-
-    if (expr->Right()->IsETSNewArrayInstanceExpression()) {
-        expr->Right()->AsETSNewArrayInstanceExpression()->SetPreferredType(leftType);
-    }
-
-    if (expr->Right()->IsETSNewMultiDimArrayInstanceExpression()) {
-        expr->Right()->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(leftType);
-    }
-
-    if (expr->Right()->IsObjectExpression()) {
-        expr->Right()->AsObjectExpression()->SetPreferredType(leftType);
-    }
-
-    if (expr->Right()->IsArrowFunctionExpression() && (leftType->IsETSArrowType() || leftType->IsETSUnionType())) {
-        expr->Right()->AsArrowFunctionExpression()->SetPreferredType(leftType);
+    } else if (expr->Right()->IsArrowFunctionExpression() &&
+               (leftType->IsETSArrowType() || leftType->IsETSUnionType())) {
+        if (auto *preferredType = GetAppropriatePreferredType(leftType, [](Type *tp) { return tp->IsETSArrowType(); });
+            preferredType != nullptr) {
+            checker->TryInferTypeForLambdaTypeAlias(expr->Right()->AsArrowFunctionExpression(),
+                                                    preferredType->AsETSFunctionType());
+        }
+    } else {
+        expr->Right()->SetPreferredType(leftType);
     }
 
     return expr->Right()->Check(checker);
@@ -1186,10 +1176,7 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
         case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
             std::tie(std::ignore, expr->operationType_) = checker->CheckBinaryOperator(
                 expr->Left(), expr->Right(), expr, expr->OperatorType(), expr->Start(), true);
-
-            auto unboxedLeft = checker->MaybeUnboxInRelation(leftType);
-            sourceType = unboxedLeft == nullptr ? leftType : unboxedLeft;
-
+            sourceType = leftType;
             relationNode = expr;
             break;
         }
@@ -1300,10 +1287,10 @@ checker::Type *ETSAnalyzer::Check(ir::BinaryExpression *expr) const
         }
     }
 
-    checker::Type *newTsType {nullptr};
-    std::tie(newTsType, expr->operationType_) =
+    auto [newTsType, operationType] =
         checker->CheckBinaryOperator(expr->Left(), expr->Right(), expr, expr->OperatorType(), expr->Start());
-    expr->SetTsType(newTsType);
+    expr->SetTsType(checker->MaybeBoxType(newTsType));
+    expr->SetOperationType(checker->MaybeBoxType(operationType));
 
     checker->Context().CheckBinarySmartCastCondition(expr);
 
@@ -1583,6 +1570,45 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     return expr->TsType();
 }
 
+static bool IsNumericType(ETSChecker *checker, Type *type)
+{
+    return checker->Relation()->IsSupertypeOf(checker->GetGlobalTypesHolder()->GlobalNumericBuiltinType(), type);
+}
+
+static Type *BiggerNumericType(ETSChecker *checker, Type *t1, Type *t2)
+{
+    ES2PANDA_ASSERT(IsNumericType(checker, t1));
+    ES2PANDA_ASSERT(IsNumericType(checker, t2));
+
+    auto *rel = checker->Relation();
+
+    if (rel->IsSupertypeOf(checker->GlobalDoubleBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalDoubleBuiltinType(), t2)) {
+        return checker->GlobalDoubleBuiltinType();
+    }
+    if (rel->IsSupertypeOf(checker->GlobalFloatBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalFloatBuiltinType(), t2)) {
+        return checker->GlobalFloatBuiltinType();
+    }
+    if (rel->IsSupertypeOf(checker->GlobalLongBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalLongBuiltinType(), t2)) {
+        return checker->GlobalLongBuiltinType();
+    }
+    if (rel->IsSupertypeOf(checker->GlobalIntBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalIntBuiltinType(), t2)) {
+        return checker->GlobalIntBuiltinType();
+    }
+    if (rel->IsSupertypeOf(checker->GlobalShortBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalShortBuiltinType(), t2)) {
+        return checker->GlobalShortBuiltinType();
+    }
+    if (rel->IsSupertypeOf(checker->GlobalByteBuiltinType(), t1) ||
+        rel->IsSupertypeOf(checker->GlobalByteBuiltinType(), t2)) {
+        return checker->GlobalByteBuiltinType();
+    }
+    ES2PANDA_UNREACHABLE();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
     if (expr->TsType() != nullptr) {
@@ -1620,21 +1646,10 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
         expr->SetTsType(checker->GetNonConstantType(consequentType));
+    } else if (IsNumericType(GetETSChecker(), consequentType) && IsNumericType(GetETSChecker(), alternateType)) {
+        expr->SetTsType(BiggerNumericType(GetETSChecker(), consequentType, alternateType));
     } else {
-        //  If possible and required update number literal type to the proper value (identical to left-side type)
-        if (alternate->IsNumberLiteral() &&
-            checker->AdjustNumberLiteralType(alternate->AsNumberLiteral(), alternateType, consequentType)) {
-            expr->SetTsType(consequentType);
-        } else if (consequent->IsNumberLiteral() &&
-                   checker->AdjustNumberLiteralType(consequent->AsNumberLiteral(), consequentType, alternateType)) {
-            expr->SetTsType(alternateType);
-        } else {
-            expr->SetTsType(checker->CreateETSUnionType({consequentType, alternateType}));
-            if (expr->TsType()->IsETSReferenceType()) {
-                checker->MaybeBoxExpression(expr->Consequent());
-                checker->MaybeBoxExpression(expr->Alternate());
-            }
-        }
+        expr->SetTsType(checker->CreateETSUnionType({consequentType, alternateType}));
     }
 
     // Restore smart casts to initial state.
@@ -1662,16 +1677,28 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
         return type;  // type is actually used as method
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+    auto *const functionType = type->AsETSFunctionType();
+    auto &signatures = functionType->CallSignatures();
+
+    if (signatures.at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
         checker->LogError(diagnostic::PRIVATE_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().size() > 1) {
+    auto it = signatures.begin();
+    while (it != signatures.end()) {
+        if ((*it)->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+            it = signatures.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    if (signatures.size() > 1U) {
         checker->LogError(diagnostic::OVERLOADED_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
-    return type->AsETSFunctionType()->MethodToArrow(checker);
+    return functionType->MethodToArrow(checker);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
@@ -1744,7 +1771,7 @@ checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checke
 
     if (baseType->IsETSArrayType()) {
         if (expr->Property()->AsIdentifier()->Name().Is("length")) {
-            return expr->AdjustType(checker, checker->GlobalIntType());
+            return expr->AdjustType(checker, checker->GlobalIntBuiltinType());
         }
 
         return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
@@ -1834,11 +1861,6 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     return ResolveMemberExpressionByBaseType(checker, baseType, expr);
 }
 
-checker::Type *ETSAnalyzer::PreferredType(ir::ObjectExpression *expr) const
-{
-    return expr->preferredType_;
-}
-
 checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1884,7 +1906,7 @@ static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker
 
     for (auto *const recordProperty : recordProperties) {
         auto *const recordPropertyExpr = recordProperty->AsProperty()->Value();
-        ETSChecker::SetPreferredTypeIfPossible(recordPropertyExpr, valueType);
+        recordPropertyExpr->SetPreferredType(valueType);
         recordPropertyExpr->Check(checker);
     }
 }
@@ -2342,7 +2364,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
             return;
         }
 
-        ETSChecker::SetPreferredTypeIfPossible(value, propType);
+        value->SetPreferredType(propType);
         key->SetTsType(propType);
         value->SetTsType(value->Check(checker));
 
@@ -2536,9 +2558,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 
     auto argType = expr->argument_->Check(checker);
     const auto isCondExpr = expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
-    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(argType, true, true, isCondExpr);
-    auto unboxedOperandType =
-        isCondExpr ? checker->MaybeUnboxConditionalInRelation(argType) : checker->MaybeUnboxInRelation(argType);
+    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(argType, isCondExpr);
 
     if (argType != nullptr && argType->IsETSBigIntType() && argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
         switch (expr->OperatorType()) {
@@ -2569,11 +2589,6 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
             default:
                 break;
         }
-    }
-
-    if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
-        unboxedOperandType->IsETSPrimitiveType()) {
-        expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedOperandType));
     }
 
     SetTsTypeForUnaryExpression(checker, expr, operandType);
@@ -2627,11 +2642,6 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
         return expr->SetTsType(checker->GlobalTypeError());
     }
 
-    if (operandType->IsETSObjectType()) {
-        expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedType) |
-                                                 checker->GetBoxingFlag(unboxedType));
-    }
-
     return expr->SetTsType(operandType);
 }
 
@@ -2647,7 +2657,9 @@ checker::Type *ETSAnalyzer::Check(ir::BooleanLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     if (expr->TsType() == nullptr) {
-        expr->SetTsType(checker->CreateETSBooleanType(expr->Value()));
+        auto type = checker->GlobalETSBooleanBuiltinType()->Clone(GetChecker());
+        type->AddTypeFlag(TypeFlag::CONSTANT);
+        expr->SetTsType(type);
     }
     return expr->TsType();
 }
@@ -2656,7 +2668,9 @@ checker::Type *ETSAnalyzer::Check(ir::CharLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     if (expr->TsType() == nullptr) {
-        expr->SetTsType(checker->ProgramAllocator()->New<checker::CharType>(expr->Char()));
+        auto type = checker->GlobalCharBuiltinType()->Clone(GetChecker());
+        type->AddTypeFlag(TypeFlag::CONSTANT);
+        expr->SetTsType(type);
     }
     return expr->TsType();
 }
@@ -2670,26 +2684,62 @@ checker::Type *ETSAnalyzer::Check(ir::NullLiteral *expr) const
     return expr->TsType();
 }
 
+static bool CheckIfLiteralValueIsAppropriate(ETSChecker *checker, Type *type, ir::NumberLiteral *expr)
+{
+    auto number = expr->Number();
+    auto relation = checker->Relation();
+    if (relation->IsSupertypeOf(checker->GetGlobalTypesHolder()->GlobalIntegralBuiltinType(), type)) {
+        if (number.IsReal()) {
+            return false;
+        }
+        auto val = number.GetValueAndCastTo<int64_t>();
+        if (relation->IsIdenticalTo(type, checker->GlobalByteBuiltinType())) {
+            return val >= std::numeric_limits<int8_t>::min() && val <= std::numeric_limits<int8_t>::max();
+        }
+        if (relation->IsIdenticalTo(type, checker->GlobalShortBuiltinType())) {
+            return val >= std::numeric_limits<int16_t>::min() && val <= std::numeric_limits<int16_t>::max();
+        }
+        if (relation->IsIdenticalTo(type, checker->GlobalIntBuiltinType())) {
+            return val >= std::numeric_limits<int32_t>::min() && val <= std::numeric_limits<int32_t>::max();
+        }
+    } else if (number.IsDouble()) {
+        return relation->IsIdenticalTo(checker->GlobalDoubleBuiltinType(), type);
+    }
+    return true;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::NumberLiteral *expr) const
 {
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
     ETSChecker *checker = GetETSChecker();
-    if (expr->Number().IsInt()) {
-        expr->SetTsType(checker->CreateIntType(expr->Number().GetInt()));
-        return expr->TsType();
+    Type *type;
+
+    if (auto *preferredType =
+            GetAppropriatePreferredType(expr->PreferredType(), [&](Type *tp) { return checker->CheckIfNumeric(tp); });
+        preferredType != nullptr && !expr->IsFolded() &&
+        CheckIfLiteralValueIsAppropriate(checker, preferredType, expr)) {
+        type = preferredType->Clone(checker);
+    } else if (expr->Number().IsInt()) {
+        type = checker->GlobalIntBuiltinType()->Clone(checker);
+    } else if (expr->Number().IsLong()) {
+        type = checker->GlobalLongBuiltinType()->Clone(checker);
+    } else if (expr->Number().IsFloat()) {
+        type = checker->GlobalFloatBuiltinType()->Clone(checker);
+    } else if (expr->Number().IsDouble()) {
+        type = checker->GlobalDoubleBuiltinType()->Clone(checker);
+    } else if (expr->Number().IsShort()) {
+        type = checker->GlobalShortBuiltinType()->Clone(checker);
+    } else if (expr->Number().IsByte()) {
+        type = checker->GlobalByteBuiltinType()->Clone(checker);
+    } else {
+        return checker->GlobalTypeError();
     }
 
-    if (expr->Number().IsLong()) {
-        expr->SetTsType(checker->CreateLongType(expr->Number().GetLong()));
-        return expr->TsType();
-    }
-
-    if (expr->Number().IsFloat()) {
-        expr->SetTsType(checker->CreateFloatType(expr->Number().GetFloat()));
-        return expr->TsType();
-    }
-
-    expr->SetTsType(checker->CreateDoubleType(expr->Number().GetDouble()));
-    return expr->TsType();
+    type->AddTypeFlag(TypeFlag::CONSTANT);
+    return expr->SetTsType(type);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::StringLiteral *expr) const
@@ -2853,6 +2903,21 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
     return ReturnTypeForStatement(st);
 }
 
+static void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
+                                  ir::AnnotationUsage *st, ETSChecker *checker)
+{
+    for (const auto &entry : fieldMap) {
+        if (entry.second->Value() == nullptr) {
+            checker->LogError(diagnostic::ANNOT_FIELD_NO_VAL, {entry.first}, st->Start());
+            continue;
+        }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto *clone = entry.second->Clone(checker->Allocator(), st);
+        st->AddProperty(clone);
+        clone->Check(checker);
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 {
     if (st->Expr()->TsType() != nullptr) {
@@ -2889,7 +2954,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         checker->CheckMultiplePropertiesAnnotation(st, st->GetBaseName()->Name(), fieldMap);
     }
 
-    checker->ProcessRequiredFields(fieldMap, st, checker);
+    ProcessRequiredFields(fieldMap, st, checker);
     return ReturnTypeForStatement(st);
 }
 
@@ -2951,7 +3016,7 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
     relation->SetNode(ident);
     if (auto ctx = checker::AssignmentContext(checker->Relation(), ident, elemType, iterType, ident->Start(),
                                               std::nullopt, TypeRelationFlag::NO_THROW);
-        !ctx.IsAssignable()) {
+        !ctx.IsAssignable() && !relation->IsLegalBoxedPrimitiveConversion(iterType, elemType)) {
         checker->LogError(diagnostic::ITERATOR_ELEMENT_TYPE_MISMATCH, {elemType, iterType}, st->Start());
         return false;
     }
@@ -2986,7 +3051,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::Type *elemType = nullptr;
 
     if (exprType->IsETSStringType()) {
-        elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
+        elemType = checker->GlobalCharBuiltinType();
     } else if (exprType->IsETSArrayType() || exprType->IsETSResizableArrayType()) {
         elemType = checker->GetElementTypeOfArray(exprType);
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
@@ -3155,24 +3220,11 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
             return false;
         }
 
-        if (st->argument_->IsObjectExpression()) {
-            st->argument_->AsObjectExpression()->SetPreferredType(funcReturnType);
-        }
         if (st->argument_->IsMemberExpression()) {
             checker->SetArrayPreferredTypeForNestedMemberExpressions(st->argument_->AsMemberExpression(),
                                                                      funcReturnType);
-        }
-
-        if (st->argument_->IsArrayExpression()) {
-            st->argument_->AsArrayExpression()->SetPreferredType(funcReturnType);
-        }
-
-        if (st->argument_->IsETSNewArrayInstanceExpression()) {
-            st->argument_->AsETSNewArrayInstanceExpression()->SetPreferredType(funcReturnType);
-        }
-
-        if (st->argument_->IsETSNewMultiDimArrayInstanceExpression()) {
-            st->argument_->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(funcReturnType);
+        } else {
+            st->argument_->SetPreferredType(funcReturnType);
         }
 
         checker::Type *argumentType = st->argument_->Check(checker);
@@ -3198,13 +3250,14 @@ checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::S
     } else {
         //  Case when function's return type should be inferred from return statement(s):
         if (containingFunc->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
-            InferReturnType(checker, containingFunc, funcReturnType,
-                            st->argument_);  // This removes the NEED_RETURN_TYPE flag, so only the first return
-                                             // statement going to land here...
+            funcReturnType = InferReturnType(checker, containingFunc,
+                                             st->argument_);  // This removes the NEED_RETURN_TYPE flag, so only the
+                                                              // first return statement going to land here...
         } else {
             //  All subsequent return statements:
-            ProcessReturnStatements(checker, containingFunc, funcReturnType, st,
-                                    st->argument_);  // and the remaining return statements will get processed here.
+            funcReturnType =
+                ProcessReturnStatements(checker, containingFunc, st,
+                                        st->argument_);  // and the remaining return statements will get processed here.
         }
     }
 
@@ -3258,9 +3311,8 @@ checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
                                                                     checker::TypeRelationFlag::NONE);
 
     auto *comparedExprType = checker->CheckSwitchDiscriminant(st->Discriminant());
-    auto unboxedDiscType = (st->Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U
-                               ? checker->MaybeUnboxInRelation(comparedExprType)
-                               : comparedExprType;
+    // may have no meaning to unbox comparedExprType
+    auto unboxedDiscType = checker->MaybeUnboxType(comparedExprType);
 
     SmartCastArray smartCasts = checker->Context().CloneSmartCasts();
     bool hasDefaultCase = false;
@@ -3393,7 +3445,11 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
     //  NOTE: T_S and K_o_t_l_i_n don't act in such way, but we can try - why not? :)
     auto *smartType = variableType;
     if (auto *const initType = st->Init() != nullptr ? st->Init()->TsType() : nullptr; initType != nullptr) {
-        smartType = checker->ResolveSmartType(initType, variableType);
+        auto const value = st->Init()->IsNumberLiteral()
+                               ? std::make_optional(st->Init()->AsNumberLiteral()->Number().GetDouble())
+                               : std::nullopt;
+
+        smartType = checker->ResolveSmartType(initType, variableType, value);
         //  Set smart type for identifier if it differs from annotated type
         //  Top-level and captured variables are not processed here!
         if (!checker->Relation()->IsIdenticalTo(variableType, smartType)) {
@@ -3470,27 +3526,23 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         return checker->InvalidateType(expr);
     }
 
-    ETSChecker::SetPreferredTypeIfPossible(expr->Expr(), targetType);
+    expr->Expr()->SetPreferredType(targetType);
 
     auto const sourceType = expr->Expr()->Check(checker);
     if (sourceType->IsTypeError()) {
         return checker->InvalidateType(expr);
     }
 
-    // NOTE(vpukhov): #20510 lowering
-    if (targetType->IsETSPrimitiveType() && sourceType->IsETSReferenceType()) {
-        auto *const boxedTargetType = checker->MaybeBoxInRelation(targetType);
-        if (!checker->Relation()->IsIdenticalTo(sourceType, boxedTargetType)) {
-            expr->Expr()->AddAstNodeFlags(ir::AstNodeFlags::CHECKCAST);
-        }
-    }
-
     if (sourceType->DefinitelyETSNullish() && !targetType->PossiblyETSNullish()) {
-        return checker->TypeError(expr, diagnostic::NULLISH_CAST_TO_NONNULLISH, expr->Start());
+        return expr->SetTsType(checker->TypeError(expr, diagnostic::NULLISH_CAST_TO_NONNULLISH, expr->Start()));
     }
 
     const checker::CastingContext ctx(
-        checker->Relation(), diagnostic::INVALID_CAST, {sourceType, targetType},
+        checker->Relation(),
+        sourceType->IsBuiltinNumeric() && targetType->IsBuiltinNumeric() ? diagnostic::IMPROPER_NUMERIC_CAST
+                                                                         : diagnostic::INVALID_CAST,
+        // CC-OFFNXT(G.FMT.03-CPP) project code style
+        {sourceType, targetType},
         checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
     if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {
@@ -3509,12 +3561,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     }
 
     if (targetType == checker->GetGlobalTypesHolder()->GlobalETSNeverType()) {
-        return checker->TypeError(expr, diagnostic::CAST_TO_NEVER, expr->Start());
+        return expr->SetTsType(checker->TypeError(expr, diagnostic::CAST_TO_NEVER, expr->Start()));
     }
 
-    checker->ComputeApparentType(targetType);
-    expr->SetTsType(targetType);
-    return expr->TsType();
+    return expr->SetTsType(targetType);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const

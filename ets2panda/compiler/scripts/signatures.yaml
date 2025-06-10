@@ -215,6 +215,20 @@ defines:
     ref: MIN_ARGSCOUNT_OF_FUNC
   - name: 'gensym%%_anonymous_const'
     ref: EXPORT_DEFAULT_CONSTANT_ANONYMOUSLY
+  - name: 'toByte'
+    ref: BYTE_CAST
+  - name: 'toShort'
+    ref: SHORT_CAST
+  - name: 'toInt'
+    ref: INT_CAST
+  - name: 'toLong'
+    ref: LONG_CAST
+  - name: 'toFloat'
+    ref: FLOAT_CAST
+  - name: 'toDouble'
+    ref: DOUBLE_CAST
+  - name: 'toChar'
+    ref: CHAR_CAST
   - name: 'NamedFunctionObject'
     ref: NAMED_FUNCTION_OBJECT
   - name: 'InterfaceObjectLiteral'
@@ -1468,6 +1482,12 @@ signatures:
     ref: BUILTIN_JSRUNTIME_GET_UNDEFINED
 
   - callee: BUILTIN_JSRUNTIME
+    method_name: getNull
+    params: []
+    return_type: BUILTIN_JSVALUE
+    ref: BUILTIN_JSRUNTIME_GET_NULL
+
+  - callee: BUILTIN_JSRUNTIME
     method_name: strictEqual
     params: [BUILTIN_JSVALUE, BUILTIN_JSVALUE]
     return_type: PRIMITIVE_BOOLEAN
@@ -1794,3 +1814,4 @@ dynamiclangs:
         - type: dynamic
           builtin: BUILTIN_JSRUNTIME_SET_ELEMENT_JSVALUE
       get_undefined: BUILTIN_JSRUNTIME_GET_UNDEFINED
+      get_null: BUILTIN_JSRUNTIME_GET_NULL

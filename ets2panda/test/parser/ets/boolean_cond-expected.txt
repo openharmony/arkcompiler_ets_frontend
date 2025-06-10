@@ -248,40 +248,8 @@
                     {
                       "type": "IfStatement",
                       "test": {
-                        "type": "BinaryExpression",
-                        "operator": ">",
-                        "left": {
-                          "type": "NumberLiteral",
-                          "value": 1,
-                          "loc": {
-                            "start": {
-                              "line": 20,
-                              "column": 7,
-                              "program": "boolean_cond.ets"
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 8,
-                              "program": "boolean_cond.ets"
-                            }
-                          }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 2,
-                          "loc": {
-                            "start": {
-                              "line": 20,
-                              "column": 11,
-                              "program": "boolean_cond.ets"
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 12,
-                              "program": "boolean_cond.ets"
-                            }
-                          }
-                        },
+                        "type": "BooleanLiteral",
+                        "value": false,
                         "loc": {
                           "start": {
                             "line": 20,

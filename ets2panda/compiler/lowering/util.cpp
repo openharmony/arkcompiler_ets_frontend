@@ -308,6 +308,15 @@ ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
     return decl->Node();
 }
 
+// Note: run varbinder on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
+void BindLoweredNode(varbinder::ETSBinder *varBinder, ir::AstNode *node)
+{
+    RefineSourceRanges(node);
+    InitScopesPhaseETS::RunExternalNode(node, varBinder);
+    auto *scope = NearestScope(node);
+    varBinder->ResolveReferencesForScopeWithContext(node, scope);
+}
+
 // Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {

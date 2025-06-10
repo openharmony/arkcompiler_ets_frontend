@@ -18,11 +18,11 @@ let a:(...args:number[])=>number = (...args:number[])=>{
 }
 type A = (...args:number[])=>string
 function foo(a:(...args:number[])=>string){
-    return a(3,4,5)
+    return a(3.0,4.0,5.0)
 }
 
 function main(){
-    assertEQ(a(1,2,3), 1)
+    assertEQ(a(1.0,2.0,3.0), 1.0)
     let func:A = (...args:number[]):string=>{ return "abc"}
     assertEQ(foo(func), "abc")
 }

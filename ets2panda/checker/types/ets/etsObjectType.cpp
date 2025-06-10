@@ -20,11 +20,14 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsEnumType.h"
-#include "checker/types/ets/etsDynamicFunctionType.h"
 #include "compiler/lowering/phase.h"
 #include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::checker {
+
+static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjectType const *owner,
+                                                                        util::StringView name,
+                                                                        PropertySearchFlags flags);
 
 void ETSObjectType::Iterate(const PropertyTraverser &cb) const
 {
@@ -41,8 +44,7 @@ void ETSObjectType::Iterate(const PropertyTraverser &cb) const
     }
 }
 
-varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(const util::StringView &name,
-                                                           PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(util::StringView name, PropertySearchFlags flags) const
 {
     varbinder::LocalVariable *res {};
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_FIELD) != 0) {
@@ -63,7 +65,7 @@ varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(const util::StringVie
     return res;
 }
 
-varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::GetProperty(util::StringView name, PropertySearchFlags flags) const
 {
     varbinder::LocalVariable *res = SearchFieldsDecls(name, flags);
     if (res == nullptr && (flags & PropertySearchFlags::SEARCH_METHOD) != 0) {
@@ -173,16 +175,11 @@ static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, cons
     res->Reset(decl, var->Flags());
 }
 
-varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
+varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(util::StringView name,
                                                                               PropertySearchFlags flags) const
 {
-    std::vector<Signature *> signatures;
-    varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(signatures, name, flags);
-    // #22952: the called function *always* returns nullptr
-    ES2PANDA_ASSERT(functionalInterface == nullptr);
-    (void)functionalInterface;
-
-    if (signatures.empty()) {
+    auto signatureSet = GetSignaturesForSyntheticType(this, name, flags);
+    if (signatureSet.empty()) {
         return nullptr;
     }
 
@@ -190,8 +187,8 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
                                                                               varbinder::VariableFlags::METHOD);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
-    for (auto &s : signatures) {
-        funcType->AddCallSignature(s);
+    for (auto &s : signatureSet) {
+        funcType->AddCallSignature(s.second);
     }
 
     res->SetTsType(funcType);
@@ -202,77 +199,91 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     return res;
 }
 
-ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &name) const
+ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(util::StringView name) const
 {
     ES2PANDA_ASSERT(GetRelation() != nullptr);
     return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
-static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
-                         varbinder::LocalVariable *found)
+static void ReplaceArgInSig(std::multimap<size_t, Signature *> *signatureSet, Signature *sigToInsert,
+                            TypeRelation *relation)
 {
-    for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-        if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
+    auto range = signatureSet->equal_range(sigToInsert->ArgCount());
+    for (auto it = range.first; it != range.second; ++it) {
+        auto sigToReplace = it->second;
+
+        if (relation->IsSupertypeOf(sigToInsert->Owner(), sigToReplace->Owner()) &&
+            relation->SignatureIsSupertypeOf(sigToInsert, sigToReplace)) {
+            // Already overridden by a subtype's signature
+            return;
+        }
+        if (relation->IsSupertypeOf(sigToReplace->Owner(), sigToInsert->Owner()) &&
+            relation->SignatureIsSupertypeOf(sigToReplace, sigToInsert)) {
+            signatureSet->erase(it);
+            signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
+            return;
+        }
+    }
+    signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
+}
+
+// CC-OFFNXT(huge_depth) solid logic
+static void AddSignatureToSignatureSet(std::multimap<size_t, Signature *> *signatureSet,
+                                       varbinder::LocalVariable *found, TypeRelation *relation,
+                                       PropertySearchFlags flags)
+{
+    for (auto *sigToInsert : found->TsType()->AsETSFunctionType()->CallSignatures()) {
+        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
+            sigToInsert->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
             continue;
         }
-        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) && it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-            continue;
+
+        if (signatureSet->count(sigToInsert->ArgCount()) != 0U) {
+            ReplaceArgInSig(signatureSet, sigToInsert, relation);
+        } else {
+            signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
         }
-        if (std::any_of(signatures.begin(), signatures.end(), [&it, &checker](auto sig) {
-                return checker->AreOverrideCompatible(sig, it) &&
-                       it->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-                       (checker->Relation()->IsSupertypeOf(it->Owner(), sig->Owner()) ||
-                        !sig->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE));
-            })) {
-            continue;
-        }
-        // Issue: #18720
-        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-        signatures.emplace_back(it);
     }
 }
 
-varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
-                                                                           const util::StringView &name,
-                                                                           PropertySearchFlags flags) const
+static void CollectSignaturesForSyntheticType(ETSObjectType const *owner,
+                                              std::multimap<size_t, Signature *> *signatureSet, util::StringView name,
+                                              PropertySearchFlags flags)
 {
-    auto *checker = GetRelation()->GetChecker()->AsETSChecker();
-
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
-        if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
+        if (auto *found = owner->GetOwnProperty<PropertyType::STATIC_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
             ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            AddSignature(signatures, flags, checker, found);
+            AddSignatureToSignatureSet(signatureSet, found, owner->GetRelation(), flags);
         }
     }
 
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
-        if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
+        if (auto *found = owner->GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
             ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            AddSignature(signatures, flags, checker, found);
+            AddSignatureToSignatureSet(signatureSet, found, owner->GetRelation(), flags);
         }
     }
 
-    if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        superType_->CollectSignaturesForSyntheticType(signatures, name, flags);
+    if (owner->SuperType() != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
+        CollectSignaturesForSyntheticType(owner->SuperType(), signatureSet, name, flags);
     }
 
-    ArenaVector<ETSObjectType *> interfaces(Allocator()->Adapter());
-    checker->GetInterfacesOfClass(const_cast<ETSObjectType *>(this), interfaces);
-
-    for (auto *const &interface : interfaces) {
-        if (interface != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) &&
-            !this->IsPartial()) {  // NOTE: issue 24548
-            if (auto *found =
-                    interface->GetProperty(name, flags | PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
-                found != nullptr && !found->TsType()->IsTypeError()) {
-                ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-                AddSignature(signatures, flags, checker, found);
-            }
+    if ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
+        for (auto *interface : owner->Interfaces()) {
+            CollectSignaturesForSyntheticType(interface, signatureSet, name, flags);
         }
     }
-    return nullptr;
+}
+
+static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjectType const *owner,
+                                                                        util::StringView name,
+                                                                        PropertySearchFlags flags)
+{
+    std::multimap<size_t, Signature *> signatureSet;
+    CollectSignaturesForSyntheticType(owner, &signatureSet, name, flags);
+    return signatureSet;
 }
 
 std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
@@ -545,6 +556,9 @@ bool ETSObjectType::IsBoxedPrimitive() const
     if (this->IsETSDynamicType()) {
         return false;
     }
+    if (this->IsETSEnumType()) {
+        return false;
+    }
 
     return this->IsETSUnboxableObject();
 }
@@ -580,8 +594,8 @@ ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
     return invoke->TsType()->AsETSFunctionType();
 }
 
-bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
-                                          TypeFlag wideningFlags, TypeFlag narrowingFlags)
+bool ETSObjectType::CastWidening(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
+                                 TypeFlag wideningFlags)
 {
     if (target->HasTypeFlag(unboxFlags)) {
         conversion::Unboxing(relation, this);
@@ -589,10 +603,6 @@ bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *co
     }
     if (target->HasTypeFlag(wideningFlags)) {
         conversion::UnboxingWideningPrimitive(relation, this, target);
-        return true;
-    }
-    if (target->HasTypeFlag(narrowingFlags)) {
-        conversion::UnboxingNarrowingPrimitive(relation, this, target);
         return true;
     }
     return false;
@@ -609,7 +619,7 @@ bool ETSObjectType::TryCastByte(TypeRelation *const relation, Type *const target
         return true;
     }
     if (target->HasTypeFlag(TypeFlag::CHAR)) {
-        conversion::UnboxingWideningNarrowingPrimitive(relation, this, target);
+        conversion::UnboxingWideningPrimitive(relation, this, target);
         return true;
     }
     return false;
@@ -621,25 +631,21 @@ bool ETSObjectType::TryCastIntegral(TypeRelation *const relation, Type *const ta
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT) &&
-        CastWideningNarrowing(relation, target, TypeFlag::SHORT,
-                              TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
-                              TypeFlag::BYTE | TypeFlag::CHAR)) {
+        CastWidening(relation, target, TypeFlag::SHORT,
+                     TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR) &&
-        CastWideningNarrowing(relation, target, TypeFlag::CHAR,
-                              TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
-                              TypeFlag::BYTE | TypeFlag::SHORT)) {
+        CastWidening(relation, target, TypeFlag::CHAR,
+                     TypeFlag::SHORT | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT) &&
-        CastWideningNarrowing(relation, target, TypeFlag::INT, TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
-                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR)) {
+        CastWidening(relation, target, TypeFlag::INT, TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG) &&
-        CastWideningNarrowing(relation, target, TypeFlag::LONG, TypeFlag::FLOAT | TypeFlag::DOUBLE,
-                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT)) {
+        CastWidening(relation, target, TypeFlag::LONG, TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
         return true;
     }
     return false;
@@ -648,14 +654,11 @@ bool ETSObjectType::TryCastIntegral(TypeRelation *const relation, Type *const ta
 bool ETSObjectType::TryCastFloating(TypeRelation *const relation, Type *const target)
 {
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT) &&
-        CastWideningNarrowing(relation, target, TypeFlag::FLOAT, TypeFlag::DOUBLE,
-                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG)) {
+        CastWidening(relation, target, TypeFlag::FLOAT, TypeFlag::DOUBLE)) {
         return true;
     }
-    if (auto narrowingFlags =
-            TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT;
-        this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
-        CastWideningNarrowing(relation, target, TypeFlag::DOUBLE, TypeFlag::NONE, narrowingFlags)) {
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+        CastWidening(relation, target, TypeFlag::DOUBLE, TypeFlag::NONE)) {
         return true;
     }
     return false;
@@ -677,6 +680,12 @@ bool ETSObjectType::TryCastUnboxable(TypeRelation *const relation, Type *const t
         conversion::WideningReference(relation, this, target->AsETSObjectType());
         return true;
     }
+
+    if (target->IsETSEnumType()) {
+        auto unboxedThis = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(this);
+        return relation->IsCastableTo(unboxedThis, target);
+    }
+
     conversion::Forbidden(relation);
     return true;
 }
@@ -701,10 +710,6 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
     }
     if (this->IsETSUnboxableObject()) {
         return TryCastUnboxable(relation, target);
-    }
-    if (target->IsETSPrimitiveType()) {
-        conversion::NarrowingReferenceUnboxing(relation, this, target);
-        return true;
     }
     return false;
 }
@@ -1483,7 +1488,7 @@ ETSObjectType *ETSObjectType::GetInstantiatedType(util::StringView hash)
     return found2->second;
 }
 
-void ETSObjectType::InsertInstantiationMap(const util::StringView &key, ETSObjectType *value)
+void ETSObjectType::InsertInstantiationMap(util::StringView key, ETSObjectType *value)
 {
     auto &instantiationMap =
         compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->GetObjectInstantiationMap();

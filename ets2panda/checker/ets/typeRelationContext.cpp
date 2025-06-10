@@ -77,19 +77,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                 result_ = paramType;
                 return;
             }
-
-            if (paramType->IsETSPrimitiveType()) {
-                checker_->Relation()->SetNode(it);
-
-                auto *const boxedTypeArg = checker_->MaybeBoxInRelation(paramType);
-                if (boxedTypeArg != nullptr) {
-                    paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                          checker_->GetGlobalTypesHolder());
-                } else {
-                    ES2PANDA_UNREACHABLE();
-                }
-            }
-
+            ES2PANDA_ASSERT(!paramType->IsETSPrimitiveType());
             typeArgTypes.push_back(paramType);
         }
     }
@@ -136,10 +124,10 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
         }
         // NOTE(vpukhov): #19701 void refactoring
         ES2PANDA_ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
+        auto maybeIrrelevantTypeArg = typeArg->IsETSVoidType() ? checker->GlobalETSUndefinedType() : typeArg;
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
-        if (!relation->IsAssignableTo(typeArg, constraint)) {
-            // NOTE(vpukhov): refine message
-            checker->LogError(diagnostic::INIT_NOT_ASSIGNABLE, {typeArg, constraint}, pos);
+        if (!relation->IsSupertypeOf(constraint, maybeIrrelevantTypeArg)) {
+            checker->LogError(diagnostic::TYPEARG_TYPEPARAM_SUBTYPING, {typeArg, constraint}, pos);
         }
     }
 }

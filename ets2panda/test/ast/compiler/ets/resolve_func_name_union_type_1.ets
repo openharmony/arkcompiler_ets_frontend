@@ -26,3 +26,4 @@ function main() {
 }
 
 /* @@@ label Error TypeError: Type '() => Double' cannot be assigned to type 'String|Double'  */
+/* @@? 25:15 Error TypeError: Cannot cast type 'String|Double' to '() => Double'  */

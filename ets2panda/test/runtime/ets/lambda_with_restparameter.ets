@@ -18,10 +18,10 @@ function main(){
     let localVariable:String = "localVariable"
     let f1 = (a:String, b:number, ...args:(number|string|undefined)[])=>{
         assertEQ(a,"000");
-        assertEQ(b,111);
-        assertEQ(args[0],123);
+        assertEQ(b,111.0);
+        assertEQ(args[0],123.0);
         assertEQ(localVariable,"localVariable");
         assertEQ(globalVariable,"globalVariable")
     }
-    f1("000",111,123,"123")
+    f1("000",111.0,123.0,"123")
 }

@@ -21,8 +21,8 @@ let f1 = (a:String, b:Number, ...args:FixedArray<String>)=>{
 function main(){
     let f2 = (a:String, b:Number, ...args:FixedArray<Number>)=>{
         assertEQ(a,"000");
-        assertEQ(args[0],222);
+        assertEQ(args[0],222.0);
     }
-    f1("000",111,"222","333")
-    f2("000",111,222,333)
+    f1("000",111.0,"222","333")
+    f2("000",111.0,222.0,333.0)
 }

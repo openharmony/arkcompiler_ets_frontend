@@ -152,6 +152,20 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
     return nullptr;
 }
 
+void RecordLowering::CheckKeyType(checker::ETSChecker *checker, checker::Type const *const keyType,
+                                  ir::ObjectExpression const *const expr, public_lib::Context *ctx) const noexcept
+{
+    if (keyType->IsETSObjectType()) {
+        if (keyType->IsETSStringType() || keyType->IsBuiltinNumeric() ||
+            checker->Relation()->IsIdenticalTo(keyType, checker->GetGlobalTypesHolder()->GlobalNumericBuiltinType()) ||
+            checker->Relation()->IsIdenticalTo(keyType, checker->GetGlobalTypesHolder()->GlobalIntegralBuiltinType()) ||
+            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ENUM_OBJECT)) {
+            return;
+        }
+    }
+    ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
+}
+
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->GetChecker()->AsETSChecker();
@@ -171,10 +185,23 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
 
     // Access type arguments
     [[maybe_unused]] size_t constexpr NUM_ARGUMENTS = 2;
-    auto typeArguments = expr->PreferredType()->AsETSObjectType()->TypeArguments();
+    auto const &typeArguments = expr->PreferredType()->AsETSObjectType()->TypeArguments();
     ES2PANDA_ASSERT(typeArguments.size() == NUM_ARGUMENTS);
 
+    auto const *keyType = typeArguments[0];
+    if (keyType->IsETSTypeParameter()) {
+        keyType = keyType->AsETSTypeParameter()->GetConstraintType();
+    }
+
     // check keys correctness
+    if (keyType->IsETSUnionType()) {
+        for (auto const *const ct : keyType->AsETSUnionType()->ConstituentTypes()) {
+            CheckKeyType(checker, ct, expr, ctx);
+        }
+    } else {
+        CheckKeyType(checker, keyType, expr, ctx);
+    }
+
     KeySetType keySet;
     CheckDuplicateKey(keySet, expr, ctx);
     CheckLiteralsCompleteness(keySet, expr, ctx);

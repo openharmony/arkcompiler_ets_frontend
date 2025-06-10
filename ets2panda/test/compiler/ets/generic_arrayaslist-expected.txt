@@ -6914,9 +6914,8 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "fastGrowThreshold",
-                          "decorators": [],
+                          "type": "NumberLiteral",
+                          "value": 8192,
                           "loc": {
                             "start": {
                               "line": 71,
@@ -7004,9 +7003,8 @@
                                   }
                                 },
                                 "right": {
-                                  "type": "Identifier",
-                                  "name": "multiplier",
-                                  "decorators": [],
+                                  "type": "NumberLiteral",
+                                  "value": 2,
                                   "loc": {
                                     "start": {
                                       "line": 73,
@@ -7052,7 +7050,7 @@
                               "loc": {
                                 "start": {
                                   "line": 73,
-                                  "column": 20,
+                                  "column": 44,
                                   "program": "generic_arrayaslist.ets"
                                 },
                                 "end": {
@@ -7115,9 +7113,8 @@
                                 }
                               },
                               "right": {
-                                "type": "Identifier",
-                                "name": "multiplier",
-                                "decorators": [],
+                                "type": "NumberLiteral",
+                                "value": 2,
                                 "loc": {
                                   "start": {
                                     "line": 75,
@@ -7794,13 +7791,47 @@
                                   },
                                   "arguments": [
                                     {
-                                      "type": "TSAsExpression",
-                                      "expression": {
+                                      "type": "CallExpression",
+                                      "callee": {
                                         "type": "MemberExpression",
                                         "object": {
                                           "type": "MemberExpression",
                                           "object": {
-                                            "type": "ThisExpression",
+                                            "type": "MemberExpression",
+                                            "object": {
+                                              "type": "ThisExpression",
+                                              "loc": {
+                                                "start": {
+                                                  "line": 82,
+                                                  "column": 59,
+                                                  "program": "generic_arrayaslist.ets"
+                                                },
+                                                "end": {
+                                                  "line": 82,
+                                                  "column": 63,
+                                                  "program": "generic_arrayaslist.ets"
+                                                }
+                                              }
+                                            },
+                                            "property": {
+                                              "type": "Identifier",
+                                              "name": "data",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 82,
+                                                  "column": 64,
+                                                  "program": "generic_arrayaslist.ets"
+                                                },
+                                                "end": {
+                                                  "line": 82,
+                                                  "column": 68,
+                                                  "program": "generic_arrayaslist.ets"
+                                                }
+                                              }
+                                            },
+                                            "computed": false,
+                                            "optional": false,
                                             "loc": {
                                               "start": {
                                                 "line": 82,
@@ -7809,24 +7840,24 @@
                                               },
                                               "end": {
                                                 "line": 82,
-                                                "column": 63,
+                                                "column": 68,
                                                 "program": "generic_arrayaslist.ets"
                                               }
                                             }
                                           },
                                           "property": {
                                             "type": "Identifier",
-                                            "name": "data",
+                                            "name": "length",
                                             "decorators": [],
                                             "loc": {
                                               "start": {
                                                 "line": 82,
-                                                "column": 64,
+                                                "column": 69,
                                                 "program": "generic_arrayaslist.ets"
                                               },
                                               "end": {
                                                 "line": 82,
-                                                "column": 68,
+                                                "column": 75,
                                                 "program": "generic_arrayaslist.ets"
                                               }
                                             }
@@ -7841,24 +7872,24 @@
                                             },
                                             "end": {
                                               "line": 82,
-                                              "column": 68,
+                                              "column": 75,
                                               "program": "generic_arrayaslist.ets"
                                             }
                                           }
                                         },
                                         "property": {
                                           "type": "Identifier",
-                                          "name": "length",
+                                          "name": "toInt",
                                           "decorators": [],
                                           "loc": {
                                             "start": {
                                               "line": 82,
-                                              "column": 69,
+                                              "column": 76,
                                               "program": "generic_arrayaslist.ets"
                                             },
                                             "end": {
                                               "line": 82,
-                                              "column": 75,
+                                              "column": 81,
                                               "program": "generic_arrayaslist.ets"
                                             }
                                           }
@@ -7873,26 +7904,13 @@
                                           },
                                           "end": {
                                             "line": 82,
-                                            "column": 75,
+                                            "column": 81,
                                             "program": "generic_arrayaslist.ets"
                                           }
                                         }
                                       },
-                                      "typeAnnotation": {
-                                        "type": "ETSPrimitiveType",
-                                        "loc": {
-                                          "start": {
-                                            "line": 82,
-                                            "column": 79,
-                                            "program": "generic_arrayaslist.ets"
-                                          },
-                                          "end": {
-                                            "line": 82,
-                                            "column": 82,
-                                            "program": "generic_arrayaslist.ets"
-                                          }
-                                        }
-                                      },
+                                      "arguments": [],
+                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 82,
@@ -7901,7 +7919,7 @@
                                         },
                                         "end": {
                                           "line": 82,
-                                          "column": 75,
+                                          "column": 83,
                                           "program": "generic_arrayaslist.ets"
                                         }
                                       }
@@ -7916,7 +7934,7 @@
                                     },
                                     "end": {
                                       "line": 82,
-                                      "column": 83,
+                                      "column": 84,
                                       "program": "generic_arrayaslist.ets"
                                     }
                                   }
@@ -7929,7 +7947,7 @@
                                   },
                                   "end": {
                                     "line": 82,
-                                    "column": 84,
+                                    "column": 85,
                                     "program": "generic_arrayaslist.ets"
                                   }
                                 }
@@ -7942,7 +7960,7 @@
                                 },
                                 "end": {
                                   "line": 82,
-                                  "column": 84,
+                                  "column": 85,
                                   "program": "generic_arrayaslist.ets"
                                 }
                               }
@@ -7955,7 +7973,7 @@
                               },
                               "end": {
                                 "line": 82,
-                                "column": 85,
+                                "column": 86,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -10300,13 +10318,47 @@
                                     },
                                     "arguments": [
                                       {
-                                        "type": "TSAsExpression",
-                                        "expression": {
+                                        "type": "CallExpression",
+                                        "callee": {
                                           "type": "MemberExpression",
                                           "object": {
                                             "type": "MemberExpression",
                                             "object": {
-                                              "type": "ThisExpression",
+                                              "type": "MemberExpression",
+                                              "object": {
+                                                "type": "ThisExpression",
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 104,
+                                                    "column": 67,
+                                                    "program": "generic_arrayaslist.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 104,
+                                                    "column": 71,
+                                                    "program": "generic_arrayaslist.ets"
+                                                  }
+                                                }
+                                              },
+                                              "property": {
+                                                "type": "Identifier",
+                                                "name": "data",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 104,
+                                                    "column": 72,
+                                                    "program": "generic_arrayaslist.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 104,
+                                                    "column": 76,
+                                                    "program": "generic_arrayaslist.ets"
+                                                  }
+                                                }
+                                              },
+                                              "computed": false,
+                                              "optional": false,
                                               "loc": {
                                                 "start": {
                                                   "line": 104,
@@ -10315,24 +10367,24 @@
                                                 },
                                                 "end": {
                                                   "line": 104,
-                                                  "column": 71,
+                                                  "column": 76,
                                                   "program": "generic_arrayaslist.ets"
                                                 }
                                               }
                                             },
                                             "property": {
                                               "type": "Identifier",
-                                              "name": "data",
+                                              "name": "length",
                                               "decorators": [],
                                               "loc": {
                                                 "start": {
                                                   "line": 104,
-                                                  "column": 72,
+                                                  "column": 77,
                                                   "program": "generic_arrayaslist.ets"
                                                 },
                                                 "end": {
                                                   "line": 104,
-                                                  "column": 76,
+                                                  "column": 83,
                                                   "program": "generic_arrayaslist.ets"
                                                 }
                                               }
@@ -10347,24 +10399,24 @@
                                               },
                                               "end": {
                                                 "line": 104,
-                                                "column": 76,
+                                                "column": 83,
                                                 "program": "generic_arrayaslist.ets"
                                               }
                                             }
                                           },
                                           "property": {
                                             "type": "Identifier",
-                                            "name": "length",
+                                            "name": "toInt",
                                             "decorators": [],
                                             "loc": {
                                               "start": {
                                                 "line": 104,
-                                                "column": 77,
+                                                "column": 84,
                                                 "program": "generic_arrayaslist.ets"
                                               },
                                               "end": {
                                                 "line": 104,
-                                                "column": 83,
+                                                "column": 89,
                                                 "program": "generic_arrayaslist.ets"
                                               }
                                             }
@@ -10379,26 +10431,13 @@
                                             },
                                             "end": {
                                               "line": 104,
-                                              "column": 83,
+                                              "column": 89,
                                               "program": "generic_arrayaslist.ets"
                                             }
                                           }
                                         },
-                                        "typeAnnotation": {
-                                          "type": "ETSPrimitiveType",
-                                          "loc": {
-                                            "start": {
-                                              "line": 104,
-                                              "column": 87,
-                                              "program": "generic_arrayaslist.ets"
-                                            },
-                                            "end": {
-                                              "line": 104,
-                                              "column": 90,
-                                              "program": "generic_arrayaslist.ets"
-                                            }
-                                          }
-                                        },
+                                        "arguments": [],
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 104,
@@ -10407,7 +10446,7 @@
                                           },
                                           "end": {
                                             "line": 104,
-                                            "column": 83,
+                                            "column": 91,
                                             "program": "generic_arrayaslist.ets"
                                           }
                                         }
@@ -10422,7 +10461,7 @@
                                       },
                                       "end": {
                                         "line": 104,
-                                        "column": 91,
+                                        "column": 92,
                                         "program": "generic_arrayaslist.ets"
                                       }
                                     }
@@ -10435,7 +10474,7 @@
                                     },
                                     "end": {
                                       "line": 104,
-                                      "column": 92,
+                                      "column": 93,
                                       "program": "generic_arrayaslist.ets"
                                     }
                                   }
@@ -10448,7 +10487,7 @@
                                   },
                                   "end": {
                                     "line": 104,
-                                    "column": 92,
+                                    "column": 93,
                                     "program": "generic_arrayaslist.ets"
                                   }
                                 }
@@ -10463,7 +10502,7 @@
                               },
                               "end": {
                                 "line": 104,
-                                "column": 93,
+                                "column": 94,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -25303,4 +25342,4 @@
   }
 }
 TypeError: Expected 1 arguments, got 3. [generic_arrayaslist.ets:115:9]
-TypeError: No matching call signature for assertTrue(int, int, "No data to popBack in ArrayAsList!") [generic_arrayaslist.ets:115:9]
+TypeError: No matching call signature for assertTrue(Int, Int, "No data to popBack in ArrayAsList!") [generic_arrayaslist.ets:115:9]

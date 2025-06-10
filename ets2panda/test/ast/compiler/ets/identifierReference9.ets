@@ -25,4 +25,4 @@ class A {
   }
 }
 
-/* @@? 24:16 Error TypeError: Type 'int' cannot be assigned to type '() => void'  */
+/* @@? 24:16 Error TypeError: Type 'Int' cannot be assigned to type '() => void'  */

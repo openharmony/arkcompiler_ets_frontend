@@ -62,6 +62,16 @@ void NumberLiteral::Dump(ir::SrcDumper *dumper) const
             dumper->Add(number_.GetDouble());
             return;
         }
+
+        if (number_.IsShort()) {
+            dumper->Add(number_.GetShort());
+            return;
+        }
+
+        if (number_.IsByte()) {
+            dumper->Add(number_.GetByte());
+            return;
+        }
     }
     dumper->Add(std::string(number_.Str()));
 }
@@ -93,6 +103,7 @@ NumberLiteral *NumberLiteral::Clone(ArenaAllocator *const allocator, AstNode *co
         clone->SetParent(parent);
     }
     clone->SetRange(Range());
+    clone->SetFolded(IsFolded());
     return clone;
 }
 
@@ -385,6 +396,14 @@ std::string NumberLiteral::ToString() const
 
     if (number_.IsFloat()) {
         FpToString(number_.GetFloat(), result);
+    }
+
+    if (number_.IsShort()) {
+        IntegerToString(number_.GetShort(), result);
+    }
+
+    if (number_.IsByte()) {
+        IntegerToString(static_cast<int32_t>(number_.GetByte()), result);
     }
 
     ES2PANDA_ASSERT(!result.empty());

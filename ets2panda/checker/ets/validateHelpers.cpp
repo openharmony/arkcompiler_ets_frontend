@@ -191,21 +191,6 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
     }
 }
 
-bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
-{
-    if (type == nullptr || type->IsTypeError()) {
-        ES2PANDA_ASSERT(IsAnyError());
-        return false;
-    }
-
-    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
-        return ValidateAnnotationPropertyType(MaybeUnboxType(GetElementTypeOfArray(type)));
-    }
-
-    return type->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_ENUM | TypeFlag::ETS_BOOLEAN) ||
-           type->IsETSStringType();
-}
-
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 {
     if (IsVariableGetterSetter(variable)) {

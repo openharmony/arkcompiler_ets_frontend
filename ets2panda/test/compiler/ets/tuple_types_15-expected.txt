@@ -1291,7 +1291,7 @@
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 26,
+                                        "column": 44,
                                         "program": "tuple_types_15.ets"
                                       },
                                       "end": {

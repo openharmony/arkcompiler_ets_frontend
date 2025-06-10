@@ -461,7 +461,8 @@ bool Identifier::CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtensi
     }
 
     if (parent->Parent() != nullptr) {
-        if (parent->Parent()->IsTSEnumDeclaration()) {
+        if (parent->Parent()->IsTSEnumDeclaration() &&
+            !(parent->IsTSEnumMember() && parent->AsTSEnumMember()->Init() == this)) {
             return true;
         }
     }

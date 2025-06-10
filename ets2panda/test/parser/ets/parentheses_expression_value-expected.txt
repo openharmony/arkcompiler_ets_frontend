@@ -794,7 +794,7 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 7,
+                                "column": 12,
                                 "program": "parentheses_expression_value.ets"
                               },
                               "end": {

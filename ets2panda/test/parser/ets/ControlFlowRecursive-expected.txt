@@ -2756,43 +2756,8 @@
                               }
                             },
                             "init": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "Identifier",
-                                "name": "ControlFlowRecursive",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 47,
-                                    "column": 23,
-                                    "program": "ControlFlowRecursive.ets"
-                                  },
-                                  "end": {
-                                    "line": 47,
-                                    "column": 43,
-                                    "program": "ControlFlowRecursive.ets"
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "n1",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 47,
-                                    "column": 44,
-                                    "program": "ControlFlowRecursive.ets"
-                                  },
-                                  "end": {
-                                    "line": 47,
-                                    "column": 46,
-                                    "program": "ControlFlowRecursive.ets"
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
+                              "type": "NumberLiteral",
+                              "value": 3,
                               "loc": {
                                 "start": {
                                   "line": 47,
@@ -2855,43 +2820,8 @@
                           }
                         },
                         "right": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "ControlFlowRecursive",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 47,
-                                "column": 53,
-                                "program": "ControlFlowRecursive.ets"
-                              },
-                              "end": {
-                                "line": 47,
-                                "column": 73,
-                                "program": "ControlFlowRecursive.ets"
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "n2",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 47,
-                                "column": 74,
-                                "program": "ControlFlowRecursive.ets"
-                              },
-                              "end": {
-                                "line": 47,
-                                "column": 76,
-                                "program": "ControlFlowRecursive.ets"
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
+                          "type": "NumberLiteral",
+                          "value": 5,
                           "loc": {
                             "start": {
                               "line": 47,
@@ -3418,7 +3348,7 @@
                                     "loc": {
                                       "start": {
                                         "line": 50,
-                                        "column": 42,
+                                        "column": 46,
                                         "program": "ControlFlowRecursive.ets"
                                       },
                                       "end": {
@@ -3499,7 +3429,7 @@
                                     "loc": {
                                       "start": {
                                         "line": 50,
-                                        "column": 53,
+                                        "column": 57,
                                         "program": "ControlFlowRecursive.ets"
                                       },
                                       "end": {
@@ -3666,43 +3596,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "ControlFlowRecursive",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 22,
-                                  "program": "ControlFlowRecursive.ets"
-                                },
-                                "end": {
-                                  "line": 53,
-                                  "column": 42,
-                                  "program": "ControlFlowRecursive.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 43,
-                                  "program": "ControlFlowRecursive.ets"
-                                },
-                                "end": {
-                                  "line": 53,
-                                  "column": 51,
-                                  "program": "ControlFlowRecursive.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 57775,
                             "loc": {
                               "start": {
                                 "line": 53,

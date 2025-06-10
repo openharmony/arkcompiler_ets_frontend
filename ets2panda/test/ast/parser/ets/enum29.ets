@@ -66,5 +66,13 @@ function main(): void {
   }
 }
 
+/* @@? 19:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 23:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 27:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 31:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 34:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 42:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 46:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 49:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@@ label1 Error TypeError: Enum switch case must be unqualified name of an enum constant */

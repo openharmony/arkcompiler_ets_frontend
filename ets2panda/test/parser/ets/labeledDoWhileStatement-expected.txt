@@ -530,7 +530,7 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 9,
+                                    "column": 13,
                                     "program": "labeledDoWhileStatement.ets"
                                   },
                                   "end": {

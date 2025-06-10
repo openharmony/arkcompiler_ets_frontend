@@ -378,12 +378,12 @@ public:
         return GetHistoryNodeAs<ClassDefinition>()->localIndex_;
     }
 
-    [[nodiscard]] util::StringView FunctionalReferenceReferencedMethod() const noexcept
+    [[nodiscard]] MethodDefinition *FunctionalReferenceReferencedMethod() const noexcept
     {
         return functionalReferenceReferencedMethod_;
     }
 
-    void SetFunctionalReferenceReferencedMethod(util::StringView functionalReferenceReferencedMethod)
+    void SetFunctionalReferenceReferencedMethod(MethodDefinition *functionalReferenceReferencedMethod)
     {
         functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod;
     }
@@ -568,7 +568,7 @@ private:
     static std::atomic<int> classCounter_;
     int localIndex_ {};
     std::string localPrefix_ {};
-    util::StringView functionalReferenceReferencedMethod_ {};
+    MethodDefinition *functionalReferenceReferencedMethod_ {};
     ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir

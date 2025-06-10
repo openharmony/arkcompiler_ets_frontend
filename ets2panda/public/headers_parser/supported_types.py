@@ -187,7 +187,6 @@ all_types_supported = [
     "void",
     # enums
     "AstNodeFlags",
-    "BoxingUnboxingFlags",
     "ModifierFlags",
     "ScriptFunctionFlags",
     "TSOperatorType",

@@ -397,9 +397,8 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "b",
-                          "decorators": [],
+                          "type": "NumberLiteral",
+                          "value": 1,
                           "loc": {
                             "start": {
                               "line": 20,

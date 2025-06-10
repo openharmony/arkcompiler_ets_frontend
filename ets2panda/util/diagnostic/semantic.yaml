@@ -907,9 +907,9 @@ semantic:
   id: 227
   message: "Array element at index {} with type '{}' is not compatible with the target array element type '{}'"
 
-- name: INIT_NOT_ASSIGNABLE
+- name: TYPEARG_TYPEPARAM_SUBTYPING
   id: 228
-  message: "Type {} is not assignable to constraint type {}"
+  message: "Type argument '{}' should be a subtype of '{}'-constraint"
 
 - name: OVERLOADED_FUNCTION_REFERENCE
   id: 229
@@ -1359,25 +1359,25 @@ semantic:
   id: 343
   message: "Indexed signatures are not allowed. Use arrays instead!"
 
-- name: USE_BEFORE_INIT
+- name: CONSTANT_FLOATING_POINT_COVERSION
   id: 344
-  message: "{} '{}' is used before being assigned."
+  message: "Floating-point value cannot be converted"
 
-- name: TYPE_NOT_FOUND
+- name: CONSTANT_VALUE_OUT_OF_RANGE
   id: 345
-  message: "Cannot find type '{}'."
+  message: "Value is out of range"
 
-- name: INTERFACE_REDECLARED
+- name: WRONG_OPERAND_TYPE_FOR_BINARY_EXPRESSION
   id: 346
-  message: "Interface redeclaration is not allowed"
+  message: "Wrong type of operands for binary expression"
 
-- name: OVERLOADED_MAIN
+- name: WRONG_OPERAND_TYPE_FOR_UNARY_EXPRESSION
   id: 347
-  message: "Main overload is not enabled"
+  message: "Wrong operand type for unary expression"
 
-- name: MULTIPLE_DEFAULT_EXPORTS
+- name: UNION_METHOD_SIGNATURE
   id: 348
-  message: "Only one default export is allowed in a module"
+  message: "Union constituent types should have only one common method signature."
 
 - name: REDEFINITION
   id: 349
@@ -1467,10 +1467,30 @@ semantic:
   id: 370
   message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
 
-- name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
+- name: TYPE_NOT_FOUND
   id: 371
+  message: "Cannot find type '{}'."
+
+- name: INTERFACE_REDECLARED
+  id: 372
+  message: "Interface redeclaration is not allowed"
+
+- name: OVERLOADED_MAIN
+  id: 373
+  message: "Main overload is not enabled"
+
+- name: MULTIPLE_DEFAULT_EXPORTS
+  id: 374
+  message: "Only one default export is allowed in a module"
+
+- name: USE_BEFORE_INIT
+  id: 375
+  message: "{} '{}' is used before being assigned."
+
+- name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
+  id: 376
   message: "Late-initialized field cannot be nullish types or possibly nullish types."
 
 - name: SUPER_NOT_ACCESSIBLE
-  id: 372
+  id: 377
   message: "Class field '{}' defined by the parent class is not accessible in the child class via super."

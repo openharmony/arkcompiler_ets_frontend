@@ -14,7 +14,7 @@
  */
 
 #include "checker/checker.h"
-#include "checker/ets/narrowingWideningConverter.h"
+#include "checker/ets/wideningConverter.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
@@ -58,14 +58,11 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     if (conditionType == nullptr) {
         return;
     }
+    expr->SetTsType(MaybeBoxType(conditionType));
 
     if (conditionType->IsETSVoidType()) {
         LogError(diagnostic::VOID_IN_LOGIC, {}, expr->Start());
         return;
-    }
-
-    if (conditionType->IsETSPrimitiveType()) {
-        FlagExpressionWithUnboxing(testType, conditionType, expr);
     }
 
     // For T_S compatibility
@@ -394,10 +391,13 @@ Type *ETSChecker::GetNonConstantType(Type *type)
     }
 
     if (type->IsETSUnionType()) {
-        return CreateETSUnionType(ETSUnionType::GetNonConstantTypes(this, type->AsETSUnionType()->ConstituentTypes()));
+        return CreateETSUnionType(type->AsETSUnionType()->GetNonConstantTypes(this));
     }
 
     if (!type->IsETSPrimitiveType()) {
+        if (type->IsETSObjectType() && type->AsETSObjectType()->IsBoxedPrimitive()) {
+            type->RemoveTypeFlag(TypeFlag::CONSTANT);
+        }
         return type;
     }
 
@@ -949,7 +949,7 @@ void ETSChecker::CheckFunctionSignatureAnnotations(const ArenaVector<ir::Express
         if (param->IsETSParameterExpression()) {
             CheckAnnotations(param->AsETSParameterExpression()->Annotations());
             if (param->AsETSParameterExpression()->TypeAnnotation() != nullptr) {
-                param->AsETSParameterExpression()->TypeAnnotation()->Check(this);
+                CheckAnnotations(param->AsETSParameterExpression()->TypeAnnotation()->Annotations());
             }
         }
     }
@@ -1095,21 +1095,68 @@ void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
     }
 }
 
+static auto IsNonArrayLiteral(ir::Expression *init)
+{
+    if ((init == nullptr) || init->IsLiteral()) {
+        return true;
+    }
+
+    if (init->TsType()->IsETSEnumType() && init->TsType()->AsETSEnumType()->NodeIsEnumLiteral(init)) {
+        return true;
+    }
+    return false;
+}
+
+static auto IsValidAnnotationPropInitializer(ir::Expression *init)
+{
+    if (IsNonArrayLiteral(init)) {
+        return true;
+    }
+
+    if (init->IsArrayExpression()) {
+        for (auto elem : init->AsArrayExpression()->Elements()) {
+            if (!IsValidAnnotationPropInitializer(elem)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+static bool ValidateAnnotationPropertyType(checker::Type *type, ETSChecker *checker)
+{
+    if (type == nullptr || type->IsTypeError()) {
+        ES2PANDA_ASSERT(checker->IsAnyError());
+        return false;
+    }
+
+    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
+        return ValidateAnnotationPropertyType(checker->GetElementTypeOfArray(type), checker);
+    }
+    auto relation = checker->Relation();
+    return type->IsETSEnumType() || type->IsETSStringType() ||
+           (type->IsETSObjectType() && (relation->IsSupertypeOf(checker->GlobalETSBooleanBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalByteBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalShortBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalIntBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalLongBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalFloatBuiltinType(), type) ||
+                                        relation->IsSupertypeOf(checker->GlobalDoubleBuiltinType(), type)));
+}
+
 void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
 {
     // typeAnnotation check
-    if (!ValidateAnnotationPropertyType(property->TsType())) {
+    if (!ValidateAnnotationPropertyType(property->TsType(), this)) {
         LogError(diagnostic::ANNOT_FIELD_INVALID_TYPE, {}, property->Start());
     }
 
-    // The type of the Initializer has been check in the parser,
-    // except for the enumeration type, because it is a member expression,
-    // so here is an additional check to the enumeration type.
-    if (property->Value() != nullptr &&
-        ((property->Value()->IsMemberExpression() && !property->TsType()->IsETSEnumType()) ||
-         property->Value()->IsIdentifier())) {
-        LogError(diagnostic::ANNOTATION_FIELD_NONLITERAL, {}, property->Value()->Start());
+    if (IsValidAnnotationPropInitializer(property->Value())) {
+        return;
     }
+
+    LogError(diagnostic::ANNOTATION_FIELD_NONLITERAL, {}, property->Value()->Start());
 }
 
 void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl)
@@ -1122,17 +1169,6 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
     ScopeContext scopeCtx(this, st->Scope());
     param->Check(this);
     CheckAnnotationPropertyType(param);
-}
-
-void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
-                                       ir::AnnotationUsage *st, ETSChecker *checker) const
-{
-    for (const auto &entry : fieldMap) {
-        if (entry.second->Value() == nullptr) {
-            checker->LogError(diagnostic::ANNOT_FIELD_NO_VAL, {entry.first}, st->Start());
-            continue;
-        }
-    }
 }
 
 void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util::StringView const &baseName,
@@ -1235,85 +1271,15 @@ Type const *ETSChecker::MaybeUnboxType(Type const *type) const
     return MaybeUnboxType(const_cast<Type *>(type));
 }
 
-ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
-{
-    auto typeKind = TypeKind(MaybeUnboxInRelation(boxingType));
-    switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN:
-            return ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN;
-        case TypeFlag::BYTE:
-            return ir::BoxingUnboxingFlags::BOX_TO_BYTE;
-        case TypeFlag::CHAR:
-            return ir::BoxingUnboxingFlags::BOX_TO_CHAR;
-        case TypeFlag::SHORT:
-            return ir::BoxingUnboxingFlags::BOX_TO_SHORT;
-        case TypeFlag::INT:
-            return ir::BoxingUnboxingFlags::BOX_TO_INT;
-        case TypeFlag::LONG:
-            return ir::BoxingUnboxingFlags::BOX_TO_LONG;
-        case TypeFlag::FLOAT:
-            return ir::BoxingUnboxingFlags::BOX_TO_FLOAT;
-        case TypeFlag::DOUBLE:
-            return ir::BoxingUnboxingFlags::BOX_TO_DOUBLE;
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
-}
-
-ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingType) const
-{
-    auto typeKind = TypeKind(unboxingType);
-    switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN;
-        case TypeFlag::BYTE:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_BYTE;
-        case TypeFlag::CHAR:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_CHAR;
-        case TypeFlag::SHORT:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_SHORT;
-        case TypeFlag::INT:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_INT;
-        case TypeFlag::LONG:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_LONG;
-        case TypeFlag::FLOAT:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT;
-        case TypeFlag::DOUBLE:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
-}
-
-void ETSChecker::MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target)
-{
-    auto boxingResult = MaybeBoxInRelation(target);
-    if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
-        relation->GetNode()->RemoveBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOXING_FLAG);
-        relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
-        relation->Result(true);
-    }
-}
-
-void ETSChecker::MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self)
-{
-    auto unboxingResult = UnboxingConverter(this, relation, source, self).Result();
-    if ((unboxingResult != nullptr) && relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
-        relation->GetNode()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxingResult));
-    }
-}
-
 void ETSChecker::CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target, Type *self)
 {
-    checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(
-        relation, TypeRelationFlag::ONLY_CHECK_WIDENING |
-                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
+    checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(relation, TypeRelationFlag::ONLY_CHECK_WIDENING);
     // NOTE: vpukhov. handle union type
     auto unboxedType = MaybeUnboxInRelation(target);
     if (unboxedType == nullptr) {
         return;
     }
-    NarrowingWideningConverter(this, relation, unboxedType, self);
+    WideningConverter(this, relation, unboxedType, self);
     if (!relation->IsTrue()) {
         relation->Result(relation->IsAssignableTo(self, unboxedType));
     }
@@ -1327,10 +1293,6 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
         return;
     }
     relation->IsAssignableTo(unboxedSourceType, unboxedTargetType);
-    if (relation->IsTrue()) {
-        relation->GetNode()->AddBoxingUnboxingFlags(
-            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxedSourceType));
-    }
 }
 
 void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target)
@@ -1338,7 +1300,6 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     ES2PANDA_ASSERT(relation != nullptr);
     checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(
         relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
-                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE) |
                       (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
                                                            : TypeRelationFlag::NONE));
 
@@ -1352,17 +1313,12 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         return;
     }
     relation->IsAssignableTo(boxedSourceType, target);
-    if (relation->IsTrue()) {
-        MaybeAddBoxingFlagInRelation(relation, boxedSourceType);
-    } else {
+    if (!relation->IsTrue()) {
         auto unboxedTargetType = MaybeUnboxInRelation(target);
         if (unboxedTargetType == nullptr) {
             return;
         }
-        NarrowingWideningConverter(this, relation, unboxedTargetType, source);
-        if (relation->IsTrue()) {
-            MaybeAddBoxingFlagInRelation(relation, target);
-        }
+        WideningConverter(this, relation, unboxedTargetType, source);
     }
 }
 
@@ -1375,10 +1331,6 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
     relation->IsAssignableTo(unboxedSourceType, target);
     if (!relation->IsTrue() && relation->ApplyWidening()) {
         relation->GetChecker()->AsETSChecker()->CheckUnboxedTypeWidenable(relation, target, unboxedSourceType);
-    }
-    if (!relation->OnlyCheckBoxingUnboxing()) {
-        relation->GetNode()->AddBoxingUnboxingFlags(
-            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxedSourceType));
     }
 }
 
@@ -1451,10 +1403,11 @@ bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunction
     return true;
 }
 
-bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
+bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
                                            ir::ArrowFunctionExpression *const arrowFuncExpr, Type *const parameterType,
                                            TypeRelationFlag flags)
 {
+    auto *typeAnnotation = param->Ident()->TypeAnnotation();
     auto checkInvocable = [&arrowFuncExpr, &parameterType, this](TypeRelationFlag functionFlags) {
         Type *const argumentType = arrowFuncExpr->Check(this);
         functionFlags |= TypeRelationFlag::NO_THROW;
@@ -1466,10 +1419,10 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
     //  process `single` type as usual.
     if (!typeAnnotation->IsETSUnionType()) {
-        auto param = typeAnnotation->Parent()->Parent()->AsETSParameterExpression();
         // #22952: infer optional parameter heuristics
         auto nonNullishParam = param->IsOptional() ? GetNonNullishType(parameterType) : parameterType;
         if (!nonNullishParam->IsETSFunctionType()) {
+            arrowFuncExpr->Check(this);
             return true;
         }
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -1530,13 +1483,12 @@ bool ETSChecker::ResolveLambdaArgumentType(Signature *signature, ir::Expression 
     }
 
     arrowFuncExpr->SetTsType(nullptr);
-    auto const *const param =
+    auto *const param =
         signature->GetSignatureInfo()->params[paramPosition]->Declaration()->Node()->AsETSParameterExpression();
-    ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
     Type *const parameterType = signature->Params()[paramPosition]->TsType();
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, resolutionFlags);
+    bool rc = CheckLambdaTypeAnnotation(param, arrowFuncExpr, parameterType, resolutionFlags);
     if (!rc) {
         if ((resolutionFlags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);

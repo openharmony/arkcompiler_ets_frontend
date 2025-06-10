@@ -230,7 +230,7 @@
                               },
                               "end": {
                                 "line": 17,
-                                "column": 38,
+                                "column": 39,
                                 "program": "float_separator_1.ets"
                               }
                             }
@@ -243,7 +243,7 @@
                             },
                             "end": {
                               "line": 17,
-                              "column": 38,
+                              "column": 39,
                               "program": "float_separator_1.ets"
                             }
                           }
@@ -258,7 +258,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 38,
+                          "column": 39,
                           "program": "float_separator_1.ets"
                         }
                       }

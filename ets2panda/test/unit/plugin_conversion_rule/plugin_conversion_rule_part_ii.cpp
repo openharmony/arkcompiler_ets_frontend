@@ -458,23 +458,6 @@ TEST_F(PluginConversionRuleUnitTest, BindingPropsPtrInputParameter)
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-/* [[nodiscard]] static std::uint32_t GetPrecedence(Type const *type) noexcept */
-TEST_F(PluginConversionRuleUnitTest, CheckerPtrInputParameter)
-{
-    std::string targetCAPI {R"(
-    extern "C" uint32_t TypeGetPrecedence([[maybe_unused]] es2panda_Context *context, es2panda_Type *classInstance,
-[[maybe_unused]] es2panda_Type *type/*return_args:*/)
-    {
-        auto *typeE2p = reinterpret_cast<checker::Type *>(type);
-        auto apiRes = ((reinterpret_cast<checker::Type *>(classInstance))->GetPrecedence(typeE2p));
-	    return apiRes;
-    }
-    )"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 /* explicit Identifier(ArenaAllocator *const allocator) */
 /* ArenaAllocatorPtrParameterConversion */
 TEST_F(PluginConversionRuleUnitTest, ContextPtrMethodCall)

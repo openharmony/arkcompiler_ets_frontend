@@ -514,7 +514,6 @@ public:
         }                                                                                   \
     }
 
-    DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxingUnboxingFlags_);
     DECLARE_FLAG_OPERATIONS(AstNodeFlags, astNodeFlags_);
 #undef DECLARE_FLAG_OPERATIONS
 
@@ -537,6 +536,12 @@ public:
     virtual void Iterate(const NodeTraverser &cb) const = 0;
 
     void TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName);
+    void TransformChildrenRecursively(const NodeTransformer &pre, const NodeTraverser &post,
+                                      std::string_view transformationName);
+    void TransformChildrenRecursively(const NodeTraverser &pre, const NodeTransformer &post,
+                                      std::string_view transformationName);
+    // CC-OFFNXT(C_RULE_ID_FUNCTION_HEADER, G.CMT.04) false positive
+    // Keep these for perf reasons:
     void TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, std::string_view transformationName);
     void TransformChildrenRecursivelyPostorder(const NodeTransformer &cb, std::string_view transformationName);
 
@@ -619,7 +624,6 @@ protected:
     AstNodeType type_;
     ModifierFlags flags_ {};
     mutable AstNodeFlags astNodeFlags_ {};
-    mutable BoxingUnboxingFlags boxingUnboxingFlags_ {};
     AstNodeHistory *history_ {nullptr};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 

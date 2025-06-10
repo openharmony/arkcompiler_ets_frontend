@@ -24,9 +24,9 @@ export class A {
 let 1: number
 
 // First level import with both types of error
-/* @@? import_1.ets:21:17 Error TypeError: Type 'int' cannot be assigned to type 'String' */
+/* @@? import_1.ets:21:17 Error TypeError: Type 'Int' cannot be assigned to type 'String' */
 /* @@? import_1.ets:24:5 Error SyntaxError: Identifier expected, got 'number literal'. */
 
 // Second level import import with both types of error
-/* @@? import_2.ets:17:17 Error TypeError: Type 'int' cannot be assigned to type 'String' */
+/* @@? import_2.ets:17:17 Error TypeError: Type 'Int' cannot be assigned to type 'String' */
 /* @@? import_2.ets:20:5 Error SyntaxError: 'var' keyword is not supported. Use 'let' instead. */

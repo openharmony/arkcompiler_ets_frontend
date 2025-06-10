@@ -33,6 +33,7 @@ public:
 
     void ToString(std::stringstream &ss, bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
+    void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;

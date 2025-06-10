@@ -22,11 +22,11 @@ namespace ark::es2panda::compiler {
 
 using AstNodePtr = ir::AstNode *;
 
-static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_lib::Context *ctx)
+static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_lib::Context *ctx, bool insideAnnotdecl)
 {
     auto *parser = ctx->parser->AsETSParser();
-    ir::TypeNode *typeAnnotation =
-        parser->CreateFormattedTypeAnnotation("Array<" + node->ElementType()->DumpEtsSrc() + ">");
+    ir::TypeNode *typeAnnotation = parser->CreateFormattedTypeAnnotation((insideAnnotdecl ? "FixedArray<" : "Array<") +
+                                                                         node->ElementType()->DumpEtsSrc() + ">");
     typeAnnotation->SetAnnotations(node->Annotations());
     typeAnnotation->SetParent(node->Parent());
     typeAnnotation->SetRange(node->Range());
@@ -37,12 +37,23 @@ static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_li
 
 bool ResizableArrayConvert::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    program->Ast()->TransformChildrenRecursivelyPreorder(
-        [ctx](ir::AstNode *node) -> AstNodePtr {
+    bool insideAnnotdecl = false;
+    program->Ast()->TransformChildrenRecursively(
+        [&insideAnnotdecl, ctx](ir::AstNode *node) -> AstNodePtr {
+            if (node->IsAnnotationDeclaration()) {
+                ES2PANDA_ASSERT(!insideAnnotdecl);
+                insideAnnotdecl = true;
+            }
             if (node->IsTSArrayType()) {
-                return ConvertToResizableArrayType(node->AsTSArrayType(), ctx);
+                return ConvertToResizableArrayType(node->AsTSArrayType(), ctx, insideAnnotdecl);
             }
             return node;
+        },
+        [&insideAnnotdecl](ir::AstNode *node) {
+            if (node->IsAnnotationDeclaration()) {
+                ES2PANDA_ASSERT(insideAnnotdecl);
+                insideAnnotdecl = false;
+            }
         },
         Name());
 

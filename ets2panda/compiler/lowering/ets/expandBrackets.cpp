@@ -33,8 +33,8 @@ static constexpr char const FORMAT_NEW_ARRAY_EXPRESSION[] =
     "  throw new TypeError(\"Fractional part of index expression should be zero.\");"
     "};"
     "(@@E5);";
-static constexpr char const CAST_NEW_DIMENSION_EXPRESSION[] = "@@I1 as int";
-static constexpr char const CAST_OLD_DIMENSION_EXPRESSION[] = "(@@E1) as int";
+static constexpr char const CAST_NEW_DIMENSION_EXPRESSION[] = "(@@I1).toInt()";
+static constexpr char const CAST_OLD_DIMENSION_EXPRESSION[] = "(@@E1).toInt()";
 // NOLINTEND(modernize-avoid-c-arrays)
 
 ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
@@ -46,10 +46,9 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     ES2PANDA_ASSERT(checker != nullptr);
     auto *dimension = newInstanceExpression->Dimension();
     auto *dimType = dimension->TsType();
-    if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
-        dimType = unboxed;
-    }
-    if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+    ES2PANDA_ASSERT(dimType->IsETSObjectType());
+
+    if (!dimType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_FLOATING_POINT)) {
         return newInstanceExpression;
     }
 
@@ -98,10 +97,8 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
     for (std::size_t i = 0U; i < newInstanceExpression->Dimensions().size(); ++i) {
         auto *dimension = newInstanceExpression->Dimensions()[i];
         auto *dimType = dimension->TsType();
-        if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
-            dimType = unboxed;
-        }
-        if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        ES2PANDA_ASSERT(dimType->IsETSObjectType());
+        if (!dimType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_FLOATING_POINT)) {
             continue;
         }
 

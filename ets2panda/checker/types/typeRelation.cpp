@@ -114,7 +114,6 @@ bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
     return result_ == RelationResult::TRUE;
 }
 
-// NOTE: applyNarrowing -> flag
 bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
     if (source == target) {
@@ -193,10 +192,7 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
             return false;
         }
 
-        // NOTE: Can't cache if the node has BoxingUnboxingFlags. These flags should be stored and restored on the node
-        // on cache hit.
-        if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE &&
-            !node_->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
+        if (UncheckedCast() && !node_->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
             checker_->UncheckedCastableResult().cached.insert(
                 {{source->Id(), target->Id()}, {result_, RelationType::UNCHECKED_CASTABLE}});
         }
@@ -209,20 +205,43 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
 
 bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
 {
-    if (!target->IsETSReferenceType() || !source->IsETSReferenceType()) {
+    ETSChecker *checker = this->GetChecker()->AsETSChecker();
+
+    if (target == nullptr || source == nullptr) {
         return false;
     }
+
+    if (target->IsETSUnionType() && source->IsETSObjectType()) {
+        Type *sourceUnboxedType = checker->MaybeUnboxType(source);
+        if (sourceUnboxedType == nullptr || !sourceUnboxedType->IsETSPrimitiveType()) {
+            return false;
+        }
+        Type *boxedUnionTarget = target->AsETSUnionType()->FindUnboxableType();
+        if (boxedUnionTarget == nullptr) {
+            return false;
+        }
+        Type *targetUnboxedType = checker->MaybeUnboxType(boxedUnionTarget);
+        if (targetUnboxedType == nullptr || !targetUnboxedType->IsETSPrimitiveType()) {
+            return false;
+        }
+        bool res = this->Result(this->IsAssignableTo(sourceUnboxedType, target));
+        return res;
+    }
+
     if (!target->IsETSObjectType() || !source->IsETSObjectType()) {
         return false;
     }
-    if (!target->AsETSObjectType()->IsBoxedPrimitive() || !source->AsETSObjectType()->IsBoxedPrimitive()) {
+
+    if (!target->AsETSObjectType()->IsBoxedPrimitive() && !source->AsETSObjectType()->IsBoxedPrimitive()) {
         return false;
     }
 
-    ETSChecker *checker = this->GetChecker()->AsETSChecker();
-
     Type *targetUnboxedType = checker->MaybeUnboxType(target);
     Type *sourceUnboxedType = checker->MaybeUnboxType(source);
+
+    if (source->IsETSIntEnumType()) {
+        targetUnboxedType = checker->GlobalIntType();
+    }
 
     if (targetUnboxedType == nullptr || sourceUnboxedType == nullptr) {
         return false;
@@ -231,7 +250,8 @@ bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
         return false;
     }
 
-    return this->Result(this->IsAssignableTo(sourceUnboxedType, targetUnboxedType));
+    bool res = this->Result(this->IsAssignableTo(sourceUnboxedType, targetUnboxedType));
+    return res;
 }
 
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)

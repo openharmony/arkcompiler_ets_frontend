@@ -22,7 +22,6 @@
 #include "compiler/lowering/ets/ambientLowering.h"
 #include "compiler/lowering/ets/arrayLiteralLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
-#include "compiler/lowering/ets/boxedTypeLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
@@ -34,6 +33,7 @@
 #include "compiler/lowering/ets/dynamicImportLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
+#include "compiler/lowering/ets/enumPropertiesInAnnotationsLowering.h"
 #include "compiler/lowering/ets/restTupleLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/exportAnonymousConst.h"
@@ -53,6 +53,7 @@
 #include "compiler/lowering/ets/optionalLowering.h"
 #include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
+#include "compiler/lowering/ets/primitiveConversionPhase.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/resizableArrayLowering.h"
@@ -64,6 +65,7 @@
 #include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
+#include "compiler/lowering/ets/unboxLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/ets/typeFromLowering.h"
 #include "compiler/lowering/plugin_phase.h"
@@ -123,7 +125,7 @@ std::vector<Phase *> GetETSPhaseList()
         new CheckerPhase,
         // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
-        new ConvertPrimitiveCastMethodCall,
+        // new ConvertPrimitiveCastMethodCall,
         new AnnotationCopyPostLowering,
         new DynamicImportLowering,
         new AsyncMethodLowering,
@@ -138,7 +140,6 @@ std::vector<Phase *> GetETSPhaseList()
         new ExtensionAccessorPhase,
         new BoxingForLocals,
         new RecordLowering,
-        new BoxedTypeLowering,
         new ObjectIndexLowering,
         new ObjectIteratorLowering,
         new LambdaConversionPhase,
@@ -153,6 +154,8 @@ std::vector<Phase *> GetETSPhaseList()
         new OptionalArgumentsLowering, // #22952 could be moved to earlier phase
         new GenericBridgesPhase,
         new TypeFromLowering,
+        new PrimitiveConversionPhase,
+        new UnboxPhase,
         // pluginsAfterLowerings has to come at the very end, nothing should go after it
         new PluginPhase{g_pluginsAfterLowering, ES2PANDA_STATE_LOWERED,
                         &util::Plugin::AfterLowerings},

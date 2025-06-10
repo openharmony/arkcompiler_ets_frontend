@@ -36,7 +36,6 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
     //  required accessible index method[s] and all the types are properly resolved.
 
     auto indexSymbol = Gensym(checker->Allocator());
-    assignmentExpression->Right()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
     auto *const memberExpression = assignmentExpression->Left()->AsMemberExpression();
     ir::Expression *loweringResult = nullptr;
     ir::AstNode *setter = nullptr;
@@ -73,7 +72,6 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
     }
     loweringResult->SetParent(assignmentExpression->Parent());
     loweringResult->SetRange(assignmentExpression->Range());
-    loweringResult->SetBoxingUnboxingFlags(assignmentExpression->GetBoxingUnboxingFlags());
     setter->AddModifier(ir::ModifierFlags::ARRAY_SETTER);
     auto scope = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(),
                                                                   NearestScope(assignmentExpression->Parent()));
@@ -99,7 +97,6 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     loweringResult->SetRange(memberExpression->Range());
 
     CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, loweringResult);
-    loweringResult->SetBoxingUnboxingFlags(memberExpression->GetBoxingUnboxingFlags());
     return loweringResult;
 }
 

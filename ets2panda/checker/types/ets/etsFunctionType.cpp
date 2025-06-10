@@ -72,13 +72,23 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto *functionN = checker->GlobalBuiltinFunctionType(arity, true)->AsETSObjectType();
+        auto nPosParams = signature->Params().size();
+        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true)->AsETSObjectType();
         auto *substitution = checker->NewSubstitution();
+        for (size_t i = 0; i < nPosParams; i++) {
+            substitution->emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
+                                  checker->MaybeBoxType(signature->Params()[i]->TsType()));
+        }
         auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
                                 ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
                                 : checker->GlobalETSAnyType();
-        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), checker->MaybeBoxType(elementType));
-        return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+        substitution->emplace(functionN->TypeArguments()[nPosParams]->AsETSTypeParameter(),
+                              checker->MaybeBoxType(elementType));
+        substitution->emplace(functionN->TypeArguments()[nPosParams + 1]->AsETSTypeParameter(),
+                              checker->MaybeBoxType(signature->ReturnType()));
+        auto result = functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+        result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);
+        return result;
     }
 
     ES2PANDA_ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
@@ -102,6 +112,8 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         HackThisParameterInExtensionFunctionInvoke(result, arity);
     }
+
+    result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);
     return result;
 }
 

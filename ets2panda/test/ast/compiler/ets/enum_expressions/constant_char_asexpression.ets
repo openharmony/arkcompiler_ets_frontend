@@ -36,3 +36,13 @@ function main() {
     enum TestEnum4 { One = constcharToLong }
     assertEQ(TestEnum4.One.valueOf(),112)
 }
+
+
+/* @@? 19:29 Error TypeError: Cannot cast type 'Char' to 'Byte'  */
+/* @@? 21:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 24:30 Error TypeError: Cannot cast type 'Char' to 'Short'  */
+/* @@? 26:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 29:28 Error TypeError: Cannot cast type 'Char' to 'Int'  */
+/* @@? 31:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 34:29 Error TypeError: Cannot cast type 'Char' to 'Long'  */
+/* @@? 36:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

@@ -30,5 +30,5 @@ function main(): void {
     let instance: B = new B();
     assertEQ(instance.getX(), true);
 }
-/* @@@ label1 Error TypeError: Type 'boolean' has no call signatures.  */
+/* @@@ label1 Error TypeError: Type 'Boolean' has no call signatures.  */
 /* @@@ label Error TypeError: Cannot inherit from class A, because field x is inherited with a different declaration type  */
