@@ -126,6 +126,10 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
                           checker::ETSObjectType *currentType = nullptr)
 {
     for (auto *it : ifaceBody) {
+        if (it->IsOverloadDeclaration()) {
+            continue;
+        }
+
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
 
@@ -375,6 +379,9 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
 static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     for (auto it : interfaceDecl->Body()->Body()) {
+        if (it->IsOverloadDeclaration()) {
+            continue;
+        }
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto methodDef = it->AsMethodDefinition();
         if (!methodDef->Function()->IsGetter() && !methodDef->Function()->IsSetter()) {

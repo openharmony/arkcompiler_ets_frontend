@@ -406,4 +406,11 @@ checker::VerifiedType ObjectExpression::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+void ObjectExpression::CleanCheckInformation()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    this->Iterate([&](auto *childNode) { childNode->CleanCheckInformation(); });
+}
 }  // namespace ark::es2panda::ir

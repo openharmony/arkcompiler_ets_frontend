@@ -273,6 +273,8 @@ public:
     void CheckCyclicConstructorCall(Signature *signature);
     std::vector<ResolveResult *> ResolveMemberReference(const ir::MemberExpression *memberExpr,
                                                         const ETSObjectType *target);
+    varbinder::LocalVariable *ResolveOverloadReference(const ir::Identifier *ident, ETSObjectType *objType,
+                                                       PropertySearchFlags searchFlags);
     void WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *const memberExpr);
     varbinder::Variable *GetExtensionFuncVarInGlobalFunction(const ir::MemberExpression *const memberExpr);
     varbinder::Variable *GetExtensionFuncVarInGlobalField(const ir::MemberExpression *const memberExpr);
@@ -477,6 +479,31 @@ public:
                                      TypeRelationFlag flags, bool reportError, bool unique);
     void ThrowSignatureMismatch(ArenaVector<Signature *> &signatures, const ArenaVector<ir::Expression *> &arguments,
                                 const lexer::SourcePosition &pos, std::string_view signatureKind);
+    Signature *FirstMatchSignatures(ir::CallExpression *expr, checker::Type *calleeType);
+    Signature *MatchOrderSignatures(ArenaVector<Signature *> &signatures,
+                                    const ir::TSTypeParameterInstantiation *typeArguments,
+                                    const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
+                                    TypeRelationFlag resolveFlags);
+    void CleanArgumentsInformation(const ArenaVector<ir::Expression *> &arguments);
+    Signature *ValidateOrderSignature(
+        std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
+        const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
+        const std::vector<bool> &argTypeInferenceRequired, const bool unique);
+    bool ValidateOrderSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
+                                              TypeRelationFlag flags,
+                                              const std::vector<bool> &argTypeInferenceRequired);
+    bool ValidateOrderSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
+                                                 TypeRelationFlag flags);
+    void ThrowOverloadMismatch(util::StringView callName, const ArenaVector<ir::Expression *> &arguments,
+                               const lexer::SourcePosition &pos, std::string_view signatureKind);
+    Signature *ResolveTrailingLambda(ArenaVector<Signature *> &signatures, ir::CallExpression *callExpr,
+                                     const lexer::SourcePosition &pos,
+                                     TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
+    Signature *ResolvePotentialTrailingLambda(ir::CallExpression *callExpr, ArenaVector<Signature *> const &signatures,
+                                              ArenaVector<ir::Expression *> &arguments);
+    bool SetPreferredTypeBeforeValidate(Signature *substitutedSig, ir::Expression *argument, size_t index,
+                                        TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired);
+
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     Signature *ValidateSignatures(ArenaVector<Signature *> &signatures,
                                   const ir::TSTypeParameterInstantiation *typeArguments,
@@ -666,6 +693,7 @@ public:
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
     static bool IsVariableExtensionAccessor(const varbinder::Variable *var);
+    static bool IsVariableOverloadDeclaration(const varbinder::Variable *var);
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
     void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
     bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
@@ -683,6 +711,12 @@ public:
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *startFrom, const ir::AstNode *p);
     void CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions, ir::CatchClause *catchClause,
                                   checker::Type *clauseType);
+
+    void CheckConstructorOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const;
+    void CheckFunctionOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const;
+    void CheckClassMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const;
+    void CheckInterfaceMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const;
+
     ETSObjectType *GetRelevantArgumentedTypeFromChild(ETSObjectType *child, ETSObjectType *target);
     util::StringView GetHashFromTypeArguments(const ArenaVector<Type *> &typeArgTypes);
     util::StringView GetHashFromSubstitution(const Substitution *substitution, const bool isExtensionFuncFlag);
@@ -978,6 +1012,7 @@ private:
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
     const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
+    ETSFunctionType *CreateSyntheticTypeFromOverload(varbinder::Variable *const var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
     bool CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);

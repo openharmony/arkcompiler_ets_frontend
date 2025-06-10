@@ -121,6 +121,7 @@ public:
     }
 
     void ClearPreferredType();
+    void CleanCheckInformation() override;
 
     [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 

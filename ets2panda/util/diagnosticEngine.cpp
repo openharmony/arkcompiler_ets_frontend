@@ -37,6 +37,29 @@ const DiagnosticStorage &DiagnosticEngine::GetDiagnosticStorage(DiagnosticType t
     return diagnostics_[type];
 }
 
+[[nodiscard]] DiagnosticCheckpoint DiagnosticEngine::Save() const
+{
+    DiagnosticCheckpoint cp;
+    for (size_t i = 0; i < diagnostics_.size(); i++) {
+        cp[i] = diagnostics_[i].size();
+    }
+    return cp;
+}
+
+void DiagnosticEngine::Rollback(const DiagnosticCheckpoint &checkpoint)
+{
+    for (size_t i = 0; i < diagnostics_.size(); i++) {
+        diagnostics_[i].resize(checkpoint[i]);
+    }
+}
+
+void DiagnosticEngine::UndoRange(const DiagnosticCheckpoint &from, const DiagnosticCheckpoint &to)
+{
+    for (size_t i = 0; i < diagnostics_.size(); i++) {
+        diagnostics_[i].erase(diagnostics_[i].begin() + from[i], diagnostics_[i].begin() + to[i]);
+    }
+}
+
 [[noreturn]] void DiagnosticEngine::Throw(ThrowableDiagnostic diag) const
 {
     throw diag;

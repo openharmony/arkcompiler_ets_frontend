@@ -257,6 +257,11 @@ public:
         return (Flags() & ir::ScriptFunctionFlags::TRAILING_LAMBDA) != 0;
     }
 
+    [[nodiscard]] bool IsSynthetic() const noexcept
+    {
+        return (Flags() & ir::ScriptFunctionFlags::SYNTHETIC) != 0;
+    }
+
     [[nodiscard]] bool IsDynamic() const noexcept
     {
         return Language().IsDynamic();

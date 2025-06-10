@@ -88,13 +88,13 @@ void AstNode::ClearScope() noexcept
 
 ir::ClassElement *AstNode::AsClassElement()
 {
-    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
+    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock() || IsOverloadDeclaration());
     return reinterpret_cast<ir::ClassElement *>(this);
 }
 
 const ir::ClassElement *AstNode::AsClassElement() const
 {
-    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
+    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock() || IsOverloadDeclaration());
     return reinterpret_cast<const ir::ClassElement *>(this);
 }
 
@@ -310,6 +310,15 @@ void AstNode::InitHistory()
 bool AstNode::HistoryInitialized() const
 {
     return history_ != nullptr;
+}
+
+void AstNode::CleanCheckInformation()
+{
+    if (IsTyped()) {
+        this->AsTyped()->SetTsType(nullptr);
+        this->AsTyped()->SetPreferredType(nullptr);
+    }
+    Iterate([&](auto *childNode) { childNode->CleanCheckInformation(); });
 }
 
 }  // namespace ark::es2panda::ir

@@ -89,6 +89,15 @@ void ETSNewMultiDimArrayInstanceExpression::ClearPreferredType()
     SetTsType(nullptr);
 }
 
+void ETSNewMultiDimArrayInstanceExpression::CleanCheckInformation()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    for (auto *dim : dimensions_) {
+        dim->CleanCheckInformation();
+    }
+}
+
 ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
     ETSNewMultiDimArrayInstanceExpression const &other, ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)),

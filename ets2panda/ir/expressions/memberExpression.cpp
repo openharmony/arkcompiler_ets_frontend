@@ -207,6 +207,11 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
             return;
         }
 
+        if (memberType->IsETSMethodType() && memberType->Variable()->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+            checker->LogError(diagnostic::OVERLOADED_UNION_CALL, {}, Start());
+            return;
+        }
+
         if (!commonPropType->IsETSMethodType() && !memberType->IsETSMethodType()) {
             if (!checker->IsTypeIdenticalTo(commonPropType, memberType)) {
                 checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());

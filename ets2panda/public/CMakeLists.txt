@@ -250,6 +250,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/ts/tsImportEqualsDeclaration.h
     ${ES2PANDA_ROOT}/ir/validationInfo.h
     ${ES2PANDA_ROOT}/ir/base/methodDefinition.h
+    ${ES2PANDA_ROOT}/ir/base/overloadDeclaration.h
     ${ES2PANDA_ROOT}/ir/ts/tsIntersectionType.h
     ${ES2PANDA_ROOT}/checker/types/ts/nullType.h
     ${ES2PANDA_ROOT}/checker/types/ts/unknownType.h
@@ -499,6 +500,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/expressions/directEvalExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeParameterDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/methodDefinition.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/overloadDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsNullKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsInterfaceHeritage.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/enumLiteralType.yaml

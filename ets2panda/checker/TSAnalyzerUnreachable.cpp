@@ -48,6 +48,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MethodDefinition *node) co
     ES2PANDA_UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OverloadDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
 {
     ES2PANDA_UNREACHABLE();

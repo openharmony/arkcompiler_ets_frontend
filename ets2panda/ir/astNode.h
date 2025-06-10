@@ -690,6 +690,8 @@ public:
 
     AstNode *GetOrCreateHistoryNode() const;
 
+    virtual void CleanCheckInformation();
+
 protected:
     AstNode(AstNode const &other);
 

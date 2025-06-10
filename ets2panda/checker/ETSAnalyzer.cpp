@@ -23,6 +23,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "types/signature.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
+#include "compiler/lowering/util.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "types/ts/nullType.h"
 #include "types/type.h"
@@ -307,6 +308,77 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
         checker->LogError(diagnostic::STATIC_METHOD_INVALID_MODIFIER, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
     }
+}
+
+static void CheckDuplicationInOverloadDeclaration(ETSChecker *const checker, ir::OverloadDeclaration *const node)
+{
+    auto overloadedNameSet = ArenaSet<std::string>(checker->ProgramAllocator()->Adapter());
+    for (ir::Expression *const overloadedName : node->OverloadedList()) {
+        bool isQualifiedName = true;
+        std::function<std::string(ir::Expression *const)> getFullOverloadedName =
+            [&isQualifiedName, &getFullOverloadedName](ir::Expression *const expr) -> std::string {
+            if (!isQualifiedName) {
+                return "";
+            }
+            if (expr->IsIdentifier()) {
+                return expr->AsIdentifier()->Name().Mutf8();
+            }
+            if (expr->IsMemberExpression()) {
+                return getFullOverloadedName(expr->AsMemberExpression()->Object()) + "." +
+                       getFullOverloadedName(expr->AsMemberExpression()->Property());
+            }
+            isQualifiedName = false;
+            return "";
+        };
+        std::string fullOverloadedName = getFullOverloadedName(overloadedName);
+        if (!isQualifiedName) {
+            continue;
+        }
+        if (overloadedNameSet.find(fullOverloadedName) != overloadedNameSet.end()) {
+            checker->LogError(diagnostic::DUPLICATE_OVERLOADED_NAME, overloadedName->Start());
+            continue;
+        }
+        overloadedNameSet.insert(fullOverloadedName);
+    }
+}
+
+checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
+{
+    ETSChecker *checker = GetETSChecker();
+    ES2PANDA_ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node->Key());
+
+    CheckDuplicationInOverloadDeclaration(checker, node);
+
+    if (!node->Key()->IsIdentifier()) {
+        checker->LogError(diagnostic::OVERLOAD_NAME_MUST_BE_IDENTIFIER, {}, node->Key()->Start());
+    }
+
+    if (node->IsConstructorOverloadDeclaration()) {
+        ES2PANDA_ASSERT(node->Parent()->IsClassDefinition());
+        checker->CheckConstructorOverloadDeclaration(checker, node);
+        return nullptr;
+    }
+
+    if (node->IsFunctionOverloadDeclaration()) {
+        ES2PANDA_ASSERT(node->Parent()->IsClassDefinition() && compiler::HasGlobalClassParent(node));
+        checker->CheckFunctionOverloadDeclaration(checker, node);
+        return nullptr;
+    }
+
+    if (node->IsClassMethodOverloadDeclaration()) {
+        ES2PANDA_ASSERT(node->Parent()->IsClassDefinition());
+        checker->CheckClassMethodOverloadDeclaration(checker, node);
+        return nullptr;
+    }
+
+    if (node->IsInterfaceMethodOverloadDeclaration()) {
+        ES2PANDA_ASSERT(node->Parent()->Parent()->IsTSInterfaceDeclaration());
+        checker->CheckInterfaceMethodOverloadDeclaration(checker, node);
+        return nullptr;
+    }
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
@@ -1335,6 +1407,18 @@ static bool LambdaIsField(ir::CallExpression *expr)
     return me->PropVar() != nullptr;
 }
 
+static bool OverloadDeclaration(ir::Expression *expr)
+{
+    while (expr->IsMemberExpression()) {
+        expr = expr->AsMemberExpression()->Property();
+    }
+
+    if (expr->IsIdentifier() && expr->AsIdentifier()->Variable() != nullptr) {
+        return expr->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::OVERLOAD);
+    }
+    return false;
+}
+
 checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
                                                   checker::Type *calleeType) const
 {
@@ -1346,6 +1430,10 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                expr->Start());
         checker->CreateOverloadSigContainer(helperSignature);
         return checker->ResolveCallExpressionAndTrailingLambda(checker->GetOverloadSigContainer(), expr, expr->Start());
+    }
+
+    if (calleeType->IsETSFunctionType() && OverloadDeclaration(expr->Callee())) {
+        return checker->FirstMatchSignatures(expr, calleeType);
     }
 
     if (calleeType->IsETSExtensionFuncHelperType()) {
@@ -1400,6 +1488,7 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
     }
 
     Signature *const signature = ResolveSignature(checker, expr, calleeType);
+
     if (signature == nullptr) {
         return checker->GlobalTypeError();
     }
@@ -1681,6 +1770,9 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
     }
     if (expr->Parent()->IsCallExpression() && expr->Parent()->AsCallExpression()->Callee() == expr) {
         return type;  // type is actually used as method
+    }
+    if (expr->Parent()->IsOverloadDeclaration()) {
+        return type;  // Don't trans overloaded name to arrow type.
     }
 
     auto *const functionType = type->AsETSFunctionType();

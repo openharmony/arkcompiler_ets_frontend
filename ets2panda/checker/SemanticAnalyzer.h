@@ -27,6 +27,7 @@
 #include "ir/base/decorator.h"
 #include "ir/base/metaProperty.h"
 #include "ir/base/methodDefinition.h"
+#include "ir/base/overloadDeclaration.h"
 #include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"

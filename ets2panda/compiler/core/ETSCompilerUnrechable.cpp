@@ -52,6 +52,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) con
     ES2PANDA_UNREACHABLE();
 }
 
+void ETSCompiler::Compile([[maybe_unused]] const ir::OverloadDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void ETSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
 {
     ES2PANDA_UNREACHABLE();

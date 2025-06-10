@@ -231,12 +231,17 @@ private:
     ir::AstNode *ParseInterfaceField();
     ir::TypeNode *ParseInterfaceTypeAnnotation(ir::Identifier *name);
     void ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField);
+    ir::OverloadDeclaration *ParseInterfaceOverload(ir::ModifierFlags modifiers);
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     void ReportAccessModifierError(const lexer::Token &token);
     std::tuple<ir::ModifierFlags, bool, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
     ir::ModifierFlags ParseClassMethodModifierFlag();
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
+    void ValidateOverloadDeclarationModifiers(ir::ModifierFlags modifiers);
+    bool ParseOverloadListElement(ArenaVector<ir::Expression *> &overloads, ir::OverloadDeclaration *overloadDecl);
+    void ValidateOverloadList(ArenaVector<ir::Expression *> const &overloadList);
+    ir::OverloadDeclaration *ParseClassOverloadDeclaration(ir::ModifierFlags modifiers);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
                                                      bool isDefault);
     ir::ScriptFunction *ParseFunction(ParserStatus newStatus);
@@ -391,6 +396,7 @@ private:
     ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
+    ir::OverloadDeclaration *ParseOverloadDeclaration(ir::ModifierFlags modifiers);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);
     ir::FunctionDeclaration *ParseAccessorWithReceiver(ir::ModifierFlags modifiers);
     ir::TypeNode *ParseExtensionFunctionsTypeAnnotation();

@@ -49,6 +49,7 @@ void ETSUnionType::Dump(ir::AstDumper *dumper) const
 
 void ETSUnionType::Dump(ir::SrcDumper *dumper) const
 {
+    dumper->Add("(");
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
@@ -58,6 +59,7 @@ void ETSUnionType::Dump(ir::SrcDumper *dumper) const
             dumper->Add(" | ");
         }
     }
+    dumper->Add(")");
 }
 
 void ETSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

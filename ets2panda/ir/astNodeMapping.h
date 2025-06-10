@@ -73,6 +73,7 @@
     _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \
     _(NUMBER_LITERAL, NumberLiteral)                                                      \
     _(OMITTED_EXPRESSION, OmittedExpression)                                              \
+    _(OVERLOAD_DECLARATION, OverloadDeclaration)                                          \
     _(PREFIX_ASSERTION_EXPRESSION, PrefixAssertionExpression)                             \
     _(PROPERTY, Property)                                                                 \
     _(REGEXP_LITERAL, RegExpLiteral)                                                      \

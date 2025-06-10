@@ -1223,6 +1223,17 @@ static bool IsValidFunctionDeclVar(const varbinder::Variable *const var)
            !var->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER);
 }
 
+static bool IsOverloadedName(ir::Expression *const expr)
+{
+    if ((!expr->IsIdentifier() && !expr->IsMemberExpression()) || !expr->Parent()->IsOverloadDeclaration()) {
+        return false;
+    }
+
+    auto overloadedList = expr->Parent()->AsOverloadDeclaration()->OverloadedList();
+    return std::any_of(overloadedList.begin(), overloadedList.end(),
+                       [&expr](const ir::Expression *overloadedName) { return overloadedName == expr; });
+}
+
 static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::AstNode *node)
 {
     if (node->IsArrowFunctionExpression()) {
@@ -1236,7 +1247,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         // so it is correct to pass ETS extension here to isReference()
         if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
             !IsInCalleePosition(id) && !IsEnumFunctionCall(id) && IsValidFunctionDeclVar(var) &&
-            !id->Variable()->HasFlag(varbinder::VariableFlags::DYNAMIC)) {
+            !id->Variable()->HasFlag(varbinder::VariableFlags::DYNAMIC) && !IsOverloadedName(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }
@@ -1250,7 +1261,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
                 checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                     checker::PropertySearchFlags::SEARCH_STATIC_METHOD | checker::PropertySearchFlags::SEARCH_IN_BASE |
                     checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
-            if (IsValidFunctionDeclVar(var) && !IsInCalleePosition(mexpr)) {
+            if (IsValidFunctionDeclVar(var) && !IsInCalleePosition(mexpr) && !IsOverloadedName(mexpr)) {
                 return ConvertFunctionReference(ctx, mexpr);
             }
         }

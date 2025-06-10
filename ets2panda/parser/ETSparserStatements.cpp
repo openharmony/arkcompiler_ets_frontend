@@ -179,6 +179,7 @@ bool ETSParser::IsInitializerBlockStart() const
     return validStart;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic, big switch case
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
@@ -208,6 +209,9 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
             result = ParseTypeDeclaration(IsInitializerBlockStart());
+            break;
+        case lexer::TokenType::KEYW_OVERLOAD:
+            result = ParseOverloadDeclaration(memberModifiers);
             break;
         case lexer::TokenType::PUNCTUATOR_AT:
             result = ParseTopLevelAnnotation(memberModifiers);

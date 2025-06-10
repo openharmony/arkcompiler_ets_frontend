@@ -81,7 +81,18 @@ enum class ModifierFlags : uint32_t {
     EXPORTED = EXPORT | DEFAULT_EXPORT | EXPORT_TYPE
 };
 
-enum class PrivateFieldKind { FIELD, METHOD, GET, SET, STATIC_FIELD, STATIC_METHOD, STATIC_GET, STATIC_SET };
+enum class PrivateFieldKind {
+    FIELD,
+    METHOD,
+    GET,
+    SET,
+    STATIC_FIELD,
+    STATIC_METHOD,
+    STATIC_GET,
+    STATIC_SET,
+    OVERLOAD,
+    STATIC_OVERLOAD
+};
 
 enum class ScriptFunctionFlags : uint32_t {
     NONE = 0U,
@@ -109,6 +120,7 @@ enum class ScriptFunctionFlags : uint32_t {
     HAS_THROW = 1U << 21U,
     IN_RECORD = 1U << 22U,
     TRAILING_LAMBDA = 1U << 23U,
+    SYNTHETIC = 1U << 24U,
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };

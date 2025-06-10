@@ -432,6 +432,11 @@ void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
     thisParam->Declaration()->BindNode(thisParam_);
 }
 
+void ETSBinder::BuildOverloadDeclaration(ir::OverloadDeclaration *overloadDef)
+{
+    overloadDef->ResolveReferences([this](auto *childNode) { ResolveReference(childNode); });
+}
+
 void ETSBinder::BuildMemberExpression(ir::MemberExpression *memberExpr)
 {
     ResolveReference(memberExpr->Object());
@@ -1156,6 +1161,9 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
         case ir::AstNodeType::METHOD_DEFINITION: {
             return BuildMethodDefinition(childNode->AsMethodDefinition());
         }
+        case ir::AstNodeType::OVERLOAD_DECLARATION: {
+            return BuildOverloadDeclaration(childNode->AsOverloadDeclaration());
+        }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
             return BuildETSNewClassInstanceExpression(childNode->AsETSNewClassInstanceExpression());
         }
@@ -1242,10 +1250,11 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
        << compiler::Signatures::METHOD_SEPARATOR;
 
     const auto *signature = func->Signature();
+    const auto funcName = util::Helpers::FunctionName(Allocator(), func);
 
     if (func->IsStaticBlock()) {
         ss << compiler::Signatures::CCTOR;
-    } else if (func->IsConstructor()) {
+    } else if (func->IsConstructor() && funcName.Is(compiler::Signatures::CONSTRUCTOR_NAME)) {
         ss << compiler::Signatures::CTOR;
     } else {
         if (func->IsGetter()) {
@@ -1253,7 +1262,7 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
         } else if (func->IsSetter()) {
             ss << compiler::Signatures::SETTER_BEGIN;
         }
-        ss << util::Helpers::FunctionName(Allocator(), func);
+        ss << funcName;
     }
 
     signature->ToAssemblerType(ss);

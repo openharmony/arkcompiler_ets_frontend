@@ -1295,3 +1295,15 @@ syntax:
 - name: INIT_MODULE_DECLARATION_POSITION
   id: 322
   message: "initModule() must only be called immediately after the import statement, and before any other declarations or statements."
+
+- name: OVERLOAD_MODIFIERS
+  id: 323
+  message: "Overload Declaration only allow use modifier 'static' | 'async'."
+
+- name: CLASS_INTERFACE_METHOD_OVERLOADED_NAME_MUST_IDENT
+  id: 324
+  message: "The overloaded method name in class/interface method overload declaration must be identifier."
+
+- name: FUNCTION_OVERLOADED_NAME_MUST_QUALIFIED_NAME
+  id: 325
+  message: "The overloaded method name in function overload declaration must be qualified name."

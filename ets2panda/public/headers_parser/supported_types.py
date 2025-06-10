@@ -64,6 +64,7 @@ ast_nodes_supported = [
     "MemberExpression",
     "MetaProperty",
     "MethodDefinition",
+    "OverloadDeclaration",
     "NamedType",
     "NewExpression",
     "NullLiteral",

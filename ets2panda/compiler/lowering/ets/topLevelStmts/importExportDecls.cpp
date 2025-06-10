@@ -176,6 +176,11 @@ void ImportExportDecls::VisitFunctionDeclaration(ir::FunctionDeclaration *funcDe
     fieldMap_.emplace(funcDecl->Function()->Id()->Name(), funcDecl->Function());
 }
 
+void ImportExportDecls::VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration)
+{
+    fieldMap_.emplace(overloadDeclaration->Id()->Name(), overloadDeclaration);
+}
+
 void ImportExportDecls::VisitVariableDeclaration(ir::VariableDeclaration *varDecl)
 {
     for (const auto &decl : varDecl->Declarators()) {

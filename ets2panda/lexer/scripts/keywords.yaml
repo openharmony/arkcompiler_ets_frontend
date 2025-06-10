@@ -421,6 +421,10 @@ keywords:
     token: KEYW_OUT
     keyword_like: [ets]
 
+  - name: 'overload'
+    token: KEYW_OVERLOAD
+    keyword: [ets]
+
   - name: 'override'
     token: KEYW_OVERRIDE
     keyword: [ets]

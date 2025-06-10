@@ -103,6 +103,7 @@ libes2panda_sources = [
   "checker/types/ets/byteType.cpp",
   "checker/types/ets/charType.cpp",
   "checker/types/ets/doubleType.cpp",
+  "checker/types/ets/etsAnyType.cpp",
   "checker/types/ets/etsArrayType.cpp",
   "checker/types/ets/etsAsyncFuncReturnType.cpp",
   "checker/types/ets/etsBigIntType.cpp",
@@ -127,7 +128,6 @@ libes2panda_sources = [
   "checker/types/ets/intType.cpp",
   "checker/types/ets/longType.cpp",
   "checker/types/ets/shortType.cpp",
-  "checker/types/ets/etsAnyType.cpp",
   "checker/types/ets/wildcardType.cpp",
   "checker/types/globalTypesHolder.cpp",
   "checker/types/gradualType.cpp",
@@ -206,6 +206,8 @@ libes2panda_sources = [
   "compiler/function/generatorFunctionBuilder.cpp",
   "compiler/lowering/checkerPhase.cpp",
   "compiler/lowering/ets/ambientLowering.cpp",
+  "compiler/lowering/ets/annotationCopyLowering.cpp",
+  "compiler/lowering/ets/annotationCopyPostLowering.cpp",
   "compiler/lowering/ets/arrayLiteralLowering.cpp",
   "compiler/lowering/ets/asyncMethodLowering.cpp",
   "compiler/lowering/ets/bigintLowering.cpp",
@@ -218,6 +220,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/declGenPhase.cpp",
   "compiler/lowering/ets/defaultParametersInConstructorLowering.cpp",
   "compiler/lowering/ets/defaultParametersLowering.cpp",
+  "compiler/lowering/ets/dynamicImport.cpp",
   "compiler/lowering/ets/enumLowering.cpp",
   "compiler/lowering/ets/enumPostCheckLowering.cpp",
   "compiler/lowering/ets/enumPropertiesInAnnotationsLowering.cpp",
@@ -230,9 +233,8 @@ libes2panda_sources = [
   "compiler/lowering/ets/insertOptionalParametersAnnotation.cpp",
   "compiler/lowering/ets/interfaceObjectLiteralLowering.cpp",
   "compiler/lowering/ets/interfacePropertyDeclarations.cpp",
-  "compiler/lowering/ets/lateInitialization.cpp",
   "compiler/lowering/ets/lambdaLowering.cpp",
-  "compiler/lowering/ets/dynamicImport.cpp",
+  "compiler/lowering/ets/lateInitialization.cpp",
   "compiler/lowering/ets/localClassLowering.cpp",
   "compiler/lowering/ets/objectIndexAccess.cpp",
   "compiler/lowering/ets/objectIterator.cpp",
@@ -240,6 +242,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/opAssignment.cpp",
   "compiler/lowering/ets/optionalArgumentsLowering.cpp",
   "compiler/lowering/ets/optionalLowering.cpp",
+  "compiler/lowering/ets/overloadMappingLowering.cpp",
   "compiler/lowering/ets/packageImplicitImport.cpp",
   "compiler/lowering/ets/partialExportClassGen.cpp",
   "compiler/lowering/ets/primitiveConversionPhase.cpp",
@@ -260,8 +263,6 @@ libes2panda_sources = [
   "compiler/lowering/ets/typeFromLowering.cpp",
   "compiler/lowering/ets/unboxLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",
-  "compiler/lowering/ets/annotationCopyLowering.cpp",
-  "compiler/lowering/ets/annotationCopyPostLowering.cpp",
   "compiler/lowering/phase.cpp",
   "compiler/lowering/plugin_phase.cpp",
   "compiler/lowering/resolveIdentifiers.cpp",
@@ -294,6 +295,7 @@ libes2panda_sources = [
   "ir/base/decorator.cpp",
   "ir/base/metaProperty.cpp",
   "ir/base/methodDefinition.cpp",
+  "ir/base/overloadDeclaration.cpp",
   "ir/base/property.cpp",
   "ir/base/scriptFunction.cpp",
   "ir/base/scriptFunctionSignature.cpp",
@@ -727,6 +729,7 @@ HEADERS_TO_BE_PARSED = [
   "ir/ts/tsImportEqualsDeclaration.h",
   "ir/validationInfo.h",
   "ir/base/methodDefinition.h",
+  "ir/base/overloadDeclaration.h",
   "ir/ts/tsIntersectionType.h",
   "checker/types/ts/nullType.h",
   "checker/types/ts/unknownType.h",
@@ -783,7 +786,7 @@ HEADERS_TO_BE_PARSED = [
   "util/importPathManager.h",
   "util/options.h",
   "util/path.h",
-  "util/arktsconfig.h"
+  "util/arktsconfig.h",
 ]
 
 ES2PANDA_API_GENERATED = [
@@ -976,6 +979,7 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/ir/expressions/directEvalExpression.yaml",
   "$LIBGEN_DIR/gen/headers/ir/ts/tsTypeParameterDeclaration.yaml",
   "$LIBGEN_DIR/gen/headers/ir/base/methodDefinition.yaml",
+  "$LIBGEN_DIR/gen/headers/ir/base/overloadDeclaration.yaml",
   "$LIBGEN_DIR/gen/headers/ir/ts/tsNullKeyword.yaml",
   "$LIBGEN_DIR/gen/headers/ir/ts/tsInterfaceHeritage.yaml",
   "$LIBGEN_DIR/gen/headers/checker/types/ts/enumLiteralType.yaml",
@@ -1070,9 +1074,9 @@ action("libes2panda_public_parse_headers") {
   script = "./public/headers_parser/main.py"
 
   deps = [
+    ":check_build_system_consistency",
     ":es2panda_options_gen_options_h",
     ":gen_es2panda_lexer_tokenType_h",
-    ":check_build_system_consistency",
   ]
 
   generated_headers = [
@@ -1112,8 +1116,8 @@ ark_gen("gen") {
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 libes2panda_public_sources = [
-  "declgen_ets2ts/isolatedDeclgenChecker.cpp",
   "declgen_ets2ts/declgenEts2Ts.cpp",
+  "declgen_ets2ts/isolatedDeclgenChecker.cpp",
   "public/${LIB_NAME}.cpp",
   "util/generateBin.cpp",
   "util/options.cpp",
@@ -1165,10 +1169,10 @@ ohos_source_set("libes2panda_frontend_static") {
     ":es2panda_options_gen_options_h",
     ":gen_${LIB_NAME}_decl_inc",
     ":gen_${LIB_NAME}_enums_inc",
+    ":gen_${LIB_NAME}_idl",
     ":gen_${LIB_NAME}_impl_inc",
     ":gen_${LIB_NAME}_include_inc",
     ":gen_${LIB_NAME}_list_inc",
-    ":gen_${LIB_NAME}_idl",
     ":gen_es2panda_compiler_signatures_h",
     ":gen_es2panda_lexer_keywords_h",
     ":gen_es2panda_lexer_tokenType_h",
