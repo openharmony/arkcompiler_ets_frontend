@@ -13,17 +13,15 @@
  * limitations under the License.
  */
 
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  verbose: true,
-  collectCoverage: true,
-  coverageDirectory: '<rootDir>/dist/coverage',
-  setupFilesAfterEnv: [
-    '<rootDir>/test/testHook/jest.memory-usage.js',
-    '<rootDir>/test/testHook/jest.time-usage.js',
-    '<rootDir>/test/testHook/jest.abc-size.js'
-  ],
-  testMatch: [],
-  testPathIgnorePatterns: [],
-};
+let startTime = 0;
+
+beforeEach(() => {
+  startTime = Date.now();
+});
+
+afterEach(() => {
+  const endTime = Date.now();
+  const duration = endTime - startTime;
+  const testName = expect.getState().currentTestName;
+  console.log(`[Jest][${testName} spent ${duration} ms]`);
+});

@@ -1,0 +1,47 @@
+{
+    "compileFiles": [
+        "test/ut/mock/demo_1.2_dep_hsp1.2/entry/a.ets",
+        "test/ut/mock/demo_1.2_dep_hsp1.2/harA/index.ets",
+        "test/ut/mock/demo_1.2_dep_hsp1.2/harA/sub.ets"
+    ],
+
+    "packageName": "entry",
+    "moduleType": "shared",
+
+    "buildType": "build",
+    "buildMode": "Debug",
+
+    "moduleRootPath": "test/ut/mock/demo_1.2_dep_hsp1.2/entry/",
+    "sourceRoots": ["./", "src/main1/ets"],
+
+    "loaderOutPath": "test/ut/mock/dist",
+    "cachePath": "test/ut/mock/dist/cache",
+
+    "enableDeclgenEts2Ts": false,
+    "declgenV1OutPath": "test/ut/mock/dist/declgen/decl_ets",
+    "declgenBridgeCodePath": "test/ut/mock/dist/declgen/ets",
+
+    "buildSdkPath": "test/mock_sdk/",
+
+    "dependentModuleList": [
+        {
+            "packageName": "harA",
+            "moduleName": "harA",
+            "moduleType": "har",
+            "modulePath": "test/ut/mock/demo_1.2_dep_hsp1.2/harA",
+            "sourceRoots": ["./"],
+            "entryFile": "test/ut/mock/demo_1.2_dep_hsp1.2/harA/index.ets",
+            "language": "1.1",
+            "dependencies": [ "hspA" ]
+        },
+        {
+            "packageName": "hspA",
+            "moduleName": "hspA",
+            "moduleType": "shared",
+            "modulePath": "test/ut/mock/demo_1.2_dep_hsp1.2/hspA",
+            "sourceRoots": ["./"],
+            "entryFile": "test/ut/mock/demo_1.2_dep_hsp1.2/hspA/index.ets",
+            "language": "1.1"
+        }
+    ]
+}

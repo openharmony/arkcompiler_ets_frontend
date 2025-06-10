@@ -44,6 +44,7 @@ process.on('message', (message: {
 
   const koalaWrapperPath = path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
   let { arkts, arktsGlobal } = require(koalaWrapperPath);
+  arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
 
   for (const fileInfo of taskList) {
     let errorStatus = false;

@@ -1,0 +1,26 @@
+{
+    "compileFiles": [
+        "test/ut/mock/demo_1.2_dep_hsp1.2/hspA/index.ets",
+        "test/ut/mock/demo_1.2_dep_hsp1.2/hspA/Calc.ets"
+    ],
+
+    "packageName": "entry",
+    "moduleType": "shared",
+
+    "buildType": "build",
+    "buildMode": "Debug",
+    "moduleRootPath": "test/ut/mock/demo_1.2_dep_hsp1.2/hspA/",
+    "sourceRoots": ["./", "src/main1/ets"],
+
+    "loaderOutPath": "test/ut/mock/dist",
+    "cachePath": "test/ut/mock/dist/cache",
+
+    "buildSdkPath": "test/mock_sdk/",
+
+    "dependentModuleList": [
+    ],
+    "enableDeclgenEts2Ts": true,
+    "declgenBridgeCodePath": "test/ut/mock/demo_1.2_dep_hsp1.2/declgen/default/declgenBridgeCode",
+    "declgenV1OutPath": "test/ut/mock/demo_1.2_dep_hsp1.2/declgen/default/declgenV1",
+    "declgenV2OutPath": "test/ut/mock/demo_1.2_dep_hsp1.2/declgen/default/declgenV2"
+}
