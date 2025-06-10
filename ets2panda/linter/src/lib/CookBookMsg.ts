@@ -265,7 +265,7 @@ cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decora
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
-cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
+cookBookTag[259] = 'The ArkUI interface should be imported before it is used (arkui-modular-interface)';
 cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
 cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =

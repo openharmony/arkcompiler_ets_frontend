@@ -201,7 +201,7 @@
             "endColumn": 59,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"DataChangeListener\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 61,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"DataChangeListener\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]
