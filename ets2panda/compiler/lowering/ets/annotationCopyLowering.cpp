@@ -57,7 +57,7 @@ void CopyAnnotationProperties(public_lib::Context *ctx, ir::AnnotationUsage *st)
     for (auto *it : st->Properties()) {
         auto *param = it->AsClassProperty();
         auto *property = findProperty(param->Id()->Name());
-        if (property == nullptr) {
+        if (property == nullptr || property->TypeAnnotation() == nullptr) {
             // Will be handled in Checker
             continue;
         }
