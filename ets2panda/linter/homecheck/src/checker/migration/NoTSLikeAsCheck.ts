@@ -42,6 +42,8 @@ import {
     UnaryOperator,
     ArkNormalBinopExpr,
     NormalBinaryOperator,
+    AbstractFieldRef,
+    ClassSignature,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -368,6 +370,11 @@ export class NoTSLikeAsCheck implements BaseChecker {
             if (this.isWithInterfaceAnnotation(currentStmt, scene)) {
                 return currentStmt;
             }
+
+            const fieldDeclareStmt = this.isCastOpFieldWithInterfaceType(currentStmt, scene);
+            if (fieldDeclareStmt) {
+                return fieldDeclareStmt;
+            }
             const gv = this.checkIfCastOpIsGlobalVar(currentStmt);
             if (gv) {
                 const globalDefs = globalVarMap.get(gv.getName());
@@ -416,6 +423,34 @@ export class NoTSLikeAsCheck implements BaseChecker {
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
         return null;
+    }
+
+    private isCastOpFieldWithInterfaceType(stmt: Stmt, scene: Scene): Stmt | undefined {
+        const obj = this.getCastOp(stmt);
+        if (obj === null || !(obj instanceof Local)) {
+            return undefined;
+        }
+        const declaringStmt = obj.getDeclaringStmt();
+        if (declaringStmt === null || !(declaringStmt instanceof ArkAssignStmt)) {
+            return undefined;
+        }
+        const rightOp = declaringStmt.getRightOp();
+        if (!(rightOp instanceof AbstractFieldRef)) {
+            return undefined;
+        }
+        const fieldDeclaring = rightOp.getFieldSignature().getDeclaringSignature();
+        if (fieldDeclaring instanceof ClassSignature) {
+            const field = scene.getClass(fieldDeclaring)?.getField(rightOp.getFieldSignature());
+            if (!field) {
+                return undefined;
+            }
+            const fieldInitializer = field.getInitializer();
+            const lastStmt = fieldInitializer[fieldInitializer.length - 1];
+            if (this.isWithInterfaceAnnotation(lastStmt, scene)) {
+                return lastStmt;
+            }
+        }
+        return undefined;
     }
 
     private checkIfCastOpIsGlobalVar(stmt: Stmt): Local | undefined {
