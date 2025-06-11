@@ -27,15 +27,19 @@ import {
 import {
   changeFileExtension,
   ensurePathExists,
+  getInteropFilePathByApi,
+  getOhmurlByApi,
   safeRealpath
 } from '../utils';
 import {
+  AliasConfig,
   BuildConfig,
   ModuleInfo
 } from '../types';
 import {
   LANGUAGE_VERSION,
   SYSTEM_SDK_PATH_FROM_SDK,
+  sdkConfigPrefix,
 } from '../pre_define';
 
 interface DynamicPathItem {
@@ -67,6 +71,8 @@ export class ArkTSConfigGenerator {
   private pathSection: Record<string, string[]>;
 
   private logger: Logger;
+  private aliasConfig: Map<string, Map<string, AliasConfig>>;
+  private dynamicSDKPaths: Set<string>;
 
   private constructor(buildConfig: BuildConfig, moduleInfos: Map<string, ModuleInfo>) {
     this.logger = Logger.getInstance();
@@ -80,6 +86,8 @@ export class ArkTSConfigGenerator {
 
     this.moduleInfos = moduleInfos;
     this.pathSection = {};
+    this.aliasConfig = buildConfig.aliasConfig;
+    this.dynamicSDKPaths = buildConfig.interopSDKPaths;
   }
 
   public static getInstance(buildConfig?: BuildConfig, moduleInfos?: Map<string, ModuleInfo>): ArkTSConfigGenerator {
@@ -142,9 +150,9 @@ export class ArkTSConfigGenerator {
     }
   }
 
-  private getPathSection(): Record<string, string[]> {
+  private getPathSection(moduleInfo: ModuleInfo): Record<string, string[]> {
     if (Object.keys(this.pathSection).length !== 0) {
-        return this.pathSection;
+      return this.pathSection;
     }
 
     this.pathSection.std = [this.stdlibStdPath];
@@ -210,7 +218,7 @@ export class ArkTSConfigGenerator {
         return;
       }
       let declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
-      Object.keys(declFilesObject.files).forEach((file: string)=> {
+      Object.keys(declFilesObject.files).forEach((file: string) => {
         let ohmurl: string = this.getOhmurl(file, depModuleInfo);
         dynamicPathSection[ohmurl] = {
           language: 'js',
@@ -235,7 +243,7 @@ export class ArkTSConfigGenerator {
       );
       this.logger.printErrorAndExit(logData);
     }
-    let pathSection = this.getPathSection();
+    let pathSection = this.getPathSection(moduleInfo);
     let dependenciesSection: string[] = [];
     this.getDependenciesSection(moduleInfo, dependenciesSection);
     let dynamicPathSection: Record<string, DynamicPathItem> = {};
@@ -243,7 +251,7 @@ export class ArkTSConfigGenerator {
     if (!enableDeclgenEts2Ts) {
       this.getDynamicPathSection(moduleInfo, dynamicPathSection);
     }
-
+    this.processAlias(moduleInfo, dynamicPathSection);
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
     let arktsConfig: ArkTSConfigObject = {
       compilerOptions: {
@@ -274,5 +282,42 @@ export class ArkTSConfigGenerator {
 
     ensurePathExists(moduleInfo.arktsConfigFile);
     fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
+  }
+
+  private processAlias(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
+    const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(moduleInfo.packageName);
+    aliasForPkg?.forEach((aliasConfig, aliasName) => {
+      // treat kit as 1.2,then do kit transform in plugin and reparse
+      if (aliasConfig.isStatic || aliasConfig.originalAPIName.startsWith('@kit')) {
+        this.processStaticAlias(aliasName, aliasConfig);
+      } else {
+        this.processDynamicAlias(aliasName, aliasConfig, dynamicPathSection);
+      }
+    })
+  }
+
+  private processStaticAlias(aliasName: string, aliasConfig: AliasConfig) {
+    if (aliasConfig.originalAPIName in this.pathSection) {
+      this.pathSection[aliasName] = this.pathSection[aliasConfig.originalAPIName];
+    }
+  }
+
+  private processDynamicAlias(aliasName: string, aliasConfig: AliasConfig, dynamicPathSection: Record<string, DynamicPathItem>) {
+    const declPath = getInteropFilePathByApi(aliasConfig.originalAPIName, this.dynamicSDKPaths);
+    if (declPath === '') {
+      return;
+    }
+    if (!fs.existsSync(declPath)) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_INTEROP_SDK_NOT_FIND,
+        `Interop SDK File Not Exist: ${declPath}`
+      );
+      this.logger.printError(logData);
+    }
+    dynamicPathSection[aliasName] = {
+      language: 'js',
+      declPath: declPath,
+      ohmUrl: getOhmurlByApi(aliasConfig.originalAPIName)
+    }
   }
 }
