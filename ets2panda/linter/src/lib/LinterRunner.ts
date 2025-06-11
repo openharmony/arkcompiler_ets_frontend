@@ -43,7 +43,10 @@ import { ProjectStatistics } from './statistics/ProjectStatistics';
 import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
-  let inputFiles = cmdOptions.inputFiles;
+  let inputFiles = cmdOptions.inputFiles.map((x) => {
+    return path.normalize(x);
+  });
+
   if (!cmdOptions.parsedConfigFile) {
     return inputFiles;
   }

@@ -2174,8 +2174,10 @@ export class TsUtils {
         return true;
       }
     }
-    // We allow computed property names if expression is string literal or string Enum member
-    return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
+    // In ArkTS 1.0, the computed property names are allowed if expression is string literal or string Enum member.
+    return (
+      !this.options.arkts2 && (ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression))
+    );
   }
 
   skipPropertyInferredTypeCheck(
@@ -3733,7 +3735,7 @@ export class TsUtils {
     if (sourceFile.fileName.endsWith(EXTNAME_D_ETS)) {
       return true;
     }
-    return !!this.options.inputFiles?.includes(sourceFile.fileName);
+    return !!this.options.inputFiles?.includes(path.normalize(sourceFile.fileName));
   }
 
   static removeOrReplaceQuotes(str: string, isReplace: boolean): string {
