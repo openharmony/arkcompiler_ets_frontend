@@ -37,10 +37,10 @@ void GetDisplayPartAndKind(ir::AstNode *node, std::vector<SymbolDisplayPart> &di
     if (IsClass(node)) {
         displayParts = ark::es2panda::lsp::CreateDisplayForClass(node);
         kind = "class";
-    } else if (node->Type() == ir::AstNodeType::ETS_PARAMETER_EXPRESSION) {
+    } else if (node->IsETSParameterExpression()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForETSParameterExpression(node);
         kind = "parameter";
-    } else if (node->Type() == ir::AstNodeType::CLASS_PROPERTY) {
+    } else if (node->IsClassProperty()) {
         // After enum refactoring, enum declaration is transformed to a class declaration
         if (compiler::ClassDefinitionIsEnumTransformed(node->Parent())) {
             auto enumDecl = node->Parent()->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
@@ -48,28 +48,28 @@ void GetDisplayPartAndKind(ir::AstNode *node, std::vector<SymbolDisplayPart> &di
             displayParts = ark::es2panda::lsp::CreateDisplayForEnumMember(enumMember);
             kind = "enum member";
         } else {
-            displayParts = ark::es2panda::lsp::CreateDisplayForClassProperty(node, kindModifiers);
+            displayParts = ark::es2panda::lsp::CreateDisplayForClassProperty(node);
             kind = "property";
         }
-    } else if (node->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
+    } else if (node->IsTSInterfaceDeclaration()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForInterface(node);
         kind = "interface";
-    } else if (node->Type() == ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION) {
+    } else if (node->IsTSTypeAliasDeclaration()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForTypeAlias(node);
         kind = "type alias";
-    } else if (node->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
+    } else if (node->IsTSEnumDeclaration()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForEnum(node);
         kind = "enum";
-    } else if (node->Type() == ir::AstNodeType::IMPORT_DECLARATION) {
+    } else if (node->IsImportDeclaration()) {
         displayParts = CreateDisplayForImportDeclaration(node);
         kind = "import";
-    } else if (node->Type() == ir::AstNodeType::TS_TYPE_PARAMETER) {
+    } else if (node->IsTSTypeParameter()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForTypeParameter(node);
         kind = "type parameter";
-    } else if (node->Type() == ir::AstNodeType::METHOD_DEFINITION) {
+    } else if (node->IsMethodDefinition()) {
         displayParts = ark::es2panda::lsp::CreateDisplayForMethodDefinition(node, kindModifiers);
         kind = "function";
-        if (node->Parent() != nullptr && node->Parent()->Type() == ir::AstNodeType::TS_INTERFACE_BODY) {
+        if (node->Parent() != nullptr && node->Parent()->IsTSInterfaceBody()) {
             kind = "property";
         }
     }

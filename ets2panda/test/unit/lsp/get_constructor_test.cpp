@@ -105,7 +105,7 @@ export class Foo extends FooParent {
 
     std::string expectedText =
         "constructor(f: Number, str: String, name: String, x: Number, primaryColor: Colors, isActive: Boolean, "
-        "items: Array<String>, point: Array<Number>, optionalValue: String|null|undefined) {\n  super(f, str);\n"
+        "items: Array<String>, point: Array<Number>, optionalValue: String | null | undefined) {\n  super(f, str);\n"
         "  this.name = name;\n  this.x = x;\n  this.primaryColor = primaryColor;\n  this.isActive = isActive;\n"
         "  this.items = items;\n  this.point = point;\n  this.optionalValue = optionalValue;\n}";
     size_t const expectedPosition = 269;
@@ -245,7 +245,7 @@ class Car {
     auto res = lspApi->getClassConstructorInfo(ctx, offset, properties);
 
     std::string expectedText =
-        "constructor(name: String, address: Address, tupleProperty: undefined, enumProperty: Color, "
+        "constructor(name: String, address: Address, tupleProperty: [String, Number], enumProperty: Color, "
         "onClick: (() => void), engine: Engine) {\n  this.name = name;\n  this.address = address;\n  "
         "this.tupleProperty = tupleProperty;\n  this.enumProperty = enumProperty;\n  this.onClick = onClick;\n  "
         "this.engine = engine;\n}";
@@ -485,7 +485,7 @@ class CommonEventRegister {
     auto res = lspApi->getClassConstructorInfo(ctx, offset, properties);
 
     std::string expectedText =
-        "constructor(subscriber: CommonEventManager.CommonEventSubscriber|null, subscribeInfo: SubscribeInfoType) "
+        "constructor(subscriber: CommonEventManager.CommonEventSubscriber | null, subscribeInfo: SubscribeInfoType) "
         "{\n  this.subscriber = subscriber;\n  this.subscribeInfo = subscribeInfo;\n}";
     size_t const expectedPosition = 148;
     std::vector<FileTextChanges> expectedFileTextChanges =

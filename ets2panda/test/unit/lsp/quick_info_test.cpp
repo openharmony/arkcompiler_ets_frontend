@@ -408,7 +408,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForUnionTypeAlias)
     expected.emplace_back(" ", "space");
     expected.emplace_back("=", "operator");
     expected.emplace_back(" ", "space");
-    expected.emplace_back("string|number", "typeName");
+    expected.emplace_back("string | number", "typeName");
     ASSERT_EQ(expected, display);
     initializer.DestroyContext(ctx);
 }
@@ -594,7 +594,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("class-property-test.ets", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("class-property-test2.ets", ES2PANDA_STATE_CHECKED,
                                   "class MyClass {\n  public myProp: number = 0;\n}\n let obj = new MyClass();");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -604,10 +604,9 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty1)
                node->AsClassProperty()->Key()->AsIdentifier()->Name() != "ETSGLOBAL";
     };
     auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForClassProperty(found, "const");
+    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForClassProperty(found);
     std::vector<SymbolDisplayPart> expected;
-
-    expected.emplace_back("const", "keyword");
+    expected.emplace_back("let", "keyword");
     expected.emplace_back(" ", "space");
     expected.emplace_back("obj", "property");
     expected.emplace_back(":", "punctuation");
@@ -631,7 +630,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty2)
                node->AsClassProperty()->Key()->AsIdentifier()->Name() != "ETSGLOBAL";
     };
     auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForClassProperty(found, "const");
+    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForClassProperty(found);
     std::vector<SymbolDisplayPart> expected;
 
     expected.emplace_back("MyClass", "className");
