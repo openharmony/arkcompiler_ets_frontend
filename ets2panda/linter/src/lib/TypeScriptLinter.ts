@@ -5832,6 +5832,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleConstructorDeclaration(node: ts.Node): void {
     const ctorDecl = node as ts.ConstructorDeclaration;
+    this.checkDefaultParamBeforeRequired(ctorDecl);
     this.handleTSOverload(ctorDecl);
     const paramProperties = ctorDecl.parameters.filter((x) => {
       return this.tsUtils.hasAccessModifier(x);
