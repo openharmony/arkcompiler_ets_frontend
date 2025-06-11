@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include "checker/ets/dynamic/dynamicCall.h"
-#include "checker/types/ets/etsDynamicType.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/identifier.h"

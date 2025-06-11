@@ -65,7 +65,6 @@ public:
           dynamicImports_(Allocator()->Adapter()),
           reExportImports_(Allocator()->Adapter()),
           reexportedNames_(Allocator()->Adapter()),
-          dynamicImportVars_(Allocator()->Adapter()),
           selectiveExportAliasMultimap_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
@@ -132,9 +131,8 @@ public:
     [[nodiscard]] bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
-    [[nodiscard]] bool HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces);
     [[nodiscard]] bool LookupInDebugInfoPlugin(ir::Identifier *ident);
-    void LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces);
+    void LookupTypeReference(ir::Identifier *ident);
     void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void BuildMemberExpression(ir::MemberExpression *memberExpr);
@@ -172,7 +170,6 @@ public:
                                            Span<parser::Program *const> record);
     Variable *FindStaticBinding(Span<parser::Program *const> records, const ir::StringLiteral *importPath);
     void AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
-    void AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void ResolveMethodDefinition(ir::MethodDefinition *methodDef);
@@ -222,11 +219,6 @@ public:
         return reExportImports_;
     }
 
-    [[nodiscard]] const DynamicImportVariables &DynamicImportVars() const noexcept
-    {
-        return dynamicImportVars_;
-    }
-
     [[nodiscard]] const ir::AstNode *DefaultExport() noexcept
     {
         return defaultExport_;
@@ -239,10 +231,6 @@ public:
 
     /* Returns the list of programs belonging to the same compilation unit based on a program path */
     [[nodiscard]] ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const noexcept;
-
-    [[nodiscard]] bool IsDynamicModuleVariable(const Variable *var) const noexcept;
-    [[nodiscard]] bool IsDynamicNamespaceVariable(const Variable *var) const noexcept;
-    [[nodiscard]] const DynamicImportData *DynamicImportDataForVar(const Variable *var) const noexcept;
 
     void ResolveReferenceForScope(ir::AstNode *node, Scope *scope);
     void ResolveReferencesForScope(ir::AstNode const *parent, Scope *scope);
@@ -273,7 +261,6 @@ public:
         dynamicImports_.clear();
         reexportedNames_.clear();
         reExportImports_.clear();
-        dynamicImportVars_.clear();
         defaultExport_ = nullptr;
         globalRecordTable_.CleanUp();
     }
@@ -297,11 +284,9 @@ private:
     void ImportGlobalProperties(const ir::ClassDefinition *classDef);
     bool ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
                                                       const ir::ClassElement *classElement);
-    void InsertForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
-                              const util::StringView &name, Variable *var);
-    void InsertOrAssignForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
-                                      const util::StringView &name, Variable *var);
-    void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
+    void InsertForeignBinding(const util::StringView &name, Variable *var);
+    void InsertOrAssignForeignBinding(const util::StringView &name, Variable *var);
+    void ImportAllForeignBindings(const varbinder::Scope::VariableMap &globalBindings,
                                   const parser::Program *importProgram, const varbinder::GlobalScope *importGlobalScope,
                                   const ir::ETSImportDeclaration *import);
     void ThrowRedeclarationError(const lexer::SourcePosition &pos, const Variable *const var,
@@ -314,7 +299,6 @@ private:
     ArenaVector<ir::ETSImportDeclaration *> dynamicImports_;
     ArenaUnorderedSet<ir::ETSReExportDeclaration *> reExportImports_;
     ArenaSet<util::StringView> reexportedNames_;
-    DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};  // 2
     ir::AstNode *defaultExport_ {};
     ModulesToExportedNamesWithAliases selectiveExportAliasMultimap_;  // 3

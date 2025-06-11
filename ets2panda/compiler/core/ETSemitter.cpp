@@ -614,11 +614,6 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     }
 
     for (auto *it : baseType->Interfaces()) {
-        // We do not need to add dynamic interfaces
-        if (it->IsETSDynamicType()) {
-            continue;
-        }
-
         auto *declNode = it->GetDeclNode();
         // NOTE: itrubachev. replace it with ES2PANDA_ASSERT(decl_node->IsTSInterfaceDeclaration())
         // after adding proper creation of lambda object in ETSFunctionType::AssignmentSource

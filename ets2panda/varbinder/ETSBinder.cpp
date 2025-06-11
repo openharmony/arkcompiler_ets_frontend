@@ -62,20 +62,6 @@ static bool IsSpecialName(const util::StringView &name)
            name == compiler::Signatures::FIXED_ARRAY_TYPE_NAME;
 }
 
-bool ETSBinder::HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces)
-{
-    if (IsDynamicModuleVariable(variable)) {
-        ident->SetVariable(variable);
-        return true;
-    }
-
-    if (allowDynamicNamespaces && IsDynamicNamespaceVariable(variable)) {
-        ident->SetVariable(variable);
-        return true;
-    }
-    return false;
-}
-
 bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)
 {
     auto *checker = GetContext()->GetChecker()->AsETSChecker();
@@ -103,7 +89,7 @@ static void CreateDummyVariable(ETSBinder *varBinder, ir::Identifier *ident)
     decl->BindNode(ident);
 }
 
-void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
+void ETSBinder::LookupTypeReference(ir::Identifier *ident)
 {
     if (ident->Variable() != nullptr && ident->Variable()->Declaration()->Node() == ident) {
         return;
@@ -126,10 +112,6 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         auto res = scope->Find(name, options);
         if (res.variable == nullptr) {
             break;
-        }
-
-        if (HandleDynamicVariables(ident, res.variable, allowDynamicNamespaces)) {
-            return;
         }
 
         switch (res.variable->Declaration()->Node()->Type()) {
@@ -290,8 +272,7 @@ void ETSBinder::BuildETSTypeReference(ir::ETSTypeReference *typeRef)
     // We allow to resolve following types in pure dynamic mode:
     // import * as I from "@dynamic"
     // let x : I.X.Y
-    bool allowDynamicNamespaces = typeRef->Part()->Name() != baseName;
-    LookupTypeReference(baseName, allowDynamicNamespaces);
+    LookupTypeReference(baseName);
     LookupTypeArgumentReferences(typeRef);
 }
 
@@ -400,7 +381,7 @@ void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
 {
     auto boundCtx = BoundContext(recordTable_, annoDecl);
     if (annoDecl->Expr()->IsIdentifier()) {
-        LookupTypeReference(annoDecl->AsAnnotationDeclaration()->Expr()->AsIdentifier(), false);
+        LookupTypeReference(annoDecl->AsAnnotationDeclaration()->Expr()->AsIdentifier());
     } else {
         ResolveReference(annoDecl->Expr());
     }
@@ -416,7 +397,7 @@ void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
 void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)
 {
     if (annoUsage->Expr()->IsIdentifier()) {
-        LookupTypeReference(annoUsage->AsAnnotationUsage()->Expr()->AsIdentifier(), false);
+        LookupTypeReference(annoUsage->AsAnnotationUsage()->Expr()->AsIdentifier());
     } else {
         ResolveReference(annoUsage->Expr());
     }
@@ -558,50 +539,13 @@ void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringVie
     }
 }
 
-void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
-                                                  const ir::ETSImportDeclaration *const import)
+void ETSBinder::InsertForeignBinding(const util::StringView &name, Variable *var)
 {
-    // NOTE issue #23214: enable it after fix default import in dynamic import
-    if (specifier->IsImportDefaultSpecifier()) {
-        ThrowError(specifier->Start(), diagnostic::DEFAULT_DYNAMIC_IMPORT);
-        return;
-    }
-    const auto name = [specifier]() {
-        if (specifier->IsImportNamespaceSpecifier()) {
-            return specifier->AsImportNamespaceSpecifier()->Local()->Name();
-        }
-
-        return specifier->AsImportSpecifier()->Local()->Name();
-    }();
-
-    auto specDecl = GetScope()->Find(name, ResolveBindingOptions::DECLARATION);
-    ES2PANDA_ASSERT(specDecl.variable != nullptr);
-    dynamicImportVars_.emplace(specDecl.variable, DynamicImportData {import, specifier, specDecl.variable});
-
-    if (specifier->IsImportSpecifier()) {
-        auto importSpecifier = specifier->AsImportSpecifier();
-        importSpecifier->Imported()->SetVariable(specDecl.variable);
-        importSpecifier->Local()->SetVariable(specDecl.variable);
-    }
-}
-
-void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
-                                     const util::StringView &name, Variable *var)
-{
-    if (import->Language().IsDynamic()) {
-        dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
-    }
-
     TopScope()->InsertForeignBinding(name, var);
 }
 
-void ETSBinder::InsertOrAssignForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
-                                             const util::StringView &name, Variable *var)
+void ETSBinder::InsertOrAssignForeignBinding(const util::StringView &name, Variable *var)
 {
-    if (import->Language().IsDynamic()) {
-        dynamicImportVars_.insert_or_assign(var, DynamicImportData {import, specifier, var});
-    }
-
     TopScope()->InsertOrAssignForeignBinding(name, var);
 }
 
@@ -658,8 +602,7 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
     }
 }
 
-void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
-                                         const varbinder::Scope::VariableMap &globalBindings,
+void ETSBinder::ImportAllForeignBindings(const varbinder::Scope::VariableMap &globalBindings,
                                          const parser::Program *const importProgram,
                                          const varbinder::GlobalScope *const importGlobalScope,
                                          const ir::ETSImportDeclaration *const import)
@@ -679,7 +622,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             (var->AsLocalVariable()->Declaration()->Node()->IsExported())) {
             auto variable = Program()->GlobalClassScope()->FindLocal(bindingName, ResolveBindingOptions::ALL);
             if (variable == nullptr || var == variable) {
-                InsertForeignBinding(specifier, import, bindingName, var);
+                InsertForeignBinding(bindingName, var);
                 continue;
             }
 
@@ -690,7 +633,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
 
             // It will be a redeclaration error, but the imported element has not been placed among the bindings yet
             if (TopScope()->FindLocal(bindingName, ResolveBindingOptions::ALL) == nullptr) {
-                InsertForeignBinding(specifier, import, bindingName, var);
+                InsertForeignBinding(bindingName, var);
             }
 
             ThrowRedeclarationError(import->Source()->Start(), var, variable, bindingName);
@@ -699,13 +642,13 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
 
     for (const auto [bindingName, var] : importProgram->GlobalClassScope()->StaticMethodScope()->Bindings()) {
         if (!var->Declaration()->Node()->IsDefaultExported()) {
-            InsertForeignBinding(specifier, import, bindingName, var);
+            InsertForeignBinding(bindingName, var);
         }
     }
 
     for (const auto [bindingName, var] : importProgram->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         if (!var->Declaration()->Node()->IsDefaultExported()) {
-            InsertForeignBinding(specifier, import, bindingName, var);
+            InsertForeignBinding(bindingName, var);
         }
     }
 }
@@ -737,7 +680,7 @@ void ETSBinder::AddImportNamespaceSpecifiersToTopBindings(Span<parser::Program *
     const auto &globalBindings = importGlobalScope->Bindings();
 
     if (namespaceSpecifier->Local()->Name().Empty()) {
-        ImportAllForeignBindings(namespaceSpecifier, globalBindings, importProgram, importGlobalScope, import);
+        ImportAllForeignBindings(globalBindings, importProgram, importGlobalScope, import);
     }
 
     for (auto item : ReExportImports()) {
@@ -928,7 +871,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
         return false;
     }
 
-    InsertOrAssignForeignBinding(importSpecifier, import, localName, var);
+    InsertOrAssignForeignBinding(localName, var);
     return true;
 }
 
@@ -946,14 +889,14 @@ void ETSBinder::AddImportDefaultSpecifiersToTopBindings(Span<parser::Program *co
         if (item1 != selectMap2->second.end()) {
             auto item2 = FindImportSpecifiersVariable(item1->first, globalBindings, records);
             importDefaultSpecifier->Local()->SetVariable(item2);
-            InsertForeignBinding(importDefaultSpecifier, import, importDefaultSpecifier->Local()->Name(), item2);
+            InsertForeignBinding(importDefaultSpecifier->Local()->Name(), item2);
             return;
         }
     }
 
     if (auto var = FindStaticBinding(records, import->Source()); var != nullptr) {
         importDefaultSpecifier->Local()->SetVariable(var);
-        InsertForeignBinding(importDefaultSpecifier, import, importDefaultSpecifier->Local()->Name(), var);
+        InsertForeignBinding(importDefaultSpecifier->Local()->Name(), var);
         return;
     }
 }
@@ -1046,10 +989,6 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(util::StringView so
 
 void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import)
 {
-    if (import->IsPureDynamic()) {
-        AddDynamicSpecifiersToTopBindings(specifier, import);
-        return;
-    }
     const auto records = varbinder::GetExternalProgram(this, import);
     if (records.empty()) {
         return;
@@ -1429,16 +1368,6 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef
     }
 }
 
-const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var) const noexcept
-{
-    auto it = dynamicImportVars_.find(var);
-    if (it == dynamicImportVars_.cend()) {
-        return nullptr;
-    }
-
-    return &it->second;
-}
-
 ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const noexcept
 {
     auto const *globalProgram = globalRecordTable_.Program();
@@ -1461,26 +1390,6 @@ ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView 
     }
 
     return ArenaVector<parser::Program *>(Allocator()->Adapter());
-}
-
-bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const noexcept
-{
-    auto *data = DynamicImportDataForVar(var);
-    if (data == nullptr) {
-        return false;
-    }
-
-    return data->specifier->IsImportSpecifier();
-}
-
-bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const noexcept
-{
-    auto *data = DynamicImportDataForVar(var);
-    if (data == nullptr) {
-        return false;
-    }
-
-    return data->specifier->IsImportNamespaceSpecifier();
 }
 
 void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,

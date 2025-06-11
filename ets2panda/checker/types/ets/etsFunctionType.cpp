@@ -263,16 +263,6 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
     AssertNoMethodsInFunctionRelation(this, target);
 
-    // this should be defined by the dynamic type itself
-    if (target->IsETSDynamicType()) {
-        ES2PANDA_ASSERT(relation->GetNode() != nullptr);
-        if (relation->GetNode()->IsArrowFunctionExpression()) {
-            ES2PANDA_ASSERT(callSignatures_.size() == 1 && ArrowSignature()->HasSignatureFlag(SignatureFlags::CALL));
-            return relation->Result(true);
-        }
-        return relation->Result(false);
-    }
-
     return relation->IsSupertypeOf(target, this);
 }
 

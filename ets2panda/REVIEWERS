@@ -47,7 +47,6 @@
 /ets2panda/util/diagnostic* @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/util/importPathManager* @dreamdoomwalker ^trubachevilya ^igelhaus ^Prof1983
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
-/ets2panda/checker/ets/dynamic.cpp @akmaevaleksey  ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/ets/function.cpp ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/ets/helpers.cpp @zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/checker/ets/object.cpp @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
@@ -61,7 +60,6 @@
 /ets2panda/test/test-lists/parser @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/unit/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/checker/types/ets/Nullish.* ^vpukhov @gogabr ^igelhaus ^Prof1983
-/ets2panda/checker/types/ets/etsDynamicType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsFunctionType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsTypeParameter.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsUnionType.* @akmaevaleksey ^vpukhov @gogabr ^igelhaus ^Prof1983

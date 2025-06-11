@@ -32,7 +32,6 @@
 #include "etsBigIntType.h"
 #include "etsObjectType.h"
 #include "etsTypeAliasType.h"
-#include "etsDynamicType.h"
 #include "etsArrayType.h"
 #include "wildcardType.h"
 #include "etsTypeParameter.h"

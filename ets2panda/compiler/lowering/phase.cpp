@@ -30,7 +30,6 @@
 #include "compiler/lowering/ets/cfgBuilderPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
 #include "compiler/lowering/ets/defaultParametersLowering.h"
-#include "compiler/lowering/ets/dynamicImportLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/ets/enumPropertiesInAnnotationsLowering.h"
@@ -85,7 +84,6 @@ static InitScopesPhaseAS g_initScopesPhaseAs;
 static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
-// static DynamicImportLowering g_dynamicImportLowering;
 const static inline char *g_pluginsAfterParse = "plugins-after-parse";
 const static inline char *g_pluginsAfterBind = "plugins-after-bind";
 const static inline char *g_pluginsAfterCheck = "plugins-after-check";
@@ -127,7 +125,6 @@ std::vector<Phase *> GetETSPhaseList()
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
         // new ConvertPrimitiveCastMethodCall,
         new AnnotationCopyPostLowering,
-        new DynamicImportLowering,
         new AsyncMethodLowering,
         new DeclareOverloadLowering,
         new EnumPostCheckLoweringPhase,

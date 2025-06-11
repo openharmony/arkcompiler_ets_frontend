@@ -17,7 +17,6 @@
 
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsEnumType.h"
-#include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/type.h"
@@ -156,17 +155,6 @@ ETSFunctionType *ETSChecker::CreateETSArrowType(Signature *signature)
 ETSFunctionType *ETSChecker::CreateETSMethodType(util::StringView name, ArenaVector<Signature *> &&signatures)
 {
     return ProgramAllocator()->New<ETSFunctionType>(this, name, std::move(signatures));
-}
-
-ETSFunctionType *ETSChecker::CreateETSDynamicArrowType(Signature *signature, Language lang)
-{
-    return ProgramAllocator()->New<ETSDynamicFunctionType>(this, signature, lang);
-}
-
-ETSFunctionType *ETSChecker::CreateETSDynamicMethodType(util::StringView name, ArenaVector<Signature *> &&signatures,
-                                                        Language lang)
-{
-    return ProgramAllocator()->New<ETSDynamicFunctionType>(this, name, std::move(signatures), lang);
 }
 
 static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir::ScriptFunctionFlags inFunctionFlags)
@@ -341,31 +329,6 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, E
     return InitializeGlobalBuiltinObjectType(this, globalId.value(), declNode, flags);
 }
 
-std::tuple<Language, bool> ETSChecker::CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName)
-{
-    Language lang(Language::Id::ETS);
-    bool hasDecl = false;
-
-    if (declNode->IsClassDefinition()) {
-        auto *clsDef = declNode->AsClassDefinition();
-        lang = clsDef->Language();
-        hasDecl = clsDef->IsDeclare();
-    }
-
-    if (declNode->IsTSInterfaceDeclaration()) {
-        auto *ifaceDecl = declNode->AsTSInterfaceDeclaration();
-        lang = ifaceDecl->Language();
-        hasDecl = ifaceDecl->IsDeclare();
-    }
-
-    auto res = compiler::Signatures::Dynamic::LanguageFromType(assemblerName.Utf8());
-    if (res) {
-        lang = *res;
-    }
-
-    return std::make_tuple(lang, hasDecl);
-}
-
 ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags)
 {
     auto const [name, internalName] = GetObjectTypeDeclNames(declNode);
@@ -383,12 +346,6 @@ ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectF
         return ProgramAllocator()->New<ETSResizableArrayType>(ProgramAllocator(), name,
                                                               std::make_tuple(declNode, flags, Relation()));
     }
-
-    if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {
-        return ProgramAllocator()->New<ETSDynamicType>(ProgramAllocator(), std::make_tuple(name, internalName, lang),
-                                                       std::make_tuple(declNode, flags, Relation()), hasDecl);
-    }
-
     return ProgramAllocator()->New<ETSObjectType>(ProgramAllocator(), name, internalName,
                                                   std::make_tuple(declNode, flags, Relation()));
 }

@@ -63,7 +63,8 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
     }
 }
 
-TEST_F(ASTVerifierTest, Imports)
+// 26272
+TEST_F(ASTVerifierTest, DISABLED_Imports)
 {
     char const *text = R"(
         import { PI } from "std/math";

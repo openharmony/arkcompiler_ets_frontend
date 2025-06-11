@@ -514,29 +514,17 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     auto *calleeObj = calleeType->AsETSObjectType();
     expr->SetTsType(calleeObj);
 
-    if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
-        auto lang = calleeType->AsETSDynamicType()->Language();
-        expr->SetSignature(checker->ResolveDynamicCallExpression(expr->GetTypeRef(), expr->GetArguments(), lang, true));
-    } else {
-        auto *signature = checker->ResolveConstructExpression(calleeObj, expr->GetArguments(), expr->Start());
+    auto *signature = checker->ResolveConstructExpression(calleeObj, expr->GetArguments(), expr->Start());
 
-        if (signature == nullptr) {
-            return checker->InvalidateType(expr);
-        }
-
-        checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
-
-        checker->ValidateSignatureAccessibility(calleeObj, signature, expr->Start());
-
-        if (calleeType->IsETSDynamicType()) {
-            ES2PANDA_ASSERT(signature->Function()->IsDynamic());
-            auto lang = calleeType->AsETSDynamicType()->Language();
-            expr->SetSignature(
-                checker->ResolveDynamicCallExpression(expr->GetTypeRef(), signature->Params(), lang, true));
-        } else {
-            expr->SetSignature(signature);
-        }
+    if (signature == nullptr) {
+        return checker->InvalidateType(expr);
     }
+
+    checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
+
+    checker->ValidateSignatureAccessibility(calleeObj, signature, expr->Start());
+
+    expr->SetSignature(signature);
 
     return expr->TsType();
 }
@@ -1406,13 +1394,7 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
         checker->ValidateSignatureAccessibility(calleeObj, signature, expr->Start());
     }
 
-    if (calleeType->IsETSMethodType() && signature->Function()->IsDynamic()) {
-        ES2PANDA_ASSERT(signature->Function()->IsDynamic());
-        auto lang = signature->Function()->Language();
-        expr->SetSignature(checker->ResolveDynamicCallExpression(expr->Callee(), signature->Params(), lang, false));
-    } else {
-        expr->SetSignature(signature);
-    }
+    expr->SetSignature(signature);
 
     // #22951: this type should not be encoded as a signature flag
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
@@ -1469,16 +1451,7 @@ static checker::SavedCheckerContext ReconstructOwnerClassContext(ETSChecker *che
 checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr, checker::Type *calleeType) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::Type *returnType = nullptr;
-    if (UNLIKELY(calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl())) {
-        // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
-        checker->EnsureValidCurlyBrace(expr);
-        auto lang = calleeType->AsETSDynamicType()->Language();
-        expr->SetSignature(checker->ResolveDynamicCallExpression(expr->Callee(), expr->Arguments(), lang, false));
-        returnType = expr->Signature()->ReturnType();
-    } else {
-        returnType = GetReturnType(expr, calleeType);
-    }
+    checker::Type *returnType = GetReturnType(expr, calleeType);
 
     if (returnType->IsTypeError()) {
         return checker->GlobalTypeError();
@@ -2277,14 +2250,9 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         return expr->TsType();
     }
 
-    if (!expr->PreferredType()->IsETSUnionType() && !expr->PreferredType()->IsETSDynamicType() &&
-        !ValidatePreferredType(checker, expr)) {
+    if (!expr->PreferredType()->IsETSUnionType() && !ValidatePreferredType(checker, expr)) {
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
-    }
-
-    if (expr->PreferredType()->IsETSDynamicType() && !expr->PreferredType()->AsETSDynamicType()->HasDecl()) {
-        return CheckDynamic(expr);
     }
 
     checker::ETSObjectType *objType = ResolveObjectTypeFromPreferredType(checker, expr);
@@ -3545,12 +3513,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         {sourceType, targetType},
         checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
-    if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {
-        // NOTE: itrubachev. change targetType to created lambdaobject type.
-        // Now targetType is not changed, only construct signature is added to it
-        checker->BuildLambdaObjectClass(targetType->AsETSObjectType(),
-                                        expr->TypeAnnotation()->AsETSFunctionType()->ReturnType());
-    }
     expr->isUncheckedCast_ = ctx.UncheckedCast();
 
     // Make sure the array type symbol gets created for the assembler to be able to emit checkcast.

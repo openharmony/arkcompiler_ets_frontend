@@ -1,4 +1,24 @@
-#24986
+# 26272
+compiler/ets/dynamic-equality.ets
+parser/ets/test_jsvalue_set_double.ets
+parser/ets/test_jsvalue_get_property_2.ets
+parser/ets/test_jsvalue_get_property_1.ets
+compiler/ets/dynamicJsImport.ets
+compiler/ets/dynamicLambda.ets
+compiler/ets/dynamicLambdaJSValue.ets
+compiler/ets/dynamicLambdaJSValueCast.ets
+compiler/ets/dynamicObjectLiteral.ets
+compiler/ets/dynamic_call.ets
+compiler/ets/dynamic_instanceof_error.ets
+compiler/ets/instanceof_dynvalue_dynvalue.ets
+compiler/ets/instanceof_dynvalue_jsvalue.ets
+compiler/ets/instanceof_etsobject_dynvalue.ets
+compiler/ets/instanceof_etsobject_jsvalue.ets
+compiler/ets/instanceof_jsvalue_dynvalue.ets
+compiler/ets/instanceof_jsvalue_jsvalue.ets
+compiler/ets/instanceof_object_dynvalue.ets
+compiler/ets/instanceof_object_jsvalue.ets
+parser/ets/test_jsvalue_get_double.ets#24986
 compiler/ets/dynamicLambdaJSValue.ets
 parser/ets/switch2.ets
 parser/ets/switch_char_compare_num.ets

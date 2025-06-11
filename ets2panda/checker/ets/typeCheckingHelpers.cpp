@@ -563,14 +563,6 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         return var->TsType();
     }
 
-    // NOTE: kbaladurin. forbid usage of imported entities as types without declarations
-    if (VarBinder()->AsETSBinder()->IsDynamicModuleVariable(var)) {
-        auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
-        if (importData->import->IsPureDynamic()) {
-            return GlobalBuiltinDynamicType(importData->import->Language());
-        }
-    }
-
     checker::SavedCheckerContext savedContext(this, CheckerStatus::NO_OPTS);
     checker::ScopeContext scopeCtx(this, var->GetScope());
     IterateInVariableContext(var);
@@ -1308,10 +1300,6 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         return;
     }
     ES2PANDA_ASSERT(target != nullptr);
-    // Do not box primitive in case of cast to dynamic types
-    if (target->IsETSDynamicType()) {
-        return;
-    }
     relation->IsAssignableTo(boxedSourceType, target);
     if (!relation->IsTrue()) {
         auto unboxedTargetType = MaybeUnboxInRelation(target);

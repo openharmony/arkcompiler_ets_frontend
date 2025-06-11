@@ -285,7 +285,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/declareOverloadLowering.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
-  compiler/lowering/ets/dynamicImportLowering.cpp
   compiler/lowering/ets/exportAnonymousConst.cpp
   compiler/lowering/ets/lateInitialization.cpp
   compiler/lowering/ets/lambdaLowering.cpp
@@ -553,7 +552,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/castingContext.cpp
   checker/ets/conversion.cpp
   checker/ets/dynamic.cpp
-  checker/ets/dynamic/dynamicCall.cpp
   checker/ets/function.cpp
   checker/ets/validateHelpers.cpp
   checker/ets/typeCheckingHelpers.cpp
@@ -587,7 +585,6 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsAnyType.cpp
   checker/types/ets/etsArrayType.cpp
   checker/types/ets/etsBooleanType.cpp
-  checker/types/ets/etsDynamicType.cpp
   checker/types/ets/etsEnumType.cpp
   checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp

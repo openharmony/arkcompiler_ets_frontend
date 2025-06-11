@@ -59,7 +59,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ts/nonPrimitiveType.h
     ${ES2PANDA_ROOT}/ir/ts/tsTypeParameterInstantiation.h
     ${ES2PANDA_ROOT}/ir/module/importDeclaration.h
-    ${ES2PANDA_ROOT}/checker/types/ets/etsDynamicType.h
     ${ES2PANDA_ROOT}/ir/statements/doWhileStatement.h
     ${ES2PANDA_ROOT}/ir/expressions/literals/bigIntLiteral.h
     ${ES2PANDA_ROOT}/ir/expressions/assignmentExpression.h
@@ -147,7 +146,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/ts/tsParenthesizedType.h
     ${ES2PANDA_ROOT}/ir/ts/tsModuleDeclaration.h
     ${ES2PANDA_ROOT}/ir/ets/etsPackageDeclaration.h
-    ${ES2PANDA_ROOT}/checker/types/ets/etsDynamicFunctionType.h
     ${ES2PANDA_ROOT}/ir/expressions/literals/regExpLiteral.h
     ${ES2PANDA_ROOT}/ir/ets/etsNewArrayInstanceExpression.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsVoidType.h
@@ -323,7 +321,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/expressions/objectExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/module/importSpecifier.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/conditionalExpression.yaml
-    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsDynamicFunctionType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/callExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/bigIntLiteral.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/classElement.yaml
@@ -447,7 +444,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/expressions/blockExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeLiteral.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeParameter.yaml
-    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsDynamicType.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/charType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsBooleanKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/spreadElement.yaml

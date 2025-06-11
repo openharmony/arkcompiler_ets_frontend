@@ -318,13 +318,6 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
     auto *etsBinder = varbinder->AsETSBinder();
     InitializeBuiltins(etsBinder);
 
-    for (auto &entry : etsBinder->DynamicImportVars()) {
-        auto &data = entry.second;
-        if (data.import->IsPureDynamic()) {
-            data.variable->SetTsType(GlobalBuiltinDynamicType(data.import->Language()));
-        }
-    }
-
     bool isEvalMode = (debugInfoPlugin_ != nullptr);
     if (UNLIKELY(isEvalMode)) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

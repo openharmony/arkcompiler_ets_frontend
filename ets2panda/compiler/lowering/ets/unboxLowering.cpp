@@ -16,7 +16,6 @@
 #include "generated/tokenType.h"
 #include "ir/visitor/IterateAstVisitor.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/dynamic/dynamicCall.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/globalTypesHolder.h"
 #include "compiler/lowering/util.h"
@@ -242,7 +241,7 @@ static void NormalizeAllTypes(UnboxContext *uctx, ir::AstNode *ast)
                     return child;
                 }
                 auto typeNodeType = child->AsExpression()->AsTypeNode()->GetType(uctx->checker);
-                if (typeNodeType == nullptr || typeNodeType->IsETSDynamicType()) {
+                if (typeNodeType == nullptr) {
                     return child;
                 }
                 auto r = uctx->allocator->New<ir::OpaqueTypeNode>(NormalizeType(uctx, typeNodeType),
@@ -715,20 +714,6 @@ static ir::Expression *AdjustType(UnboxContext *uctx, ir::Expression *expr, chec
     expectedType = uctx->checker->GetApparentType(expectedType);
     checker::Type *actualType = expr->Check(uctx->checker);
 
-    if (expectedType->IsETSDynamicType()) {
-        return expr;
-    }
-    if (actualType->IsETSDynamicType()) {
-        auto *parent = expr->Parent();
-        auto *allocator = uctx->allocator;
-        auto *res = util::NodeAllocator::ForceSetParent<ir::TSAsExpression>(
-            allocator, expr, allocator->New<ir::OpaqueTypeNode>(expectedType, allocator), false);
-        res->SetParent(parent);
-        res->SetTsType(expectedType);
-        res->SetRange(expr->Range());
-        return res;
-    }
-
     if (actualType->IsETSPrimitiveType() && checker::ETSChecker::IsReferenceType(expectedType)) {
         expr = InsertPrimitiveConversionIfNeeded(uctx, expr, expectedType);
         ES2PANDA_ASSERT(
@@ -872,24 +857,9 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
         }
     }
 
-    void HandleDynamicCall(ir::CallExpression *call)
-    {
-        auto *sig = call->Signature();
-        auto numSysParams = checker::DynamicCall::IsByValue(uctx_->varbinder, call->Callee()) ? 2 : 3;
-        for (size_t ix = 0; ix < call->Arguments().size(); ix++) {
-            auto *expectedType = sig->Params()[numSysParams + ix]->TsType();
-            call->Arguments()[ix] = AdjustType(uctx_, call->Arguments()[ix], expectedType);
-        }
-    }
-
     // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
     void VisitCallExpression(ir::CallExpression *call) override
     {
-        if (call->Callee()->TsType()->IsETSDynamicType()) {
-            HandleDynamicCall(call);
-            return;
-        }
-
         auto *func = call->Signature()->Function();
         if (func == nullptr) {
             // some lambda call, all arguments and return type need to be boxed
@@ -958,23 +928,8 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
         }
     }
 
-    void HandleDynamicConstructorCall(ir::ETSNewClassInstanceExpression *call)
-    {
-        auto *sig = call->GetSignature();
-        auto numSysParams = checker::DynamicCall::IsByValue(uctx_->varbinder, call->GetTypeRef()) ? 2 : 3;
-        for (size_t ix = 0; ix < call->GetArguments().size(); ix++) {
-            auto *expectedType = sig->Params()[numSysParams + ix]->TsType();
-            call->GetArguments()[ix] = AdjustType(uctx_, call->GetArguments()[ix], expectedType);
-        }
-    }
-
     void VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *call) override
     {
-        if (call->GetTypeRef()->TsType()->IsETSDynamicType()) {
-            HandleDynamicConstructorCall(call);
-            return;
-        }
-
         auto *func = call->GetSignature()->Function();
         HandleDeclarationNode(uctx_, func);
 
@@ -1208,9 +1163,6 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
     // CC-OFFNXT(huge_cyclomatic_complexity, huge_depth[C++], huge_depth, huge_method, G.FUN.01-CPP, G.FUN.05) solid
     void VisitMemberExpression(ir::MemberExpression *mexpr) override
     {
-        if (mexpr->Object()->TsType()->IsETSDynamicType()) {
-            return;
-        }
         if (mexpr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS ||
             /* Workaround for memo plugin */
             mexpr->Kind() == ir::MemberExpressionKind::NONE || mexpr->Kind() == ir::MemberExpressionKind::GETTER ||
@@ -1275,7 +1227,7 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
         auto *exprType = asExpr->Expr()->TsType();
         auto *targetType = asExpr->TypeAnnotation()->TsType();
         if (targetType->IsETSPrimitiveType() || TypeIsBoxedPrimitive(targetType)) {
-            if (exprType->IsETSPrimitiveType() || TypeIsBoxedPrimitive(exprType) || exprType->IsETSDynamicType()) {
+            if (exprType->IsETSPrimitiveType() || TypeIsBoxedPrimitive(exprType)) {
                 auto *primTargetType = MaybeRecursivelyUnboxType(uctx_, targetType);
                 asExpr->TypeAnnotation()->SetTsType(primTargetType);
                 asExpr->SetExpr(AdjustType(uctx_, asExpr->Expr(), MaybeRecursivelyUnboxType(uctx_, exprType)));
