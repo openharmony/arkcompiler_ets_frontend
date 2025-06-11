@@ -1101,7 +1101,7 @@ void ETSChecker::MaybeReportErrorsForOverridingValidation(ArenaVector<ETSFunctio
 
 void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos)
 {
-    if (classType->HasObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS)) {
+    if (GetCachedComputedAbstracts()->find(classType) != GetCachedComputedAbstracts()->end()) {
         return;
     }
 
@@ -1133,8 +1133,6 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
     } while (superIter != nullptr);
     ValidateAbstractMethodsToBeImplemented(abstractsToBeImplemented, classType, implementedSignatures);
     MaybeReportErrorsForOverridingValidation(abstractsToBeImplemented, classType, pos, throwError);
-
-    classType->AddObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS);
 }
 
 void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSignatures,
