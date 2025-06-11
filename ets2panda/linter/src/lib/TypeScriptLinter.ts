@@ -6661,6 +6661,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       !ts.isNonNullExpression(node) ||
       !ts.isNonNullExpression(node.expression) ||
       ts.isNonNullExpression(node.parent) ||
+      ts.isPropertyAccessExpression(node.parent) ||
       ts.isNonNullExpression(node.expression.expression)
     ) {
       return;
@@ -6668,26 +6669,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const statement = ts.findAncestor(node, ts.isExpressionStatement);
     if (statement && this.isCustomComponent(statement)) {
-      let currentParam: ts.Identifier | undefined;
-      if (ts.isPropertyAccessExpression(node.expression.expression)) {
-        currentParam = node.expression.expression.name as ts.Identifier;
-      }
-
-      let customParam: ts.Identifier | undefined;
-      if (ts.isPropertyAssignment(node.parent)) {
-        customParam = node.parent.name as ts.Identifier;
-      }
-
-      if (!currentParam || !customParam) {
-        return;
-      }
-
-      const originalExpr = node.parent.parent;
-      if (!ts.isObjectLiteralExpression(originalExpr)) {
-        return;
-      }
-      const autofix = this.autofixer?.fixCustomBidirectionalBinding(originalExpr, currentParam, customParam);
-      this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+      this.handleCustomBidirectionalBinding(node, node.expression);
     } else {
       const autofix = this.autofixer?.fixNativeBidirectionalBinding(node, this.interfacesNeedToImport);
       this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
@@ -6714,6 +6696,30 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return this.interfacesAlreadyImported.has(callExpr.expression.getText());
+  }
+
+  private handleCustomBidirectionalBinding(firstExpr: ts.NonNullExpression, secondExpr: ts.NonNullExpression): void {
+    let currentParam: ts.Identifier | undefined;
+    if (ts.isPropertyAccessExpression(secondExpr.expression)) {
+      currentParam = secondExpr.expression.name as ts.Identifier;
+    }
+
+    let customParam: ts.Identifier | undefined;
+    if (ts.isPropertyAssignment(firstExpr.parent)) {
+      customParam = firstExpr.parent.name as ts.Identifier;
+    }
+
+    if (!currentParam || !customParam) {
+      return;
+    }
+
+    const originalExpr = firstExpr.parent.parent;
+    if (!ts.isObjectLiteralExpression(originalExpr)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixCustomBidirectionalBinding(originalExpr, currentParam, customParam);
+    this.incrementCounters(firstExpr, FaultID.DoubleExclaBindingNotSupported, autofix);
   }
 
   private handleDoubleDollar(node: ts.Node): void {
