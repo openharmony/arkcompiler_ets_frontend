@@ -28,7 +28,9 @@
 namespace {
 using ark::es2panda::lsp::ClassHierarchy;
 using ark::es2panda::lsp::ClassHierarchyInfo;
+using ark::es2panda::lsp::ClassHierarchyItem;
 using ark::es2panda::lsp::ClassMethodItem;
+using ark::es2panda::lsp::ClassPropertyItem;
 }  // namespace
 
 char *GetStringCopy(KStringPtr &ptr)
@@ -722,14 +724,14 @@ KNativePointer impl_getClassNameFromClassHierarchyInfo(KNativePointer info)
 }
 TS_INTEROP_1(getClassNameFromClassHierarchyInfo, KNativePointer, KNativePointer)
 
-KNativePointer impl_getMethodListFromClassHierarchyInfo(KNativePointer info)
+KNativePointer impl_getMethodItemsFromClassHierarchyInfo(KNativePointer info)
 {
     auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
     if (infoPtr == nullptr) {
         return nullptr;
     }
     std::vector<void *> ptrs;
-    for (const auto &element : infoPtr->GetMethodList()) {
+    for (const auto &element : infoPtr->GetMethodItemList()) {
         if (element.second == nullptr) {
             continue;
         }
@@ -737,17 +739,34 @@ KNativePointer impl_getMethodListFromClassHierarchyInfo(KNativePointer info)
     }
     return new std::vector<void *>(ptrs);
 }
-TS_INTEROP_1(getMethodListFromClassHierarchyInfo, KNativePointer, KNativePointer)
+TS_INTEROP_1(getMethodItemsFromClassHierarchyInfo, KNativePointer, KNativePointer)
 
-KNativePointer impl_getDetailFromClassMethodItem(KNativePointer item)
+KNativePointer impl_getPropertyItemsFromClassHierarchyInfo(KNativePointer info)
 {
-    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
+    if (infoPtr == nullptr) {
+        return nullptr;
+    }
+    std::vector<void *> ptrs;
+    for (const auto &element : infoPtr->GetPropertyItemList()) {
+        if (element.second == nullptr) {
+            continue;
+        }
+        ptrs.push_back(new ClassPropertyItem(*(element.second)));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getPropertyItemsFromClassHierarchyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDetailFromClassHierarchyItem(KNativePointer item)
+{
+    auto *itemPtr = reinterpret_cast<ClassHierarchyItem *>(item);
     if (itemPtr == nullptr) {
         return nullptr;
     }
-    return new std::string(itemPtr->GetFunctionDetail());
+    return new std::string(itemPtr->GetDetail());
 }
-TS_INTEROP_1(getDetailFromClassMethodItem, KNativePointer, KNativePointer)
+TS_INTEROP_1(getDetailFromClassHierarchyItem, KNativePointer, KNativePointer)
 
 KInt impl_getSetterStyleFromClassMethodItem(KNativePointer item)
 {
@@ -759,15 +778,15 @@ KInt impl_getSetterStyleFromClassMethodItem(KNativePointer item)
 }
 TS_INTEROP_1(getSetterStyleFromClassMethodItem, KInt, KNativePointer)
 
-KInt impl_getAccessModifierStyleFromClassMethodItem(KNativePointer item)
+KInt impl_getAccessModifierStyleFromClassHierarchyItem(KNativePointer item)
 {
-    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    auto *itemPtr = reinterpret_cast<ClassHierarchyItem *>(item);
     if (itemPtr == nullptr) {
         return 0;
     }
     return static_cast<size_t>(itemPtr->GetAccessModifierStyle());
 }
-TS_INTEROP_1(getAccessModifierStyleFromClassMethodItem, KInt, KNativePointer)
+TS_INTEROP_1(getAccessModifierStyleFromClassHierarchyItem, KInt, KNativePointer)
 
 KInt impl_getAliasScriptElementKind(KNativePointer context, KInt position)
 {
