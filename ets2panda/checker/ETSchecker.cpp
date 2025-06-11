@@ -97,13 +97,15 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
     ES2PANDA_ASSERT(iterator != varMap.end());
     auto *var = iterator->second;
     Type *type {nullptr};
-    if (var->Declaration()->Node()->IsClassDefinition()) {
-        type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
-    } else {
-        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
-        type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+    if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
+        if (var->Declaration()->Node()->IsClassDefinition()) {
+            type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
+        } else {
+            ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+            type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+        }
+        checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
     }
-    checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
     return iterator->first;
 }
 
