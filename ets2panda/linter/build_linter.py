@@ -265,15 +265,11 @@ def parse_args():
 
 def main():
     options = parse_args()
-    backup_package_files(options.source_path)
-    install_homecheck(options, 5, 3)
     install_typescript(options)
     node_modules_path = os.path.join(options.source_path, "node_modules")
     extract(options.typescript, node_modules_path, "typescript")
     build(options)
     copy_output(options)
-    clean_env(options.source_path)
-
 
 if __name__ == '__main__':
     sys.exit(main())
