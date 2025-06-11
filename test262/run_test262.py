@@ -157,6 +157,8 @@ def parse_args():
                         help="stub file")
     parser.add_argument('--disable-force-gc', action='store_true',
                         help="Run test262 with close force-gc")
+    parser.add_argument('--multi-context', action='store_true',
+                        help="Run test262 with multi context")
     parser.add_argument('--enable-arkguard', action='store_true',
                         help="enable arkguard for 262 tests")
     
@@ -758,6 +760,10 @@ def get_disable_force_gc(host_args, args):
 
     return host_args
 
+def get_multi_context(args, host_args):
+    host_args += f"--multi-context "
+
+    return host_args
 
 def get_host_args_of_stub_file(args, host_args):
     host_args += f"--stub-file={args.stub_file} "
@@ -829,6 +835,9 @@ def get_host_args(args, host_type):
 
     if args.disable_force_gc:
         host_args = get_disable_force_gc(host_args, args)
+
+    if args.multi_context:
+        host_args = get_multi_context(args, host_args)
 
     return host_args
 
