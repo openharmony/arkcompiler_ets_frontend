@@ -183,11 +183,11 @@ void Checker::CleanUp()
     }
     context_ = CheckerContext(this, CheckerStatus::NO_OPTS);
     relation_ = allocator_->New<TypeRelation>(this);
-    identicalResults_.cached.clear();
-    assignableResults_.cached.clear();
-    comparableResults_.cached.clear();
-    uncheckedCastableResults_.cached.clear();
-    supertypeResults_.cached.clear();
+    identicalResults_.Clear();
+    assignableResults_.Clear();
+    comparableResults_.Clear();
+    uncheckedCastableResults_.Clear();
+    supertypeResults_.Clear();
     typeStack_.clear();
     namedTypeStack_.clear();
 }

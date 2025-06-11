@@ -50,7 +50,8 @@ public:
     explicit Type(TypeFlag flag) : typeFlags_(flag)
     {
         std::lock_guard<std::mutex> lock(idLock_);
-        static uint64_t typeId = 0;
+        static uint32_t typeId = 0;
+        ES2PANDA_ASSERT(typeId < std::numeric_limits<uint32_t>::max());
         id_ = ++typeId;
     }
 
@@ -180,7 +181,7 @@ public:
         typeFlags_ &= ~typeFlag;
     }
 
-    uint64_t Id() const
+    uint32_t Id() const
     {
         return id_;
     }
@@ -272,7 +273,7 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     TypeFlag typeFlags_;
     varbinder::Variable *variable_ {};  // Variable associated with the type if any
-    uint64_t id_;
+    uint32_t id_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
