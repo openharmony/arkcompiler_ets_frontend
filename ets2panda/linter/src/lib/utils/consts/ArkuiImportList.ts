@@ -1102,6 +1102,7 @@ export const arkuiImportList: Set<string> = new Set([
   'RenderProcessNotRespondingData',
   'RenderProcessNotRespondingReason',
   'RenderingContextSettings',
+  'Repeat',
   'RepeatAttribute',
   'RepeatItem',
   'RepeatMode',
