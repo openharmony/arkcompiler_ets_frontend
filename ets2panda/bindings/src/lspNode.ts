@@ -23,7 +23,7 @@ import { NativePtrDecoder } from './Platform';
 enum HierarchyType { OTHERS, INTERFACE, CLASS };
 
 export enum SetterStyle {
-  METHOD = 0,
+  NONE = 0,
   SETTER,
   GETTER
 }
@@ -35,6 +35,11 @@ export enum AccessModifierStyle {
 }
 
 enum ClassRelationKind { UNKNOWN, INTERFACE, CLASS, FIELD, METHOD, PROPERTY };
+
+export enum ClassDefinitionStyle {
+  FIELD = 0,
+  METHOD
+}
 
 export abstract class LspNode {
   readonly peer: KNativePointer;
@@ -228,30 +233,50 @@ export class LspSymbolDisplayPart extends LspNode {
   readonly kind: String;
 }
 
-export class LspClassMethodItem extends LspNode {
-  constructor(peer: KNativePointer) {
+export class LspClassHierarchyItem extends LspNode {
+  constructor(peer: KNativePointer, style: ClassDefinitionStyle) {
     super(peer);
-    this.functionDetail = unpackString(global.es2panda._getDetailFromClassMethodItem(this.peer));
-    this.setter = global.es2panda._getSetterStyleFromClassMethodItem(this.peer);
-    this.accessModifier = global.es2panda._getAccessModifierStyleFromClassMethodItem(this.peer);
+    this.style = style;
+    this.detail = unpackString(global.es2panda._getDetailFromClassHierarchyItem(this.peer));
+    this.accessModifier = global.es2panda._getAccessModifierStyleFromClassHierarchyItem(this.peer);
   }
-  readonly functionDetail: string;
-  readonly setter: SetterStyle;
+  readonly detail: string;
   readonly accessModifier: AccessModifierStyle;
+  readonly style: ClassDefinitionStyle;
+}
+
+export class LspClassMethodItem extends LspClassHierarchyItem {
+  constructor(peer: KNativePointer) {
+    super(peer, ClassDefinitionStyle.METHOD);
+    this.setter = global.es2panda._getSetterStyleFromClassMethodItem(this.peer);
+  }
+  readonly setter: SetterStyle;
+}
+
+export class LspClassPropertyItem extends LspClassHierarchyItem {
+  constructor(peer: KNativePointer) {
+    super(peer, ClassDefinitionStyle.FIELD);
+  }
 }
 
 export class LspClassHierarchyInfo extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.className = unpackString(global.es2panda._getClassNameFromClassHierarchyInfo(this.peer));
-    this.items = new NativePtrDecoder()
-      .decode(global.es2panda._getMethodListFromClassHierarchyInfo(this.peer))
+    this.methodItems = new NativePtrDecoder()
+      .decode(global.es2panda._getMethodItemsFromClassHierarchyInfo(this.peer))
       .map((elPeer: KNativePointer) => {
         return new LspClassMethodItem(elPeer);
       });
+    this.fieldItems = new NativePtrDecoder()
+      .decode(global.es2panda._getPropertyItemsFromClassHierarchyInfo(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspClassPropertyItem(elPeer);
+      });
   }
   readonly className: string;
-  readonly items: LspClassMethodItem[];
+  readonly methodItems: LspClassMethodItem[];
+  readonly fieldItems: LspClassPropertyItem[];
 }
 
 export class LspClassHierarchy extends LspNode {

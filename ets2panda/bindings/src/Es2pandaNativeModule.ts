@@ -209,19 +209,23 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getMethodListFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+  _getMethodItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
-  _getDetailFromClassMethodItem(ptr: KNativePointer): KPtr {
+  _getPropertyItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDetailFromClassHierarchyItem(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getAccessModifierStyleFromClassHierarchyItem(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 
   _getSetterStyleFromClassMethodItem(ptr: KNativePointer): KInt {
-    throw new Error('Not implemented');
-  }
-
-  _getAccessModifierStyleFromClassMethodItem(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 
