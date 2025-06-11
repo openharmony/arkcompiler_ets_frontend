@@ -16,6 +16,7 @@
 #include "recordLowering.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
@@ -169,6 +170,9 @@ void RecordLowering::CheckKeyType(checker::ETSChecker *checker, checker::Type co
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->GetChecker()->AsETSChecker();
+    if (expr->PreferredType()->IsETSAsyncFuncReturnType()) {
+        expr->SetPreferredType(expr->PreferredType()->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
+    }
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
