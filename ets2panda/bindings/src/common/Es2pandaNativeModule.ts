@@ -74,6 +74,9 @@ export class Es2pandaNativeModule {
   _CreateContextFromString(config: KPtr, source: String, filename: String): KPtr {
     throw new Error('Not implemented');
   }
+  _CreateContextFromStringWithHistory(config: KPtr, source: String, filename: String): KPtr {
+    throw new Error('Not implemented');
+  }
   _GenerateTsDeclarationsFromContext(
     config: KPtr,
     outputDeclEts: String,

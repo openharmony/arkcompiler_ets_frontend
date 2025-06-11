@@ -1,5 +1,7 @@
-#FailKind.SEGFAULT_FAIL - 1 tests:
+#FailKind.SEGFAULT_FAIL - 3 tests:
 lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
+first_match/ctor_need_fix_bytecode.ets
+overload_declaration/constructor_overload_sig_with_ref_type.ets
 #FailKind.ABORT_FAIL - 1 tests:
 type_param_in_union.ets
 #FailKind.TSC_FAIL - 14 tests:
@@ -20,3 +22,6 @@ top_level_03.ets
 multisource_inheritance.ets
 as_string.ets
 function_type_with_receiver/extensionFunctionType_return_this.ets
+defaultExportObjectLiteral_exp.ets
+forOfCustomIterator3.ets
+too_many_async.ets

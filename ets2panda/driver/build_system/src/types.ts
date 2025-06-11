@@ -74,6 +74,7 @@ export interface ArkTS {
   };
   Context: {
     createFromString: Function;
+    createFromStringWithHistory: Function;
   };
   EtsScript: {
     fromContext: Function;

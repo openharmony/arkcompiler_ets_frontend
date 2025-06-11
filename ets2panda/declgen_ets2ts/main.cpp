@@ -16,6 +16,7 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "declgenEts2Ts.h"
+#include "ir/astNodeHistory.h"
 #include "isolatedDeclgenChecker.h"
 
 namespace ark::es2panda::declgen_ets2ts {
@@ -91,8 +92,7 @@ static int Run(int argc, const char **argv)
     auto *cfgImpl = reinterpret_cast<ark::es2panda::public_lib::ConfigImpl *>(cfg);
     auto parserInputCStr = cfgImpl->options->CStrParserInputContents().first;
     es2panda_Context *ctx =
-        impl->CreateContextFromString(cfg, parserInputCStr, cfgImpl->options->SourceFileName().c_str());
-
+        impl->CreateContextFromStringWithHistory(cfg, parserInputCStr, cfgImpl->options->SourceFileName().c_str());
     auto *ctxImpl = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *checker = reinterpret_cast<checker::ETSChecker *>(ctxImpl->GetChecker());
 

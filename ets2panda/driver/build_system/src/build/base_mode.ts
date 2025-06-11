@@ -174,7 +174,7 @@ export abstract class BaseMode {
         fileInfo.arktsConfigFile,
         fileInfo.filePath
       ]).peer;
-      arktsGlobal.compilerContext = arkts.Context.createFromString(source);
+      arktsGlobal.compilerContext = arkts.Context.createFromStringWithHistory(source);
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, this.skipDeclCheck);

@@ -76,7 +76,7 @@ process.on('message', (message: {
         fileInfo.arktsConfigFile,
         fileInfo.filePath
       ]).peer;
-      arktsGlobal.compilerContext = arkts.Context.createFromString(source);
+      arktsGlobal.compilerContext = arkts.Context.createFromStringWithHistory(source);
       pluginDriver.getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
       const skipDeclCheck = buildConfig?.skipDeclCheck as boolean ?? true;
 

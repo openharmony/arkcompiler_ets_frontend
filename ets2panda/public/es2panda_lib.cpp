@@ -542,6 +542,16 @@ extern __attribute__((unused)) es2panda_Context *CreateContextGenerateAbcForExte
     return reinterpret_cast<es2panda_Context *>(res);
 }
 
+extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromStringWithHistory(es2panda_Config *config,
+                                                                                        const char *source,
+                                                                                        char const *fileName)
+{
+    // NOTE: gogabr. avoid copying source.
+    es2panda_Context *context = CreateContextFromString(config, source, fileName);
+    ir::EnableContextHistory();
+    return context;
+}
+
 __attribute__((unused)) static Context *Parse(Context *ctx)
 {
     if (ctx->state != ES2PANDA_STATE_NEW) {
@@ -1329,6 +1339,7 @@ es2panda_Impl g_impl = {
     CreateContextFromFile,
     CreateCacheContextFromFile,
     CreateContextFromString,
+    CreateContextFromStringWithHistory,
     CreateCacheContextFromString,
     CreateContextGenerateAbcForExternalSourceFiles,
     ProceedToState,
