@@ -149,14 +149,17 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private isPassToCustomBuilder(stmt: Stmt, locals: Set<Local>): Local | undefined {
+        let res: Local | undefined = undefined;
         if (stmt instanceof ArkAssignStmt) {
-            if (!this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
-                return undefined;
+            if (this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
+                const rightOp = stmt.getRightOp();
+                if (rightOp instanceof Local && locals.has(rightOp)) {
+                    res = rightOp;
+                }
             }
-            const rightOp = stmt.getRightOp();
-            if (rightOp instanceof Local && locals.has(rightOp)) {
-                return rightOp;
-            }
+        }
+        if (res !== undefined) {
+            return res;
         }
         const invokeExpr = stmt.getInvokeExpr();
         if (invokeExpr) {
