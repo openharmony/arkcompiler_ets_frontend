@@ -324,6 +324,15 @@ std::pair<ir::TypeNode *, bool> ETSParser::ParseNonNullableType(TypeAnnotationPa
     return std::make_pair(AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator()), true);
 }
 
+// Helper function to reduce line count of GetTypeAnnotationFromToken(...)
+void ETSParser::CheckForConditionalTypeError(TypeAnnotationParsingOptions options, lexer::TokenType tokenType)
+{
+    if ((options & TypeAnnotationParsingOptions::TYPE_ALIAS_CONTEXT) != 0 &&
+        (tokenType == lexer::TokenType::KEYW_EXTENDS || tokenType == lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
+        LogError(diagnostic::ERROR_ARKTS_NO_CONDITIONAL_TYPES);
+    }
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
@@ -335,6 +344,7 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
     if (IsPrimitiveType(Lexer()->GetToken().KeywordType()) ||
         Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         auto typeAnnotation = ParseLiteralIdent(options);
+        CheckForConditionalTypeError(*options, Lexer()->GetToken().Type());
         if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
             (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
             return std::make_pair(typeAnnotation, false);

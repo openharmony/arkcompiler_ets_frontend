@@ -832,7 +832,8 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::TYPE_ALIAS_CONTEXT;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
     if (typeAnnotation == nullptr) {
         return nullptr;
