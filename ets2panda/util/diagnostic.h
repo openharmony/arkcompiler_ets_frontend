@@ -220,6 +220,11 @@ public:
     DiagnosticType Type() const override;
     std::string Message() const override;
 
+    bool HasSuggestions() const
+    {
+        return suggestions_ != nullptr;
+    }
+
     const std::vector<class Suggestion *> &Suggestion() const
     {
         return *suggestions_;

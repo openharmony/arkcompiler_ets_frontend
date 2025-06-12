@@ -187,7 +187,17 @@ DiagnosticReferences GetSyntacticDiagnostics(es2panda_Context *context)
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
+    const auto &diagnosticsPluginError =
+        ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::PLUGIN_ERROR);
+    const auto &diagnosticsPluginWarning =
+        ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::PLUGIN_WARNING);
     for (const auto &diagnostic : diagnostics) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
+    }
+    for (const auto &diagnostic : diagnosticsPluginError) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
+    }
+    for (const auto &diagnostic : diagnosticsPluginWarning) {
         result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
     return result;
@@ -372,14 +382,12 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
     auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
     return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
 }
-std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(const char *fileName, size_t startPosition, size_t endPosition,
-                                                      std::vector<int> &errorCodes, CodeFixOptions &codeFixOptions)
+std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(es2panda_Context *context, size_t startPosition,
+                                                      size_t endPosition, std::vector<int> &errorCodes,
+                                                      CodeFixOptions &codeFixOptions)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result =
         ark::es2panda::lsp::GetCodeFixesAtPositionImpl(context, startPosition, endPosition, errorCodes, codeFixOptions);
-    initializer.DestroyContext(context);
     return result;
 }
 

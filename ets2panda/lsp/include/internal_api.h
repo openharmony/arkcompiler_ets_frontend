@@ -52,6 +52,47 @@ public:
         impl_->DestroyContext(context);
     }
 
+    const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage,
+                                                        es2panda_PluginDiagnosticType etype)
+    {
+        return impl_->CreateDiagnosticKind(context, dmessage, etype);
+    }
+
+    es2panda_SuggestionInfo *CreateSuggestionInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                  const char **args, size_t argc, const char *substitutionCode)
+    {
+        return impl_->CreateSuggestionInfo(context, kind, args, argc, substitutionCode);
+    }
+
+    es2panda_DiagnosticInfo *CreateDiagnosticInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                  const char **args, size_t argc)
+    {
+        return impl_->CreateDiagnosticInfo(context, kind, args, argc);
+    }
+
+    es2panda_SourcePosition *CreateSourcePosition(es2panda_Context *context, size_t index, size_t line)
+    {
+        return impl_->CreateSourcePosition(context, index, line);
+    }
+
+    es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es2panda_SourcePosition *start,
+                                            es2panda_SourcePosition *end)
+    {
+        return impl_->CreateSourceRange(context, start, end);
+    }
+
+    void LogDiagnosticWithSuggestion(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
+                                     const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range)
+    {
+        return impl_->LogDiagnosticWithSuggestion(context, diagnosticInfo, suggestionInfo, range);
+    }
+
+    void LogDiagnostic(es2panda_Context *context, const es2panda_DiagnosticKind *ekind, const char **args, size_t argc,
+                       es2panda_SourcePosition *pos)
+    {
+        return impl_->LogDiagnostic(context, ekind, args, argc, pos);
+    }
+
     NO_COPY_SEMANTIC(Initializer);
     NO_MOVE_SEMANTIC(Initializer);
 
