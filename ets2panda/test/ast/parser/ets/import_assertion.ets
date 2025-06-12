@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-let x = "literal str" as const
+import * as Pt from "mod" /* @@ label1 */assert /* @@ label2 */{ type: /* @@ label3 */"json" }
 
-/* @@? 16:26 Error SyntaxError: 'as const' assertion is not supported. */
-/* @@? 16:26 Error SyntaxError: Unexpected token 'const'. */
-/* @@? 23:1 Error SyntaxError: Identifier expected, got 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 23:1 Error TypeError: Missing initializer in const declaration */
+
+/* @@@ label1 Error SyntaxError: Import assertion is not supported, please use the ordinary import syntax instead! */
+/* @@@ label1 Error TypeError: Unresolved reference assert */
+/* @@@ label2 Error SyntaxError: Unexpected token '{'. */
+/* @@@ label3 Error SyntaxError: Label must be followed by a loop statement. */

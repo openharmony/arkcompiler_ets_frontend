@@ -129,7 +129,8 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     const auto *const binaryExpr = ident->Parent()->AsBinaryExpression();
     bool isFinished = false;
 
-    if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Left() == ident) {
+    bool isInstanceOfKeyword = binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF;
+    if (isInstanceOfKeyword && binaryExpr->Left() == ident) {
         if (!IsReferenceType(type)) {
             std::ignore =
                 TypeError(ident->Variable(), diagnostic::INSTANCEOF_NONOBJECT, {ident->Name()}, ident->Start());
@@ -144,6 +145,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
             WrongContextErrorClassifyByType(ident);
         }
         isFinished = true;
+    }
+    if (isInstanceOfKeyword && ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE |
+                                                          varbinder::VariableFlags::TYPE_ALIAS)) {
+        LogError(diagnostic::WRONG_LEFT_OF_INSTANCEOF, {}, ident->Start());
     }
     return isFinished;
 }

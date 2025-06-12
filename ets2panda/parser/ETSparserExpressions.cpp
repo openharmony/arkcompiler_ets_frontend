@@ -587,7 +587,10 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
     Lexer()->NextToken();
-
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CONST) {
+        LogError(diagnostic::AS_CONST_USAGE);
+        return nullptr;
+    }
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
     ir::TypeNode *type = ParseTypeAnnotation(&options);

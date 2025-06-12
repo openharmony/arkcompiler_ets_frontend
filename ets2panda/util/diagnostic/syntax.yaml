@@ -1243,3 +1243,27 @@ syntax:
 - name: ERROR_ARKTS_NO_AMBIENT_DECLS
   id: 308
   message: "Ambient module declaration is not supported!"
+
+- name: TYPEOF_IN_ANNOTATION
+  id: 309
+  message: "Result of 'typeof' operator is not supported to be used as type annotation."
+
+- name: WRONG_LEFT_OF_INSTANCEOF
+  id: 310
+  message: "The left operand of 'instanceof' operator cannot be a type."
+
+- name: AS_CONST_USAGE
+  id: 311
+  message: "'as const' assertion is not supported."
+
+- name: ERROR_ARKTS_NO_REQUIRE
+  id: 312
+  message: "Importing by 'require' and 'import' assignment is not supported, use 'import * as ... from ...' form instead!"
+
+- name: ERROR_ARKTS_NO_IMPORT_ASSERTIONS
+  id: 313
+  message: "Import assertion is not supported, please use the ordinary import syntax instead!"
+
+- name: GENERATOR_FUNCTION
+  id: 314
+  message: "Generator functions are not supported, please use async/await mechanism for multitasking"

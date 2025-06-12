@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,5 @@
  * limitations under the License.
  */
 
-let x = "literal str" as const
-
-/* @@? 16:26 Error SyntaxError: 'as const' assertion is not supported. */
-/* @@? 16:26 Error SyntaxError: Unexpected token 'const'. */
-/* @@? 23:1 Error SyntaxError: Identifier expected, got 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 23:1 Error TypeError: Missing initializer in const declaration */
+function* f() {}
+/* @@? 16:11 Error SyntaxError: Generator functions are not supported, please use async/await mechanism for multitasking */

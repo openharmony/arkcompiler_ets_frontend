@@ -540,6 +540,12 @@ bool ETSParser::ParseReadonlyInTypeAnnotation()
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
     const auto startPos = Lexer()->GetToken().Start();
+    if ((*options &
+         (TypeAnnotationParsingOptions::DISALLOW_UNION | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW)) == 0 &&
+        Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_TYPEOF)) {
+        LogError(diagnostic::TYPEOF_IN_ANNOTATION);
+        return AllocBrokenType(Lexer()->GetToken().Loc());
+    }
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
     if (!Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
         return ParseTypeAnnotationNoPreferParam(options);

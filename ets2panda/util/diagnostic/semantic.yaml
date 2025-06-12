@@ -1494,3 +1494,7 @@ semantic:
 - name: SUPER_NOT_ACCESSIBLE
   id: 377
   message: "Class field '{}' defined by the parent class is not accessible in the child class via super."
+
+- name: INTERFACE_EXTENDS_CLASS
+  id: 373
+  message: "Interfaces cannot extend classes, only other interfaces."
