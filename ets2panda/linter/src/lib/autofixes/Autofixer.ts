@@ -3647,7 +3647,9 @@ export class Autofixer {
       annotationEndLine = sourceFile.getLineAndCharacterOfPosition(annotationEndPos).line;
     }
 
-    let text = this.printer.printNode(ts.EmitHint.Unspecified, importDeclaration, sourceFile);
+    let text = Autofixer.formatImportStatement(
+      this.printer.printNode(ts.EmitHint.Unspecified, importDeclaration, sourceFile)
+    );
     if (annotationEndPos !== 0) {
       text = this.getNewLine() + this.getNewLine() + text;
     }
@@ -3658,6 +3660,25 @@ export class Autofixer {
     }
     return [{ start: annotationEndPos, end: annotationEndPos, replacementText: text }];
   }
+
+  private static formatImportStatement(stmt: string): string {
+    return stmt.replace(/\{([^}]+)\}/, (match, importList) => {
+      const items = importList.split(',').map((item) => {
+        return item.trim();
+      });
+
+      if (items.length > 1) {
+        const formattedList = items
+          .map((item) => {
+            return `  ${item.trim()},`;
+          })
+          .join('\n');
+        return `{\n${formattedList}\n}`;
+      }
+      return `{${importList}}`;
+    });
+  }
+
 
   fixStylesDecoratorGlobal(
     funcDecl: ts.FunctionDeclaration,

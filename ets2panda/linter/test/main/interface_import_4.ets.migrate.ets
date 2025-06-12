@@ -13,7 +13,20 @@
  * limitations under the License.
  */
 
-import { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';
+import {
+  Entry,
+  ComponentV2,
+  Local,
+  Scroller,
+  Column,
+  List,
+  Repeat,
+  RepeatItem,
+  ListItem,
+  Row,
+  Text,
+  Button,
+} from '@kit.ArkUI';
 
 @Entry
 @ComponentV2

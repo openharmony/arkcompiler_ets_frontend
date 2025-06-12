@@ -13,7 +13,20 @@
  * limitations under the License.
  */
 
-import { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  State,
+  Column,
+  Button,
+  Text,
+  Row,
+  TextAttribute,
+  ColumnAttribute,
+  AnimatableExtend,
+  $$,
+  ImageFit,
+} from '@kit.ArkUI';
 
 import { Slider } from '@kit.ArkUI';
 

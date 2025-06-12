@@ -13,7 +13,15 @@
  * limitations under the License.
  */
 
-import { CommonMethod, Color, Entry, Component, BuilderParam, Require, Button } from '@kit.ArkUI';
+import {
+  CommonMethod,
+  Color,
+  Entry,
+  Component,
+  BuilderParam,
+  Require,
+  Button,
+} from '@kit.ArkUI';
 
 function NormalStyles(instance: CommonMethod): void {
     instance.backgroundColor(Color.Blue);

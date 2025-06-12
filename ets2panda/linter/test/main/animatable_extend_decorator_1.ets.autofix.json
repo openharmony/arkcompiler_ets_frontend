@@ -171,7 +171,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -192,7 +192,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -213,7 +213,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -234,7 +234,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -255,7 +255,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -276,7 +276,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -297,7 +297,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -318,7 +318,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,

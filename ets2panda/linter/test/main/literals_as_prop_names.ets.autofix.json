@@ -1483,7 +1483,7 @@
                 {
                     "start": 608,
                     "end": 608,
-                    "replacementText": "\n\nimport { Component, State } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n} from '@kit.ArkUI';",
                     "line": 117,
                     "column": 2,
                     "endLine": 117,
@@ -1504,7 +1504,7 @@
                 {
                     "start": 608,
                     "end": 608,
-                    "replacementText": "\n\nimport { Component, State } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n} from '@kit.ArkUI';",
                     "line": 117,
                     "column": 2,
                     "endLine": 117,

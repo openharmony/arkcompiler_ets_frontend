@@ -171,7 +171,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  Column,\n  Text,\n  ColumnAttribute,\n  Color,\n} from '@kit.ArkUI';",
                     "line": 35,
                     "column": 20,
                     "endLine": 35,
@@ -192,7 +192,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  Column,\n  Text,\n  ColumnAttribute,\n  Color,\n} from '@kit.ArkUI';",
                     "line": 35,
                     "column": 20,
                     "endLine": 35,
@@ -213,7 +213,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  Column,\n  Text,\n  ColumnAttribute,\n  Color,\n} from '@kit.ArkUI';",
                     "line": 35,
                     "column": 20,
                     "endLine": 35,
@@ -234,7 +234,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  Column,\n  Text,\n  ColumnAttribute,\n  Color,\n} from '@kit.ArkUI';",
                     "line": 35,
                     "column": 20,
                     "endLine": 35,

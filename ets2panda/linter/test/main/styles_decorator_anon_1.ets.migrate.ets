@@ -13,7 +13,15 @@
  * limitations under the License.
  */
 
-import { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  BuilderParam,
+  Require,
+  Button,
+  CommonMethod,
+  Color,
+} from '@kit.ArkUI';
 
 @Entry
 @Component

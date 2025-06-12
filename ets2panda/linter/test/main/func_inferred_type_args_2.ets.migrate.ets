@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-import { Observed, Track, CommonAttribute } from '@kit.ArkUI';
+import {
+  Observed,
+  Track,
+  CommonAttribute,
+} from '@kit.ArkUI';
 
 import { AttributeUpdater } from '@kit.ArkUI';
 
