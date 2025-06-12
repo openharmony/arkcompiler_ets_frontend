@@ -17,7 +17,7 @@ import { throwError } from './utils';
 import { KNativePointer, nullptr } from './InteropTypes';
 import { withString, withStringArray, withBigingArray } from './arrays';
 import { NativePtrDecoder, withStringResult } from './Platform';
-import { LspDiagsNode, LspNode } from './lspNode';
+import { LspDiagsNode, LspNode } from '../lsp/lspNode';
 
 export function lspData(peer: KNativePointer): LspNode {
   return new LspDiagsNode(peer);

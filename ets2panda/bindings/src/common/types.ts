@@ -136,30 +136,21 @@ export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
-export interface BuildBaseConfig {
-  buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
-  buildMode: 'Debug' | 'Release';
-  hasMainModule: boolean;
-  arkts: object;
-  arktsGlobal: object;
-}
-
 export interface ModuleConfig {
   packageName: string;
   moduleType: string;
   moduleRootPath: string;
-  sourceRoots: string[];
+  language: string;
+  declFilesPath?: string;
+  dependencies?: string[];
 }
 
 export interface PathConfig {
-  loaderOutPath: string;
-  declgenDtsOutPath: string;
-  declgenTsOutPath: string;
-  cachePath: string;
   buildSdkPath: string;
-  pandaSdkPath?: string; // path to panda sdk lib/bin, for local test
-  pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
-  abcLinkerPath?: string;
+  projectPath: string;
+  declgenOutDir: string;
+  cacheDir?: string;
+  externalApiPath?: string;
 }
 
 export interface DeclgenConfig {
@@ -168,52 +159,25 @@ export interface DeclgenConfig {
   declgenBridgeCodePath?: string;
 }
 
-export interface LoggerConfig {
-  getHvigorConsoleLogger?: Function;
-}
-
-export interface DependentModuleConfig {
-  packageName: string;
-  moduleName: string;
-  moduleType: string;
-  modulePath: string;
-  sourceRoots: string[];
-  entryFile: string;
-  language: string;
-  declFilesPath?: string;
-  dependencies?: string[];
-}
-
-export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+export interface BuildConfig extends DeclgenConfig, ModuleConfig, PathConfig {
   plugins: PluginsConfig;
   compileFiles: string[];
-  dependentModuleList: DependentModuleConfig[];
 }
 // ProjectConfig ends
 
-export interface CompileFileInfo {
-  filePath: string;
-  dependentFiles: string[];
-  abcFilePath: string;
-  arktsConfigFile: string;
-  packageName: string;
-}
-
 export interface ModuleInfo {
-  isMainModule: boolean;
   packageName: string;
   moduleRootPath: string;
   moduleType: string;
-  sourceRoots: string[];
   entryFile: string;
   arktsConfigFile: string;
-  compileFileInfos: CompileFileInfo[];
+  compileFiles: string[];
   declgenV1OutPath: string | undefined;
   declgenBridgeCodePath: string | undefined;
+  staticDepModuleInfos: string[];
+  dynamicDepModuleInfos: string[];
+  language: string;
   dependencies?: string[];
-  staticDepModuleInfos: Map<string, ModuleInfo>;
-  dynamicDepModuleInfos: Map<string, ModuleInfo>;
-  language?: string;
   declFilesPath?: string;
 }
 
@@ -244,4 +208,10 @@ export interface FileDepsInfo {
 export interface WorkerInfo {
   worker: ThreadWorker;
   isIdle: boolean;
+}
+export interface TextDocumentChangeInfo {
+  newDoc: string;
+  rangeStart?: number;
+  rangeEnd?: number;
+  updateText?: string;
 }

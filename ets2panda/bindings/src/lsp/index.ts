@@ -13,4 +13,17 @@
  * limitations under the License.
  */
 
-export * from './lsp/index';
+export { Lsp } from './lsp_helper';
+export { Es2pandaContextState } from '../generated/Es2pandaEnums';
+export {
+  LspCompletionInfo,
+  LspCompletionEntryKind,
+  LspDefinitionData,
+  LspDiagsNode,
+  LspDiagnosticNode,
+  LspDiagSeverity,
+  LspQuickInfo,
+  LspSymbolDisplayPart
+} from './lspNode';
+export type { ModuleDescriptor } from './generateBuildConfig';
+export type { PathConfig, TextDocumentChangeInfo } from '../common/types';

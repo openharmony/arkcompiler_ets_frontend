@@ -22,7 +22,7 @@ import {
   initPublicEs2panda,
   initPublicGeneratedEs2panda
 } from './Es2pandaNativeModule';
-import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
+import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from '../generated/Es2pandaNativeModule';
 import { initInterop, InteropNativeModule, initPublicInterop } from './InteropNativeModule';
 
 // CC-OFFNXT(G.NAM.01) project code style

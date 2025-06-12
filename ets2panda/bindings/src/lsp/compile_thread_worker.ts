@@ -15,10 +15,10 @@
 
 import { parentPort, workerData } from 'worker_threads';
 import * as fs from 'fs';
-import { PluginDriver, PluginHook } from './ui_plugins_driver';
-import { LspDriverHelper } from './driver_helper';
-import { Es2pandaContextState } from './generated/Es2pandaEnums';
-import { JobInfo } from './types';
+import { PluginDriver, PluginHook } from '../common/ui_plugins_driver';
+import { LspDriverHelper } from '../common/driver_helper';
+import { Es2pandaContextState } from '../generated/Es2pandaEnums';
+import { JobInfo } from '../common/types';
 
 const { workerId } = workerData;
 
@@ -27,6 +27,9 @@ function compileExternalProgram(jobInfo: JobInfo): void {
   let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', jobInfo.arktsConfigFile];
   let lspDriverHelper = new LspDriverHelper();
   let config = lspDriverHelper.createCfg(ets2pandaCmd, jobInfo.filePath);
+  if (!fs.existsSync(jobInfo.filePath)) {
+    return;
+  }
   const source = fs.readFileSync(jobInfo.filePath, 'utf8').replace(/\r\n/g, '\n');
   let context = lspDriverHelper.createCtx(source, jobInfo.filePath, config, jobInfo.globalContextPtr, true);
   PluginDriver.getInstance().getPluginContext().setContextPtr(context);

@@ -16,7 +16,7 @@
 import { Context, Config } from './types';
 import { global } from './global';
 import { throwError } from './utils';
-import { Es2pandaContextState } from './generated/Es2pandaEnums';
+import { Es2pandaContextState } from '../generated/Es2pandaEnums';
 import { withStringResult } from './Platform';
 import { KBoolean, KInt, KNativePointer, KPointer } from './InteropTypes';
 import { passStringArray } from './private';

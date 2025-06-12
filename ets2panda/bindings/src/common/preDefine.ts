@@ -15,8 +15,6 @@
 
 export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
 
-export const ABC_SUFFIX: string = '.abc';
-
 export enum LANGUAGE_VERSION {
   ARKTS_1_2 = '1.2',
   ARKTS_1_1 = '1.1',
@@ -26,3 +24,5 @@ export enum LANGUAGE_VERSION {
 export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
+export const EXTERNAL_API_PATH_FROM_SDK: string = '../../../hms/ets/ets1.2';
+export const DEFAULT_CACHE_DIR: string = './.idea/.deveco';
