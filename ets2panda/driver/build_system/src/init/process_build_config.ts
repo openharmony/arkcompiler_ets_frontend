@@ -35,7 +35,8 @@ import {
 import { ErrorCode } from '../error_code';
 import {
   BuildConfig,
-  BUILD_MODE
+  BUILD_MODE,
+  AliasConfig
 } from '../types';
 
 export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
@@ -55,7 +56,8 @@ export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   initBuildEnv(buildConfig);
   initKoalaWrapper(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig);
-
+  initAliasConfig(buildConfig);
+  initInteropSDKInfo(buildConfig);
   return buildConfig;
 }
 
@@ -142,4 +144,59 @@ function initKoalaWrapper(buildConfig: BuildConfig): void {
   buildConfig.arkts = arkts;
   buildConfig.arktsGlobal = arktsGlobal;
   buildConfig.arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
+}
+
+function initAliasConfig(buildConfig: BuildConfig): void {
+  buildConfig.aliasConfig = new Map();
+  buildConfig.aliasPaths = buildConfig.aliasPaths instanceof Map
+    ? buildConfig.aliasPaths
+    : new Map(Object.entries(buildConfig.aliasPaths || {}));
+
+  if (buildConfig.aliasPaths.size === 0) {
+    return;
+  }
+  for (const [pkgName, filePath] of buildConfig.aliasPaths) {
+    const rawContent = fs.readFileSync(filePath, 'utf-8');
+    const jsonData = JSON.parse(rawContent);
+    const pkgAliasMap = new Map<string, AliasConfig>();
+
+    for (const [aliasKey, config] of Object.entries(jsonData)) {
+      if (typeof config !== 'object' || config === null ||
+        !('originalAPIName' in config) || !('isStatic' in config)) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_INIT_ALIAS_CONFIG_FAILED,
+          'Init Alias Config Failed',
+          `Invalid AliasConfig format in ${pkgName} -> ${aliasKey}`
+        );
+        Logger.getInstance().printErrorAndExit(logData);
+      }
+
+      const aliasConfig = config as AliasConfig;
+      pkgAliasMap.set(aliasKey, {
+        originalAPIName: aliasConfig.originalAPIName,
+        isStatic: aliasConfig.isStatic
+      });
+    }
+
+    buildConfig.aliasConfig.set(pkgName, pkgAliasMap);
+  }
+}
+
+function initInteropSDKInfo(buildConfig: BuildConfig): void {
+  buildConfig.interopSDKPaths = new Set();
+
+  const dynamicInteroSDKBasePath =
+    process.env.dynamicInteroSDKBasePath ||
+    buildConfig.dynamicInteroSDKBasePath ||
+    path.resolve(buildConfig.buildSdkPath as string, "../ets1.1/build-tools/interop");
+
+  const arktsPath = path.resolve(dynamicInteroSDKBasePath, './arkts');
+  const apiPath = path.resolve(dynamicInteroSDKBasePath, './api');
+
+  if (fs.existsSync(arktsPath)) {
+    buildConfig.interopSDKPaths.add(arktsPath);
+  }
+  if (fs.existsSync(apiPath)) {
+    buildConfig.interopSDKPaths.add(apiPath);
+  }
 }

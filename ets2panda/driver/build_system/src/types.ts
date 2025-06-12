@@ -109,6 +109,10 @@ export interface PathConfig {
   externalApiPaths: string[];
   abcLinkerPath?: string;
   dependencyAnalyzerPath?: string;
+  sdkAliasConfigPaths?: string[];
+  aliasPaths: Map<string, string>;
+  interopSDKPaths: Set<string>;
+  dynamicInteroSDKBasePath:string;
 }
 
 /**
@@ -165,6 +169,7 @@ export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfi
   compileFiles: string[];
   entryFiles?: string[];
   dependentModuleList: DependentModuleConfig[];
+  aliasConfig: Map<string, Map<string, AliasConfig>>;
 }
 // ProjectConfig ends
 
@@ -223,3 +228,8 @@ export interface JobInfo {
 }
 
 export type KPointer = number | bigint;
+
+export interface AliasConfig {
+  originalAPIName: string;
+  isStatic: boolean;
+}

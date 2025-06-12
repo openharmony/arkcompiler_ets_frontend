@@ -17,7 +17,13 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { DECL_ETS_SUFFIX } from './pre_define';
+
+import {
+  ARKTS_MODULE_NAME,
+  DECL_ETS_SUFFIX,
+  NATIVE_MODULE,
+  sdkConfigPrefix
+} from './pre_define';
 import {
   Logger,
   LogData,
@@ -102,4 +108,37 @@ export function safeRealpath(path: string, logger: Logger): string {
     logger.printError(logData);
     throw logData;
   }
+}
+
+export function getInteropFilePathByApi(apiName: string, interopSDKPath: Set<string>): string {
+  for (const sdkPath of interopSDKPath) {
+    const modulePath = path.resolve(sdkPath, apiName + DECL_ETS_SUFFIX);
+    if (fs.existsSync(modulePath)) {
+      return modulePath;
+    }
+  }
+  return '';
+}
+
+/**
+ * Issue:26513
+ * todo read config from external instead of prodcue
+ */
+export function getOhmurlByApi(api: string): string {
+  const REG_SYSTEM_MODULE: RegExp = new RegExp(`@(${sdkConfigPrefix})\\.(\\S+)`);
+
+  if (REG_SYSTEM_MODULE.test(api.trim())) {
+    return api.replace(REG_SYSTEM_MODULE, (_, moduleType, systemKey) => {
+      const systemModule: string = `${moduleType}.${systemKey}`;
+      if (NATIVE_MODULE.has(systemModule)) {
+        return `@native:${systemModule}`;
+      } else if (moduleType === ARKTS_MODULE_NAME) {
+        // @arkts.xxx -> @ohos:arkts.xxx
+        return `@ohos:${systemModule}`;
+      } else {
+        return `@ohos:${systemKey}`;
+      };
+    });
+  }
+  return '';
 }

@@ -39,3 +39,9 @@ export const DEFAULT_WOKER_NUMS: number = 4;
 
 export const ETS_1_1 = 'ets1.1';
 export const ETS_1_1_INTEROP = 'ets1.1interop';
+
+export const sdkConfigPrefix = 'ohos|system|kit|arkts';
+export const NATIVE_MODULE: Set<string> = new Set(
+  ['system.app', 'ohos.app', 'system.router', 'system.curves', 'ohos.curves', 'system.matrix4', 'ohos.matrix4']);
+
+export const ARKTS_MODULE_NAME: string = 'arkts';

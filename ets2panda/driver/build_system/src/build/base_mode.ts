@@ -507,6 +507,10 @@ export abstract class BaseMode {
     const queue: string[] = [];
 
     this.entryFiles.forEach((file: string) => {
+      // Skip the declaration files when compiling abc
+      if (file.endsWith(DECL_ETS_SUFFIX)) {
+        return;
+      }
       let hasModule = false;
       for (const [packageName, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
@@ -546,7 +550,8 @@ export abstract class BaseMode {
         return;
       }
     });
-
+    this.collectAbcFileFromByteCodeHar();
+    
     while (queue.length > 0) {
       const currentFile = queue.shift()!;
       processed.add(currentFile);
@@ -607,16 +612,9 @@ export abstract class BaseMode {
       return;
     }
     this.entryFiles.forEach((file: string) => {
-      // Skip the declaration files when compiling abc
-      if (file.endsWith(DECL_ETS_SUFFIX)) {
-        return;
-      }
       for (const [packageName, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
           continue;
-        }
-        if (moduleInfo.moduleType === OHOS_MODULE_TYPE.HAR && moduleInfo.byteCodeHar) {
-          return;
         }
         let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
         let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
@@ -642,14 +640,12 @@ export abstract class BaseMode {
       );
       this.logger.printError(logData);
     });
-
-    this.collectAbcFileFromByteCodeHar();
   }
 
   protected collectAbcFileFromByteCodeHar(): void {
     // the abc of the dependent bytecode har needs to be included When compiling hsp/hap
     // but it's not required when compiling har
-    if (this.buildConfig.moduleType !== OHOS_MODULE_TYPE.HAR) {
+    if (this.buildConfig.moduleType === OHOS_MODULE_TYPE.HAR) {
       return;
     }
     for (const [packageName, moduleInfo] of this.moduleInfos) {
