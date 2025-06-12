@@ -12,29 +12,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// static
-class AA1 {
-    public static instance : number | string;
-    getInstance(): number {
-        if (AA1.instance instanceof string) {
-            return 0;
-        }
-        return AA1.instance;  // Error
-    }
-}
 
-class AA2 {
-    public instance : number | string;
-    getInstance(): number {
-        if (this.instance instanceof string) {
-            return 0;
-        }
-        return this.instance;   // Error
-    }
-}
 class A {
     private static instance:A = new A();
         static get():A {
-        return A.instance;
+        return A.instance; //
     }
+}
+
+class AA {
+  public static instance?: number;
+
+  getInstance(): number {
+    if (!AA.instance) {
+      return 0;
+    }
+    return AA.instance; // Error
+  }
+}
+
+class AA1 {
+  public static instance : Number | String | Object = "smart cast";
+  getInstance(): Number {
+    if (!(AA1.instance instanceof Number)) {
+      return 0;
+    }
+    return AA1.instance; // Error
+  }
+}
+
+class AA2 {
+  public instance : Number | String | Object= 'smart cast';
+  getInstance(): Number {
+    if (!(this.instance instanceof Number)) {
+      return 0;
+    }
+    return this.instance; // Error
+  }
+}
+
+class AA3 {
+  public instance : number | String | Object = 'string';
+  getInstance(): number {
+    if (this.instance instanceof String) {
+      return 0;
+    } else if (this.instance instanceof Object) {
+      return 1;
+    }
+    return this.instance; // Error
+  }
 }

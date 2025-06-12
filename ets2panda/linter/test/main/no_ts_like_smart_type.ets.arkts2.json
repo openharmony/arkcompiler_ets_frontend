@@ -15,63 +15,93 @@
     ],
     "result": [
         {
-            "line": 22,
-            "column": 9,
-            "endLine": 22,
-            "endColumn": 29,
-            "problem": "NoTsLikeSmartType",
-            "suggest": "",
-            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 46,
-            "problem": "ClassstaticInitialization",
-            "suggest": "",
-            "rule": "The static property has no initializer (arkts-class-static-initialization)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 20,
-            "endLine": 20,
-            "endColumn": 21,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 9,
-            "endLine": 32,
-            "endColumn": 30,
-            "problem": "NoTsLikeSmartType",
-            "suggest": "",
-            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 30,
-            "column": 20,
+            "column": 5,
             "endLine": 30,
-            "endColumn": 21,
+            "endColumn": 24,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 14,
+            "endLine": 28,
+            "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 27,
-            "column": 12,
-            "endLine": 27,
-            "endColumn": 20,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property 'instance' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property 'instance' has no initializer and is not definitely assigned in the constructor.",
+            "line": 40,
+            "column": 5,
+            "endLine": 40,
+            "endColumn": 25,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 14,
+            "endLine": 38,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 26,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 14,
+            "endLine": 48,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 5,
+            "endLine": 62,
+            "endColumn": 26,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 14,
+            "endLine": 58,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 14,
+            "endLine": 60,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

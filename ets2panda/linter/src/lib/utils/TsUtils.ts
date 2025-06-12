@@ -2139,6 +2139,14 @@ export class TsUtils {
     return callSigns && callSigns.length > 0;
   }
 
+  static getFunctionReturnType(type: ts.Type): ts.Type | null {
+    const signatures = type.getCallSignatures();
+    if (signatures.length === 0) {
+      return null;
+    }
+    return signatures[0].getReturnType();
+  }
+
   isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
