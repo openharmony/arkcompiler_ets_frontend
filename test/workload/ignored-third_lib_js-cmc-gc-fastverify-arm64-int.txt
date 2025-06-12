@@ -8,3 +8,9 @@ brotli_test
 memory-cache_test
 mathjs_test
 lodash_test
+
+#24985
+qrcodegen_test
+
+#18745
+json-stringify-inspector
