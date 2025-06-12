@@ -65,16 +65,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
-            "column": 13,
-            "endLine": 25,
-            "endColumn": 59,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 29,
             "column": 30,
             "endLine": 29,
@@ -125,16 +115,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
-            "column": 13,
-            "endLine": 39,
-            "endColumn": 62,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 63,
             "column": 43,
             "endLine": 63,
@@ -165,16 +145,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 65,
-            "column": 7,
-            "endLine": 65,
-            "endColumn": 42,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 67,
             "column": 7,
             "endLine": 67,
@@ -182,16 +152,6 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 7,
-            "endLine": 67,
-            "endColumn": 53,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -205,16 +165,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
-            "column": 7,
-            "endLine": 68,
-            "endColumn": 53,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 70,
             "column": 5,
             "endLine": 70,
@@ -222,16 +172,6 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 70,
-            "column": 5,
-            "endLine": 70,
-            "endColumn": 53,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
@@ -245,16 +185,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 73,
-            "column": 5,
-            "endLine": 73,
-            "endColumn": 43,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 74,
             "column": 5,
             "endLine": 74,
@@ -265,16 +195,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 74,
-            "column": 5,
-            "endLine": 74,
-            "endColumn": 48,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
-            "severity": "ERROR"
-        },
-        {
             "line": 75,
             "column": 5,
             "endLine": 75,
@@ -282,16 +202,6 @@
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
-            "column": 5,
-            "endLine": 75,
-            "endColumn": 50,
-            "problem": "ArrayTypeImmutable",
-            "suggest": "",
-            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {
