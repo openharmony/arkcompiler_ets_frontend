@@ -402,10 +402,16 @@ export abstract class BaseMode {
 
   private loadHashCache(): Record<string, string> {
     try {
-      if (fs.existsSync(this.hashCacheFile)) {
-        const cacheContent = fs.readFileSync(this.hashCacheFile, 'utf-8');
-        return JSON.parse(cacheContent);
+      if (!fs.existsSync(this.hashCacheFile)) {
+        return {};
       }
+
+      const cacheContent: string = fs.readFileSync(this.hashCacheFile, 'utf-8');
+      const cacheData: Record<string, string> = JSON.parse(cacheContent);
+      const filteredCache: Record<string, string> = Object.fromEntries(
+        Object.entries(cacheData).filter(([file]) => this.entryFiles.has(file))
+      );
+      return filteredCache;
     } catch (error) {
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
@@ -415,8 +421,8 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
       }
+      return {};
     }
-    return {};
   }
 
   private saveHashCache(): void {
