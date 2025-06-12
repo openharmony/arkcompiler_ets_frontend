@@ -492,10 +492,6 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
     ir::ClassElement *property = nullptr;
 
     if (desc->classMethod) {
-        if ((desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
-            LogError(diagnostic::DECLARE_MODIFIER_ON_INVALID_CLASS_ELEMENT);
-        }
-
         property = ParseClassMethod(desc, properties, propName, &propEnd);
         property->SetRange({desc->propStart, propEnd});
         return property;
@@ -1046,10 +1042,6 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
         }
     } else {
         argument = ParseExpression(flags);
-    }
-
-    if (inPattern && argument->IsAssignmentExpression()) {
-        LogError(diagnostic::RESTPARAM_INIT);
     }
 
     auto nodeType = inPattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;

@@ -33,10 +33,6 @@ syntax:
   id: 4
   message: "Ambient class declarations must have a body."
 
-- name: ANNOTATION_ABSTRACT
-  id: 29
-  message: "Annotations are not allowed on an abstract class or methods."
-
 - name: ANNOTATION_DECLARATION_ACCESS_MODIFIER
   id: 210
   message: "Annotation declaration can not have access modifier."
@@ -113,10 +109,6 @@ syntax:
   id: 217
   message: "A binding pattern parameter cannot be optional in an implementation signature."
 
-- name: CANNOT_EXPORT_SAME_TYPE_TWICE
-  id: 284
-  message: "Cannot export the same '{}' type twice."
-
 - name: CAN_NOT_FIND_NAME_TO_EXPORT
   id: 279
   message: "Cannot find name '{}' to export."
@@ -145,17 +137,9 @@ syntax:
   id: 127
   message: "Conflicting modifiers '!' and '?' on field."
 
-- name: CONSTANT_MULTI_INITIALIZED_IN_STATIC_BLOCK
-  id: 290
-  message: "package constant property initialization can only be applied once in static block"
-
 - name: DECALRE_IN_AMBIENT_CONTEXT
   id: 104
   message: "A 'declare' modifier cannot be used in an already ambient context."
-
-- name: DECLARE_MODIFIER_ON_INVALID_CLASS_ELEMENT
-  id: 157
-  message: "'declare modifier cannot appear on class elements of this kind."
 
 - name: DECORATORS_INVALID
   id: 183
@@ -205,17 +189,9 @@ syntax:
   id: 82
   message: "Duplicate group name."
 
-- name: DUPLICATE_PROTO_FIELDS
-  id: 285
-  message: "Duplicate __proto__ fields are not allowed in object literals"
-
 - name: ENUM_INVALID_INIT
   id: 36
   message: "Invalid enum initialization value"
-
-- name: ENUM_OR_ANNOTATION_DIVIDE_BY_ZERO
-  id: 293
-  message: "Division by zero are not allowed in Enum or Annotation"
 
 - name: ENUM_STRING_TYPE_ALL_ITEMS_INIT
   id: 276
@@ -692,10 +668,6 @@ syntax:
   id: 130
   message: "Invalid right-hand side in 'instanceof' expression."
 
-- name: INVALID_SHORTHAND_PROPERTY_INITIALIZER
-  id: 286
-  message: "Invalid shorthand property initializer."
-
 - name: INVALID_TYPE
   id: 138
   message: "Invalid Type."
@@ -740,10 +712,6 @@ syntax:
 - name: LOCAL_CLASS_ACCESS_MOD
   id: 30
   message: "Local class or interface declaration members can not have access modifies."
-
-- name: LOCAL_TYPE_DEC_NO_IMPLEMENTED
-  id: 109
-  message: "Local type declaration (class, struct, interface and enum) support is not yet implemented."
 
 - name: META_PROP_FOR_IMPORT
   id: 68
@@ -821,10 +789,6 @@ syntax:
   id: 134
   message: "Namespace is allowed only at the top level or inside a namespace."
 
-- name: NAME_CANNOT_BE_EXPORTED_AND_TYPE_EXPORTED
-  id: 283
-  message: "Name '{}' cannot be exported and type exported at the same time."
-
 - name: NATIVE_FLAG_ONLY_FOR_TOP_FUN
   id: 203
   message: "'native' flags must be used for functions only at top-level."
@@ -893,22 +857,6 @@ syntax:
   id: 193
   message: "Rest parameter should be either array or tuple type."
 
-- name: ONLY_CALL_AFTER_LAUNCH
-  id: 37
-  message: "Only call expressions are allowed after 'launch'."
-
-- name: ONLY_CONSTANT_ALLOWED
-  id: 292
-  message: "Only constant expression is expected in the field"
-
-- name: ONLY_CONSTANT_EXPRESSION
-  id: 272
-  message: "Only constant expression is expected in the field"
-
-- name: ONLY_EXPORT_CLASS_OR_INTERFACE
-  id: 41
-  message: "Can only type export class or interface."
-
 - name: ONLY_SPREAD_AT_LAST_INDEX
   id: 143
   message: "Only one spread type declaration allowed, at the last index."
@@ -920,10 +868,6 @@ syntax:
 - name: ONLY_THROWS_IN_FUN_TYPE
   id: 103
   message: "Only 'throws' can be used with function types."
-
-- name: OPTIONAL_TYPES_IN_TUPLE_NOT_IMPLEMENTED
-  id: 142
-  message: "Optional types in tuples are not yet implemented."
 
 - name: OPTIONAL_VARIABLE
   id: 306
@@ -1025,17 +969,9 @@ syntax:
   id: 156
   message: "RestParameter must be followed by an identifier in declaration contexts"
 
-- name: RESTPARAM_INIT
-  id: 152
-  message: "RestParameter does not support an initializer."
-
 - name: REST_AND_DEFAULT_SAME_TIME
   id: 15
   message: "Both optional and rest parameters are not allowed in function's parameter list."
-
-- name: REST_PARAM_CANNOT_BE_OPTIONAL
-  id: 218
-  message: "A rest parameter cannot be optional."
 
 - name: REST_PARAM_LAST
   id: 236
@@ -1085,10 +1021,6 @@ syntax:
   id: 136
   message: "Spread type must be at the last index in the tuple type."
 
-- name: SPREAD_TYPE_MUST_BE_ARRAY
-  id: 139
-  message: "Spread type must be an array type."
-
 - name: STATIC_LATE_INITIALIZATION_FIELD_INVALID_MODIFIER
   id: 303
   message: "Late-initialized field cannot be defined as static."
@@ -1100,10 +1032,6 @@ syntax:
 - name: STRICT_MODE_FUNC_DECL
   id: 198
   message: "In strict mode code, functions can only be declared at top level, inside a block, or as the body of an if statement."
-
-- name: STRING_INTERPOLATION_NOT_CONSTANT
-  id: 275
-  message: "String Interpolation Expression is not constant expression."
 
 - name: TAGGED_TEMPLATE_LITERALS_IN_OPTIONALCHAIN
   id: 56
@@ -1168,10 +1096,6 @@ syntax:
 - name: UNEXPECTED_CHAR_PRIVATE_IDENTIFIER
   id: 270
   message: "Unexpected character in private identifier."
-
-- name: UNEXPECTED_DEFAULT
-  id: 235
-  message: "Unexpected token 'default'. Only declarations are allowed after 'export default'."
 
 - name: UNEXPECTED_ID
   id: 45
@@ -1270,10 +1194,6 @@ syntax:
   message: "Unsupported enum type annotation. Supported enum types are: int, long or double. String is allowed for literal
     types, not annotations."
 
-- name: UNSUPPORTED_OPERATOR_FOR_STRING
-  id: 274
-  message: "Unsupported operator for String."
-
 - name: UNTERMINATED_MULTI_LINE_COMMENT
   id: 245
   message: "Unterminated multi-line comment."
@@ -1323,5 +1243,25 @@ syntax:
   message: "Yield is not allowed in generator parameters."
 
 graveyard:
+- 29
+- 37
+- 41
+- 109
+- 139
+- 142
+- 152
+- 157
+- 218
+- 235
+- 272
+- 274
+- 275
+- 283
+- 284
+- 285
+- 286
+- 290
+- 292
+- 293
 - 317
 # See ets_frontend/ets2panda/util/diagnostic/README.md before contributing.

@@ -1522,14 +1522,6 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
 
             [[fallthrough]];
         }
-        case ir::AstNodeType::REST_ELEMENT: {
-            if (expr->AsRestElement()->IsOptional()) {
-                LogError(diagnostic::REST_PARAM_CANNOT_BE_OPTIONAL, {}, expr->Start());
-            }
-
-            ValidateArrowParameterBindings(expr->AsRestElement()->Argument());
-            return ParserStatus::HAS_COMPLEX_PARAM;
-        }
         case ir::AstNodeType::IDENTIFIER: {
             const util::StringView &identifier = expr->AsIdentifier()->Name();
             bool isOptional = expr->AsIdentifier()->IsOptional();
