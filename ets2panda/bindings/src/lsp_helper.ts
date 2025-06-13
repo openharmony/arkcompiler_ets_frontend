@@ -377,8 +377,8 @@ export class Lsp {
     let arktsconfig = this.fileNameToArktsconfig[filePath];
     let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
-    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
-    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
@@ -396,8 +396,8 @@ export class Lsp {
     let arktsconfig = this.fileNameToArktsconfig[filePath];
     let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
-    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
-    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
@@ -410,21 +410,45 @@ export class Lsp {
   }
 
   getClassHierarchies(filename: String, offset: number): LspClassHierarchies {
+    let contextList = [];
     let lspDriverHelper = new LspDriverHelper();
-    let filePath = path.resolve(filename.valueOf());
-    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let localFilePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[localFilePath];
     let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
-    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
-    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
-    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, localFilePath, this.pandaLibPath);
+    const source = this.getFileSource(localFilePath);
+    let localCtx = lspDriverHelper.createCtx(source, localFilePath, localCfg);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
-    let ptr = global.es2panda._getClassHierarchies(localCtx, filename, offset);
+    contextList.push({ ctx: localCtx, cfg: localCfg });
+    let nativeContextList = global.es2panda._pushBackToNativeContextVector(localCtx, localCtx, 1);
+    let moduleName = path.basename(path.dirname(arktsconfig));
+    let buildConfig = this.moduleToBuildConfig[moduleName];
+    for (let i = 0; i < buildConfig.compileFiles.length; i++) {
+      let filePath = path.resolve(buildConfig.compileFiles[i]);
+      if (localFilePath === filePath) {
+        continue;
+      }
+      let arktsconfig = this.fileNameToArktsconfig[filePath];
+      let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+      let searchCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+      const source = this.getFileSource(filePath);
+      let searchCtx = lspDriverHelper.createCtx(source, filePath, searchCfg);
+      PluginDriver.getInstance().getPluginContext().setContextPtr(searchCtx);
+      lspDriverHelper.proceedToState(searchCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      lspDriverHelper.proceedToState(searchCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      contextList.push({ ctx: searchCtx, cfg: searchCfg });
+      global.es2panda._pushBackToNativeContextVector(searchCtx, nativeContextList, 0);
+    }
+    let ptr = global.es2panda._getClassHierarchies(nativeContextList, filename, offset);
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
-    lspDriverHelper.destroyContext(localCtx);
-    lspDriverHelper.destroyConfig(localCfg);
+    for (const { ctx, cfg } of contextList) {
+      lspDriverHelper.destroyContext(ctx);
+      lspDriverHelper.destroyConfig(cfg);
+    }
     return new LspClassHierarchies(ptr);
   }
 
@@ -438,8 +462,8 @@ export class Lsp {
     let arktsconfig = this.fileNameToArktsconfig[filePath];
     let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
-    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
-    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);

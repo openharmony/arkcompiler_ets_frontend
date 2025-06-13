@@ -114,19 +114,19 @@ KNativePointer impl_getDisplayNameFromPropertyInfo(KNativePointer infoPtr)
 }
 TS_INTEROP_1(getDisplayNameFromPropertyInfo, KNativePointer, KNativePointer)
 
-KNativePointer impl_getStartFromPropertyInfo(KNativePointer infoPtr)
+KInt impl_getStartFromPropertyInfo(KNativePointer infoPtr)
 {
     auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
-    return new std::size_t(info->start);
+    return info->start;
 }
-TS_INTEROP_1(getStartFromPropertyInfo, KNativePointer, KNativePointer)
+TS_INTEROP_1(getStartFromPropertyInfo, KInt, KNativePointer)
 
-KNativePointer impl_getEndFromPropertyInfo(KNativePointer infoPtr)
+KInt impl_getEndFromPropertyInfo(KNativePointer infoPtr)
 {
     auto info = reinterpret_cast<FieldListProperty *>(infoPtr);
-    return new std::size_t(info->end);
+    return info->end;
 }
-TS_INTEROP_1(getEndFromPropertyInfo, KNativePointer, KNativePointer)
+TS_INTEROP_1(getEndFromPropertyInfo, KInt, KNativePointer)
 
 KNativePointer impl_getSyntacticDiagnostics(KNativePointer context)
 {
@@ -778,14 +778,28 @@ KInt impl_getAliasScriptElementKind(KNativePointer context, KInt position)
 }
 TS_INTEROP_2(getAliasScriptElementKind, KInt, KNativePointer, KInt)
 
+KNativePointer impl_pushBackToNativeContextVector(KNativePointer context, KNativePointer contextList, KBoolean isNew)
+{
+    auto contextPtr = reinterpret_cast<es2panda_Context *>(context);
+    if (isNew != 0) {
+        auto *newVector = new std::vector<es2panda_Context *>();
+        newVector->push_back(contextPtr);
+        return newVector;
+    }
+    auto contextVector = reinterpret_cast<std::vector<es2panda_Context *> *>(contextList);
+    contextVector->push_back(contextPtr);
+    return contextVector;
+}
+TS_INTEROP_3(pushBackToNativeContextVector, KNativePointer, KNativePointer, KNativePointer, KBoolean)
+
 KNativePointer impl_getClassHierarchies(KNativePointer context, KStringPtr &fileNamePtr, KInt pos)
 {
     LSPAPI const *ctx = GetImpl();
     if (ctx == nullptr) {
         return nullptr;
     }
-    auto infos =
-        ctx->getClassHierarchiesImpl(reinterpret_cast<es2panda_Context *>(context), GetStringCopy(fileNamePtr), pos);
+    auto *contextlist = reinterpret_cast<std::vector<es2panda_Context *> *>(context);
+    auto infos = ctx->getClassHierarchiesImpl(contextlist, GetStringCopy(fileNamePtr), pos);
     std::vector<void *> ptrs;
     ptrs.reserve(infos.size());
     for (auto &info : infos) {
@@ -797,10 +811,10 @@ TS_INTEROP_3(getClassHierarchies, KNativePointer, KNativePointer, KStringPtr, KI
 
 KNativePointer impl_getClassHierarchyList(KNativePointer infosPtr)
 {
-    auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> *>(infosPtr);
+    auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo *> *>(infosPtr);
     std::vector<void *> infoPtrList;
     for (auto &info : *infos) {
-        infoPtrList.push_back(new ark::es2panda::lsp::ClassHierarchyItemInfo(info));
+        infoPtrList.push_back(info);
     }
     return new std::vector<void *>(infoPtrList);
 }
@@ -834,9 +848,8 @@ KNativePointer impl_getOverriddenFromClassHierarchyItemInfo(KNativePointer infoP
     auto &overridden = info->overridden;
     std::vector<void *> overriddenPtrList;
     overriddenPtrList.reserve(overridden.size());
-    size_t idx = 0;
     for (auto &details : overridden) {
-        overriddenPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+        overriddenPtrList.push_back(new ark::es2panda::lsp::ClassRelationDetails(details));
     }
     return new std::vector<void *>(std::move(overriddenPtrList));
 }
@@ -848,9 +861,8 @@ KNativePointer impl_getOverridingFromClassHierarchyItemInfo(KNativePointer infoP
     auto &overriding = info->overriding;
     std::vector<void *> overridingPtrList;
     overridingPtrList.reserve(overriding.size());
-    size_t idx = 0;
     for (auto &details : overriding) {
-        overridingPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+        overridingPtrList.push_back(new ark::es2panda::lsp::ClassRelationDetails(details));
     }
     return new std::vector<void *>(std::move(overridingPtrList));
 }
@@ -862,9 +874,8 @@ KNativePointer impl_getImplementedFromClassHierarchyItemInfo(KNativePointer info
     auto implemented = info->implemented;
     std::vector<void *> implementedPtrList;
     implementedPtrList.reserve(implemented.size());
-    size_t idx = 0;
     for (auto &details : implemented) {
-        implementedPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+        implementedPtrList.push_back(new ark::es2panda::lsp::ClassRelationDetails(details));
     }
     return new std::vector<void *>(std::move(implementedPtrList));
 }
@@ -876,9 +887,8 @@ KNativePointer impl_getImplementingFromClassHierarchyItemInfo(KNativePointer inf
     auto implementing = info->implementing;
     std::vector<void *> implementingPtrList;
     implementingPtrList.reserve(implementing.size());
-    size_t idx = 0;
     for (auto &details : implementing) {
-        implementingPtrList[idx++] = new ark::es2panda::lsp::ClassRelationDetails(details);
+        implementingPtrList.push_back(new ark::es2panda::lsp::ClassRelationDetails(details));
     }
     return new std::vector<void *>(std::move(implementingPtrList));
 }

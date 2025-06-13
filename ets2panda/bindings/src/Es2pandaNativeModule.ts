@@ -395,6 +395,10 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _pushBackToNativeContextVector(context: KNativePointer, contextList: KNativePointer, isNew: KBoolean): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _getClassHierarchyList(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
