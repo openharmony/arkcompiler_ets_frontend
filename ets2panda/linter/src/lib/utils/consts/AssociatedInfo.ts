@@ -12,18 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
-class A {}
+import { FaultID } from '../../Problems';
+import { SdkProblem } from './SdkWhitelist';
 
-const variable = new A().constructor
-
-let a = new A()
-console.log(a.constructor + "");
-
-function foo3(): A {
-  return new A();
-}
-console.log(foo3().constructor + "");
-
-console.log(A.constructor + "");
+export const globalApiAssociatedInfo: Map<string, number> = new Map([
+  [SdkProblem.DeclWithDuplicateName, FaultID.DuplicateDeclNameFromSdk],
+  [SdkProblem.LimitedVoidType, FaultID.LimitedVoidTypeFromSdk]
+]);

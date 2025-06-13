@@ -360,7 +360,7 @@ export class ThisBindCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: ArkAssignStmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();

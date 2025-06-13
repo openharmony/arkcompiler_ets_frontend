@@ -975,7 +975,43 @@ export class Autofixer {
     return this.renameSymbolAsIdentifier(symbol, enumMember);
   }
 
+  renameAsObjectElementAccessExpression(node: ts.ElementAccessExpression): Autofix[] | undefined {
+    const parenExpr = ts.isParenthesizedExpression(node.expression) ? node.expression : undefined;
+    const asExpr = parenExpr && ts.isAsExpression(parenExpr.expression) ? parenExpr.expression : undefined;
+    if (!asExpr) {
+      return undefined;
+    }
+
+    const argument = node.argumentExpression;
+    const propertyName = ts.isStringLiteral(argument) ? argument.text : undefined;
+    if (!propertyName) {
+      return undefined;
+    }
+
+    const realObj = asExpr.expression;
+    const type = this.typeChecker.getTypeAtLocation(realObj);
+    const property = this.typeChecker.getPropertyOfType(type, propertyName);
+    if (!property) {
+      return undefined;
+    }
+
+    return [
+      {
+        replacementText: realObj.getText() + '.' + propertyName,
+        start: node.getStart(),
+        end: node.getEnd()
+      }
+    ];
+  }
+
   fixPropertyAccessByIndex(node: ts.ElementAccessExpression): Autofix[] | undefined {
+    if (ts.isParenthesizedExpression(node.expression) && ts.isAsExpression(node.expression.expression)) {
+      const assertedType = this.typeChecker.getTypeAtLocation(node.expression.expression.type);
+      if (this.typeChecker.typeToString(assertedType) === 'object') {
+        return this.renameAsObjectElementAccessExpression(node);
+      }
+    }
+
     const symbol = this.typeChecker.getSymbolAtLocation(node.argumentExpression);
     if (symbol === undefined) {
       return undefined;

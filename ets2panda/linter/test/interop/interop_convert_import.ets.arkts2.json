@@ -45,6 +45,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 20,
+            "column": 18,
+            "endLine": 20,
+            "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 21,
             "column": 20,
             "endLine": 21,
@@ -52,6 +62,16 @@
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 20,
+            "endLine": 21,
+            "endColumn": 29,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -65,6 +85,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 22,
+            "column": 19,
+            "endLine": 22,
+            "endColumn": 27,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 19,
             "endLine": 23,
@@ -72,6 +102,16 @@
             "problem": "InterOpConvertImport",
             "suggest": "",
             "rule": "Casting interop JS objects to primitive types is not allowed (arkts-interop-js2s-convert-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 19,
+            "endLine": 23,
+            "endColumn": 27,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {

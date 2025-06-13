@@ -58,9 +58,10 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
 
   if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
-    const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
+    let migrationTool: MigrationTool | null = new MigrationTool(ruleConfigInfo, projectConfigInfo);
     await migrationTool.buildCheckEntry();
     const result = await migrationTool.start();
+    migrationTool = null;
 
     homeCheckResult = transferIssues2ProblemInfo(result);
     for (const [filePath, problems] of homeCheckResult) {
@@ -107,6 +108,11 @@ function mergeLintProblems(
   if (cmdOptions.onlySyntax) {
     filteredProblems = problems.filter((problem) => {
       return onlyArkts2SyntaxRules.has(problem.ruleTag);
+    });
+  }
+  if (cmdOptions.scanWholeProjectInHomecheck && !cmdOptions.inputFiles.includes(filePath)) {
+    filteredProblems = problems.filter((problem) => {
+      return problem.rule.includes('s2d');
     });
   }
   mergedProblems.get(filePath)!.push(...filteredProblems);

@@ -76,7 +76,7 @@ if(b().isInstanceOf(Array)) {
 
 }
 
-const myDog: MyNamespace.Dog = new MyNamespace.Dog('Buddy');
+const myDog: MyNamespace.Dog = new MyNamespace.getPropertyByName("Dog")('Buddy');
 
 if (myDog.isInstanceOf(MyNamespace.Dog)) {
   console.log("This is a Dog!");

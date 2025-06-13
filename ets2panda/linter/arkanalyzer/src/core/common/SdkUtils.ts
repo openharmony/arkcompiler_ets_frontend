@@ -28,10 +28,21 @@ import { ClassType } from '../base/Type';
 import { AbstractFieldRef } from '../base/Ref';
 import { ArkNamespace } from '../model/ArkNamespace';
 import { TypeInference } from './TypeInference';
+import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
+
+const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'SdkUtils');
 
 export class SdkUtils {
 
     private static sdkImportMap: Map<string, ArkFile> = new Map<string, ArkFile>();
+
+    /*
+     * Set static field to be null, then all related objects could be freed by GC.
+     * Class SdkUtils is only internally used by ArkAnalyzer type inference, the dispose method should be called at the end of type inference.
+     */
+    public static dispose(): void {
+        this.sdkImportMap.clear();
+    }
 
     public static buildSdkImportMap(file: ArkFile): void {
         const fileName = path.basename(file.getName());
@@ -84,15 +95,18 @@ export class SdkUtils {
 
     private static loadClass(globalMap: Map<string, ArkExport>, cls: ArkClass): void {
         const old = globalMap.get(cls.getName());
-        if (old instanceof ArkClass) {
+        if (old instanceof ArkClass && old.getDeclaringArkFile().getProjectName() === cls.getDeclaringArkFile().getProjectName()) {
             if (old.getCategory() === ClassCategory.CLASS) {
-                this.copyMethod(cls, old);
+                this.copyMembers(cls, old);
             } else {
-                this.copyMethod(old, cls);
+                this.copyMembers(old, cls);
                 globalMap.delete(cls.getName());
                 globalMap.set(cls.getName(), cls);
             }
-        } else if (!old) {
+        } else {
+            if (old) {
+                logger.error(`${old.getSignature()} is override`);
+            }
             globalMap.set(cls.getName(), cls);
         }
     }
@@ -105,10 +119,7 @@ export class SdkUtils {
             const instance = globalMap.get(name + 'Interface');
             const attr = globalMap.get(name + COMPONENT_ATTRIBUTE);
             if (attr instanceof ArkClass && instance instanceof ArkClass) {
-                instance
-                    .getMethods()
-                    .filter(m => !attr.getMethodWithName(m.getName()))
-                    .forEach(m => attr.addMethod(m));
+                this.copyMembers(instance, attr);
                 globalMap.set(name, attr);
                 return;
             }
@@ -119,15 +130,12 @@ export class SdkUtils {
         } else if (old instanceof ArkClass && local.getType() instanceof ClassType) {
             const localConstructor = scene.getClass((local.getType() as ClassType).getClassSignature());
             if (localConstructor) {
-                localConstructor
-                    .getMethods()
-                    .filter(m => !old.getMethodWithName(m.getName()))
-                    .forEach(m => old.addMethod(m));
+                this.copyMembers(localConstructor, old);
             }
         }
     }
 
-    private static copyMethod(from: ArkClass, to: ArkClass): void {
+    private static copyMembers(from: ArkClass, to: ArkClass): void {
         from.getMethods().forEach(method => {
             const dist = method.isStatic() ? to.getStaticMethodWithName(method.getName()) : to.getMethodWithName(method.getName());
             const distSignatures = dist?.getDeclareSignatures();
@@ -135,6 +143,12 @@ export class SdkUtils {
                 method.getDeclareSignatures()?.forEach(x => distSignatures.push(x));
             } else {
                 to.addMethod(method);
+            }
+        });
+        from.getFields().forEach(field => {
+            const dist = field.isStatic() ? to.getStaticFieldWithName(field.getName()) : to.getFieldWithName(field.getName());
+            if (!dist) {
+                to.addField(field);
             }
         });
     }

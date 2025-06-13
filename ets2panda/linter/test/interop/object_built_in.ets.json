@@ -43,6 +43,16 @@
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 1,
+            "endLine": 27,
+            "endColumn": 14,
+            "problem": "InteropCallObjectParam",
+            "suggest": "",
+            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)",
+            "severity": "ERROR"
         }
     ]
 }

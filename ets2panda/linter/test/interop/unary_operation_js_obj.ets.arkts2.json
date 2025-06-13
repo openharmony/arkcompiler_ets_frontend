@@ -21,6 +21,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 2,
+            "endLine": 17,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 1,
             "endLine": 18,
@@ -28,6 +38,16 @@
             "problem": "InteropNoHaveNum",
             "suggest": "",
             "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 2,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
@@ -41,6 +61,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 20,
             "column": 1,
             "endLine": 20,
@@ -48,6 +78,16 @@
             "problem": "InteropNoHaveNum",
             "suggest": "",
             "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         }
     ]

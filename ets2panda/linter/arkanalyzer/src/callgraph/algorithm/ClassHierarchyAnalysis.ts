@@ -20,11 +20,12 @@ import { ArkClass } from '../../core/model/ArkClass';
 import { NodeID } from '../../core/graph/BaseExplicitGraph';
 import { CallGraph, CallSite } from '../model/CallGraph';
 import { AbstractAnalysis } from './AbstractAnalysis';
+import { CallGraphBuilder } from '../model/builder/CallGraphBuilder';
 
 export class ClassHierarchyAnalysis extends AbstractAnalysis {
-    constructor(scene: Scene, cg: CallGraph) {
-        super(scene);
-        this.cg = cg;
+    constructor(scene: Scene, cg: CallGraph, cb: CallGraphBuilder) {
+        super(scene, cg);
+        this.cgBuilder = cb;
     }
 
     public resolveCall(callerMethod: NodeID, invokeStmt: Stmt): CallSite[] {

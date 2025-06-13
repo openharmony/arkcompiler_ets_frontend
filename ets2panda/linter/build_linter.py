@@ -36,6 +36,9 @@ def copy_files(source_path, dest_path, is_file=False):
 
 
 def run_cmd(cmd, execution_path=None):
+    if (cmd and cmd[0].strip().endswith('npm')):
+        cmd.append('--registry')
+        cmd.append('https://repo.huaweicloud.com/repository/npm/')
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                            stdin=subprocess.PIPE,
                            stderr=subprocess.PIPE,

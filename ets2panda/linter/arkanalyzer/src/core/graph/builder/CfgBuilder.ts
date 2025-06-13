@@ -677,6 +677,9 @@ export class CfgBuilder {
             for (let i = stmt.nexts.length - 1; i >= 0; i--) {
                 stmtQueue.push(stmt.nexts[i]);
             }
+            if (stmt.afterSwitch && stmt.afterSwitch.lasts.size == 0) {
+                stmtQueue.push(stmt.afterSwitch);
+            }
         } else if (stmt instanceof TryStatementBuilder) {
             if (stmt.finallyStatement) {
                 stmtQueue.push(stmt.finallyStatement);

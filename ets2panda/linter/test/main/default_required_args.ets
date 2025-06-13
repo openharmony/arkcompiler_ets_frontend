@@ -58,3 +58,16 @@ function log(level: string = 'info', some: string, message?: string): void {
 function config(debug: boolean = true, verbose?: boolean): string { //legal
   return `Debug: ${debug ?? false}, Verbose: ${verbose ?? false}`;
 }
+
+export class DefaultArgsA {
+  readonly left: number;
+  readonly right: number;
+  constructor(left: number = 0.0, right: number) { // 漏扫
+    this.left = left;
+    this.right = right;
+  }
+
+  defaultArgsFoo1(left: number = 0.0, right: number): number {
+    return left + right;
+  }
+}

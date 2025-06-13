@@ -108,7 +108,7 @@
             "line": 79,
             "column": 36,
             "endLine": 79,
-            "endColumn": 51,
+            "endColumn": 65,
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
