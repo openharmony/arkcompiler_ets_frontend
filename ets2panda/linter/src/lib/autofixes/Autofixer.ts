@@ -4701,6 +4701,139 @@ export class Autofixer {
     return !builtInTypes.has(type.typeName.getText());
   }
 
+  fixLimitedVoidType(
+    node: ts.VariableDeclaration | ts.ParameterDeclaration | ts.PropertyDeclaration
+  ): Autofix[] | undefined {
+    const srcFile = node.getSourceFile();
+    const newType = Autofixer.createNewTypeFromVoid(node.type);
+    const newInit = Autofixer.createNewInitializer(node.initializer, newType);
+
+    const newDecl = Autofixer.createNewDeclaration(node, newType, newInit);
+    if (!newDecl) {
+      return undefined;
+    }
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newDecl, srcFile);
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText }];
+  }
+
+  private static createNewTypeFromVoid(type: ts.TypeNode | undefined): ts.TypeNode {
+    const identUndefined = ts.factory.createIdentifier(UNDEFINED_NAME);
+    if (type && ts.isUnionTypeNode(type)) {
+      const updatedTypes = type.types.map((t) => {
+        return t.kind === ts.SyntaxKind.VoidKeyword ? ts.factory.createTypeReferenceNode(UNDEFINED_NAME) : t;
+      });
+      return ts.factory.createUnionTypeNode(updatedTypes);
+    }
+    return ts.factory.createTypeReferenceNode(identUndefined);
+  }
+
+  private static createNewInitializer(initializer: ts.Expression | undefined, newType: ts.TypeNode): ts.Expression {
+    const identUndefined = ts.factory.createIdentifier(UNDEFINED_NAME);
+    if (!initializer) {
+      return identUndefined;
+    }
+
+    const stmts: ts.Statement[] = [
+      ts.factory.createExpressionStatement(initializer),
+      ts.factory.createReturnStatement(identUndefined)
+    ];
+    const funcBody = ts.factory.createBlock(stmts);
+    const arrowFunc = ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      [],
+      newType,
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      funcBody
+    );
+    return ts.factory.createCallExpression(ts.factory.createParenthesizedExpression(arrowFunc), undefined, undefined);
+  }
+
+  private static createNewDeclaration(
+    node: ts.VariableDeclaration | ts.ParameterDeclaration | ts.PropertyDeclaration,
+    newType: ts.TypeNode,
+    newInit: ts.Expression
+  ): ts.Node | undefined {
+    if (ts.isVariableDeclaration(node)) {
+      return ts.factory.createVariableDeclaration(node.name, node.exclamationToken, newType, newInit);
+    }
+
+    if (ts.isParameter(node)) {
+      return ts.factory.createParameterDeclaration(
+        node.modifiers,
+        node.dotDotDotToken,
+        node.name,
+        node.questionToken,
+        newType,
+        node.initializer ? newInit : undefined
+      );
+    }
+
+    if (ts.isPropertyDeclaration(node)) {
+      const optionalToken = node.questionToken || node.exclamationToken;
+      return ts.factory.createPropertyDeclaration(node.modifiers, node.name, optionalToken, newType, newInit);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Fixes function declarations/expressions that return `void` as part of a union.
+   * Replaces `void` with `undefined` in the return type,
+   * replaces `return;` with `return undefined;`,
+   * and adds `return undefined;` if the function has no returns.
+   */
+  fixLimitedVoidTypeFunction(fn: ts.FunctionLikeDeclaration): Autofix[] | undefined {
+    const fixes: Autofix[] = [];
+    const returnType = fn.type;
+    if (!returnType || !ts.isUnionTypeNode(returnType) || !TsUtils.typeContainsVoid(returnType)) {
+      return undefined;
+    }
+
+    const updatedTypes = returnType.types.map((t) => {
+      return t.kind === ts.SyntaxKind.VoidKeyword ? ts.factory.createTypeReferenceNode(UNDEFINED_NAME) : t;
+    });
+
+    const newType = ts.factory.createUnionTypeNode(updatedTypes);
+    fixes.push({
+      start: returnType.getStart(),
+      end: returnType.getEnd(),
+      replacementText: this.printer.printNode(ts.EmitHint.Unspecified, newType, fn.getSourceFile())
+    });
+
+    let hasReturn = false;
+    function visit(node: ts.Node): void {
+      if (ts.isReturnStatement(node)) {
+        hasReturn = true;
+        if (!node.expression) {
+          fixes.push({
+            start: node.getStart(),
+            end: node.getEnd(),
+            replacementText: 'return undefined;'
+          });
+        }
+      }
+      ts.forEachChild(node, visit);
+    }
+    if (fn.body) {
+      visit(fn.body);
+
+      if (!hasReturn) {
+        if (ts.isBlock(fn.body)) {
+          const lastBrace = fn.body.getEnd() - 1;
+          fixes.push({
+            start: lastBrace,
+            end: lastBrace,
+            replacementText: '\nreturn undefined;\n'
+          });
+        }
+      }
+    }
+
+    return fixes;
+  }
+
   fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
     const typeNode = this.getTypeNodeForNewExpression(node);
     if (!typeNode || !ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {

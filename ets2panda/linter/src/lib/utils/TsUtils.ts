@@ -3807,4 +3807,13 @@ export class TsUtils {
     forEachNodeInSubtree(targetNode, callback, stopCondition);
     return found;
   }
+
+  static typeContainsVoid(typeNode: ts.TypeNode): boolean {
+    if (ts.isUnionTypeNode(typeNode)) {
+      return typeNode.types.some((t) => {
+        return t.kind === ts.SyntaxKind.VoidKeyword;
+      });
+    }
+    return typeNode.kind === ts.SyntaxKind.VoidKeyword;
+  }
 }

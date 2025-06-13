@@ -693,8 +693,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(tsParam);
     this.handleSdkGlobalApi(tsParam);
     const typeNode = tsParam.type;
-    if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
-      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    if (this.options.arkts2 && typeNode && TsUtils.typeContainsVoid(typeNode)) {
+      const autofix = this.autofixer?.fixLimitedVoidType(tsParam);
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType, autofix);
     }
     this.handlePropertyDescriptorInScenarios(tsParam);
   }
@@ -1631,8 +1632,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
     const classDecorators = ts.getDecorators(node.parent);
     const propType = node.type?.getText();
-    if (this.options.arkts2 && propType === 'void' && node.type) {
-      this.incrementCounters(node.type, FaultID.LimitedVoidType);
+    if (this.options.arkts2 && node.type && TsUtils.typeContainsVoid(node.type)) {
+      const autofix = this.autofixer?.fixLimitedVoidType(node);
+      this.incrementCounters(node.type, FaultID.LimitedVoidType, autofix);
     }
     this.filterOutDecoratorsDiagnostics(
       classDecorators,
@@ -1907,6 +1909,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (hasUnfixableReturnType) {
       this.incrementCounters(funcExpr, FaultID.LimitedReturnTypeInference);
     }
+    this.handleLimitedVoidFunction(funcExpr);
   }
 
   private handleArrowFunction(node: ts.Node): void {
@@ -1921,6 +1924,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     this.checkDefaultParamBeforeRequired(arrowFunc);
+    this.handleLimitedVoidFunction(arrowFunc);
   }
 
   private handleFunctionDeclaration(node: ts.Node): void {
@@ -1966,6 +1970,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkAssignmentNumericSemanticsFuntion(tsFunctionDeclaration);
     this.handleInvalidIdentifier(tsFunctionDeclaration);
     this.checkDefaultParamBeforeRequired(tsFunctionDeclaration);
+    this.handleLimitedVoidFunction(tsFunctionDeclaration);
   }
 
   private handleMissingReturnType(
@@ -3542,6 +3547,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkDefaultParamBeforeRequired(tsMethodDecl);
     this.handleMethodInherit(tsMethodDecl);
     this.handleSdkGlobalApi(tsMethodDecl);
+    this.handleLimitedVoidFunction(tsMethodDecl);
+  }
+
+  private handleLimitedVoidFunction(node: ts.FunctionLikeDeclaration): void {
+    const typeNode = node.type;
+    if (!typeNode || !ts.isUnionTypeNode(typeNode)) {
+      return;
+    }
+    const containsVoid = typeNode.types.some((t) => {
+      return t.kind === ts.SyntaxKind.VoidKeyword;
+    });
+    if (this.options.arkts2 && containsVoid) {
+      const autofix = this.autofixer?.fixLimitedVoidTypeFunction(node);
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType, autofix);
+    }
   }
 
   private checkDefaultParamBeforeRequired(node: ts.FunctionLikeDeclarationBase): void {
@@ -6235,8 +6255,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const typeNode = node.type;
-    if (typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
-      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    if (typeNode && TsUtils.typeContainsVoid(typeNode)) {
+      const autofix = this.autofixer?.fixLimitedVoidType(node);
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType, autofix);
     }
   }
 
