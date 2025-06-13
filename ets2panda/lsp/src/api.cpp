@@ -292,6 +292,11 @@ std::vector<ark::es2panda::lsp::ReferencedNode> FindReferencesWrapper(
     return res;
 }
 
+RenameInfoType GetRenameInfoWrapper(es2panda_Context *context, size_t pos, const char *pandaLibPath)
+{
+    return GetRenameInfo(context, pos, std::string(pandaLibPath));
+}
+
 std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
@@ -302,23 +307,19 @@ std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, si
 }
 
 std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWrapper(
-    const std::vector<ark::es2panda::SourceFile> &srcFiles, const ark::es2panda::SourceFile &srcFile, size_t position)
+    const std::vector<es2panda_Context *> &fileContexts, es2panda_Context *context, size_t position)
 {
-    auto tmp = FindRenameLocations(srcFiles, srcFile, position);
-    std::vector<ark::es2panda::lsp::RenameLocation> res(tmp.size());
-    for (const auto &entry : tmp) {
-        res.emplace_back(entry);
-    }
-    return res;
+    auto locations = FindRenameLocations(fileContexts, context, position);
+    return std::vector<ark::es2panda::lsp::RenameLocation> {locations.begin(), locations.end()};
 }
 
 std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWithCancellationWrapper(
-    ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
-    const ark::es2panda::SourceFile &srcFile, size_t position)
+    ark::es2panda::lsp::CancellationToken *tkn, const std::vector<es2panda_Context *> &fileContexts,
+    es2panda_Context *context, size_t position)
 {
-    auto tmp = FindRenameLocations(tkn, srcFiles, srcFile, position);
-    std::vector<ark::es2panda::lsp::RenameLocation> res(tmp.size());
-    for (const auto &entry : tmp) {
+    auto locations = FindRenameLocations(tkn, fileContexts, context, position);
+    std::vector<ark::es2panda::lsp::RenameLocation> res(locations.size());
+    for (const auto &entry : locations) {
         res.emplace_back(entry);
     }
     return res;
@@ -461,6 +462,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     FindRenameLocationsWithCancellationWrapper,
                     FindSafeDeleteLocation,
                     FindReferencesWrapper,
+                    GetRenameInfoWrapper,
                     GetClassPropertyInfoWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,

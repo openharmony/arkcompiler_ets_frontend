@@ -122,6 +122,37 @@ export class CustomTextEncoder {
     return array;
   }
 
+  encodedBigintLength(value: bigint): int32 {
+    let str = value.toString();
+    return this.encodedLength(str);
+  }
+
+  encodeBigintInto(value: bigint, result: Uint8Array, position: int32): Uint8Array {
+    let str = value.toString();
+    return this.encodeInto(str, result, position);
+  }
+
+  encodeBigintArray(bigints: Array<bigint>): Uint8Array {
+    let totalBytes = CustomTextEncoder.HeaderLen;
+    let lengths = new Int32Array(bigints.length);
+    for (let i = 0; i < lengths.length; i++) {
+      let len = this.encodedBigintLength(bigints[i]);
+      lengths[i] = len;
+      totalBytes += len + CustomTextEncoder.HeaderLen;
+    }
+    let array = new Uint8Array(totalBytes);
+    let position = 0;
+    this.addLength(array, position, lengths.length);
+    position += CustomTextEncoder.HeaderLen;
+    for (let i = 0; i < lengths.length; i++) {
+      this.addLength(array, position, lengths[i]);
+      position += CustomTextEncoder.HeaderLen;
+      this.encodeBigintInto(bigints[i], array, position);
+      position += lengths[i];
+    }
+    return array;
+  }
+
   encodeInto(input: string, result: Uint8Array, position: int32): Uint8Array {
     if (this.encoder !== undefined) {
       this.encoder!.encodeInto(input, result.subarray(position, result.length));

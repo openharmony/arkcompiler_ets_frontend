@@ -5,7 +5,7 @@
   "2": {
     "diagnostics": [
       {
-        "message": "Type '\"1\"' is not compatible with type 'double' at index 1",
+        "message": "Type '\"1\"' is not compatible with type 'Double' at index 1",
         "source": "\"1\"",
         "range": {
           "start": {
@@ -27,7 +27,7 @@
         }
       },
       {
-        "message": "No matching call signature for add(\"1\", int)",
+        "message": "No matching call signature for add(\"1\", Int)",
         "source": "add",
         "range": {
           "start": {
@@ -49,7 +49,7 @@
         }
       },
       {
-        "message": "Type '\"hello\"' cannot be assigned to type 'double'",
+        "message": "Type '\"hello\"' cannot be assigned to type 'Double'",
         "source": "\"hello\"",
         "range": {
           "start": {

@@ -796,6 +796,78 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getRenameLocationFileName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameLocationStart(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameLocationEnd(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameLocationLine(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameLocationPrefixText(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameLocationSuffixText(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _findRenameLocations(argc: KInt, fileContexts: Uint8Array, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessFileName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessKind(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessDisplayName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessFullDisplayName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessKindModifiers(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameSuccessTriggerSpan(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameFailureLocalizedErrorMessage(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameInfoIsSuccess(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameInfoSuccess(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameInfoFailure(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRenameInfo(context: KNativePointer, position: KInt, pandaLibPath: String): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _createTextSpan(start: KInt, length: KInt): KPtr {
     throw new Error('Not implemented');
   }

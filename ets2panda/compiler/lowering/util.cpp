@@ -290,6 +290,32 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
     node->Check(checker);
 }
 
+// NOTE: used to get the declaration name in Plugin API and LSP
+std::optional<std::string> GetNameOfDeclaration(const ir::AstNode *node)
+{
+    if (node == nullptr) {
+        return std::nullopt;
+    }
+    switch (node->Type()) {
+        case ir::AstNodeType::IDENTIFIER:
+            return std::string(node->AsIdentifier()->Name().Utf8());
+        case ir::AstNodeType::METHOD_DEFINITION:
+            return std::string(node->AsMethodDefinition()->Id()->Name().Utf8());
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+            return std::string(node->AsFunctionDeclaration()->Function()->Id()->Name().Utf8());
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+            return std::string(node->AsFunctionExpression()->Function()->Id()->Name().Utf8());
+        case ir::AstNodeType::CLASS_DEFINITION:
+            return std::string(node->AsClassDefinition()->Ident()->Name().Utf8());
+        case ir::AstNodeType::CLASS_PROPERTY:
+            return std::string(node->AsClassProperty()->Id()->Name().Utf8());
+        case ir::AstNodeType::TS_INTERFACE_DECLARATION:
+            return std::string(node->AsTSInterfaceDeclaration()->Id()->Name().Utf8());
+        default:
+            return std::nullopt;
+    }
+}
+
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 {

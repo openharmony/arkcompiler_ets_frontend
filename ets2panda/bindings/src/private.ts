@@ -15,7 +15,7 @@
 
 import { throwError } from './utils';
 import { KNativePointer, nullptr } from './InteropTypes';
-import { withString, withStringArray } from './arrays';
+import { withString, withStringArray, withBigingArray } from './arrays';
 import { NativePtrDecoder, withStringResult } from './Platform';
 import { LspDiagsNode, LspNode } from './lspNode';
 
@@ -62,4 +62,8 @@ export function passString(str: string | undefined): string {
 
 export function passStringArray(strings: string[]): Uint8Array {
   return withStringArray(strings);
+}
+
+export function passPointerArray(pointers: KNativePointer[]): Uint8Array {
+  return withBigingArray(pointers.map((pointer) => BigInt(Number(pointer))));
 }
