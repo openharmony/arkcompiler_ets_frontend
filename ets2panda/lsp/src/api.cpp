@@ -49,6 +49,8 @@ namespace ark::es2panda::lsp {
 
 DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
     auto node = declInfo.first;
@@ -80,17 +82,23 @@ bool IsPackageModule(es2panda_Context *context)
 
 CompletionEntryKind GetAliasScriptElementKind(es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = GetAliasScriptElementKindImpl(context, position);
     return result;
 }
 
 References GetFileReferences(char const *fileName, es2panda_Context *context, bool isPackageModule)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     return GetFileReferencesImpl(context, fileName, isPackageModule);
 }
 
 DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     DeclInfo result;
     if (context == nullptr) {
         return result;
@@ -104,16 +112,22 @@ DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
 
 std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *context, const char *fileName, size_t pos)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     return GetClassHierarchiesImpl(context, std::string(fileName), pos);
 }
 
 bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     return GetSafeDeleteInfoImpl(context, position, path);
 }
 
 References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = GetReferencesAtPositionImpl(context, {declInfo->fileName, declInfo->fileText});
     auto compare = [](const ReferenceInfo &lhs, const ReferenceInfo &rhs) {
         if (lhs.fileName != rhs.fileName) {
@@ -131,24 +145,31 @@ References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo
 es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto ast = ctx->parserProgram->Ast();
     return reinterpret_cast<es2panda_AstNode *>(FindPrecedingToken(pos, ast, ctx->allocator));
 }
 
 std::string GetCurrentTokenValue(es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = GetCurrentTokenValueImpl(context, position);
     return result;
 }
 
 std::vector<FileTextChanges> OrganizeImportsImpl(es2panda_Context *context, char const *fileName)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = OrganizeImports::Organize(context, fileName);
     return result;
 }
 
 QuickInfo GetQuickInfoAtPosition(const char *fileName, es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto res = GetQuickInfoAtPositionImpl(context, position, fileName);
     return res;
 }
@@ -157,6 +178,8 @@ QuickInfo GetQuickInfoAtPosition(const char *fileName, es2panda_Context *context
 CompletionEntryDetails GetCompletionEntryDetails(const char *entryName, const char *fileName, es2panda_Context *context,
                                                  size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = GetCompletionEntryDetailsImpl(context, position, fileName, entryName);
     return result;
 }
@@ -164,6 +187,7 @@ CompletionEntryDetails GetCompletionEntryDetails(const char *entryName, const ch
 TextSpan GetSpanOfEnclosingComment(es2panda_Context *context, size_t pos, bool onlyMultiLine)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto *range = ctx->allocator->New<CommentRange>();
     GetRangeOfEnclosingComment(context, pos, range);
     return (range != nullptr) && (!onlyMultiLine || range->kind_ == CommentKind::MULTI_LINE)
@@ -175,6 +199,7 @@ DiagnosticReferences GetSemanticDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SEMANTIC);
     for (const auto &diagnostic : diagnostics) {
         result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
@@ -186,6 +211,7 @@ DiagnosticReferences GetSyntacticDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
     const auto &diagnosticsPluginError =
         ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::PLUGIN_ERROR);
@@ -308,6 +334,7 @@ DiagnosticReferences GetSuggestionDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences res {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto ast = ctx->parserProgram->Ast();
     auto vec = GetSuggestionDiagnosticsImpl(ast);
     res.diagnostic.reserve(vec.size());
@@ -319,6 +346,8 @@ DiagnosticReferences GetSuggestionDiagnostics(es2panda_Context *context)
 
 ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(es2panda_Context *context, size_t position)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    SetPhaseManager(ctx->phaseManager);
     auto result = CompletionInfo(GetCompletionsAtPositionImpl(context, position));
     return result;
 }

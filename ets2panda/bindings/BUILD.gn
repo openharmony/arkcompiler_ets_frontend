@@ -22,7 +22,6 @@ npm_path = "//prebuilts/build-tools/common/nodejs/current/bin/npm"
 
 shared_library("ts_bindings") {
   sources = [
-    "./native/src/callback-resource.cpp",
     "./native/src/common-interop.cpp",
     "./native/src/convertors-napi.cpp",
     "./native/src/lsp.cpp",
@@ -184,7 +183,6 @@ shared_library("ts_bindings") {
 shared_library("public") {
   sources = [
     "./native/src/bridges.cpp",
-    "./native/src/callback-resource.cpp",
     "./native/src/common-interop.cpp",
     "./native/src/common.cpp",
     "./native/src/convertors-napi.cpp",

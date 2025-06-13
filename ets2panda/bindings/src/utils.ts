@@ -15,6 +15,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 export function throwError(error: string): never {
   throw new Error(error);
@@ -42,4 +43,8 @@ export function ensurePathExists(filePath: string): void {
       console.error(`Error: ${error.message}`);
     }
   }
+}
+
+export function isMac(): boolean {
+  return os.type() === 'Darwin';
 }

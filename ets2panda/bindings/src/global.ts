@@ -24,7 +24,6 @@ import {
 } from './Es2pandaNativeModule';
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
 import { initInterop, InteropNativeModule, initPublicInterop } from './InteropNativeModule';
-import { Context } from './types';
 
 // CC-OFFNXT(G.NAM.01) project code style
 export class global {

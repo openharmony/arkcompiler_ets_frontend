@@ -187,6 +187,9 @@ struct CAPI_EXPORT es2panda_Impl {
     es2panda_Context *(*CreateCacheContextFromFile)(es2panda_Config *config, char const *source_file_name,
                                                     es2panda_GlobalContext *globalContext, bool isExternal);
     es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);
+    es2panda_Context *(*CreateCacheContextFromString)(es2panda_Config *config, const char *source,
+                                                      char const *file_name, es2panda_GlobalContext *globalContext,
+                                                      bool isExternal);
     es2panda_Context *(*ProceedToState)(es2panda_Context *context, es2panda_ContextState state);  // context is consumed
     void (*DestroyContext)(es2panda_Context *context);
 

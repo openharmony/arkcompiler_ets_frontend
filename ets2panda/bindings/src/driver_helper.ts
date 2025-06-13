@@ -18,7 +18,8 @@ import { global } from './global';
 import { throwError } from './utils';
 import { Es2pandaContextState } from './generated/Es2pandaEnums';
 import { withStringResult } from './Platform';
-import { KBoolean, KNativePointer, KPointer } from './InteropTypes';
+import { KBoolean, KInt, KNativePointer, KPointer } from './InteropTypes';
+import { passStringArray } from './private';
 
 export class DriverHelper {
   constructor(filePath: string, cmd: string[]) {
@@ -85,12 +86,38 @@ export class DriverHelper {
 }
 
 export class LspDriverHelper {
-  public createCfg(cmd: string[], filePath: string, pandaLibPath: string): Config {
+  public memInitialize(pandaLibPath: string): void {
+    global.es2pandaPublic._MemInitialize(pandaLibPath);
+  }
+
+  public memFinalize(): void {
+    global.es2pandaPublic._MemFinalize();
+  }
+
+  public createGlobalContext(config: KNativePointer, externalFileList: string[], fileNum: KInt): KNativePointer {
+    return global.es2pandaPublic._CreateGlobalContext(config, passStringArray(externalFileList), fileNum);
+  }
+
+  public destroyGlobalContext(context: KNativePointer): void {
+    global.es2pandaPublic._DestroyGlobalContext(context);
+  }
+
+  public createCfg(cmd: string[], filePath: string, pandaLibPath: string = ''): Config {
     return Config.create(cmd, filePath, pandaLibPath, true);
   }
 
-  public createCtx(source: string, filePath: string, cfg: Config): KNativePointer {
-    return Context.lspCreateFromString(source, filePath, cfg);
+  public createCtx(
+    source: string,
+    filePath: string,
+    cfg: Config,
+    globalContextPtr?: KNativePointer,
+    isExternal: boolean = false
+  ): KNativePointer {
+    if (globalContextPtr) {
+      return Context.lspCreateCacheContextFromString(source, filePath, cfg, globalContextPtr, isExternal);
+    } else {
+      return Context.lspCreateFromString(source, filePath, cfg);
+    }
   }
 
   public proceedToState(ctx: KNativePointer, state: Es2pandaContextState): void {

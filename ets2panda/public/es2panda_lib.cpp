@@ -465,6 +465,15 @@ extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromFile(es2pa
     return CreateContext(config, ss.str(), sourceFileName, nullptr, false, false);
 }
 
+extern "C" __attribute__((unused)) es2panda_Context *CreateCacheContextFromString(es2panda_Config *config,
+                                                                                  const char *source,
+                                                                                  char const *fileName,
+                                                                                  es2panda_GlobalContext *globalContext,
+                                                                                  bool isExternal)
+{
+    return CreateContext(config, std::string(source), fileName, globalContext, isExternal, false);
+}
+
 extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromString(es2panda_Config *config,
                                                                              const char *source, char const *fileName)
 {
@@ -1240,6 +1249,7 @@ es2panda_Impl g_impl = {
     CreateContextFromFile,
     CreateCacheContextFromFile,
     CreateContextFromString,
+    CreateCacheContextFromString,
     ProceedToState,
     DestroyContext,
     CreateGlobalContext,

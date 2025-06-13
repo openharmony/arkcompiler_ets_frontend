@@ -15,15 +15,12 @@
 
 #include "convertors-napi.h"
 #include "lsp/include/api.h"
-#include "lsp/include/completions.h"
 #include "common.h"
 #include "panda_types.h"
 #include "public/es2panda_lib.h"
 #include "lsp/include/refactors/refactor_types.h"
 #include <cstddef>
-#include <cstdint>
 #include <string>
-#include <variant>
 
 namespace {
 using ark::es2panda::lsp::ClassHierarchy;
