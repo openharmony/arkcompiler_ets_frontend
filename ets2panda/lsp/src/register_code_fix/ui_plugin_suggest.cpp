@@ -39,7 +39,7 @@ std::vector<TextChange> GetTextChangesFromSuggestions(const ark::es2panda::util:
     for (auto suggestion : diag->Suggestion()) {
         auto sourceStart = suggestion->SourceRange()->start.index;
         auto sourceEnd = suggestion->SourceRange()->end.index;
-        auto span = TextSpan(sourceStart, sourceEnd);
+        auto span = TextSpan(sourceStart, sourceEnd - sourceStart);
         if (isAll) {
             textChanges.emplace_back(TextChange(span, suggestion->SubstitutionCode()));
         } else if (pos >= sourceStart && pos <= sourceEnd) {
