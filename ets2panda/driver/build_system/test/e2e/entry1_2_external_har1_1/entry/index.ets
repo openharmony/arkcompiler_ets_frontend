@@ -13,17 +13,6 @@
  * limitations under the License.
  */
 
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  verbose: true,
-  collectCoverage: true,
-  coverageDirectory: '<rootDir>/dist/coverage',
-  setupFilesAfterEnv: [
-    '<rootDir>/test/testHook/jest.memory-usage.js',
-    '<rootDir>/test/testHook/jest.time-usage.js',
-    '<rootDir>/test/testHook/jest.abc-size.js'
-  ],
-  testMatch: [],
-  testPathIgnorePatterns: [],
-};
+import { sub } from 'har1_1' // should be insert by ui-plugins
+
+sub(5, 3);

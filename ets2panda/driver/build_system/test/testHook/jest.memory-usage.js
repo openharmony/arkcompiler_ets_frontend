@@ -13,17 +13,16 @@
  * limitations under the License.
  */
 
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  verbose: true,
-  collectCoverage: true,
-  coverageDirectory: '<rootDir>/dist/coverage',
-  setupFilesAfterEnv: [
-    '<rootDir>/test/testHook/jest.memory-usage.js',
-    '<rootDir>/test/testHook/jest.time-usage.js',
-    '<rootDir>/test/testHook/jest.abc-size.js'
-  ],
-  testMatch: [],
-  testPathIgnorePatterns: [],
-};
+let startMem = 0;
+
+beforeEach(() => {
+  global.gc?.();
+  startMem = process.memoryUsage().heapUsed;
+});
+
+afterEach(() => {
+  const endMem = process.memoryUsage().heapUsed;
+  const peak = (endMem - startMem) / 1024 / 1024;
+  const testName = expect.getState().currentTestName;
+  console.log(`[Jest][${testName} used ${peak.toFixed(2)} MB]`);
+});

@@ -13,17 +13,11 @@
  * limitations under the License.
  */
 
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  verbose: true,
-  collectCoverage: true,
-  coverageDirectory: '<rootDir>/dist/coverage',
-  setupFilesAfterEnv: [
-    '<rootDir>/test/testHook/jest.memory-usage.js',
-    '<rootDir>/test/testHook/jest.time-usage.js',
-    '<rootDir>/test/testHook/jest.abc-size.js'
-  ],
-  testMatch: [],
-  testPathIgnorePatterns: [],
-};
+import { add } from 'hsp1_2'
+
+function main() {
+  let a: string = "hello world"
+  console.log(a)
+  let sum = add(2, 1)
+  console.log(sum)
+}
