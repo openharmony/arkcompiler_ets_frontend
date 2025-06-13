@@ -1016,14 +1016,17 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
             LogError(diagnostic::LOCAL_CLASS_ACCESS_MOD, {}, Lexer()->GetToken().Start());
         }
     }
-
     const auto keywordType = Lexer()->GetToken().KeywordType();
     const bool isPrivate = (keywordType == lexer::TokenType::KEYW_PRIVATE);
     const bool isDefaultInAmbient = (keywordType == lexer::TokenType::KEYW_DEFAULT) && InAmbientContext();
-    if (!isPrivate && !isDefaultInAmbient) {
-        LogError(diagnostic::UNEXPECTED_TOKEN_PRIVATE_ID);
+    if (!isPrivate) {
+        if (!isDefaultInAmbient) {
+            LogError(diagnostic::UNEXPECTED_TOKEN_PRIVATE_ID);
+        }
+        if (keywordType == lexer::TokenType::KEYW_NEW) {
+            LogError(diagnostic::ERROR_ARKTS_NO_INTERFACE_CONSTRUCTOR_SIGNATURES);
+        }
     }
-
     Lexer()->NextToken();
     return isDefaultInAmbient ? ir::ModifierFlags::DEFAULT : ir::ModifierFlags::PRIVATE;
 }

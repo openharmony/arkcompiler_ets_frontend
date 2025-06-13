@@ -222,6 +222,10 @@ syntax:
   id: 313
   message: "Import assertion is not supported, please use the ordinary import syntax instead!"
 
+- name: ERROR_ARKTS_NO_INTERFACE_CONSTRUCTOR_SIGNATURES
+  id: 81515
+  message: "Constructor signatures are not supported in interfaces, use methods instead!"
+
 - name: ERROR_ARKTS_NO_PRIVATE_IDENTIFIERS
   id: 298
   message: "Use 'private' keyword to declare an identifier as private."
