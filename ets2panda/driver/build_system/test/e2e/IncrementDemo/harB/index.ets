@@ -13,4 +13,5 @@
  * limitations under the License.
  */
 
-export { add } from './Calc'
+
+export let strB = "hello world from harA!";

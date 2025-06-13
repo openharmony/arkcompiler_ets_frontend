@@ -17,6 +17,7 @@ import { FileManager } from '../../../src/plugins/FileManager';
 import { LANGUAGE_VERSION } from '../../../src/pre_define';
 import * as utils from '../../../src/utils';
 
+// This test suite is for the FileManager class, which manages file paths and language versions in the build system.
 describe('class FileManager', () => {
     const mockBuildConfig = {
         dependentModuleList: [
@@ -36,53 +37,49 @@ describe('class FileManager', () => {
         FileManager.arkTSModuleMap.clear();
         FileManager.staticApiPath.clear();
         FileManager.dynamicApiPath.clear();
-        // Make tsc ignore the access of private member
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         FileManager.buildConfig = undefined;
     });
 
-    it('should initialize singleton and static properties', () => {
+    test('initialize singleton && static properties', () => {
         FileManager.init(mockBuildConfig as any);
         expect(FileManager.getInstance()).toBeInstanceOf(FileManager);
         expect(FileManager.buildConfig).toEqual(mockBuildConfig);
         expect(FileManager.staticApiPath.size).toBe(1);
         expect(FileManager.dynamicApiPath.size).toBe(2);
         expect(FileManager.arkTSModuleMap.size).toBe(1);
-    });
-
-    it('should clean singleton instance', () => {
         FileManager.init(mockBuildConfig as any);
-        FileManager.cleanFileManagerObject();
-        // Make tsc ignore the access of private member
-        // @ts-ignore
-        expect(FileManager.instance).toBeUndefined();
+        const instance = FileManager.getInstance();
+        FileManager.init({
+            ...mockBuildConfig,
+            buildSdkPath: '/another/path'
+        } as any);
+        expect(FileManager.getInstance()).toBe(instance);
     });
 
-    it('should add staticApiPath and dynamicApiPath in initSDK', () => {
+    test('add staticApiPath && dynamicApiPath in initSDK', () => {
         FileManager.initSDK(new Set(['/api1', '/api2']), '/sdk/path');
         expect(FileManager.staticApiPath.has('/api1')).toBe(true);
         expect(FileManager.staticApiPath.has('/api2')).toBe(true);
         expect(FileManager.dynamicApiPath.size).toBe(2);
     });
 
-    it('should handle empty externalApiPath in initSDK', () => {
+    test('empty externalApiPath in initSDK', () => {
         FileManager.initSDK(new Set(), '/sdk/path');
         expect(FileManager.staticApiPath.size).toBe(0);
         expect(FileManager.dynamicApiPath.size).toBe(2);
     });
 
-    it('should get correct language version by file path', () => {
+    test('get language version', () => {
         FileManager.init(mockBuildConfig as any);
-        const fm = FileManager.getInstance();
+        let fm = FileManager.getInstance();
         expect(fm.getLanguageVersionByFilePath('/mock/staticApi/abc.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_2);
         const [dynPath] = Array.from(FileManager.dynamicApiPath);
         expect(fm.getLanguageVersionByFilePath(`${dynPath}/abc.ets`)).toBe(LANGUAGE_VERSION.ARKTS_1_1);
         expect(fm.getLanguageVersionByFilePath('/mock/project/main.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_2);
         expect(fm.getLanguageVersionByFilePath('/mock/path/modA/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_2);
         expect(fm.getLanguageVersionByFilePath('/other/path/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
-    });
-
-    it('should return ARKTS_1_2 if first line is use static in hybrid module', () => {
         FileManager.init({
             ...mockBuildConfig,
             dependentModuleList: [
@@ -93,28 +90,11 @@ describe('class FileManager', () => {
                 }
             ]
         } as any);
-        const fm = FileManager.getInstance();
-        // Make tsc ignore the access of private member
+        fm = FileManager.getInstance();
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         jest.spyOn(FileManager as any, 'isFirstLineUseStatic').mockReturnValue(true);
-        expect(fm.getLanguageVersionByFilePath('/mock/hybrid/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_2);
-    });
-
-    it('should handle empty dependentModuleList in initLanguageVersionFromDependentModuleMap', () => {
-        // Make tsc ignore the access of private member
-        // @ts-ignore
-        FileManager['initLanguageVersionFromDependentModuleMap']([]);
-        expect(FileManager.arkTSModuleMap.size).toBe(0);
-    });
-
-    it('should getInstance auto new when not initialized', () => {
-        // Make tsc ignore the access of private member
-        // @ts-ignore
-        FileManager.instance = undefined;
-        expect(FileManager.getInstance()).toBeInstanceOf(FileManager);
-    });
-
-    it('should return ARKTS_1_1 for hybrid module if first line is not use static', () => {
+        expect(fm.getLanguageVersionByFilePath('/mock/hybrid/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
         FileManager.init({
             dependentModuleList: [
                 {
@@ -127,41 +107,21 @@ describe('class FileManager', () => {
             buildSdkPath: '/mock/sdk',
             compileFiles: []
         } as any);
-        const fm = FileManager.getInstance();
-        // Make tsc ignore the access of private member
+        fm = FileManager.getInstance();
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         jest.spyOn(FileManager as any, 'isFirstLineUseStatic').mockReturnValue(false);
         expect(fm.getLanguageVersionByFilePath('/mock/hybrid/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
-    });
 
-    it('should allow cleanFileManagerObject to be called multiple times', () => {
-        FileManager.init({
-            dependentModuleList: [],
-            externalApiPaths: [],
-            buildSdkPath: '/mock/sdk',
-            compileFiles: []
-        } as any);
-        FileManager.cleanFileManagerObject();
-        expect(FileManager.getInstance()).toBeInstanceOf(FileManager);
-        FileManager.cleanFileManagerObject();
-        // Make tsc ignore the access of private member
-        // @ts-ignore
-        expect(FileManager.instance).toBeUndefined();
-    });
-
-    it('should return ARKTS_1_1 if staticApiPath and dynamicApiPath are empty', () => {
         FileManager.cleanFileManagerObject();
         FileManager.staticApiPath.clear();
         FileManager.dynamicApiPath.clear();
         FileManager.arkTSModuleMap.clear();
-        // Make tsc ignore the access of private member
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         FileManager.buildConfig = { compileFiles: [] };
-        const fm = FileManager.getInstance();
+        fm = FileManager.getInstance();
         expect(fm.getLanguageVersionByFilePath('/any/path/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
-    });
-
-    it('should return module language if not hybrid', () => {
         FileManager.init({
             dependentModuleList: [
                 {
@@ -174,42 +134,59 @@ describe('class FileManager', () => {
             buildSdkPath: '/mock/sdk',
             compileFiles: []
         } as any);
-        const fm = FileManager.getInstance();
-        expect(fm.getLanguageVersionByFilePath('/mock/path/modB/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_2);
+        fm = FileManager.getInstance();
+        expect(fm.getLanguageVersionByFilePath('/mock/path/modB/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
     });
 
-    it('should isFirstLineUseStatic returns false when first line is not use static', () => {
-        jest.spyOn(utils, 'readFirstLineSync').mockReturnValue('not static');
-        
+    test('empty dependentModuleList', () => {
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
-        expect(FileManager['isFirstLineUseStatic']('anyfile.ets')).toBe(false);
+        FileManager['initLanguageVersionFromDependentModuleMap']([]);
+        expect(FileManager.arkTSModuleMap.size).toBe(0);
     });
 
-    it('should init does nothing if already initialized', () => {
+    test('clean singleton instance', () => {
         FileManager.init(mockBuildConfig as any);
-        const instance = FileManager.getInstance();
+        FileManager.cleanFileManagerObject();
+        // Make tsc ignore the access of private member or type error
+        // @ts-ignore
+        expect(FileManager.instance).toBeUndefined();
         FileManager.init({
-            ...mockBuildConfig,
-            buildSdkPath: '/another/path'
+            dependentModuleList: [],
+            externalApiPaths: [],
+            buildSdkPath: '/mock/sdk',
+            compileFiles: []
         } as any);
-        expect(FileManager.getInstance()).toBe(instance);
-    });
-
-    it('should cleanFileManagerObject does nothing if instance is undefined', () => {
+        FileManager.cleanFileManagerObject();
+        expect(FileManager.getInstance()).toBeInstanceOf(FileManager);
+        FileManager.cleanFileManagerObject();
+        // Make tsc ignore the access of private member or type error
+        // @ts-ignore
+        expect(FileManager.instance).toBeUndefined();
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         FileManager.instance = undefined;
         expect(() => FileManager.cleanFileManagerObject()).not.toThrow();
     });
 
-    it('should getLanguageVersionByFilePath handles undefined compileFiles', () => {
+    test('isFirstLineUseStatic', () => {
+        jest.spyOn(utils, 'readFirstLineSync').mockReturnValue('not static');
+        // Make tsc ignore the access of private member or type error
+        // @ts-ignore
+        expect(FileManager['isFirstLineUseStatic']('anyfile.ets')).toBe(false);
+    });
+
+    test('getLanguageVersionByFilePath handles undefined compileFiles', () => {
         FileManager.cleanFileManagerObject();
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         FileManager.buildConfig = {};
         const fm = FileManager.getInstance();
         expect(fm.getLanguageVersionByFilePath('/any/path/file.ets')).toBe(LANGUAGE_VERSION.ARKTS_1_1);
     });
 
-    it('should initSDK handles undefined externalApiPath', () => {
+    test('initSDK', () => {
+        // Make tsc ignore the access of private member or type error
         // @ts-ignore
         expect(() => FileManager.initSDK(undefined, '/sdk/path')).not.toThrow();
     });

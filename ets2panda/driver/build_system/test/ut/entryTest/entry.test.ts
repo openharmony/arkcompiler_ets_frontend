@@ -13,72 +13,238 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
 import * as entryModule from '../../../src/entry';
-import { BuildConfig } from '../../../src/types';
+import { BUILD_TYPE, BuildConfig, OHOS_MODULE_TYPE, BUILD_MODE } from '../../../src/types';
+import { Logger } from '../../../src/logger';
+
+jest.mock('../../../src/build/build_mode');
+jest.mock('../../../src/build/build_framework_mode');
+jest.mock('../../../src/logger');
+jest.mock('../../../src/init/process_build_config', () => ({
+  processBuildConfig: jest.fn((config) => config)
+}));
 
 beforeEach(() => {
   jest.clearAllMocks();
-
   process.exit = jest.fn() as any;
-
 });
 
-function main(configFilePath?: string): void {
-  const buildConfigPath = configFilePath;
+function testBuildTypeBranch() {
+  const BuildMode = require('../../../src/build/build_mode').BuildMode;
+  const BuildFrameworkMode = require('../../../src/build/build_framework_mode').BuildFrameworkMode;
+  const mockBuildModeRun = jest.fn().mockResolvedValue(undefined);
+  BuildMode.mockImplementation(() => {
+    return {
+      run: mockBuildModeRun,
+      generateDeclaration: jest.fn()
+    };
+  });
 
-  const projectConfig: BuildConfig = JSON.parse(fs.readFileSync(buildConfigPath!, 'utf-8'));
+  const mockLoggerHasErrors = jest.fn().mockReturnValue(false);
+  Logger.getInstance = jest.fn().mockReturnValue({
+    hasErrors: mockLoggerHasErrors,
+    printInfo: jest.fn(),
+    printError: jest.fn()
+  });
 
-  entryModule.build(projectConfig);
+  const mockConfig = {
+    buildType: BUILD_TYPE.BUILD,
+    packageName: 'test',
+    compileFiles: ['test.ets'],
+    enableDeclgenEts2Ts: false,
+    frameworkMode: false,
+    loaderOutPath: './dist',
+    cachePath: './dist/cache',
+    moduleType: OHOS_MODULE_TYPE.HAR,
+    sourceRoots: ['./'],
+    moduleRootPath: '/test/path',
+    buildMode: BUILD_MODE.DEBUG
+  } as BuildConfig;
+  return {
+    buildMode: BuildMode,
+    frameworkMode: BuildFrameworkMode,
+    mockBuildModeRun,
+    mockConfig,
+    execute: async () => {
+      await entryModule.build(mockConfig);
+      expect(BuildMode).toHaveBeenCalledWith(expect.objectContaining({
+        buildType: BUILD_TYPE.BUILD,
+        entryFiles: mockConfig.compileFiles
+      }));
+      expect(mockBuildModeRun).toHaveBeenCalled();
+      expect(BuildFrameworkMode).not.toHaveBeenCalled();
+    }
+  };
 }
 
-describe('test entry.ts file api', () => {
-  test('test build001', () => {
-    test_build001();
-  });
-  test('test build002', () => {
-    test_build002();
-  });
-  test('test build003', () => {
-    test_build003();
-  });
-  test('test build004', () => {
-    test_build004();
-  });
-});
+function testFrameworkModeBranch() {
+  const BuildMode = require('../../../src/build/build_mode').BuildMode;
+  const BuildFrameworkMode = require('../../../src/build/build_framework_mode').BuildFrameworkMode;
 
-function test_build001() {
-  const buildSpy = jest.spyOn(entryModule, 'build');
-  const buildConfigPath = "test/ut/mock/demo_1.2_dep_hsp1.2/build_config3.json";
-  main(buildConfigPath);
-  expect(buildSpy).toHaveBeenCalledWith(expect.objectContaining({
-    buildType: 'build'
-  }));
-}
+  const mockFrameworkModeRun = jest.fn().mockResolvedValue(undefined);
+  BuildFrameworkMode.mockImplementation(() => {
+    return {
+      run: mockFrameworkModeRun
+    };
+  });
 
-function test_build002() {
-  const buildSpy = jest.spyOn(entryModule, 'build');
-  const buildConfigPath = "test/ut/mock/demo_1.2_dep_hsp1.2/build_config.json";
-  main(buildConfigPath);
-  expect(buildSpy).toHaveBeenCalledWith(expect.objectContaining({
-    buildType: 'build1'
-  }));
-}
+  const mockLoggerHasErrors = jest.fn().mockReturnValue(false);
+  Logger.getInstance = jest.fn().mockReturnValue({
+    hasErrors: mockLoggerHasErrors,
+    printInfo: jest.fn(),
+    printError: jest.fn()
+  });
 
-function test_build003() {
-  const buildSpy = jest.spyOn(entryModule, 'build');
-  const buildConfigPath = "test/ut/mock/demo_1.2_dep_hsp1.2/build_config1.json";
-  main(buildConfigPath);
-  expect(buildSpy).toHaveBeenCalledWith(expect.objectContaining({
+  const mockConfig = {
+    buildType: BUILD_TYPE.BUILD,
+    packageName: 'test',
+    compileFiles: ['test.ets'],
+    enableDeclgenEts2Ts: false,
     frameworkMode: true,
-  }));
+    loaderOutPath: './dist',
+    cachePath: './dist/cache',
+    moduleType: OHOS_MODULE_TYPE.HAR,
+    sourceRoots: ['./'],
+    moduleRootPath: '/test/path',
+    buildMode: BUILD_MODE.DEBUG
+  } as BuildConfig;
+
+  return {
+    buildMode: BuildMode,
+    frameworkMode: BuildFrameworkMode,
+    mockFrameworkModeRun,
+    mockConfig,
+    mockLoggerHasErrors,
+    execute: async () => {
+      await entryModule.build(mockConfig);
+      expect(BuildFrameworkMode).toHaveBeenCalledWith(expect.objectContaining({
+        frameworkMode: true,
+        entryFiles: mockConfig.compileFiles
+      }));
+      expect(mockFrameworkModeRun).toHaveBeenCalled();
+      expect(BuildMode).not.toHaveBeenCalled();
+      expect(process.exit).not.toHaveBeenCalled();
+    }
+  };
 }
 
-function test_build004() {
-  const buildSpy = jest.spyOn(entryModule, 'build');
-  const buildConfigPath = "test/ut/mock/demo_1.2_dep_hsp1.2/build_config2.json";
-  main(buildConfigPath);
-  expect(buildSpy).toHaveBeenCalledWith(expect.objectContaining({
+function testEnableDeclgenEts2TsBranch() {
+  const BuildMode = require('../../../src/build/build_mode').BuildMode;
+  const BuildFrameworkMode = require('../../../src/build/build_framework_mode').BuildFrameworkMode;
+  const mockGenerateDeclaration = jest.fn().mockResolvedValue(undefined);
+  BuildMode.mockImplementation(() => {
+    return {
+      run: jest.fn(),
+      generateDeclaration: mockGenerateDeclaration
+    };
+  });
+
+  Logger.getInstance = jest.fn().mockReturnValue({
+    hasErrors: jest.fn().mockReturnValue(false),
+    printInfo: jest.fn(),
+    printError: jest.fn()
+  });
+
+  const mockConfig = {
+    buildType: BUILD_TYPE.BUILD,
+    packageName: 'test',
+    compileFiles: ['test.ets'],
     enableDeclgenEts2Ts: true,
-  }));
+    frameworkMode: false,
+    loaderOutPath: './dist',
+    cachePath: './dist/cache',
+    moduleType: OHOS_MODULE_TYPE.HAR,
+    sourceRoots: ['./'],
+    moduleRootPath: '/test/path',
+    buildMode: BUILD_MODE.DEBUG
+  } as BuildConfig;
+
+  return {
+    buildMode: BuildMode,
+    frameworkMode: BuildFrameworkMode,
+    mockGenerateDeclaration,
+    mockConfig,
+    execute: async () => {
+      await entryModule.build(mockConfig);
+      expect(BuildMode).toHaveBeenCalledWith(expect.objectContaining({
+        enableDeclgenEts2Ts: true,
+        entryFiles: mockConfig.compileFiles
+      }));
+      expect(mockGenerateDeclaration).toHaveBeenCalled();
+      expect(BuildFrameworkMode).not.toHaveBeenCalled();
+    }
+  };
 }
+
+function testNoMatchingBranch() {
+  const BuildMode = require('../../../src/build/build_mode').BuildMode;
+  const BuildFrameworkMode = require('../../../src/build/build_framework_mode').BuildFrameworkMode;
+  BuildMode.mockReset();
+  BuildFrameworkMode.mockReset();
+  const mockBuildModeRun = jest.fn();
+  const mockGenerateDeclaration = jest.fn();
+  const mockLoggerHasErrors = jest.fn()
+    .mockReturnValueOnce(true) 
+    .mockReturnValueOnce(false);
+  Logger.getInstance = jest.fn().mockReturnValue({
+    hasErrors: mockLoggerHasErrors,
+    printInfo: jest.fn(),
+    printError: jest.fn()
+  });
+  const clean = jest.fn();
+  jest.mock('../../../src/entry.ts', () => ({
+    clean: clean
+  }));
+  const mockConfig = {
+    buildType: BUILD_TYPE.PREVIEW,
+    packageName: 'test',
+    compileFiles: ['test.ets'],
+    enableDeclgenEts2Ts: false,
+    frameworkMode: true,
+    loaderOutPath: './dist',
+    cachePath: './dist/cache',
+    moduleType: OHOS_MODULE_TYPE.HAR,
+    sourceRoots: ['./'],
+    moduleRootPath: '/test/path',
+    buildMode: BUILD_MODE.DEBUG
+  } as BuildConfig;
+  return {
+    buildMode: BuildMode,
+    frameworkMode: BuildFrameworkMode,
+    mockBuildModeRun,
+    mockGenerateDeclaration,
+    mockConfig,
+    mockLoggerHasErrors,
+    clean,
+    execute: async () => {
+      await entryModule.build(mockConfig);
+      expect(mockLoggerHasErrors).toHaveBeenCalled();
+      jest.clearAllMocks();
+      await entryModule.build(mockConfig);
+      expect(BuildMode).not.toHaveBeenCalled();
+    }
+  };
+}
+
+// Test the functions of the entry.ts file
+describe('test entry.ts file api', () => {
+  test('test build function BUILD_TYPE.BUILD branch', async () => {
+    const testCase = testBuildTypeBranch();
+    await testCase.execute();
+  });
+
+  test('test build function frameworkMode branch', async () => {
+    const testCase = testFrameworkModeBranch();
+    await testCase.execute();
+  });
+
+  test('test build function enableDeclgenEts2Ts branch', async () => {
+    const testCase = testEnableDeclgenEts2TsBranch();
+    await testCase.execute();
+  });
+
+  test('test build function no matching branch', async () => {
+    const testCase = testNoMatchingBranch();
+    await testCase.execute();
+  });
+});

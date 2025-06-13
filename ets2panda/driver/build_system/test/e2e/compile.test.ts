@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// Depends on hardware environment, set a longer timeout
+jest.setTimeout(20000);
+
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
