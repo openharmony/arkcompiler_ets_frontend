@@ -15,10 +15,110 @@
   ],
   "result": [
     {
-      "line": 20,
+      "line": 16,
+      "column": 1,
+      "endLine": 16,
+      "endColumn": 60,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 1,
+      "endLine": 17,
+      "endColumn": 44,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 18,
+      "column": 1,
+      "endLine": 18,
+      "endColumn": 37,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 19,
+      "column": 1,
+      "endLine": 19,
+      "endColumn": 68,
+      "problem": "ImportAfterStatement",
+      "suggest": "",
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 24,
       "column": 5,
-      "endLine": 20,
+      "endLine": 24,
+      "endColumn": 50,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 5,
+      "endLine": 33,
       "endColumn": 52,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 5,
+      "endLine": 37,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 41,
+      "column": 5,
+      "endLine": 41,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 45,
+      "column": 5,
+      "endLine": 45,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 50,
+      "column": 5,
+      "endLine": 50,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 55,
+      "column": 5,
+      "endLine": 55,
+      "endColumn": 43,
       "problem": "AnyType",
       "suggest": "",
       "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
