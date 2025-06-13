@@ -114,6 +114,8 @@ def parse_args():
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--disable-force-gc', action='store_true',
                         help="Run test262 with close force-gc")
+    parser.add_argument('--multi-context', action='store_true',
+                        help="Run test262 with multi context")
     parser.add_argument('--enable-arkguard', action='store_true',
                         required=False,
                         help="enable arkguard for 262 tests")
@@ -141,6 +143,7 @@ class ArkProgram():
         self.run_pgo = False
         self.enable_litecg = False
         self.disable_force_gc = False
+        self.multi_context = False
         self.run_jit = False
         self.run_baseline_jit = False
         self.ark_aot_tool = ARK_AOT_TOOL
@@ -180,6 +183,9 @@ class ArkProgram():
 
         if self.args.disable_force_gc:
             self.disable_force_gc = self.args.disable_force_gc
+
+        if self.args.multi_context:
+            self.multi_context = self.args.multi_context
 
         if self.args.run_jit:
             self.run_jit = self.args.run_jit
@@ -694,7 +700,10 @@ class ArkProgram():
             asm_arg1 = "--enable-force-gc=true"
             if unforce_gc or self.disable_force_gc:
                 asm_arg1 = "--enable-force-gc=false"
-            cmd_args = [self.ark_tool, icu_path, asm_arg1,
+            asm_arg2 = "--multi-context=false"
+            if self.multi_context:
+                asm_arg2 = "--multi-context=true"
+            cmd_args = [self.ark_tool, icu_path, asm_arg1, asm_arg2,
                         f'{file_name_pre}.abc']
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
