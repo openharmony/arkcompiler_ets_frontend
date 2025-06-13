@@ -134,7 +134,7 @@ std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *cont
                                                           CodeFixOptions &codeFixOptions);
 CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
                                                CodeFixOptions &codeFixOptions);
-
+ir::Identifier *GetIdentFromNewClassExprPart(const ir::Expression *value);
 }  // namespace ark::es2panda::lsp
 
 #endif
