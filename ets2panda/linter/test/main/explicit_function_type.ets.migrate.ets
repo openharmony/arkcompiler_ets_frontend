@@ -130,7 +130,7 @@ let tup38:[['arkts'|Function, 1.0|true, false], string[], Function] = [['arkts',
 //枚举
 enum E39 {
   Function,
-  BLUE = 1,
+  BLUE = 1.0,
   YELLOW
 }
 

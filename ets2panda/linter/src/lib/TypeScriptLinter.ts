@@ -9692,10 +9692,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
       return false;
     };
+    const isStandardFloatFormat = (): boolean => {
+      const text = node.getText();
+      return /\.\d*0+$/.test(text);
+    };
     const isNoNeedFix =
       isInElementAccessExpression(node) ||
-      ts.isEnumMember(node.parent) ||
-      'name' in node.parent && node.parent.name === node;
+      'name' in node.parent && node.parent.name === node ||
+      isStandardFloatFormat();
     if (isNoNeedFix) {
       return;
     }

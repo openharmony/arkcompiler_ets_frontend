@@ -112,8 +112,8 @@ let g: number = an_array[]
 const a: number = 1.0
 
 enum Test {
-  A = 1,  // 显式赋值为 1
-  B = 2   // 显式赋值为 2
+  A = 1.0,  // 显式赋值为 1
+  B = 2.0   // 显式赋值为 2
 }
 const test: number = Test.A;
 
@@ -209,3 +209,25 @@ for (let i:number = 0.0; i < 100.0; i++) {
 let cancelIds:ArrayList<number> = arr.subArrayList(6.0, 86.0)
 let a: Array<number> = Array.from(cancelIds)
 let arr1: Array<number> = Array.from(new ArrayList<number>())
+
+let a:number = 0.000;
+
+const b:number = 0.000;
+
+export enum WalletStageValue {
+  DEFAULT = 0.0,
+  SWIPE_INIT = -1.0,
+  SELECT_CARD = 1.0,
+  SWIPE_DOING = 2.0,
+  SWIPE_SUCCEED = 3.0,
+  SWIPE_FAILED = 4.0,
+  SWIPE_FINISHED = 5.0,
+}
+
+export enum AnimationStage {
+  INIT = 0.0,
+  ENTER = 1.0,
+  ROTATING = 2.0,
+  EXIT_START = 3.0,
+  EXIT_END = 4.0,
+}

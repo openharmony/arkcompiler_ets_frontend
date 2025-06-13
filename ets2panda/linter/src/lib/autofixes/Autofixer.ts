@@ -5000,7 +5000,23 @@ export class Autofixer {
 
   fixNumericLiteralIntToNumber(node: ts.NumericLiteral): Autofix[] | undefined {
     void this;
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: `${node.getText()}.0` }];
+    let replacementText = node.getText();
+    let parent = node.parent;
+
+    if (ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.MinusToken) {
+      replacementText = `-${replacementText}.0`;
+      return [{
+        start: parent.getStart(),
+        end: node.getEnd(),
+        replacementText
+      }];
+    }
+
+    return [{
+      start: node.getStart(),
+      end: node.getEnd(),
+      replacementText: `${replacementText}.0`
+    }];
   }
 
   fixPropDecorator(node: ts.Decorator, decoratorName: string): Autofix[] {
