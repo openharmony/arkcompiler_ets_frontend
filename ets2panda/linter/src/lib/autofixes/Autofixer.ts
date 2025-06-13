@@ -4967,7 +4967,7 @@ export class Autofixer {
 
   fixCustomLayout(node: ts.StructDeclaration): Autofix[] {
     const startPos = Autofixer.getStartPositionWithoutDecorators(node);
-    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Layoutable));
+    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.CustomLayout));
 
     const text = this.getNewLine() + this.printer.printNode(ts.EmitHint.Unspecified, decorator, node.getSourceFile());
     return [{ start: startPos, end: startPos, replacementText: text }];

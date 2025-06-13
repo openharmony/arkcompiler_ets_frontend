@@ -9617,7 +9617,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (decorators) {
       for (const decorator of decorators) {
         const decoratorName = TsUtils.getDecoratorName(decorator);
-        if (decoratorName && decoratorName === CustomDecoratorName.Layoutable) {
+        if (decoratorName && decoratorName === CustomDecoratorName.CustomLayout) {
           return;
         }
       }
