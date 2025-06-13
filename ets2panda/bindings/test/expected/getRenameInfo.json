@@ -1,0 +1,14 @@
+{
+  "1": {
+    "canRenameSuccess": true,
+    "fileToRename": "",
+    "kind": "property",
+    "displayName": "aaa",
+    "fullDisplayName": "aaa",
+    "kindModifiers": "",
+    "triggerSpan": {
+      "start": 613,
+      "length": 3
+    }
+  }
+}

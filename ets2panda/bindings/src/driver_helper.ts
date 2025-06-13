@@ -80,8 +80,7 @@ export class DriverHelper {
   public generateTsDecl(declOutPath: string, etsOutPath: string, exportAll: boolean, isolated: boolean): void {
     let exportAll_: KBoolean = exportAll ? 1 : 0;
     let isolated_: KBoolean = isolated ? 1 : 0;
-    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath,
-      exportAll_, isolated_);
+    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_, isolated_);
   }
 }
 

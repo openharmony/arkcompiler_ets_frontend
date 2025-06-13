@@ -42,7 +42,11 @@ import {
   TextSpan,
   LspSignatureHelpItems,
   CodeFixActionInfo,
-  CodeFixActionInfoList
+  CodeFixActionInfoList,
+  LspRenameLocation,
+  LspRenameInfoType,
+  LspRenameInfoSuccess,
+  LspRenameInfoFailure
 } from './lspNode';
 import { passStringArray, unpackString } from './private';
 import { Es2pandaContextState } from './generated/Es2pandaEnums';
@@ -53,7 +57,9 @@ import { generateArkTsConfigByModules } from './arktsConfigGenerate';
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { KNativePointer } from './InteropTypes';
+import { KNativePointer, KPointer } from './InteropTypes';
+import { passPointerArray } from './private';
+import { NativePtrDecoder } from './Platform';
 import { Worker as ThreadWorker } from 'worker_threads';
 import { ensurePathExists, isMac } from './utils';
 import * as child_process from 'child_process';
@@ -711,6 +717,82 @@ export class Lsp {
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
     return result;
+  }
+
+  findRenameLocations(filename: String, offset: number): LspRenameLocation[] {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let moduleName = path.basename(path.dirname(arktsconfig));
+    let buildConfig: BuildConfig = this.moduleToBuildConfig[moduleName];
+    const fileContexts: KPointer[] = [];
+    const fileConfigs: Config[] = [localCfg];
+    for (let i = 0; i < buildConfig.compileFiles.length; i++) {
+      let filePath = path.resolve(buildConfig.compileFiles[i]);
+      let arktsconfig = this.fileNameToArktsconfig[filePath];
+      let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+      let compileFileCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+      const source = this.getFileSource(filePath);
+      let compileFileCtx = lspDriverHelper.createCtx(source, filePath, compileFileCfg, this.globalContextPtr);
+      PluginDriver.getInstance().getPluginContext().setContextPtr(compileFileCtx);
+      lspDriverHelper.proceedToState(compileFileCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      lspDriverHelper.proceedToState(compileFileCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      fileContexts.push(compileFileCtx);
+      fileConfigs.push(compileFileCfg);
+    }
+    const ptr = global.es2panda._findRenameLocations(
+      fileContexts.length,
+      passPointerArray(fileContexts),
+      localCtx,
+      offset
+    );
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    const result: LspRenameLocation[] = new NativePtrDecoder().decode(ptr).map((elPeer: KPointer) => {
+      return new LspRenameLocation(elPeer);
+    });
+    for (let i = 0; i < fileContexts.length; i++) {
+      lspDriverHelper.destroyContext(fileContexts[i]);
+    }
+    lspDriverHelper.destroyContext(localCtx);
+    for (const cfg of fileConfigs) {
+      lspDriverHelper.destroyConfig(cfg);
+    }
+    return Array.from(new Set(result));
+  }
+
+  getRenameInfo(filename: String, offset: number): LspRenameInfoType {
+    let lspDriverHelper = new LspDriverHelper();
+    let filePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const source = this.getFileSource(filePath);
+    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    let ptr = global.es2panda._getRenameInfo(localCtx, offset, this.pandaLibPath);
+    const success = global.es2panda._getRenameInfoIsSuccess(ptr);
+    let res: LspRenameInfoType;
+    if (success) {
+      res = new LspRenameInfoSuccess(global.es2panda._getRenameInfoSuccess(ptr));
+    } else {
+      res = new LspRenameInfoFailure(global.es2panda._getRenameInfoFailure(ptr));
+    }
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
+    lspDriverHelper.destroyConfig(localCfg);
+    return res;
   }
 
   getSpanOfEnclosingComment(filename: String, offset: number, onlyMultiLine: boolean): LspTextSpan {

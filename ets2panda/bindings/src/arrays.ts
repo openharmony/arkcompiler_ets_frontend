@@ -42,6 +42,15 @@ export function withStringArray(strings: Array<string> | undefined): Uint8Array 
   return array;
 }
 
+export function withBigingArray(bigints: Array<bigint> | undefined): Uint8Array {
+  if (bigints === undefined || bigints.length === 0) {
+    throwError('Error in strings array');
+  }
+
+  let array = encoder.encodeBigintArray(bigints);
+  return array;
+}
+
 function withArray<C extends TypedArray, R>(data: C | undefined, exec: ExecWithLength<C | null, R>): R {
   return exec(data ?? null, data?.length ?? 0);
 }

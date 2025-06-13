@@ -42,6 +42,8 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node);
+// NOTE: used to get the declaration name in Plugin API and LSP
+std::optional<std::string> GetNameOfDeclaration(const ir::AstNode *node);
 
 // Note: run varbinder on the new node generated in lowering phases
 void BindLoweredNode(varbinder::ETSBinder *varBinder, ir::AstNode *node);

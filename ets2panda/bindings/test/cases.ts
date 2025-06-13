@@ -133,6 +133,17 @@ export const testCases: TestCases = {
     '1': [resolveTestPath('test/testcases/getSignatureHelpItems/getSignatureHelpItems1.ets'), 613],
     '2': [resolveTestPath('test/testcases/getSignatureHelpItems/getSignatureHelpItems1.ets'), 620],
     '3': [resolveTestPath('test/testcases/getSignatureHelpItems/getSignatureHelpItems1.ets'), 678]
+  },
+  findRenameLocations: {
+    expectedFilePath: resolveTestPath('test/expected/findRenameLocations.json'),
+    '1': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations2.ets'), 632],
+    '2': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 627],
+    '3': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 670],
+    '4': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 721]
+  },
+  getRenameInfo: {
+    expectedFilePath: resolveTestPath('test/expected/getRenameInfo.json'),
+    '1': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo1.ets'), 615]
   }
 };
 

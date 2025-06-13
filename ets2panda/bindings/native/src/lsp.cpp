@@ -60,6 +60,198 @@ KNativePointer impl_getClassPropertyInfo(KNativePointer context, KInt position, 
 }
 TS_INTEROP_3(getClassPropertyInfo, KNativePointer, KNativePointer, KInt, KBoolean)
 
+KNativePointer impl_getRenameLocationFileName(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return &renameLocationRef->fileName;
+}
+TS_INTEROP_1(getRenameLocationFileName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameLocationPrefixText(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return new std::string(renameLocationRef->prefixText);
+}
+TS_INTEROP_1(getRenameLocationPrefixText, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameLocationSuffixText(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return new std::string(renameLocationRef->suffixText);
+}
+TS_INTEROP_1(getRenameLocationSuffixText, KNativePointer, KNativePointer)
+
+KInt impl_getRenameLocationStart(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return renameLocationRef->start;
+}
+TS_INTEROP_1(getRenameLocationStart, KInt, KNativePointer)
+
+KInt impl_getRenameLocationEnd(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return renameLocationRef->end;
+}
+TS_INTEROP_1(getRenameLocationEnd, KInt, KNativePointer)
+
+KInt impl_getRenameLocationLine(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return renameLocationRef->line;
+}
+TS_INTEROP_1(getRenameLocationLine, KInt, KNativePointer)
+
+// NOLINTBEGIN
+inline KUInt UnpackUInt(const KByte *bytes)
+{
+    return (bytes[0] | (bytes[1] << 8U) | (bytes[2U] << 16U) | (bytes[3U] << 24U));
+}
+// NOLINTEND
+
+/*
+ * Parses an array of pointers from a KStringArray.
+ * format:
+ * | header(4 bytes) | strLen(4 bytes) | strData(strLen bytes) | strLen(4 bytes) | strData(strLen bytes) | ...
+ */
+static std::vector<void *> ParsePointerArray(KInt argc, KStringArray pointerArrayPtr)
+{
+    const std::size_t headerLen = 4;
+    auto bigintPtrs = std::vector<void *>();
+    bigintPtrs.reserve(static_cast<std::size_t>(argc));
+    std::size_t offset = headerLen;
+    std::size_t strLen = 0;
+
+    for (std::size_t i = 0; i < static_cast<std::size_t>(argc); ++i) {
+        strLen = UnpackUInt(pointerArrayPtr + offset);
+        offset += headerLen;
+        std::string bigintStr(reinterpret_cast<const char *>(pointerArrayPtr + offset), strLen);
+        offset += strLen;
+
+        uintptr_t ptrValue = 0;
+        const size_t prefixLen = 2;
+        const size_t hex = 16;
+        const size_t decimal = 10;
+        if (bigintStr.substr(0, prefixLen) == "0x" || bigintStr.substr(0, prefixLen) == "0X") {
+            ptrValue = std::stoull(bigintStr, nullptr, hex);
+        } else {
+            ptrValue = std::stoull(bigintStr, nullptr, decimal);
+        }
+        bigintPtrs.push_back(reinterpret_cast<void *>(ptrValue));
+    }
+
+    return bigintPtrs;
+}
+
+KNativePointer impl_findRenameLocations(KInt argc, KStringArray pointerArrayPtr, KNativePointer context, KInt position)
+{
+    auto pointerArray = ParsePointerArray(argc, pointerArrayPtr);
+    auto fileContexts = std::vector<es2panda_Context *> {};
+    fileContexts.reserve(argc);
+    for (std::size_t i = 0; i < static_cast<std::size_t>(argc); ++i) {
+        auto contextPtr = reinterpret_cast<es2panda_Context *>(pointerArray[i]);
+        if (contextPtr != nullptr) {
+            fileContexts.push_back(contextPtr);
+        }
+    }
+    LSPAPI const *ctx = GetImpl();
+    auto result = ctx->findRenameLocations(fileContexts, reinterpret_cast<es2panda_Context *>(context),
+                                           static_cast<std::size_t>(position));
+    auto ptrs = std::make_unique<std::vector<void *>>();
+    ptrs->reserve(result.size());
+    for (auto &el : result) {
+        ptrs->push_back(new ark::es2panda::lsp::RenameLocation(std::move(el)));
+    }
+    return ptrs.release();
+}
+TS_INTEROP_4(findRenameLocations, KNativePointer, KInt, KStringArray, KNativePointer, KInt)
+
+KNativePointer impl_getRenameSuccessFileName(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new std::string(successInfo->GetFileToRename());
+}
+TS_INTEROP_1(getRenameSuccessFileName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameSuccessKind(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new std::string(successInfo->GetKind());
+}
+TS_INTEROP_1(getRenameSuccessKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameSuccessDisplayName(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new std::string(successInfo->GetDisplayName());
+}
+TS_INTEROP_1(getRenameSuccessDisplayName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameSuccessFullDisplayName(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new std::string(successInfo->GetFullDisplayName());
+}
+TS_INTEROP_1(getRenameSuccessFullDisplayName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameSuccessKindModifiers(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new std::string(successInfo->GetKindModifiers());
+}
+TS_INTEROP_1(getRenameSuccessKindModifiers, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameSuccessTriggerSpan(KNativePointer successPtr)
+{
+    auto successInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoSuccess *>(successPtr);
+    return new TextSpan(successInfo->GetTriggerSpan());
+}
+TS_INTEROP_1(getRenameSuccessTriggerSpan, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameFailureLocalizedErrorMessage(KNativePointer failurePtr)
+{
+    auto failureInfo = reinterpret_cast<ark::es2panda::lsp::RenameInfoFailure *>(failurePtr);
+    return new std::string(failureInfo->GetLocalizedErrorMessage());
+}
+TS_INTEROP_1(getRenameFailureLocalizedErrorMessage, KNativePointer, KNativePointer)
+
+KBoolean impl_getRenameInfoIsSuccess(KNativePointer renameInfoPtr)
+{
+    auto renameInfo = reinterpret_cast<std::tuple<bool, ark::es2panda::lsp::RenameInfoType *> *>(renameInfoPtr);
+    return std::get<0>(*renameInfo) ? 1 : 0;
+}
+TS_INTEROP_1(getRenameInfoIsSuccess, KBoolean, KNativePointer)
+
+KNativePointer impl_getRenameInfoSuccess(KNativePointer renameInfoPtr)
+{
+    auto renameInfo = reinterpret_cast<std::tuple<bool, ark::es2panda::lsp::RenameInfoSuccess *> *>(renameInfoPtr);
+    auto [flag, successInfo] = *renameInfo;
+    return flag ? successInfo : nullptr;
+}
+TS_INTEROP_1(getRenameInfoSuccess, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameInfoFailure(KNativePointer renameInfoPtr)
+{
+    auto renameInfo = reinterpret_cast<std::tuple<bool, ark::es2panda::lsp::RenameInfoFailure *> *>(renameInfoPtr);
+    auto [flag, failureInfo] = *renameInfo;
+    return flag ? nullptr : failureInfo;
+}
+TS_INTEROP_1(getRenameInfoFailure, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRenameInfo(KNativePointer context, KInt position, KStringPtr &pandaLibPath)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto result = ctx->getRenameInfo(reinterpret_cast<es2panda_Context *>(context), static_cast<std::size_t>(position),
+                                     GetStringCopy(pandaLibPath));
+    if (std::holds_alternative<ark::es2panda::lsp::RenameInfoSuccess>(result)) {
+        auto &successInfo = std::get<ark::es2panda::lsp::RenameInfoSuccess>(result);
+        return new std::tuple(true, new ark::es2panda::lsp::RenameInfoSuccess(std::move(successInfo)));
+    }
+    auto &failureInfo = std::get<ark::es2panda::lsp::RenameInfoFailure>(result);
+    return new std::tuple(false, new ark::es2panda::lsp::RenameInfoFailure(std::move(failureInfo)));
+}
+TS_INTEROP_3(getRenameInfo, KNativePointer, KNativePointer, KInt, KStringPtr)
+
 KNativePointer impl_getFieldsInfoFromPropertyInfo(KNativePointer infoPtr)
 {
     auto info = reinterpret_cast<std::vector<FieldsInfo> *>(infoPtr);

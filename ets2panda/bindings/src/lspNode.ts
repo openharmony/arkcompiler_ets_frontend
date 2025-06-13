@@ -901,3 +901,53 @@ export class LspSignatureHelpItems extends LspNode {
   readonly argumentIndex: number;
   readonly argumentCount: number;
 }
+
+export class LspRenameInfoSuccess extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.canRenameSuccess = true;
+    this.fileToRename = unpackString(global.es2panda._getRenameSuccessFileName(peer));
+    this.kind = unpackString(global.es2panda._getRenameSuccessKind(peer));
+    this.displayName = unpackString(global.es2panda._getRenameSuccessDisplayName(peer));
+    this.fullDisplayName = unpackString(global.es2panda._getRenameSuccessFullDisplayName(peer));
+    this.kindModifiers = unpackString(global.es2panda._getRenameSuccessKindModifiers(peer));
+    this.triggerSpan = new LspTextSpan(global.es2panda._getRenameSuccessTriggerSpan(peer));
+  }
+  readonly canRenameSuccess: boolean;
+  readonly fileToRename: string;
+  readonly kind: string;
+  readonly displayName: string;
+  readonly fullDisplayName: string;
+  readonly kindModifiers: string;
+  readonly triggerSpan: LspTextSpan;
+}
+
+export class LspRenameInfoFailure extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.canRenameFailure = false;
+    this.localizedErrorMessage = unpackString(global.es2panda._getRenameFailureLocalizedErrorMessage(peer));
+  }
+  readonly canRenameFailure: boolean;
+  readonly localizedErrorMessage: string;
+}
+
+export type LspRenameInfoType = LspRenameInfoSuccess | LspRenameInfoFailure;
+
+export class LspRenameLocation extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getRenameLocationFileName(peer));
+    this.start = global.es2panda._getRenameLocationStart(peer);
+    this.end = global.es2panda._getRenameLocationEnd(peer);
+    this.line = global.es2panda._getRenameLocationLine(peer);
+    this.prefixText = unpackString(global.es2panda._getRenameLocationPrefixText(peer));
+    this.suffixText = unpackString(global.es2panda._getRenameLocationSuffixText(peer));
+  }
+  readonly fileName: string;
+  readonly start: number;
+  readonly end: number;
+  readonly line: number;
+  readonly prefixText: string;
+  readonly suffixText: string;
+}
