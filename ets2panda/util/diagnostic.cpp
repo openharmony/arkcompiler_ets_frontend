@@ -166,12 +166,12 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Declgen ets2ts error";
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
             return "Declgen ets2ts warning";
+        case DiagnosticType::ISOLATED_DECLGEN:
+            return "Isolated declgen error";
         case DiagnosticType::ARKTS_CONFIG_ERROR:
             return "ArkTS config error";
         case DiagnosticType::SUGGESTION:
             return "SUGGESTION";
-        case DiagnosticType::ISOLATED_DECLGEN:
-            return "Isolated declgen error";
         default:
             ES2PANDA_UNREACHABLE();
     }

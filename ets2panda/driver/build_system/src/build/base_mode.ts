@@ -194,6 +194,7 @@ export abstract class BaseMode {
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
+        false,
         false
       ); // Generate 1.0 declaration files & 1.0 glue code
       this.logger.printInfo('declaration files generated');

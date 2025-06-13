@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-#include "checker/IsolatedDeclgenChecker.h"
+#include "isolatedDeclgenChecker.h"
+
+#include "es2panda.h"
 #include "clang.h"
 #include "utils/logger.h"
 
-namespace ark::es2panda::checker {
+namespace ark::es2panda::declgen {
 using AstNodePtr = ir::AstNode *;
 
 void IsolatedDeclgenChecker::LogError(const diagnostic::DiagnosticKind &diagnostic,
@@ -27,23 +29,28 @@ void IsolatedDeclgenChecker::LogError(const diagnostic::DiagnosticKind &diagnost
     diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
+static bool IsUnionTypeWithError(const checker::Type *type)
+{
+    if (type == nullptr || !type->IsUnionType()) {
+        return false;
+    }
+
+    return type->ToString().find(ERROR_TYPE) != std::string::npos;
+}
+
 void IsolatedDeclgenChecker::Check(ir::ClassProperty *ast)
 {
     if (ast->Parent()->IsAnnotationUsage()) {
         return;
     }
-    if (ast->TypeAnnotation() == nullptr) {
-        LogError(diagnostic::PROPERTY_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL, {}, ast->Start());
+    if (ast->IsPrivate()) {
+        return;
     }
-}
-
-void IsolatedDeclgenChecker::Check(ir::ObjectExpression *ast)
-{
-    for (auto property : ast->Properties()) {
-        if (property->IsSpreadElement()) {
-            LogError(diagnostic::OBJECTS_THAT_CONTAIN_SPREAD_ASSIGNMENTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {},
-                     property->Start());
-        }
+    if (ast->TypeAnnotation() != nullptr) {
+        return;
+    }
+    if (ast->TsType()->IsTypeError() || IsUnionTypeWithError(ast->TsType())) {
+        LogError(diagnostic::PROPERTY_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL, {}, ast->Start());
     }
 }
 
@@ -76,9 +83,30 @@ void IsolatedDeclgenChecker::Check(ir::ArrayExpression *ast)
     }
 }
 
+static std::string GetETSTypeReferenceName(ir::ETSTypeReference *typeRef)
+{
+    if (typeRef == nullptr) {
+        return "";
+    }
+    auto *part = typeRef->Part();
+    if (part == nullptr) {
+        return "";
+    }
+    if (part->Name()->IsIdentifier()) {
+        return part->Name()->AsIdentifier()->Name().Mutf8();
+    }
+    if (part->Name()->IsTSQualifiedName()) {
+        return part->Name()->AsTSQualifiedName()->Name().Mutf8();
+    }
+    return "";
+}
+
 void IsolatedDeclgenChecker::Check(ir::ETSParameterExpression *ast)
 {
-    if (ast->TypeAnnotation() == nullptr) {
+    if (ast->TypeAnnotation() != nullptr) {
+        return;
+    }
+    if (ast->TsType()->IsTypeError() || IsUnionTypeWithError(ast->TsType())) {
         LogError(diagnostic::PARAMETER_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL, {}, ast->Start());
     }
 }
@@ -87,57 +115,57 @@ void IsolatedDeclgenChecker::Check(ir::ExportDefaultDeclaration *ast)
 {
     auto *decl = ast->Decl();
     if (decl == nullptr) {
-        LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+        LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         return;
     }
     if (decl->IsClassDeclaration()) {
         auto *classDecl = decl->AsClassDeclaration();
         if (classDecl == nullptr) {
-            LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+            LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         }
         return;
     }
     if (decl->IsTSInterfaceDeclaration()) {
         auto *interfaceDecl = decl->AsTSInterfaceDeclaration();
         if (interfaceDecl == nullptr) {
-            LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+            LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         }
         return;
     }
     if (decl->IsTSEnumDeclaration()) {
         auto *enumDecl = decl->AsTSEnumDeclaration();
         if (enumDecl == nullptr) {
-            LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+            LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         }
         return;
     }
     if (decl->IsFunctionDeclaration()) {
         auto *funcDecl = decl->AsFunctionDeclaration();
         if (funcDecl == nullptr) {
-            LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+            LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         }
         return;
     }
     if (decl->IsClassProperty()) {
         auto *classProperty = decl->AsClassProperty();
         if (classProperty == nullptr) {
-            LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+            LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
         }
         return;
     }
-    LogError(diagnostic::DEFAULT_EXPORTS__CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
+    LogError(diagnostic::DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL, {}, ast->Start());
 }
 
-std::string GetLiteralType(const ir::Literal *literal)
+static std::string GetLiteralType(const ir::Literal *literal)
 {
     if (literal->IsStringLiteral()) {
-        return "String";
+        return "string";
     }
     if (literal->IsNumberLiteral()) {
-        return "Number";
+        return "number";
     }
     if (literal->IsBooleanLiteral()) {
-        return "Boolean";
+        return "boolean";
     }
     return "";
 }
@@ -170,15 +198,8 @@ std::string IsolatedDeclgenChecker::ProcessIdentifierArgument(ir::Identifier *id
     }
 
     if (decl->IsLetOrConstDecl()) {
-        return decl->Node()
-            ->AsClassProperty()
-            ->TypeAnnotation()
-            ->AsETSTypeReference()
-            ->Part()
-            ->Name()
-            ->AsIdentifier()
-            ->Name()
-            .Mutf8();
+        auto *typeAnnotationRef = decl->Node()->AsClassProperty()->TypeAnnotation()->AsETSTypeReference();
+        return GetETSTypeReferenceName(typeAnnotationRef);
     }
     LogError(diagnostic::FUNCTION_MUST_HAVE_AN_EXPLICIT_RETURN_TYPE_ANNOTATION_WITH_ISOLATED_DECL, {},
              returnStatement->Start());
@@ -206,7 +227,7 @@ std::string IsolatedDeclgenChecker::ProcessNewClassInstanceExpressionArgument(
                  returnStatement->Start());
         return "";
     }
-    return classType->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
+    return GetETSTypeReferenceName(classType->AsETSTypeReference());
 }
 
 std::string IsolatedDeclgenChecker::InferReturnTypeForArgument(ir::ReturnStatement *returnStatement)
@@ -281,9 +302,9 @@ std::string IsolatedDeclgenChecker::Check(ir::ScriptFunction *ast)
     return returnTypeStr;
 }
 
-void IsolatedDeclgenChecker::CheckBeforeChecker()
+void IsolatedDeclgenChecker::Check()
 {
-    program_.Ast()->TransformChildrenRecursively(
+    const_cast<parser::Program &>(program_).Ast()->TransformChildrenRecursively(
         [&](ir::AstNode *ast) -> AstNodePtr {
             if (ast->IsClassProperty()) {
                 Check(ast->AsClassProperty());
@@ -300,10 +321,6 @@ void IsolatedDeclgenChecker::CheckBeforeChecker()
                 return ast;
             }
 
-            if (ast->IsObjectExpression()) {
-                Check(ast->AsObjectExpression());
-                return ast;
-            }
             if (ast->IsExportDefaultDeclaration()) {
                 Check(ast->AsExportDefaultDeclaration());
                 return ast;
@@ -311,31 +328,6 @@ void IsolatedDeclgenChecker::CheckBeforeChecker()
 
             return ast;
         },
-        "CheckIsolatedDeclBeforeChecker");
+        "CheckIsolatedDecl");
 }
-
-void IsolatedDeclgenChecker::CheckAfterChecker()
-{
-    program_.Ast()->TransformChildrenRecursively(
-        [&](ir::AstNode *ast) -> AstNodePtr {
-            if (!ast->IsScriptFunction()) {
-                return ast;
-            }
-
-            auto *scriptFunction = ast->AsScriptFunction();
-            auto *returnType = scriptFunction->Signature()->ReturnType();
-            if (returnType == nullptr) {
-                return ast;
-            }
-            std::string returnTypeStr = Check(scriptFunction);
-            if (returnType->ToString().find(ERROR_TYPE) == std::string::npos) {
-                scriptFunction->SetIsolatedDeclgenReturnType(returnType->ToString());
-                return ast;
-            }
-            scriptFunction->SetIsolatedDeclgenReturnType(returnTypeStr);
-
-            return ast;
-        },
-        "CheckIsolatedDeclAfterChecker");
-}
-}  // namespace ark::es2panda::checker
+}  // namespace ark::es2panda::declgen

@@ -137,10 +137,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident)
         return;
     }
 
-    if (!GetContext()->config->options->IsGenerateDeclEnableIsolated()) {
-        ThrowUnresolvableType(ident->Start(), name);
-    }
-
+    ThrowUnresolvableType(ident->Start(), name);
     CreateDummyVariable(this, ident);
 }
 
@@ -953,10 +950,8 @@ varbinder::Variable *ETSBinder::FindStaticBinding(Span<parser::Program *const> r
     if (result != nullptr) {
         return result;
     }
-    if (!GetContext()->config->options->IsGenerateDeclEnableIsolated()) {
-        ThrowError(importPath->Start(), diagnostic::DEFAULT_IMPORT_NOT_FOUND);
-    }
 
+    ThrowError(importPath->Start(), diagnostic::DEFAULT_IMPORT_NOT_FOUND);
     return nullptr;
 }
 

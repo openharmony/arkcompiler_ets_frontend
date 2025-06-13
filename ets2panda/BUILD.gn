@@ -59,7 +59,6 @@ libes2panda_sources = [
   "checker/ETSAnalyzerHelpers.cpp",
   "checker/ETSAnalyzerUnreachable.cpp",
   "checker/ETSchecker.cpp",
-  "checker/IsolatedDeclgenChecker.cpp",
   "checker/JSchecker.cpp",
   "checker/TSAnalyzer.cpp",
   "checker/TSAnalyzerUnreachable.cpp",
@@ -1092,6 +1091,7 @@ ark_gen("gen") {
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 libes2panda_public_sources = [
+  "declgen_ets2ts/isolatedDeclgenChecker.cpp",
   "declgen_ets2ts/declgenEts2Ts.cpp",
   "public/${LIB_NAME}.cpp",
   "util/generateBin.cpp",
@@ -1240,9 +1240,9 @@ ark_gen("es2panda_diagnostic_gen") {
     "util/diagnostic/semantic.yaml",
     "util/diagnostic/warning.yaml",
     "util/diagnostic/fatal.yaml",
-    "util/diagnostic/isolated_declgen.yaml",
     "declgen_ets2ts/declgen_ets2ts_error.yaml",
     "declgen_ets2ts/declgen_ets2ts_warning.yaml",
+    "declgen_ets2ts/isolated_declgen.yaml",
     "util/diagnostic/arktsconfig_error.yaml",
   ]
   template_files = [ "diagnostic.h.erb" ]

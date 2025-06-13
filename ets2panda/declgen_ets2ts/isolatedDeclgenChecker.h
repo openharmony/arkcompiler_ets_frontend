@@ -19,10 +19,10 @@
 #include "macros.h"
 #include "checker/checker.h"
 
-namespace ark::es2panda::checker {
+namespace ark::es2panda::declgen {
 class IsolatedDeclgenChecker {
 public:
-    explicit IsolatedDeclgenChecker(util::DiagnosticEngine &diagnosticEngine, parser::Program &program)
+    explicit IsolatedDeclgenChecker(util::DiagnosticEngine &diagnosticEngine, const parser::Program &program)
         : diagnosticEngine_(diagnosticEngine), program_(program)
     {
     }
@@ -31,18 +31,16 @@ public:
     NO_COPY_SEMANTIC(IsolatedDeclgenChecker);
     NO_MOVE_SEMANTIC(IsolatedDeclgenChecker);
 
-    void CheckBeforeChecker();
-    void CheckAfterChecker();
-
-    void Check(ir::ClassProperty *ast);
-    void Check(ir::ObjectExpression *ast);
-    void Check(ir::ArrayExpression *ast);
-    void Check(ir::ETSParameterExpression *ast);
-    void Check(ir::ExportDefaultDeclaration *ast);
+    void Check();
 
     std::string Check(ir::ScriptFunction *ast);
 
 private:
+    void Check(ir::ClassProperty *ast);
+    void Check(ir::ArrayExpression *ast);
+    void Check(ir::ETSParameterExpression *ast);
+    void Check(ir::ExportDefaultDeclaration *ast);
+
     std::string InferReturnTypeForArgument(ir::ReturnStatement *returnStatement);
 
     std::string ProcessLiteralArgument(ir::Literal *literal, ir::ReturnStatement *returnStatement);
@@ -56,8 +54,8 @@ private:
 
 private:
     util::DiagnosticEngine &diagnosticEngine_;
-    parser::Program &program_;
+    const parser::Program &program_;
 };
-}  // namespace ark::es2panda::checker
+}  // namespace ark::es2panda::declgen
 
 #endif  // ES2PANDA_CHECKER_ISOLATED_DECLGEN_CHECKER_H

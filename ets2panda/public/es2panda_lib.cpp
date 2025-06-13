@@ -360,7 +360,6 @@ static void InitializeContext(Context *res)
     res->parser->SetContext(res);
 
     res->PushChecker(res->allocator->New<checker::ETSChecker>(res->allocator, *res->diagnosticEngine, res->allocator));
-    res->isolatedDeclgenChecker = new checker::IsolatedDeclgenChecker(*res->diagnosticEngine, *(res->parserProgram));
     res->PushAnalyzer(res->allocator->New<checker::ETSAnalyzer>(res->GetChecker()));
     res->GetChecker()->SetAnalyzer(res->GetAnalyzer());
 
@@ -1163,7 +1162,8 @@ extern "C" es2panda_AstNode **AllDeclarationsByNameFromProgram([[maybe_unused]] 
 
 extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2panda_Context *ctx,
                                                                          const char *outputDeclEts,
-                                                                         const char *outputEts, bool exportAll)
+                                                                         const char *outputEts, bool exportAll,
+                                                                         bool isolated)
 {
     auto *ctxImpl = reinterpret_cast<Context *>(ctx);
     auto *checker = reinterpret_cast<ark::es2panda::checker::ETSChecker *>(ctxImpl->GetChecker());
@@ -1172,6 +1172,7 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
     declgenOptions.exportAll = exportAll;
     declgenOptions.outputDeclEts = outputDeclEts ? outputDeclEts : "";
     declgenOptions.outputEts = outputEts ? outputEts : "";
+    declgenOptions.isolated = isolated;
 
     return ark::es2panda::declgen_ets2ts::GenerateTsDeclarations(checker, ctxImpl->parserProgram, declgenOptions) ? 0
                                                                                                                   : 1;
@@ -1185,7 +1186,7 @@ extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2
     if (ctxImpl->state != ES2PANDA_STATE_CHECKED) {
         return 1;
     }
-    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath, false);
+    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
 
     return ctxImpl->diagnosticEngine->IsAnyError() ? 1 : 0;
 }

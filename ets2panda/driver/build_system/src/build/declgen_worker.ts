@@ -95,6 +95,7 @@ process.on('message', (message: {
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
+        false,
         false
       ); // Generate 1.0 declaration files & 1.0 glue code
       logger.printInfo('declaration files generated');

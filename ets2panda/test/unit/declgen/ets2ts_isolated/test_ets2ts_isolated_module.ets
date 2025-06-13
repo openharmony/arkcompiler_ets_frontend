@@ -12,15 +12,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+import * as np from "./test_ets2ts_isolated_enum.ets"
+import {B, C0 as C} from "./test_ets2ts_isolated_enum.ets"
 
-import A from "./infer_function_return_type_with_literal.ets";
+export let b: np.A = new np.A
 
-import B from "./infer_function_return_type_with_literal.ets";
+export default let d: int = 1
 
-import C from "./infer_function_return_type_with_literal.ets";
-
-export declare let b: A;
-
-export default declare let d: int;
-
-export declare function foo(a: int, c: C): A | Array<Boolean> | Array<Number> | Array<String> | B | Number | String;
+export function foo(a: int, c: C) 
+{
+    if (a < 0) {
+        return 1;
+    }
+    if (a == 0) {
+        return b;
+    }
+    if (a == 1) {
+        return new B;
+    }
+    if (a == 2) {
+        return ["hello", "arkts"];
+    }
+    if (a == 3) {
+        return [0, 1, 2];
+    }
+    if (a == 4) {
+        return [true, false, false, true];
+    }
+    
+    return "hello";
+}

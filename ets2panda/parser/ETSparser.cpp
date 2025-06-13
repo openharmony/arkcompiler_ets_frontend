@@ -140,11 +140,9 @@ void ETSParser::ParseProgram(ScriptKind kind)
     if ((GetContext().Status() & ParserStatus::IN_PACKAGE) != 0) {
         GetContext().Status() &= ~ParserStatus::IN_PACKAGE;
     }
-
-    if (!GetOptions().IsGenerateDeclEnableIsolated()) {
-        AddExternalSource(ParseSources(true));
-    }
-
+#ifndef ENABLE_ISOLATED_DECLGEN
+    AddExternalSource(ParseSources(true));
+#endif
     GetProgram()->SetAst(script);
 }
 

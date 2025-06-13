@@ -16,6 +16,7 @@ import("//build/ohos.gni")
 
 ohos_executable("declgen_ets2ts") {
   sources = [
+    "isolatedDeclgenChecker.cpp",
     "declgenEts2Ts.cpp",
     "main.cpp",
   ]
