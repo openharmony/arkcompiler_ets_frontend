@@ -79,6 +79,22 @@ export interface ArkTS {
   Es2pandaContextState: typeof Es2pandaContextState;
   MemInitialize: Function;
   CreateGlobalContext: Function;
+  AstNode: AstNode;
+  ETSImportDeclaration: ETSImportDeclaration;
+  isEtsScript: Function;
+  isImportSpecifier: Function;
+  isETSImportDeclaration: Function;
+  factory: {
+    createEtsScript: Function;
+    createImportDeclaration: Function;
+    createImportSpecifier: Function;
+    createLiteral: Function;
+    createIdentifier: Function;
+    updateEtsScript: Function;
+    createStringLiteral: Function;
+  };
+  Es2pandaImportKinds: typeof Es2pandaImportKinds;
+  Es2pandaImportFlags: typeof Es2pandaImportFlags;
 }
 
 export enum Es2pandaContextState {
@@ -232,4 +248,37 @@ export type KPointer = number | bigint;
 export interface AliasConfig {
   originalAPIName: string;
   isStatic: boolean;
+}
+
+export interface AstNode {
+  kind: string;
+  statements: AstNode[];
+  source: LiteralNode;
+  specifiers: ImportSpecifierNode[];
+}
+
+export interface LiteralNode {
+  str: string;
+  clone: Function;
+}
+
+export interface IdentifierNode {
+  name: string;
+}
+
+export interface ImportSpecifierNode {
+  imported?: IdentifierNode;
+}
+
+export interface ETSImportDeclaration extends AstNode {
+  specifiers: ImportSpecifierNode[];
+  source: LiteralNode;
+}
+
+export enum Es2pandaImportKinds {
+  IMPORT_KINDS_VALUE = 0,
+}
+
+export enum Es2pandaImportFlags {
+  IMPORT_FLAGS_NONE,
 }

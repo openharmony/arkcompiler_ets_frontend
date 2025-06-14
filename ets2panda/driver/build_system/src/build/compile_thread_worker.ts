@@ -37,6 +37,7 @@ import {
   Logger
 } from '../logger';
 import { ErrorCode } from '../error_code';
+import { KitImportTransformer } from '../plugins/KitImportTransformer';
 
 const { workerId } = workerData;
 
@@ -72,7 +73,12 @@ function compileAbc(jobInfo: JobInfo): void {
     PluginDriver.getInstance().getPluginContext().setContextPtr(context);
 
     arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, context);
-
+    if (config.aliasConfig?.size > 0) {
+      // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
+      let ast = arkts.EtsScript.fromContext();
+      let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program, config.buildSdkPath, config.aliasConfig).transform(ast);
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
+    }
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
     arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, context);

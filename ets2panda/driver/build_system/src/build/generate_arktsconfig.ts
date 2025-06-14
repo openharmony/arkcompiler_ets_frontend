@@ -286,14 +286,88 @@ export class ArkTSConfigGenerator {
 
   private processAlias(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
     const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(moduleInfo.packageName);
+
     aliasForPkg?.forEach((aliasConfig, aliasName) => {
-      // treat kit as 1.2,then do kit transform in plugin and reparse
-      if (aliasConfig.isStatic || aliasConfig.originalAPIName.startsWith('@kit')) {
-        this.processStaticAlias(aliasName, aliasConfig);
-      } else {
-        this.processDynamicAlias(aliasName, aliasConfig, dynamicPathSection);
+        if (aliasConfig.isStatic || aliasConfig.originalAPIName.startsWith('@kit')) {
+            this.processStaticAlias(aliasName, aliasConfig);
+        } else {
+            this.processDynamicAlias(aliasName, aliasConfig, dynamicPathSection);
+        }
+    });
+
+    this.dynamicSDKPaths.forEach(basePath => {
+        if (fs.existsSync(basePath)) {
+            this.traverseDynamicPath(basePath, '', false, dynamicPathSection);
+        } else {
+            this.logger.printWarn(`sdk path ${basePath} not exist.`);
+        }
+    });
+  }
+
+  private traverseDynamicPath(
+      currentDir: string,
+      relativePath: string,
+      isExcludedDir: boolean,
+      dynamicPathSection: Record<string, DynamicPathItem>,
+      allowedExtensions: string[] = ['.d.ets']
+  ): void {
+      const items = fs.readdirSync(currentDir);
+
+      for (const item of items) {
+          const itemPath = path.join(currentDir, item);
+          const stat = fs.statSync(itemPath);
+
+          if (stat.isFile()) {
+              if (this.isAllowedExtension(item, allowedExtensions)) {
+                  this.processDynamicFile(itemPath, item, relativePath, isExcludedDir, dynamicPathSection);
+              }
+              continue;
+          }
+
+          if (stat.isDirectory()) {
+              const isRuntimeAPI = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
+              const newRelativePath = isRuntimeAPI ? '' : (relativePath ? `${relativePath}.${item}` : item);
+              this.traverseDynamicPath(
+                  path.resolve(currentDir, item),
+                  newRelativePath,
+                  isExcludedDir || isRuntimeAPI,
+                  dynamicPathSection,
+                  allowedExtensions
+              );
+          }
       }
-    })
+  }
+
+  private isAllowedExtension(fileName: string, allowedExtensions: string[]): boolean {
+    return allowedExtensions.some(ext => fileName.endsWith(ext));
+  }
+
+  private isValidAPIFile(fileName: string): boolean {
+    const pattern = new RegExp(`^@(${sdkConfigPrefix})\\..+\.d\.ets$`, 'i');
+    return pattern.test(fileName);
+  }
+
+  private buildDynamicKey(baseName: string, relativePath: string, isExcludedDir: boolean): string {
+    return 'default' + (isExcludedDir ? baseName : (relativePath ? `${relativePath}.${baseName}` : baseName));
+  }
+
+  private processDynamicFile(
+    filePath: string,
+    fileName: string,
+    relativePath: string,
+    isExcludedDir: boolean,
+    dynamicPathSection: Record<string, DynamicPathItem>
+  ): void {
+    if (!this.isValidAPIFile(fileName)) return;
+
+    const baseName = path.basename(fileName, '.d.ets');
+    const key = this.buildDynamicKey(baseName, relativePath, isExcludedDir);
+
+    dynamicPathSection[key] = {
+        language: 'js',
+        declPath: filePath,
+        ohmUrl: getOhmurlByApi(baseName)
+    };
   }
 
   private processStaticAlias(aliasName: string, aliasConfig: AliasConfig) {
