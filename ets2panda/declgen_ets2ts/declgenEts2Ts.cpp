@@ -110,7 +110,6 @@ void TSDeclGen::ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnota
 {
     if (typeAnnotation->IsETSTypeReference()) {
         ProcessETSTypeReferenceDependencies(typeAnnotation->AsETSTypeReference());
-        return;
     } else if (typeAnnotation->IsETSUnionType()) {
         GenSeparated(
             typeAnnotation->AsETSUnionType()->Types(),
@@ -127,10 +126,9 @@ void TSDeclGen::ProcessETSTypeReferenceDependencies(const ir::ETSTypeReference *
         GenSeparated(
             part->TypeParams()->Params(), [this](ir::TypeNode *param) { ProcessTypeAnnotationDependencies(param); },
             "");
-        return;
     } else if (part->Name()->IsTSQualifiedName() && part->Name()->AsTSQualifiedName()->Name() != nullptr) {
         const auto qualifiedName = part->Name()->AsTSQualifiedName()->Name().Mutf8();
-        std::istringstream stream(qualifiedName.data());
+        std::istringstream stream(qualifiedName);
         std::string firstSegment;
         if (std::getline(stream, firstSegment, '.')) {
             importSet_.insert(firstSegment);
@@ -650,7 +648,7 @@ void TSDeclGen::SplitUnionTypes(std::string &unionTypeString)
     std::string currentType;
 
     for (char c : unionTypeString) {
-        if (std::isspace(c)) {
+        if (std::isspace(c) != 0) {
             continue;
         }
         if (c == '|') {
@@ -1184,7 +1182,7 @@ bool TSDeclGen::ProcessTSQualifiedName(const ir::ETSTypeReference *typeReference
     if (typeReference->Part()->Name()->IsTSQualifiedName() &&
         typeReference->Part()->Name()->AsTSQualifiedName()->Name() != nullptr) {
         const auto qualifiedName = typeReference->Part()->Name()->AsTSQualifiedName()->Name().Mutf8();
-        std::istringstream stream(qualifiedName.data());
+        std::istringstream stream(qualifiedName);
         std::string segment;
         while (std::getline(stream, segment, '.')) {
             importSet_.insert(segment);
