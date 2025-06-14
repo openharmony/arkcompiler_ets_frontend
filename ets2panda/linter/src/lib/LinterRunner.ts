@@ -41,6 +41,7 @@ import { compileLintOptions } from './ts-compiler/Compiler';
 import * as qEd from './autofixes/QuasiEditor';
 import { ProjectStatistics } from './statistics/ProjectStatistics';
 import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
+import { processSyncErr } from '../lib/utils/functions/ProcessWrite';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -129,6 +130,7 @@ function lintFiles(
 
   TypeScriptLinter.initGlobals();
   InteropTypescriptLinter.initGlobals();
+  let fileCount: number = 0;
 
   for (const srcFile of srcFiles) {
     const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
@@ -138,6 +140,10 @@ function lintFiles(
     const problems = linter.problemsInfos;
     problemsInfos.set(path.normalize(srcFile.fileName), [...problems]);
     projectStats.fileStats.push(linter.fileStats);
+    fileCount = fileCount + 1;
+    if (options.ideInteractive) {
+      processSyncErr(`{"content":"${srcFile.fileName}","messageType":1,"indicator":${fileCount / srcFiles.length}}\n`);
+    }
   }
 
   return {

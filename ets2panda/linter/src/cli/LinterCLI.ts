@@ -27,6 +27,7 @@ import { logStatistics } from '../lib/statistics/StatisticsLogger';
 import { arkts2Rules, onlyArkts2SyntaxRules } from '../lib/utils/consts/ArkTS2Rules';
 import { MigrationTool } from 'homecheck';
 import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
+import { processSyncErr, processSyncOut } from '../lib/utils/functions/ProcessWrite';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -129,22 +130,6 @@ async function generateReportFile(reportData, reportPath?: string): Promise<void
   } catch (error) {
     console.error('Error generating report file:', error);
   }
-}
-
-async function processSyncOut(message: string): Promise<void> {
-  await new Promise((resolve) => {
-    process.stdout.write(message, () => {
-      resolve('success');
-    });
-  });
-}
-
-async function processSyncErr(message: string): Promise<void> {
-  await new Promise((resolve) => {
-    process.stderr.write(message, () => {
-      resolve('success');
-    });
-  });
 }
 
 function getTempFileName(): string {
