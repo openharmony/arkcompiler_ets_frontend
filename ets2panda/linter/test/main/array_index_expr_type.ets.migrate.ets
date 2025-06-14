@@ -83,3 +83,7 @@ arr[a] = 1.0;
 arr[b] = 1.0;
 arr[c] = 1.0;
 arr[d] = 1.0;
+
+let test: number = 1.0;
+arr[1 as int];
+arr[test as int];

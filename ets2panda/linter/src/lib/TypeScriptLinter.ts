@@ -4195,7 +4195,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
     const validStringLiteralTypes = [
       STRINGLITERAL_INT,
       STRINGLITERAL_BYTE,
@@ -4206,19 +4205,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const argTypeString = this.tsTypeChecker.typeToString(argType);
 
     if (this.tsUtils.isNumberLikeType(argType)) {
-      this.handleNumericArgument(argExpr, expr.argumentExpression, argType);
+      this.handleNumericArgument(expr.argumentExpression, argType);
     } else if (!validStringLiteralTypes.includes(argTypeString)) {
-      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+      this.incrementCounters(expr.argumentExpression, FaultID.ArrayIndexExprType);
     }
   }
 
-  private static getUnwrappedArgumentExpression(argExpr: ts.Expression): ts.Expression {
-    return argExpr.kind === ts.SyntaxKind.AsExpression ? (argExpr as ts.AsExpression).expression : argExpr;
-  }
-
-  private handleNumericArgument(argExpr: ts.Expression, asExpr: ts.Expression, argType: ts.Type): void {
+  private handleNumericArgument(argExpr: ts.Expression, argType: ts.Type): void {
     const isNumericLiteral = ts.isNumericLiteral(argExpr);
-    const isAsExpression = asExpr.kind === ts.SyntaxKind.AsExpression;
     const argText = argExpr.getText();
     const argValue = Number(argText);
 
@@ -4227,7 +4221,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const containsDot = argText.includes('.');
 
       if (!isInteger || containsDot) {
-        const autofix = this.autofixer?.fixArrayIndexExprType(isAsExpression ? asExpr : argExpr);
+        const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
