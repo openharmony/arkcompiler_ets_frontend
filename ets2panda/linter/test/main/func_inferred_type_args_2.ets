@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AttributeUpdater } from '@kit.ArkUI';
 
 const irreparableArr = new Array();
 let repairableArr: Array<number> = new Array();
@@ -77,3 +78,19 @@ const testMap: Map<string, number> = new Map([
   ['123', 1], // my comment 1
   ['sfe', 2] // my comment 2
 ]);
+let a : Array<string> = new Array();
+function foo(arr:Array<string>) { }
+foo(new Array()); 
+@Observed
+export class AppIconCloneBadgeVm {
+  @Track public cloneBadgeModifier: AttributeUpdater<CommonAttribute> = new AttributeUpdater<CommonAttribute>();
+}
+class B {}
+class C {}
+class A <T,U = B>{
+  t:T;
+  constructor(t:T) {
+    this.t = t;
+  }
+}
+new A<C>(new C())

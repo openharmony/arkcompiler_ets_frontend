@@ -1026,12 +1026,32 @@
         },
         {
             "line": 88,
+            "column": 1,
+            "endLine": 88,
+            "endColumn": 17,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
             "column": 5,
             "endLine": 88,
             "endColumn": 16,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 1,
+            "endLine": 89,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

@@ -4850,9 +4850,28 @@ export class Autofixer {
     return fixes;
   }
 
+  private fixGenericCallNoTypeArgsWithContextualType(node: ts.NewExpression): Autofix[] | undefined {
+    const contextualType = this.typeChecker.getContextualType(node);
+    if (!contextualType) {
+      return undefined;
+    }
+
+    const typeArgs = Autofixer.getTypeArgumentsFromType(contextualType);
+    if (typeArgs.length === 0) {
+      return undefined;
+    }
+    const reference = typeArgs.map((arg) => {
+      return ts.factory.createTypeReferenceNode(this.typeChecker.typeToString(arg));
+    });
+    return this.generateGenericTypeArgumentsAutofix(node, reference);
+  }
+
   fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
     const typeNode = this.getTypeNodeForNewExpression(node);
-    if (!typeNode || !ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
+    if (!typeNode) {
+      return this.fixGenericCallNoTypeArgsWithContextualType(node);
+    }
+    if (!ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
       return undefined;
     }
 
@@ -4866,6 +4885,38 @@ export class Autofixer {
     // Insert the type arguments immediately after the constructor name
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+  }
+
+  private generateGenericTypeArgumentsAutofix(
+    node: ts.NewExpression,
+    typeArgs: ts.TypeReferenceNode[]
+  ): Autofix[] | undefined {
+    const srcFile = node.getSourceFile();
+    const identifier = node.expression;
+    const args = node.arguments;
+    const hasValidArgs = typeArgs.some((arg) => {
+      return arg?.typeName && ts.isIdentifier(arg.typeName);
+    });
+    if (!hasValidArgs) {
+      return undefined;
+    }
+    const hasAnyType = typeArgs.some((arg) => {
+      return ts.isIdentifier(arg?.typeName) && arg.typeName.text === 'any';
+    });
+    if (hasAnyType) {
+      return undefined;
+    }
+    const newExpression = ts.factory.createNewExpression(identifier, typeArgs, args);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  static getTypeArgumentsFromType(type: ts.Type): ts.Type[] {
+    const typeReference = type as ts.TypeReference;
+    if (typeReference.typeArguments) {
+      return [...typeReference.typeArguments];
+    }
+    return [];
   }
 
   private getTypeNodeForNewExpression(node: ts.NewExpression): ts.TypeNode | undefined {
@@ -5001,22 +5052,26 @@ export class Autofixer {
   fixNumericLiteralIntToNumber(node: ts.NumericLiteral): Autofix[] | undefined {
     void this;
     let replacementText = node.getText();
-    let parent = node.parent;
+    const parent = node.parent;
 
     if (ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.MinusToken) {
       replacementText = `-${replacementText}.0`;
-      return [{
-        start: parent.getStart(),
-        end: node.getEnd(),
-        replacementText
-      }];
+      return [
+        {
+          start: parent.getStart(),
+          end: node.getEnd(),
+          replacementText
+        }
+      ];
     }
 
-    return [{
-      start: node.getStart(),
-      end: node.getEnd(),
-      replacementText: `${replacementText}.0`
-    }];
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: `${replacementText}.0`
+      }
+    ];
   }
 
   fixPropDecorator(node: ts.Decorator, decoratorName: string): Autofix[] {

@@ -4709,29 +4709,92 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const resolvedTypeArgs = signDecl.typeArguments;
-    const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
+    const providedTypeArgs = callLikeExpr.typeArguments;
+    const startTypeArg = providedTypeArgs?.length ?? 0;
+    let shouldReportError = startTypeArg !== resolvedTypeArgs.length;
     if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
-      if (startTypeArg !== resolvedTypeArgs.length) {
+      shouldReportError = this.shouldReportGenericTypeArgsError(
+        callLikeExpr,
+        resolvedTypeArgs,
+        providedTypeArgs,
+        startTypeArg,
+        shouldReportError
+      );
+      if (shouldReportError) {
         const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr);
         this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       }
     } else {
-      for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
-        const typeNode = resolvedTypeArgs[i];
+      this.checkForUnknownTypeInNonArkTS2(callLikeExpr, resolvedTypeArgs, startTypeArg);
+    }
+  }
 
-        /*
-         * if compiler infers 'unknown' type there are 2 possible cases:
-         *   1. Compiler unable to infer type from arguments and use 'unknown'
-         *   2. Compiler infer 'unknown' from arguments
-         * We report error in both cases. It is ok because we cannot use 'unknown'
-         * in ArkTS and already have separate check for it.
-         */
-        if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
-          this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
-          break;
-        }
+  private checkForUnknownTypeInNonArkTS2(
+    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    resolvedTypeArgs: ts.NodeArray<ts.TypeNode>,
+    startTypeArg: number
+  ): void {
+    for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
+      const typeNode = resolvedTypeArgs[i];
+
+      /*
+       * if compiler infers 'unknown' type there are 2 possible cases:
+       *   1. Compiler unable to infer type from arguments and use 'unknown'
+       *   2. Compiler infer 'unknown' from arguments
+       * We report error in both cases. It is ok because we cannot use 'unknown'
+       * in ArkTS and already have separate check for it.
+       */
+      if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
+        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+        break;
       }
     }
+  }
+
+  private shouldReportGenericTypeArgsError(
+    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    resolvedTypeArgs: ts.NodeArray<ts.TypeNode>,
+    providedTypeArgs: ts.NodeArray<ts.TypeNode> | undefined,
+    startTypeArg: number,
+    initialErrorState: boolean
+  ): boolean {
+    const typeParameters = this.getOriginalTypeParameters(callLikeExpr);
+    if (!typeParameters || typeParameters.length === 0) {
+      return initialErrorState;
+    }
+    const optionalParamsCount = typeParameters.filter((param, index) => {
+      return param.default && (!providedTypeArgs || index >= providedTypeArgs.length);
+    }).length;
+    if (optionalParamsCount === 0) {
+      return initialErrorState;
+    }
+    return startTypeArg + optionalParamsCount !== resolvedTypeArgs.length;
+  }
+
+  private getOriginalTypeParameters(
+    callLikeExpr: ts.CallExpression | ts.NewExpression
+  ): ts.TypeParameterDeclaration[] | undefined {
+    const typeChecker = this.tsTypeChecker;
+    const expressionType = typeChecker.getTypeAtLocation(callLikeExpr.expression);
+    const declarations = expressionType.symbol?.declarations;
+    if (!declarations || declarations.length === 0) {
+      return undefined;
+    }
+    for (const decl of declarations) {
+      if (ts.isFunctionDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isMethodDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isClassDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isInterfaceDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+    }
+    return undefined;
   }
 
   private isNonGenericClass(expression: ts.NewExpression): boolean {
@@ -5228,9 +5291,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return false;
       }
 
-      const elements = importClause.namedBindings.elements.some(
-        (element) => { return element.name.text === ESLIB_SHAREDARRAYBUFFER; }
-      );
+      const elements = importClause.namedBindings.elements.some((element) => {
+        return element.name.text === ESLIB_SHAREDARRAYBUFFER;
+      });
       return elements;
     });
     if (isImported) {
@@ -9484,7 +9547,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     };
     const isStandardFloatFormat = (): boolean => {
       const text = node.getText();
-      return /\.\d*0+$/.test(text);
+      return (/\.\d*0+$/).test(text);
     };
     const isNoNeedFix =
       isInElementAccessExpression(node) ||
@@ -9585,7 +9648,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       };
     }
 
-    const analysis = this.analyzeStatementType( node, accessExpr, loopVarName, arraySym);
+    const analysis = this.analyzeStatementType(node, accessExpr, loopVarName, arraySym);
 
     return {
       isInSafeContext: true,
@@ -9602,11 +9665,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
     switch (node.kind) {
       case ts.SyntaxKind.ForStatement:
-        return this.analyzeForStatement(node as ts.ForStatement, accessExpr, loopVarName, arraySym);
+        return this.analyzeForStatement(node, accessExpr, loopVarName, arraySym);
       case ts.SyntaxKind.WhileStatement:
-        return this.analyzeWhileStatement(node as ts.WhileStatement, accessExpr, loopVarName, arraySym);
+        return this.analyzeWhileStatement(node, accessExpr, loopVarName, arraySym);
       case ts.SyntaxKind.IfStatement:
-        return this.analyzeIfStatement(node as ts.IfStatement, accessExpr, loopVarName, arraySym);
+        return this.analyzeIfStatement(node, accessExpr, loopVarName, arraySym);
       default:
         return { isValidBoundCheck: false, isVarModifiedBeforeAccess: false };
     }
@@ -9665,11 +9728,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return { isValidBoundCheck, isVarModifiedBeforeAccess };
   }
 
-  private checkBoundCondition(
-    condition: ts.Expression,
-    varName: string,
-    arraySym: ts.Symbol
-  ): boolean {
+  private checkBoundCondition(condition: ts.Expression, varName: string, arraySym: ts.Symbol): boolean {
     if (ts.isBinaryExpression(condition)) {
       const { left, right, operatorToken } = condition;
 
@@ -9691,8 +9750,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         }
       }
 
-      return this.checkBoundCondition(left, varName, arraySym) ||
-        this.checkBoundCondition(right, varName, arraySym);
+      return this.checkBoundCondition(left, varName, arraySym) || this.checkBoundCondition(right, varName, arraySym);
     }
 
     return false;
@@ -9794,12 +9852,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     varName: string,
     scopeStack: { shadowed: boolean; localVars: Set<string> }[]
   ): void {
-    if (ts.isVariableDeclaration(node) &&
-      ts.isIdentifier(node.name) &&
-      node.name.text === varName) {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === varName) {
       const parent = node.parent;
-      if (ts.isVariableDeclarationList(parent) &&
-        (parent.flags & ts.NodeFlags.Let || parent.flags & ts.NodeFlags.Const)) {
+      if (
+        ts.isVariableDeclarationList(parent) &&
+        (parent.flags & ts.NodeFlags.Let || parent.flags & ts.NodeFlags.Const)
+      ) {
         scopeStack[scopeStack.length - 1].localVars.add(varName);
       }
     }
@@ -9814,8 +9872,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     varName: string,
     scopeStack: { shadowed: boolean; localVars: Set<string> }[]
   ): boolean {
-    if (!ts.isBinaryExpression(node) ||
-      node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+    if (!ts.isBinaryExpression(node) || node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
       return false;
     }
 
@@ -9866,9 +9923,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return (
         (argType.flags & ts.TypeFlags.NumberLike) !== 0 ||
         argType.isUnionOrIntersection() &&
-        argType.types.some((t) => {
-          return t.flags & ts.TypeFlags.NumberLike;
-        })
+          argType.types.some((t) => {
+            return t.flags & ts.TypeFlags.NumberLike;
+          })
       );
     };
 
