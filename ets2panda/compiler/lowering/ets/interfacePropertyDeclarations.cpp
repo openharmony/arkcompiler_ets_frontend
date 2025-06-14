@@ -317,8 +317,11 @@ bool InterfacePropertyDeclarationsPhase::PerformForModule(public_lib::Context *c
         return ast;
     };
 
-    program->Ast()->TransformChildrenRecursively(handleInterfacePropertyDecl, Name());
-    program->Ast()->TransformChildrenRecursively(handleClassPropertyDecl, Name());
+    program->Ast()->TransformChildrenRecursively(
+        [handleClassPropertyDecl, handleInterfacePropertyDecl](ir::AstNode *const ast) {
+            return handleClassPropertyDecl(handleInterfacePropertyDecl(ast));
+        },
+        Name());
 
     return true;
 }

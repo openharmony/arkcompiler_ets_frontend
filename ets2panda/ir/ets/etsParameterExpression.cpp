@@ -280,6 +280,7 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
                             ? allocator->New<ETSParameterExpression>(identOrSpread, initializer, allocator)
                             : allocator->New<ETSParameterExpression>(identOrSpread, IsOptional(), allocator);
     ES2PANDA_ASSERT(identOrSpread != nullptr);
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     identOrSpread->SetParent(clone);
 
     if (initializer != nullptr) {

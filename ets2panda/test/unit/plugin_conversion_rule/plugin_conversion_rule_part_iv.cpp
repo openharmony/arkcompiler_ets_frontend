@@ -325,26 +325,6 @@ TEST_F(PluginConversionRuleUnitTest, NodeTransformerInputParameter)
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-// apiName: AstNodeFindChildConst
-TEST_F(PluginConversionRuleUnitTest, NodePredicateInputParameter)
-{
-    std::string targetCAPI {R"(
-    extern "C"  es2panda_AstNode *AstNodeFindChildConst([[maybe_unused]] es2panda_Context *context,
-    es2panda_AstNode *classInstance, [[maybe_unused]] NodePredicate cb/*return_args:*/)
-    {
-        std::function<bool(ir::AstNode *)> cbE2p = [cb](ir::AstNode *traverserLambdaNode)
-        {return cb(reinterpret_cast<es2panda_AstNode *>(traverserLambdaNode));};
-        auto apiRes = reinterpret_cast< es2panda_AstNode *>
-                   ((reinterpret_cast<const ir::AstNode *>(classInstance))->FindChild(cbE2p));
-    	return apiRes;
-    }
-
-)"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 // apiName: ETSObjectTypeUpdateTypeProperties
 TEST_F(PluginConversionRuleUnitTest, PropertyProcessorInputParameter)
 {

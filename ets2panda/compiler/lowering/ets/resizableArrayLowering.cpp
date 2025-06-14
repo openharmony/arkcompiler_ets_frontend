@@ -38,7 +38,7 @@ static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_li
 bool ResizableArrayConvert::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     bool insideAnnotdecl = false;
-    program->Ast()->TransformChildrenRecursively(
+    program->Ast()->PreTransformChildrenRecursively(
         [&insideAnnotdecl, ctx](ir::AstNode *node) -> AstNodePtr {
             if (node->IsAnnotationDeclaration()) {
                 ES2PANDA_ASSERT(!insideAnnotdecl);

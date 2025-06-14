@@ -122,7 +122,8 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
 
     for (const auto *var : paramScope->Params()) {
         func.params.emplace_back(PandasmTypeWithRank(var->TsType()), EXTENSION);
-        if (var->Declaration()->Node() == nullptr || !var->Declaration()->Node()->IsETSParameterExpression()) {
+        if (scriptFunc->IsExternal() || var->Declaration()->Node() == nullptr ||
+            !var->Declaration()->Node()->IsETSParameterExpression()) {
             continue;
         }
         func.params.back().GetOrCreateMetadata().SetAnnotations(emitter->GenCustomAnnotations(
@@ -144,7 +145,9 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
         accessFlags |= ACC_VARARGS;
     }
     func.metadata->SetAccessFlags(accessFlags);
-    func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), func.name));
+    if (!scriptFunc->IsExternal()) {
+        func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), func.name));
+    }
 
     return func;
 }
@@ -504,14 +507,9 @@ void ETSEmitter::GenGlobalArrayRecord(const checker::ETSArrayType *arrayType, ch
 void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external)
 {
     auto *baseType = interfaceDecl->TsType()->AsETSObjectType();
-
     auto interfaceRecord = pandasm::Record(interfaceDecl->InternalName().Mutf8(), Program()->lang);
-    if (external) {
-        interfaceRecord.metadata->SetAttribute(Signatures::EXTERNAL);
-    }
 
     uint32_t accessFlags = ACC_PUBLIC | ACC_ABSTRACT | ACC_INTERFACE;
-
     if (interfaceDecl->IsStatic()) {
         accessFlags |= ACC_STATIC;
     }
@@ -520,13 +518,6 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
     interfaceRecord.metadata->SetAccessFlags(accessFlags);
     interfaceRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
     interfaceRecord.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE, Signatures::BUILTIN_OBJECT);
-
-    for (auto *it : baseType->Interfaces()) {
-        auto *declNode = it->GetDeclNode();
-        ES2PANDA_ASSERT(declNode->IsTSInterfaceDeclaration());
-        std::string name = declNode->AsTSInterfaceDeclaration()->InternalName().Mutf8();
-        interfaceRecord.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
-    }
 
     GenClassInheritedFields(baseType, interfaceRecord);
 
@@ -539,6 +530,19 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
                 GenInterfaceMethodDefinition(overload, external);
             }
         }
+    }
+
+    if (external) {
+        interfaceRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+        Program()->recordTable.emplace(interfaceRecord.name, std::move(interfaceRecord));
+        return;
+    }
+
+    for (auto *it : baseType->Interfaces()) {
+        auto *declNode = it->GetDeclNode();
+        ES2PANDA_ASSERT(declNode->IsTSInterfaceDeclaration());
+        std::string name = declNode->AsTSInterfaceDeclaration()->InternalName().Mutf8();
+        interfaceRecord.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
     }
 
     Program()->recordTable.emplace(interfaceRecord.name, std::move(interfaceRecord));
@@ -596,16 +600,26 @@ static uint32_t GetAccessFlags(const ir::ClassDefinition *classDef)
 void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool external)
 {
     auto classRecord = pandasm::Record(classDef->InternalName().Mutf8(), Program()->lang);
-    if (external) {
-        classRecord.metadata->SetAttribute(Signatures::EXTERNAL);
-    }
-
-    classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), classRecord.name));
     uint32_t accessFlags = GetAccessFlags(classDef);
     classRecord.metadata->SetAccessFlags(accessFlags);
     classRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
 
     auto *baseType = classDef->TsType()->AsETSObjectType();
+    GenClassInheritedFields(baseType, classRecord);
+    for (const auto *prop : classDef->Body()) {
+        if (!prop->IsClassProperty()) {
+            continue;
+        }
+
+        GenClassField(prop->AsClassProperty(), classRecord, external);
+    }
+
+    if (external) {
+        classRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+        Program()->recordTable.emplace(classRecord.name, std::move(classRecord));
+        return;
+    }
+
     if (baseType->SuperType() != nullptr) {
         classRecord.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE,
                                                 baseType->SuperType()->AssemblerName().Mutf8());
@@ -627,17 +641,9 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
         classRecord.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
     }
 
-    GenClassInheritedFields(baseType, classRecord);
-    for (const auto *prop : classDef->Body()) {
-        if (!prop->IsClassProperty()) {
-            continue;
-        }
-
-        GenClassField(prop->AsClassProperty(), classRecord, external);
-    }
+    classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), classRecord.name));
 
     std::vector<pandasm::AnnotationData> annotations = GenAnnotations(classDef);
-
     if (classDef->IsNamespaceTransformed() || classDef->IsGlobalInitialized()) {
         annotations.push_back(GenAnnotationModule(classDef));
     }
