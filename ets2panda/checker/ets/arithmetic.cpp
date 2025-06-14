@@ -836,6 +836,10 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
         return leftType;
     }
     leftType = GetNonNullishType(leftType);
+    if (leftType->IsTypeError()) {
+        ES2PANDA_ASSERT(IsAnyError());
+        return GlobalTypeError();
+    }
 
     auto *rightType = MaybeBoxExpression(right);
     if (IsTypeIdenticalTo(leftType, rightType)) {

@@ -837,12 +837,16 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
         if (condExpr->Alternate()->IsBinaryExpression() &&
             condExpr->Alternate()->AsBinaryExpression()->OperatorType() == lexer::TokenType::KEYW_IN) {
             LogError(diagnostic::INVALID_LEFT_FOR_IN);
+            rightNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
+            updateNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
             // CC-OFFNXT(G.FMT.03-CPP) project code style
             return {ForStatementKind::IN, initNode, rightNode, updateNode};
         }
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        rightNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
+        updateNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
         LogError(diagnostic::INVALID_LEFT_FOR_IN_OF);
         return {ForStatementKind::UPDATE, initNode, rightNode, updateNode};
     }
