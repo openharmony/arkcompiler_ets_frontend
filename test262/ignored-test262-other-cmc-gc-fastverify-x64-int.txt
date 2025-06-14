@@ -2,3 +2,6 @@
 
 #25907
 test262/data/other_tests/built-ins/RegExp/property-escapes/generated/Script_Extensions_-Pau_Cin_Hau.js
+
+#26536
+test262/data/other_tests/language/statements/class/elements/after-same-line-static-async-gen-rs-private-method-alt.js
