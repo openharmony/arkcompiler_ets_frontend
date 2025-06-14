@@ -1249,6 +1249,9 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
             propName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         }
 
+        if (propName == nullptr) {
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        }
         propName->SetRange(Lexer()->GetToken().Loc());
 
         typeName = AllocNode<ir::TSQualifiedName>(typeName, propName, Allocator());
