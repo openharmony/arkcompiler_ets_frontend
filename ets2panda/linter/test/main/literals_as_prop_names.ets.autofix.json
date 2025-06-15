@@ -704,7 +704,7 @@
             "endColumn": 33,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
-            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
             "severity": "ERROR"
         },
         {
@@ -714,7 +714,7 @@
             "endColumn": 40,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
-            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
             "severity": "ERROR"
         },
         {
@@ -868,7 +868,7 @@
             "endColumn": 31,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
-            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
             "severity": "ERROR"
         },
         {
@@ -899,7 +899,7 @@
             "endColumn": 35,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
-            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
             "severity": "ERROR"
         },
         {
@@ -960,7 +960,7 @@
             "endColumn": 35,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
-            "rule": "Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
             "severity": "ERROR"
         },
         {
