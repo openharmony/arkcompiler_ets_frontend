@@ -75,6 +75,11 @@ checker::Type *ETSKeyofType::GetType(checker::ETSChecker *checker)
         return checker->GlobalTypeError();
     }
 
+    checker::TypeStackElement tse(checker, this, {{diagnostic::CYCLIC_TYPE_OF, {}}}, Start());
+    if (tse.HasTypeError()) {
+        return checker->GlobalTypeError();
+    }
+
     SetTsType(checker->CreateUnionFromKeyofType(typeReference->AsETSObjectType()));
     return TsType();
 }
