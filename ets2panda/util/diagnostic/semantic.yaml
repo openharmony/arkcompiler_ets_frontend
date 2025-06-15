@@ -1482,3 +1482,15 @@ semantic:
 - name: SUPER_NOT_ACCESSIBLE
   id: 372
   message: "Class field '{}' defined by the parent class is not accessible in the child class via super."
+
+- name: CYCLIC_TYPE_OF
+  id: 379
+  message: "Circular type of reference"
+
+- name: CYCLIC_CLASS_SUPER_TYPE
+  id: 380
+  message: "Class's super type is itself"
+
+- name: CYCLIC_CALLEE
+  id: 381
+  message: "Circular call function"

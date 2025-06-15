@@ -199,7 +199,13 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
         if (it->IsMethodDefinition() && !it->AsMethodDefinition()->IsConstructor()) {
             LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: "
                                  << it->AsMethodDefinition()->Id()->Name().Mutf8().c_str();
-            it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
+            if (it->AsMethodDefinition()->Function()->Body() == nullptr &&
+                it->AsMethodDefinition()->AsyncPairMethod() != nullptr) {
+                it->AsMethodDefinition()->AsyncPairMethod()->Function()->Body()->IterateRecursively(
+                    remapCapturedVariables);
+            } else {
+                it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
+            }
         }
     }
     // Since the constructor with zero parameter is not listed in the class_def body the constructors
