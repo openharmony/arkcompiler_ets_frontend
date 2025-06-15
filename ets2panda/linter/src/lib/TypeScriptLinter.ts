@@ -2181,7 +2181,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
         this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
         this.handleSdkGlobalApi(tsBinaryExpr);
-        this.checkArrayTypeImmutable(tsBinaryExpr);
         break;
       case ts.SyntaxKind.AmpersandAmpersandEqualsToken:
       case ts.SyntaxKind.QuestionQuestionEqualsToken:
@@ -2627,44 +2626,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignment(tsVarDecl);
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
     this.handleSdkGlobalApi(tsVarDecl);
-    this.checkArrayTypeImmutable(tsVarDecl);
-  }
-
-  private checkArrayTypeImmutable(node: ts.VariableDeclaration | ts.BinaryExpression): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    if (ts.isVariableDeclaration(node)) {
-      if (!node.initializer || ts.isArrayLiteralExpression(node.initializer)) {
-        return;
-      }
-      if (node.type && ts.isArrayTypeNode(node.type)) {
-        const varDeclType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.name));
-        const initializerType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.initializer));
-        if (varDeclType !== initializerType) {
-          this.incrementCounters(node, FaultID.ArrayTypeImmutable);
-        }
-      }
-    } else {
-      this.checkArrayTypeImmutableForBinaryExpression(node);
-    }
-  }
-
-  private checkArrayTypeImmutableForBinaryExpression(node: ts.BinaryExpression): void {
-    const sym = this.tsTypeChecker.getSymbolAtLocation(node.left);
-    const declaration = sym?.declarations?.[0];
-    if (
-      declaration &&
-      (ts.isVariableDeclaration(declaration) || ts.isParameter(declaration) || ts.isPropertyDeclaration(declaration))
-    ) {
-      if (declaration.type && ts.isArrayTypeNode(declaration.type) && !ts.isArrayLiteralExpression(node.right)) {
-        const leftType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.left));
-        const rightType = this.tsTypeChecker.typeToString(this.tsTypeChecker.getTypeAtLocation(node.right));
-        if (leftType !== rightType) {
-          this.incrementCounters(node, FaultID.ArrayTypeImmutable);
-        }
-      }
-    }
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -5313,6 +5274,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleAsExpressionImport(tsAsExpr);
     this.handleNoTuplesArrays(node, targetType, exprType);
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
+    this.handleArrayTypeImmutable(tsAsExpr, exprType, targetType);
   }
 
   private isExemptedAsExpression(node: ts.AsExpression): boolean {
@@ -6129,6 +6091,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   ): void {
     const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
     this.handleNoTuplesArrays(field, lhsType, rhsType);
+    this.handleArrayTypeImmutable(field, lhsType, rhsType, rhsExpr);
     // check that 'sendable typeAlias' is assigned correctly
     if (this.tsUtils.isWrongSendableFunctionAssignment(lhsType, rhsType)) {
       this.incrementCounters(field, FaultID.SendableFunctionAssignment);
@@ -6686,12 +6649,59 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }
+  }
+
+  private handleArrayTypeImmutable(node: ts.Node, lhsType: ts.Type, rhsType: ts.Type, rhsExpr?: ts.Expression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (
+      !(this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
+        this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
+        lhsType !== rhsType)
+    ) {
+      return;
+    }
+
+    const rhsTypeStr = this.tsTypeChecker.typeToString(rhsType);
+    let lhsTypeStr = this.tsTypeChecker.typeToString(lhsType);
+    if (rhsExpr && (this.isNullOrEmptyArray(rhsExpr) || ts.isArrayLiteralExpression(rhsExpr))) {
+      return;
+    }
+
+    if (ts.isAsExpression(node) && ts.isArrayLiteralExpression(node.expression)) {
+      node.expression.elements.forEach((elem) => {
+        if (elem.kind === ts.SyntaxKind.FalseKeyword || elem.kind === ts.SyntaxKind.TrueKeyword) {
+          lhsTypeStr = rhsTypeStr.replace(elem.getText(), 'boolean');
+        }
+      });
+    }
+    if (lhsTypeStr !== rhsTypeStr) {
+      this.incrementCounters(node, FaultID.ArrayTypeImmutable);
+    }
+  }
+
+  private isNullOrEmptyArray(expr: ts.Expression): boolean {
+    if (ts.isNewExpression(expr)) {
+      const constructorSym = this.tsTypeChecker.getSymbolAtLocation(expr.expression);
+      if (constructorSym?.name === 'Array') {
+        if (!expr.arguments || expr.arguments.length === 0) {
+          return true;
+        }
+        if (expr.arguments.length === 1) {
+          const argType = this.tsTypeChecker.getTypeAtLocation(expr.arguments[0]);
+          return !!(argType.flags & ts.TypeFlags.NumberLike);
+        }
+      }
+    }
+
+    return false;
   }
 
   private handleExponentOperation(node: ts.Node): void {
@@ -9060,10 +9070,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private shouldIncrementCounters(node: ts.ElementAccessExpression): boolean {
     const indexExpr = node.argumentExpression;
     if (!indexExpr) {
-        return false;
+      return false;
     }
     if (ts.isStringLiteral(indexExpr) || ts.isNumericLiteral(indexExpr)) {
-        return true;
+      return true;
     }
     const type = this.tsTypeChecker.getTypeAtLocation(indexExpr);
     const typeString = this.tsTypeChecker.typeToString(type);
