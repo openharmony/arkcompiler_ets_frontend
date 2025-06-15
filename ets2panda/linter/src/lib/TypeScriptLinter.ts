@@ -5399,8 +5399,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isIdentifier(typeNameIdentifier) || typeNameIdentifier.getText() !== ESLIB_SHAREDARRAYBUFFER) {
       return;
     }
+    const symbol = this.tsUtils.trueSymbolAtLocation(typeNameIdentifier);
+    if (!symbol) {
+      return;
+    }
 
-    const decls = this.tsUtils.trueSymbolAtLocation(typeNameIdentifier)?.getDeclarations();
+    const isImported = this.sourceFile.statements.some(stmt => {
+      if (!ts.isImportDeclaration(stmt)) {
+        return false;
+      }
+      const importClause = stmt.importClause;
+      if (!importClause?.namedBindings || !ts.isNamedImports(importClause.namedBindings)) {
+        return false;
+      }
+
+      const elements = importClause.namedBindings.elements.some(
+        element => element.name.text === ESLIB_SHAREDARRAYBUFFER
+      );
+      return elements;
+    });
+    if (isImported) {
+      return;
+    }
+    const decls = symbol.getDeclarations();
     const isSharedMemoryEsLib = decls?.some((decl) => {
       const srcFileName = decl.getSourceFile().fileName;
       return srcFileName.endsWith(ESLIB_SHAREDMEMORY_FILENAME);
