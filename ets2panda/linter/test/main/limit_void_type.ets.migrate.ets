@@ -16,57 +16,57 @@
 
 // Example 1: Basic function
 function func1(): void { }
-let a: void = func1();
+let a: undefined = ((): undefined => { func1(); return undefined; })();
 // Example 2: Arrow function
 const func2 = (): void => { };
-let b: void = func2();
+let b: undefined = ((): undefined => { func2(); return undefined; })();
 // Example 3: Class method
 class Demo {
   method(): void { }
 }
-let c: void = new Demo().method();
+let c: undefined = ((): undefined => { new Demo().method(); return undefined; })();
 // Example 4: Immediately Invoked Function Expression (IIFE)
-let d: void = (function (): void { })();
+let d: undefined = ((): undefined => { ((): void => { })(); return undefined; })();
 // Example 5: Asynchronous function
 async function asyncFunc(): Promise<void> { }
-let e: void = await asyncFunc();
+let e: undefined = ((): undefined => { await asyncFunc(); return undefined; })();
 // Example 6: Function parameter
 function wrapper(fn: () => void) {
-  let f: void = fn();
+  let f: undefined = ((): undefined => { fn(); return undefined; })();
 }
 // Example 7: Type assertion
 function func3(): void { }
-let g: void = func3() as void;
+let g: undefined = ((): undefined => { func3() as void; return undefined; })();
 // Example 8: Callback function
-setTimeout((): void => { }, 1000);
-let h: void = setTimeout(() => { }, 1000);
+setTimeout((): void => { }, 1000.0);
+let h: undefined = ((): undefined => { setTimeout(() => { }, 1000.0); return undefined; })();
 // Example 9: Array operation
 const funcArr: (() => void)[] = [() => { }];
-let i: void = funcArr[0]();
+let i: undefined = ((): undefined => { funcArr[0](); return undefined; })();
 // Example 10: Object method
 const obj = {
   action: (): void => { }
 };
-let j: void = obj.action();
+let j: undefined = ((): undefined => { obj.action(); return undefined; })();
 // Example 11: Strict mode
 // @ts-strict
 function func4(): void { }
-let k: void = func4();
+let k: undefined = ((): undefined => { func4(); return undefined; })();
 // Example 12: Module export
 export function exportedFunc(): void { }
-let l: void = exportedFunc();
+let l: undefined = ((): undefined => { exportedFunc(); return undefined; })();
 // Example 13: Generic function
 function genericFunc<T>(): void { }
-let m: void = genericFunc();
+let m: undefined = ((): undefined => { genericFunc(); return undefined; })();
 // Example 14: Function overloading
 function overloadFunc(): void;
 function overloadFunc(n: number): number;
 function overloadFunc(n?: number) { return n; }
-let n: void = overloadFunc();
+let n: undefined = ((): undefined => { overloadFunc(); return undefined; })();
 // Example 15: Type alias
 type VoidFunc = () => void;
 const aliasFunc: VoidFunc = () => { };
-let o: void = aliasFunc();
+let o: undefined = ((): undefined => { aliasFunc(); return undefined; })();
 // Example 16: Interface implementation
 interface Task {
   run(): void;
@@ -74,60 +74,64 @@ interface Task {
 class Printer implements Task {
   run(): void { }
 }
-let p: void = new Printer().run();
+let p: undefined = ((): undefined => { new Printer().run(); return undefined; })();
 // Example 17: Optional parameter
 function withParam(param?: string): void { }
-let q: void = withParam();
+let q: undefined = ((): undefined => { withParam(); return undefined; })();
 // Example 18: Rest parameter
 function sum(...nums: number[]): void { }
-let r: void = sum(1, 2, 3);
+let r: undefined = ((): undefined => { sum(1.0, 2.0, 3.0); return undefined; })();
 // Example 19: This parameter
 function withThis(this: Window): void { }
-let s: void = withThis.call(window);
+let s: undefined = ((): undefined => { withThis.call(window); return undefined; })();
 // Example 20: Generator function
 function* genFunc(): Generator<void> {
   yield;
 }
-let u: void = genFunc().next().value;
+let u: undefined = ((): undefined => { genFunc().next().value; return undefined; })();
 // Example 21: Function currying
 const curry = () => (): void => { };
-let w: void = curry()();
+let w: undefined = ((): undefined => { curry()(); return undefined; })();
 // Example 22: Method chaining
 class Chain {
   first(): this { return this; }
   last(): void { }
 }
-let x: void = new Chain().first().last();
+let x: undefined = ((): undefined => { new Chain().first().last(); return undefined; })();
 // Example 23: Destructuring assignment
-const [func] = [(): void => { }];
-let y: void = func();
+const GeneratedDestructArray_1 = [(): void => { }];
+const func = GeneratedDestructArray_1[0];
+
+let y: undefined = ((): undefined => { func(); return undefined; })();
 // Example 24: Type mapping
-type Wrapper<T> = { value: T };
+interface Wrapper<T> {
+    value: T;
+}
 const wrapped: Wrapper<() => void> = { value: () => { } };
-let z: void = wrapped.value();
+let z: undefined = ((): undefined => { wrapped.value(); return undefined; })();
 // Example 25: Conditional type
 type Conditional<T> = T extends boolean ? () => void : never;
 const condFunc: Conditional<boolean> = () => { };
-let aa: void = condFunc();
+let aa: undefined = ((): undefined => { condFunc(); return undefined; })();
 // Example 26: Mixed type
 interface Mixed {
   (): void;
   prop: string;
 }
 const mixed: Mixed = Object.assign(() => { }, { prop: "" });
-let ab: void = mixed();
+let ab: undefined = ((): undefined => { mixed(); return undefined; })();
 // Example 27: Recursive call
 function recursive(): void {
   return recursive();
 }
-let ac: void = recursive();
+let ac: undefined = ((): undefined => { recursive(); return undefined; })();
 // Example 28: Decorator function
 function decorator() {
-  return function (target: any) { };
+  return (target: any) => { };
 }
 @decorator()
 class Decorated { }
-let ad: void = decorator()(Decorated);
+let ad: undefined = ((): undefined => { decorator()(Decorated); return undefined; })();
 
 function f1(): void { }
 
@@ -135,7 +139,7 @@ let a1 = f1(); // type `void` is used as value
 
 a1 = f1(); // type `void` is used as value
 
-let a2: void; // type `void` is used as type annotation
+let a2: undefined = undefined; // type `void` is used as type annotation
 
 let a3: void[] = [f1()]; // type `void` is used as type annotation
 
@@ -143,26 +147,30 @@ a3 = [f1()]; // type `void` is used as value
 
 a3[0] = f1(); // type `void` is used as value
 
-let a4: void = f1(); // type `void` is used as type annotation
+let a4: undefined = ((): undefined => { f1(); return undefined; })(); // type `void` is used as type annotation
 
-function f2(a: void) { } // type `void` is used as type annotation
+function f2(a: undefined) { } // type `void` is used as type annotation
 
 f2(f1()); // type `void` is used as value
 
 class A {
-  f: void; // type `void` is used as type annotation
+  f: undefined = undefined; // type `void` is used as type annotation
 
-  m(p: void) { } // type `void` is used as type annotation
+  m(p: undefined) { } // type `void` is used as type annotation
 
-  constructor(a: void) { // type `void` is used as type annotation
+  constructor(a: undefined) { // type `void` is used as type annotation
     this.f = a;
   }
 }
 
-function f3(): void | Promise<void> { } // type `void` is not allowed in union type
+function f3(): undefined | Promise<void> { 
+return undefined;
+} // type `void` is not allowed in union type
 
 class B {
-  m(): void | number { } // type `void` is not allowed in union type
+  m(): undefined | number { 
+return undefined;
+} // type `void` is not allowed in union type
 }
 
 type ss = void;
@@ -208,53 +216,55 @@ function foo1():void{
     return foo(); // No Error
 }
 
-function foocfe(a: number): string | void {
-  if (a >= 0) {
+function foocfe(a: number): string | undefined {
+  if (a >= 0.0) {
     return "a >= 0";
   }
 }
 
-function foocfe2(a: number): string | void {
-  if (a < 0) {
-    return;
+function foocfe2(a: number): string | undefined {
+  if (a < 0.0) {
+    return undefined;
   }
   return "a >= 0";
 }
 function fooefc(): void { }
-let ss: void = foo()
-let t: void | number = foo()
-let t2: void | number = 1;
+let ss: undefined = ((): undefined => { foo(); return undefined; })()
+let t: undefined | number = ((): undefined | number => { foo(); return undefined; })()
+let t2: undefined | number = ((): undefined | number => { 1.0; return undefined; })();
 
-function greet(hour: number): string | void {
-  if (hour < 12) {
-    return;
-  } else if (hour < 18) {
+function greet(hour: number): string | undefined {
+  if (hour < 12.0) {
+    return undefined;
+  } else if (hour < 18.0) {
     return "Good afternoon";
   } else {
-    return;
+    return undefined;
   }
 }
 
-function logOrReturn(flag: boolean): string | void {
+function logOrReturn(flag: boolean): string | undefined {
   if (flag) {
     return "Flag is true";
   }
   console.log("Flag is false");
-  return;
+  return undefined;
 }
 
-function justLogs(): string | void {
+function justLogs(): string | undefined {
   console.log("Hello!");
+
+return undefined;
 }
 
-function getStatus(code: number): string | void {
+function getStatus(code: number): string | undefined {
   switch (code) {
-    case 1: return "OK";
-    case 2: return "Warning";
+    case 1.0: return "OK";
+    case 2.0: return "Warning";
   }
 }
 
-function tryThing(): string | void {
+function tryThing(): string | undefined {
   try {
     return "Worked!";
   } catch (e) {

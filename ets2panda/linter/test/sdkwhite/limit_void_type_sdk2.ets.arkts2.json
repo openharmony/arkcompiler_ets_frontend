@@ -98,7 +98,27 @@
             "line": 28,
             "column": 28,
             "endLine": 28,
+            "endColumn": 48,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 28,
+            "endLine": 28,
             "endColumn": 32,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 26,
+            "endLine": 32,
+            "endColumn": 46,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
