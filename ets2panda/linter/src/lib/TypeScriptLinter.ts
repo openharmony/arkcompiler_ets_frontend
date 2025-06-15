@@ -2118,7 +2118,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handlePostfixUnaryExpression(node: ts.Node): void {
     const unaryExpr = node as ts.PostfixUnaryExpression;
-    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken || unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
+    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken ||
+      unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
       this.checkAutoIncrementDecrement(unaryExpr);
     }
   }
@@ -4079,7 +4080,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsValueType(typeNode)
@@ -6177,7 +6178,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -6374,10 +6375,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const typeText = this.tsTypeChecker.typeToString(t);
       return Boolean(
         t.flags & ts.TypeFlags.StringLike ||
-          typeText === 'String' ||
-          t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
-          isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
-          t.flags & ts.TypeFlags.EnumLike
+        typeText === 'String' ||
+        t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
+        isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
+        t.flags & ts.TypeFlags.EnumLike
       );
     };
 
@@ -9362,78 +9363,114 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+
     const className = classDecl.name?.getText();
-    classDecl.members.forEach((member) => {
-      if (ts.isMethodDeclaration(member)) {
-        this.checkMethod(member, className);
-      }
-    });
-  }
+    const { staticProps, instanceProps } = this.collectClassProperties(classDecl);
 
-  private checkMethod(methodNode: ts.MethodDeclaration, className: string | undefined): void {
-    const variableDeclarations = new Map<string, ts.TypeNode | undefined>();
-    const returnStatements: ts.ReturnStatement[] = [];
-    if (methodNode.body) {
-      ts.forEachChild(methodNode.body, (node) => {
-        this.visitMethodBody(node, variableDeclarations, returnStatements);
-      });
-    }
-
-    const isStaticPropertyAccess = (node: ts.Expression, className: string): boolean => {
-      return (
-        ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === className
-      );
-    };
-
-    const isInstancePropertyAccess = (node: ts.Expression): boolean => {
-      return ts.isPropertyAccessExpression(node) && node.expression.kind === ts.SyntaxKind.ThisKeyword;
-    };
-
-    this.checkReturnStatements(returnStatements, className, isStaticPropertyAccess, isInstancePropertyAccess);
-  }
-
-  private visitMethodBody(
-    node: ts.Node,
-    variableDeclarations: Map<string, ts.TypeNode | undefined>,
-    returnStatements: ts.ReturnStatement[]
-  ): void {
-    if (ts.isVariableStatement(node)) {
-      node.declarationList.declarations.forEach((decl) => {
-        if (ts.isIdentifier(decl.name)) {
-          variableDeclarations.set(decl.name.text, decl.type);
-        }
-      });
-    }
-
-    if (ts.isReturnStatement(node)) {
-      returnStatements.push(node);
-    }
-
-    ts.forEachChild(node, (child) => {
-      this.visitMethodBody(child, variableDeclarations, returnStatements);
-    });
-  }
-
-  private checkReturnStatements(
-    returnStatements: ts.ReturnStatement[],
-    className: string | undefined,
-    isStaticPropertyAccess: (node: ts.Expression, className: string) => boolean,
-    isInstancePropertyAccess: (node: ts.Expression) => boolean
-  ): void {
-    returnStatements.forEach((returnStmt) => {
-      if (!returnStmt.expression) {
+    classDecl.members.forEach(member => {
+      if (!ts.isMethodDeclaration(member) || !member.body) {
         return;
       }
 
-      const returnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression);
-      if (className && isStaticPropertyAccess(returnStmt.expression, className) && returnType.isUnion()) {
-        this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
+      const methodReturnType = this.tsTypeChecker.getTypeAtLocation(member);
+      this.checkMethodAndReturnStatements(member.body, className, methodReturnType, staticProps, instanceProps);
+    });
+  }
+
+  private checkMethodAndReturnStatements(
+    body: ts.Block,
+    className: string | undefined,
+    methodReturnType: ts.Type,
+    staticProps: Map<string, ts.Type>,
+    instanceProps: Map<string, ts.Type>
+  ): void {
+    body.forEachChild((node) => {
+      if (!ts.isReturnStatement(node) || !node.expression) {
+        return;
       }
 
-      if (isInstancePropertyAccess(returnStmt.expression) && returnType.isUnion()) {
-        this.incrementCounters(returnStmt, FaultID.NoTsLikeSmartType);
+      const isStaticPropertyAccess = (node: ts.Expression, className: string): boolean => {
+        return (
+          ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === className
+        );
+      };
+      const isInstancePropertyAccess = (node: ts.Expression): boolean => {
+        return ts.isPropertyAccessExpression(node) && node.expression.kind === ts.SyntaxKind.ThisKeyword;
+      };
+
+      if (className && isStaticPropertyAccess(node.expression, className)) {
+        this.checkPropertyAccess(
+          node,
+          node.expression as ts.PropertyAccessExpression,
+          staticProps,
+          methodReturnType
+        );
+        return;
+      }
+
+      if (isInstancePropertyAccess(node.expression)) {
+        this.checkPropertyAccess(
+          node,
+          node.expression as ts.PropertyAccessExpression,
+          instanceProps,
+          methodReturnType
+        );
       }
     });
+  }
+
+  private checkPropertyAccess(
+    returnNode: ts.ReturnStatement,
+    propAccess: ts.PropertyAccessExpression,
+    propsMap: Map<string, ts.Type>,
+    methodReturnType: ts.Type
+  ): void {
+    const propName = propAccess.name.getText();
+    const propType = propsMap.get(propName);
+
+    if (propType && this.isExactlySameType(propType, methodReturnType)) {
+      return;
+    }
+
+    this.incrementCounters(returnNode, FaultID.NoTsLikeSmartType);
+  }
+
+  private collectClassProperties(classDecl: ts.ClassDeclaration): {
+    staticProps: Map<string, ts.Type>;
+    instanceProps: Map<string, ts.Type>;
+  } {
+    const result = {
+      staticProps: new Map<string, ts.Type>(),
+      instanceProps: new Map<string, ts.Type>()
+    };
+
+    classDecl.members.forEach(member => {
+      if (!ts.isPropertyDeclaration(member)) {
+        return;
+      }
+
+      const propName = member.name.getText();
+      const propType = this.tsTypeChecker.getTypeAtLocation(member);
+      const isStatic = member.modifiers?.some(m => {
+        return m.kind === ts.SyntaxKind.StaticKeyword;
+      });
+
+      if (isStatic) {
+        result.staticProps.set(propName, propType);
+      } else {
+        result.instanceProps.set(propName, propType);
+      }
+    });
+
+    return result;
+  }
+
+  private isExactlySameType(type1: ts.Type, type2: ts.Type): boolean {
+    if (type2.getCallSignatures().length > 0) {
+      const returnType = TsUtils.getFunctionReturnType(type2);
+      return returnType ? this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(returnType) : false;
+    }
+    return this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(type2);
   }
 
   private handleNumericBigintCompare(node: ts.BinaryExpression): void {
