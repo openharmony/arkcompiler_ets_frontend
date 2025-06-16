@@ -213,36 +213,6 @@
             "severity": "WARNING"
         },
         {
-            "line": 129,
-            "column": 15,
-            "endLine": 129,
-            "endColumn": 21,
-            "problem": "ClassAsObject",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "WARNING"
-        },
-        {
-            "line": 130,
-            "column": 15,
-            "endLine": 130,
-            "endColumn": 22,
-            "problem": "ClassAsObject",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "WARNING"
-        },
-        {
-            "line": 131,
-            "column": 15,
-            "endLine": 131,
-            "endColumn": 21,
-            "problem": "ClassAsObject",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "WARNING"
-        },
-        {
             "line": 132,
             "column": 15,
             "endLine": 132,
@@ -657,16 +627,6 @@
             "column": 8,
             "endLine": 194,
             "endColumn": 14,
-            "problem": "ClassAsObject",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "WARNING"
-        },
-        {
-            "line": 205,
-            "column": 87,
-            "endLine": 205,
-            "endColumn": 93,
             "problem": "ClassAsObject",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
