@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 #include "variableHasScope.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ts/tsEnumDeclaration.h"

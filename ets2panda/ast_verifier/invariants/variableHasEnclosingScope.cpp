@@ -15,7 +15,7 @@
 
 #include "variableHasEnclosingScope.h"
 #include "variableHasScope.h"
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 

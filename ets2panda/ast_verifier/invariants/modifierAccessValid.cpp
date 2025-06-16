@@ -14,7 +14,7 @@
  */
 
 #include "modifierAccessValid.h"
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 #include "varbinder/variableFlags.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/callExpression.h"
