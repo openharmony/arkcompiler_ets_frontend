@@ -43,7 +43,8 @@ class ETSStringType;
 class ETSBigIntType;
 class ETSResizableArrayType;
 
-using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
+using Substitution = std::map<ETSTypeParameter *, Type *>;
+using ArenaSubstitution = ArenaMap<ETSTypeParameter *, Type *>;
 
 class Type {
 public:

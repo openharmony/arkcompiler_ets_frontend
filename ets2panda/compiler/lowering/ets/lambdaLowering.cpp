@@ -92,12 +92,12 @@ static util::StringView CreateCalleeName(ArenaAllocator *allocator)
     return name.View();
 }
 
-static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> CloneTypeParams(
+static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneTypeParams(
     public_lib::Context *ctx, ir::TSTypeParameterDeclaration *oldIrTypeParams, ir::ScriptFunction *enclosingFunction,
     varbinder::Scope *enclosingScope)
 {
     if (oldIrTypeParams == nullptr) {
-        return {nullptr, nullptr};
+        return {nullptr, {}};
     }
 
     auto *allocator = ctx->allocator;
@@ -106,7 +106,7 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
     auto *newScope = allocator->New<varbinder::LocalScope>(allocator, enclosingScope);
     auto newTypeParams = ArenaVector<checker::ETSTypeParameter *>(allocator->Adapter());
     auto newTypeParamNodes = ArenaVector<ir::TSTypeParameter *>(allocator->Adapter());
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = checker::Substitution {};
 
     for (size_t ix = 0; ix < oldIrTypeParams->Params().size(); ix++) {
         auto *oldTypeParamNode = oldIrTypeParams->Params()[ix];
@@ -128,20 +128,20 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
 
         newTypeParams.push_back(newTypeParam);
         newTypeParamNodes.push_back(newTypeParamNode);
-        substitution->emplace(oldTypeParam, newTypeParam);
+        substitution.emplace(oldTypeParam, newTypeParam);
     }
 
     for (size_t ix = 0; ix < oldIrTypeParams->Params().size(); ix++) {
         auto *oldTypeParam = enclosingFunction->Signature()->TypeParams()[ix]->AsETSTypeParameter();
 
         if (auto *oldConstraint = oldTypeParam->GetConstraintType(); oldConstraint != nullptr) {
-            auto *newConstraint = oldConstraint->Substitute(checker->Relation(), substitution);
+            auto *newConstraint = oldConstraint->Substitute(checker->Relation(), &substitution);
             newTypeParams[ix]->SetConstraintType(newConstraint);
             newTypeParamNodes[ix]->SetConstraint(allocator->New<ir::OpaqueTypeNode>(newConstraint, allocator));
             newTypeParamNodes[ix]->Constraint()->SetParent(newTypeParamNodes[ix]);
         }
         if (auto *oldDefault = oldTypeParam->GetDefaultType(); oldDefault != nullptr) {
-            auto *newDefault = oldDefault->Substitute(checker->Relation(), substitution);
+            auto *newDefault = oldDefault->Substitute(checker->Relation(), &substitution);
             newTypeParams[ix]->SetDefaultType(newDefault);
             newTypeParamNodes[ix]->SetDefaultType(allocator->New<ir::OpaqueTypeNode>(newDefault, allocator));
             newTypeParamNodes[ix]->DefaultType()->SetParent(newTypeParamNodes[ix]);
@@ -152,7 +152,7 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
         allocator, std::move(newTypeParamNodes), oldIrTypeParams->RequiredParams());
     newIrTypeParams->SetScope(newScope);
 
-    return {newIrTypeParams, substitution};
+    return {newIrTypeParams, std::move(substitution)};
 }
 
 using ParamsAndVarMap =
@@ -325,19 +325,19 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
         info->callReceiver != nullptr ? classScope->InstanceMethodScope() : classScope->StaticMethodScope();
 
     auto [newTypeParams, subst0] = CloneTypeParams(ctx, oldTypeParams, info->enclosingFunction, enclosingScope);
-    auto *substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
+    auto &substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
     auto *scopeForMethod = newTypeParams != nullptr ? newTypeParams->Scope() : enclosingScope;
 
     auto lexScope = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, enclosingScope);
     auto paramScope = allocator->New<varbinder::FunctionParamScope>(allocator, scopeForMethod);
 
-    auto [params, vMap] = CreateLambdaCalleeParameters(ctx, lambda, *info->capturedVars, paramScope, substitution);
+    auto [params, vMap] = CreateLambdaCalleeParameters(ctx, lambda, *info->capturedVars, paramScope, &substitution);
     auto varMap = std::move(vMap);
 
     auto *returnType =
         cmInfo->forcedReturnType != nullptr
             ? cmInfo->forcedReturnType
-            : lambda->Function()->Signature()->ReturnType()->Substitute(checker->Relation(), substitution);
+            : lambda->Function()->Signature()->ReturnType()->Substitute(checker->Relation(), &substitution);
     auto returnTypeAnnotation = allocator->New<ir::OpaqueTypeNode>(returnType, allocator);
 
     auto funcFlags = ir::ScriptFunctionFlags::METHOD | cmInfo->auxFunctionFlags;
@@ -355,7 +355,7 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
                                               : cmInfo->body->Scope()->AsFunctionScope();
     funcScope->BindName(info->calleeClass->Definition()->TsType()->AsETSObjectType()->AssemblerName());
     func->SetScope(funcScope);
-    ProcessCalleeMethodBody(cmInfo->body, checker, paramScope, substitution, varMap);
+    ProcessCalleeMethodBody(cmInfo->body, checker, paramScope, &substitution, varMap);
 
     for (auto *param : func->Params()) {
         param->SetParent(func);
@@ -856,9 +856,9 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     auto *oldTypeParams = (info->enclosingFunction != nullptr) ? info->enclosingFunction->TypeParams() : nullptr;
     auto [newTypeParams, subst0] =
         CloneTypeParams(ctx, oldTypeParams, info->enclosingFunction, ctx->parserProgram->GlobalClassScope());
-    auto *substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
+    auto &substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
 
-    auto fnInterface = fntype->Substitute(checker->Relation(), substitution)->ArrowToFunctionalInterface(checker);
+    auto fnInterface = fntype->Substitute(checker->Relation(), &substitution)->ArrowToFunctionalInterface(checker);
     auto lambdaProviderClass = FunctionTypeToLambdaProviderType(checker, fntype->ArrowSignature());
 
     auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, ctx->parserProgram->GlobalClassScope());
@@ -872,15 +872,15 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
                                       ir::ClassDefinitionModifiers::FUNCTIONAL_REFERENCE);
     }
 
-    CreateLambdaClassFields(ctx, classDefinition, info, substitution);
-    CreateLambdaClassConstructor(ctx, classDefinition, info, substitution);
+    CreateLambdaClassFields(ctx, classDefinition, info, &substitution);
+    CreateLambdaClassConstructor(ctx, classDefinition, info, &substitution);
 
     auto signature = fntype->ArrowSignature();
 
     LambdaClassInvokeInfo lciInfo;
     lciInfo.callee = callee;
     lciInfo.classDefinition = classDefinition;
-    lciInfo.substitution = substitution;
+    lciInfo.substitution = &substitution;
     lciInfo.lambdaSignature = signature;
 
     for (size_t arity = signature->MinArgCount(); arity <= signature->ArgCount(); ++arity) {

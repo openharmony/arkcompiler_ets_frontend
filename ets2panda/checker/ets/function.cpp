@@ -1815,14 +1815,14 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
     if (sourceTypeParams.empty()) {
         return target;
     }
-    auto *substitution = NewSubstitution();
+    auto substitution = Substitution {};
     for (size_t ix = 0; ix < sourceTypeParams.size(); ix++) {
         if (!targetTypeParams[ix]->IsETSTypeParameter()) {
             continue;
         }
-        EmplaceSubstituted(substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
+        EmplaceSubstituted(&substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
     }
-    return target->Substitute(Relation(), substitution);
+    return target->Substitute(Relation(), &substitution);
 }
 
 void ETSChecker::ReportOverrideError(Signature *signature, Signature *overriddenSignature,
@@ -2432,7 +2432,7 @@ void ETSChecker::CollectReturnStatements(ir::AstNode *parent)
     });
 }
 
-ArenaVector<ConstraintCheckRecord> &ETSChecker::PendingConstraintCheckRecords()
+std::vector<ConstraintCheckRecord> &ETSChecker::PendingConstraintCheckRecords()
 {
     return pendingConstraintCheckRecords_;
 }

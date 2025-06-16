@@ -181,7 +181,7 @@ private:
     parser::Program *globalProgram_;
     util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
-    mutable const lexer::SourcePosition *srcPos_ {};
+    mutable lexer::SourcePosition srcPos_ {};
     bool isDynamic_ = false;
 };
 

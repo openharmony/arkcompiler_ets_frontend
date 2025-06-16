@@ -120,7 +120,7 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
         clone->SetAnnotations(std::move(annotationUsages));
     }
 
-    clone->SetRange(range_);
+    clone->SetRange(range_.GetRange());
     return clone;
 }
 }  // namespace ark::es2panda::ir

@@ -462,7 +462,7 @@ private:
 
     // for lazy properties instantiation
     TypeRelation *relation_ = nullptr;
-    const Substitution *effectiveSubstitution_ = nullptr;
+    const ArenaSubstitution *effectiveSubstitution_ = nullptr;
     mutable bool propertiesInstantiated_ = false;
     mutable ArenaVector<Signature *> constructSignatures_;
     mutable PropertyHolder properties_;

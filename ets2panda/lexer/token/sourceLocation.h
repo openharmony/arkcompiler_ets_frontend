@@ -19,6 +19,7 @@
 #include "macros.h"
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 namespace ark::es2panda::parser {
@@ -78,6 +79,62 @@ public:
     {
         return start != other.start || end != other.end;
     }
+};
+
+class CompressedSourceRange {
+public:
+    explicit CompressedSourceRange() = default;
+    DEFAULT_COPY_SEMANTIC(CompressedSourceRange);
+    DEFAULT_MOVE_SEMANTIC(CompressedSourceRange);
+    ~CompressedSourceRange() = default;
+
+    void SetStart(SourcePosition const &s)
+    {
+        startLine_ = Limit<uint32_t>(s.line);
+        startIndex_ = Limit<uint32_t>(s.index);
+        program_ = s.Program();
+    }
+
+    void SetEnd(SourcePosition const &e)
+    {
+        endLine_ = Limit<uint32_t>(e.line);
+        endIndex_ = Limit<uint32_t>(e.index);
+        program_ = e.Program();
+    }
+
+    SourcePosition GetStart() const
+    {
+        return SourcePosition(startIndex_, startLine_, program_);
+    }
+
+    SourcePosition GetEnd() const
+    {
+        return SourcePosition(endIndex_, endLine_, program_);
+    }
+
+    void SetRange(SourceRange const &r)
+    {
+        SetStart(r.start);
+        SetEnd(r.end);
+    }
+
+    SourceRange GetRange() const
+    {
+        return SourceRange(GetStart(), GetEnd());
+    }
+
+private:
+    template <typename T>
+    static T Limit(uint64_t val)
+    {
+        return val > std::numeric_limits<T>::max() ? std::numeric_limits<T>::max() : val;
+    }
+
+    parser::Program const *program_ {};
+    uint32_t startLine_ {};
+    uint32_t endLine_ {};
+    uint32_t startIndex_ {};
+    uint32_t endIndex_ {};
 };
 
 class SourceLocation {

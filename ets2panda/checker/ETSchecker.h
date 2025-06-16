@@ -74,7 +74,7 @@ using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
 using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
-using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Substitution *, lexer::SourcePosition>;
+using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Substitution, lexer::SourcePosition>;
 // can't use util::DiagnosticWithParams because std::optional can't contain references
 using MaybeDiagnosticInfo =
     std::optional<std::pair<const diagnostic::DiagnosticKind, const util::DiagnosticMessageParams>>;
@@ -87,7 +87,6 @@ public:
         // NOLINTNEXTLINE(readability-redundant-member-init)
         : Checker(allocator, diagnosticEngine, programAllocator),
           arrayTypes_(Allocator()->Adapter()),
-          pendingConstraintCheckRecords_(Allocator()->Adapter()),
           objectInstantiationMap_(Allocator()->Adapter()),
           invokeToArrowSignatures_(Allocator()->Adapter()),
           arrowToFuncInterfaces_(Allocator()->Adapter()),
@@ -417,21 +416,20 @@ public:
     bool CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda);
     bool IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument, const Substitution *substitution);
 
-    Substitution *NewSubstitution()
+    ArenaSubstitution *NewArenaSubstitution()
     {
-        return ProgramAllocator()->New<Substitution>(ProgramAllocator()->Adapter());
+        return ProgramAllocator()->New<ArenaSubstitution>(ProgramAllocator()->Adapter());
     }
 
-    Substitution *CopySubstitution(const Substitution *src)
-    {
-        return ProgramAllocator()->New<Substitution>(*src);
-    }
     bool ValidateTypeSubstitution(const ArenaVector<Type *> &typeParams, Type *ctype, Type *argumentType,
                                   Substitution *substitution);
     bool ProcessUntypedParameter(ir::AstNode *declNode, size_t paramIndex, Signature *paramSig, Signature *argSig,
                                  Substitution *substitution);
 
+    static Substitution ArenaSubstitutionToSubstitution(const ArenaSubstitution *orig);
     void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
+    void EmplaceSubstituted(ArenaSubstitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
+
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
@@ -830,7 +828,7 @@ public:
         return util::NodeAllocator::ForceSetParent<T>(ProgramAllocator(), std::forward<Args>(args)...);
     }
 
-    ArenaVector<ConstraintCheckRecord> &PendingConstraintCheckRecords();
+    std::vector<ConstraintCheckRecord> &PendingConstraintCheckRecords();
     size_t &ConstraintCheckScopesCount();
 
     ETSObjectType *GetCachedFunctionalInterface(ir::ETSFunctionType *type);
@@ -1053,7 +1051,7 @@ private:
                                      std::unordered_set<const ir::TSTypeAliasDeclaration *> &typeAliases);
 
     ArrayMap arrayTypes_;
-    ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
+    std::vector<ConstraintCheckRecord> pendingConstraintCheckRecords_ {};
     ObjectInstantiationMap objectInstantiationMap_;
     FunctionSignatureMap invokeToArrowSignatures_;
     FunctionInterfaceMap arrowToFuncInterfaces_;

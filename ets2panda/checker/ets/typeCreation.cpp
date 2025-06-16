@@ -84,10 +84,10 @@ ETSResizableArrayType *ETSChecker::CreateETSMultiDimResizableArrayType(Type *ele
     Type *baseArrayType = element;
 
     for (size_t dim = 0; dim < dimSize; ++dim) {
-        Substitution *tmpSubstitution = NewSubstitution();
-        EmplaceSubstituted(tmpSubstitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+        auto tmpSubstitution = Substitution {};
+        EmplaceSubstituted(&tmpSubstitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
                            MaybeBoxType(baseArrayType));
-        baseArrayType = arrayType->Substitute(Relation(), tmpSubstitution);
+        baseArrayType = arrayType->Substitute(Relation(), &tmpSubstitution);
     }
     return baseArrayType->AsETSResizableArrayType();
 }
@@ -97,10 +97,10 @@ ETSResizableArrayType *ETSChecker::CreateETSResizableArrayType(Type *element)
     ETSResizableArrayType *arrayType = GlobalBuiltinETSResizableArrayType()->AsETSResizableArrayType();
     ES2PANDA_ASSERT(arrayType->TypeArguments().size() == 1U);
 
-    Substitution *substitution = NewSubstitution();
-    EmplaceSubstituted(substitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+    auto substitution = Substitution {};
+    EmplaceSubstituted(&substitution, arrayType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
                        MaybeBoxType(element));
-    return arrayType->Substitute(Relation(), substitution);
+    return arrayType->Substitute(Relation(), &substitution);
 }
 
 ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePolluting)
@@ -402,10 +402,10 @@ ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
     ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
     ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1U);
 
-    Substitution *substitution = NewSubstitution();
-    EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
+    auto substitution = Substitution {};
+    EmplaceSubstituted(&substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
 
-    return promiseType->Substitute(Relation(), substitution);
+    return promiseType->Substitute(Relation(), &substitution);
 }
 
 static bool IsInValidKeyofTypeNode(ir::AstNode *node)

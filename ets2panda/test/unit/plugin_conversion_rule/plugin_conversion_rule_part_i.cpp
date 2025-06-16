@@ -389,35 +389,6 @@ es2panda_Scope *classInstance/*return_args:*/, es2panda_Variable ***arenaMapValu
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-/* Signature *Substitute(TypeRelation *relation, const Substitution *substitution) */
-TEST_F(PluginConversionRuleUnitTest, ArenaMapPtrInputValue)
-{
-    std::string targetCAPI {R"(
-    extern "C"  es2panda_Signature *SignatureSubstitute([[maybe_unused]] es2panda_Context *context,
-es2panda_Signature *classInstance, [[maybe_unused]] es2panda_TypeRelation *relation,
-[[maybe_unused]] es2panda_Type **substitutionKeyArray, es2panda_Type **substitutionValueArray,
-size_t substitutionLen/*return_args:*/)
-    {
-        auto *relationE2p = reinterpret_cast<checker::TypeRelation *>(relation);
-    	auto *substitutionArenaMap = reinterpret_cast<Context *>(context)->allocator->New<ArenaMap
-    <checker::ETSTypeParameter *, checker::Type *>>(reinterpret_cast<Context *>(context)->allocator->Adapter());
- 	    for (size_t i = 0; i < substitutionLen; ++i) {
- 		    auto *substitutionElement1 = substitutionKeyArray[i];
- 		    auto *substitutionElement2 = substitutionValueArray[i];
- 		    auto *substitutionElement1E2p = reinterpret_cast<checker::ETSTypeParameter *>(substitutionElement1);
- 		    auto *substitutionElement2E2p = reinterpret_cast<checker::Type *>(substitutionElement2);
- 		    (*substitutionArenaMap)[substitutionElement1E2p] = substitutionElement2E2p;
- 	    }
-        auto apiRes = reinterpret_cast< es2panda_Signature *>
-    ((reinterpret_cast< checker::Signature *>(classInstance))->Substitute(relationE2p, substitutionArenaMap));
-	    return apiRes;
-    }
-    )"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 /* Typed<AstNode> *AsTyped() */
 TEST_F(PluginConversionRuleUnitTest, IrTypedPtrReturnValue)
 {

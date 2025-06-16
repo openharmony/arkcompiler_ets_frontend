@@ -21,6 +21,7 @@
 #include <chrono>
 #include <mutex>
 #include <forward_list>
+#include <optional>
 
 #ifdef PANDA_TARGET_UNIX
 #include "sys/resource.h"
@@ -226,7 +227,7 @@ static void DumpPerfMetricRecord(std::stringstream &ss, PerfMetricRecord const *
 
     auto const &stats = rec->GetStats();
     // NOLINTBEGIN(readability-magic-numbers)
-    ss << "#" << std::left << std::setw(50U) << rec->GetName() << ": ";
+    ss << ":" << std::left << std::setw(50U) << rec->GetName() << ": ";
     if (rec->GetMaxNesting() > 1) {
         metric("nesting", 6U) << rec->GetMaxNesting();
     }
@@ -240,10 +241,13 @@ static void DumpPerfMetricRecord(std::stringstream &ss, PerfMetricRecord const *
     // NOLINTEND(readability-magic-numbers)
 }
 
-// You may want to add __attribute__((destructor)) for the debugging needs
-void DumpPerfMetrics()
+static void DumpPerfMetricsImpl(std::optional<std::string_view> prefix)
 {
     std::lock_guard lk(g_perfMetricsListsMtx);  // prevents new thread from appearing
+
+    if (g_perfMetricsLists.begin() == g_perfMetricsLists.end()) {
+        return;
+    }
 
     auto getSortVal = [](PerfMetricRecord *rec) { return rec->GetStats().GetTimeNanoseconds(); };
 
@@ -253,7 +257,9 @@ void DumpPerfMetrics()
     for (auto &tlsdata : g_perfMetricsLists) {
         std::vector<PerfMetricRecord *> records;
         for (auto &rec : tlsdata.second) {
-            records.push_back(&rec);
+            if (prefix.has_value() && rec.GetName().rfind(*prefix, 0) != std::string::npos) {
+                records.push_back(&rec);
+            }
         }
         std::sort(records.begin(), records.end(),
                   [getSortVal](PerfMetricRecord *r1, PerfMetricRecord *r2) { return getSortVal(r1) > getSortVal(r2); });
@@ -267,6 +273,17 @@ void DumpPerfMetrics()
     }
 
     std::cout << ss.str();
+}
+
+void DumpPerfMetrics()
+{
+    DumpPerfMetricsImpl("@");
+}
+
+// You may want to add __attribute__((destructor)) for the debugging needs
+[[maybe_unused]] static void DbgDumpPerfMetrics()
+{
+    DumpPerfMetricsImpl("%");
 }
 
 }  // namespace ark::es2panda::util

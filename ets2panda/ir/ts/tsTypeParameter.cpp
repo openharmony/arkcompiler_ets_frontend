@@ -158,7 +158,7 @@ TSTypeParameter *TSTypeParameter::Clone(ArenaAllocator *allocator, AstNode *pare
         name_->Clone(allocator, this), constraint_ == nullptr ? nullptr : constraint_->Clone(allocator, this),
         defaultType_ == nullptr ? nullptr : defaultType_->Clone(allocator, this), allocator);
     clone->SetParent(parent);
-    clone->SetRange(range_);
+    clone->SetRange(range_.GetRange());
 
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};

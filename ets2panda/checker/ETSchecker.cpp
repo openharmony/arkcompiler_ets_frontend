@@ -679,9 +679,9 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
             return AsETSObjectType(&GlobalTypesHolder::GlobalDoubleBoxBuiltinType);
         default: {
             auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
-            auto *substitution = NewSubstitution();
-            substitution->emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
-            return base->Substitute(Relation(), substitution);
+            auto substitution = Substitution {};
+            substitution.emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
+            return base->Substitute(Relation(), &substitution);
         }
     }
 }

@@ -87,7 +87,7 @@ AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode
         clone->AddProperty(property->Clone(allocator, clone));
     }
 
-    clone->SetRange(range_);
+    clone->SetRange(range_.GetRange());
     clone->SetScope(propertiesScope_);
 
     return clone;

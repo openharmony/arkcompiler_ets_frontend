@@ -33,13 +33,13 @@ public:
 
     [[nodiscard]] bool IsGrouped() const noexcept
     {
-        return AstNode::GetHistoryNodeAs<Expression>()->grouped_;
+        return AstNode::GetHistoryNodeAs<Expression>()->HasAstNodeFlags(AstNodeFlags::IS_GROUPED);
     }
 
     void SetGrouped() noexcept
     {
         if (!IsGrouped()) {
-            AstNode::GetOrCreateHistoryNodeAs<Expression>()->grouped_ = true;
+            AstNode::GetOrCreateHistoryNodeAs<Expression>()->SetAstNodeFlags(AstNodeFlags::IS_GROUPED);
         }
     }
 
@@ -109,14 +109,10 @@ protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}
     explicit Expression(AstNodeType const type, ModifierFlags const flags) : TypedAstNode(type, flags) {}
 
-    Expression(Expression const &other) : TypedAstNode(static_cast<TypedAstNode const &>(other))
-    {
-        grouped_ = other.IsGrouped();
-    }
+    Expression(Expression const &other) : TypedAstNode(static_cast<TypedAstNode const &>(other)) {}
 
 private:
     friend class SizeOfNodeTest;
-    bool grouped_ {};
 };
 
 class AnnotatedExpression : public Annotated<Expression> {

@@ -67,7 +67,7 @@ using NodeTransformer = std::function<AstNode *(AstNode *)>;
 using NodeTraverser = std::function<void(AstNode *)>;
 using NodePredicate = std::function<bool(AstNode *)>;
 
-enum class AstNodeType {
+enum class AstNodeType : uint8_t {
 /* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_NODE_TYPES(nodeType, className) nodeType,
@@ -135,7 +135,7 @@ AST_NODE_REINTERPRET_MAPPING(DECLARE_CLASSES)
 class AstNode {
 public:
     explicit AstNode(AstNodeType type) : type_(type) {};
-    explicit AstNode(AstNodeType type, ModifierFlags flags) : type_(type), flags_(flags) {};
+    explicit AstNode(AstNodeType type, ModifierFlags flags) : flags_(flags), type_(type) {};
     virtual ~AstNode() = default;
 
     AstNode() = delete;
@@ -281,38 +281,38 @@ public:
 
     void SetRange(const lexer::SourceRange &loc) noexcept
     {
-        if (GetHistoryNode()->range_ != loc) {
-            GetOrCreateHistoryNode()->range_ = loc;
+        if (GetHistoryNode()->range_.GetRange() != loc) {
+            GetOrCreateHistoryNode()->range_.SetRange(loc);
         }
     }
 
     void SetStart(const lexer::SourcePosition &start) noexcept
     {
-        if (GetHistoryNode()->range_.start != start) {
-            GetOrCreateHistoryNode()->range_.start = start;
+        if (GetHistoryNode()->range_.GetStart() != start) {
+            GetOrCreateHistoryNode()->range_.SetStart(start);
         }
     }
 
     void SetEnd(const lexer::SourcePosition &end) noexcept
     {
-        if (GetHistoryNode()->range_.end != end) {
-            GetOrCreateHistoryNode()->range_.end = end;
+        if (GetHistoryNode()->range_.GetEnd() != end) {
+            GetOrCreateHistoryNode()->range_.SetEnd(end);
         }
     }
 
-    [[nodiscard]] const lexer::SourcePosition &Start() const noexcept
+    [[nodiscard]] lexer::SourcePosition Start() const noexcept
     {
-        return GetHistoryNode()->range_.start;
+        return GetHistoryNode()->range_.GetStart();
     }
 
-    [[nodiscard]] const lexer::SourcePosition &End() const noexcept
+    [[nodiscard]] lexer::SourcePosition End() const noexcept
     {
-        return GetHistoryNode()->range_.end;
+        return GetHistoryNode()->range_.GetEnd();
     }
 
-    [[nodiscard]] const lexer::SourceRange &Range() const noexcept
+    [[nodiscard]] lexer::SourceRange Range() const noexcept
     {
-        return GetHistoryNode()->range_;
+        return GetHistoryNode()->range_.GetRange();
     }
 
     [[nodiscard]] AstNodeType Type() const noexcept
@@ -724,23 +724,19 @@ protected:
     friend class SizeOfNodeTest;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     AstNode *parent_ {};
-    lexer::SourceRange range_ {};
-    AstNodeType type_;
+    AstNodeHistory *history_ {nullptr};
+    lexer::CompressedSourceRange range_ {};
     ModifierFlags flags_ {};
     mutable AstNodeFlags astNodeFlags_ {};
-    AstNodeHistory *history_ {nullptr};
+    AstNodeType type_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
     compiler::PhaseId GetFirstCreated() const;
     AstNode &operator=(const AstNode &) = default;
 
-    const std::optional<std::pair<std::string_view, AstNode *>> &TransformedNode() const noexcept;
-
     varbinder::Variable *variable_ {};
     AstNode *originalNode_ = nullptr;
-    // {lowering_phase_name, new_generated_node}
-    std::optional<std::pair<std::string_view, AstNode *>> transformedNode_ = std::nullopt;
 };
 
 template <typename T>

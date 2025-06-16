@@ -164,17 +164,10 @@ AstNode *AstNode::OriginalNode() const noexcept
     return GetHistoryNode()->originalNode_;
 }
 
-const std::optional<std::pair<std::string_view, AstNode *>> &AstNode::TransformedNode() const noexcept
-{
-    return GetHistoryNode()->transformedNode_;
-}
-
-void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)
+void AstNode::SetTransformedNode([[maybe_unused]] std::string_view const transformationName, AstNode *transformedNode)
 {
     if (transformedNode != nullptr) {
         transformedNode->SetOriginalNode(this);
-        GetOrCreateHistoryNode()->transformedNode_ =
-            std::make_optional(std::make_pair(transformationName, transformedNode));
     }
 }
 
@@ -239,7 +232,6 @@ void AstNode::CopyTo(AstNode *other) const
     other->history_ = history_;
     other->variable_ = variable_;
     other->originalNode_ = originalNode_;
-    other->transformedNode_ = transformedNode_;
 }
 
 AstNode *AstNode::Construct([[maybe_unused]] ArenaAllocator *allocator)

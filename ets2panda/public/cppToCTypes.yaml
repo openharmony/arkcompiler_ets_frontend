@@ -2789,7 +2789,7 @@ change_types:
       min_ptr_depth: 1
     new_args:
     - type:
-        name: "ArenaMap"
+        name: "Map"
         ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
         template_args:
         - type:

@@ -24,7 +24,7 @@ namespace ark::es2panda::ir {
 
 using ENUMBITOPS_OPERATORS;
 
-enum class AstNodeFlags {
+enum class AstNodeFlags : uint16_t {
     NO_OPTS = 0,
     CHECKCAST = 1U << 0U,
     ALLOW_REQUIRED_INSTANTIATION = 1U << 2U,
@@ -35,6 +35,8 @@ enum class AstNodeFlags {
     RESIZABLE_REST = 1U << 7U,
     // TO BE REMOVED AFTER COMPLETE PRIMITIVE TYPES REFACTORING, DO NOT USE!!
     TMP_CONVERT_PRIMITIVE_CAST_METHOD_CALL = 1U << 8U,
+    // Moved out of the ir::Expression
+    IS_GROUPED = 1U << 9U,
     /* do not introduce new flags. all the existing to be removed */
 };
 

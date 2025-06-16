@@ -280,7 +280,8 @@ void ETSTypeAliasType::ApplySubstitution(TypeRelation *relation)
 
     while (!(types = getTypes(), types.empty())) {
         for (auto type : types) {
-            type->SetTargetType(type->parent_->targetType_->Substitute(relation, type->substitution_));
+            auto subst = ETSChecker::ArenaSubstitutionToSubstitution(type->substitution_);
+            type->SetTargetType(type->parent_->targetType_->Substitute(relation, &subst));
         }
     }
 }
@@ -311,10 +312,13 @@ Type *ETSTypeAliasType::Substitute(TypeRelation *relation, const Substitution *s
         return copiedType;
     }
 
+    auto arenaSubst = checker->NewArenaSubstitution();
+    std::copy(substitution->begin(), substitution->end(), std::inserter(*arenaSubst, arenaSubst->end()));
+
     copiedType = checker->CreateETSTypeAliasType(name_, declNode_, isRecursive_);
     copiedType->base_ = base_ == nullptr ? this : base_;
     copiedType->parent_ = this;
-    copiedType->substitution_ = substitution;
+    copiedType->substitution_ = arenaSubst;
     copiedType->typeArguments_ = newTypeArgs;
 
     EmplaceInstantiatedType(hash, copiedType);

@@ -1576,14 +1576,14 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
-    auto *substitution = NewSubstitution();
+    auto substitution = Substitution {};
 
     if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
         return GlobalTypeError();
     }
 
     std::set<Type *> parametersNeedToBeBoxed;
-    auto expandedAliasType = aliasType->Substitute(Relation(), substitution);
+    auto expandedAliasType = aliasType->Substitute(Relation(), &substitution);
     CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
 
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
@@ -1601,13 +1601,13 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
                 paramType = boxedType;
             }
         }
-        substitution->insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
+        substitution.insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ValidateGenericTypeAliasForClonedNode(typeAliasNode->AsTSTypeAliasDeclaration(), typeParams);
 
-    return aliasType->Substitute(Relation(), substitution);
+    return aliasType->Substitute(Relation(), &substitution);
 }
 
 std::vector<util::StringView> ETSChecker::GetNameForSynteticObjectType(const util::StringView &source)
@@ -2289,7 +2289,21 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
     return GetRelevantArgumentedTypeFromChild(child->SuperType(), target);
 }
 
+Substitution ETSChecker::ArenaSubstitutionToSubstitution(const ArenaSubstitution *orig)
+{
+    Substitution copied {};
+    std::copy(orig->begin(), orig->end(), std::inserter(copied, copied.end()));
+    return copied;
+}
+
 void ETSChecker::EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg)
+{
+    // *only* reference type may be substituted, no exceptions
+    ES2PANDA_ASSERT(typeArg->IsETSReferenceType());
+    substitution->emplace(tparam, typeArg);
+}
+
+void ETSChecker::EmplaceSubstituted(ArenaSubstitution *substitution, ETSTypeParameter *tparam, Type *typeArg)
 {
     // *only* reference type may be substituted, no exceptions
     ES2PANDA_ASSERT(typeArg->IsETSReferenceType());
