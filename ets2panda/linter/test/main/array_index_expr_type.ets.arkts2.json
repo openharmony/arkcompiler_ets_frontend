@@ -96,6 +96,16 @@
         },
         {
             "line": 19,
+            "column": 12,
+            "endLine": 19,
+            "endColumn": 31,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
             "column": 21,
             "endLine": 19,
             "endColumn": 30,
@@ -112,6 +122,16 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 12,
+            "endLine": 20,
+            "endColumn": 33,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -206,16 +226,6 @@
         },
         {
             "line": 24,
-            "column": 11,
-            "endLine": 24,
-            "endColumn": 30,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
             "column": 20,
             "endLine": 24,
             "endColumn": 29,
@@ -252,16 +262,6 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 11,
-            "endLine": 26,
-            "endColumn": 21,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -366,6 +366,16 @@
         },
         {
             "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 37,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
             "column": 20,
             "endLine": 30,
             "endColumn": 36,
@@ -386,6 +396,16 @@
         },
         {
             "line": 31,
+            "column": 11,
+            "endLine": 31,
+            "endColumn": 37,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
             "column": 20,
             "endLine": 31,
             "endColumn": 36,
@@ -402,6 +422,16 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 11,
+            "endLine": 32,
+            "endColumn": 44,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -535,16 +565,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
-            "column": 1,
-            "endLine": 43,
-            "endColumn": 15,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
             "line": 45,
             "column": 1,
             "endLine": 45,
@@ -616,6 +636,16 @@
         },
         {
             "line": 51,
+            "column": 1,
+            "endLine": 51,
+            "endColumn": 19,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
             "column": 8,
             "endLine": 51,
             "endColumn": 18,
@@ -676,16 +706,6 @@
         },
         {
             "line": 55,
-            "column": 15,
-            "endLine": 55,
-            "endColumn": 24,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
             "column": 22,
             "endLine": 55,
             "endColumn": 23,
@@ -702,16 +722,6 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 59,
-            "column": 15,
-            "endLine": 59,
-            "endColumn": 24,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -766,12 +776,62 @@
         },
         {
             "line": 67,
+            "column": 1,
+            "endLine": 67,
+            "endColumn": 12,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
             "column": 6,
             "endLine": 67,
             "endColumn": 11,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 1,
+            "endLine": 68,
+            "endColumn": 12,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 1,
+            "endLine": 69,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 1,
+            "endLine": 70,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 1,
+            "endLine": 71,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -782,6 +842,26 @@
             "problem": "IndexNegative",
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 1,
+            "endLine": 72,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 1,
+            "endLine": 73,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -866,6 +946,16 @@
         },
         {
             "line": 81,
+            "column": 1,
+            "endLine": 81,
+            "endColumn": 18,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
             "column": 5,
             "endLine": 81,
             "endColumn": 17,
@@ -876,32 +966,12 @@
         },
         {
             "line": 82,
-            "column": 1,
-            "endLine": 82,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 82,
             "column": 10,
             "endLine": 82,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 1,
-            "endLine": 83,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -916,32 +986,12 @@
         },
         {
             "line": 84,
-            "column": 1,
-            "endLine": 84,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 84,
             "column": 10,
             "endLine": 84,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 85,
-            "column": 1,
-            "endLine": 85,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

@@ -149,16 +149,6 @@
             "column": 17,
             "endLine": 24,
             "endColumn": 24,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 17,
-            "endLine": 24,
-            "endColumn": 24,
             "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
@@ -172,16 +162,6 @@
             "problem": "InterOpImportJsIndex",
             "suggest": "",
             "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 13,
-            "endLine": 25,
-            "endColumn": 20,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -232,16 +212,6 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 17,
-            "endLine": 27,
-            "endColumn": 24,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

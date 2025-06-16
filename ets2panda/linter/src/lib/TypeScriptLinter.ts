@@ -136,8 +136,7 @@ import {
   STDLIB_TASKPOOL_OBJECT_NAME
 } from './utils/consts/TaskpoolAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
-import type { ArrayAccess, UncheckedIdentifier, CheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
-import { CheckResult } from './utils/consts/RuntimeCheckAPI';
+import type { ArrayAccess, UncheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
 import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
 import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
@@ -334,7 +333,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.ForStatement, this.handleForStatement],
     [ts.SyntaxKind.ForInStatement, this.handleForInStatement],
     [ts.SyntaxKind.ForOfStatement, this.handleForOfStatement],
-    [ts.SyntaxKind.IfStatement, this.handleIfStatement],
     [ts.SyntaxKind.ImportDeclaration, this.handleImportDeclaration],
     [ts.SyntaxKind.PropertyAccessExpression, this.handlePropertyAccessExpression],
     [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
@@ -924,75 +922,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsForStmt = node as ts.ForStatement;
     const tsForInit = tsForStmt.initializer;
     if (tsForInit) {
-      this.checkStaticArrayControl(tsForStmt);
       this.checkForLoopDestructuring(tsForInit);
-    }
-  }
-
-  private checkStaticArrayControl(tsForStmt: ts.ForStatement): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    if (!ts.isBlock(tsForStmt.statement)) {
-      return;
-    }
-
-    const loopBody = tsForStmt.statement;
-    const arrayAccessInfo = this.checkBodyHasArrayAccess(loopBody);
-    const loopCondition = tsForStmt.condition;
-
-    if (!arrayAccessInfo) {
-      return;
-    }
-    if (!loopCondition) {
-      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayAccessInfo.arrayIdent);
-    if (!arraySymbol) {
-      return;
-    }
-
-    const arrayCheckedAgainst = this.checkConditionForArrayAccess(loopCondition, arraySymbol);
-    if (!arrayCheckedAgainst) {
-      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(arrayAccessInfo, arrayCheckedAgainst);
-  }
-
-  private checkIfAccessAndCheckVariablesMatch(accessInfo: ArrayAccess, checkedAgainst: CheckedIdentifier): void {
-    const { arrayIdent, accessingIdentifier } = accessInfo;
-
-    if (accessingIdentifier === NUMBER_LITERAL) {
-      if (checkedAgainst === NUMBER_LITERAL) {
-        return;
-      }
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    if (checkedAgainst === NUMBER_LITERAL) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    const checkedAgainstSym = this.tsUtils.trueSymbolAtLocation(checkedAgainst);
-    if (!checkedAgainstSym) {
-      return;
-    }
-
-    const accessingIdentSym = this.tsUtils.trueSymbolAtLocation(accessingIdentifier);
-
-    if (checkedAgainstSym !== accessingIdentSym) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    if (this.isChangedAfterCheck(arrayIdent.getSourceFile(), checkedAgainstSym)) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
     }
   }
 
@@ -1059,115 +989,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return arrayAccessResult;
   }
 
-  private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    const arrayAccessInfo = this.isElementAccessOfArray(accessExpr);
-    if (!arrayAccessInfo) {
-      return;
-    }
-
-    const { arrayIdent } = arrayAccessInfo;
-    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
-    if (!arraySym) {
-      return;
-    }
-    const sourceFile = arrayIdent.getSourceFile();
-    let boundChecked = true;
-
-    for (const statement of sourceFile.statements) {
-      const checkResult = this.checkStatementForArrayAccess(statement, arrayAccessInfo, arraySym);
-      if (checkResult === CheckResult.SKIP) {
-        boundChecked = false;
-        continue;
-      }
-
-      if (checkResult === CheckResult.HAS_ARRAY_ACCES) {
-        continue;
-      }
-
-      if (checkResult === CheckResult.CHECKED) {
-        boundChecked = true;
-        break;
-      }
-    }
-
-    if (!boundChecked) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-    }
-  }
-
-  private checkStatementForArrayAccess(
-    statement: ts.Statement,
-    accessInfo: ArrayAccess,
-    arraySym: ts.Symbol
-  ): CheckResult {
-    if (ts.isForStatement(statement)) {
-      return this.isThisArrayAccess(statement.statement as ts.Block, accessInfo.arrayIdent);
-    }
-
-    if (!ts.isIfStatement(statement)) {
-      return CheckResult.SKIP;
-    }
-
-    const thisArrayAccess = this.isThisArrayAccess(statement.thenStatement as ts.Block, accessInfo.arrayIdent);
-    if (thisArrayAccess !== CheckResult.SKIP) {
-      return thisArrayAccess;
-    }
-
-    const checkedAgainst = this.checkConditionForArrayAccess(statement.expression, arraySym);
-    if (!checkedAgainst) {
-      return CheckResult.SKIP;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
-    return CheckResult.CHECKED;
-  }
-
-  private isThisArrayAccess(block: ts.Block, arrayIdent: ts.Identifier): CheckResult {
-    const info = this.checkBodyHasArrayAccess(block);
-    if (!info) {
-      return CheckResult.SKIP;
-    }
-
-    if (info.arrayIdent === arrayIdent) {
-      return CheckResult.CHECKED;
-    }
-
-    return CheckResult.HAS_ARRAY_ACCES;
-  }
-
-  private isChangedAfterCheck(sourceFile: ts.SourceFile, sym: ts.Symbol): boolean {
-    for (const statement of sourceFile.statements) {
-      if (!ts.isExpressionStatement(statement)) {
-        continue;
-      }
-      if (!ts.isBinaryExpression(statement.expression)) {
-        continue;
-      }
-      if (!ts.isIdentifier(statement.expression.left)) {
-        continue;
-      }
-      if (statement.expression.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
-        continue;
-      }
-
-      const leftSym = this.tsUtils.trueSymbolAtLocation(statement.expression.left);
-      if (!leftSym) {
-        continue;
-      }
-
-      if (leftSym === sym) {
-        return true;
-      }
-      continue;
-    }
-
-    return false;
-  }
-
   private handleForInStatement(node: ts.Node): void {
     const tsForInStmt = node as ts.ForInStatement;
     const tsForInInit = tsForInStmt.initializer;
@@ -1180,37 +1001,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsForOfInit = tsForOfStmt.initializer;
     this.checkForLoopDestructuring(tsForOfInit);
     this.handleForOfJsArray(tsForOfStmt);
-  }
-
-  private handleIfStatement(ifStatement: ts.IfStatement): void {
-    if (this.options.arkts2 && this.useStatic) {
-      this.checkIfStatementForArrayUsage(ifStatement);
-    }
-  }
-
-  private checkIfStatementForArrayUsage(ifStatement: ts.IfStatement): void {
-    if (!ts.isBlock(ifStatement.thenStatement)) {
-      return;
-    }
-
-    const accessInfo = this.checkBodyHasArrayAccess(ifStatement.thenStatement);
-    if (!accessInfo) {
-      return;
-    }
-    const { arrayIdent } = accessInfo;
-
-    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayIdent);
-    if (!arraySymbol) {
-      return;
-    }
-
-    const checkedAgainst = this.checkConditionForArrayAccess(ifStatement.expression, arraySymbol);
-    if (!checkedAgainst) {
-      this.incrementCounters(arrayIdent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
   }
 
   private updateDataSdkJsonInfo(importDeclNode: ts.ImportDeclaration, importClause: ts.ImportClause): void {
@@ -9711,5 +9501,397 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixNumericLiteralIntToNumber(node);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
+  }
+
+  private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      const accessArgument = accessExpr.argumentExpression;
+      if (TypeScriptLinter.isFunctionCall(accessArgument)) {
+        this.incrementCounters(accessExpr, FaultID.RuntimeArrayCheck);
+      }
+      return;
+    }
+
+    const { arrayIdent } = arrayAccessInfo;
+    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
+    if (!arraySym) {
+      return;
+    }
+
+    const indexExpr = accessExpr.argumentExpression;
+    const loopVarName = ts.isIdentifier(indexExpr) ? indexExpr.text : undefined;
+
+    const { isInSafeContext, isValidBoundCheck, isVarModifiedBeforeAccess } = this.analyzeSafeContext(
+      accessExpr,
+      loopVarName,
+      arraySym
+    );
+
+    if (isInSafeContext) {
+      if (!isValidBoundCheck || isVarModifiedBeforeAccess) {
+        this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      }
+    } else {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+    }
+  }
+
+  private analyzeSafeContext(
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string | undefined,
+    arraySym: ts.Symbol
+  ): { isInSafeContext: boolean; isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const context = TypeScriptLinter.findSafeContext(accessExpr);
+    if (!context) {
+      return { isInSafeContext: false, isValidBoundCheck: false, isVarModifiedBeforeAccess: false };
+    }
+
+    return this.analyzeContextSafety(context, accessExpr, loopVarName, arraySym);
+  }
+
+  static findSafeContext(
+    accessExpr: ts.ElementAccessExpression
+  ): { node: ts.ForStatement | ts.WhileStatement | ts.IfStatement } | void {
+    let currentNode: ts.Node | undefined = accessExpr;
+
+    while (currentNode) {
+      if (ts.isForStatement(currentNode) || ts.isWhileStatement(currentNode) || ts.isIfStatement(currentNode)) {
+        return { node: currentNode };
+      }
+      currentNode = currentNode.parent;
+    }
+
+    return undefined;
+  }
+
+  private analyzeContextSafety(
+    context: { node: ts.ForStatement | ts.WhileStatement | ts.IfStatement },
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string | undefined,
+    arraySym: ts.Symbol
+  ): { isInSafeContext: boolean; isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const { node } = context;
+
+    if (!loopVarName) {
+      return {
+        isInSafeContext: true,
+        isValidBoundCheck: false,
+        isVarModifiedBeforeAccess: false
+      };
+    }
+
+    const analysis = this.analyzeStatementType( node, accessExpr, loopVarName, arraySym);
+
+    return {
+      isInSafeContext: true,
+      isValidBoundCheck: analysis.isValidBoundCheck,
+      isVarModifiedBeforeAccess: analysis.isVarModifiedBeforeAccess
+    };
+  }
+
+  private analyzeStatementType(
+    node: ts.ForStatement | ts.WhileStatement | ts.IfStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    switch (node.kind) {
+      case ts.SyntaxKind.ForStatement:
+        return this.analyzeForStatement(node as ts.ForStatement, accessExpr, loopVarName, arraySym);
+      case ts.SyntaxKind.WhileStatement:
+        return this.analyzeWhileStatement(node as ts.WhileStatement, accessExpr, loopVarName, arraySym);
+      case ts.SyntaxKind.IfStatement:
+        return this.analyzeIfStatement(node as ts.IfStatement, accessExpr, loopVarName, arraySym);
+      default:
+        return { isValidBoundCheck: false, isVarModifiedBeforeAccess: false };
+    }
+  }
+
+  private analyzeForStatement(
+    forNode: ts.ForStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = forNode.condition ?
+      this.checkBoundCondition(forNode.condition, loopVarName, arraySym) :
+      false;
+
+    const isVarModifiedBeforeAccess = forNode.statement ?
+      TypeScriptLinter.checkVarModifiedBeforeNode(forNode.statement, accessExpr, loopVarName) :
+      false;
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private analyzeWhileStatement(
+    whileNode: ts.WhileStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = whileNode.expression ?
+      this.checkBoundCondition(whileNode.expression, loopVarName, arraySym) :
+      false;
+
+    const isVarModifiedBeforeAccess = whileNode.statement ?
+      TypeScriptLinter.checkVarModifiedBeforeNode(whileNode.statement, accessExpr, loopVarName) :
+      false;
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private analyzeIfStatement(
+    ifNode: ts.IfStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = ifNode.expression ?
+      this.checkBoundCondition(ifNode.expression, loopVarName, arraySym) :
+      false;
+
+    let isVarModifiedBeforeAccess = false;
+    const statementBlock = ts.isBlock(ifNode.thenStatement) ? ifNode.thenStatement : undefined;
+    if (statementBlock) {
+      isVarModifiedBeforeAccess = TypeScriptLinter.checkVarModifiedBeforeNode(statementBlock, accessExpr, loopVarName);
+    }
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private checkBoundCondition(
+    condition: ts.Expression,
+    varName: string,
+    arraySym: ts.Symbol
+  ): boolean {
+    if (ts.isBinaryExpression(condition)) {
+      const { left, right, operatorToken } = condition;
+
+      if (this.checkVarLessThanArrayLength(left, right, operatorToken, varName, arraySym)) {
+        return true;
+      }
+
+      if (this.checkArrayLengthGreaterThanVar(left, right, operatorToken, varName, arraySym)) {
+        return true;
+      }
+
+      if (ts.isIdentifier(left) && left.text === varName && ts.isNumericLiteral(right)) {
+        const value = parseFloat(right.text);
+        if (
+          operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken && value <= 0 ||
+          operatorToken.kind === ts.SyntaxKind.GreaterThanToken && value < 0
+        ) {
+          return true;
+        }
+      }
+
+      return this.checkBoundCondition(left, varName, arraySym) ||
+        this.checkBoundCondition(right, varName, arraySym);
+    }
+
+    return false;
+  }
+
+  private checkArrayLengthGreaterThanVar(
+    left: ts.Expression,
+    right: ts.Expression,
+    operatorToken: ts.Token<ts.BinaryOperator>,
+    varName: string,
+    arraySym: ts.Symbol
+  ): boolean {
+    if (
+      ts.isPropertyAccessExpression(left) &&
+      left.name.text === 'length' &&
+      ts.isIdentifier(right) &&
+      right.text === varName
+    ) {
+      const leftArraySym = this.tsUtils.trueSymbolAtLocation(left.expression);
+      if (leftArraySym === arraySym) {
+        return (
+          operatorToken.kind === ts.SyntaxKind.GreaterThanToken ||
+          operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken
+        );
+      }
+    }
+    return false;
+  }
+
+  private checkVarLessThanArrayLength(
+    left: ts.Expression,
+    right: ts.Expression,
+    operatorToken: ts.Token<ts.BinaryOperator>,
+    varName: string,
+    arraySym: ts.Symbol
+  ): boolean {
+    return (
+      ts.isIdentifier(left) &&
+      left.text === varName &&
+      ts.isPropertyAccessExpression(right) &&
+      right.name.text === 'length' &&
+      (operatorToken.kind === ts.SyntaxKind.LessThanToken ||
+        operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken) &&
+      this.tsUtils.trueSymbolAtLocation(right.expression) === arraySym
+    );
+  }
+
+  private static traverseNodesUntilTarget(
+    node: ts.Node,
+    targetNode: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[],
+    state: { targetFound: boolean; modified: boolean }
+  ): void {
+    if (node === targetNode) {
+      state.targetFound = true;
+      return;
+    }
+
+    if (state.targetFound) {
+      return;
+    }
+
+    const newScope = this.handleNewScope(node, scopeStack);
+
+    TypeScriptLinter.getVariablesFromScope(node, varName, scopeStack);
+
+    if (this.isVariableModified(node, varName, scopeStack)) {
+      state.modified = true;
+    }
+
+    ts.forEachChild(node, (child) => {
+      this.traverseNodesUntilTarget(child, targetNode, varName, scopeStack, state);
+    });
+
+    if (newScope) {
+      scopeStack.pop();
+    }
+  }
+
+  private static handleNewScope(
+    node: ts.Node,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): { shadowed: boolean; localVars: Set<string> } | null {
+    if (ts.isBlock(node) || ts.isFunctionLike(node) || ts.isCatchClause(node)) {
+      const parentScope = scopeStack[scopeStack.length - 1];
+      const newScope = {
+        shadowed: parentScope.shadowed,
+        localVars: new Set<string>()
+      };
+      scopeStack.push(newScope);
+      return newScope;
+    }
+    return null;
+  }
+
+  static getVariablesFromScope(
+    node: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): void {
+    if (ts.isVariableDeclaration(node) &&
+      ts.isIdentifier(node.name) &&
+      node.name.text === varName) {
+      const parent = node.parent;
+      if (ts.isVariableDeclarationList(parent) &&
+        (parent.flags & ts.NodeFlags.Let || parent.flags & ts.NodeFlags.Const)) {
+        scopeStack[scopeStack.length - 1].localVars.add(varName);
+      }
+    }
+
+    if (ts.isParameter(node) && ts.isIdentifier(node.name) && node.name.text === varName) {
+      scopeStack[scopeStack.length - 1].localVars.add(varName);
+    }
+  }
+
+  private static isVariableModified(
+    node: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): boolean {
+    if (!ts.isBinaryExpression(node) ||
+      node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+      return false;
+    }
+
+    if (!ts.isIdentifier(node.left) || node.left.text !== varName) {
+      return false;
+    }
+
+    for (let i = scopeStack.length - 1; i >= 0; i--) {
+      if (scopeStack[i].localVars.has(varName)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static checkVarModifiedBeforeNode(container: ts.Node, targetNode: ts.Node, varName: string): boolean {
+    const scopeStack: { shadowed: boolean; localVars: Set<string> }[] = [];
+    scopeStack.push({ shadowed: false, localVars: new Set() });
+
+    const state = {
+      targetFound: false,
+      modified: false
+    };
+
+    this.traverseNodesUntilTarget(container, targetNode, varName, scopeStack, state);
+    return state.modified;
+  }
+
+  static isFunctionCall(node: ts.Node): boolean {
+    return ts.isCallExpression(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node);
+  }
+
+  private getArrayAccessInfo(expr: ts.ElementAccessExpression): false | ArrayAccess {
+    if (!ts.isIdentifier(expr.expression)) {
+      return false;
+    }
+    const baseType = this.tsTypeChecker.getTypeAtLocation(expr.expression);
+    if (!this.tsUtils.isArray(baseType)) {
+      return false;
+    }
+    const accessArgument = expr.argumentExpression;
+
+    TypeScriptLinter.isFunctionCall(accessArgument);
+
+    const checkNumericType = (node: ts.Node): boolean => {
+      const argType = this.tsTypeChecker.getTypeAtLocation(node);
+      return (
+        (argType.flags & ts.TypeFlags.NumberLike) !== 0 ||
+        argType.isUnionOrIntersection() &&
+        argType.types.some((t) => {
+          return t.flags & ts.TypeFlags.NumberLike;
+        })
+      );
+    };
+
+    const isEnumMember = (node: ts.Node): boolean => {
+      if (ts.isPropertyAccessExpression(node)) {
+        const symbol = this.tsUtils.trueSymbolAtLocation(node);
+        return !!symbol && (symbol.flags & ts.SymbolFlags.EnumMember) !== 0;
+      }
+      return false;
+    };
+
+    if (TypeScriptLinter.isFunctionCall(accessArgument)) {
+      return false;
+    }
+
+    if (checkNumericType(accessArgument) || isEnumMember(accessArgument)) {
+      return {
+        pos: expr.getEnd(),
+        accessingIdentifier: accessArgument,
+        arrayIdent: expr.expression
+      };
+    }
+
+    return false;
   }
 }

@@ -86,5 +86,82 @@ newIndex = 22.0;
 
 arr10[newIndex as int];
 
+let arr: number[] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+for(let i: number = 0.0; i < arr.length; i++) {
+arr[i as int] = arr[i as int] + 1.0;
+}
+for(let i: number = 0.0; i < arr.length; i++) {
+i = 10.0;
+arr[i as int] = arr[i as int] + 1.0;
+}
 
+let arr: number[] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+let idx: number = 2.0;
+if(idx > 0.0 && idx < arr.length) {
+arr[idx as int] = arr[idx as int] + 1.0;
+}
+if(idx > 0.0 && idx < arr.length) {
+idx = 10.0;
+arr[idx as int] = arr[idx as int] + 1.0;
+}
+
+let arr: number[] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+let idx: number = 0.0;
+while(idx > 0.0 && idx < arr.length) {
+arr[idx as int] = arr[idx as int] + 1.0;
+idx++;
+idx = 10.0;
+}
+while(idx > 0.0 && idx < arr.length) {
+idx = 10.0;
+arr[idx as int] = arr[idx as int] + 1.0;
+}
+
+let arr: number[] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+let idx: number = 0.0;
+arr[idx as int];
+arr[10];
+if (arr.length > 10.0) {
+arr[10] = 10.0;
+}
+
+function foo():int{
+return 1.0;
+}
+
+arr[(44/3) as int];
+arr[foo()];
+arr[()=>{return 1}];
+if(arr.length > foo()) {
+arr[foo()];
+}
+if(arr.length > 44.0/3.0) {
+arr[(4*4/3) as int];
+}
+
+let arr1:number[] = [1.0, 1.5,45.0,2.0]
+
+function foo(i:number):number{
+  return i;
+}
+
+arr1[3*5] = 23.0;
+arr1[parseInt("16") as int] = 23.0;
+arr1[foo(16) as int] = 23.0
+
+let arr1:number[] = [1.0, 1.5,45.0,2.0]
+
+arr1[Number.MAX_VALUE as int] = 23.0;
+arr1[Number.MAX_SAFE_INTEGER as int] = 23.0;
+
+let arr1:number[] = [1.0, 1.5,45.0,2.0]
+function foo(i:number):number{
+  return i;
+}
+arr1[(24)] = 23.0;
+arr1[+24] = 23.0;
+enum TE{
+  AA = 12
+}
+arr1[TE.AA] = 12.0;
 
