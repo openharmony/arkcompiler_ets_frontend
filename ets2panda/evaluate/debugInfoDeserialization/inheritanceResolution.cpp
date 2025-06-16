@@ -22,8 +22,8 @@
 #include "evaluate/proxyProgramsCache.h"
 #include "evaluate/entityDeclarator-inl.h"
 
-#include "libpandafile/class_data_accessor.h"
-#include "libpandafile/file-inl.h"
+#include "libarkfile/class_data_accessor.h"
+#include "libarkfile/file-inl.h"
 
 namespace ark::es2panda::evaluate {
 
