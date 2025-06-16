@@ -491,6 +491,11 @@ export abstract class BaseMode {
       processed.add(currentFile);
 
       (this.dependencyFileMap?.dependants[currentFile] || []).forEach(dependant => {
+        // For the 1.1 declaration file referenced in dynamicPaths, if a path is detected as non-existent, it will be skipped.
+        const isFileExist = fs.existsSync(dependant);
+        if (!isFileExist) {
+          return;
+        }
         if (!compileFiles.has(dependant) && !processed.has(dependant)) {
           queue.push(dependant);
         }
