@@ -17,6 +17,7 @@
 #include "internal_api.h"
 #include "ir/astNode.h"
 #include "public/public.h"
+#include "ir/ets/etsTuple.h"
 #include "ir/ets/etsUnionType.h"
 #include "api.h"
 #include "compiler/lowering/util.h"
@@ -396,9 +397,23 @@ std::string GetNameForUnionType(const ir::TypeNode *unionType)
     for (size_t i = 0; i < types.size(); ++i) {
         newstr += GetNameForTypeNode(types[i]);
         if (i != types.size() - 1) {
-            newstr += "|";
+            newstr += " | ";
         }
     }
+    return newstr;
+}
+
+std::string GetNameForTupleType(const ir::TypeNode *tupleType)
+{
+    const auto &types = tupleType->AsETSTuple()->GetTupleTypeAnnotationsList();
+    std::string newstr = "[";
+    for (size_t i = 0; i < types.size(); ++i) {
+        newstr += GetNameForTypeNode(types[i]);
+        if (i != types.size() - 1) {
+            newstr += ", ";
+        }
+    }
+    newstr += "]";
     return newstr;
 }
 
@@ -441,6 +456,68 @@ std::string GetNameForFunctionType(const ir::TypeNode *functionType)
     return "((" + params + ") => " + returnType + ")";
 }
 
+std::string EscapeJsonString(const std::string &input)
+{
+    std::ostringstream oss;
+    oss << "\"";
+    for (char c : input) {
+        switch (c) {
+            case '\"':
+                oss << "\\\"";
+                break;
+            case '\\':
+                oss << "\\\\";
+                break;
+            case '\n':
+                oss << "\\n";
+                break;
+            case '\r':
+                oss << "\\r";
+                break;
+            case '\t':
+                oss << "\\t";
+                break;
+            default:
+                oss << c;
+                break;
+        }
+    }
+    oss << "\"";
+    return oss.str();
+}
+
+std::string GetNameForLiteralTypeNode(const ir::AstNode *node, bool iskindModifier = false)
+{
+    if (node == nullptr) {
+        return "undefined";
+    }
+    if (node->IsStringLiteral()) {
+        return iskindModifier ? EscapeJsonString(std::string(node->AsStringLiteral()->Str())) : "String";
+    }
+    if (node->IsNumberLiteral()) {
+        return iskindModifier ? std::string(node->AsNumberLiteral()->Str()) : "Number";
+    }
+    if (node->IsBooleanLiteral()) {
+        return iskindModifier ? node->AsBooleanLiteral()->Value() ? "true" : "false" : "Boolean";
+    }
+    if (node->IsBigIntLiteral()) {
+        return "Bigint";
+    }
+    if (node->IsIdentifier()) {
+        auto name = node->AsIdentifier()->Name();
+        if (name.Is("NaN")) {
+            return "Number";
+        }
+    }
+    if (node->IsNullLiteral()) {
+        return "null";
+    }
+    if (node->IsETSStringLiteralType()) {
+        return "String";
+    }
+    return "undefined";
+}
+
 std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation)
 {
     if (typeAnnotation->IsETSUnionType()) {
@@ -449,27 +526,25 @@ std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation)
     if (typeAnnotation->IsETSPrimitiveType()) {
         return PrimitiveTypeToName(typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType());
     }
-
     if (typeAnnotation->IsETSTypeReference()) {
         return GetNameForTypeReference(typeAnnotation);
     }
-
     if (typeAnnotation->IsETSFunctionType()) {
         return GetNameForFunctionType(typeAnnotation);
     }
-
     if (typeAnnotation->IsTSArrayType()) {
         return GetNameForTypeNode(typeAnnotation->AsTSArrayType()->ElementType()) + "[]";
     }
-
     if (typeAnnotation->IsETSNullType()) {
         return "null";
     }
-
     if (typeAnnotation->IsETSUndefinedType()) {
         return "undefined";
     }
-    return "undefined";
+    if (typeAnnotation->IsETSTuple()) {
+        return GetNameForTupleType(typeAnnotation);
+    }
+    return GetNameForLiteralTypeNode(typeAnnotation);
 }
 
 std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation)
@@ -481,7 +556,7 @@ std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation)
         std::string str = GetNameForTypeNode(type);
         newstr += str;
         if (i != typeAnnotation->AsETSUnionType()->Types().size() - 1) {
-            newstr += "|";
+            newstr += " | ";
         }
     }
     return newstr;
@@ -1000,13 +1075,7 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
     return displayParts;
 }
 
-bool IsKindModifierInSet(const std::string &target)
-{
-    static std::set<std::string> kindModifierSet = {"const", "static public declare const"};
-    return kindModifierSet.find(target) != kindModifierSet.end();
-}
-
-std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, const std::string &kindModifier)
+std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node)
 {
     std::vector<SymbolDisplayPart> displayParts;
     if (node->Type() != ir::AstNodeType::CLASS_PROPERTY) {
@@ -1015,10 +1084,11 @@ std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, 
     auto classDef = node->Parent();
     if (classDef->Type() == ir::AstNodeType::CLASS_DEFINITION) {
         auto className = classDef->AsClassDefinition()->Ident()->Name();
+        auto isConst = (node->Modifiers() & ir::ModifierFlags::CONST) != 0;
         if (className != "ETSGLOBAL") {
             displayParts.emplace_back(CreateClassName(std::string(className)));
             displayParts.emplace_back(CreatePunctuation("."));
-        } else if (IsKindModifierInSet(kindModifier)) {
+        } else if (isConst) {
             displayParts.emplace_back(CreateKeyword("const"));
             displayParts.emplace_back(CreateSpace());
         } else {
@@ -1035,7 +1105,8 @@ std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, 
         if (typeAnnotation == nullptr) {
             if (node->AsClassProperty()->Value() == nullptr ||
                 !node->AsClassProperty()->Value()->IsETSNewClassInstanceExpression()) {
-                displayParts.emplace_back(CreateTypeName("undefined"));
+                displayParts.emplace_back(
+                    CreateTypeName(GetNameForLiteralTypeNode(node->AsClassProperty()->Value(), isConst)));
                 return displayParts;
             }
             auto newClassExpr = node->AsClassProperty()->Value()->AsETSNewClassInstanceExpression();
@@ -1124,7 +1195,7 @@ QuickInfo GetQuickInfo(ir::AstNode *node, ir::AstNode *containerNode, ir::AstNod
             auto enumMember = GetEnumMemberByName(enumDecl, node->AsClassProperty()->Key()->AsIdentifier()->Name());
             displayParts = CreateDisplayForEnumMember(enumMember);
         } else {
-            displayParts = CreateDisplayForClassProperty(node, kindModifiers);
+            displayParts = CreateDisplayForClassProperty(node);
             kind = "property";
         }
     } else if (node->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
