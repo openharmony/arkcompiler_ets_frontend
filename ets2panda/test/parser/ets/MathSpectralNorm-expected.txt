@@ -6797,9 +6797,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 87,
+                                "column": 5,
+                                "program": "MathSpectralNorm.ets"
+                              },
+                              "end": {
+                                "line": 87,
+                                "column": 12,
+                                "program": "MathSpectralNorm.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 87,
+                                "column": 13,
+                                "program": "MathSpectralNorm.ets"
+                              },
+                              "end": {
+                                "line": 87,
+                                "column": 21,
+                                "program": "MathSpectralNorm.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 87,
@@ -6808,7 +6842,7 @@
                             },
                             "end": {
                               "line": 87,
-                              "column": 13,
+                              "column": 21,
                               "program": "MathSpectralNorm.ets"
                             }
                           }
@@ -6821,12 +6855,12 @@
                             "loc": {
                               "start": {
                                 "line": 87,
-                                "column": 14,
+                                "column": 22,
                                 "program": "MathSpectralNorm.ets"
                               },
                               "end": {
                                 "line": 87,
-                                "column": 19,
+                                "column": 27,
                                 "program": "MathSpectralNorm.ets"
                               }
                             }
@@ -6837,12 +6871,12 @@
                             "loc": {
                               "start": {
                                 "line": 87,
-                                "column": 21,
+                                "column": 29,
                                 "program": "MathSpectralNorm.ets"
                               },
                               "end": {
                                 "line": 87,
-                                "column": 46,
+                                "column": 54,
                                 "program": "MathSpectralNorm.ets"
                               }
                             }
@@ -6853,12 +6887,12 @@
                             "loc": {
                               "start": {
                                 "line": 87,
-                                "column": 49,
+                                "column": 57,
                                 "program": "MathSpectralNorm.ets"
                               },
                               "end": {
                                 "line": 87,
-                                "column": 67,
+                                "column": 75,
                                 "program": "MathSpectralNorm.ets"
                               }
                             }
@@ -6873,7 +6907,7 @@
                           },
                           "end": {
                             "line": 87,
-                            "column": 68,
+                            "column": 76,
                             "program": "MathSpectralNorm.ets"
                           }
                         }
@@ -6886,7 +6920,7 @@
                         },
                         "end": {
                           "line": 87,
-                          "column": 69,
+                          "column": 77,
                           "program": "MathSpectralNorm.ets"
                         }
                       }

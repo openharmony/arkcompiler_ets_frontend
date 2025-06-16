@@ -431,9 +431,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 5,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 12,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 13,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 21,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 21,
@@ -442,7 +476,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 13,
+                              "column": 21,
                               "program": "import_alias_and_without_alias_2.ets"
                             }
                           }
@@ -454,12 +488,12 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 14,
+                                "column": 22,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 17,
+                                "column": 25,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -473,12 +507,12 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 19,
+                                  "column": 27,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 27,
+                                  "column": 35,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 }
                               }
@@ -488,12 +522,12 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 19,
+                                "column": 27,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 29,
+                                "column": 37,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -508,7 +542,7 @@
                           },
                           "end": {
                             "line": 21,
-                            "column": 30,
+                            "column": 38,
                             "program": "import_alias_and_without_alias_2.ets"
                           }
                         }
@@ -521,7 +555,7 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 31,
+                          "column": 39,
                           "program": "import_alias_and_without_alias_2.ets"
                         }
                       }
@@ -531,9 +565,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 5,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 12,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 13,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 21,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 22,
@@ -542,7 +610,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 13,
+                              "column": 21,
                               "program": "import_alias_and_without_alias_2.ets"
                             }
                           }
@@ -554,12 +622,12 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 14,
+                                "column": 22,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 17,
+                                "column": 25,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -575,12 +643,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 19,
+                                    "column": 27,
                                     "program": "import_alias_and_without_alias_2.ets"
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 22,
+                                    "column": 30,
                                     "program": "import_alias_and_without_alias_2.ets"
                                   }
                                 }
@@ -592,12 +660,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 23,
+                                    "column": 31,
                                     "program": "import_alias_and_without_alias_2.ets"
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 26,
+                                    "column": 34,
                                     "program": "import_alias_and_without_alias_2.ets"
                                   }
                                 }
@@ -607,12 +675,12 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 19,
+                                  "column": 27,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 26,
+                                  "column": 34,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 }
                               }
@@ -622,12 +690,12 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 19,
+                                "column": 27,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 28,
+                                "column": 36,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -642,7 +710,7 @@
                           },
                           "end": {
                             "line": 22,
-                            "column": 29,
+                            "column": 37,
                             "program": "import_alias_and_without_alias_2.ets"
                           }
                         }
@@ -655,7 +723,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 30,
+                          "column": 38,
                           "program": "import_alias_and_without_alias_2.ets"
                         }
                       }
@@ -665,9 +733,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 5,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 12,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 13,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 21,
+                                "program": "import_alias_and_without_alias_2.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 23,
@@ -676,7 +778,7 @@
                             },
                             "end": {
                               "line": 23,
-                              "column": 13,
+                              "column": 21,
                               "program": "import_alias_and_without_alias_2.ets"
                             }
                           }
@@ -688,12 +790,12 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 14,
+                                "column": 22,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 17,
+                                "column": 25,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -707,12 +809,12 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 19,
+                                  "column": 27,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 22,
+                                  "column": 30,
                                   "program": "import_alias_and_without_alias_2.ets"
                                 }
                               }
@@ -722,12 +824,12 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 19,
+                                "column": 27,
                                 "program": "import_alias_and_without_alias_2.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 24,
+                                "column": 32,
                                 "program": "import_alias_and_without_alias_2.ets"
                               }
                             }
@@ -742,7 +844,7 @@
                           },
                           "end": {
                             "line": 23,
-                            "column": 25,
+                            "column": 33,
                             "program": "import_alias_and_without_alias_2.ets"
                           }
                         }
@@ -755,7 +857,7 @@
                         },
                         "end": {
                           "line": 23,
-                          "column": 26,
+                          "column": 34,
                           "program": "import_alias_and_without_alias_2.ets"
                         }
                       }

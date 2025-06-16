@@ -28,11 +28,11 @@ function foo2() : Char {
 function main() {
     let c : Char = c'c';
     let val : Char = foo()
-    assertEQ(val, c)
+    arktest.assertEQ(val, c)
 
     let val1 : Char = foo1(c'c')
-    assertEQ(val1, c)
+    arktest.assertEQ(val1, c)
 
     let val2 : Char = foo2()
-    assertEQ(val2, c)
+    arktest.assertEQ(val2, c)
 }

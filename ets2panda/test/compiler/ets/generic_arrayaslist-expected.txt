@@ -8884,9 +8884,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertLT",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 93,
+                                "column": 9,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 93,
+                                "column": 16,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertLT",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 93,
+                                "column": 17,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 93,
+                                "column": 25,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 93,
@@ -8895,7 +8929,7 @@
                             },
                             "end": {
                               "line": 93,
-                              "column": 17,
+                              "column": 25,
                               "program": "generic_arrayaslist.ets"
                             }
                           }
@@ -8907,12 +8941,12 @@
                             "loc": {
                               "start": {
                                 "line": 93,
-                                "column": 18,
+                                "column": 26,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 93,
-                                "column": 19,
+                                "column": 27,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -8924,12 +8958,12 @@
                               "loc": {
                                 "start": {
                                   "line": 93,
-                                  "column": 21,
+                                  "column": 29,
                                   "program": "generic_arrayaslist.ets"
                                 },
                                 "end": {
                                   "line": 93,
-                                  "column": 25,
+                                  "column": 33,
                                   "program": "generic_arrayaslist.ets"
                                 }
                               }
@@ -8941,12 +8975,12 @@
                               "loc": {
                                 "start": {
                                   "line": 93,
-                                  "column": 26,
+                                  "column": 34,
                                   "program": "generic_arrayaslist.ets"
                                 },
                                 "end": {
                                   "line": 93,
-                                  "column": 33,
+                                  "column": 41,
                                   "program": "generic_arrayaslist.ets"
                                 }
                               }
@@ -8956,12 +8990,12 @@
                             "loc": {
                               "start": {
                                 "line": 93,
-                                "column": 21,
+                                "column": 29,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 93,
-                                "column": 33,
+                                "column": 41,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -8972,12 +9006,12 @@
                             "loc": {
                               "start": {
                                 "line": 93,
-                                "column": 35,
+                                "column": 43,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 93,
-                                "column": 74,
+                                "column": 82,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -8992,7 +9026,7 @@
                           },
                           "end": {
                             "line": 93,
-                            "column": 75,
+                            "column": 83,
                             "program": "generic_arrayaslist.ets"
                           }
                         }
@@ -9005,7 +9039,7 @@
                         },
                         "end": {
                           "line": 93,
-                          "column": 76,
+                          "column": 84,
                           "program": "generic_arrayaslist.ets"
                         }
                       }
@@ -11414,9 +11448,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertTrue",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 115,
+                                "column": 9,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 115,
+                                "column": 16,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertTrue",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 115,
+                                "column": 17,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 115,
+                                "column": 27,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 115,
@@ -11425,7 +11493,7 @@
                             },
                             "end": {
                               "line": 115,
-                              "column": 19,
+                              "column": 27,
                               "program": "generic_arrayaslist.ets"
                             }
                           }
@@ -11437,12 +11505,12 @@
                             "loc": {
                               "start": {
                                 "line": 115,
-                                "column": 20,
+                                "column": 28,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 115,
-                                "column": 21,
+                                "column": 29,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -11454,12 +11522,12 @@
                               "loc": {
                                 "start": {
                                   "line": 115,
-                                  "column": 23,
+                                  "column": 31,
                                   "program": "generic_arrayaslist.ets"
                                 },
                                 "end": {
                                   "line": 115,
-                                  "column": 27,
+                                  "column": 35,
                                   "program": "generic_arrayaslist.ets"
                                 }
                               }
@@ -11471,12 +11539,12 @@
                               "loc": {
                                 "start": {
                                   "line": 115,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "generic_arrayaslist.ets"
                                 },
                                 "end": {
                                   "line": 115,
-                                  "column": 35,
+                                  "column": 43,
                                   "program": "generic_arrayaslist.ets"
                                 }
                               }
@@ -11486,12 +11554,12 @@
                             "loc": {
                               "start": {
                                 "line": 115,
-                                "column": 23,
+                                "column": 31,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 115,
-                                "column": 35,
+                                "column": 43,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -11502,12 +11570,12 @@
                             "loc": {
                               "start": {
                                 "line": 115,
-                                "column": 37,
+                                "column": 45,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 115,
-                                "column": 73,
+                                "column": 81,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -11522,7 +11590,7 @@
                           },
                           "end": {
                             "line": 115,
-                            "column": 74,
+                            "column": 82,
                             "program": "generic_arrayaslist.ets"
                           }
                         }
@@ -11535,7 +11603,7 @@
                         },
                         "end": {
                           "line": 115,
-                          "column": 75,
+                          "column": 83,
                           "program": "generic_arrayaslist.ets"
                         }
                       }
@@ -12568,9 +12636,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertTrue",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 129,
+                                "column": 9,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 129,
+                                "column": 16,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertTrue",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 129,
+                                "column": 17,
+                                "program": "generic_arrayaslist.ets"
+                              },
+                              "end": {
+                                "line": 129,
+                                "column": 27,
+                                "program": "generic_arrayaslist.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 129,
@@ -12579,7 +12681,7 @@
                             },
                             "end": {
                               "line": 129,
-                              "column": 19,
+                              "column": 27,
                               "program": "generic_arrayaslist.ets"
                             }
                           }
@@ -12591,12 +12693,12 @@
                             "loc": {
                               "start": {
                                 "line": 129,
-                                "column": 20,
+                                "column": 28,
                                 "program": "generic_arrayaslist.ets"
                               },
                               "end": {
                                 "line": 129,
-                                "column": 25,
+                                "column": 33,
                                 "program": "generic_arrayaslist.ets"
                               }
                             }
@@ -12611,7 +12713,7 @@
                           },
                           "end": {
                             "line": 129,
-                            "column": 26,
+                            "column": 34,
                             "program": "generic_arrayaslist.ets"
                           }
                         }
@@ -12624,7 +12726,7 @@
                         },
                         "end": {
                           "line": 129,
-                          "column": 26,
+                          "column": 34,
                           "program": "generic_arrayaslist.ets"
                         }
                       }

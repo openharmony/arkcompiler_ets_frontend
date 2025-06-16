@@ -16,9 +16,9 @@
 function funcWithThrowsParam(f: () => void throws) {
     try {
         f()
-        assertTrue(false)
+        arktest.assertTrue(false)
     } catch (e) {
-        assertTrue(true)
+        arktest.assertTrue(true)
     }
 }
 
@@ -28,15 +28,15 @@ function funcThrows(): void throws {
 
 function funcRethrows(f: () => void throws) rethrows {
    f()
-   assertTrue(false)
+   arktest.assertTrue(false)
 }
 
 function funcDoubleThrows(ff: (f: () => void throws) => void throws) {
     try {
         ff(funcThrows)
-        assertTrue(false)
+        arktest.assertTrue(false)
     } catch (e) {
-        assertTrue(true)
+        arktest.assertTrue(true)
     }
 }
 
@@ -45,9 +45,9 @@ function main() {
 
    try {
          funcRethrows(funcThrows)
-         assertTrue(false)
+         arktest.assertTrue(false)
     } catch (e) {
-         assertTrue(true)
+         arktest.assertTrue(true)
    }
 
     funcDoubleThrows(funcRethrows)

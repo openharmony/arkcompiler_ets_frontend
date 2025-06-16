@@ -42,14 +42,14 @@ function main() : int
    let var2? = O;
    let var3? = goo();
 
-   assertEQ(c.method('blablabla'), 1)
-   assertEQ(c.method(undefined), 2)
-   assertEQ(c.method(), 2)
-   assertTrue(c.field === undefined)
+   arktest.assertEQ(c.method('blablabla'), 1)
+   arktest.assertEQ(c.method(undefined), 2)
+   arktest.assertEQ(c.method(), 2)
+   arktest.assertTrue(c.field === undefined)
 
-   assertTrue(var1 === undefined)
-   assertTrue(var2 === O)
-   assertTrue(var3 === I)
+   arktest.assertTrue(var1 === undefined)
+   arktest.assertTrue(var2 === O)
+   arktest.assertTrue(var3 === I)
 
    return 0;
 }

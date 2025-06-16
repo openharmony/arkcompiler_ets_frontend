@@ -16239,9 +16239,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 152,
+                                "column": 9,
+                                "program": "AccessNBody.ets"
+                              },
+                              "end": {
+                                "line": 152,
+                                "column": 16,
+                                "program": "AccessNBody.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 152,
+                                "column": 17,
+                                "program": "AccessNBody.ets"
+                              },
+                              "end": {
+                                "line": 152,
+                                "column": 25,
+                                "program": "AccessNBody.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 152,
@@ -16250,7 +16284,7 @@
                             },
                             "end": {
                               "line": 152,
-                              "column": 17,
+                              "column": 25,
                               "program": "AccessNBody.ets"
                             }
                           }
@@ -16263,12 +16297,12 @@
                             "loc": {
                               "start": {
                                 "line": 152,
-                                "column": 18,
+                                "column": 26,
                                 "program": "AccessNBody.ets"
                               },
                               "end": {
                                 "line": 152,
-                                "column": 21,
+                                "column": 29,
                                 "program": "AccessNBody.ets"
                               }
                             }
@@ -16280,12 +16314,12 @@
                               "loc": {
                                 "start": {
                                   "line": 152,
-                                  "column": 23,
+                                  "column": 31,
                                   "program": "AccessNBody.ets"
                                 },
                                 "end": {
                                   "line": 152,
-                                  "column": 27,
+                                  "column": 35,
                                   "program": "AccessNBody.ets"
                                 }
                               }
@@ -16297,12 +16331,12 @@
                               "loc": {
                                 "start": {
                                   "line": 152,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "AccessNBody.ets"
                                 },
                                 "end": {
                                   "line": 152,
-                                  "column": 36,
+                                  "column": 44,
                                   "program": "AccessNBody.ets"
                                 }
                               }
@@ -16312,12 +16346,12 @@
                             "loc": {
                               "start": {
                                 "line": 152,
-                                "column": 23,
+                                "column": 31,
                                 "program": "AccessNBody.ets"
                               },
                               "end": {
                                 "line": 152,
-                                "column": 36,
+                                "column": 44,
                                 "program": "AccessNBody.ets"
                               }
                             }
@@ -16328,12 +16362,12 @@
                             "loc": {
                               "start": {
                                 "line": 152,
-                                "column": 39,
+                                "column": 47,
                                 "program": "AccessNBody.ets"
                               },
                               "end": {
                                 "line": 152,
-                                "column": 57,
+                                "column": 65,
                                 "program": "AccessNBody.ets"
                               }
                             }
@@ -16348,7 +16382,7 @@
                           },
                           "end": {
                             "line": 152,
-                            "column": 58,
+                            "column": 66,
                             "program": "AccessNBody.ets"
                           }
                         }
@@ -16361,7 +16395,7 @@
                         },
                         "end": {
                           "line": 152,
-                          "column": 59,
+                          "column": 67,
                           "program": "AccessNBody.ets"
                         }
                       }

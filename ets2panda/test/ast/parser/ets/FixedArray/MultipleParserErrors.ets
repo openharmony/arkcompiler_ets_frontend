@@ -104,7 +104,7 @@ function foo(... a: byte): void {}
 native function foo(... b: byte): long;
 
 function min(v: double, u: double): double {
-    assertTrue(false)
+    arktest.assertTrue(false)
     return v < u ? v : u;
 }
 
@@ -138,12 +138,12 @@ function main(): void {
         //Do something.
     }
 
-    assertTrue(foo(), undefined);
+    arktest.assertTrue(foo(), undefined);
 
     f(0);
 
     let a10: A = new A();
-    assertTrue(a10.getInner().i ==  2); // #22840 assertEQ incorrect check types of operands
+    arktest.assertTrue(a10.getInner().i ==  2); // #22840 arktest.assertEQ incorrect check types of operands
 
     let instance_A: A = new A(2, 3);
     let instanc_A: A = new A(2);
@@ -155,7 +155,7 @@ function main(): void {
     instance1.getValue();
 
     let b: A = new A();
-    assertTrue(b.getInner().foo() == 1); // #22840 assertEQ incorrect check types of operands
+    arktest.assertTrue(b.getInner().foo() == 1); // #22840 arktest.assertEQ incorrect check types of operands
 
     min(1.0, 1.0)
     let let = 0;
@@ -265,15 +265,15 @@ function main(): void {
 /* @@? 137:18 Error SyntaxError: Unexpected token '0'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 137:21 Error SyntaxError: Unexpected token '{'. */
-/* @@? 141:16 Error TypeError: This expression is not callable. */
+/* @@? 141:24 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
-/* @@? 146:20 Error TypeError: Property 'getInner' does not exist on type 'A' */
+/* @@? 146:28 Error TypeError: Property 'getInner' does not exist on type 'A' */
 /* @@? 148:25 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 149:24 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 151:20 Error TypeError: Cannot find type 'D0'. */
 /* @@? 151:29 Error TypeError: Cannot find type 'D0'. */
 /* @@? 157:16 Error TypeError: A is abstract therefore cannot be instantiated. */
-/* @@? 158:18 Error TypeError: Property 'getInner' does not exist on type 'A' */
+/* @@? 158:26 Error TypeError: Property 'getInner' does not exist on type 'A' */
 /* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */

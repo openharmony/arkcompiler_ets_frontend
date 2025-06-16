@@ -15,7 +15,7 @@
 
 function main(): int {
    let n: int = 2
-   /* @@ label1 */assertEQ(n, 5, /* @@ label2 */42);
+   /* @@ label1 */arktest.assertEQ(n, 5, /* @@ label2 */42);
    return 0;
 }
 

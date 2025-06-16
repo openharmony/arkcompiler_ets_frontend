@@ -5686,9 +5686,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 9,
+                                "program": "MathCordic.ets"
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 16,
+                                "program": "MathCordic.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 17,
+                                "program": "MathCordic.ets"
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 25,
+                                "program": "MathCordic.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 74,
@@ -5697,7 +5731,7 @@
                             },
                             "end": {
                               "line": 74,
-                              "column": 17,
+                              "column": 25,
                               "program": "MathCordic.ets"
                             }
                           }
@@ -5710,12 +5744,12 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 18,
+                                "column": 26,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 23,
+                                "column": 31,
                                 "program": "MathCordic.ets"
                               }
                             }
@@ -5726,12 +5760,12 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 25,
+                                "column": 33,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 44,
+                                "column": 52,
                                 "program": "MathCordic.ets"
                               }
                             }
@@ -5742,12 +5776,12 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 47,
+                                "column": 55,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 65,
+                                "column": 73,
                                 "program": "MathCordic.ets"
                               }
                             }
@@ -5762,7 +5796,7 @@
                           },
                           "end": {
                             "line": 74,
-                            "column": 66,
+                            "column": 74,
                             "program": "MathCordic.ets"
                           }
                         }
@@ -5775,7 +5809,7 @@
                         },
                         "end": {
                           "line": 74,
-                          "column": 67,
+                          "column": 75,
                           "program": "MathCordic.ets"
                         }
                       }

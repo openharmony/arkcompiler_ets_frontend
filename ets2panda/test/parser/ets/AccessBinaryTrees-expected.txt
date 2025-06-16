@@ -4988,9 +4988,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 75,
+                                "column": 5,
+                                "program": "AccessBinaryTrees.ets"
+                              },
+                              "end": {
+                                "line": 75,
+                                "column": 12,
+                                "program": "AccessBinaryTrees.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 75,
+                                "column": 13,
+                                "program": "AccessBinaryTrees.ets"
+                              },
+                              "end": {
+                                "line": 75,
+                                "column": 21,
+                                "program": "AccessBinaryTrees.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 75,
@@ -4999,7 +5033,7 @@
                             },
                             "end": {
                               "line": 75,
-                              "column": 13,
+                              "column": 21,
                               "program": "AccessBinaryTrees.ets"
                             }
                           }
@@ -5012,12 +5046,12 @@
                             "loc": {
                               "start": {
                                 "line": 75,
-                                "column": 14,
+                                "column": 22,
                                 "program": "AccessBinaryTrees.ets"
                               },
                               "end": {
                                 "line": 75,
-                                "column": 17,
+                                "column": 25,
                                 "program": "AccessBinaryTrees.ets"
                               }
                             }
@@ -5028,12 +5062,12 @@
                             "loc": {
                               "start": {
                                 "line": 75,
-                                "column": 19,
+                                "column": 27,
                                 "program": "AccessBinaryTrees.ets"
                               },
                               "end": {
                                 "line": 75,
-                                "column": 45,
+                                "column": 53,
                                 "program": "AccessBinaryTrees.ets"
                               }
                             }
@@ -5044,12 +5078,12 @@
                             "loc": {
                               "start": {
                                 "line": 75,
-                                "column": 48,
+                                "column": 56,
                                 "program": "AccessBinaryTrees.ets"
                               },
                               "end": {
                                 "line": 75,
-                                "column": 66,
+                                "column": 74,
                                 "program": "AccessBinaryTrees.ets"
                               }
                             }
@@ -5064,7 +5098,7 @@
                           },
                           "end": {
                             "line": 75,
-                            "column": 67,
+                            "column": 75,
                             "program": "AccessBinaryTrees.ets"
                           }
                         }
@@ -5077,7 +5111,7 @@
                         },
                         "end": {
                           "line": 75,
-                          "column": 68,
+                          "column": 76,
                           "program": "AccessBinaryTrees.ets"
                         }
                       }

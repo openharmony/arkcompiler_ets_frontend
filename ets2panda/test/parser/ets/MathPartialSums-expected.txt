@@ -4776,9 +4776,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 78,
+                                "column": 5,
+                                "program": "MathPartialSums.ets"
+                              },
+                              "end": {
+                                "line": 78,
+                                "column": 12,
+                                "program": "MathPartialSums.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 78,
+                                "column": 13,
+                                "program": "MathPartialSums.ets"
+                              },
+                              "end": {
+                                "line": 78,
+                                "column": 21,
+                                "program": "MathPartialSums.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 78,
@@ -4787,7 +4821,7 @@
                             },
                             "end": {
                               "line": 78,
-                              "column": 13,
+                              "column": 21,
                               "program": "MathPartialSums.ets"
                             }
                           }
@@ -4800,12 +4834,12 @@
                             "loc": {
                               "start": {
                                 "line": 78,
-                                "column": 14,
+                                "column": 22,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 78,
-                                "column": 17,
+                                "column": 25,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -4816,12 +4850,12 @@
                             "loc": {
                               "start": {
                                 "line": 78,
-                                "column": 19,
+                                "column": 27,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 78,
-                                "column": 43,
+                                "column": 51,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -4832,12 +4866,12 @@
                             "loc": {
                               "start": {
                                 "line": 78,
-                                "column": 46,
+                                "column": 54,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 78,
-                                "column": 64,
+                                "column": 72,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -4852,7 +4886,7 @@
                           },
                           "end": {
                             "line": 78,
-                            "column": 65,
+                            "column": 73,
                             "program": "MathPartialSums.ets"
                           }
                         }
@@ -4865,7 +4899,7 @@
                         },
                         "end": {
                           "line": 78,
-                          "column": 66,
+                          "column": 74,
                           "program": "MathPartialSums.ets"
                         }
                       }
@@ -4875,9 +4909,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 79,
+                                "column": 5,
+                                "program": "MathPartialSums.ets"
+                              },
+                              "end": {
+                                "line": 79,
+                                "column": 12,
+                                "program": "MathPartialSums.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 79,
+                                "column": 13,
+                                "program": "MathPartialSums.ets"
+                              },
+                              "end": {
+                                "line": 79,
+                                "column": 21,
+                                "program": "MathPartialSums.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 79,
@@ -4886,7 +4954,7 @@
                             },
                             "end": {
                               "line": 79,
-                              "column": 13,
+                              "column": 21,
                               "program": "MathPartialSums.ets"
                             }
                           }
@@ -4907,12 +4975,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 79,
-                                      "column": 14,
+                                      "column": 22,
                                       "program": "MathPartialSums.ets"
                                     },
                                     "end": {
                                       "line": 79,
-                                      "column": 29,
+                                      "column": 37,
                                       "program": "MathPartialSums.ets"
                                     }
                                   }
@@ -4924,12 +4992,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 79,
-                                      "column": 30,
+                                      "column": 38,
                                       "program": "MathPartialSums.ets"
                                     },
                                     "end": {
                                       "line": 79,
-                                      "column": 36,
+                                      "column": 44,
                                       "program": "MathPartialSums.ets"
                                     }
                                   }
@@ -4939,12 +5007,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 79,
-                                    "column": 14,
+                                    "column": 22,
                                     "program": "MathPartialSums.ets"
                                   },
                                   "end": {
                                     "line": 79,
-                                    "column": 36,
+                                    "column": 44,
                                     "program": "MathPartialSums.ets"
                                   }
                                 }
@@ -4955,12 +5023,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 79,
-                                    "column": 40,
+                                    "column": 48,
                                     "program": "MathPartialSums.ets"
                                   },
                                   "end": {
                                     "line": 79,
-                                    "column": 41,
+                                    "column": 49,
                                     "program": "MathPartialSums.ets"
                                   }
                                 }
@@ -4968,12 +5036,12 @@
                               "loc": {
                                 "start": {
                                   "line": 79,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "MathPartialSums.ets"
                                 },
                                 "end": {
                                   "line": 79,
-                                  "column": 41,
+                                  "column": 49,
                                   "program": "MathPartialSums.ets"
                                 }
                               }
@@ -4987,12 +5055,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 79,
-                                    "column": 45,
+                                    "column": 53,
                                     "program": "MathPartialSums.ets"
                                   },
                                   "end": {
                                     "line": 79,
-                                    "column": 60,
+                                    "column": 68,
                                     "program": "MathPartialSums.ets"
                                   }
                                 }
@@ -5004,12 +5072,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 79,
-                                    "column": 61,
+                                    "column": 69,
                                     "program": "MathPartialSums.ets"
                                   },
                                   "end": {
                                     "line": 79,
-                                    "column": 67,
+                                    "column": 75,
                                     "program": "MathPartialSums.ets"
                                   }
                                 }
@@ -5019,12 +5087,12 @@
                               "loc": {
                                 "start": {
                                   "line": 79,
-                                  "column": 45,
+                                  "column": 53,
                                   "program": "MathPartialSums.ets"
                                 },
                                 "end": {
                                   "line": 79,
-                                  "column": 67,
+                                  "column": 75,
                                   "program": "MathPartialSums.ets"
                                 }
                               }
@@ -5032,12 +5100,12 @@
                             "loc": {
                               "start": {
                                 "line": 79,
-                                "column": 40,
+                                "column": 48,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 79,
-                                "column": 67,
+                                "column": 75,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -5048,12 +5116,12 @@
                             "loc": {
                               "start": {
                                 "line": 79,
-                                "column": 69,
+                                "column": 77,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 79,
-                                "column": 70,
+                                "column": 78,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -5064,12 +5132,12 @@
                             "loc": {
                               "start": {
                                 "line": 79,
-                                "column": 73,
+                                "column": 81,
                                 "program": "MathPartialSums.ets"
                               },
                               "end": {
                                 "line": 79,
-                                "column": 91,
+                                "column": 99,
                                 "program": "MathPartialSums.ets"
                               }
                             }
@@ -5084,7 +5152,7 @@
                           },
                           "end": {
                             "line": 79,
-                            "column": 92,
+                            "column": 100,
                             "program": "MathPartialSums.ets"
                           }
                         }
@@ -5097,7 +5165,7 @@
                         },
                         "end": {
                           "line": 79,
-                          "column": 93,
+                          "column": 101,
                           "program": "MathPartialSums.ets"
                         }
                       }

@@ -23,10 +23,10 @@ class IndexStr {
   foo() {
     switch (this.indexField) {
       case IndexField.TITLE:
-          assertEQ(this.indexField, IndexField.TITLE)
+          arktest.assertEQ(this.indexField, IndexField.TITLE)
           break;
       /* @@ label */case IndexField.TITLE:
-          assertEQ(this.indexField, IndexField.TITLE)
+          arktest.assertEQ(this.indexField, IndexField.TITLE)
     }
   }
 }

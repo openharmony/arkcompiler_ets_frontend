@@ -113,7 +113,7 @@ export class StringFasta  {
         ret += fastaRandom(3 * count * 1000, IUB);
         ret += fastaRandom(5 * count * 1000, HomoSap);
 
-        assertEQ(ret, this.expected, "Incorrect result");
+        arktest.assertEQ(ret, this.expected, "Incorrect result");
     }
 }
 
@@ -178,4 +178,4 @@ function main(): void {
 /* @@? 114:28 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
 /* @@? 114:32 Error TypeError: Function name 'count' used in the wrong context */
 /* @@? 114:46 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
-/* @@? 116:28 Error TypeError: 'expected' is a static property of 'StringFasta' */
+/* @@? 116:36 Error TypeError: 'expected' is a static property of 'StringFasta' */

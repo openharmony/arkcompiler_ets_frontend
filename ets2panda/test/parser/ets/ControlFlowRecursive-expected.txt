@@ -3561,9 +3561,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 5,
+                                "program": "ControlFlowRecursive.ets"
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 12,
+                                "program": "ControlFlowRecursive.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 13,
+                                "program": "ControlFlowRecursive.ets"
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 21,
+                                "program": "ControlFlowRecursive.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 53,
@@ -3572,7 +3606,7 @@
                             },
                             "end": {
                               "line": 53,
-                              "column": 13,
+                              "column": 21,
                               "program": "ControlFlowRecursive.ets"
                             }
                           }
@@ -3585,12 +3619,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 14,
+                                "column": 22,
                                 "program": "ControlFlowRecursive.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 20,
+                                "column": 28,
                                 "program": "ControlFlowRecursive.ets"
                               }
                             }
@@ -3601,12 +3635,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 22,
+                                "column": 30,
                                 "program": "ControlFlowRecursive.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 51,
+                                "column": 59,
                                 "program": "ControlFlowRecursive.ets"
                               }
                             }
@@ -3617,12 +3651,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 54,
+                                "column": 62,
                                 "program": "ControlFlowRecursive.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 72,
+                                "column": 80,
                                 "program": "ControlFlowRecursive.ets"
                               }
                             }
@@ -3637,7 +3671,7 @@
                           },
                           "end": {
                             "line": 53,
-                            "column": 73,
+                            "column": 81,
                             "program": "ControlFlowRecursive.ets"
                           }
                         }
@@ -3650,7 +3684,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 74,
+                          "column": 82,
                           "program": "ControlFlowRecursive.ets"
                         }
                       }

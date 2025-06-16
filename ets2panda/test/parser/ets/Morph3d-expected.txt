@@ -3414,9 +3414,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertLT",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 55,
+                                "column": 5,
+                                "program": "Morph3d.ets"
+                              },
+                              "end": {
+                                "line": 55,
+                                "column": 12,
+                                "program": "Morph3d.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertLT",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 55,
+                                "column": 13,
+                                "program": "Morph3d.ets"
+                              },
+                              "end": {
+                                "line": 55,
+                                "column": 21,
+                                "program": "Morph3d.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 55,
@@ -3425,7 +3459,7 @@
                             },
                             "end": {
                               "line": 55,
-                              "column": 13,
+                              "column": 21,
                               "program": "Morph3d.ets"
                             }
                           }
@@ -3440,12 +3474,12 @@
                               "loc": {
                                 "start": {
                                   "line": 55,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "Morph3d.ets"
                                 },
                                 "end": {
                                   "line": 55,
-                                  "column": 17,
+                                  "column": 25,
                                   "program": "Morph3d.ets"
                                 }
                               }
@@ -3458,12 +3492,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 55,
-                                    "column": 18,
+                                    "column": 26,
                                     "program": "Morph3d.ets"
                                   },
                                   "end": {
                                     "line": 55,
-                                    "column": 28,
+                                    "column": 36,
                                     "program": "Morph3d.ets"
                                   }
                                 }
@@ -3473,12 +3507,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 14,
+                                "column": 22,
                                 "program": "Morph3d.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 29,
+                                "column": 37,
                                 "program": "Morph3d.ets"
                               }
                             }
@@ -3490,12 +3524,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 31,
+                                "column": 39,
                                 "program": "Morph3d.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 38,
+                                "column": 46,
                                 "program": "Morph3d.ets"
                               }
                             }
@@ -3506,12 +3540,12 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 40,
+                                "column": 48,
                                 "program": "Morph3d.ets"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 58,
+                                "column": 66,
                                 "program": "Morph3d.ets"
                               }
                             }
@@ -3526,7 +3560,7 @@
                           },
                           "end": {
                             "line": 55,
-                            "column": 59,
+                            "column": 67,
                             "program": "Morph3d.ets"
                           }
                         }
@@ -3539,7 +3573,7 @@
                         },
                         "end": {
                           "line": 55,
-                          "column": 60,
+                          "column": 68,
                           "program": "Morph3d.ets"
                         }
                       }

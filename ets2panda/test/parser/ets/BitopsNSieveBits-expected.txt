@@ -3524,9 +3524,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 5,
+                                "program": "BitopsNSieveBits.ets"
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 12,
+                                "program": "BitopsNSieveBits.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 13,
+                                "program": "BitopsNSieveBits.ets"
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 21,
+                                "program": "BitopsNSieveBits.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 53,
@@ -3535,7 +3569,7 @@
                             },
                             "end": {
                               "line": 53,
-                              "column": 13,
+                              "column": 21,
                               "program": "BitopsNSieveBits.ets"
                             }
                           }
@@ -3548,12 +3582,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 14,
+                                "column": 22,
                                 "program": "BitopsNSieveBits.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 17,
+                                "column": 25,
                                 "program": "BitopsNSieveBits.ets"
                               }
                             }
@@ -3564,12 +3598,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 19,
+                                "column": 27,
                                 "program": "BitopsNSieveBits.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 44,
+                                "column": 52,
                                 "program": "BitopsNSieveBits.ets"
                               }
                             }
@@ -3580,12 +3614,12 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 47,
+                                "column": 55,
                                 "program": "BitopsNSieveBits.ets"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 65,
+                                "column": 73,
                                 "program": "BitopsNSieveBits.ets"
                               }
                             }
@@ -3600,7 +3634,7 @@
                           },
                           "end": {
                             "line": 53,
-                            "column": 66,
+                            "column": 74,
                             "program": "BitopsNSieveBits.ets"
                           }
                         }
@@ -3613,7 +3647,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 67,
+                          "column": 75,
                           "program": "BitopsNSieveBits.ets"
                         }
                       }

@@ -27,5 +27,5 @@
     }
   }
 
-  assertEQ(new C().foo(), 1);
+  arktest.assertEQ(new C().foo(), 1);
 }

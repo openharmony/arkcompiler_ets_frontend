@@ -27,5 +27,5 @@ class OExt extends O{
 
 function main(): void {
     let o: OExt = new OExt()
-    assertEQ(o.$_hashCode(), 4);
+    arktest.assertEQ(o.$_hashCode(), 4);
 }

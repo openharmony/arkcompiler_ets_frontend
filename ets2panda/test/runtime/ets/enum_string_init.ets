@@ -23,11 +23,11 @@ enum Color {
 
 function main() {
     let redString : string = b + "a" + 1 + 1;
-    assertEQ(Color.Red.toString(), redString)
+    arktest.assertEQ(Color.Red.toString(), redString)
     
     let blueString = a + "Blue" + 3.123414515123516135135;
-    assertEQ(Color.Blue.toString(), blueString)
+    arktest.assertEQ(Color.Blue.toString(), blueString)
 
     let yellowString = "a" + 123401841039413413413431.123124;
-    assertEQ(Color.Yelllow.toString(), yellowString)
+    arktest.assertEQ(Color.Yelllow.toString(), yellowString)
 }

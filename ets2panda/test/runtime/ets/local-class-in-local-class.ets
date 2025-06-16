@@ -25,8 +25,8 @@ function main() : int
         method1()
         {
             let l_int2 = 12;
-            assertEQ(this.m_int1, 11)
-            assertEQ(l_int, 0)
+            arktest.assertEQ(this.m_int1, 11)
+            arktest.assertEQ(l_int, 0)
             l_int = 1;
 
             class LocalClassLevel2
@@ -34,21 +34,21 @@ function main() : int
                 m_int2 : int = 22;
 
                 method2() {
-                    assertEQ(this.m_int2, 22)
-                    assertEQ(l_int2, 12)
+                    arktest.assertEQ(this.m_int2, 22)
+                    arktest.assertEQ(l_int2, 12)
                     l_int2 = 13;
                 }
             }
 
             let lcl2 = new LocalClassLevel2();
             lcl2.method2();
-            assertEQ(l_int2, 13)
+            arktest.assertEQ(l_int2, 13)
         }
     }
 
     let lcl1 = new LocalClassLevel1();
     lcl1.method1();
-    assertEQ(l_int, 1)
+    arktest.assertEQ(l_int, 1)
 
     return 0;
 }

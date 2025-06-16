@@ -64,7 +64,7 @@ class A {
 }
 let a = new A();
 a.foo();
-assertEQ(a.x, 2);
+arktest.assertEQ(a.x, 2);
 )";
 
 static es2panda_Impl *impl = nullptr;

@@ -21,6 +21,6 @@ function main() {
         One = c2 ? 1: 0,
         Two = true ? 5 : 10
     }
-    assertEQ(TestEnum.One.valueOf(),0);
-    assertEQ(TestEnum.Two.valueOf(),5);
+    arktest.assertEQ(TestEnum.One.valueOf(),0);
+    arktest.assertEQ(TestEnum.Two.valueOf(),5);
 }
