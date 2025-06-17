@@ -1213,7 +1213,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private updateDataSdkJsonInfo(importDeclNode: ts.ImportDeclaration, importClause: ts.ImportClause): void {
     const sdkInfo = TypeScriptLinter.pathMap.get(importDeclNode.moduleSpecifier.getText());
-    if (sdkInfo && importClause.namedBindings) {
+    if (!sdkInfo) {
+      return;
+    }
+    if (importClause.name) {
+      const importClauseName = importClause.name.text;
+      sdkInfo.forEach((info) => {
+        TypeScriptLinter.addOrUpdateData(this.interfaceMap, importClauseName, info);
+      });
+    }
+    if (importClause.namedBindings) {
       const namedImports = importClause.namedBindings as ts.NamedImports;
       if (!namedImports.elements) {
         return;
@@ -3047,6 +3056,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     methodName?: string
   ): boolean {
     return heritageClause.types.some((type) => {
+      const parentName = ts.isPropertyAccessExpression(type.expression) ?
+        type.expression.name.text :
+        type.expression.getText();
       const fullTypeName = TypeScriptLinter.findFinalExpression(type).getText();
       const sdkInfos = this.interfaceMap.get(fullTypeName);
       if (!sdkInfos || sdkInfos.size === 0) {
@@ -3058,7 +3070,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           return false;
         }
 
-        if (!methodName) {
+        if (!methodName && sdkInfo.parent_api[0].api_name === parentName) {
           this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members, tsClassDecl);
           return false;
         }
