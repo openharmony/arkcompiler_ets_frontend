@@ -62,7 +62,7 @@ TEST_F(LspUISuggestionTests, UIPluginsErrorTest1)
     const char *substitutionCode = "replace b";
     const char *dmessage2 = "error";
     const size_t argc0 = 0;
-    const size_t index1 = 0;
+    const size_t index1 = 1;
     const size_t line1 = 0;
     const size_t index2 = 15;
     const size_t line2 = 0;
@@ -84,6 +84,7 @@ TEST_F(LspUISuggestionTests, UIPluginsErrorTest1)
     CodeFixOptions emptyOptions;
     auto fix = ark::es2panda::lsp::GetCodeFixesAtPositionImpl(ctx, index1, index2, codes, emptyOptions);
     ASSERT_EQ(fix.at(0).changes_.at(0).textChanges.at(0).newText, substitutionCode);
+    ASSERT_EQ(fix.at(0).changes_.at(0).textChanges.at(0).span.length, index2 - index1);
 
     initializer.DestroyContext(ctx);
 }
