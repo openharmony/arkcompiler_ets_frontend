@@ -1541,7 +1541,6 @@ void Lexer::NextToken(Keywords *kws)
             break;
         }
         case LEX_CHAR_DOLLAR_SIGN:
-        case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_E:
         case LEX_CHAR_UPPERCASE_G:
         case LEX_CHAR_UPPERCASE_H:
@@ -1621,6 +1620,7 @@ void Lexer::NextToken(Keywords *kws)
         case LEX_CHAR_LOWERCASE_X:
         case LEX_CHAR_LOWERCASE_Y:
         case LEX_CHAR_LOWERCASE_Z:
+        case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_B:
         case LEX_CHAR_UPPERCASE_C:
         case LEX_CHAR_UPPERCASE_D:
