@@ -1375,7 +1375,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
     this.propertyAccessExpressionForBuiltin(node as ts.PropertyAccessExpression);
     this.checkConstrutorAccess(node as ts.PropertyAccessExpression);
-
+    this.handleTaskPoolDeprecatedUsages(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
@@ -4571,7 +4571,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
     this.handleNoTsLikeFunctionCall(tsCallExpr);
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
-    this.handleTaskPoolDeprecatedUsages(tsCallExpr);
     this.handleSdkGlobalApi(tsCallExpr);
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
     this.checkRestrictedAPICall(tsCallExpr)
@@ -8339,50 +8338,38 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private handleTaskPoolDeprecatedUsages(node: ts.CallExpression): void {
+  private handleTaskPoolDeprecatedUsages(propertyAccess: ts.PropertyAccessExpression): void {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-
-    if (!ts.isPropertyAccessExpression(node.expression)) {
-      return;
-    }
-
-    const propertyAccess = node.expression;
-    const objectExpr = propertyAccess.expression;
-
+    const objectExpr = ts.isNewExpression(propertyAccess.expression) ?
+      propertyAccess.expression.expression :
+      propertyAccess.expression;
     // Step 1: Must be either setCloneList or setTransferList
     if (!TypeScriptLinter.isDeprecatedTaskPoolMethodCall(propertyAccess)) {
       return;
     }
-
-    if (!ts.isIdentifier(objectExpr)) {
+    const variableDecl = TsUtils.getDeclaration(this.tsUtils.trueSymbolAtLocation(objectExpr));
+    const isNoContinue =
+      !variableDecl ||
+      !ts.isVariableDeclaration(variableDecl) ||
+      !variableDecl?.initializer ||
+      !ts.isNewExpression(variableDecl.initializer);
+    if (isNoContinue) {
       return;
     }
-
-    // Step 2: Resolve declaration of task
-    const variableDecl = this.tsUtils.findVariableDeclaration(objectExpr);
-    if (!variableDecl?.initializer || !ts.isNewExpression(variableDecl.initializer)) {
-      return;
-    }
-
-    // Step 3: Check new taskpool.Task()
     const taskpoolExpr = variableDecl.initializer.expression;
-    if (!TypeScriptLinter.isTaskPoolTaskCreation(taskpoolExpr)) {
+    if (!this.isTaskPoolTaskCreation(taskpoolExpr)) {
       return;
     }
-
     const faultId =
       propertyAccess.name.text === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ?
         FaultID.SetCloneListDeprecated :
         FaultID.SetTransferListDeprecated;
-    this.incrementCounters(node.parent, faultId);
+    this.incrementCounters(propertyAccess.name, faultId);
   }
 
   private static isDeprecatedTaskPoolMethodCall(propertyAccess: ts.PropertyAccessExpression): boolean {
-    if (!ts.isIdentifier(propertyAccess.expression)) {
-      return false;
-    }
     const methodName = propertyAccess.name.text;
     return (
       methodName === DEPRECATED_TASKPOOL_METHOD_SETCLONELIST ||
@@ -8390,13 +8377,64 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
   }
 
-  private static isTaskPoolTaskCreation(taskpoolExpr: ts.Expression): boolean {
-    return (
-      ts.isPropertyAccessExpression(taskpoolExpr) &&
-      ts.isIdentifier(taskpoolExpr.expression) &&
-      taskpoolExpr.expression.text === STDLIB_TASKPOOL_OBJECT_NAME &&
-      taskpoolExpr.name.text === STDLIB_TASK_CLASS_NAME
-    );
+  private isTaskPoolTaskCreation(taskpoolExpr: ts.Expression): boolean {
+    if (
+      ts.isIdentifier(taskpoolExpr) ||
+      ts.isPropertyAccessExpression(taskpoolExpr) && taskpoolExpr.name.text === STDLIB_TASK_CLASS_NAME
+    ) {
+      const objectExpr = ts.isIdentifier(taskpoolExpr) ? taskpoolExpr : taskpoolExpr.expression;
+      return this.isTaskPoolReferenceisTaskPoolImportForTaskPoolDeprecatedUsages(objectExpr);
+    }
+    return false;
+  }
+
+  private isTaskPoolReferenceisTaskPoolImportForTaskPoolDeprecatedUsages(expr: ts.Expression): boolean {
+    if (ts.isIdentifier(expr)) {
+      const sym = this.tsTypeChecker.getSymbolAtLocation(expr);
+      const importChild = TsUtils.getDeclaration(sym);
+      if (!importChild) {
+        return false;
+      }
+      if (ts.isImportSpecifier(importChild)) {
+        return TypeScriptLinter.isTaskPoolImportForTaskPoolDeprecatedUsages(importChild);
+      }
+      if (ts.isImportClause(importChild) && importChild.name?.text === STDLIB_TASKPOOL_OBJECT_NAME) {
+        return TypeScriptLinter.checkModuleSpecifierForTaskPoolDeprecatedUsages(importChild.parent);
+      }
+    }
+    if (ts.isPropertyAccessExpression(expr)) {
+      return this.isTaskPoolReferenceOnPropertyAccessExpression(expr);
+    }
+    return false;
+  }
+
+  private static checkModuleSpecifierForTaskPoolDeprecatedUsages(importDecl: ts.ImportDeclaration): boolean {
+    if (ts.isImportDeclaration(importDecl) && ts.isStringLiteral(importDecl.moduleSpecifier)) {
+      const moduleSpecifier = importDecl.moduleSpecifier;
+      return TASKPOOL_MODULES.includes(TsUtils.removeOrReplaceQuotes(moduleSpecifier.getText(), false));
+    }
+    return false;
+  }
+
+  private isTaskPoolReferenceOnPropertyAccessExpression(expr: ts.PropertyAccessExpression): boolean {
+    if (expr.name.text !== STDLIB_TASKPOOL_OBJECT_NAME || !ts.isIdentifier(expr.expression)) {
+      return false;
+    }
+    const sym = this.tsTypeChecker.getSymbolAtLocation(expr.expression);
+    const importChild = TsUtils.getDeclaration(sym);
+    if (importChild && ts.isNamespaceImport(importChild)) {
+      return TypeScriptLinter.checkModuleSpecifierForTaskPoolDeprecatedUsages(importChild.parent.parent);
+    }
+    return false;
+  }
+
+  private static isTaskPoolImportForTaskPoolDeprecatedUsages(specifier: ts.ImportSpecifier): boolean {
+    const specifierName = specifier.propertyName ? specifier.propertyName : specifier.name;
+    if (STDLIB_TASKPOOL_OBJECT_NAME !== specifierName.text) {
+      return false;
+    }
+    const importDeclaration = specifier.parent.parent.parent;
+    return TypeScriptLinter.checkModuleSpecifierForTaskPoolDeprecatedUsages(importDeclaration);
   }
 
   private handleForOfJsArray(node: ts.ForOfStatement): void {
