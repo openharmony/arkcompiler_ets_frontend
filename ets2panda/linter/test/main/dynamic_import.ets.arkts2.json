@@ -161,7 +161,7 @@
             "endColumn": 76,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"EllipseShape\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

@@ -7251,7 +7251,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
 
     this.interfacesNeedToAlarm.forEach((identifier) => {
-      this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix);
+      const name = identifier.getText();
+      const errorMsg = `The ArkUI interface "${name}" should be imported before it is used (arkui-modular-interface)`;
+      this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix, errorMsg);
     });
 
     this.interfacesNeedToAlarm = [];
