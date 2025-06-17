@@ -184,6 +184,7 @@ faultsAttrs[FaultID.AnimatableExtendDecoratorTransform] = new FaultAttributes(25
 faultsAttrs[FaultID.DataObservation] = new FaultAttributes(258);
 faultsAttrs[FaultID.UIInterfaceImport] = new FaultAttributes(259);
 faultsAttrs[FaultID.EntryAnnotation] = new FaultAttributes(260);
+faultsAttrs[FaultID.SdkAbilityLifecycleMonitor] = new FaultAttributes(261);
 faultsAttrs[FaultID.MakeObservedIsNotSupported] = new FaultAttributes(262);
 faultsAttrs[FaultID.ProvideAnnotation] = new FaultAttributes(263);
 faultsAttrs[FaultID.InteropJsObjectInheritance] = new FaultAttributes(265);
