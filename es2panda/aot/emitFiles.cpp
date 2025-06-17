@@ -49,13 +49,10 @@ void EmitFileQueue::Schedule()
 {
     ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
-    auto targetApi = options_->CompilerOptions().targetApiVersion;
-    auto targetSubApi = options_->CompilerOptions().targetApiSubVersion;
 
     if (mergeAbc_) {
         // generate merged abc
-        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(),
-            options_->CompilerOptions().transformLib, progsInfo_, targetApi, targetSubApi);
+        auto emitMergedAbcJob = new EmitMergedAbcJob(options_, progsInfo_);
         //  One job should be placed before the jobs on which it depends to prevent blocking
         jobs_.push_back(emitMergedAbcJob);
         jobsCount_++;
@@ -65,6 +62,8 @@ void EmitFileQueue::Schedule()
             ScheduleEmitCacheJobs(emitMergedAbcJob);
         }
     } else {
+        auto targetApi = options_->CompilerOptions().targetApiVersion;
+        auto targetSubApi = options_->CompilerOptions().targetApiSubVersion;
         for (const auto &info: progsInfo_) {
             try {
                 // generate multi abcs
@@ -109,9 +108,11 @@ void EmitMergedAbcJob::Run()
         progs.push_back(&(info.second->program));
     }
 
+    panda::pandasm::EmitterConfig emitConfig {targetApiVersion_, targetApiSubVersion_,
+        options_->CompilerOptions().isDebug, options_->CompilerOptions().fileThreadCount};
     bool success = panda::pandasm::AsmEmitter::EmitPrograms(
         panda::os::file::File::GetExtendedFilePath(outputFileName_), progs, true,
-        targetApiVersion_, targetApiSubVersion_);
+        emitConfig);
 
     panda::Timer::timerEnd(panda::EVENT_EMIT_MERGED_PROGRAM, "");
 
