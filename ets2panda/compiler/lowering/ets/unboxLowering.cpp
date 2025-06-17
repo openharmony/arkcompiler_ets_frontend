@@ -44,6 +44,9 @@ struct UnboxContext {
     ArenaSet<ir::AstNode *> handled;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
+
+// NOLINTNEXTLINE(readability-identifier-naming)
+char const *UNBOXER_METHOD_NAME = "unboxed";
 }  // namespace
 
 static bool IsRecursivelyUnboxedReference(checker::Type *t);
@@ -284,12 +287,6 @@ static void HandleScriptFunctionHeader(UnboxContext *uctx, ir::ScriptFunction *f
         return;
     }
 
-    // Special case for enum boxing function -- this should still return a boxed value
-    if (func->Parent()->Parent()->IsMethodDefinition() &&
-        func->Parent()->Parent()->AsMethodDefinition()->Id()->Name() == "boxedFromInt") {
-        return;
-    }
-
     for (size_t i = 0; i < func->Signature()->Params().size(); i++) {
         auto *sigParam = func->Signature()->Params()[i];
         auto *funcParam = func->Params()[i]->AsETSParameterExpression();
@@ -359,14 +356,6 @@ static void HandleDeclarationNode(UnboxContext *uctx, ir::AstNode *ast)  ///
     uctx->handled.insert(ast);
 }
 
-static util::StringView UnboxerMethodName(checker::Type *unboxedType)
-{
-    if (unboxedType->IsETSIntEnumType() || unboxedType->IsETSStringEnumType()) {
-        return "unbox";
-    }
-    return "unboxed";
-}
-
 static ir::Expression *InsertUnboxing(UnboxContext *uctx, ir::Expression *expr)
 {
     auto *boxedType = expr->TsType();
@@ -388,7 +377,7 @@ static ir::Expression *InsertUnboxing(UnboxContext *uctx, ir::Expression *expr)
         return ret;
     }
 
-    auto *methodId = allocator->New<ir::Identifier>(UnboxerMethodName(unboxedType), allocator);
+    auto *methodId = allocator->New<ir::Identifier>(UNBOXER_METHOD_NAME, allocator);
     auto *mexpr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
         allocator, expr, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *call = util::NodeAllocator::ForceSetParent<ir::CallExpression>(
@@ -448,15 +437,13 @@ static ir::Expression *CreateToIntrinsicCallExpression(UnboxContext *uctx, check
     return call;
 }
 
-static bool CheckIfOnTopOfUnboxing(UnboxContext *uctx, ir::Expression *expr, checker::Type *unboxedType,
-                                   checker::Type *boxedType)
+static bool CheckIfOnTopOfUnboxing(UnboxContext *uctx, ir::Expression *expr, checker::Type *boxedType)
 {
     return expr->IsCallExpression() && expr->AsCallExpression()->Arguments().empty() &&
            expr->AsCallExpression()->Callee()->IsMemberExpression() &&
            expr->AsCallExpression()->Callee()->AsMemberExpression()->Property()->IsIdentifier() &&
            expr->AsCallExpression()->Callee()->AsMemberExpression()->Property()->AsIdentifier()->Name() ==
-               // CC-OFFNXT(G.FMT.02) project code style
-               UnboxerMethodName(unboxedType) &&
+               UNBOXER_METHOD_NAME &&
            uctx->checker->Relation()->IsIdenticalTo(
                expr->AsCallExpression()->Callee()->AsMemberExpression()->Object()->TsType(), boxedType);
 }
@@ -476,41 +463,13 @@ static ir::Expression *InsertBoxing(UnboxContext *uctx, ir::Expression *expr)
     auto *parent = expr->Parent();
 
     // Avoid boxing application right on top of unboxing.
-    if (CheckIfOnTopOfUnboxing(uctx, expr, unboxedType, boxedType)) {
+    if (CheckIfOnTopOfUnboxing(uctx, expr, boxedType)) {
         return LinkUnboxingExpr(expr, parent);
     }
 
     auto *allocator = uctx->allocator;
 
     auto args = ArenaVector<ir::Expression *>(allocator->Adapter());
-
-    if (unboxedType->IsETSIntEnumType() || unboxedType->IsETSStringEnumType()) {
-        auto *memberExpr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
-            allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator),
-            allocator->New<ir::Identifier>("boxedFromInt", allocator), ir::MemberExpressionKind::PROPERTY_ACCESS, false,
-            false);
-        auto *asExpr = CreateToIntrinsicCallExpression(uctx, uctx->checker->GlobalIntType(), unboxedType, expr);
-        args.push_back(asExpr);
-        auto *call = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, memberExpr, std::move(args),
-                                                                             nullptr, false);
-        call->SetParent(parent);
-
-        BindLoweredNode(uctx->varbinder, call);
-
-        auto *methodVar = boxedType->AsETSObjectType()->StaticMethods()["boxedFromInt"];
-        memberExpr->Property()->SetVariable(methodVar);
-
-        /* Ensure that calleeMethod's signature is updated to accept an unboxed value */
-        auto *calleeMethod = methodVar->Declaration()->Node();
-        HandleDeclarationNode(uctx, calleeMethod);
-
-        memberExpr->SetTsType(methodVar->TsType());
-        memberExpr->SetObjectType(boxedType->AsETSObjectType());
-        call->SetTsType(boxedType);
-        call->SetSignature(methodVar->TsType()->AsETSFunctionType()->CallSignatures()[0]);
-
-        return call;
-    }
 
     args.push_back(expr);
     auto *constrCall = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
