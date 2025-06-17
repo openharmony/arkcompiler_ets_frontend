@@ -30,7 +30,6 @@ std::tuple<bool, CompletionEntryKind> GetTargetTokenKindIfETSType(ir::AstNodeTyp
             return std::make_tuple(true, CompletionEntryKind::VALUE);
         case ir::AstNodeType::ETS_PRIMITIVE_TYPE:
         case ir::AstNodeType::ETS_CLASS_LITERAL:
-        case ir::AstNodeType::ETS_UNION_TYPE:
         case ir::AstNodeType::ETS_KEYOF_TYPE:
             return std::make_tuple(true, CompletionEntryKind::KEYWORD);
         case ir::AstNodeType::ETS_NEW_ARRAY_INSTANCE_EXPRESSION:
@@ -50,10 +49,12 @@ std::tuple<bool, CompletionEntryKind> GetTargetTokenKindIfETSType(ir::AstNodeTyp
             return std::make_tuple(true, CompletionEntryKind::REFERENCE);
         case ir::AstNodeType::ETS_WILDCARD_TYPE:
             return std::make_tuple(true, CompletionEntryKind::TEXT);
+        case ir::AstNodeType::ETS_UNION_TYPE:
+            return std::make_tuple(true, CompletionEntryKind::TYPE_PARAMETER);
         default:
             break;
     }
-    return std::make_tuple(false, CompletionEntryKind::TEXT);
+    return std::make_tuple(false, CompletionEntryKind::ALIAS_TYPE);
 }
 
 bool IsTSParameterKind(ir::AstNodeType type)
@@ -97,7 +98,7 @@ bool IsTSMoudleKind(ir::AstNodeType type)
 
 std::tuple<bool, CompletionEntryKind> GetTargetTokenKindIfTSType(ir::AstNodeType type)
 {
-    auto reuslt = std::make_tuple(false, CompletionEntryKind::TEXT);
+    auto reuslt = std::make_tuple(false, CompletionEntryKind::ALIAS_TYPE);
     if (IsValidAncestorType(type)) {
         reuslt = std::make_tuple(true, CompletionEntryKind::KEYWORD);
     } else if (IsTSParameterKind(type)) {
@@ -251,7 +252,7 @@ bool IsModule(ir::AstNodeType type)
 
 CompletionEntryKind GetTargetTokenKind(const ir::AstNode *node)
 {
-    CompletionEntryKind normalResult = CompletionEntryKind::TEXT;
+    CompletionEntryKind normalResult = CompletionEntryKind::ALIAS_TYPE;
     if (node == nullptr) {
         return normalResult;
     }
@@ -300,13 +301,47 @@ CompletionEntryKind GetTargetTokenKind(const ir::AstNode *node)
     return normalResult;
 }
 
+const ir::TSTypeAliasDeclaration *GetAliasDeclFromCurrentToken(const ir::AstNode *node)
+{
+    if (node == nullptr) {
+        return nullptr;
+    }
+    const ir::TSTypeAliasDeclaration *aliasDecl = nullptr;
+    if (node->IsTSTypeAliasDeclaration()) {
+        aliasDecl = node->AsTSTypeAliasDeclaration();
+    } else if (node->IsIdentifier()) {
+        auto decl = compiler::DeclarationFromIdentifier(node->AsIdentifier());
+        if (decl == nullptr) {
+            return nullptr;
+        }
+        aliasDecl = decl->AsTSTypeAliasDeclaration();
+    }
+    return aliasDecl;
+}
+
 CompletionEntryKind GetAliasScriptElementKindImpl(es2panda_Context *context, size_t position)
 {
     auto touchingToken = GetTouchingToken(context, position, false);
-    if (touchingToken == nullptr) {
+    auto aliasDecl = GetAliasDeclFromCurrentToken(touchingToken);
+    if (aliasDecl == nullptr) {
         return CompletionEntryKind::TEXT;
     }
-    auto result = GetTargetTokenKind(touchingToken);
-    return result;
+    auto typeAnnotation = aliasDecl->TypeAnnotation();
+    if (typeAnnotation == nullptr) {
+        return CompletionEntryKind::ALIAS_TYPE;
+    }
+    if (typeAnnotation->IsETSTypeReference()) {
+        auto part = typeAnnotation->AsETSTypeReference()->Part()->AsETSTypeReferencePart();
+        if (part == nullptr) {
+            return CompletionEntryKind::ALIAS_TYPE;
+        }
+        auto targetIdent = part->GetIdent();
+        auto decl = compiler::DeclarationFromIdentifier(targetIdent);
+        if (compiler::ClassDefinitionIsEnumTransformed(decl)) {
+            return CompletionEntryKind::ENUM;
+        }
+        return GetTargetTokenKind(decl);
+    }
+    return GetTargetTokenKind(typeAnnotation);
 }
 }  // namespace ark::es2panda::lsp
