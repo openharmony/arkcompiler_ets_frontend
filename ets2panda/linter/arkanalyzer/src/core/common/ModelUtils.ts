@@ -51,7 +51,7 @@ export class ModelUtils {
 
     /*
      * Set static field to be null, then all related objects could be freed by GC.
-     * Static field implicitArkUIBuilderMethods is only internally used by ArkAnalyzer build method body, the dispose method should be called after build all body.
+     * Static field implicitArkUIBuilderMethods is only used during method body building, the dispose method should be called after build all body.
      */
     public static dispose(): void {
         this.implicitArkUIBuilderMethods.clear();

@@ -957,7 +957,7 @@ export class PagBuilder {
             .getCfg()
             ?.getStmts()
             .filter(s => s instanceof ArkAssignStmt && s.getRightOp() instanceof ArkThisRef);
-        let thisPtr = (thisAssignStmt?.at(0) as ArkAssignStmt).getRightOp() as ArkThisRef;
+        let thisPtr = (thisAssignStmt?.[0] as ArkAssignStmt).getRightOp() as ArkThisRef;
         if (!thisPtr) {
             throw new Error('Can not get this ptr');
         }
@@ -1043,8 +1043,8 @@ export class PagBuilder {
 
         // add args to parameters edges
         for (let i = offset; i <= args.length; i++) {
-            let arg = args.at(i);
-            let param = params.at(i - offset);
+            let arg = args[i];
+            let param = params[i - offset];
             if (!arg || !param) {
                 return srcNodes;
             }
@@ -1075,7 +1075,7 @@ export class PagBuilder {
         // container value is the base value of callstmt, its points-to is PagNewContainerExprNode
         let srcNodes: NodeID[] = [];
         let containerValue = (callStmt.getInvokeExpr() as ArkInstanceInvokeExpr).getBase();
-        let param = params.at(0);
+        let param = params[0];
         if (!containerValue || !param) {
             return srcNodes;
         }
@@ -1212,7 +1212,7 @@ export class PagBuilder {
 
         // add args to parameters edges
         for (let i = 0; i < argNum; i++) {
-            let arg = cs.args?.at(i);
+            let arg = cs.args?.[i];
             let paramValue;
 
             if (arg instanceof Local && arg.getType() instanceof FunctionType) {

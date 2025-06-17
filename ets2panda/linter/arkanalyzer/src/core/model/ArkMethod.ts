@@ -644,16 +644,21 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
             if (!args[i]) {
                 return isArrowFunc ? true : parameters[i].isOptional();
             }
-            const isMatched = this.matchParam(parameters[i].getType(), args[i]);
+            const paramType = parameters[i].getType();
+            const isMatched = this.matchParam(paramType, args[i]);
             if (!isMatched) {
                 return false;
+            } else if (paramType instanceof EnumValueType || paramType instanceof LiteralType) {
+                return true;
             }
         }
         return true;
     }
 
     private matchParam(paramType: Type, arg: Value): boolean {
-        arg = ArkMethod.parseArg(arg);
+        if (paramType instanceof EnumValueType || paramType instanceof LiteralType) {
+            arg = ArkMethod.parseArg(arg);
+        }
         const argType = arg.getType();
         if (paramType instanceof AliasType && !(argType instanceof AliasType)) {
             paramType = TypeInference.replaceAliasType(paramType);
