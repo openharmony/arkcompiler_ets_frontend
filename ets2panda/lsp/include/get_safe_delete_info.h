@@ -17,6 +17,6 @@
 #include "public/es2panda_lib.h"
 namespace ark::es2panda::lsp {
 // This function judge whether indicated part can be deleted.
-bool GetSafeDeleteInfoImpl(es2panda_Context *context, size_t position, const std::string &path);
+bool GetSafeDeleteInfoImpl(es2panda_Context *context, size_t position);
 }  // namespace ark::es2panda::lsp
 #endif

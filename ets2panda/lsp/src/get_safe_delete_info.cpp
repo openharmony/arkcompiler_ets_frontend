@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,89 +23,129 @@
 #include "public/public.h"
 #include "references.h"
 
+namespace {
+constexpr size_t BUILTIN_TYPE_COUNT = 9;
+constexpr std::array<const char *, BUILTIN_TYPE_COUNT> BUILTIN_TYPES = {
+    "Number", "String", "Boolean", "void", "BigInt", "Never", "undefined", "null", "Object"};
+}  // namespace
+
 namespace ark::es2panda::lsp {
-bool NodeIsEligibleForSafeDelete(ir::AstNode *astNode)
+
+bool IsBuiltinTypeReference(ir::AstNode *node)
 {
+    if (node == nullptr || node->Type() != ir::AstNodeType::IDENTIFIER) {
+        return false;
+    }
+    auto *parent = node->Parent();
+    while (parent != nullptr) {
+        if (parent->Type() == ir::AstNodeType::ETS_TYPE_REFERENCE_PART ||
+            parent->Type() == ir::AstNodeType::ETS_TYPE_REFERENCE) {
+            std::string nameStr(node->AsIdentifier()->Name());
+            auto it =
+                std::find_if(BUILTIN_TYPES.begin(), BUILTIN_TYPES.end(), [&](const char *s) { return nameStr == s; });
+            if (it != BUILTIN_TYPES.end()) {
+                return true;
+            }
+        }
+        parent = parent->Parent();
+    }
+    return false;
+}
+
+bool IsDeletableDecl(ir::AstNode *node)
+{
+    return node->IsFunctionDeclaration() || node->IsVariableDeclarator() || node->IsClassProperty() ||
+           node->Type() == ir::AstNodeType::METHOD_DEFINITION || node->Type() == ir::AstNodeType::CLASS_DECLARATION ||
+           node->IsTSTypeParameterDeclaration() || node->IsImportDefaultSpecifier() ||
+           node->Type() == ir::AstNodeType::ETS_TYPE_REFERENCE_PART || node->IsCallExpression() ||
+           node->IsETSImportDeclaration() || node->IsImportSpecifier() || node->IsBinaryExpression() ||
+           node->IsTSInterfaceDeclaration() || node->IsETSTypeReferencePart() || node->IsImportNamespaceSpecifier() ||
+           node->IsTSTypeAliasDeclaration() || node->IsExpressionStatement() || node->IsMemberExpression() ||
+           node->IsTypeofExpression();
+}
+
+ir::AstNode *FindNearestDeletableDecl(ir::AstNode *node)
+{
+    ir::AstNode *cur = node;
+    while (cur != nullptr) {
+        if (IsDeletableDecl(cur)) {
+            return cur;
+        }
+        cur = cur->Parent();
+    }
+    return nullptr;
+}
+
+std::string NormalizeFilePath(const std::string &filePath)
+{
+    std::string normPath = filePath;
+    std::transform(normPath.begin(), normPath.end(), normPath.begin(), ::tolower);
+    std::replace(normPath.begin(), normPath.end(), '\\', '/');
+    return normPath;
+}
+
+/**
+ * Distinguish a namespace from a class by checking whether the class body contains only the $init$ method and has
+ * no constructor
+ */
+bool IsNamespaceClass(ir::AstNode *astNode)
+{
+    if (astNode->Type() != ir::AstNodeType::CLASS_DECLARATION) {
+        return false;
+    }
+    auto *classDecl = static_cast<ir::ClassDeclaration *>(astNode);
+    const auto &body = classDecl->Definition()->Body();
+    bool hasConstructor = false;
+    bool onlyInit = true;
+    for (auto *member : body) {
+        if (member->Type() == ir::AstNodeType::METHOD_DEFINITION) {
+            auto *method = static_cast<ir::MethodDefinition *>(member);
+            util::StringView keyName = method->Key()->AsIdentifier()->Name();
+            if (keyName == "constructor") {
+                hasConstructor = true;
+            }
+            if (keyName != "_$init$_") {
+                onlyInit = false;
+            }
+        }
+    }
+    return !hasConstructor && onlyInit;
+}
+
+bool GetSafeDeleteInfoImpl(es2panda_Context *context, size_t position)
+{
+    auto astNode = GetTouchingToken(context, position, false);
     if (astNode == nullptr) {
         return false;
     }
-    switch (astNode->Type()) {
-        case ir::AstNodeType::THIS_EXPRESSION:
-        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE:
-        case ir::AstNodeType::IDENTIFIER:
-            return true;
-        default:
-            return false;
-    }
-}
 
-DeclInfo GetDeclInfoCur(es2panda_Context *context, size_t position)
-{
-    DeclInfo result;
-    if (context == nullptr) {
-        return result;
-    }
-    auto astNode = GetTouchingToken(context, position, false);
     auto declInfo = GetDeclInfoImpl(astNode);
-    result.fileName = std::get<0>(declInfo);
-    result.fileText = std::get<1>(declInfo);
-    return result;
-}
-
-// This function judge whether type is standard library file defined type.
-bool IsLibrayFile(ir::AstNode *node, const std::string &path)
-{
-    auto declInfo = GetDeclInfoImpl(node);
     auto fileName = std::get<0>(declInfo);
-    if (fileName.empty()) {
+    std::string normFileName = NormalizeFilePath(fileName);
+    if (!normFileName.empty() && normFileName.find("ets1.2/build-tools/ets2panda/lib/stdlib") != std::string::npos) {
         return false;
     }
-    if (fileName.find("ets1.2") != std::string::npos) {
-        return fileName.find(path) != std::string::npos;
+    if (!normFileName.empty() && normFileName.find("/sdk/") != std::string::npos) {
+        return false;
     }
+
+    if (IsBuiltinTypeReference(astNode)) {
+        return false;
+    }
+
+    astNode = FindNearestDeletableDecl(astNode);
+    if (astNode == nullptr) {
+        return false;
+    }
+
+    if (IsNamespaceClass(astNode)) {
+        return false;
+    }
+
+    if (astNode->IsTSTypeParameterDeclaration()) {
+        return false;
+    }
+
     return true;
-}
-
-bool IsAllowToDeleteDeclaration(ir::AstNode *node, const std::string &path)
-{
-    return (node->IsETSModule() && node->AsETSModule()->IsNamespace()) || node->IsTSTypeParameterDeclaration() ||
-           (node->Type() == ir::AstNodeType::IDENTIFIER && node->Parent()->IsTSModuleDeclaration()) ||
-           IsLibrayFile(node, path) || node->IsArrowFunctionExpression() || node->IsETSStringLiteralType();
-}
-
-bool GetSafeDeleteInfoForNode(es2panda_Context *context, size_t position, const std::string &path)
-{
-    auto declInfoData = GetDeclInfoCur(context, position);
-    DeclInfoType declInfo = {declInfoData.fileName, declInfoData.fileText};
-    std::vector<ir::AstNode *> nodes;
-
-    auto ctx = reinterpret_cast<ark::es2panda::public_lib::Context *>(context);
-    if (ctx->parserProgram == nullptr || ctx->parserProgram->Ast() == nullptr) {
-        return false;
-    }
-    auto astNode = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
-    astNode->IterateRecursively([declInfo, &nodes](ir::AstNode *child) {
-        auto info = GetDeclInfoImpl(child);
-        if (info == declInfo) {
-            nodes.push_back(child);
-        }
-    });
-    std::vector<ir::AstNode *> filterNodes;
-    std::for_each(nodes.begin(), nodes.end(), [&filterNodes, path](ir::AstNode *node) {
-        if (IsAllowToDeleteDeclaration(node, path)) {
-            filterNodes.push_back(node);
-        }
-    });
-
-    return !filterNodes.empty();
-}
-
-bool GetSafeDeleteInfoImpl(es2panda_Context *context, size_t position, const std::string &path)
-{
-    auto astNode = GetTouchingToken(context, position, false);
-    if (NodeIsEligibleForSafeDelete(astNode)) {
-        return GetSafeDeleteInfoForNode(context, position, path);
-    }
-    return false;
 }
 }  // namespace ark::es2panda::lsp

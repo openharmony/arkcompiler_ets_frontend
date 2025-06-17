@@ -676,7 +676,7 @@ export class Lsp {
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
-    let result = global.es2panda._getSafeDeleteInfo(localCtx, position, path.resolve(__dirname, '../../..'));
+    let result = global.es2panda._getSafeDeleteInfo(localCtx, position);
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
