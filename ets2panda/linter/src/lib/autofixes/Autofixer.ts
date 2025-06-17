@@ -3369,7 +3369,7 @@ export class Autofixer {
       node.initializer
     );
 
-    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newProperty, node.getSourceFile());
+    const replacementText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, newProperty, node.getSourceFile());
 
     return [
       {
@@ -3494,7 +3494,7 @@ export class Autofixer {
       initializer
     );
 
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
+    const text = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
 
