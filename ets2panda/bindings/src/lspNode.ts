@@ -335,7 +335,7 @@ export class FieldListProperty extends LspNode {
     this.modifierKinds = new NativePtrDecoder()
       .decode(global.es2panda._getModifierKindsFromPropertyInfo(peer))
       .map((elPeer: KNativePointer) => {
-        return new String(elPeer);
+        return new String(unpackString(elPeer));
       });
     this.displayName = unpackString(global.es2panda._getDisplayNameFromPropertyInfo(peer));
     this.start = global.es2panda._getStartFromPropertyInfo(peer);

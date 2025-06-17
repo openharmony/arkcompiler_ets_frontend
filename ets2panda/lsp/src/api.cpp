@@ -110,11 +110,15 @@ DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
     return result;
 }
 
-std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *context, const char *fileName, size_t pos)
+std::vector<ClassHierarchyItemInfo> GetClassHierarchies(std::vector<es2panda_Context *> *contextList,
+                                                        const char *fileName, size_t pos)
 {
-    auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    SetPhaseManager(ctx->phaseManager);
-    return GetClassHierarchiesImpl(context, std::string(fileName), pos);
+    auto *ctxList = reinterpret_cast<std::vector<es2panda_Context *> *>(contextList);
+    for (auto *context : *ctxList) {
+        auto ctx = reinterpret_cast<public_lib::Context *>(context);
+        SetPhaseManager(ctx->phaseManager);
+    }
+    return GetClassHierarchiesImpl(contextList, std::string(fileName), pos);
 }
 
 bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
