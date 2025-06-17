@@ -1547,6 +1547,11 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags)
         ir::VariableDeclarator *declarator = ParseVariableDeclarator(flags);
         if (declarator != nullptr) {  // Error processing.
             declarators.push_back(declarator);
+            if (declarator->Init() != nullptr && declarator->Init()->IsETSClassLiteral()) {
+                ParseClassBody({});
+                LogError(diagnostic::UNSUPPORTED_CLASS_LITERAL);
+                return AllocBrokenStatement(declarator->Init()->Start());
+            }
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
