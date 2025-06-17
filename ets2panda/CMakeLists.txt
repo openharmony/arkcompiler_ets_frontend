@@ -642,6 +642,7 @@ set(ES2PANDA_LIB_SRC
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp
+  util/perfMetrics.cpp
   util/ustring.cpp
   test/utils/panda_executable_path_getter.cpp
   evaluate/debugInfoDeserialization/debugInfoDeserializer.cpp

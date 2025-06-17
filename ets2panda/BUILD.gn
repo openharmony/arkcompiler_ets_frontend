@@ -488,6 +488,7 @@ libes2panda_sources = [
   "util/helpers.cpp",
   "util/importPathManager.cpp",
   "util/path.cpp",
+  "util/perfMetrics.cpp",
   "util/plugin.cpp",
   "util/ustring.cpp",
   "varbinder/ASBinder.cpp",

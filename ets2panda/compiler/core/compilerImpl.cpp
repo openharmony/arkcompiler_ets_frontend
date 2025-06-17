@@ -43,6 +43,7 @@
 #include "parser/program/program.h"
 #include "public/public.h"
 #include "util/ustring.h"
+#include "util/perfMetrics.h"
 #include "varbinder/JSBinder.h"
 #include "varbinder/ASBinder.h"
 #include "varbinder/TSBinder.h"
@@ -153,6 +154,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         if (name == compiler::CheckerPhase::NAME) {
             afterCheckerPhase = true;
         }
+        ES2PANDA_PERF_EVENT_SCOPE("phases/" + name);
 
         if (options.GetSkipPhases().count(name) > 0) {
             continue;
@@ -348,6 +350,7 @@ static void SavePermanents(public_lib::Context *ctx, parser::Program *program)
 static pandasm::Program *EmitProgram(CompilerImpl *compilerImpl, public_lib::Context *context,
                                      const CompilationUnit &unit)
 {
+    ES2PANDA_PERF_SCOPE("EmitProgram");
     context->emitter->GenAnnotation();
     auto result = compilerImpl->Emit(context);
     if (unit.ext == ScriptExtension::ETS && context->compilingState != public_lib::CompilingState::SINGLE_COMPILING) {
@@ -358,6 +361,7 @@ static pandasm::Program *EmitProgram(CompilerImpl *compilerImpl, public_lib::Con
 
 static bool ExecuteParsingAndCompiling(const CompilationUnit &unit, public_lib::Context *context)
 {
+    ES2PANDA_PERF_SCOPE("Parser and pipeline phases");
     parser::Program *program = context->parserProgram;
     if (unit.ext == ScriptExtension::ETS &&
         context->compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {

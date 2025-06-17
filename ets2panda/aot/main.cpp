@@ -24,6 +24,7 @@
 #include "util/generateBin.h"
 #include "util/options.h"
 #include "util/plugin.h"
+#include "util/perfMetrics.h"
 #include "libpandabase/os/stacktrace.h"
 #include "generated/diagnostic.h"
 
@@ -100,8 +101,8 @@ static int CompileMultipleFiles(es2panda::Compiler &compiler, std::vector<Source
     return overallRes;
 }
 
-static unsigned int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
-                                      util::DiagnosticEngine &diagnosticEngine)
+static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
+                             util::DiagnosticEngine &diagnosticEngine)
 {
     auto compilationList = FindProjectSources(options->ArkTSConfig());
     if (compilationList.empty()) {
@@ -185,22 +186,27 @@ static int Run(Span<const char *const> args)
         return 1;
     }
 
+    int res;
     if (options->GetCompilationMode() == CompilationMode::PROJECT) {
-        return CompileFromConfig(compiler, options.get(), diagnosticEngine);
-    }
-
-    std::string sourceFile;
-    std::string_view parserInput;
-    if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        sourceFile = "etsstdlib.ets";
-        parserInput = "";
+        res = CompileFromConfig(compiler, options.get(), diagnosticEngine);
     } else {
-        sourceFile = options->SourceFileName();
-        auto [buf, size] = options->CStrParserInputContents();
-        parserInput = std::string_view(buf, size);
+        std::string sourceFile;
+        std::string_view parserInput;
+        if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+            sourceFile = "etsstdlib.ets";
+            parserInput = "";
+        } else {
+            sourceFile = options->SourceFileName();
+            auto [buf, size] = options->CStrParserInputContents();
+            parserInput = std::string_view(buf, size);
+        }
+        es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
+        res = CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
     }
-    es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
-    return CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
+    if (options->IsDumpPerfMetrics()) {
+        util::DumpPerfMetrics();
+    }
+    return res;
 }
 }  // namespace ark::es2panda::aot
 
