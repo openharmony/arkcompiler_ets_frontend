@@ -29,9 +29,9 @@ class B {
     static getx() { return B.x }
 }
 
-expectThrow(() => { A.getx() }, (e) => e instanceof NullPointerError)
-expectThrow(() => { A.getx() }, (e) => e instanceof LinkerUnresolvedClassError)
-expectThrow(() => { B.getx() }, (e) => e instanceof LinkerUnresolvedClassError)
+arktest.expectThrow(() => { A.getx() }, (e) => e instanceof NullPointerError)
+arktest.expectThrow(() => { A.getx() }, (e) => e instanceof LinkerUnresolvedClassError)
+arktest.expectThrow(() => { B.getx() }, (e) => e instanceof LinkerUnresolvedClassError)
 
 class C {
     static x: string
@@ -45,5 +45,5 @@ class C {
 let cb: () => void
 cb = () => { C.x }
 
-expectThrow(() => { new C() }, (e) => e instanceof NullPointerError)
-expectThrow(() => { new C() }, (e) => e instanceof LinkerUnresolvedClassError)
+arktest.expectThrow(() => { new C() }, (e) => e instanceof NullPointerError)
+arktest.expectThrow(() => { new C() }, (e) => e instanceof LinkerUnresolvedClassError)

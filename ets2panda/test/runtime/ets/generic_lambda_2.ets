@@ -18,31 +18,31 @@ function main() {
 
     // Explicitly deducing generics
     let res1 = foo<number, string>(1.0, "abc")
-    assertEQ(res1[0], 1.0)
-    assertEQ(res1[1], "abc")
+    arktest.assertEQ(res1[0], 1.0)
+    arktest.assertEQ(res1[1], "abc")
 
     let res2 = foo<Error, null>(new Error(), null)
-    assertTrue(res2[0] instanceof Error)
-    assertEQ(res2[1], null)
+    arktest.assertTrue(res2[0] instanceof Error)
+    arktest.assertEQ(res2[1], null)
 
     let res3 = foo<[Double, string], [Error, null]>(res1, res2)
-    assertEQ(res3[0][0], 1.0)
-    assertEQ(res3[0][1], "abc")
-    assertTrue(res3[1][0] instanceof Error)
-    assertEQ(res3[1][1], null)
+    arktest.assertEQ(res3[0][0], 1.0)
+    arktest.assertEQ(res3[0][1], "abc")
+    arktest.assertTrue(res3[1][0] instanceof Error)
+    arktest.assertEQ(res3[1][1], null)
 
     // Implicit derivation of generics
     let res4 = foo(1.0, "abc")
-    assertEQ(res4[0], 1.0)
-    assertEQ(res4[1], "abc")
+    arktest.assertEQ(res4[0], 1.0)
+    arktest.assertEQ(res4[1], "abc")
 
     let res5 = foo(new Error(), null)
-    assertTrue(res5[0] instanceof Error)
-    assertEQ(res5[1], null)
+    arktest.assertTrue(res5[0] instanceof Error)
+    arktest.assertEQ(res5[1], null)
 
     let res6 = foo(res1, res2)
-    assertEQ(res6[0][0], 1.0)
-    assertEQ(res6[0][1], "abc")
-    assertTrue(res6[1][0] instanceof Error)
-    assertEQ(res6[1][1], null)
+    arktest.assertEQ(res6[0][0], 1.0)
+    arktest.assertEQ(res6[0][1], "abc")
+    arktest.assertTrue(res6[1][0] instanceof Error)
+    arktest.assertEQ(res6[1][1], null)
 }

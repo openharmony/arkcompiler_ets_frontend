@@ -17,25 +17,25 @@ function main() {
     let foo1 = <T>(t: int) => {
         return 1;
     }
-    assertEQ(foo1(1), 1)
+    arktest.assertEQ(foo1(1), 1)
 
     let foo2 = <T>(t: int) => {
         return t;
     }
-    assertEQ(foo2(1), 1)
-    assertEQ(foo2(100), 100)
+    arktest.assertEQ(foo2(1), 1)
+    arktest.assertEQ(foo2(100), 100)
 
     let foo3 = <T>(t: T) => {
         return t;
     }
-    assertEQ(foo3(1), 1)
-    assertEQ(foo3("123"), "123")
+    arktest.assertEQ(foo3(1), 1)
+    arktest.assertEQ(foo3("123"), "123")
 
     let foo4 = <T, U>(t: T, u: U) => {
         return t;
     }
-    assertEQ(foo4(1, 1), 1)
-    assertEQ(foo4(100, 1), 100)
-    assertEQ(foo4(100, "abc"), 100)
-    assertEQ(foo4("abc", 100), "abc")
+    arktest.assertEQ(foo4(1, 1), 1)
+    arktest.assertEQ(foo4(100, 1), 100)
+    arktest.assertEQ(foo4(100, "abc"), 100)
+    arktest.assertEQ(foo4("abc", 100), "abc")
 }

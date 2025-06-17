@@ -36,8 +36,8 @@ function main() {
     {}
 
     // Case 3: transform trailing lambda for arktest.assert statement
-    assertEQ(1, f(){});
-    assertEQ(1, f(()=>{}));
+    arktest.assertEQ(1, f(){});
+    arktest.assertEQ(1, f(()=>{}));
     {
     }
 }
