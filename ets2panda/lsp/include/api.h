@@ -502,7 +502,7 @@ typedef struct LSPAPI {
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> (*getClassHierarchiesImpl)(
         std::vector<es2panda_Context *> *contextList, const char *fileName, size_t pos);
-    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position, const char *path);
+    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);

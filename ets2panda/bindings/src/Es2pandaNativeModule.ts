@@ -734,7 +734,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getSafeDeleteInfo(context: KNativePointer, position: KInt, path: String): boolean {
+  _getSafeDeleteInfo(context: KNativePointer, position: KInt): boolean {
     throw new Error('Not implemented');
   }
 

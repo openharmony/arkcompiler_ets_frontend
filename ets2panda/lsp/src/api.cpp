@@ -121,11 +121,11 @@ std::vector<ClassHierarchyItemInfo> GetClassHierarchies(std::vector<es2panda_Con
     return GetClassHierarchiesImpl(contextList, std::string(fileName), pos);
 }
 
-bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
+bool GetSafeDeleteInfo(es2panda_Context *context, size_t position)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     SetPhaseManager(ctx->phaseManager);
-    return GetSafeDeleteInfoImpl(context, position, path);
+    return GetSafeDeleteInfoImpl(context, position);
 }
 
 References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo)
