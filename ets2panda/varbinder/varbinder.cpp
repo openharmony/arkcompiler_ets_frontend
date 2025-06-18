@@ -476,8 +476,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
         auto stmt = func->Body()->AsBlockStatement()->Statements();
         auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
         std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *node) {
-            if (node->IsTSInterfaceDeclaration() || node->IsClassDeclaration() || node->IsTSEnumDeclaration() ||
-                node->IsAnnotationDeclaration()) {
+            if (node->IsTSInterfaceDeclaration() || node->IsTSEnumDeclaration()) {
                 ResolveReference(node);
             }
             node->Iterate([&](ir::AstNode *child) { doNode(child); });
