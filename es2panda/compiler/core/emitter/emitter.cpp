@@ -15,6 +15,7 @@
 
 #include "emitter.h"
 
+#include <abc2program/common/abc_file_utils.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/pandagen.h>
@@ -394,7 +395,8 @@ pandasm::AnnotationData FunctionEmitter::CreateAnnotation(const ir::Annotation *
 {
     std::string annoName = std::string(anno->Name());
     if (pg_->Context()->IsMergeAbc()) {
-        std::string prefix = std::string(pg_->Context()->RecordName()) + ".";
+        std::string prefix =
+            std::string(pg_->Context()->RecordName()) + std::string(abc2program::RECORD_ANNOTATION_SEPARATOR);
         annoName.insert(0, prefix);
     }
     pandasm::AnnotationData annotation(annoName);
