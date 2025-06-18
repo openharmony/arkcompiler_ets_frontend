@@ -83,3 +83,7 @@ arr[a] = 1;
 arr[b] = 1;
 arr[c] = 1;
 arr[d] = 1;
+
+let test = 1;
+arr[1 as number];
+arr[test as number];
