@@ -110,12 +110,25 @@ function mergeLintProblems(
       return onlyArkts2SyntaxRules.has(problem.ruleTag);
     });
   }
-  if (cmdOptions.scanWholeProjectInHomecheck && !cmdOptions.inputFiles.includes(filePath)) {
-    filteredProblems = problems.filter((problem) => {
-      return problem.rule.includes('s2d');
-    });
-  }
   mergedProblems.get(filePath)!.push(...filteredProblems);
+
+  if (cmdOptions.scanWholeProjectInHomecheck) {
+    for (const file of mergedProblems.keys()) {
+      if (cmdOptions.inputFiles.includes(filePath)) {
+        continue;
+      }
+      const totalProblems = mergedProblems.get(file);
+      if (totalProblems === undefined) {
+        continue;
+      }
+      filteredProblems = totalProblems.filter(problem => problem.rule.includes('s2d'));
+      if (filteredProblems.length > 0) {
+        mergedProblems.set(file, filteredProblems);
+      } else {
+        mergedProblems.delete(file);
+      }
+    }
+  }
 }
 
 async function generateReportFile(reportData, reportPath?: string): Promise<void> {
