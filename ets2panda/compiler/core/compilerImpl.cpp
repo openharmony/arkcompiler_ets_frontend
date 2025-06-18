@@ -119,6 +119,7 @@ void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &
     }
     std::string result = program.Ast()->DumpDecl();
     result.erase(0, result.find_first_not_of('\n'));
+    result = "'use static'\n" + result;
 
     outFile << result;
     outFile.close();
