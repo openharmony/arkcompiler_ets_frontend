@@ -4630,7 +4630,7 @@ export class Autofixer {
   fixNoTsLikeFunctionCall(identifier: ts.Node): Autofix[] {
     void this;
     const funcName = identifier.getText();
-    const replacementText = `${funcName}.unSafeCall`;
+    const replacementText = `${funcName}.unsafeCall`;
     return [
       {
         replacementText,

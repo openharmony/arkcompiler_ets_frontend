@@ -54,7 +54,7 @@ class D5 implements C5 {
 }
 
 function run6(fn: Function) {
-  fn.unSafeCall();
+  fn.unsafeCall();
 }
 
 function getFunction8(): Function {
@@ -136,7 +136,7 @@ enum E39 {
 
 //回调参数不明确
 function handleEvent41(callback: Function) {
-  callback.unSafeCall("event", Date.now());
+  callback.unsafeCall("event", Date.now());
 }
 
 let fn43: Function = (x: number) => x + 1.0;
@@ -157,19 +157,19 @@ const fetchData44: Function = async (url: string) => {
 
 //高阶函数
 function compose45(...fns: Function[]): Function {
-  return fns.reduce((prev, curr) => (...args: Function[]) => curr.unSafeCall(prev.unSafeCall(...args)) as Function);
+  return fns.reduce((prev, curr) => (...args: Function[]) => curr.unsafeCall(prev.unsafeCall(...args)) as Function);
 }
 
 export let add: (a: number, b: number) => number;
 export let add1: (a: string) => object;
 
-f1.unSafeCall();
+f1.unsafeCall();
 
 class AB3 {
   fn3: Function = () => {};
 }
 let ab3 = new AB3();
-ab3.fn3.unSafeCall();
+ab3.fn3.unsafeCall();
 
 const fn29: Function[] = [];
-fn29[1].unSafeCall();
+fn29[1].unsafeCall();
