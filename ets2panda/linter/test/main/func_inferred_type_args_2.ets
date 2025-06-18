@@ -37,7 +37,7 @@ repairableC.repairableSet = new Set();
 repairableC.repairableMap = new Map();
 MyClass.repairableStaticMap = new Map();
 
-const promise: Promise<String> = new Promise(()=> {return ''});
+const promise: Promise<String> = new Promise(() => { return ''; });
 
 function testA(): Map<string, string> {
   return new Map();
@@ -72,3 +72,8 @@ class MyClassB {
     return new Set();
   }
 }
+
+const testMap: Map<string, number> = new Map([
+  ['123', 1], // my comment 1
+  ['sfe', 2] // my comment 2
+]);

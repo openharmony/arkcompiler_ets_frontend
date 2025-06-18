@@ -295,16 +295,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 46,
-            "column": 3,
-            "endLine": 48,
-            "endColumn": 2,
-            "problem": "TsLikeCatchType",
-            "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 50,
             "column": 11,
             "endLine": 50,

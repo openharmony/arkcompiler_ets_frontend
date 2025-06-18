@@ -72,3 +72,8 @@ class MyClassB {
     return new Set();
   }
 }
+
+const testMap: Map<string, number> = new Map<string, number>([
+  ['123', 1.0], // my comment 1
+  ['sfe', 2.0] // my comment 2
+]);

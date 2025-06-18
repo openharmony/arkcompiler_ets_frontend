@@ -113,6 +113,16 @@
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
             "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 23,
+            "endLine": 39,
+            "endColumn": 33,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
         }
     ]
 }

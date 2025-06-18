@@ -315,6 +315,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 342,
+            "column": 5,
+            "endLine": 342,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
             "line": 245,
             "column": 3,
             "endLine": 245,

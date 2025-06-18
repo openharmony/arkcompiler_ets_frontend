@@ -376,6 +376,16 @@
         },
         {
             "line": 88,
+            "column": 17,
+            "endLine": 88,
+            "endColumn": 34,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
             "column": 54,
             "endLine": 88,
             "endColumn": 55,
@@ -419,6 +429,276 @@
             "column": 27,
             "endLine": 90,
             "endColumn": 54,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 101,
+            "column": 13,
+            "endLine": 101,
+            "endColumn": 28,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 103,
+            "column": 16,
+            "endLine": 103,
+            "endColumn": 33,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 13,
+            "endLine": 104,
+            "endColumn": 32,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 8,
+            "endLine": 105,
+            "endColumn": 33,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 107,
+            "column": 3,
+            "endLine": 107,
+            "endColumn": 20,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 108,
+            "column": 10,
+            "endLine": 108,
+            "endColumn": 25,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 5,
+            "endLine": 112,
+            "endColumn": 21,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 22,
+            "endLine": 112,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 24,
+            "endLine": 112,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 113,
+            "column": 5,
+            "endLine": 113,
+            "endColumn": 23,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 116,
+            "column": 12,
+            "endLine": 116,
+            "endColumn": 34,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 119,
+            "column": 1,
+            "endLine": 119,
+            "endColumn": 17,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 120,
+            "column": 1,
+            "endLine": 120,
+            "endColumn": 16,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 121,
+            "column": 1,
+            "endLine": 121,
+            "endColumn": 19,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 122,
+            "column": 1,
+            "endLine": 122,
+            "endColumn": 15,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 123,
+            "column": 1,
+            "endLine": 123,
+            "endColumn": 18,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 1,
+            "endLine": 124,
+            "endColumn": 18,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 40,
+            "endLine": 124,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 43,
+            "endLine": 124,
+            "endColumn": 44,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 1,
+            "endLine": 125,
+            "endColumn": 23,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 45,
+            "endLine": 125,
+            "endColumn": 46,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 48,
+            "endLine": 125,
+            "endColumn": 49,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 1,
+            "endLine": 126,
+            "endColumn": 16,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 1,
+            "endLine": 127,
+            "endColumn": 20,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 1,
+            "endLine": 128,
+            "endColumn": 16,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 129,
+            "column": 1,
+            "endLine": 129,
+            "endColumn": 19,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 1,
+            "endLine": 130,
+            "endColumn": 21,
             "problem": "NoTuplesArrays",
             "suggest": "",
             "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",

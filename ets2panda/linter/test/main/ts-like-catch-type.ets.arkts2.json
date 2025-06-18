@@ -15,63 +15,13 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 21,
-            "endLine": 18,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 21,
-            "endColumn": 4,
+            "line": 20,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 9,
             "problem": "TsLikeCatchType",
             "suggest": "",
             "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 21,
-            "endLine": 26,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 12,
-            "endLine": 27,
-            "endColumn": 18,
-            "problem": "CatchWithUnsupportedType",
-            "suggest": "",
-            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 5,
-            "endLine": 29,
-            "endColumn": 4,
-            "problem": "TsLikeCatchType",
-            "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 15,
-            "endLine": 27,
-            "endColumn": 18,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]

@@ -60,7 +60,7 @@ export const OBJECT_PROPERTIES = [
   'isSealed'
 ];
 
-export const USE_STATIC = "'use static'";
+export const USE_STATIC = '\'use static\'';
 export const OBJECT_LITERAL = 'Object';
 export const REFLECT_LITERAL = 'Reflect';
 export const NONE = 'none';

@@ -42,9 +42,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 676,
-                    "end": 687,
-                    "replacementText": "new Array<number>()",
+                    "start": 685,
+                    "end": 685,
+                    "replacementText": "<number>",
                     "line": 17,
                     "column": 36,
                     "endLine": 17,
@@ -63,9 +63,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 705,
-                    "end": 716,
-                    "replacementText": "new Array<number>()",
+                    "start": 714,
+                    "end": 714,
+                    "replacementText": "<number>",
                     "line": 18,
                     "column": 17,
                     "endLine": 18,
@@ -114,9 +114,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 796,
-                    "end": 805,
-                    "replacementText": "new Map<string, number>()",
+                    "start": 803,
+                    "end": 803,
+                    "replacementText": "<string, number>",
                     "line": 21,
                     "column": 44,
                     "endLine": 21,
@@ -135,9 +135,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 823,
-                    "end": 832,
-                    "replacementText": "new Map<string, number>()",
+                    "start": 830,
+                    "end": 830,
+                    "replacementText": "<string, number>",
                     "line": 22,
                     "column": 17,
                     "endLine": 22,
@@ -206,9 +206,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 994,
-                    "end": 1003,
-                    "replacementText": "new Map<string, () => string[]>()",
+                    "start": 1001,
+                    "end": 1001,
+                    "replacementText": "<string, () => string[]>",
                     "line": 27,
                     "column": 55,
                     "endLine": 27,
@@ -227,9 +227,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1065,
-                    "end": 1074,
-                    "replacementText": "new Map<string, () => string[]>()",
+                    "start": 1072,
+                    "end": 1072,
+                    "replacementText": "<string, () => string[]>",
                     "line": 28,
                     "column": 61,
                     "endLine": 28,
@@ -268,9 +268,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1215,
-                    "end": 1228,
-                    "replacementText": "new MyClass<number>()",
+                    "start": 1226,
+                    "end": 1226,
+                    "replacementText": "<number>",
                     "line": 34,
                     "column": 38,
                     "endLine": 34,
@@ -299,9 +299,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1298,
-                    "end": 1307,
-                    "replacementText": "new Set<string>()",
+                    "start": 1305,
+                    "end": 1305,
+                    "replacementText": "<string>",
                     "line": 36,
                     "column": 29,
                     "endLine": 36,
@@ -320,9 +320,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1337,
-                    "end": 1346,
-                    "replacementText": "new Map<string, () => string[]>()",
+                    "start": 1344,
+                    "end": 1344,
+                    "replacementText": "<string, () => string[]>",
                     "line": 37,
                     "column": 29,
                     "endLine": 37,
@@ -341,9 +341,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1378,
-                    "end": 1387,
-                    "replacementText": "new Map<string, () => string[]>()",
+                    "start": 1385,
+                    "end": 1385,
+                    "replacementText": "<string, () => string[]>",
                     "line": 38,
                     "column": 31,
                     "endLine": 38,
@@ -358,17 +358,17 @@
             "line": 40,
             "column": 34,
             "endLine": 40,
-            "endColumn": 63,
+            "endColumn": 67,
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1423,
-                    "end": 1452,
-                    "replacementText": "new Promise<String>(() => { return ''; })",
+                    "start": 1434,
+                    "end": 1434,
+                    "replacementText": "<String>",
                     "line": 40,
                     "column": 34,
                     "endLine": 40,
-                    "endColumn": 63
+                    "endColumn": 67
                 }
             ],
             "suggest": "",
@@ -393,9 +393,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1504,
-                    "end": 1513,
-                    "replacementText": "new Map<string, string>()",
+                    "start": 1515,
+                    "end": 1515,
+                    "replacementText": "<string, string>",
                     "line": 43,
                     "column": 10,
                     "endLine": 43,
@@ -424,9 +424,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1582,
-                    "end": 1591,
-                    "replacementText": "new Map<string, string>()",
+                    "start": 1593,
+                    "end": 1593,
+                    "replacementText": "<string, string>",
                     "line": 47,
                     "column": 10,
                     "endLine": 47,
@@ -515,9 +515,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1798,
-                    "end": 1807,
-                    "replacementText": "new Map<string, string>()",
+                    "start": 1809,
+                    "end": 1809,
+                    "replacementText": "<string, string>",
                     "line": 60,
                     "column": 12,
                     "endLine": 60,
@@ -546,9 +546,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 1873,
-                    "end": 1882,
-                    "replacementText": "new Map<string, string>()",
+                    "start": 1884,
+                    "end": 1884,
+                    "replacementText": "<string, string>",
                     "line": 64,
                     "column": 12,
                     "endLine": 64,
@@ -618,6 +618,69 @@
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
-        }
+        },
+      {
+        "line": 76,
+        "column": 38,
+        "endLine": 79,
+        "endColumn": 3,
+        "problem": "GenericCallNoTypeArgs",
+        "autofix": [
+          {
+            "start": 2074,
+            "end": 2074,
+            "replacementText": "<string, number>",
+            "line": 76,
+            "column": 38,
+            "endLine": 79,
+            "endColumn": 3
+          }
+        ],
+        "suggest": "",
+        "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+        "severity": "ERROR"
+      },
+      {
+        "line": 77,
+        "column": 11,
+        "endLine": 77,
+        "endColumn": 12,
+        "problem": "NumericSemantics",
+        "autofix": [
+          {
+            "start": 2087,
+            "end": 2088,
+            "replacementText": "1.0",
+            "line": 77,
+            "column": 11,
+            "endLine": 77,
+            "endColumn": 12
+          }
+        ],
+        "suggest": "",
+        "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+        "severity": "ERROR"
+      },
+      {
+        "line": 78,
+        "column": 11,
+        "endLine": 78,
+        "endColumn": 12,
+        "problem": "NumericSemantics",
+        "autofix": [
+          {
+            "start": 2117,
+            "end": 2118,
+            "replacementText": "2.0",
+            "line": 78,
+            "column": 11,
+            "endLine": 78,
+            "endColumn": 12
+          }
+        ],
+        "suggest": "",
+        "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+        "severity": "ERROR"
+      }
     ]
 }

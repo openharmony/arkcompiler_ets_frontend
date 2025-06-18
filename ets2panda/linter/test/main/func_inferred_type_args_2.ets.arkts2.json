@@ -248,7 +248,7 @@
             "line": 40,
             "column": 34,
             "endLine": 40,
-            "endColumn": 63,
+            "endColumn": 67,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
@@ -453,6 +453,36 @@
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
-        }
+        },
+      {
+        "line": 76,
+        "column": 38,
+        "endLine": 79,
+        "endColumn": 3,
+        "problem": "GenericCallNoTypeArgs",
+        "suggest": "",
+        "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+        "severity": "ERROR"
+      },
+      {
+        "line": 77,
+        "column": 11,
+        "endLine": 77,
+        "endColumn": 12,
+        "problem": "NumericSemantics",
+        "suggest": "",
+        "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+        "severity": "ERROR"
+      },
+      {
+        "line": 78,
+        "column": 11,
+        "endLine": 78,
+        "endColumn": 12,
+        "problem": "NumericSemantics",
+        "suggest": "",
+        "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+        "severity": "ERROR"
+      }
     ]
 }

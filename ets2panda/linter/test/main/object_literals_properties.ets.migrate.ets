@@ -318,3 +318,34 @@ class C6 {
 
 let map1:Map<string,string> = new Map<string,string>();
 let c6: C6 = {map1: map1};
+
+// Namespace typed object literals
+namespace X {
+  export class C {
+    m() {
+      console.log("C - 1");
+    }
+  }
+ 
+  export interface I {
+    m(a: number, b: string): void;
+  }
+}
+ 
+class GeneratedObjectLiteralClass_11 extends X.C {
+    m() {
+        console.log("C - 2");
+    }
+}
+
+class GeneratedObjectLiteralClass_12 implements X.I {
+    m(): void {
+        console.log("I");
+    }
+}
+
+function test() {
+  let c: X.C = new GeneratedObjectLiteralClass_11()
+ 
+  let i: X.I = new GeneratedObjectLiteralClass_12()
+}

@@ -15,46 +15,6 @@
     ],
     "result": [
         {
-            "line": 27,
-            "column": 26,
-            "endLine": 27,
-            "endColumn": 31,
-            "problem": "LimitedStdLibNoASON",
-            "suggest": "",
-            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 18,
-            "endLine": 29,
-            "endColumn": 33,
-            "problem": "LimitedStdLibNoASON",
-            "suggest": "",
-            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
-            "column": 18,
-            "endLine": 31,
-            "endColumn": 31,
-            "problem": "LimitedStdLibNoASON",
-            "suggest": "",
-            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 26,
-            "endLine": 33,
-            "endColumn": 41,
-            "problem": "LimitedStdLibNoASON",
-            "suggest": "",
-            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
-            "severity": "ERROR"
-        },
-        {
             "line": 35,
             "column": 22,
             "endLine": 35,
@@ -69,6 +29,16 @@
             "column": 33,
             "endLine": 37,
             "endColumn": 43,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 23,
+            "endLine": 39,
+            "endColumn": 33,
             "problem": "LimitedStdLibNoASON",
             "suggest": "",
             "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
