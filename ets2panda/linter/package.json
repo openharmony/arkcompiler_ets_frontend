@@ -40,7 +40,13 @@
     "eslint-check": "npx eslint .",
     "eslint-fix": "npm run eslint-check -- --fix",
     "prettier-fix": "npx prettier --write .",
-    "fix": "npm run prettier-fix && npm run eslint-fix"
+    "fix": "npm run prettier-fix && npm run eslint-fix",
+    "coverage": "npm run coverage-prepare && npm run coverage-instrument && npm run coverage-test && npm run coverage-collect && npm run coverage-report",
+    "coverage-prepare": "npm run build && node scripts/testRunner/coverage_prepare.js",
+    "coverage-instrument": "nyc --compact false instrument build coverage/build_instrument",
+    "coverage-test": "node coverage/build_instrument/testRunner/TestRunner.js -d test/main,test/rules,test/regression,test/extended_features,test/migration,test/ohmurl,test/interop,test/sdkwhite,test/concurrent,test/builtin",
+    "coverage-collect": "node scripts/testRunner/coverage_collect.js",
+    "coverage-report": "node scripts/testRunner/coverage_report.js"
   },
   "dependencies": {
     "commander": "^9.4.0",
@@ -67,7 +73,9 @@
     "shelljs": "^0.8.5",
     "typescript-eslint": "latest",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^5.0.1",
+    "nyc": "^15.1.0",
+    "source-map": "^0.7.4"
   },
   "bundleDependencies": [
     "log4js",
