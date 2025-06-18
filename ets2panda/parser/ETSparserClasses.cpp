@@ -113,11 +113,6 @@ ir::ModifierFlags ETSParser::ParseClassModifiers()
     while (IsClassModifier(Lexer()->GetToken().KeywordType())) {
         ir::ModifierFlags currentFlag = ir::ModifierFlags::NONE;
 
-        lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
-        if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
-        }
-
         switch (Lexer()->GetToken().KeywordType()) {
             case lexer::TokenType::KEYW_STATIC: {
                 currentFlag = ir::ModifierFlags::STATIC;
@@ -201,11 +196,6 @@ std::tuple<ir::ModifierFlags, bool, bool> ETSParser::ParseClassMemberAccessModif
         return {ir::ModifierFlags::NONE, false, false};
     }
 
-    lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
-    if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-        LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
-    }
-
     ir::ModifierFlags accessFlag = ir::ModifierFlags::NONE;
 
     const auto token = Lexer()->GetToken();
@@ -265,11 +255,6 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
         }
 
         ir::ModifierFlags currentFlag;
-
-        lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
-        if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
-        }
 
         switch (Lexer()->GetToken().KeywordType()) {
             case lexer::TokenType::KEYW_STATIC: {
@@ -402,11 +387,6 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
         }
 
         ir::ModifierFlags currentFlag = ir::ModifierFlags::NONE;
-
-        lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
-        if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
-        }
 
         currentFlag = ParseClassMethodModifierFlag();
         if ((flags & currentFlag) != 0) {
@@ -854,16 +834,6 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
 
     lexer::SourcePosition bodyStart = Lexer()->GetToken().Start();
     auto members = ParseTypeLiteralOrInterface();
-
-    for (auto &member : members) {
-        if (member->Type() == ir::AstNodeType::CLASS_DECLARATION ||
-            member->Type() == ir::AstNodeType::STRUCT_DECLARATION ||
-            member->Type() == ir::AstNodeType::TS_ENUM_DECLARATION ||
-            member->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
-            LogError(diagnostic::IMPROPER_NESTING_INTERFACE);
-        }
-    }
-
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
     body->SetRange({bodyStart, Lexer()->GetToken().End()});
 
@@ -1042,11 +1012,6 @@ ir::AstNode *ETSParser::ParseInterfaceField()
 
     ParseInterfaceModifiers(fieldModifiers, optionalField);
     auto *typeAnnotation = ParseInterfaceTypeAnnotation(name);
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL &&
-        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        LogError(diagnostic::INITIALIZERS_INTERFACE_PROPS);
-        Lexer()->NextToken();  // Error processing: eat '='.
-    }
     auto *field = AllocNode<ir::ClassProperty>(name, nullptr, typeAnnotation->Clone(Allocator(), nullptr),
                                                fieldModifiers, Allocator(), false);
     if (optionalField) {

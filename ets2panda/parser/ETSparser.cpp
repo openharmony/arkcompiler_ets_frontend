@@ -773,43 +773,6 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
     return typeAliasDecl;
 }
 
-std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptFunction *const function)
-{
-    bool hasOptionalParameters = false;
-    bool hasRestParameter = false;
-    std::size_t requiredParametersNumber = 0U;
-
-    for (auto *const it : function->Params()) {
-        auto const *const param = it->AsETSParameterExpression();
-
-        if (param->IsRestParameter()) {
-            hasRestParameter = true;
-            continue;
-        }
-
-        if (hasRestParameter) {
-            LogError(diagnostic::REST_PARAM_LAST, {}, param->Start());
-        }
-
-        if (param->IsOptional()) {
-            hasOptionalParameters = true;
-            continue;
-        }
-
-        if (hasOptionalParameters) {
-            LogError(diagnostic::REQUIRED_PARAM_AFTER_DEFAULT, {}, param->Start());
-        }
-
-        ++requiredParametersNumber;
-    }
-
-    if (hasOptionalParameters && hasRestParameter) {
-        LogError(diagnostic::REST_AND_DEFAULT_SAME_TIME, {}, function->Start());
-    }
-
-    return std::make_pair(hasOptionalParameters, requiredParametersNumber);
-}
-
 std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type) const
 {
     switch (type) {
@@ -1382,7 +1345,8 @@ bool ETSParser::ParseNamedSpecifiesImport(ArenaVector<ir::ImportSpecifier *> *re
     auto *imported = ExpectIdentifier();
 
     ir::Identifier *local = nullptr;
-    if (CheckModuleAsModifier() && Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
+    CheckModuleAsModifier();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
         if (Lexer()->TryEatTokenType(lexer::TokenType::KEYW_DEFAULT)) {
             auto *exportedAnonyConst = AllocNode<ir::ExportSpecifier>(imported, imported->Clone(Allocator(), nullptr));
             exportedAnonyConst->SetDefault();
@@ -1443,9 +1407,7 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
     lexer::SourcePosition namespaceStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat `*` character
 
-    if (!CheckModuleAsModifier()) {
-        LogError(diagnostic::UNEXPECTED_TOKEN);
-    }
+    CheckModuleAsModifier();
 
     // Note (oeotvos) As a temporary solution we allow the stdlib to use namespace import without an alias, but this
     // should be handled at some point.
@@ -1512,13 +1474,11 @@ ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *
     return nullptr;
 }
 
-bool ETSParser::CheckModuleAsModifier()
+void ETSParser::CheckModuleAsModifier()
 {
     if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0U) {
         LogError(diagnostic::ESCAPE_SEQUENCES_IN_AS);
     }
-
-    return true;
 }
 
 ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
