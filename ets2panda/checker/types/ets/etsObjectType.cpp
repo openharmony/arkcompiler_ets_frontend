@@ -582,7 +582,6 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 bool ETSObjectType::CheckIdenticalFlags(ETSObjectType *other) const
 {
     constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
-                                     ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                      ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY | ETSObjectFlags::EXTENSION_FUNCTION;
 
     auto cleanedTargetFlags = other->ObjectFlags();
@@ -1000,8 +999,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     ES2PANDA_ASSERT(copiedType->internalName_ == internalName_);
     ES2PANDA_ASSERT(copiedType->name_ == name_);
     copiedType->typeFlags_ = typeFlags_;
-    copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                 ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    copiedType->RemoveObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copiedType->SetVariable(variable_);
     copiedType->SetSuperType(superType_);
 
@@ -1098,8 +1096,7 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
                                             ArenaVector<Type *> &&newTypeArgs, ETSObjectType *base)
 {
     copiedType->typeFlags_ = typeFlags_;
-    copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                 ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    copiedType->RemoveObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copiedType->SetVariable(variable_);
 
     // #25295 Need to do some refactor on baseType for partial
