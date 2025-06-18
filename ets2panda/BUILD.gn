@@ -775,6 +775,7 @@ HEADERS_TO_BE_PARSED = [
   "es2panda.h",
   "ast_verifier/ASTVerifier.h",
   "util/importPathManager.h",
+  "util/options.h",
   "util/path.h",
   "util/arktsconfig.h"
 ]
@@ -1043,7 +1044,8 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/ast_verifier/ASTVerifier.yaml",
   "$LIBGEN_DIR/gen/headers/util/importPathManager.yaml",
   "$LIBGEN_DIR/gen/headers/util/path.yaml",
-  "$LIBGEN_DIR/gen/headers/util/arktsconfig.yaml"
+  "$LIBGEN_DIR/gen/headers/util/arktsconfig.yaml",
+  "$LIBGEN_DIR/gen/headers/util/options.yaml"
 ]
 
 ES2PANDA_API = [
