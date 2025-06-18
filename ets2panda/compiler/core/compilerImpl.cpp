@@ -151,7 +151,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
     bool afterCheckerPhase = false;
     while (auto phase = context.phaseManager->NextPhase()) {
         const auto name = std::string {phase->Name()};
-        if (name == compiler::CheckerPhase::NAME) {
+        if (name == "plugins-after-check") {
             afterCheckerPhase = true;
         }
         ES2PANDA_PERF_EVENT_SCOPE("phases/" + name);
