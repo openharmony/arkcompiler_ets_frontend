@@ -34,7 +34,7 @@ export enum CustomDecoratorName {
   AnimatableExtend = 'AnimatableExtend',
   Memo = 'Memo',
   Observed = 'Observed',
-  Layoutable = 'Layoutable'
+  CustomLayout = 'CustomLayout'
 }
 
 export enum StorageTypeName {

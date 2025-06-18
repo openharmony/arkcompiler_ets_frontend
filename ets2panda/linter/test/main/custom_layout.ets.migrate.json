@@ -15,33 +15,33 @@
     ],
     "result": [
         {
-            "line": 42,
+            "line": 45,
             "column": 1,
-            "endLine": 42,
-            "endColumn": 12,
+            "endLine": 45,
+            "endColumn": 14,
             "problem": "DecoratorsNotSupported",
             "suggest": "",
             "rule": "Decorators are not supported(arkts-no-ts-decorators)",
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 72,
             "column": 1,
-            "endLine": 69,
-            "endColumn": 12,
+            "endLine": 72,
+            "endColumn": 14,
             "problem": "DecoratorsNotSupported",
             "suggest": "",
             "rule": "Decorators are not supported(arkts-no-ts-decorators)",
             "severity": "ERROR"
         },
         {
-            "line": 101,
-            "column": 3,
-            "endLine": 101,
-            "endColumn": 8,
-            "problem": "AnyType",
+            "line": 103,
+            "column": 1,
+            "endLine": 103,
+            "endColumn": 14,
+            "problem": "DecoratorsNotSupported",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
             "severity": "ERROR"
         }
     ]

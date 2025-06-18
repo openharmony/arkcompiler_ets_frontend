@@ -262,6 +262,7 @@ export const arkuiImportList: Set<string> = new Set([
   'CrownSensitivity',
   'CurrentDayStyle',
   'Curve',
+  'CustomLayout',
   'CustomBuilder',
   'CustomComponent',
   'CustomComponentV2',
