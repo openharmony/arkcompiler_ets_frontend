@@ -85,6 +85,7 @@ export abstract class BaseMode {
   public isDebug: boolean;
   public enableDeclgenEts2Ts: boolean;
   public declgenV1OutPath: string | undefined;
+  public declgenV2OutPath: string | undefined;
   public declgenBridgeCodePath: string | undefined;
   public hasMainModule: boolean;
   public abcFiles: Set<string>;
@@ -93,6 +94,7 @@ export abstract class BaseMode {
   public isCacheFileExists: boolean;
   public dependencyFileMap: DependencyFileConfig | null;
   public isBuildConfigModified: boolean | undefined;
+  public byteCodeHar: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -116,6 +118,7 @@ export abstract class BaseMode {
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
     this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
     this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
+    this.declgenV2OutPath = buildConfig.declgenV2OutPath as string | undefined;
     this.declgenBridgeCodePath = buildConfig.declgenBridgeCodePath as string | undefined;
     this.hasMainModule = buildConfig.hasMainModule;
     this.abcFiles = new Set<string>();
@@ -124,6 +127,7 @@ export abstract class BaseMode {
     this.isCacheFileExists = fs.existsSync(this.hashCacheFile);
     this.dependencyFileMap = null;
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
+    this.byteCodeHar = buildConfig.byteCodeHar as boolean;
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
@@ -364,6 +368,9 @@ export abstract class BaseMode {
         }
         this.collectDependencyModules(packageName, module, dynamicDepModules, staticDepModules);
       });
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+        dynamicDepModules.set(moduleInfo.packageName, moduleInfo);
+      }
       return [dynamicDepModules, staticDepModules];
     }
 
@@ -402,7 +409,8 @@ export abstract class BaseMode {
 
   protected generateArkTSConfigForModules(): void {
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
-      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts);
+      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos)
+        .writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts, this.buildConfig);
     });
   }
 
@@ -432,7 +440,10 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
       }
-      const moduleInfo: ModuleInfo = {
+      if (this.moduleInfos.has(module.packageName)) {
+        return;
+      }
+      let moduleInfo: ModuleInfo = {
         isMainModule: false,
         packageName: module.packageName,
         moduleRootPath: module.modulePath,
@@ -444,9 +455,11 @@ export abstract class BaseMode {
         dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
         staticDepModuleInfos: new Map<string, ModuleInfo>(),
         declgenV1OutPath: module.declgenV1OutPath,
+        declgenV2OutPath: module.declgenV2OutPath,
         declgenBridgeCodePath: module.declgenBridgeCodePath,
         language: module.language,
         declFilesPath: module.declFilesPath,
+        byteCodeHar: module.byteCodeHar,
         dependencies: module.dependencies
       };
       this.moduleInfos.set(module.packageName, moduleInfo);
@@ -455,19 +468,24 @@ export abstract class BaseMode {
   }
 
   protected getMainModuleInfo(): ModuleInfo {
+    const mainModuleInfo = this.dependentModuleList.find((module: DependentModuleConfig) => module.packageName === this.packageName);
     return {
-        isMainModule: this.hasMainModule,
-        packageName: this.packageName,
-        moduleRootPath: this.moduleRootPath,
-        moduleType: this.moduleType,
-        sourceRoots: this.sourceRoots,
-        entryFile: '',
-        arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
-        dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
-        staticDepModuleInfos: new Map<string, ModuleInfo>(),
-        compileFileInfos: [],
-        declgenV1OutPath: this.declgenV1OutPath,
-        declgenBridgeCodePath: this.declgenBridgeCodePath
+      isMainModule: this.hasMainModule,
+      packageName: this.packageName,
+      moduleRootPath: this.moduleRootPath,
+      moduleType: this.moduleType,
+      sourceRoots: this.sourceRoots,
+      entryFile: '',
+      arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
+      dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
+      staticDepModuleInfos: new Map<string, ModuleInfo>(),
+      compileFileInfos: [],
+      declgenV1OutPath: this.declgenV1OutPath,
+      declgenV2OutPath: this.declgenV2OutPath,
+      declgenBridgeCodePath: this.declgenBridgeCodePath,
+      byteCodeHar: this.byteCodeHar,
+      language: mainModuleInfo?.language ?? LANGUAGE_VERSION.ARKTS_1_2,
+      declFilesPath: mainModuleInfo?.declFilesPath,
     };
   }
 
@@ -773,7 +791,7 @@ export abstract class BaseMode {
     }
   }
 
-  public async runParallell(): Promise<void> {
+  public async runParallel(): Promise<void> {
     this.generateModuleInfos();
 
     if (!cluster.isPrimary) {

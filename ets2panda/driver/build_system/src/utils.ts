@@ -82,3 +82,9 @@ export function readFirstLineSync(filePath: string): string | null {
 
   return firstLine;
 }
+
+export function isSubPathOf(targetPath: string, parentDir: string): boolean {
+  const resolvedParent = toUnixPath(path.resolve(parentDir));
+  const resolvedTarget = toUnixPath(path.resolve(targetPath));
+  return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
+}
