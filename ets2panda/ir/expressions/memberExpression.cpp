@@ -412,6 +412,10 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         return nullptr;
     }
 
+    if (objType_->IsETSResizableArrayType() && property_->IsNumberLiteral()) {
+        CheckArrayIndexValue(checker);
+    }
+
     ArenaVector<Expression *> arguments {checker->ProgramAllocator()->Adapter()};
     arguments.emplace_back(property_);
     if (isSetter) {
