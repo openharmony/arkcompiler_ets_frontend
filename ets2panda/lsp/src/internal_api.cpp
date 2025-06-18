@@ -652,6 +652,17 @@ void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVect
     ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(child, cb, results); });
 }
 
+ir::AstNode *FindAncestor(ir::AstNode *node, const ir::NodePredicate &cb)
+{
+    while (node != nullptr) {
+        if (cb(node)) {
+            return node;
+        }
+        node = node->Parent();
+    }
+    return node;
+}
+
 ArenaVector<ir::AstNode *> FindReferencesByName(ir::AstNode *ast, ir::AstNode *decl, ir::AstNode *node,
                                                 ArenaAllocator *allocator)
 {

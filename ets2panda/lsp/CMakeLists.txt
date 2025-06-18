@@ -32,7 +32,11 @@ set(ES2PANDA_LSP_SRC
   ./src/refactors/refactor_types.cpp
   ./src/applicable_refactors.cpp
   ./src/refactor_provider.cpp
+  ./src/refactors/convert_chain.cpp
+  ./src/refactors/convert_export.cpp
   ./src/refactors/convert_function.cpp
+  ./src/refactors/convert_import.cpp
+  ./src/refactors/convert_template.cpp
   ./src/formatting/formatting_context.cpp
   ./src/formatting/formatting_settings.cpp
   ./src/formatting/formatting.cpp

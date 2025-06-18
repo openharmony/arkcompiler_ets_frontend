@@ -355,11 +355,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getRefactorAction(ptr: KNativePointer): KPtr {
-    throw new Error('Not implemented');
-  }
-
-  _getApplicableRefactors(context: KNativePointer, kind: String, position: number): KPtr {
+  _getApplicableRefactorAction(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -368,6 +364,14 @@ export class Es2pandaNativeModule {
   }
 
   _getApplicableRefactorDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactors(context: KNativePointer, kind: String, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorInfoList(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
