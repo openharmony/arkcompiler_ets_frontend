@@ -159,7 +159,9 @@ function formArkts2Options(cmdOptions: CommandLineOptions, commanderOpts: Option
 
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   const opts: CommandLineOptions = {
-    inputFiles: parsedCmd.args.inputFiles,
+    inputFiles: parsedCmd.args.inputFiles.map((file) => {
+      return path.normalize(file);
+    }),
     linterOptions: {
       useRtLogic: true,
       interopCheckMode: false
