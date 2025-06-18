@@ -113,6 +113,7 @@ export interface PathConfig {
   aliasPaths: Map<string, string>;
   interopSDKPaths: Set<string>;
   dynamicInteroSDKBasePath:string;
+  projectRootPath: string;
 }
 
 /**
