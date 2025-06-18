@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-declare class A {
-  declare/* @@ label */ constructor()
+interface Dep {
+  someMethod?;
 }
-class B {
-  declare/* @@ label1 */ constructor()
+
+class Src implements Dep {
+  someMethod?
 }
-/* @@? 17:10 Error SyntaxError: Field type annotation expected. */
-/* @@? 20:10 Error SyntaxError: Field type annotation expected. */
-/* @@? 20:37 Error TypeError: Only abstract or native methods can't have body. */
+
+/* @@? 17:14 Error SyntaxError: Interface fields must have type annotation. */
+/* @@? 18:1 Error SyntaxError: Invalid Type. */
+/* @@? 21:14 Error SyntaxError: Field type annotation expected. */

@@ -28,6 +28,7 @@
 #include "lexer/lexer.h"
 #include "lexer/ETSLexer.h"
 #include "ir/astNode.h"
+#include "ir/brokenTypeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
 #include "ir/base/catchClause.h"
@@ -474,14 +475,20 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     bool optionalField = false;
 
     auto start = Lexer()->GetToken().Start();
-    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+    if (Lexer()->GetToken().Type() == (lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+        endLoc = Lexer()->GetToken().End();
         modifiers |= ir::ModifierFlags::DEFINITE;
+        Lexer()->NextToken();
     }
-    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
+    if (Lexer()->GetToken().Type() == (lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
+        endLoc = Lexer()->GetToken().End();
         optionalField = true;
+        Lexer()->NextToken();
     }
-    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+    if (Lexer()->GetToken().Type() == (lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK)) {
+        endLoc = Lexer()->GetToken().End();
         modifiers |= ir::ModifierFlags::DEFINITE;
+        Lexer()->NextToken();
     }
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         typeAnnotation = ParseTypeAnnotation(&options);
@@ -499,7 +506,9 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SUBSTITUTION)) {
         initializer = ParseExpression();
     } else if (typeAnnotation == nullptr) {
-        LogError(diagnostic::FIELD_TPYE_ANNOTATION_MISSING);
+        typeAnnotation = AllocNode<ir::BrokenTypeNode>(Allocator());
+        typeAnnotation->SetRange({endLoc, endLoc});
+        LogError(diagnostic::FIELD_TPYE_ANNOTATION_MISSING, {}, endLoc);
     }
 
     ValidateFieldModifiers(modifiers, optionalField, initializer, start);
