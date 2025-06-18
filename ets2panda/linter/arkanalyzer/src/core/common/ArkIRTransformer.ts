@@ -155,6 +155,8 @@ export class ArkIRTransformer {
             stmts = this.expressionInExportToStmts(node.expression);
         } else if (ts.isClassDeclaration(node)) {
             stmts = this.classDeclarationToStmts(node);
+        } else if (ts.isParameter(node)) {
+            stmts = this.parameterPropertyToStmts(node);
         }
 
         this.mapStmtsToTsStmt(stmts, node);
@@ -187,6 +189,44 @@ export class ArkIRTransformer {
         cls.setDeclaringArkFile(this.declaringMethod.getDeclaringArkFile());
         buildNormalArkClassFromArkMethod(node, cls, this.sourceFile, this.declaringMethod);
         return [];
+    }
+
+    // This is only used to add class property assign stmts into constructor when it is with parameter property.
+    private parameterPropertyToStmts(paramNode: ts.ParameterDeclaration): Stmt[] {
+        if (paramNode.modifiers === undefined || !ts.isIdentifier(paramNode.name)) {
+            return [];
+        }
+        const fieldName = paramNode.name.text;
+        const arkClass = this.declaringMethod.getDeclaringArkClass();
+        const fieldSignature = arkClass.getFieldWithName(fieldName)?.getSignature();
+        const paramLocal = Array.from(this.getLocals()).find(local => local.getName() === fieldName);
+        if (fieldSignature === undefined || paramLocal === undefined) {
+            return [];
+        }
+        const leftOp = new ArkInstanceFieldRef(this.getThisLocal(), fieldSignature);
+        const fieldAssignStmt = new ArkAssignStmt(leftOp, paramLocal);
+        fieldAssignStmt.setOperandOriginalPositions([FullPosition.DEFAULT, FullPosition.DEFAULT, FullPosition.DEFAULT]);
+
+        // If the parameter has initializer, the related stmts should be added into class instance init method.
+        const instInitMethodCfg = arkClass.getInstanceInitMethod().getBody()?.getCfg();
+        const instInitStmts = instInitMethodCfg?.getStartingBlock()?.getStmts();
+        if (paramNode.initializer && instInitStmts && instInitMethodCfg) {
+            const {
+                value: instanceInitValue,
+                valueOriginalPositions: instanceInitPositions,
+                stmts: instanceInitStmts,
+            } = this.tsNodeToValueAndStmts(paramNode.initializer);
+            const instanceAssignStmt = new ArkAssignStmt(leftOp, instanceInitValue);
+            instanceAssignStmt.setOperandOriginalPositions([FullPosition.DEFAULT, FullPosition.DEFAULT, ...instanceInitPositions]);
+            const newInstanceInitStmts = [...instanceInitStmts, instanceAssignStmt];
+
+            // All these stmts will be added into instance init method, while that method has completed the building. So all new stmts should set cfg here.
+            newInstanceInitStmts.forEach(stmt => stmt.setCfg(instInitMethodCfg));
+
+            // The last stmt of instance init method is return stmt, so all the initializer stmts should be added before return stmt.
+            instInitStmts.splice(instInitStmts.length - 1, 0, ...newInstanceInitStmts);
+        }
+        return [fieldAssignStmt];
     }
 
     private returnStatementToStmts(returnStatement: ts.ReturnStatement): Stmt[] {

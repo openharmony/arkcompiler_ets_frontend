@@ -176,11 +176,14 @@ export class InteropBackwardDFACheck implements BaseChecker {
             const invoke = stmt.getInvokeExpr();
             let isReflect = false;
             let paramIdx = -1;
-            if (invoke && invoke instanceof ArkInstanceInvokeExpr) {
-                if (invoke.getBase().getName() === 'Reflect') {
+            if (invoke && invoke instanceof ArkStaticInvokeExpr) {
+                const classSig = invoke.getMethodSignature().getDeclaringClassSignature();
+                if (
+                    classSig.getDeclaringFileSignature().getProjectName() === 'built-in' &&
+                    classSig.getDeclaringNamespaceSignature()?.getNamespaceName() === 'Reflect'
+                ) {
                     isReflect = true;
-                    paramIdx =
-                        REFLECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
+                    paramIdx = REFLECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
                 }
             }
             if (invoke && invoke instanceof ArkStaticInvokeExpr) {

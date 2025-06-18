@@ -19,11 +19,13 @@ import { MethodSignature } from '../model/ArkSignature';
 import { Local } from './Local';
 import {
     AliasType,
+    AnyType,
     ArrayType,
     BigIntType,
     BooleanType,
     ClassType,
     FunctionType,
+    GenericType,
     NullType,
     NumberType,
     StringType,
@@ -134,7 +136,8 @@ export abstract class AbstractInvokeExpr extends AbstractExpr {
 
     public getType(): Type {
         const type = this.methodSignature.getType();
-        if (this.realGenericTypes) {
+        if (TypeInference.checkType(type, t => t instanceof GenericType || t instanceof AnyType) &&
+            this.realGenericTypes) {
             return TypeInference.replaceTypeWithReal(type, this.realGenericTypes);
         }
         return type;
@@ -346,6 +349,14 @@ export class ArkNewExpr extends AbstractExpr {
             let type: Type | null | undefined = ModelUtils.findDeclaredLocal(new Local(className), arkMethod, 1)?.getType();
             if (TypeInference.isUnclearType(type)) {
                 type = TypeInference.inferUnclearRefName(className, arkMethod.getDeclaringArkClass());
+            }
+            if (type instanceof AliasType) {
+                const originalType = TypeInference.replaceAliasType(type);
+                if (originalType instanceof FunctionType) {
+                    type = originalType.getMethodSignature().getMethodSubSignature().getReturnType();
+                } else {
+                    type = originalType;
+                }
             }
             if (type && type instanceof ClassType) {
                 const instanceType = this.constructorSignature(type, arkMethod) ?? type;

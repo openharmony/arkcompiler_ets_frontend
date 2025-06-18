@@ -48,11 +48,11 @@ const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'Scene');
 
 enum SceneBuildStage {
     BUILD_INIT,
+    SDK_INFERRED,
     CLASS_DONE,
     METHOD_DONE,
     CLASS_COLLECTED,
     METHOD_COLLECTED,
-    SDK_INFERRED,
     TYPE_INFERRED,
 }
 
@@ -207,6 +207,9 @@ export class Scene {
         }
 
         // handle sdks
+        if (this.options.enableBuiltIn && !sceneConfig.getSdksObj().find(sdk => sdk.name === SdkUtils.BUILT_IN_NAME)) {
+            sceneConfig.getSdksObj().unshift(SdkUtils.BUILT_IN_SDK);
+        }
         sceneConfig.getSdksObj()?.forEach(sdk => {
             if (!sdk.moduleName) {
                 this.buildSdk(sdk.name, sdk.path);
@@ -220,7 +223,16 @@ export class Scene {
                 }
             }
         });
-
+        if (this.buildStage < SceneBuildStage.SDK_INFERRED) {
+            this.sdkArkFilesMap.forEach(file => {
+                IRInference.inferFile(file);
+                SdkUtils.mergeGlobalAPI(file, this.sdkGlobalMap);
+            });
+            this.sdkArkFilesMap.forEach(file => {
+                SdkUtils.postInferredSdk(file, this.sdkGlobalMap);
+            });
+            this.buildStage = SceneBuildStage.SDK_INFERRED;
+        }
         this.fileLanguages = sceneConfig.getFileLanguages();
     }
 
@@ -235,6 +247,7 @@ export class Scene {
                 return;
             }
             const buildProfileJson = parseJsonText(configurationsText);
+            SdkUtils.setEsVersion(buildProfileJson);
             const modules = buildProfileJson.modules;
             if (modules instanceof Array) {
                 modules.forEach(module => {
@@ -588,7 +601,8 @@ export class Scene {
     }
 
     private buildSdk(sdkName: string, sdkPath: string): void {
-        const allFiles = getAllFiles(sdkPath, this.options.supportFileExts!, this.options.ignoreFileNames);
+        const allFiles = sdkName === SdkUtils.BUILT_IN_NAME ? SdkUtils.fetchBuiltInFiles() :
+            getAllFiles(sdkPath, this.options.supportFileExts!, this.options.ignoreFileNames);
         allFiles.forEach(file => {
             logger.trace('=== parse sdk file:', file);
             try {
@@ -602,7 +616,7 @@ export class Scene {
                 const fileSig = arkFile.getFileSignature().toMapKey();
                 this.sdkArkFilesMap.set(fileSig, arkFile);
                 SdkUtils.buildSdkImportMap(arkFile);
-                SdkUtils.buildGlobalMap(arkFile, this.sdkGlobalMap);
+                SdkUtils.loadGlobalAPI(arkFile, this.sdkGlobalMap);
             } catch (error) {
                 logger.error('Error parsing file:', file, error);
                 this.unhandledSdkFilePaths.push(file);
@@ -1039,16 +1053,7 @@ export class Scene {
      ```
      */
     public inferTypes(): void {
-        if (this.buildStage < SceneBuildStage.SDK_INFERRED) {
-            this.sdkArkFilesMap.forEach(file => {
-                try {
-                    IRInference.inferFile(file);
-                } catch (error) {
-                    logger.error('Error inferring types of sdk file:', file.getFileSignature(), error);
-                }
-            });
-            this.buildStage = SceneBuildStage.SDK_INFERRED;
-        }
+
         this.filesMap.forEach(file => {
             try {
                 IRInference.inferFile(file);

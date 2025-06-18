@@ -69,7 +69,7 @@ export class PointerAnalysisConfig {
      * Class PointerAnalysisConfig has been exported by ArkAnalyzer, the dispose method should be called by users themselves before free this class.
      */
     public static dispose(): void {
-        // @ts-ignore
+        // @ts-expect-error: only be used to free the memory
         this.instance = null;
     }
 
