@@ -1142,8 +1142,6 @@ ohos_source_set("libes2panda_frontend_static") {
     ":gen_es2panda_lexer_token_inl",
     ":isa_gen_es2panda_formats_h",
     ":isa_gen_es2panda_isa_h",
-    "$ark_third_party_root/icu/icu4c:static_icui18n",
-    "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
   external_deps = [
     "runtime_core:libarktsassembler_package",
@@ -1152,6 +1150,17 @@ ohos_source_set("libes2panda_frontend_static") {
     "runtime_core:libarktsfile_package",
     sdk_libc_secshared_dep,
   ]
+  if (ark_standalone_build || ark_static_standalone_build) {
+    deps += [
+      "$ark_third_party_root/icu/icu4c:static_icui18n",
+      "$ark_third_party_root/icu/icu4c:static_icuuc",
+    ]
+  } else {
+    external_deps += [
+      "icu:static_icui18n",
+      "icu:static_icuuc",
+    ]
+  }
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
