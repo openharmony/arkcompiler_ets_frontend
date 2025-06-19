@@ -17,27 +17,26 @@
 #include "refactors/convert_chain.h"
 #include "refactor_provider.h"
 #include "internal_api.h"
+#include "public/public.h"
 
 namespace ark::es2panda::lsp {
-
-ark::es2panda::ir::AstNode *FindType(ark::es2panda::ir::AstNode *node);
-
 ConvertChainRefactor::ConvertChainRefactor()
 {
     AddKind(std::string(TO_NAMED_CHAIN_ACTION.kind));
 }
 
-ark::es2panda::ir::AstNode *FindType(ark::es2panda::ir::AstNode *node)
+ark::es2panda::ir::AstNode *FindETSNullType(ark::es2panda::ir::AstNode *node, es2panda_Context *context)
 {
-    if ((node != nullptr) && (node->Parent() != nullptr)) {
-        if (node->Parent()->IsExpression()) {
-            return node;
-        }
-        auto cb = [](ir::AstNode *ancestorNode) { return ancestorNode->IsConditionalExpression(); };
-        node = FindAncestor(node, cb);
-        return node;
-    }
-    return node;
+    auto consequent = node->AsConditionalExpression()->Consequent();
+    auto nodeproperty = consequent->AsMemberExpression()->Property();
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto targetNode = ctx->parserProgram->Ast()->FindChild([&nodeproperty](ir::AstNode *childNode) {
+        return childNode->IsScriptFunction() &&
+               childNode->AsScriptFunction()->Id()->AsIdentifier()->Name() == nodeproperty->AsIdentifier()->Name();
+    });
+    auto etc = targetNode->FindChild([](ir::AstNode *childNode) { return childNode->IsETSNullType(); });
+
+    return etc;
 }
 
 ApplicableRefactorInfo ConvertChainRefactor::GetAvailableActions(const RefactorContext &refContext) const
@@ -55,8 +54,17 @@ ApplicableRefactorInfo ConvertChainRefactor::GetAvailableActions(const RefactorC
         return res;
     }
 
-    auto nodedec1 = FindType(node);
-    if (nodedec1 != nullptr && (nodedec1->IsConditionalExpression() || nodedec1->IsExpression())) {
+    auto parent = node->Parent();
+    if (parent == nullptr) {
+        return res;
+    }
+    if (parent->IsExpression()) {
+        if (parent->IsConditionalExpression()) {
+            auto etc = FindETSNullType(parent, context);
+            if (etc != nullptr) {
+                return res;
+            }
+        }
         res.name = refactor_name::CONVERT_CHAIN_REFACTOR_NAME;
         res.description = refactor_description::CONVERT_CHAIN_REFACTOR_DESC;
         res.action.kind = std::string(TO_NAMED_CHAIN_ACTION.kind);

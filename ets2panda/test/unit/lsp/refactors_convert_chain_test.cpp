@@ -80,10 +80,8 @@ foo.bar.baz : "whenFalse";/*2*/
     refactorContext.kind = std::string(TO_NAMED_CHAIN_KIND);
     refactorContext.span.pos = pos + REFACTOR_CHAIN_POSITION_OFFSET;
     auto result = GetApplicableRefactorsImpl(&refactorContext);
-
     initializer.DestroyContext(ctx);
-    ASSERT_EQ(1, result.size());
-    ASSERT_EQ(std::string(TO_NAMED_CHAIN_NAME), result[0].action.name);
+    ASSERT_EQ(0, result.size());
 }
 
 TEST_F(LspChainRefTests, ConvertChainRefactor3)
