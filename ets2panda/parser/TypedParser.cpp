@@ -130,7 +130,11 @@ bool TypedParser::IsNamespaceDecl()
     }
     auto savedPos = Lexer()->Save();
     Lexer()->NextToken();
-    bool isNamespaceDecl = Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT;
+    // namespace is a soft keyword, so it can be used as an identifier outside declarations
+    // If followed by an identifier (literal or keyword), it's treated as a declaration
+    // Using keywords as identifiers is invalid, but that error is handled later during parsing
+    bool isNamespaceDecl =
+        Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT || Lexer()->GetToken().IsKeyword();
     Lexer()->Rewind(savedPos);
     return isNamespaceDecl;
 }
