@@ -31,17 +31,8 @@ static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjec
 
 void ETSObjectType::Iterate(const PropertyTraverser &cb) const
 {
-    for (const auto *prop : GetAllProperties()) {
-        cb(prop);
-    }
-
-    if (superType_ != nullptr) {
-        superType_->Iterate(cb);
-    }
-
-    for (const auto *interface : interfaces_) {
-        interface->Iterate(cb);
-    }
+    ForEachAllOwnProperties(cb);
+    ForEachAllNonOwnProperties(cb);
 }
 
 void ETSObjectType::AddInterface(ETSObjectType *interfaceType)
@@ -335,6 +326,29 @@ static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjec
     return signatureSet;
 }
 
+void ETSObjectType::ForEachAllOwnProperties(const PropertyTraverser &cb) const
+{
+    EnsurePropertiesInstantiated();
+    for (size_t i = 0; i < static_cast<size_t>(PropertyType::COUNT); ++i) {
+        PropertyMap &map = properties_[i];
+        for (const auto &[_, prop] : map) {
+            (void)_;
+            cb(prop);
+        }
+    }
+}
+
+void ETSObjectType::ForEachAllNonOwnProperties(const PropertyTraverser &cb) const
+{
+    if (superType_ != nullptr) {
+        superType_->Iterate(cb);
+    }
+
+    for (const auto *interface : interfaces_) {
+        interface->Iterate(cb);
+    }
+}
+
 std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
 {
     std::vector<varbinder::LocalVariable *> allProperties;
@@ -415,34 +429,24 @@ std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties()
     ownInstanceProps.reserve(properties_.size());
     ownStaticProps.reserve(properties_.size());
 
-    for (const auto *prop : GetAllProperties()) {
+    ForEachAllOwnProperties([&](const varbinder::LocalVariable *prop) {
         if (prop->HasFlag(varbinder::VariableFlags::STATIC)) {
             ownStaticProps.insert(prop->Name());
         } else {
             ownInstanceProps.insert(prop->Name());
         }
-    }
-
-    std::map<util::StringView, const varbinder::LocalVariable *> allInstanceProps {};
-    std::map<util::StringView, const varbinder::LocalVariable *> allStaticProps {};
-    Iterate([&allInstanceProps, &allStaticProps](const varbinder::LocalVariable *var) {
+    });
+    ForEachAllNonOwnProperties([&](const varbinder::LocalVariable *var) {
         if (var->HasFlag(varbinder::VariableFlags::STATIC)) {
-            allStaticProps.emplace(var->Name(), var);
+            if (ownStaticProps.find(var->Name()) == ownStaticProps.end()) {
+                foreignProps.push_back(var);
+            }
         } else {
-            allInstanceProps.emplace(var->Name(), var);
+            if (ownInstanceProps.find(var->Name()) == ownInstanceProps.end()) {
+                foreignProps.push_back(var);
+            }
         }
     });
-
-    for (const auto &[name, var] : allInstanceProps) {
-        if (ownInstanceProps.find(name) == ownInstanceProps.end()) {
-            foreignProps.push_back(var);
-        }
-    }
-    for (const auto &[name, var] : allStaticProps) {
-        if (ownStaticProps.find(name) == ownStaticProps.end()) {
-            foreignProps.push_back(var);
-        }
-    }
 
     return foreignProps;
 }
@@ -1516,7 +1520,7 @@ void ETSObjectType::InsertInstantiationMap(util::StringView key, ETSObjectType *
         ArenaUnorderedMap<util::StringView, ETSObjectType *> instantiation(
             compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->Allocator()->Adapter());
         instantiation.emplace(key, value);
-        instantiationMap.emplace(this, instantiation);
+        instantiationMap.emplace(this, std::move(instantiation));
     }
     compiler::GetPhaseManager()
         ->Context()
