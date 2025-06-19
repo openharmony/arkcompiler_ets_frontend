@@ -264,7 +264,6 @@ public:
     void CastToFloat(const ir::AstNode *node);
     void CastToLong(const ir::AstNode *node);
     void CastToInt(const ir::AstNode *node);
-    void CastToString(const ir::AstNode *node);
     void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
