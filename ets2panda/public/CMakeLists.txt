@@ -24,6 +24,20 @@ set(ES2PANDA_API
     ${CMAKE_CURRENT_SOURCE_DIR}/ignoredAllowed.yaml
 )
 
+set(CHECK_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/out)
+set(GENERATED_STAMP ${CHECK_OUTPUT_DIR}/build_consistency_check.stamp)
+
+find_package(Python3 REQUIRED)
+add_custom_command(
+    OUTPUT ${GENERATED_STAMP}
+    COMMAND ${Python3_EXECUTABLE} 
+           ./../scripts/check_build_system_consistency.py
+           "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CHECK_OUTPUT_DIR}
+    COMMAND ${CMAKE_COMMAND} -E touch ${GENERATED_STAMP}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/varbinder/variableFlags.h
     ${GENERATED_DIR}/options.h
@@ -611,8 +625,10 @@ add_custom_command(
     OUTPUT ${ES2PANDA_API_GENERATED}
     COMMAND python3 -B ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
         --es2panda-root "${ES2PANDA_ROOT}" --lib-gen-dir "${LIBGEN_DIR}" --headers ${HEADERS_TO_BE_PARSED}
-    DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
+    DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES} ${GENERATED_STAMP}
 )
+
+
 
 add_custom_target(gen_yamls DEPENDS es2panda_options_gen es2panda_keywords ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
