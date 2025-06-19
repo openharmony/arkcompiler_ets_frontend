@@ -71,9 +71,9 @@ enum class TypeRelationFlag : uint32_t {
     CASTING_CONTEXT = WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
 };
 
-enum class RelationResult { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
+enum class RelationResult : uint8_t { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
 
-enum class RelationType { COMPARABLE, ASSIGNABLE, IDENTICAL, UNCHECKED_CASTABLE, SUPERTYPE };
+enum class RelationType : uint8_t { COMPARABLE, ASSIGNABLE, IDENTICAL, UNCHECKED_CASTABLE, SUPERTYPE };
 
 enum class VarianceFlag { COVARIANT, CONTRAVARIANT, INVARIANT };
 
@@ -85,47 +85,45 @@ struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeRelationFlag> : std
 
 namespace ark::es2panda::checker {
 
-class RelationKey {
-public:
-    uint64_t sourceId;
-    uint64_t targetId;
-};
-
-class RelationKeyHasher {
-public:
-    size_t operator()(const RelationKey &key) const noexcept
-    {
-        return static_cast<size_t>(key.sourceId ^ key.targetId);
-    }
-};
-
-class RelationKeyComparator {
-public:
-    bool operator()(const RelationKey &lhs, const RelationKey &rhs) const
-    {
-        return lhs.sourceId == rhs.sourceId && lhs.targetId == rhs.targetId;
-    }
-};
-
-class RelationEntry {
-public:
-    RelationResult result;
-    RelationType type;
-};
-
-using RelationMap = ArenaUnorderedMap<RelationKey, RelationEntry, RelationKeyHasher, RelationKeyComparator>;
-
 class RelationHolder {
 public:
-    RelationHolder(ThreadSafeArenaAllocator *allocator, RelationType relationType)
-        : cached(allocator->Adapter()), type(relationType)
+    using RelationKey = uint64_t;
+
+    class RelationEntry {
+    public:
+        RelationResult result;
+        RelationType type;
+    };
+
+    explicit RelationHolder(ThreadSafeArenaAllocator *allocator) : cached_(allocator->Adapter()) {}
+
+    static RelationKey MakeKey(uint32_t sourceId, uint32_t targetId)
     {
+        constexpr size_t U32_NR_BITS = 32;  // CC-OFF(G.NAM.03-CPP) project code style
+        return (static_cast<uint64_t>(sourceId) << U32_NR_BITS) | targetId;
     }
 
-    // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-    RelationMap cached;
-    // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-    RelationType type {};
+    const RelationEntry *Find(RelationKey key) const
+    {
+        auto it = cached_.find(key);
+        if (it == cached_.cend()) {
+            return nullptr;
+        }
+        return &it->second;
+    }
+
+    void Insert(RelationKey key, RelationEntry entry)
+    {
+        cached_.insert({key, entry});
+    }
+
+    void Clear()
+    {
+        cached_.clear();
+    }
+
+private:
+    ArenaUnorderedMap<RelationKey, RelationEntry> cached_;
 };
 
 class TypeRelation {

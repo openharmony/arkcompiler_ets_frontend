@@ -255,11 +255,11 @@ private:
     varbinder::Scope *scope_ {};
     util::DiagnosticEngine &diagnosticEngine_;
 
-    RelationHolder identicalResults_ {Allocator(), RelationType::IDENTICAL};
-    RelationHolder assignableResults_ {Allocator(), RelationType::ASSIGNABLE};
-    RelationHolder comparableResults_ {Allocator(), RelationType::COMPARABLE};
-    RelationHolder uncheckedCastableResults_ {Allocator(), RelationType::UNCHECKED_CASTABLE};
-    RelationHolder supertypeResults_ {Allocator(), RelationType::SUPERTYPE};
+    RelationHolder identicalResults_ {Allocator()};
+    RelationHolder assignableResults_ {Allocator()};
+    RelationHolder comparableResults_ {Allocator()};
+    RelationHolder uncheckedCastableResults_ {Allocator()};
+    RelationHolder supertypeResults_ {Allocator()};
 
     std::unordered_map<const void *, Type *> typeStack_;
     std::unordered_set<Type *> namedTypeStack_;

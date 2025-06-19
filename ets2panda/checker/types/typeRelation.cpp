@@ -36,17 +36,17 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
     ES2PANDA_ASSERT(source != nullptr);
     ES2PANDA_ASSERT(target != nullptr);
 
-    RelationKey relationKey {source->Id(), target->Id()};
-    auto res = holder.cached.find(relationKey);
-    if (res == holder.cached.end()) {
+    auto key = RelationHolder::MakeKey(source->Id(), target->Id());
+    auto res = holder.Find(key);
+    if (res == nullptr) {
         return RelationResult::CACHE_MISS;
     }
 
-    if (res->second.type >= type && res->second.result == RelationResult::TRUE) {
+    if (res->type >= type && res->result == RelationResult::TRUE) {
         return RelationResult::TRUE;
     }
 
-    if (res->second.type <= type && res->second.result == RelationResult::FALSE) {
+    if (res->type <= type && res->result == RelationResult::FALSE) {
         return RelationResult::FALSE;
     }
 
@@ -69,7 +69,8 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
         checker_->ResolveStructuredTypeMembers(target);
         result_ = RelationResult::FALSE;
         target->Identical(this, source);
-        checker_->IdenticalResults().cached.insert({{source->Id(), target->Id()}, {result_, RelationType::IDENTICAL}});
+        auto key = RelationHolder::MakeKey(source->Id(), target->Id());
+        checker_->IdenticalResults().Insert(key, {result_, RelationType::IDENTICAL});
     }
 
     return IsTrue();
@@ -143,8 +144,8 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
         }
 
         if (flags_ == TypeRelationFlag::NONE) {
-            checker_->AssignableResults().cached.insert(
-                {{source->Id(), target->Id()}, {result_, RelationType::ASSIGNABLE}});
+            auto key = RelationHolder::MakeKey(source->Id(), target->Id());
+            checker_->AssignableResults().Insert(key, {result_, RelationType::ASSIGNABLE});
         }
     }
 
@@ -161,8 +162,8 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
 
         result_ = RelationResult::FALSE;
         target->Compare(this, source);
-        checker_->ComparableResults().cached.insert(
-            {{source->Id(), target->Id()}, {result_, RelationType::COMPARABLE}});
+        auto key = RelationHolder::MakeKey(source->Id(), target->Id());
+        checker_->ComparableResults().Insert(key, {result_, RelationType::COMPARABLE});
     }
 
     return result_ == RelationResult::TRUE;
@@ -185,8 +186,8 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
         }
 
         if (UncheckedCast() && !node_->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
-            checker_->UncheckedCastableResult().cached.insert(
-                {{source->Id(), target->Id()}, {result_, RelationType::UNCHECKED_CASTABLE}});
+            auto key = RelationHolder::MakeKey(source->Id(), target->Id());
+            checker_->UncheckedCastableResult().Insert(key, {result_, RelationType::UNCHECKED_CASTABLE});
         }
 
         return true;
@@ -270,7 +271,8 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
         }
 
         if (flags_ == TypeRelationFlag::NONE) {
-            checker_->SupertypeResults().cached.insert({{super->Id(), sub->Id()}, {result_, RelationType::SUPERTYPE}});
+            auto key = RelationHolder::MakeKey(super->Id(), sub->Id());
+            checker_->SupertypeResults().Insert(key, {result_, RelationType::SUPERTYPE});
         }
     }
 
