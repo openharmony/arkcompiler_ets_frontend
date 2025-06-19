@@ -13,7 +13,7 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-     "result": [
+    "result": [
         {
             "line": 16,
             "column": 1,
@@ -42,6 +42,26 @@
             "problem": "TsOverload",
             "suggest": "",
             "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 16,
+            "endLine": 20,
+            "endColumn": 20,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 16,
+            "endLine": 22,
+            "endColumn": 20,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -281,7 +301,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

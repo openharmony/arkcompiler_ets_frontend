@@ -40,7 +40,7 @@ import { WarnInfo } from '../../utils/common/Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { getLanguageStr } from './Utils';
 
-const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObservedDecoratorCheck');
+const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropBoxedTypeCheck');
 const gMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',

@@ -21,7 +21,37 @@
             "endColumn": 37,
             "problem": "NoConstructorOnClass",
             "suggest": "",
-            "rule": "The Class object does not have a constructor. (arkts-no-arkts-constructor)",
+            "rule": "Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 13,
+            "endLine": 22,
+            "endColumn": 26,
+            "problem": "NoConstructorOnClass",
+            "suggest": "",
+            "rule": "Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 13,
+            "endLine": 27,
+            "endColumn": 31,
+            "problem": "NoConstructorOnClass",
+            "suggest": "",
+            "rule": "Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 13,
+            "endLine": 29,
+            "endColumn": 26,
+            "problem": "NoConstructorOnClass",
+            "suggest": "",
+            "rule": "Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)",
             "severity": "ERROR"
         }
     ]

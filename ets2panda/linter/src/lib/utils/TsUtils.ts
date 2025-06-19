@@ -44,9 +44,8 @@ import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
-import { USE_STATIC } from './consts/InteropAPI';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_ETS, EXTNAME_JS } from './consts/ExtensionName';
+import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const SYMBOL = 'Symbol';
@@ -2140,6 +2139,14 @@ export class TsUtils {
     return callSigns && callSigns.length > 0;
   }
 
+  static getFunctionReturnType(type: ts.Type): ts.Type | null {
+    const signatures = type.getCallSignatures();
+    if (signatures.length === 0) {
+      return null;
+    }
+    return signatures[0].getReturnType();
+  }
+
   isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
@@ -2175,8 +2182,10 @@ export class TsUtils {
         return true;
       }
     }
-    // We allow computed property names if expression is string literal or string Enum member
-    return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
+    // In ArkTS 1.0, the computed property names are allowed if expression is string literal or string Enum member.
+    return (
+      !this.options.arkts2 && (ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression))
+    );
   }
 
   skipPropertyInferredTypeCheck(
@@ -3654,7 +3663,7 @@ export class TsUtils {
         ) {
           return false;
         }
-        
+
         return true;
       }
       current = current.parent;
@@ -3722,21 +3731,19 @@ export class TsUtils {
     return (
       importSourceFile.fileName.endsWith(EXTNAME_ETS) &&
       currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      !TsUtils.isArkts12File(importSourceFile) &&
-      TsUtils.isArkts12File(currentSourceFile)
+      !this.isArkts12File(importSourceFile) &&
+      this.isArkts12File(currentSourceFile)
     );
   }
 
-  static isArkts12File(sourceFile: ts.SourceFile): boolean {
-    if (!sourceFile?.statements.length) {
+  isArkts12File(sourceFile: ts.SourceFile): boolean {
+    if (!sourceFile?.fileName) {
       return false;
     }
-    const statements = sourceFile.statements;
-    return (
-      ts.isExpressionStatement(statements[0]) &&
-      ts.isStringLiteral(statements[0].expression) &&
-      statements[0].expression.getText() === USE_STATIC
-    );
+    if (sourceFile.fileName.endsWith(EXTNAME_D_ETS)) {
+      return true;
+    }
+    return !!this.options.inputFiles?.includes(path.normalize(sourceFile.fileName));
   }
 
   static removeOrReplaceQuotes(str: string, isReplace: boolean): string {
@@ -3807,5 +3814,14 @@ export class TsUtils {
 
     forEachNodeInSubtree(targetNode, callback, stopCondition);
     return found;
+  }
+
+  static typeContainsVoid(typeNode: ts.TypeNode): boolean {
+    if (ts.isUnionTypeNode(typeNode)) {
+      return typeNode.types.some((t) => {
+        return t.kind === ts.SyntaxKind.VoidKeyword;
+      });
+    }
+    return typeNode.kind === ts.SyntaxKind.VoidKeyword;
   }
 }

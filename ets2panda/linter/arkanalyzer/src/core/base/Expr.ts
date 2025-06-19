@@ -19,11 +19,13 @@ import { MethodSignature } from '../model/ArkSignature';
 import { Local } from './Local';
 import {
     AliasType,
+    AnyType,
     ArrayType,
     BigIntType,
     BooleanType,
     ClassType,
     FunctionType,
+    GenericType,
     NullType,
     NumberType,
     StringType,
@@ -40,8 +42,9 @@ import { ArkMethod } from '../model/ArkMethod';
 import { UNKNOWN_FILE_NAME } from '../common/Const';
 import { IRInference } from '../common/IRInference';
 import { ImportInfo } from '../model/ArkImport';
-import { ArkClass } from '../model/ArkClass';
+import { ArkClass, ClassCategory } from '../model/ArkClass';
 import { ArkField } from '../model/ArkField';
+import { ModelUtils } from '../common/ModelUtils';
 
 /**
  * @category core/base/expr
@@ -133,7 +136,8 @@ export abstract class AbstractInvokeExpr extends AbstractExpr {
 
     public getType(): Type {
         const type = this.methodSignature.getType();
-        if (this.realGenericTypes) {
+        if (TypeInference.checkType(type, t => t instanceof GenericType || t instanceof AnyType) &&
+            this.realGenericTypes) {
             return TypeInference.replaceTypeWithReal(type, this.realGenericTypes);
         }
         return type;
@@ -342,13 +346,37 @@ export class ArkNewExpr extends AbstractExpr {
         const classSignature = this.classType.getClassSignature();
         if (classSignature.getDeclaringFileSignature().getFileName() === UNKNOWN_FILE_NAME) {
             const className = classSignature.getClassName();
-            let type = TypeInference.inferUnclearRefName(className, arkMethod.getDeclaringArkClass());
+            let type: Type | null | undefined = ModelUtils.findDeclaredLocal(new Local(className), arkMethod, 1)?.getType();
+            if (TypeInference.isUnclearType(type)) {
+                type = TypeInference.inferUnclearRefName(className, arkMethod.getDeclaringArkClass());
+            }
+            if (type instanceof AliasType) {
+                const originalType = TypeInference.replaceAliasType(type);
+                if (originalType instanceof FunctionType) {
+                    type = originalType.getMethodSignature().getMethodSubSignature().getReturnType();
+                } else {
+                    type = originalType;
+                }
+            }
             if (type && type instanceof ClassType) {
-                let realGenericTypes = this.classType.getRealGenericTypes();
-                this.classType = realGenericTypes ? new ClassType(type.getClassSignature(), realGenericTypes) : type;
+                const instanceType = this.constructorSignature(type, arkMethod) ?? type;
+                this.classType.setClassSignature(instanceType.getClassSignature());
+                TypeInference.inferRealGenericTypes(this.classType.getRealGenericTypes(), arkMethod.getDeclaringArkClass());
             }
         }
         return this;
+    }
+
+    private constructorSignature(type: ClassType, arkMethod: ArkMethod): ClassType | undefined {
+        const classConstructor = arkMethod.getDeclaringArkFile().getScene().getClass(type.getClassSignature());
+        if (classConstructor?.getCategory() === ClassCategory.INTERFACE) {
+            const type = classConstructor.getMethodWithName('construct-signature')?.getReturnType();
+            if (type) {
+                const returnType = TypeInference.replaceAliasType(type);
+                return returnType instanceof ClassType ? returnType : undefined;
+            }
+        }
+        return undefined;
     }
 }
 
@@ -695,9 +723,13 @@ export abstract class AbstractBinopExpr extends AbstractExpr {
             case '^':
             case '<<':
             case '>>':
+                if (op1Type === NumberType.getInstance() && op2Type === NumberType.getInstance()) {
+                    type = NumberType.getInstance();
+                }
                 if (op1Type === BigIntType.getInstance() && op2Type === BigIntType.getInstance()) {
                     type = BigIntType.getInstance();
                 }
+                break;
             case '>>>':
                 if (op1Type === NumberType.getInstance() && op2Type === NumberType.getInstance()) {
                     type = NumberType.getInstance();
@@ -1042,10 +1074,14 @@ export class AliasTypeExpr extends AbstractExpr {
     public getType(): Type {
         function getTypeOfImportInfo(importInfo: ImportInfo): Type {
             const arkExport = importInfo.getLazyExportInfo()?.getArkExport();
-            if (arkExport) {
-                return TypeInference.parseArkExport2Type(arkExport) ?? UnknownType.getInstance();
+            const importClauseName = importInfo.getImportClauseName();
+            let type;
+            if (importClauseName.includes('.') && arkExport instanceof ArkClass) {
+                type = TypeInference.inferUnclearRefName(importClauseName, arkExport);
+            } else if (arkExport) {
+                type = TypeInference.parseArkExport2Type(arkExport);
             }
-            return UnknownType.getInstance();
+            return type ?? UnknownType.getInstance();
         }
 
         const operator = this.getOriginalObject();

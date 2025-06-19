@@ -17,3 +17,13 @@
 class A {}
 
 const variable = new A().constructor
+
+let a = new A()
+console.log(a.constructor + "");
+
+function foo3(): A {
+  return new A();
+}
+console.log(foo3().constructor + "");
+
+console.log(A.constructor + "");

@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 101,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
+            "line": 19,
             "column": 18,
-            "endLine": 20,
+            "endLine": 19,
             "endColumn": 27,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -35,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 19,
             "column": 24,
-            "endLine": 20,
+            "endLine": 19,
             "endColumn": 25,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -45,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 23,
             "column": 22,
-            "endLine": 24,
+            "endLine": 23,
             "endColumn": 51,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -55,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 25,
             "column": 14,
-            "endLine": 26,
+            "endLine": 25,
             "endColumn": 15,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -65,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 26,
             "column": 14,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 25,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -75,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 26,
             "column": 16,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 23,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -85,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 26,
             "column": 16,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 23,
             "problem": "SpreadOperator",
             "suggest": "",
@@ -95,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 5,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 18,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -105,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 35,
             "column": 12,
-            "endLine": 36,
+            "endLine": 35,
             "endColumn": 29,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -115,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 48,
             "column": 15,
-            "endLine": 49,
+            "endLine": 48,
             "endColumn": 35,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -125,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 57,
+            "line": 56,
             "column": 11,
-            "endLine": 57,
+            "endLine": 56,
             "endColumn": 29,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -135,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 63,
+            "line": 62,
             "column": 30,
-            "endLine": 63,
+            "endLine": 62,
             "endColumn": 48,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -145,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 69,
             "column": 5,
-            "endLine": 73,
+            "endLine": 72,
             "endColumn": 2,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -155,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 71,
             "column": 6,
-            "endLine": 72,
+            "endLine": 71,
             "endColumn": 8,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -165,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 78,
             "column": 5,
-            "endLine": 79,
+            "endLine": 78,
             "endColumn": 24,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -175,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 80,
+            "line": 79,
             "column": 5,
-            "endLine": 80,
+            "endLine": 79,
             "endColumn": 23,
             "problem": "InteropObjectLiteralClass",
             "suggest": "",
@@ -185,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 78,
             "column": 21,
-            "endLine": 79,
+            "endLine": 78,
             "endColumn": 22,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -195,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 80,
+            "line": 79,
             "column": 20,
-            "endLine": 80,
+            "endLine": 79,
             "endColumn": 21,
             "problem": "NumericSemantics",
             "suggest": "",

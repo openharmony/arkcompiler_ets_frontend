@@ -15,29 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 63,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 67,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
+            "line": 20,
             "column": 5,
-            "endLine": 21,
+            "endLine": 20,
             "endColumn": 31,
             "problem": "InteropObjectLiteralAmbiguity",
             "suggest": "",
@@ -45,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 22,
             "column": 5,
-            "endLine": 23,
+            "endLine": 22,
             "endColumn": 31,
             "problem": "InteropObjectLiteralAmbiguity",
             "suggest": "",
@@ -55,10 +35,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 24,
             "column": 5,
-            "endLine": 25,
+            "endLine": 24,
             "endColumn": 37,
+            "problem": "InteropObjectLiteralAmbiguity",
+            "suggest": "",
+            "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 34,
             "problem": "InteropObjectLiteralAmbiguity",
             "suggest": "",
             "rule": "Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)",

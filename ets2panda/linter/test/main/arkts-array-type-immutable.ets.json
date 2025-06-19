@@ -13,5 +13,66 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 106,
+            "column": 10,
+            "endLine": 106,
+            "endColumn": 15,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 122,
+            "column": 5,
+            "endLine": 122,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 134,
+            "column": 17,
+            "endLine": 134,
+            "endColumn": 99,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 134,
+            "column": 44,
+            "endLine": 134,
+            "endColumn": 45,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 151,
+            "column": 1,
+            "endLine": 151,
+            "endColumn": 53,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 151,
+            "column": 1,
+            "endLine": 151,
+            "endColumn": 54,
+            "problem": "InteropCallReflect",
+            "suggest": "",
+            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
+            "severity": "ERROR"
+        }
+    ]
 }

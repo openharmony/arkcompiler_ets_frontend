@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 1,
-            "endLine": 16,
-            "endColumn": 43,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 43,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -35,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 1,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 6,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -45,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 1,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 9,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -55,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 5,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 8,
             "problem": "NumericSemantics",
             "suggest": "",

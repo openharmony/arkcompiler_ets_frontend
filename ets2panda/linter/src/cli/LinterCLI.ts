@@ -58,9 +58,10 @@ async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<vo
 
   if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
     const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
-    const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
+    let migrationTool: MigrationTool | null = new MigrationTool(ruleConfigInfo, projectConfigInfo);
     await migrationTool.buildCheckEntry();
     const result = await migrationTool.start();
+    migrationTool = null;
 
     homeCheckResult = transferIssues2ProblemInfo(result);
     for (const [filePath, problems] of homeCheckResult) {
@@ -110,6 +111,26 @@ function mergeLintProblems(
     });
   }
   mergedProblems.get(filePath)!.push(...filteredProblems);
+
+  if (cmdOptions.scanWholeProjectInHomecheck) {
+    for (const file of mergedProblems.keys()) {
+      if (cmdOptions.inputFiles.includes(file)) {
+        continue;
+      }
+      const totalProblems = mergedProblems.get(file);
+      if (totalProblems === undefined) {
+        continue;
+      }
+      filteredProblems = totalProblems.filter((problem) => {
+        return problem.rule.includes('s2d');
+      });
+      if (filteredProblems.length > 0) {
+        mergedProblems.set(file, filteredProblems);
+      } else {
+        mergedProblems.delete(file);
+      }
+    }
+  }
 }
 
 async function generateReportFile(reportData, reportPath?: string): Promise<void> {

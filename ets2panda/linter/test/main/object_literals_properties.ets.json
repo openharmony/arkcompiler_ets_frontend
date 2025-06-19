@@ -295,10 +295,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 258,
-            "column": 11,
-            "endLine": 258,
-            "endColumn": 12,
+            "line": 274,
+            "column": 16,
+            "endLine": 274,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 280,
+            "column": 16,
+            "endLine": 280,
+            "endColumn": 17,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",

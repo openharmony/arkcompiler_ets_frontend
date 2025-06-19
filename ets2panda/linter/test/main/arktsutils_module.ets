@@ -35,4 +35,6 @@ function tesCollectionsUsage() {
   type CreatedType = ArkTSUtils.ASON.SomeType;
 
   const someType: CreatedType = ArkTSUtils.ASON.SomeType;
+
+  const map: number = ArkTSUtils.ASON.ParseReturnType.map;
 }

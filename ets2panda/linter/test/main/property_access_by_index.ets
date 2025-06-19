@@ -182,3 +182,15 @@ class MyClass extends collections.BitVector {
     }
   }
 }
+
+class AA {
+  i: number = 1.0;
+  func(b: number) {}
+}
+let a: object = new AA();
+let b: AA = new AA();
+b[i] = 1.0;
+a["i"] = 2.0;
+(b as object)["i"] = 2.0;
+(b as object)["func"](1.0);
+(b as object)["func1"](1.0);

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-'use static'
 import {a, b} from "./interop_equality_judgment_js"
 a == b
 a != b

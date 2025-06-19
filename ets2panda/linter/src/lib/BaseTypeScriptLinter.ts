@@ -69,7 +69,12 @@ export abstract class BaseTypeScriptLinter {
     });
   }
 
-  protected incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  protected incrementCounters(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[],
+    errorMsg?: string
+  ): void {
     const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
     const startPos = this.sourceFile.getLineAndCharacterOfPosition(startOffset);
     const endPos = this.sourceFile.getLineAndCharacterOfPosition(endOffset);
@@ -78,7 +83,7 @@ export abstract class BaseTypeScriptLinter {
     const faultType = TypeScriptLinterConfig.tsSyntaxKindNames[node.kind];
 
     const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    const cookBookTg = cookBookTag[cookBookMsgNum];
+    const cookBookTg = errorMsg ? errorMsg : cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
     autofix = autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;

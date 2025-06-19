@@ -95,27 +95,27 @@ LiteralAsPropertyNameEnum.PrivateTwo;
 
 {
   const enum Direction {
-   __empty = 1,
+   __empty = 1.0,
   }
 }
 
 const enum Direction16 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 
 const enum Direction17 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 let case17: number = Direction17.___x5c
 let case172: number = Direction17.__x5c
 
 const enum Direction11 {
-__x21x21 = 1,
+__x21x21 = 1.0,
 }
 const enum Direction23 {
-aaa = 1,
+aaa = 1.0,
 }
 // ArkUI
 @Component
@@ -134,11 +134,23 @@ class A{
 let a:A = { age: 30.0}  
 
 
-class B{
+class B {
   public age: number = 1.0 // error in arkts2
 }
 
 let obj11: Record<string, number> = {
-['value']: 1.0, // 误扫
-'value2': 1.0 // ok
+  ['value']: 1.0, // Error in arkts 2.0
+  'value2': 1.0 // ok
 }
+
+class CompPropClass {
+  ['CompProp'] = 1.0; // Error in arkts 2.0
+  [2.0] = 'CompProp2'; // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One] = 3.0; // Error in arkts 2.0
+}
+
+let compPropObj = {
+  ['CompProp']: 1.0, // Error in arkts 2.0
+  [2.0]: 'CompProp2', // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One]: 3.0 // Error in arkts 2.0
+};

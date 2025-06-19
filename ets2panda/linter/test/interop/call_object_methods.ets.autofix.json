@@ -15,38 +15,28 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 1,
-            "endLine": 16,
-            "endColumn": 47,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 47,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 617,
-                    "end": 663,
+                    "start": 604,
+                    "end": 650,
                     "replacementText": "",
-                    "line": 16,
+                    "line": 15,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 15,
                     "endColumn": 47
                 },
                 {
-                    "start": 663,
-                    "end": 663,
+                    "start": 650,
+                    "end": 650,
                     "replacementText": "let GeneratedImportVar_1 = ESValue.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
-                    "line": 16,
+                    "line": 15,
                     "column": 1,
-                    "endLine": 16,
+                    "endLine": 15,
                     "endColumn": 47
                 }
             ],
@@ -55,36 +45,40 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 1,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 13,
             "problem": "InteropCallObjectMethods",
             "autofix": [
-              {
-                "start": 665,
-                "end": 677,
-                "replacementText": "foo.invokeMethod(\"bar\", ESValue.wrap(123))"
-              }
+                {
+                    "start": 652,
+                    "end": 664,
+                    "replacementText": "foo.invokeMethod(\"bar\", ESValue.wrap(123))",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 13
+                }
             ],
             "suggest": "",
             "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 9,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 12,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 673,
-                    "end": 676,
+                    "start": 660,
+                    "end": 663,
                     "replacementText": "123.0",
-                    "line": 18,
+                    "line": 17,
                     "column": 9,
-                    "endLine": 18,
+                    "endLine": 17,
                     "endColumn": 12
                 }
             ],

@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 46,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 46,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -35,6 +25,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 2,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -52,16 +62,6 @@
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 2,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         },
         {
@@ -85,16 +85,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 2,
-            "endLine": 20,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 21,
             "column": 1,
             "endLine": 21,
@@ -115,20 +105,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 2,
-            "endLine": 21,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 1,
             "endLine": 22,
-            "endColumn": 9,
+            "endColumn": 11,
             "problem": "InteropNoHaveNum",
             "suggest": "",
             "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
@@ -136,22 +116,12 @@
         },
         {
             "line": 22,
-            "column": 2,
+            "column": 3,
             "endLine": 22,
-            "endColumn": 9,
+            "endColumn": 10,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 2,
-            "endLine": 22,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         },
         {
@@ -175,16 +145,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 3,
-            "endLine": 23,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 24,
             "column": 1,
             "endLine": 24,
@@ -205,16 +165,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 3,
-            "endLine": 24,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 25,
             "column": 1,
             "endLine": 25,
@@ -232,46 +182,6 @@
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 3,
-            "endLine": 25,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 1,
-            "endLine": 26,
-            "endColumn": 11,
-            "problem": "InteropNoHaveNum",
-            "suggest": "",
-            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 3,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "InteropObjectProperty",
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 3,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         }
     ]

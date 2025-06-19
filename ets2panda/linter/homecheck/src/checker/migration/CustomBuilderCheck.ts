@@ -149,14 +149,17 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private isPassToCustomBuilder(stmt: Stmt, locals: Set<Local>): Local | undefined {
+        let res: Local | undefined = undefined;
         if (stmt instanceof ArkAssignStmt) {
-            if (!this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
-                return undefined;
+            if (this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
+                const rightOp = stmt.getRightOp();
+                if (rightOp instanceof Local && locals.has(rightOp)) {
+                    res = rightOp;
+                }
             }
-            const rightOp = stmt.getRightOp();
-            if (rightOp instanceof Local && locals.has(rightOp)) {
-                return rightOp;
-            }
+        }
+        if (res !== undefined) {
+            return res;
         }
         const invokeExpr = stmt.getInvokeExpr();
         if (invokeExpr) {
@@ -208,7 +211,7 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();
@@ -229,7 +232,7 @@ export class CustomBuilderCheck implements BaseChecker {
             fixPosition.endLine = endPosition.line;
             fixPosition.endCol = endPosition.col;
         }
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const sourceFile = AstTreeUtils.getASTNode(arkFile.getName(), arkFile.getCode());
         const range = FixUtils.getRangeWithAst(sourceFile, fixPosition);
         ruleFix.range = range;

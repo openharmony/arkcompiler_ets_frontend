@@ -198,7 +198,6 @@ export enum FaultID {
   SdkTypeQuery,
   IsConcurrentDeprecated,
   InteropStaticObjectLiterals,
-  InteropJsObjectUsage,
   InteropJsObjectInheritance,
   InteropJsObjectTraverseJsInstance,
   InteropJsObjectCallStaticFunc,
@@ -253,6 +252,7 @@ export enum FaultID {
   LocalStoragePropDecoratorNotSupported,
   PropFunctionNotSupported,
   SetAndPropFunctionNotSupported,
+  PropNeedCallMethodForDeepCopy,
   // this should always be last enum
   LAST_ID
 }

@@ -88,3 +88,43 @@ const originalArray: [number] = [1, 2, 3, 4, 5];
 const array18 = originalArray.map((value) => value % 2 === 0 ? true : value * 2);
 let tuple20: [number, boolean] = array18 as [number, boolean]   //error
 let array20: (number)[] = originalArray as (number)[]   //error
+
+const inputArray: readonly [Record<string, never>, [], () => void] = [
+  {},
+  [],
+  () => {
+  }
+];
+const even = (element: Record<string, never> | [] | (() => void)): boolean => {
+  return typeof element === 'function';
+};
+const res = inputArray.some(even); // error
+console.log("res:" + JSON.stringify(res));
+console.log(''+inputArray.length) // error
+console.log(inputArray.toString()) // error
+typeof inputArray.toLocaleString(); // error
+function getConcat() {
+  inputArray.concat(); // error
+  return inputArray.join(','); // error
+}
+class Demo{
+  set(){
+    inputArray.slice(1,2); // error
+    inputArray.indexOf([]); // error
+  }
+  get(){
+    return inputArray.lastIndexOf([]); // error
+  }
+}
+inputArray.every(()=>{}) // error
+inputArray.some(()=>{}) // error
+inputArray.forEach(()=>{}) // error
+inputArray.map(()=>{}) // error
+inputArray.filter(()=>{}) // error
+inputArray.reduce((acc, item) => acc + 1, 0); // error
+inputArray.reduceRight((acc, item) => acc + 1, 0); // error
+inputArray.find((item) => Array.isArray(item)); // error
+inputArray.includes(() => {}); // error
+inputArray.flat() // error
+inputArray.flatMap((item) => [item]); // error
+inputArray.findIndex((item) => typeof item === 'function'); // error

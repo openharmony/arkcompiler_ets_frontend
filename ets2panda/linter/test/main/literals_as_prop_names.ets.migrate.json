@@ -76,10 +76,120 @@
         },
         {
             "line": 90,
+            "column": 12,
+            "endLine": 90,
+            "endColumn": 31,
+            "problem": "InteropDirectAccessToTSTypes",
+            "suggest": "",
+            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
             "column": 36,
             "endLine": 90,
             "endColumn": 37,
             "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 92,
+            "column": 1,
+            "endLine": 92,
+            "endColumn": 33,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 37,
+            "endLine": 141,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 142,
+            "column": 3,
+            "endLine": 142,
+            "endColumn": 12,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 147,
+            "column": 3,
+            "endLine": 147,
+            "endColumn": 15,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 148,
+            "column": 3,
+            "endLine": 148,
+            "endColumn": 8,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 149,
+            "column": 3,
+            "endLine": 149,
+            "endColumn": 34,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 152,
+            "column": 19,
+            "endLine": 152,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 153,
+            "column": 3,
+            "endLine": 153,
+            "endColumn": 15,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 154,
+            "column": 3,
+            "endLine": 154,
+            "endColumn": 8,
+            "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 155,
+            "column": 3,
+            "endLine": 155,
+            "endColumn": 34,
+            "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"

@@ -32,6 +32,7 @@ import { ConditionBuilder } from './ConditionBuilder';
 import { TrapBuilder } from './TrapBuilder';
 import { CONSTRUCTOR_NAME, PROMISE } from '../../common/TSConst';
 import { ModifierType } from '../../model/ArkBaseModel';
+import { ParameterDeclaration } from 'ohos-typescript';
 
 class StatementBuilder {
     type: string;
@@ -524,7 +525,7 @@ export class CfgBuilder {
         this.scopes.push(scope);
         for (let i = 0; i < nodes.length; i++) {
             let c = nodes[i];
-            if (ts.isVariableStatement(c) || ts.isExpressionStatement(c) || ts.isThrowStatement(c) || ts.isTypeAliasDeclaration(c)) {
+            if (ts.isVariableStatement(c) || ts.isExpressionStatement(c) || ts.isThrowStatement(c) || ts.isTypeAliasDeclaration(c) || ts.isParameter(c)) {
                 let s = new StatementBuilder('statement', c.getText(this.sourceFile), c, scope.id);
                 this.judgeLastType(s, lastStatement);
                 lastStatement = s;
@@ -676,6 +677,9 @@ export class CfgBuilder {
             }
             for (let i = stmt.nexts.length - 1; i >= 0; i--) {
                 stmtQueue.push(stmt.nexts[i]);
+            }
+            if (stmt.afterSwitch && stmt.afterSwitch.lasts.size === 0) {
+                stmtQueue.push(stmt.afterSwitch);
             }
         } else if (stmt instanceof TryStatementBuilder) {
             if (stmt.finallyStatement) {
@@ -956,6 +960,16 @@ export class CfgBuilder {
         this.exit.lasts = new Set([s]);
     }
 
+    private getParamPropertyNodes(constructorParams: ts.NodeArray<ParameterDeclaration>): ts.Node[] {
+        let stmts: ts.Node[] = [];
+        constructorParams.forEach(parameter => {
+            if (parameter.modifiers !== undefined) {
+                stmts.push(parameter);
+            }
+        });
+        return stmts;
+    }
+
     buildCfgBuilder(): void {
         let stmts: ts.Node[] = [];
         if (ts.isSourceFile(this.astRoot)) {
@@ -969,11 +983,7 @@ export class CfgBuilder {
             ts.isFunctionExpression(this.astRoot) ||
             ts.isClassStaticBlockDeclaration(this.astRoot)
         ) {
-            if (this.astRoot.body) {
-                stmts = [...this.astRoot.body.statements];
-            } else {
-                this.emptyBody = true;
-            }
+            this.astRoot.body ? stmts = [...this.astRoot.body.statements] : this.emptyBody = true;
         } else if (ts.isArrowFunction(this.astRoot)) {
             if (ts.isBlock(this.astRoot.body)) {
                 stmts = [...this.astRoot.body.statements];
@@ -988,6 +998,10 @@ export class CfgBuilder {
         } else if (ts.isModuleDeclaration(this.astRoot) && ts.isModuleBlock(this.astRoot.body!)) {
             stmts = [...this.astRoot.body.statements];
         }
+        // For constructor, add parameter property node to stmts which can be used when build body
+        if (ts.isConstructorDeclaration(this.astRoot)) {
+            stmts = [...this.getParamPropertyNodes(this.astRoot.parameters), ...stmts];
+        }
         if (!ModelUtils.isArkUIBuilderMethod(this.declaringMethod)) {
             this.walkAST(this.entry, this.exit, stmts);
         } else {
@@ -996,6 +1010,7 @@ export class CfgBuilder {
         if (ts.isArrowFunction(this.astRoot) && !ts.isBlock(this.astRoot.body)) {
             this.buildStatementBuilder4ArrowFunction(this.astRoot.body);
         }
+
         this.addReturnInEmptyMethod();
         this.deleteExit();
         this.CfgBuilder2Array(this.entry);

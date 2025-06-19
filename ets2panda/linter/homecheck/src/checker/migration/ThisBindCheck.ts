@@ -29,6 +29,7 @@ import {
     ArkNewExpr,
     ArkClass,
     ClassSignature,
+    ArkReturnStmt,
 } from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -115,7 +116,18 @@ export class ThisBindCheck implements BaseChecker {
 
     private useThisInBody(method: ArkMethod): boolean {
         const thisInstance = (method.getThisInstance() as Local)!;
-        return thisInstance.getUsedStmts().length > 0;
+        const usedStmts = thisInstance.getUsedStmts();
+        if (method.getName() !== 'constructor') {
+            return usedStmts.length > 0;
+        }
+        // constructor方法一定会有return this语句，此句若为ArkAnalyzer为constructor方法自动生成，则不在检查范围内
+        for (const stmt of usedStmts) {
+            if (stmt instanceof ArkReturnStmt && stmt.getOriginPositionInfo().getLineNo() <= 0) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     private isSafeUse(v: Value): boolean {
@@ -348,7 +360,7 @@ export class ThisBindCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: ArkAssignStmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();

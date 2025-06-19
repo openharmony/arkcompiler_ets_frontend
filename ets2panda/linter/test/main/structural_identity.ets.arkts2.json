@@ -65,6 +65,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 54,
+            "column": 3,
+            "endLine": 54,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 13,
             "endLine": 57,
@@ -985,6 +995,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 480,
+            "column": 1,
+            "endLine": 480,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 485,
+            "column": 1,
+            "endLine": 485,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 502,
             "column": 7,
             "endLine": 502,
@@ -1582,6 +1612,16 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 699,
+            "column": 14,
+            "endLine": 699,
+            "endColumn": 21,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         }
     ]

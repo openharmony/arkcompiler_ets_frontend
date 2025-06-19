@@ -24,7 +24,11 @@
                 {
                     "start": 685,
                     "end": 727,
-                    "replacementText": "const __get_local_storage__ = (): LocalStorage => globalThis.localStorage;\n@Entry({ storage: \"__get_local_storage__\" })"
+                    "replacementText": "const __get_local_storage__ = (): LocalStorage => globalThis.localStorage;\n@Entry({ storage: \"__get_local_storage__\" })",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 43
                 }
             ],
             "suggest": "",
@@ -37,13 +41,6 @@
             "endLine": 18,
             "endColumn": 41,
             "problem": "GlobalThisError",
-            "autofix": [
-                {
-                    "start": 702,
-                    "end": 725,
-                    "replacementText": "specialAutofixLib.globalThis.get(\"localStorage\")"
-                }
-            ],
             "suggest": "",
             "rule": "\"globalThis\" is not supported (arkts-no-globalthis)",
             "severity": "ERROR"

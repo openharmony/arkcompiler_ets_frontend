@@ -62,7 +62,7 @@ for (let i: int = 0.0; i < array2.length; i++) {
 let arr1:number[] = [1.0, 2.0, 3.0]
 enum TE{
   AA = 1.12
-  BB = 0
+  BB = 0.0
 }
 arr1[TE.AA as int];
 arr1[TE.BB];
@@ -83,3 +83,7 @@ arr[a] = 1.0;
 arr[b] = 1.0;
 arr[c] = 1.0;
 arr[d] = 1.0;
+
+let test: number = 1.0;
+arr[1 as int];
+arr[test as int];

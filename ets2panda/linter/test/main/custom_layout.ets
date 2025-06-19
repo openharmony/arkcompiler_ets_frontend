@@ -20,6 +20,7 @@ struct Index {
     Column() {
       CustomLayout1({ builder: ColumnChildren })
       CustomLayout2({ builder: ColumnChildren })
+      CustomLayout3({ builder: ColumnChildren })
     }
   }
 }
@@ -94,7 +95,44 @@ struct CustomLayout2 {
 
 @Component
 struct CustomLayout3 {
-  build {
+  @Builder
+  doNothingBuilder() {
+  };
+
+  @BuilderParam builder: () => void = this.doNothingBuilder;
+  @State startSize: number = 100;
+  result: SizeResult = {
+    width: 0,
+    height: 0
+  };
+
+  onMeasureSize(selfLayoutInfo: GeometryInfo, children: Array<Measurable>, constraint: ConstraintSizeOptions) {
+    let size = 100;
+    children.forEach((child) => {
+      let result: MeasureResult = child.measure({ minHeight: size, minWidth: size, maxWidth: size, maxHeight: size })
+      size += result.width / 2;
+    })
+    this.result.width = 100;
+    this.result.height = 400;
+    return this.result;
+  }
+
+  onPlaceChildren(selfLayoutInfo: GeometryInfo, children: Array<Layoutable>, constraint: ConstraintSizeOptions) {
+    let startPos = 300;
+    children.forEach((child) => {
+      let pos = startPos - child.measureResult.height;
+      child.layout({ x: pos, y: pos })
+    })
+  }
+
+  build() {
+    this.builder()
+  }
+}
+
+@Component
+struct CustomLayout4 {
+  build() {
 
   }
 }

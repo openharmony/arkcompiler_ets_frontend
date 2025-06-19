@@ -47,7 +47,7 @@ export function buildProperty2ArkField(
         } else if (ts.isPropertyAccessExpression(member.name.expression)) {
             fieldName = handlePropertyAccessExpression(member.name.expression);
         } else {
-            logger.warn('Other property expression type found!');
+            logger.warn(`Other property expression type found: ${member.name.expression.getText()}!`);
         }
     } else if (member.name && (ts.isIdentifier(member.name) || ts.isLiteralExpression(member.name))) {
         fieldName = member.name.text;
@@ -56,7 +56,7 @@ export function buildProperty2ArkField(
         fieldName = propertyName.substring(1);
         field.addModifier(ModifierType.PRIVATE);
     } else {
-        logger.warn('Other type of property name found!');
+        logger.warn(`Other type of property name found: ${member.getText()}!`);
     }
 
     let fieldType: Type = UnknownType.getInstance();

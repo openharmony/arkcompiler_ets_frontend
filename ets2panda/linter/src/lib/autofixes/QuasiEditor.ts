@@ -20,6 +20,7 @@ import { Logger } from '../Logger';
 import type { ProblemInfo } from '../ProblemInfo';
 import type { Autofix } from './Autofixer';
 import type { LinterOptions } from '../LinterOptions';
+import { USE_STATIC } from '../utils/consts/InteropAPI';
 import { AUTOFIX_HTML_TEMPLATE_TEXT, AutofixHtmlTemplate } from './AutofixReportHtmlHelper';
 
 const BACKUP_AFFIX = '~';
@@ -40,12 +41,6 @@ export class QuasiEditor {
 
   static backupSrcFile(filePath: string): void {
     fs.copyFileSync(filePath, QuasiEditor.getBackupFileName(filePath));
-  }
-
-  static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
-    return problemInfos.some((problemInfo) => {
-      return problemInfo.autofix !== undefined;
-    });
   }
 
   private generateReport(acceptedPatches: Autofix[]): void {
@@ -95,14 +90,16 @@ export class QuasiEditor {
     }
   }
 
-  fix(problemInfos: ProblemInfo[]): string {
+  fix(problemInfos: ProblemInfo[], needAddUseStatic: boolean | undefined): string {
     const acceptedPatches = QuasiEditor.sortAndRemoveIntersections(problemInfos);
-    const result = this.applyFixes(acceptedPatches);
+    let result = this.applyFixes(acceptedPatches);
 
     if (this.linterOpts.migrationReport) {
       this.generateReport(acceptedPatches);
     }
-
+    if (needAddUseStatic) {
+      result = QuasiEditor.addUseStaticDirective(result);
+    }
     return result;
   }
 
@@ -195,5 +192,19 @@ export class QuasiEditor {
      * [--]         (rhs)
      */
     return !(lhs.end < rhs.start || rhs.end < lhs.start);
+  }
+
+  private static addUseStaticDirective(content: string): string {
+    const lines = content.split('\n');
+    if (lines.length > 0 && lines[0].trim() === USE_STATIC) {
+      return content;
+    }
+    return USE_STATIC + '\n' + content;
+  }
+
+  static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
+    return problemInfos.some((problemInfo) => {
+      return problemInfo.autofix !== undefined;
+    });
   }
 }

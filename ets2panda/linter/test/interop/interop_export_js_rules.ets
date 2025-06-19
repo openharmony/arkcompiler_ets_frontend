@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 import { ff1 } from "./interop_import_js_rules_js"
 

@@ -24,6 +24,7 @@ import { CallGraph } from '../../callgraph/model/CallGraph';
 import { ClassHierarchyAnalysis } from '../../callgraph/algorithm/ClassHierarchyAnalysis';
 import { addCfg2Stmt } from '../../utils/entryMethodUtils';
 import { getRecallMethodInParam } from './Util';
+import { CallGraphBuilder } from '../../callgraph/model/builder/CallGraphBuilder';
 
 /*
 this program is roughly an implementation of the paper: Practical Extensions to the IFDS Algorithm.
@@ -88,7 +89,7 @@ export abstract class DataflowSolver<D> {
 
         // build CHA
         let cg = new CallGraph(this.scene);
-        this.CHA = new ClassHierarchyAnalysis(this.scene, cg);
+        this.CHA = new ClassHierarchyAnalysis(this.scene, cg, new CallGraphBuilder(cg, this.scene));
         this.buildStmtMapInClass();
         this.setCfg4AllStmt();
         return;

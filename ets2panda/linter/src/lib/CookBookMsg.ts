@@ -236,7 +236,7 @@ cookBookTag[198] = 'Class TS overloading is not supported(arkts-no-ts-overload)'
 cookBookTag[199] = 'Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)';
 cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
-cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
+cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
@@ -245,7 +245,7 @@ cookBookTag[210] =
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
 cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
-cookBookTag[214] = 'The Class object does not have a constructor. (arkts-no-arkts-constructor)';
+cookBookTag[214] = 'Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)';
 cookBookTag[215] = 'Array bound not checked. (arkts-runtime-array-check)';
 cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
 cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
@@ -265,28 +265,29 @@ cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decora
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
-cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
+cookBookTag[259] = 'The ArkUI interface should be imported before it is used (arkui-modular-interface)';
 cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
 cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =
   'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
-cookBookTag[264] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)';
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';
 cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)';
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
-cookBookTag[270] = 'Trying to catch JS errors is not permitted (arkts-interop-js2s-js-exception)';
+cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
-  'Custom components with custom layout capability need to add the "@Layoutable" decorator (arkui-custom-layout-need-add-decorator)';
+  'Custom components with custom layout capability need to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
 cookBookTag[284] = '"prop" function is not supported (arkui-no-prop-function)';
 cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-function)';
+cookBookTag[286] =
+  'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =
@@ -322,7 +323,7 @@ cookBookTag[327] =
   'Object literal not compatible with target union type. (arkts-interop-d2s-object-literal-no-ambiguity)';
 cookBookTag[328] =
   'Object literal cannot be directly assigned to class with a constructor. (arkts-interop-d2s-object-literal-no-args-constructor)';
-cookBookTag[329] = 'Enum cannot get member name by member value (arkts-unsupport-prop-name-from-value)';
+cookBookTag[329] = 'Enum cannot get member name by member value (arkts-enum-no-props-by-index)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-interop-js2s-import-js)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)';
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-interop-js2s-access-js-prop)';

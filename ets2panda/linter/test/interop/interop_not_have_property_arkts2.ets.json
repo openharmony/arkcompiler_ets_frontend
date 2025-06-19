@@ -18,10 +18,20 @@
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 59,
+            "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]

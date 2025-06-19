@@ -33,4 +33,5 @@ export interface CommandLineOptions {
   disableStrictDiagnostics?: boolean;
   outputFilePath?: string;
   verbose?: boolean;
+  scanWholeProjectInHomecheck?: boolean;
 }
