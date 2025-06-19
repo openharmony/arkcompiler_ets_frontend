@@ -923,8 +923,8 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
                 ES2PANDA_ASSERT(!call->Arguments().empty());
                 call->SetTsType(call->Arguments()[0]->TsType());
             }
-        } else {
-            call->SetTsType(call->Signature()->ReturnType());
+        } else if (auto *returnType = call->Signature()->ReturnType(); returnType->IsETSPrimitiveType()) {
+            call->SetTsType(returnType);
         }
     }
 
