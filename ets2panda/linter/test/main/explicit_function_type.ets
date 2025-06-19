@@ -173,3 +173,8 @@ ab3.fn3();
 
 const fn29: Function[] = [];
 fn29[1]();
+
+SysApiWrapper.setTimeout = (handler: Function | string, delay?: number): number => {
+  (handler as Function)?.();
+  return Math.random();
+}

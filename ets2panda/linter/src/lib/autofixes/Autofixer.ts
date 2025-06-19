@@ -4627,17 +4627,22 @@ export class Autofixer {
     return [{ start: argExpr.getStart(), end: argExpr.getEnd(), replacementText: `${argExpr.getText()} as int` }];
   }
 
-  fixNoTsLikeFunctionCall(identifier: ts.Node): Autofix[] {
+  fixNoTsLikeFunctionCall(callExpr: ts.CallExpression): Autofix[] {
     void this;
-    const funcName = identifier.getText();
-    const replacementText = `${funcName}.unsafeCall`;
-    return [
-      {
-        replacementText,
-        start: identifier.getStart(),
-        end: identifier.getEnd()
-      }
-    ];
+    const expr = callExpr.expression;
+    const hasOptionalChain = !!callExpr.questionDotToken;
+    
+    const replacementText = hasOptionalChain
+        ? `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall`
+        : `${expr.getText()}.unsafeCall`;
+
+    return [{
+        start: expr.getStart(),
+        end: hasOptionalChain
+            ? callExpr.questionDotToken.getEnd()
+            : expr.getEnd(),
+        replacementText
+    }];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {

@@ -106,9 +106,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn.unsafeCall",
                     "start": 1572,
                     "end": 1574,
+                    "replacementText": "fn.unsafeCall",
                     "line": 57,
                     "column": 3,
                     "endLine": 57,
@@ -374,9 +374,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "callback.unsafeCall",
                     "start": 2921,
                     "end": 2929,
+                    "replacementText": "callback.unsafeCall",
                     "line": 139,
                     "column": 3,
                     "endLine": 139,
@@ -446,9 +446,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "curr.unsafeCall",
                     "start": 3458,
                     "end": 3462,
+                    "replacementText": "curr.unsafeCall",
                     "line": 160,
                     "column": 62,
                     "endLine": 160,
@@ -467,9 +467,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "prev.unsafeCall",
                     "start": 3463,
                     "end": 3467,
+                    "replacementText": "prev.unsafeCall",
                     "line": 160,
                     "column": 67,
                     "endLine": 160,
@@ -488,9 +488,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "f1.unsafeCall",
                     "start": 3586,
                     "end": 3588,
+                    "replacementText": "f1.unsafeCall",
                     "line": 166,
                     "column": 1,
                     "endLine": 166,
@@ -509,9 +509,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "ab3.fn3.unsafeCall",
                     "start": 3656,
                     "end": 3663,
+                    "replacementText": "ab3.fn3.unsafeCall",
                     "line": 172,
                     "column": 1,
                     "endLine": 172,
@@ -530,9 +530,9 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn29[1].unsafeCall",
                     "start": 3697,
                     "end": 3704,
+                    "replacementText": "fn29[1].unsafeCall",
                     "line": 175,
                     "column": 1,
                     "endLine": 175,
@@ -551,6 +551,27 @@
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 178,
+            "column": 3,
+            "endLine": 178,
+            "endColumn": 24,
+            "problem": "ExplicitFunctionType",
+            "autofix": [
+                {
+                    "start": 3796,
+                    "end": 3819,
+                    "replacementText": "(handler as Function)?.unsafeCall",
+                    "line": 178,
+                    "column": 3,
+                    "endLine": 178,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         }
     ]
