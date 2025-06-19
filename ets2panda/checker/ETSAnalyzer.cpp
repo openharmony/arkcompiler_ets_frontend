@@ -959,9 +959,12 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         return expr->TsType();
     }
 
-    auto *preferredType = GetAppropriatePreferredType(expr->PreferredType(), [](Type *tp) -> bool {
-        return tp->IsETSArrayType() || tp->IsETSResizableArrayType() || tp->IsETSTupleType();
-    });
+    auto *preferredType = GetAppropriatePreferredType(expr->PreferredType(), &Type::IsAnyETSArrayOrTupleType);
+
+    if (preferredType != nullptr && preferredType->IsETSReadonlyArrayType()) {
+        const auto elementType = preferredType->AsETSObjectType()->TypeArguments().front();
+        preferredType = checker->CreateETSResizableArrayType(elementType);
+    }
 
     if (!IsArrayExpressionValidInitializerForType(checker, preferredType)) {
         checker->LogError(diagnostic::UNEXPECTED_ARRAY, {expr->PreferredType()}, expr->Start());

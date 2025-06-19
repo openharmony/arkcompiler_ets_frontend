@@ -18,4 +18,4 @@ function foo (x: readonly int[]) {
     let x1 : int[]
     x1 = /* @@ label */x
 }
-/* @@@ label Error TypeError: Type 'readonly Array<Int>' cannot be assigned to type 'Array<Int>' */
+/* @@@ label Error TypeError: Type 'ReadonlyArray<Int>' cannot be assigned to type 'Array<Int>' */

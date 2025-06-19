@@ -101,6 +101,7 @@ public:
 #undef TYPE_AS_CASTS
 
     bool IsETSResizableArrayType() const;
+    bool IsETSReadonlyArrayType() const;
     bool IsETSStringType() const;
     bool IsETSCharType() const;
     bool IsETSBigIntType() const;
@@ -171,6 +172,11 @@ public:
     bool IsConstantType() const
     {
         return HasTypeFlag(checker::TypeFlag::CONSTANT);
+    }
+
+    bool IsAnyETSArrayOrTupleType() const
+    {
+        return IsETSArrayType() || IsETSResizableArrayType() || IsETSReadonlyArrayType() || IsETSTupleType();
     }
 
     Type *MaybeBaseTypeOfGradualType();

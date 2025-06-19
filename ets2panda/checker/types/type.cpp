@@ -30,6 +30,11 @@ bool Type::IsETSResizableArrayType() const
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_ARRAY);
 }
 
+bool Type::IsETSReadonlyArrayType() const
+{
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_READONLY_ARRAY);
+}
+
 bool Type::IsETSStringType() const
 {
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::STRING);

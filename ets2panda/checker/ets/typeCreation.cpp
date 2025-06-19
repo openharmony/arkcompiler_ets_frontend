@@ -327,6 +327,8 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             setType(GlobalTypeId::ETS_ARRAY, programAllocator->New<ETSResizableArrayType>(programAllocator, arrayObj));
             return arrayObj;
         }
+        case GlobalTypeId::ETS_READONLY_ARRAY:
+            return setType(globalId, create(ETSObjectFlags::BUILTIN_READONLY_ARRAY))->AsETSObjectType();
         case GlobalTypeId::ETS_BOOLEAN_BUILTIN:
             return create(ETSObjectFlags::BUILTIN_BOOLEAN);
         case GlobalTypeId::ETS_BYTE_BUILTIN:

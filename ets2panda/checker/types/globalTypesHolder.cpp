@@ -58,6 +58,7 @@ void GlobalTypesHolder::AddETSEscompatLayer()
 {
     // ETS escompat layer
     builtinNameMappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
+    builtinNameMappings_.emplace("ReadonlyArray", GlobalTypeId::ETS_READONLY_ARRAY);
     builtinNameMappings_.emplace("Date", GlobalTypeId::ETS_DATE_BUILTIN);
     builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
     builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
@@ -632,6 +633,11 @@ Type *GlobalTypesHolder::GlobalRegExpBuiltinType()
 Type *GlobalTypesHolder::GlobalArrayBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ARRAY_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalReadonlyArray()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_READONLY_ARRAY));
 }
 
 Type *GlobalTypesHolder::GlobalBoxBuiltinType()
