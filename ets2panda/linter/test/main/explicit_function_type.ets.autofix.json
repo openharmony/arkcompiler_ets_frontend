@@ -106,7 +106,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn.unSafeCall",
+                    "replacementText": "fn.unsafeCall",
                     "start": 1572,
                     "end": 1574,
                     "line": 57,
@@ -346,6 +346,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 133,
+            "column": 10,
+            "endLine": 133,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2849,
+                    "end": 2850,
+                    "replacementText": "1.0",
+                    "line": 133,
+                    "column": 10,
+                    "endLine": 133,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 139,
             "column": 3,
             "endLine": 139,
@@ -353,7 +374,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "callback.unSafeCall",
+                    "replacementText": "callback.unsafeCall",
                     "start": 2921,
                     "end": 2929,
                     "line": 139,
@@ -425,7 +446,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "curr.unSafeCall",
+                    "replacementText": "curr.unsafeCall",
                     "start": 3458,
                     "end": 3462,
                     "line": 160,
@@ -446,7 +467,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "prev.unSafeCall",
+                    "replacementText": "prev.unsafeCall",
                     "start": 3463,
                     "end": 3467,
                     "line": 160,
@@ -467,7 +488,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "f1.unSafeCall",
+                    "replacementText": "f1.unsafeCall",
                     "start": 3586,
                     "end": 3588,
                     "line": 166,
@@ -488,7 +509,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "ab3.fn3.unSafeCall",
+                    "replacementText": "ab3.fn3.unsafeCall",
                     "start": 3656,
                     "end": 3663,
                     "line": 172,
@@ -509,7 +530,7 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn29[1].unSafeCall",
+                    "replacementText": "fn29[1].unsafeCall",
                     "start": 3697,
                     "end": 3704,
                     "line": 175,

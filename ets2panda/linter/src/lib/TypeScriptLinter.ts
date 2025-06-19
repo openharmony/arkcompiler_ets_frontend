@@ -80,7 +80,7 @@ import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhi
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
-import { ASON_TEXT, ASON_MODULES, ARKTS_UTILS_TEXT } from './utils/consts/ArkTSUtilsAPI';
+import { ASON_TEXT, ASON_MODULES, ARKTS_UTILS_TEXT, JSON_TEXT, ASON_WHITE_SET } from './utils/consts/ArkTSUtilsAPI';
 import { interanlFunction } from './utils/consts/InternalFunction';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
@@ -136,10 +136,11 @@ import {
   STDLIB_TASKPOOL_OBJECT_NAME
 } from './utils/consts/TaskpoolAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
-import type { ArrayAccess, UncheckedIdentifier, CheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
-import { CheckResult } from './utils/consts/RuntimeCheckAPI';
+import type { ArrayAccess, UncheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
 import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
 import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
+import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
+import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -332,7 +333,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.ForStatement, this.handleForStatement],
     [ts.SyntaxKind.ForInStatement, this.handleForInStatement],
     [ts.SyntaxKind.ForOfStatement, this.handleForOfStatement],
-    [ts.SyntaxKind.IfStatement, this.handleIfStatement],
     [ts.SyntaxKind.ImportDeclaration, this.handleImportDeclaration],
     [ts.SyntaxKind.PropertyAccessExpression, this.handlePropertyAccessExpression],
     [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
@@ -922,75 +922,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsForStmt = node as ts.ForStatement;
     const tsForInit = tsForStmt.initializer;
     if (tsForInit) {
-      this.checkStaticArrayControl(tsForStmt);
       this.checkForLoopDestructuring(tsForInit);
-    }
-  }
-
-  private checkStaticArrayControl(tsForStmt: ts.ForStatement): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    if (!ts.isBlock(tsForStmt.statement)) {
-      return;
-    }
-
-    const loopBody = tsForStmt.statement;
-    const arrayAccessInfo = this.checkBodyHasArrayAccess(loopBody);
-    const loopCondition = tsForStmt.condition;
-
-    if (!arrayAccessInfo) {
-      return;
-    }
-    if (!loopCondition) {
-      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayAccessInfo.arrayIdent);
-    if (!arraySymbol) {
-      return;
-    }
-
-    const arrayCheckedAgainst = this.checkConditionForArrayAccess(loopCondition, arraySymbol);
-    if (!arrayCheckedAgainst) {
-      this.incrementCounters(arrayAccessInfo.arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(arrayAccessInfo, arrayCheckedAgainst);
-  }
-
-  private checkIfAccessAndCheckVariablesMatch(accessInfo: ArrayAccess, checkedAgainst: CheckedIdentifier): void {
-    const { arrayIdent, accessingIdentifier } = accessInfo;
-
-    if (accessingIdentifier === NUMBER_LITERAL) {
-      if (checkedAgainst === NUMBER_LITERAL) {
-        return;
-      }
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    if (checkedAgainst === NUMBER_LITERAL) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    const checkedAgainstSym = this.tsUtils.trueSymbolAtLocation(checkedAgainst);
-    if (!checkedAgainstSym) {
-      return;
-    }
-
-    const accessingIdentSym = this.tsUtils.trueSymbolAtLocation(accessingIdentifier);
-
-    if (checkedAgainstSym !== accessingIdentSym) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    if (this.isChangedAfterCheck(arrayIdent.getSourceFile(), checkedAgainstSym)) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
     }
   }
 
@@ -1057,115 +989,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return arrayAccessResult;
   }
 
-  private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return;
-    }
-
-    const arrayAccessInfo = this.isElementAccessOfArray(accessExpr);
-    if (!arrayAccessInfo) {
-      return;
-    }
-
-    const { arrayIdent } = arrayAccessInfo;
-    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
-    if (!arraySym) {
-      return;
-    }
-    const sourceFile = arrayIdent.getSourceFile();
-    let boundChecked = true;
-
-    for (const statement of sourceFile.statements) {
-      const checkResult = this.checkStatementForArrayAccess(statement, arrayAccessInfo, arraySym);
-      if (checkResult === CheckResult.SKIP) {
-        boundChecked = false;
-        continue;
-      }
-
-      if (checkResult === CheckResult.HAS_ARRAY_ACCES) {
-        continue;
-      }
-
-      if (checkResult === CheckResult.CHECKED) {
-        boundChecked = true;
-        break;
-      }
-    }
-
-    if (!boundChecked) {
-      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
-    }
-  }
-
-  private checkStatementForArrayAccess(
-    statement: ts.Statement,
-    accessInfo: ArrayAccess,
-    arraySym: ts.Symbol
-  ): CheckResult {
-    if (ts.isForStatement(statement)) {
-      return this.isThisArrayAccess(statement.statement as ts.Block, accessInfo.arrayIdent);
-    }
-
-    if (!ts.isIfStatement(statement)) {
-      return CheckResult.SKIP;
-    }
-
-    const thisArrayAccess = this.isThisArrayAccess(statement.thenStatement as ts.Block, accessInfo.arrayIdent);
-    if (thisArrayAccess !== CheckResult.SKIP) {
-      return thisArrayAccess;
-    }
-
-    const checkedAgainst = this.checkConditionForArrayAccess(statement.expression, arraySym);
-    if (!checkedAgainst) {
-      return CheckResult.SKIP;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
-    return CheckResult.CHECKED;
-  }
-
-  private isThisArrayAccess(block: ts.Block, arrayIdent: ts.Identifier): CheckResult {
-    const info = this.checkBodyHasArrayAccess(block);
-    if (!info) {
-      return CheckResult.SKIP;
-    }
-
-    if (info.arrayIdent === arrayIdent) {
-      return CheckResult.CHECKED;
-    }
-
-    return CheckResult.HAS_ARRAY_ACCES;
-  }
-
-  private isChangedAfterCheck(sourceFile: ts.SourceFile, sym: ts.Symbol): boolean {
-    for (const statement of sourceFile.statements) {
-      if (!ts.isExpressionStatement(statement)) {
-        continue;
-      }
-      if (!ts.isBinaryExpression(statement.expression)) {
-        continue;
-      }
-      if (!ts.isIdentifier(statement.expression.left)) {
-        continue;
-      }
-      if (statement.expression.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
-        continue;
-      }
-
-      const leftSym = this.tsUtils.trueSymbolAtLocation(statement.expression.left);
-      if (!leftSym) {
-        continue;
-      }
-
-      if (leftSym === sym) {
-        return true;
-      }
-      continue;
-    }
-
-    return false;
-  }
-
   private handleForInStatement(node: ts.Node): void {
     const tsForInStmt = node as ts.ForInStatement;
     const tsForInInit = tsForInStmt.initializer;
@@ -1178,37 +1001,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsForOfInit = tsForOfStmt.initializer;
     this.checkForLoopDestructuring(tsForOfInit);
     this.handleForOfJsArray(tsForOfStmt);
-  }
-
-  private handleIfStatement(ifStatement: ts.IfStatement): void {
-    if (this.options.arkts2 && this.useStatic) {
-      this.checkIfStatementForArrayUsage(ifStatement);
-    }
-  }
-
-  private checkIfStatementForArrayUsage(ifStatement: ts.IfStatement): void {
-    if (!ts.isBlock(ifStatement.thenStatement)) {
-      return;
-    }
-
-    const accessInfo = this.checkBodyHasArrayAccess(ifStatement.thenStatement);
-    if (!accessInfo) {
-      return;
-    }
-    const { arrayIdent } = accessInfo;
-
-    const arraySymbol = this.tsUtils.trueSymbolAtLocation(arrayIdent);
-    if (!arraySymbol) {
-      return;
-    }
-
-    const checkedAgainst = this.checkConditionForArrayAccess(ifStatement.expression, arraySymbol);
-    if (!checkedAgainst) {
-      this.incrementCounters(arrayIdent, FaultID.RuntimeArrayCheck);
-      return;
-    }
-
-    this.checkIfAccessAndCheckVariablesMatch(accessInfo, checkedAgainst);
   }
 
   private updateDataSdkJsonInfo(importDeclNode: ts.ImportDeclaration, importClause: ts.ImportClause): void {
@@ -1385,10 +1177,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.propertyAccessExpressionForBuiltin(node as ts.PropertyAccessExpression);
     this.checkConstrutorAccess(node as ts.PropertyAccessExpression);
     this.handleTaskPoolDeprecatedUsages(node as ts.PropertyAccessExpression);
+    this.handleNoTuplesArraysForPropertyAccessExpression(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
-
     const propertyAccessNode = node as ts.PropertyAccessExpression;
     const exprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode);
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
@@ -2127,8 +1919,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handlePostfixUnaryExpression(node: ts.Node): void {
     const unaryExpr = node as ts.PostfixUnaryExpression;
-    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken ||
-      unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
+    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken || unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
       this.checkAutoIncrementDecrement(unaryExpr);
     }
   }
@@ -2938,12 +2729,25 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(node, FaultID.CatchWithUnsupportedType, autofix);
     }
 
-    if (
-      this.options.arkts2 &&
-      tsCatch.variableDeclaration &&
-      TsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(tsCatch.variableDeclaration))
-    ) {
-      this.incrementCounters(node, FaultID.TsLikeCatchType);
+    if (this.options.arkts2 && tsCatch.variableDeclaration?.name) {
+      const varDeclName = tsCatch.variableDeclaration?.name.getText();
+      tsCatch.block.statements.forEach((statement) => {
+        this.checkTsLikeCatchType(statement, varDeclName);
+      });
+    }
+  }
+
+  private checkTsLikeCatchType(node: ts.Node, variableDeclarationName: string): void {
+    if (!node) {
+      return;
+    }
+    for (const child of node.getChildren()) {
+      if (ts.isPropertyAccessExpression(child)) {
+        if (child.expression.getText() === variableDeclarationName && !ERROR_PROP_LIST.has(child.name.getText())) {
+          this.incrementCounters(child, FaultID.TsLikeCatchType);
+        }
+      }
+      this.checkTsLikeCatchType(child, variableDeclarationName);
     }
   }
 
@@ -3943,7 +3747,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleGlobalThisCase(node: ts.Identifier, isArkTs2: boolean | undefined): void {
     let faultId = FaultID.GlobalThis;
-    let autofix: Autofix[] | undefined;
     let targetNode: ts.Node = node;
 
     if (!isArkTs2) {
@@ -3960,14 +3763,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         parentExpression.operatorToken.kind === ts.SyntaxKind.EqualsToken
       ) {
         targetNode = parentExpression;
-        autofix = this.autofixer?.fixGlobalThisSet(targetNode as ts.BinaryExpression);
       } else {
         targetNode = node.parent;
-        autofix = this.autofixer?.fixGlobalThisGet(targetNode as ts.PropertyAccessExpression);
       }
     }
 
-    this.incrementCounters(targetNode, faultId, autofix);
+    this.incrementCounters(targetNode, faultId);
   }
 
   // hard-coded alternative to TypeScriptLinter.advancedClassChecks
@@ -4059,7 +3860,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
 
-    this.handleIllegalSymbolUsage(tsIdentifier, tsIdentSym)
+    this.handleIllegalSymbolUsage(tsIdentifier, tsIdentSym);
   }
 
   private handleIllegalSymbolUsage(tsIdentifier: ts.Identifier, tsIdentSym: ts.Symbol): void {
@@ -4100,7 +3901,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsValueType(typeNode)
@@ -4579,7 +4380,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralInFunctionArgs(tsCallExpr);
     this.handleSdkGlobalApi(tsCallExpr);
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
-    this.checkRestrictedAPICall(tsCallExpr)
+    this.checkRestrictedAPICall(tsCallExpr);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -4812,7 +4613,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       case OBJECT_LITERAL:
         this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallObjectParam);
         break;
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -4907,29 +4709,92 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const resolvedTypeArgs = signDecl.typeArguments;
-    const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
+    const providedTypeArgs = callLikeExpr.typeArguments;
+    const startTypeArg = providedTypeArgs?.length ?? 0;
+    let shouldReportError = startTypeArg !== resolvedTypeArgs.length;
     if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
-      if (startTypeArg !== resolvedTypeArgs.length) {
+      shouldReportError = this.shouldReportGenericTypeArgsError(
+        callLikeExpr,
+        resolvedTypeArgs,
+        providedTypeArgs,
+        startTypeArg,
+        shouldReportError
+      );
+      if (shouldReportError) {
         const autofix = this.autofixer?.fixGenericCallNoTypeArgs(callLikeExpr);
         this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       }
     } else {
-      for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
-        const typeNode = resolvedTypeArgs[i];
+      this.checkForUnknownTypeInNonArkTS2(callLikeExpr, resolvedTypeArgs, startTypeArg);
+    }
+  }
 
-        /*
-         * if compiler infers 'unknown' type there are 2 possible cases:
-         *   1. Compiler unable to infer type from arguments and use 'unknown'
-         *   2. Compiler infer 'unknown' from arguments
-         * We report error in both cases. It is ok because we cannot use 'unknown'
-         * in ArkTS and already have separate check for it.
-         */
-        if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
-          this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
-          break;
-        }
+  private checkForUnknownTypeInNonArkTS2(
+    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    resolvedTypeArgs: ts.NodeArray<ts.TypeNode>,
+    startTypeArg: number
+  ): void {
+    for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
+      const typeNode = resolvedTypeArgs[i];
+
+      /*
+       * if compiler infers 'unknown' type there are 2 possible cases:
+       *   1. Compiler unable to infer type from arguments and use 'unknown'
+       *   2. Compiler infer 'unknown' from arguments
+       * We report error in both cases. It is ok because we cannot use 'unknown'
+       * in ArkTS and already have separate check for it.
+       */
+      if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
+        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+        break;
       }
     }
+  }
+
+  private shouldReportGenericTypeArgsError(
+    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    resolvedTypeArgs: ts.NodeArray<ts.TypeNode>,
+    providedTypeArgs: ts.NodeArray<ts.TypeNode> | undefined,
+    startTypeArg: number,
+    initialErrorState: boolean
+  ): boolean {
+    const typeParameters = this.getOriginalTypeParameters(callLikeExpr);
+    if (!typeParameters || typeParameters.length === 0) {
+      return initialErrorState;
+    }
+    const optionalParamsCount = typeParameters.filter((param, index) => {
+      return param.default && (!providedTypeArgs || index >= providedTypeArgs.length);
+    }).length;
+    if (optionalParamsCount === 0) {
+      return initialErrorState;
+    }
+    return startTypeArg + optionalParamsCount !== resolvedTypeArgs.length;
+  }
+
+  private getOriginalTypeParameters(
+    callLikeExpr: ts.CallExpression | ts.NewExpression
+  ): ts.TypeParameterDeclaration[] | undefined {
+    const typeChecker = this.tsTypeChecker;
+    const expressionType = typeChecker.getTypeAtLocation(callLikeExpr.expression);
+    const declarations = expressionType.symbol?.declarations;
+    if (!declarations || declarations.length === 0) {
+      return undefined;
+    }
+    for (const decl of declarations) {
+      if (ts.isFunctionDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isMethodDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isClassDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+      if (ts.isInterfaceDeclaration(decl) && decl.typeParameters) {
+        return [...decl.typeParameters];
+      }
+    }
+    return undefined;
   }
 
   private isNonGenericClass(expression: ts.NewExpression): boolean {
@@ -5417,7 +5282,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const isImported = this.sourceFile.statements.some(stmt => {
+    const isImported = this.sourceFile.statements.some((stmt) => {
       if (!ts.isImportDeclaration(stmt)) {
         return false;
       }
@@ -5426,9 +5291,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return false;
       }
 
-      const elements = importClause.namedBindings.elements.some(
-        element => element.name.text === ESLIB_SHAREDARRAYBUFFER
-      );
+      const elements = importClause.namedBindings.elements.some((element) => {
+        return element.name.text === ESLIB_SHAREDARRAYBUFFER;
+      });
       return elements;
     });
     if (isImported) {
@@ -6212,7 +6077,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -6409,10 +6274,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const typeText = this.tsTypeChecker.typeToString(t);
       return Boolean(
         t.flags & ts.TypeFlags.StringLike ||
-        typeText === 'String' ||
-        t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
-        isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
-        t.flags & ts.TypeFlags.EnumLike
+          typeText === 'String' ||
+          t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
+          isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
+          t.flags & ts.TypeFlags.EnumLike
       );
     };
 
@@ -6684,11 +6549,23 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
+    }
+  }
+
+  private handleNoTuplesArraysForPropertyAccessExpression(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const lhsType = this.tsTypeChecker.getTypeAtLocation(node.expression);
+    if (this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)) {
+      if (ARRAY_API_LIST.includes(node.name.text)) {
+        this.incrementCounters(node, FaultID.NoTuplesArrays);
+      }
     }
   }
 
@@ -6697,9 +6574,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (
-      !(this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
+      !(
+        this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
         this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-        lhsType !== rhsType)
+        lhsType !== rhsType
+      )
     ) {
       return;
     }
@@ -7059,8 +6938,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         if (parent.right.text !== node.text) {
           return;
         }
-        this.checkAsonUsage(parent.left);
-
+        if (ts.isQualifiedName(parent.parent) && ASON_WHITE_SET.has(parent.parent.right.text)) {
+          this.checkAsonUsage(parent.left, true);
+        } else {
+          this.checkAsonUsage(parent.left, false);
+        }
         break;
       case ts.SyntaxKind.PropertyAccessExpression:
         if (!ts.isPropertyAccessExpression(parent)) {
@@ -7069,20 +6951,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         if (parent.name.text !== node.text) {
           return;
         }
-        this.checkAsonUsage(parent.expression);
-
+        if (ts.isPropertyAccessExpression(parent.parent) && ASON_WHITE_SET.has(parent.parent.name.text)) {
+          this.checkAsonUsage(parent.expression, true);
+        } else {
+          this.checkAsonUsage(parent.expression, false);
+        }
         break;
       default:
     }
   }
 
-  private checkAsonUsage(nodeToCheck: ts.Node): void {
+  private checkAsonUsage(nodeToCheck: ts.Node, needAutofix: boolean): void {
     if (!ts.isIdentifier(nodeToCheck)) {
       return;
     }
+
     const declaration = this.tsUtils.getDeclarationNode(nodeToCheck);
     if (!declaration && nodeToCheck.text === ARKTS_UTILS_TEXT) {
-      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON);
+      const autofix =
+        needAutofix && this.autofixer ? this.autofixer.replaceNode(nodeToCheck.parent, JSON_TEXT) : undefined;
+      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON, autofix);
       return;
     }
 
@@ -7098,7 +6986,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return fileName.startsWith(moduleName);
       })
     ) {
-      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON);
+      const autofix =
+        needAutofix && this.autofixer ? this.autofixer.replaceNode(nodeToCheck.parent, JSON_TEXT) : undefined;
+      this.incrementCounters(nodeToCheck, FaultID.LimitedStdLibNoASON, autofix);
     }
   }
 
@@ -9143,6 +9033,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
   }
+
   private shouldIncrementCounters(node: ts.ElementAccessExpression): boolean {
     const indexExpr = node.argumentExpression;
     if (!indexExpr) {
@@ -9442,7 +9333,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const className = classDecl.name?.getText();
     const { staticProps, instanceProps } = this.collectClassProperties(classDecl);
 
-    classDecl.members.forEach(member => {
+    classDecl.members.forEach((member) => {
       if (!ts.isMethodDeclaration(member) || !member.body) {
         return;
       }
@@ -9474,22 +9365,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       };
 
       if (className && isStaticPropertyAccess(node.expression, className)) {
-        this.checkPropertyAccess(
-          node,
-          node.expression as ts.PropertyAccessExpression,
-          staticProps,
-          methodReturnType
-        );
+        this.checkPropertyAccess(node, node.expression as ts.PropertyAccessExpression, staticProps, methodReturnType);
         return;
       }
 
       if (isInstancePropertyAccess(node.expression)) {
-        this.checkPropertyAccess(
-          node,
-          node.expression as ts.PropertyAccessExpression,
-          instanceProps,
-          methodReturnType
-        );
+        this.checkPropertyAccess(node, node.expression as ts.PropertyAccessExpression, instanceProps, methodReturnType);
       }
     });
   }
@@ -9519,14 +9400,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       instanceProps: new Map<string, ts.Type>()
     };
 
-    classDecl.members.forEach(member => {
+    classDecl.members.forEach((member) => {
       if (!ts.isPropertyDeclaration(member)) {
         return;
       }
 
       const propName = member.name.getText();
       const propType = this.tsTypeChecker.getTypeAtLocation(member);
-      const isStatic = member.modifiers?.some(m => {
+      const isStatic = member.modifiers?.some((m) => {
         return m.kind === ts.SyntaxKind.StaticKeyword;
       });
 
@@ -9543,7 +9424,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private isExactlySameType(type1: ts.Type, type2: ts.Type): boolean {
     if (type2.getCallSignatures().length > 0) {
       const returnType = TsUtils.getFunctionReturnType(type2);
-      return returnType ? this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(returnType) : false;
+      return returnType ?
+        this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(returnType) :
+        false;
     }
     return this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(type2);
   }
@@ -9662,10 +9545,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
       return false;
     };
+    const isStandardFloatFormat = (): boolean => {
+      const text = node.getText();
+      return (/\.\d*0+$/).test(text);
+    };
     const isNoNeedFix =
       isInElementAccessExpression(node) ||
-      ts.isEnumMember(node.parent) ||
-      'name' in node.parent && node.parent.name === node;
+      'name' in node.parent && node.parent.name === node ||
+      isStandardFloatFormat();
     if (isNoNeedFix) {
       return;
     }
@@ -9677,5 +9564,391 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixNumericLiteralIntToNumber(node);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
+  }
+
+  private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return;
+    }
+
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      const accessArgument = accessExpr.argumentExpression;
+      if (TypeScriptLinter.isFunctionCall(accessArgument)) {
+        this.incrementCounters(accessExpr, FaultID.RuntimeArrayCheck);
+      }
+      return;
+    }
+
+    const { arrayIdent } = arrayAccessInfo;
+    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
+    if (!arraySym) {
+      return;
+    }
+
+    const indexExpr = accessExpr.argumentExpression;
+    const loopVarName = ts.isIdentifier(indexExpr) ? indexExpr.text : undefined;
+
+    const { isInSafeContext, isValidBoundCheck, isVarModifiedBeforeAccess } = this.analyzeSafeContext(
+      accessExpr,
+      loopVarName,
+      arraySym
+    );
+
+    if (isInSafeContext) {
+      if (!isValidBoundCheck || isVarModifiedBeforeAccess) {
+        this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      }
+    } else {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+    }
+  }
+
+  private analyzeSafeContext(
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string | undefined,
+    arraySym: ts.Symbol
+  ): { isInSafeContext: boolean; isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const context = TypeScriptLinter.findSafeContext(accessExpr);
+    if (!context) {
+      return { isInSafeContext: false, isValidBoundCheck: false, isVarModifiedBeforeAccess: false };
+    }
+
+    return this.analyzeContextSafety(context, accessExpr, loopVarName, arraySym);
+  }
+
+  static findSafeContext(
+    accessExpr: ts.ElementAccessExpression
+  ): { node: ts.ForStatement | ts.WhileStatement | ts.IfStatement } | void {
+    let currentNode: ts.Node | undefined = accessExpr;
+
+    while (currentNode) {
+      if (ts.isForStatement(currentNode) || ts.isWhileStatement(currentNode) || ts.isIfStatement(currentNode)) {
+        return { node: currentNode };
+      }
+      currentNode = currentNode.parent;
+    }
+
+    return undefined;
+  }
+
+  private analyzeContextSafety(
+    context: { node: ts.ForStatement | ts.WhileStatement | ts.IfStatement },
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string | undefined,
+    arraySym: ts.Symbol
+  ): { isInSafeContext: boolean; isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const { node } = context;
+
+    if (!loopVarName) {
+      return {
+        isInSafeContext: true,
+        isValidBoundCheck: false,
+        isVarModifiedBeforeAccess: false
+      };
+    }
+
+    const analysis = this.analyzeStatementType(node, accessExpr, loopVarName, arraySym);
+
+    return {
+      isInSafeContext: true,
+      isValidBoundCheck: analysis.isValidBoundCheck,
+      isVarModifiedBeforeAccess: analysis.isVarModifiedBeforeAccess
+    };
+  }
+
+  private analyzeStatementType(
+    node: ts.ForStatement | ts.WhileStatement | ts.IfStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    switch (node.kind) {
+      case ts.SyntaxKind.ForStatement:
+        return this.analyzeForStatement(node, accessExpr, loopVarName, arraySym);
+      case ts.SyntaxKind.WhileStatement:
+        return this.analyzeWhileStatement(node, accessExpr, loopVarName, arraySym);
+      case ts.SyntaxKind.IfStatement:
+        return this.analyzeIfStatement(node, accessExpr, loopVarName, arraySym);
+      default:
+        return { isValidBoundCheck: false, isVarModifiedBeforeAccess: false };
+    }
+  }
+
+  private analyzeForStatement(
+    forNode: ts.ForStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = forNode.condition ?
+      this.checkBoundCondition(forNode.condition, loopVarName, arraySym) :
+      false;
+
+    const isVarModifiedBeforeAccess = forNode.statement ?
+      TypeScriptLinter.checkVarModifiedBeforeNode(forNode.statement, accessExpr, loopVarName) :
+      false;
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private analyzeWhileStatement(
+    whileNode: ts.WhileStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = whileNode.expression ?
+      this.checkBoundCondition(whileNode.expression, loopVarName, arraySym) :
+      false;
+
+    const isVarModifiedBeforeAccess = whileNode.statement ?
+      TypeScriptLinter.checkVarModifiedBeforeNode(whileNode.statement, accessExpr, loopVarName) :
+      false;
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private analyzeIfStatement(
+    ifNode: ts.IfStatement,
+    accessExpr: ts.ElementAccessExpression,
+    loopVarName: string,
+    arraySym: ts.Symbol
+  ): { isValidBoundCheck: boolean; isVarModifiedBeforeAccess: boolean } {
+    const isValidBoundCheck = ifNode.expression ?
+      this.checkBoundCondition(ifNode.expression, loopVarName, arraySym) :
+      false;
+
+    let isVarModifiedBeforeAccess = false;
+    const statementBlock = ts.isBlock(ifNode.thenStatement) ? ifNode.thenStatement : undefined;
+    if (statementBlock) {
+      isVarModifiedBeforeAccess = TypeScriptLinter.checkVarModifiedBeforeNode(statementBlock, accessExpr, loopVarName);
+    }
+
+    return { isValidBoundCheck, isVarModifiedBeforeAccess };
+  }
+
+  private checkBoundCondition(condition: ts.Expression, varName: string, arraySym: ts.Symbol): boolean {
+    if (ts.isBinaryExpression(condition)) {
+      const { left, right, operatorToken } = condition;
+
+      if (this.checkVarLessThanArrayLength(left, right, operatorToken, varName, arraySym)) {
+        return true;
+      }
+
+      if (this.checkArrayLengthGreaterThanVar(left, right, operatorToken, varName, arraySym)) {
+        return true;
+      }
+
+      if (ts.isIdentifier(left) && left.text === varName && ts.isNumericLiteral(right)) {
+        const value = parseFloat(right.text);
+        if (
+          operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken && value <= 0 ||
+          operatorToken.kind === ts.SyntaxKind.GreaterThanToken && value < 0
+        ) {
+          return true;
+        }
+      }
+
+      return this.checkBoundCondition(left, varName, arraySym) || this.checkBoundCondition(right, varName, arraySym);
+    }
+
+    return false;
+  }
+
+  private checkArrayLengthGreaterThanVar(
+    left: ts.Expression,
+    right: ts.Expression,
+    operatorToken: ts.Token<ts.BinaryOperator>,
+    varName: string,
+    arraySym: ts.Symbol
+  ): boolean {
+    if (
+      ts.isPropertyAccessExpression(left) &&
+      left.name.text === 'length' &&
+      ts.isIdentifier(right) &&
+      right.text === varName
+    ) {
+      const leftArraySym = this.tsUtils.trueSymbolAtLocation(left.expression);
+      if (leftArraySym === arraySym) {
+        return (
+          operatorToken.kind === ts.SyntaxKind.GreaterThanToken ||
+          operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken
+        );
+      }
+    }
+    return false;
+  }
+
+  private checkVarLessThanArrayLength(
+    left: ts.Expression,
+    right: ts.Expression,
+    operatorToken: ts.Token<ts.BinaryOperator>,
+    varName: string,
+    arraySym: ts.Symbol
+  ): boolean {
+    return (
+      ts.isIdentifier(left) &&
+      left.text === varName &&
+      ts.isPropertyAccessExpression(right) &&
+      right.name.text === 'length' &&
+      (operatorToken.kind === ts.SyntaxKind.LessThanToken ||
+        operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken) &&
+      this.tsUtils.trueSymbolAtLocation(right.expression) === arraySym
+    );
+  }
+
+  private static traverseNodesUntilTarget(
+    node: ts.Node,
+    targetNode: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[],
+    state: { targetFound: boolean; modified: boolean }
+  ): void {
+    if (node === targetNode) {
+      state.targetFound = true;
+      return;
+    }
+
+    if (state.targetFound) {
+      return;
+    }
+
+    const newScope = this.handleNewScope(node, scopeStack);
+
+    TypeScriptLinter.getVariablesFromScope(node, varName, scopeStack);
+
+    if (this.isVariableModified(node, varName, scopeStack)) {
+      state.modified = true;
+    }
+
+    ts.forEachChild(node, (child) => {
+      this.traverseNodesUntilTarget(child, targetNode, varName, scopeStack, state);
+    });
+
+    if (newScope) {
+      scopeStack.pop();
+    }
+  }
+
+  private static handleNewScope(
+    node: ts.Node,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): { shadowed: boolean; localVars: Set<string> } | null {
+    if (ts.isBlock(node) || ts.isFunctionLike(node) || ts.isCatchClause(node)) {
+      const parentScope = scopeStack[scopeStack.length - 1];
+      const newScope = {
+        shadowed: parentScope.shadowed,
+        localVars: new Set<string>()
+      };
+      scopeStack.push(newScope);
+      return newScope;
+    }
+    return null;
+  }
+
+  static getVariablesFromScope(
+    node: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): void {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === varName) {
+      const parent = node.parent;
+      if (
+        ts.isVariableDeclarationList(parent) &&
+        (parent.flags & ts.NodeFlags.Let || parent.flags & ts.NodeFlags.Const)
+      ) {
+        scopeStack[scopeStack.length - 1].localVars.add(varName);
+      }
+    }
+
+    if (ts.isParameter(node) && ts.isIdentifier(node.name) && node.name.text === varName) {
+      scopeStack[scopeStack.length - 1].localVars.add(varName);
+    }
+  }
+
+  private static isVariableModified(
+    node: ts.Node,
+    varName: string,
+    scopeStack: { shadowed: boolean; localVars: Set<string> }[]
+  ): boolean {
+    if (!ts.isBinaryExpression(node) || node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+      return false;
+    }
+
+    if (!ts.isIdentifier(node.left) || node.left.text !== varName) {
+      return false;
+    }
+
+    for (let i = scopeStack.length - 1; i >= 0; i--) {
+      if (scopeStack[i].localVars.has(varName)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static checkVarModifiedBeforeNode(container: ts.Node, targetNode: ts.Node, varName: string): boolean {
+    const scopeStack: { shadowed: boolean; localVars: Set<string> }[] = [];
+    scopeStack.push({ shadowed: false, localVars: new Set() });
+
+    const state = {
+      targetFound: false,
+      modified: false
+    };
+
+    this.traverseNodesUntilTarget(container, targetNode, varName, scopeStack, state);
+    return state.modified;
+  }
+
+  static isFunctionCall(node: ts.Node): boolean {
+    return ts.isCallExpression(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node);
+  }
+
+  private getArrayAccessInfo(expr: ts.ElementAccessExpression): false | ArrayAccess {
+    if (!ts.isIdentifier(expr.expression)) {
+      return false;
+    }
+    const baseType = this.tsTypeChecker.getTypeAtLocation(expr.expression);
+    if (!this.tsUtils.isArray(baseType)) {
+      return false;
+    }
+    const accessArgument = expr.argumentExpression;
+
+    TypeScriptLinter.isFunctionCall(accessArgument);
+
+    const checkNumericType = (node: ts.Node): boolean => {
+      const argType = this.tsTypeChecker.getTypeAtLocation(node);
+      return (
+        (argType.flags & ts.TypeFlags.NumberLike) !== 0 ||
+        argType.isUnionOrIntersection() &&
+          argType.types.some((t) => {
+            return t.flags & ts.TypeFlags.NumberLike;
+          })
+      );
+    };
+
+    const isEnumMember = (node: ts.Node): boolean => {
+      if (ts.isPropertyAccessExpression(node)) {
+        const symbol = this.tsUtils.trueSymbolAtLocation(node);
+        return !!symbol && (symbol.flags & ts.SymbolFlags.EnumMember) !== 0;
+      }
+      return false;
+    };
+
+    if (TypeScriptLinter.isFunctionCall(accessArgument)) {
+      return false;
+    }
+
+    if (checkNumericType(accessArgument) || isEnumMember(accessArgument)) {
+      return {
+        pos: expr.getEnd(),
+        accessingIdentifier: accessArgument,
+        arrayIdent: expr.expression
+      };
+    }
+
+    return false;
   }
 }

@@ -295,6 +295,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 73,
+            "column": 1,
+            "endLine": 73,
+            "endColumn": 11,
+            "problem": "NoTuplesArrays",
+            "suggest": "",
+            "rule": "Array and tuple are different type(arkts-no-tuples-arrays)",
+            "severity": "ERROR"
+        },
+        {
             "line": 78,
             "column": 37,
             "endLine": 78,

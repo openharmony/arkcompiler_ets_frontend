@@ -24,15 +24,17 @@ export { utils } from './oh_modules/@arkts.utils';
 
 function tesCollectionsUsage() {
 
-  const utils1: string = utils.ASON.stringify(1.0);
+  const utils1: string = JSON.stringify(1.0);
 
-  const utils2 = ArkTSUtilsAlias.ASON.stringify(1.0);
+  const utils2 = JSON.stringify(1.0);
 
-  const utils3 = kitArkTSUtils.ASON.stringify(1.0);
+  const utils3 = JSON.stringify(1.0);
 
-  const utils4: string = ArkTSUtilsAlias.ASON.stringify(1.0);
+  const utils4: string = JSON.stringify(1.0);
 
   type CreatedType = ArkTSUtils.ASON.SomeType;
 
   const someType: CreatedType = ArkTSUtils.ASON.SomeType;
+
+  const map: number = ArkTSUtils.ASON.ParseReturnType.map;
 }

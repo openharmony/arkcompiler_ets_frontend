@@ -13,26 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
       ],
-    "result": [
-        {
-            "line": 27,
-            "column": 12,
-            "endLine": 27,
-            "endColumn": 18,
-            "problem": "CatchWithUnsupportedType",
-            "suggest": "",
-            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 15,
-            "endLine": 27,
-            "endColumn": 18,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

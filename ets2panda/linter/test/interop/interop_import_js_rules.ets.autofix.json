@@ -552,16 +552,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 46,
-            "column": 3,
-            "endLine": 48,
-            "endColumn": 2,
-            "problem": "TsLikeCatchType",
-            "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 50,
             "column": 11,
             "endLine": 50,
@@ -601,16 +591,6 @@
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 54,
-            "column": 3,
-            "endLine": 54,
-            "endColumn": 9,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -705,6 +685,16 @@
             ],
             "suggest": "",
             "rule": "Interop objects can't be indexed directly (arkts-interop-js2s-access-js-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 3,
+            "endLine": 54,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {

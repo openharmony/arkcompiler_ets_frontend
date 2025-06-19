@@ -804,9 +804,9 @@ export class Autofixer {
         propAccessExpr
       );
       // Create statement for the assignment expression, with or without parentheses based on the flag
-      const statement = needParentheses[index]
-        ? ts.factory.createExpressionStatement(ts.factory.createParenthesizedExpression(assignmentExpr))
-        : ts.factory.createExpressionStatement(assignmentExpr);
+      const statement = needParentheses[index] ?
+        ts.factory.createExpressionStatement(ts.factory.createParenthesizedExpression(assignmentExpr)) :
+        ts.factory.createExpressionStatement(assignmentExpr);
 
       // Append the generated text for the destructuring assignment
       destructElementText +=
@@ -1081,7 +1081,7 @@ export class Autofixer {
     const moduleName = TsUtils.getModuleName(importDeclNode);
     const newPathParts = [moduleName ?? DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
     const newPath = newPathParts.join(PATH_SEPARATOR);
-    const newPathString = "'" + newPath + "'";
+    const newPathString = '\'' + newPath + '\'';
 
     return [{ start: moduleSpecifier.getStart(), end: moduleSpecifier.getEnd(), replacementText: newPathString }];
   }
@@ -1095,7 +1095,7 @@ export class Autofixer {
     const newPathParts = [...beforeEts, SRC_AND_MAIN, ...afterEts];
 
     const newPath = newPathParts.join(PATH_SEPARATOR);
-    const newPathString = "'" + newPath + "'";
+    const newPathString = '\'' + newPath + '\'';
 
     return [{ start: moduleSpecifier.getStart(), end: moduleSpecifier.getEnd(), replacementText: newPathString }];
   }
@@ -1394,9 +1394,9 @@ export class Autofixer {
   fixVarDeclaration(node: ts.VariableDeclarationList): Autofix[] | undefined {
     const newNode = ts.factory.createVariableDeclarationList(node.declarations, ts.NodeFlags.Let);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newNode, node.getSourceFile());
-    return this.canAutofixNoVar(node)
-      ? [{ start: node.getStart(), end: node.getEnd(), replacementText: text }]
-      : undefined;
+    return this.canAutofixNoVar(node) ?
+      [{ start: node.getStart(), end: node.getEnd(), replacementText: text }] :
+      undefined;
   }
 
   private getFixReturnTypeArrowFunction(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): string {
@@ -1517,14 +1517,15 @@ export class Autofixer {
 
   private static getReturnTypePosition(funcLikeDecl: ts.FunctionLikeDeclaration): number {
     if (funcLikeDecl.body) {
+
       /*
        * Find position of the first node or token that follows parameters.
        * After that, iterate over child nodes in reverse order, until found
        * first closing parenthesis.
        */
-      const postParametersPosition = ts.isArrowFunction(funcLikeDecl)
-        ? funcLikeDecl.equalsGreaterThanToken.getStart()
-        : funcLikeDecl.body.getStart();
+      const postParametersPosition = ts.isArrowFunction(funcLikeDecl) ?
+        funcLikeDecl.equalsGreaterThanToken.getStart() :
+        funcLikeDecl.body.getStart();
 
       const children = funcLikeDecl.getChildren();
       for (let i = children.length - 1; i >= 0; i--) {
@@ -1549,8 +1550,8 @@ export class Autofixer {
       ts.isTypeOfExpression(parent) ||
       ts.isVoidExpression(parent) ||
       ts.isAwaitExpression(parent) ||
-      (ts.isCallExpression(parent) && node === parent.expression) ||
-      (ts.isBinaryExpression(parent) && !isAssignmentOperator(parent.operatorToken))
+      ts.isCallExpression(parent) && node === parent.expression ||
+      ts.isBinaryExpression(parent) && !isAssignmentOperator(parent.operatorToken)
     );
   }
 
@@ -1886,6 +1887,7 @@ export class Autofixer {
     objectLiteralType: ts.Type | undefined
   ): Autofix[] | undefined {
     if (objectLiteralType) {
+
       /*
        * Special case for object literal of Record type: fix object's property names
        * by replacing identifiers with string literals.
@@ -2017,6 +2019,7 @@ export class Autofixer {
     newInterfaceName: string,
     objectLiteralExpr: ts.ObjectLiteralExpression
   ): Autofix {
+
     /*
      * If object literal is initializing a variable or property,
      * then simply add new 'contextual' type to the declaration.
@@ -2059,7 +2062,8 @@ export class Autofixer {
   private fixObjectLiteralAsClass(
     objectLiteralExpr: ts.ObjectLiteralExpression,
     typeDecl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined,
-    enclosingStmt: ts.Node
+    enclosingStmt: ts.Node,
+    typeNode?: ts.TypeReferenceNode
   ): Autofix[] | undefined {
     if (this.utils.nodeCapturesValueFromEnclosingLocalScope(objectLiteralExpr, enclosingStmt)) {
       return undefined;
@@ -2078,9 +2082,9 @@ export class Autofixer {
     const classDeclAndCtorInitProps = this.createClassDeclForObjectLiteral(
       objectLiteralExpr,
       enclosingStmt,
-      newClassName,
-      newInitInterfaceName,
-      typeDecl
+      { className: newClassName, initInterfaceName: newInitInterfaceName },
+      typeDecl,
+      typeNode
     );
     if (!classDeclAndCtorInitProps) {
       return undefined;
@@ -2109,10 +2113,11 @@ export class Autofixer {
   private createClassDeclForObjectLiteral(
     objectLiteralExpr: ts.ObjectLiteralExpression,
     enclosingStmt: ts.Node,
-    newClassName: string,
-    newInitInterfaceName: string,
-    typeDecl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+    names: { className: string; initInterfaceName: string },
+    typeDecl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined,
+    typeNode?: ts.TypeReferenceNode
   ): { classDecl: ts.ClassDeclaration; ctorInitProps: ts.PropertyAssignment[] } | undefined {
+    const { className, initInterfaceName } = names;
     const classFields: ts.PropertyDeclaration[] = [];
     const classMethods: (ts.MethodDeclaration | ts.AccessorDeclaration)[] = [];
     const ctorBodyStmts: ts.Statement[] = [];
@@ -2142,14 +2147,14 @@ export class Autofixer {
 
     const classElements: ts.ClassElement[] = [...classFields];
     if (ctorInitProps.length) {
-      classElements.push(Autofixer.createClassConstructorForObjectLiteral(newInitInterfaceName, ctorBodyStmts));
+      classElements.push(Autofixer.createClassConstructorForObjectLiteral(initInterfaceName, ctorBodyStmts));
     }
     classElements.push(...classMethods);
 
-    const heritageClauses = Autofixer.createHeritageClausesForObjectLiteralClass(typeDecl);
+    const heritageClauses = Autofixer.createHeritageClausesForObjectLiteralClass(typeDecl, typeNode);
 
     return {
-      classDecl: ts.factory.createClassDeclaration(undefined, newClassName, undefined, heritageClauses, classElements),
+      classDecl: ts.factory.createClassDeclaration(undefined, className, undefined, heritageClauses, classElements),
       ctorInitProps
     };
   }
@@ -2208,18 +2213,30 @@ export class Autofixer {
   }
 
   private static createHeritageClausesForObjectLiteralClass(
-    typeDecl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+    typeDecl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined,
+    typeNode?: ts.TypeReferenceNode
   ): ts.HeritageClause[] | undefined {
     if (!typeDecl?.name) {
       return undefined;
     }
 
+    const heritageTypeExpression = typeNode ?
+      Autofixer.entityNameToExpression(typeNode.typeName) :
+      ts.factory.createIdentifier(typeDecl.name.text);
+
     return [
       ts.factory.createHeritageClause(
         ts.isClassDeclaration(typeDecl) ? ts.SyntaxKind.ExtendsKeyword : ts.SyntaxKind.ImplementsKeyword,
-        [ts.factory.createExpressionWithTypeArguments(typeDecl.name, undefined)]
+        [ts.factory.createExpressionWithTypeArguments(heritageTypeExpression, undefined)]
       )
     ];
+  }
+
+  private static entityNameToExpression(name: ts.EntityName): ts.Expression {
+    if (ts.isQualifiedName(name)) {
+      return ts.factory.createPropertyAccessExpression(Autofixer.entityNameToExpression(name.left), name.right);
+    }
+    return ts.factory.createIdentifier(name.text);
   }
 
   private static createClassConstructorForObjectLiteral(
@@ -2271,7 +2288,7 @@ export class Autofixer {
     }
 
     const typeDecl = TsUtils.getDeclaration(objectLiteralType.getSymbol());
-    if (!typeDecl || (!ts.isClassDeclaration(typeDecl) && !ts.isInterfaceDeclaration(typeDecl)) || !typeDecl.name) {
+    if (!typeDecl || !ts.isClassDeclaration(typeDecl) && !ts.isInterfaceDeclaration(typeDecl) || !typeDecl.name) {
       return undefined;
     }
 
@@ -2288,7 +2305,8 @@ export class Autofixer {
       return undefined;
     }
 
-    return this.fixObjectLiteralAsClass(objectLiteralExpr, typeDecl, enclosingStmt);
+    const typeNode = (objectLiteralExpr.parent as ts.VariableDeclaration).type as ts.TypeReferenceNode | undefined;
+    return this.fixObjectLiteralAsClass(objectLiteralExpr, typeDecl, enclosingStmt, typeNode);
   }
 
   private hasMethodOverridingProperty(
@@ -2527,12 +2545,6 @@ export class Autofixer {
       return [{ start: decl.getStart(), end: decl.getEnd(), replacementText: replacementText }];
     }
     return undefined;
-  }
-
-  fixGlobalThisGet(node: ts.PropertyAccessExpression): Autofix[] {
-    void this;
-    const replacement = `${SPECIAL_LIB_NAME}.globalThis.get("${node.name.text}")`;
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: replacement }];
   }
 
   fixVoidOperator(voidExpr: ts.VoidExpression): Autofix[] {
@@ -3369,7 +3381,11 @@ export class Autofixer {
       node.initializer
     );
 
-    const replacementText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, newProperty, node.getSourceFile());
+    const replacementText = this.nonCommentPrinter.printNode(
+      ts.EmitHint.Unspecified,
+      newProperty,
+      node.getSourceFile()
+    );
 
     return [
       {
@@ -3398,7 +3414,7 @@ export class Autofixer {
       replacement = ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(callee.expression, ts.factory.createIdentifier(INVOKE_METHOD)),
         undefined,
-        [ts.factory.createStringLiteral(callee.name.getText()), ...(args || [])]
+        [ts.factory.createStringLiteral(callee.name.getText()), ...args || []]
       );
     } else if (ts.isIdentifier(callee)) {
       // For expressions like foo() or bar(123) => foo.invoke(...) or bar.invoke(...)
@@ -3543,11 +3559,11 @@ export class Autofixer {
   collectExistingNames(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember): Set<string> {
     void this;
     return new Set(
-      parentEnum.members
-        .filter((m) => {
+      parentEnum.members.
+        filter((m) => {
           return m !== tsEnumMember;
-        })
-        .map((m) => {
+        }).
+        map((m) => {
           const nameNode = m.name;
           if (ts.isStringLiteral(nameNode)) {
             const fix = this.fixLiteralAsPropertyNamePropertyName(nameNode);
@@ -4176,7 +4192,7 @@ export class Autofixer {
           const propertyAccessExpr = node.expression as ts.PropertyAccessExpression;
           const newCallExpr = this.createJSInvokeCallExpression(propertyAccessExpr.expression, INVOKE_METHOD, [
             ts.factory.createStringLiteral(propertyAccessExpr.name.text),
-            ...(newArgs || [])
+            ...newArgs || []
           ]);
 
           if (!newCallExpr) {
@@ -4185,7 +4201,7 @@ export class Autofixer {
           return this.printer.printNode(ts.EmitHint.Unspecified, newCallExpr, node.getSourceFile());
         }
         default: {
-          const callExpr = this.createJSInvokeCallExpression(node.expression, INVOKE, [...(newArgs || [])]);
+          const callExpr = this.createJSInvokeCallExpression(node.expression, INVOKE, [...newArgs || []]);
 
           if (!callExpr) {
             return undefined;
@@ -4203,7 +4219,7 @@ export class Autofixer {
       return `${base}.${GET_PROPERTY_BY_NAME}('${propName}')`;
     } else if (ts.isNewExpression(node)) {
       const newArgs = this.createArgs(node.arguments);
-      const newCallExpr = this.createJSInvokeCallExpression(node.expression, INSTANTIATE, [...(newArgs || [])]);
+      const newCallExpr = this.createJSInvokeCallExpression(node.expression, INSTANTIATE, [...newArgs || []]);
 
       if (!newCallExpr) {
         return undefined;
@@ -4268,9 +4284,9 @@ export class Autofixer {
       this.modVarName = newVarName;
     }
     const propertyName = originalName || symbolName;
-    const constructDeclInfo: string[] = isLoad
-      ? [this.modVarName, ES_VALUE, LOAD]
-      : [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
+    const constructDeclInfo: string[] = isLoad ?
+      [this.modVarName, ES_VALUE, LOAD] :
+      [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
     const newVarDecl = Autofixer.createVariableForInteropImport(
       constructDeclInfo[0],
       constructDeclInfo[1],
@@ -4614,7 +4630,7 @@ export class Autofixer {
   fixNoTsLikeFunctionCall(identifier: ts.Node): Autofix[] {
     void this;
     const funcName = identifier.getText();
-    const replacementText = `${funcName}.unSafeCall`;
+    const replacementText = `${funcName}.unsafeCall`;
     return [
       {
         replacementText,
@@ -4655,18 +4671,18 @@ export class Autofixer {
   }
 
   private static createExactObjectInitializer(type: ts.TypeLiteralNode): ts.ObjectLiteralExpression {
-    const properties = type.members
-      .filter((member): member is ts.PropertySignature => {
+    const properties = type.members.
+      filter((member): member is ts.PropertySignature => {
         return ts.isPropertySignature(member);
-      })
-      .map((member) => {
+      }).
+      map((member) => {
         const initializer = Autofixer.createInitializerForPropertySignature(member);
         if (initializer) {
           return ts.factory.createPropertyAssignment(member.name, initializer);
         }
         return null;
-      })
-      .filter((property): property is ts.PropertyAssignment => {
+      }).
+      filter((property): property is ts.PropertyAssignment => {
         return property !== null;
       });
 
@@ -4834,22 +4850,73 @@ export class Autofixer {
     return fixes;
   }
 
-  fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
-    const typeNode = this.getTypeNodeForNewExpression(node);
-    if (!typeNode || !ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
+  private fixGenericCallNoTypeArgsWithContextualType(node: ts.NewExpression): Autofix[] | undefined {
+    const contextualType = this.typeChecker.getContextualType(node);
+    if (!contextualType) {
       return undefined;
     }
 
-    const reference: ts.TypeReferenceNode[] = [];
-    typeNode.typeArguments?.forEach((arg) => {
-      return reference.push(ts.factory.createTypeReferenceNode(arg.getText()));
+    const typeArgs = Autofixer.getTypeArgumentsFromType(contextualType);
+    if (typeArgs.length === 0) {
+      return undefined;
+    }
+    const reference = typeArgs.map((arg) => {
+      return ts.factory.createTypeReferenceNode(this.typeChecker.typeToString(arg));
     });
+    return this.generateGenericTypeArgumentsAutofix(node, reference);
+  }
+
+  fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
+    const typeNode = this.getTypeNodeForNewExpression(node);
+    if (!typeNode) {
+      return this.fixGenericCallNoTypeArgsWithContextualType(node);
+    }
+    if (!ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
+      return undefined;
+    }
+
+    const srcFile = node.getSourceFile();
+    const typeArgsText = `<${typeNode.typeArguments?.
+      map((arg) => {
+        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+      }).
+      join(', ')}>`;
+
+    // Insert the type arguments immediately after the constructor name
+    const insertPos = node.expression.getEnd();
+    return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+  }
+
+  private generateGenericTypeArgumentsAutofix(
+    node: ts.NewExpression,
+    typeArgs: ts.TypeReferenceNode[]
+  ): Autofix[] | undefined {
     const srcFile = node.getSourceFile();
     const identifier = node.expression;
     const args = node.arguments;
-    const newExpression = ts.factory.createNewExpression(identifier, reference, args);
+    const hasValidArgs = typeArgs.some((arg) => {
+      return arg?.typeName && ts.isIdentifier(arg.typeName);
+    });
+    if (!hasValidArgs) {
+      return undefined;
+    }
+    const hasAnyType = typeArgs.some((arg) => {
+      return ts.isIdentifier(arg?.typeName) && arg.typeName.text === 'any';
+    });
+    if (hasAnyType) {
+      return undefined;
+    }
+    const newExpression = ts.factory.createNewExpression(identifier, typeArgs, args);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  static getTypeArgumentsFromType(type: ts.Type): ts.Type[] {
+    const typeReference = type as ts.TypeReference;
+    if (typeReference.typeArguments) {
+      return [...typeReference.typeArguments];
+    }
+    return [];
   }
 
   private getTypeNodeForNewExpression(node: ts.NewExpression): ts.TypeNode | undefined {
@@ -4926,7 +4993,7 @@ export class Autofixer {
 
     const newCallExpr = this.createJSInvokeCallExpression(accessedProperty, INVOKE_METHOD, [
       ts.factory.createStringLiteral(ident.text),
-      ...(newArgs || [])
+      ...newArgs || []
     ]);
 
     if (!newCallExpr) {
@@ -4984,7 +5051,27 @@ export class Autofixer {
 
   fixNumericLiteralIntToNumber(node: ts.NumericLiteral): Autofix[] | undefined {
     void this;
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: `${node.getText()}.0` }];
+    let replacementText = node.getText();
+    const parent = node.parent;
+
+    if (ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.MinusToken) {
+      replacementText = `-${replacementText}.0`;
+      return [
+        {
+          start: parent.getStart(),
+          end: node.getEnd(),
+          replacementText
+        }
+      ];
+    }
+
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: `${replacementText}.0`
+      }
+    ];
   }
 
   fixPropDecorator(node: ts.Decorator, decoratorName: string): Autofix[] {

@@ -26,16 +26,6 @@
         },
         {
             "line": 110,
-            "column": 17,
-            "endLine": 110,
-            "endColumn": 27,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 110,
             "column": 26,
             "endLine": 110,
             "endColumn": 26,

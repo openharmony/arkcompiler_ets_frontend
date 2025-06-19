@@ -256,3 +256,30 @@ class C6 {
 
 let map1:Map<string,string> = new Map<string,string>();
 let c6: C6 = {map1};
+
+// Namespace typed object literals
+namespace X {
+  export class C {
+    m() {
+      console.log("C - 1");
+    }
+  }
+ 
+  export interface I {
+    m(a: number, b: string): void;
+  }
+}
+ 
+function test() {
+  let c: X.C = {
+    m() {
+      console.log("C - 2");
+    }
+  }
+ 
+  let i: X.I = {
+    m(): void {
+      console.log("I");
+    }
+  }
+}

@@ -95,27 +95,27 @@ LiteralAsPropertyNameEnum.PrivateTwo;
 
 {
   const enum Direction {
-   __empty = 1,
+   __empty = 1.0,
   }
 }
 
 const enum Direction16 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 
 const enum Direction17 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 let case17: number = Direction17.___x5c
 let case172: number = Direction17.__x5c
 
 const enum Direction11 {
-__x21x21 = 1,
+__x21x21 = 1.0,
 }
 const enum Direction23 {
-aaa = 1,
+aaa = 1.0,
 }
 // ArkUI
 @Component
