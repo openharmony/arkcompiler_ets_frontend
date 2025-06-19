@@ -133,6 +133,10 @@ export const testCases: TestCases = {
       { start: 712, length: 11 } as TextSpan
     ]
   },
+  getCodeFixesAtPosition: {
+    expectedFilePath: resolveTestPath('test/expected/getCodeFixesAtPosition.json'),
+    '1': [resolveTestPath('test/testcases/getCodeFixesAtPosition/getCodeFixesAtPosition1.ets'), 994, 995, [4000]]
+  },
   getSignatureHelpItems: {
     expectedFilePath: resolveTestPath('test/expected/getSignatureHelpItems.json'),
     '1': [resolveTestPath('test/testcases/getSignatureHelpItems/getSignatureHelpItems1.ets'), 613],
