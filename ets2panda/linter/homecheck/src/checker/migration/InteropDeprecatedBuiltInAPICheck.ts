@@ -27,7 +27,6 @@ import {
     ArkNamespace,
     Local,
     ClassType,
-    ArkField,
     ClassSignature,
     Type,
     BooleanType,
@@ -60,6 +59,7 @@ import { WarnInfo } from '../../utils/common/Utils';
 import { ArkClass } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { MethodParameter } from 'arkanalyzer/lib/core/model/builder/ArkMethodBuilder';
+import { AbstractFieldRef } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'DeprecatedBuiltInAPICheck');
 const gMetaData: BaseMetaData = {
@@ -226,7 +226,7 @@ class DeprecatedAPIList {
         this.createMapForEachAPI(),
         this.createArraySymbolIteratorAPI(),
         this.createSetSymbolIteratorAPI(),
-        this.createMapSymbolIteratorAPI()
+        this.createMapSymbolIteratorAPI(),
     ];
 
     private static createArrayEveryAPI1(): DeprecatedAPIInfo {
@@ -385,9 +385,8 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     };
 
     public processArkClass(arkClass: ArkClass, globalVarMap: Map<string, Stmt[]>): void {
-        for (let field of arkClass.getFields()) {
-            this.processClassField(field, globalVarMap);
-        }
+        this.processArkMethod(arkClass.getInstanceInitMethod(), globalVarMap);
+        this.processArkMethod(arkClass.getStaticInitMethod(), globalVarMap);
         for (let mtd of arkClass.getMethods()) {
             this.processArkMethod(mtd, globalVarMap);
         }
@@ -399,16 +398,6 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         }
         for (let arkClass of namespace.getClasses()) {
             this.processArkClass(arkClass, globalVarMap);
-        }
-    }
-
-    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>): void {
-        const stmts = field.getInitializer();
-        for (const stmt of stmts) {
-            const invokeExpr = this.getInvokeExpr(stmt);
-            if (invokeExpr === null) {
-                continue;
-            }
         }
     }
 
@@ -514,13 +503,14 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (this.isInstanceCallMethodInDeprecatedAPIs(base, stmt, invokeExpr.getMethodSignature(), invokeExpr.getArgs())) {
                 return base;
             }
-            // instance invoke未匹配到，继续匹配静态调用。Array.from的API调用ArkAnalyzer也表示为ArkInstanceInvokeExpr，因为API定义里没有明确的static标识。
-            return this.getTargetValueInStaticInvokeWithDeprecatedAPIs(invokeExpr);
+            // Array.from的API调用ArkAnalyzer也表示为ArkInstanceInvokeExpr，因为API定义里没有明确的static标识
+            return this.getTargetLocalInArrayFrom(invokeExpr);
         } else if (invokeExpr instanceof ArkPtrInvokeExpr) {
             // TODO：可能存在ptr invoke的场景吗？
             return null;
         } else if (invokeExpr instanceof ArkStaticInvokeExpr) {
-            return null;
+            // Symbol.iterator API 检测的Reflect.get场景，是static invoke
+            return this.getTargetLocalInReflectGet(invokeExpr);
         }
         return null;
     }
@@ -553,8 +543,64 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         return true;
     }
 
-    private getTargetValueInStaticInvokeWithDeprecatedAPIs(staticInvokeExpr: ArkStaticInvokeExpr): Local | null {
-        const callApiMethod = staticInvokeExpr.getMethodSignature();
+    // 此函数仅用作Symbol.iterator API 检测的Reflect.get场景
+    private getTargetLocalInReflectGet(staticInvokeExpr: ArkStaticInvokeExpr): Local | null {
+        const method = staticInvokeExpr.getMethodSignature();
+        const methodName = method.getMethodSubSignature().getMethodName();
+        const namespaceName = method.getDeclaringClassSignature().getDeclaringNamespaceSignature()?.getNamespaceName();
+        if (namespaceName !== 'Reflect' || methodName !== 'get') {
+            return null;
+        }
+
+        const args = staticInvokeExpr.getArgs();
+        if (args.length < 2) {
+            return null;
+        }
+        const targetLocal = args[0];
+        const apiCall = args[1];
+        if (!(targetLocal instanceof Local) || !(apiCall instanceof Local)) {
+            return null;
+        }
+
+        const declaringStmt = apiCall.getDeclaringStmt();
+        if (declaringStmt === null || !(declaringStmt instanceof ArkAssignStmt)) {
+            return null;
+        }
+        const rightOp = declaringStmt.getRightOp();
+        if (!(rightOp instanceof ArkInstanceFieldRef)) {
+            return null;
+        }
+        const fieldBaseName = rightOp.getBase().getName();
+        const fieldName = rightOp.getFieldName();
+        if (fieldBaseName !== 'Symbol' || fieldName !== 'iterator') {
+            return null;
+        }
+
+        for (const api of DeprecatedAPIList.DeprecatedAPIs) {
+            if (api.name !== 'Symbol.iterator') {
+                continue;
+            }
+            if (api.base === APIBaseCategory.Array && targetLocal.getType() instanceof ArrayType) {
+                return targetLocal;
+            }
+            if (api.base === APIBaseCategory.Set) {
+                const localType = targetLocal.getType();
+                if (localType instanceof ClassType && localType.getClassSignature().getClassName() === 'Set') {
+                    return targetLocal;
+                }
+            }
+            if (api.base === APIBaseCategory.Map) {
+                const localType = targetLocal.getType();
+                if (localType instanceof ClassType && localType.getClassSignature().getClassName() === 'Map') {
+                    return targetLocal;
+                }
+            }
+        }
+        return null;
+    }
+
+    private getTargetLocalInArrayFrom(invokeExpr: ArkInstanceInvokeExpr): Local | null {
+        const callApiMethod = invokeExpr.getMethodSignature();
         const callApiClass = callApiMethod.getDeclaringClassSignature();
         for (const api of DeprecatedAPIList.DeprecatedAPIs) {
             if (!api.isStatic) {
@@ -572,7 +618,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                 continue;
             }
             if (this.compareParamTypes(api.params, callApiMethod.getMethodSubSignature().getParameters())) {
-                const args = staticInvokeExpr.getArgs();
+                const args = invokeExpr.getArgs();
                 // 形参匹配的情况下，进一步比较传入的实参，因为当前废弃接口大多数为去掉any类型的第二个可选参数
                 // TODO：这里需要考虑如何做的更通用
                 if (args.length !== api.params.length) {
@@ -598,24 +644,6 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             }
         }
         return null;
-    }
-
-    private isMatchSymbolIterator(apiName: string, callApiName: string, stmt: Stmt): boolean {
-        // 对于map[Symbol.iterator]这样的API，这里会存在%0 = Symbol.iterator的操作
-        if (apiName !== 'Symbol.iterator' || !callApiName.startsWith('%')) {
-            return false;
-        }
-        const tempLocalDeclaring = stmt.getCfg().getDeclaringMethod().getBody()?.getLocals().get(callApiName)?.getDeclaringStmt();
-        if (tempLocalDeclaring && tempLocalDeclaring instanceof ArkAssignStmt) {
-            const rightOp = tempLocalDeclaring.getRightOp();
-            if (!(rightOp instanceof ArkInstanceFieldRef)) {
-                return false;
-            }
-            if (rightOp.getFieldName() === 'iterator' && rightOp.getBase().getName() === 'Symbol') {
-                return true;
-            }
-        }
-        return false;
     }
 
     private isInstanceCallMethodInDeprecatedAPIs(callBase: Local, stmt: Stmt, callMethod: MethodSignature, args: Value[]): boolean {
@@ -794,6 +822,17 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                     const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res) {
                         return true;
+                    }
+                }
+            }
+
+            if (currentStmt instanceof ArkAssignStmt && currentStmt.getRightOp() instanceof AbstractFieldRef) {
+                const fieldSignature = (currentStmt.getRightOp() as AbstractFieldRef).getFieldSignature();
+                const classSignature = fieldSignature.getDeclaringSignature();
+                if (classSignature instanceof ClassSignature) {
+                    const field = this.scene.getClass(classSignature)?.getField(fieldSignature);
+                    if (field) {
+                        field.getInitializer().forEach(s => worklist.push(this.dvfg.getOrNewDVFGNode(s)));
                     }
                 }
             }
