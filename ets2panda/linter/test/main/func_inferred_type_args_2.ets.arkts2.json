@@ -256,32 +256,12 @@
         },
         {
             "line": 44,
-            "column": 14,
-            "endLine": 44,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
             "column": 10,
             "endLine": 44,
             "endColumn": 19,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 14,
-            "endLine": 48,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -306,16 +286,6 @@
         },
         {
             "line": 52,
-            "column": 14,
-            "endLine": 52,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
             "column": 10,
             "endLine": 52,
             "endColumn": 19,
@@ -336,16 +306,6 @@
         },
         {
             "line": 56,
-            "column": 14,
-            "endLine": 56,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 56,
             "column": 10,
             "endLine": 56,
             "endColumn": 19,
@@ -356,32 +316,12 @@
         },
         {
             "line": 61,
-            "column": 16,
-            "endLine": 61,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
             "column": 12,
             "endLine": 61,
             "endColumn": 21,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 65,
-            "column": 16,
-            "endLine": 65,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -406,16 +346,6 @@
         },
         {
             "line": 69,
-            "column": 16,
-            "endLine": 69,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
             "column": 12,
             "endLine": 69,
             "endColumn": 21,
@@ -432,16 +362,6 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 16,
-            "endLine": 73,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {

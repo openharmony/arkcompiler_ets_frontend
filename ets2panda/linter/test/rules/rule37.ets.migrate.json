@@ -13,16 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 59,
-            "column": 21,
-            "endLine": 59,
-            "endColumn": 27,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

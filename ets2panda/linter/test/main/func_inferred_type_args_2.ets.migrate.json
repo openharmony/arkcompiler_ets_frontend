@@ -176,16 +176,6 @@
         },
         {
             "line": 59,
-            "column": 14,
-            "endLine": 59,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 59,
             "column": 10,
             "endLine": 59,
             "endColumn": 19,
@@ -252,16 +242,6 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 76,
-            "column": 16,
-            "endLine": 76,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {

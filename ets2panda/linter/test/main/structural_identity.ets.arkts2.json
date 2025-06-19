@@ -1613,16 +1613,6 @@
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
-        },
-        {
-            "line": 699,
-            "column": 14,
-            "endLine": 699,
-            "endColumn": 21,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
         }
     ]
 }

@@ -180,6 +180,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   static literalAsPropertyNameTypeSet: Set<ApiListItem>;
   private localApiListItem: ApiListItem | undefined = undefined;
   static constructorFuncsSet: Set<ApiListItem>;
+  static ConstructorIfaceSet: Set<ApiListItem>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -273,11 +274,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private static addSdkConstructorIfaceSetData(item: ApiListItem): void {
+    if (item.api_info.problem === SdkProblem.ConstructorIface) {
+      TypeScriptLinter.ConstructorIfaceSet.add(item);
+    }
+  }
+
   private static initSdkWhitelist(): void {
     TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
     TypeScriptLinter.literalAsPropertyNameTypeSet = new Set<ApiListItem>();
     TypeScriptLinter.constructorFuncsSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
+    TypeScriptLinter.ConstructorIfaceSet = new Set<ApiListItem>();
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
         if (item.file_path !== '') {
@@ -290,6 +298,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         TypeScriptLinter.addSdkliteralAsPropertyNameTypeSetData(item);
         TypeScriptLinter.addSdkConstructorFuncsSetData(item);
         TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
+        TypeScriptLinter.addSdkConstructorIfaceSetData(item);
       }
     }
   }
@@ -4448,7 +4457,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
     this.handleBuiltinCtorCallSignature(tsCallExpr);
-
+    this.handleSdkConstructorIfaceForCallExpression(tsCallExpr);
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
       this.handleSdkPropertyAccessByIndex(tsCallExpr);
     }
@@ -5124,30 +5133,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !this.useStatic) {
       return;
     }
-
-    if (!ts.isReturnStatement(newExpression.parent)) {
-      return;
-    }
-
     const calleeExpr = newExpression.expression;
     if (!ts.isIdentifier(calleeExpr)) {
       return;
     }
 
     const type = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
-    if (!type.symbol) {
-      return;
+    const typeDeclaration = TsUtils.getDeclaration(type.symbol);
+    if (typeDeclaration && ts.isInterfaceDeclaration(typeDeclaration) && type.symbol) {
+      const filePath = typeDeclaration.getSourceFile().fileName;
+      this.checkIsConstructorIface(calleeExpr, type.symbol.name, path.basename(filePath));
     }
-    const typeDeclarations = type.symbol.declarations;
-    if (!typeDeclarations || typeDeclarations.length === 0) {
-      return;
-    }
+  }
 
-    if (!ts.isInterfaceDeclaration(typeDeclarations[0])) {
-      return;
-    }
-
-    this.incrementCounters(calleeExpr, FaultID.ConstructorIfaceFromSdk);
+  private checkIsConstructorIface(node: ts.Node, symbol: string, filePath: string): void {
+    const constructorIfaceSetInfos = Array.from(TypeScriptLinter.ConstructorIfaceSet);
+    constructorIfaceSetInfos.some((constructorFuncsInfo) => {
+      const api_name = constructorFuncsInfo.api_info.parent_api[0].api_name;
+      if (
+        symbol === api_name &&
+        (constructorFuncsInfo.file_path.includes(filePath) || constructorFuncsInfo.import_path.includes(filePath))
+      ) {
+        this.incrementCounters(node, FaultID.ConstructorIfaceFromSdk);
+        return true;
+      }
+      return false;
+    });
   }
 
   private handleNewExpression(node: ts.Node): void {
@@ -5375,6 +5386,52 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         break;
       }
     }
+  }
+
+  private handleSdkConstructorIfaceForCallExpression(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    let type: ts.Type | undefined;
+    if (!callExpr.arguments || callExpr.arguments.length === 0) {
+      if (ts.isPropertyAccessExpression(callExpr.expression)) {
+        type = this.tsTypeChecker.getTypeAtLocation(callExpr.expression.expression);
+      }
+    }
+    callExpr.arguments.some((args) => {
+      if (ts.isIdentifier(args)) {
+        type = this.tsTypeChecker.getTypeAtLocation(args);
+      }
+    });
+    if (!type) {
+      return;
+    }
+    const decl = TsUtils.getDeclaration(type?.symbol);
+    if (!decl) {
+      return;
+    }
+    const filePath = TypeScriptLinter.getFileName(decl);
+    this.checkIsConstructorIface(callExpr, type.symbol.name, filePath);
+  }
+
+  private static getFileName(decl: ts.Declaration): string {
+    let filePath = '';
+    if (
+      ts.isImportSpecifier(decl) &&
+      ts.isImportDeclaration(decl.parent.parent.parent) &&
+      ts.isStringLiteral(decl.parent.parent.parent.moduleSpecifier)
+    ) {
+      filePath = decl.parent.parent.parent.moduleSpecifier.text;
+    } else if (
+      ts.isImportClause(decl) &&
+      ts.isImportDeclaration(decl.parent) &&
+      ts.isStringLiteral(decl.parent.moduleSpecifier)
+    ) {
+      filePath = decl.parent.moduleSpecifier.text;
+    } else {
+      filePath = decl.getSourceFile().fileName;
+    }
+    return path.basename(filePath);
   }
 
   private handleSharedArrayBuffer(
