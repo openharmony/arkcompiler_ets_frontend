@@ -118,6 +118,9 @@ static T *CloneNodeIfNotNullptr(T *node, ArenaAllocator *allocator)
 Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 {
     ES2PANDA_ASSERT(typeToBePartial->IsETSReferenceType());
+    if (typeToBePartial->IsTypeError()) {
+        return typeToBePartial;
+    }
 
     if (typeToBePartial->IsETSAnyType()) {
         return typeToBePartial;
