@@ -541,6 +541,12 @@ ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterLis
 
     ir::Expression *expr = ParseExpression(newFlags);
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+        LogError(diagnostic::ERROR_ARKTS_NO_COMMA_OUTSIDE_LOOPS);
+        auto sequenceExpression = ParseSequenceExpression(expr);
+        Lexer()->NextToken();
+        return AllocBrokenExpression(sequenceExpression->Range());
+    }
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     }
