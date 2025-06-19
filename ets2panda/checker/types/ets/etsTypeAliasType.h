@@ -107,7 +107,7 @@ private:
     Type *targetType_ = nullptr;
     InstantiationMap instantiationMap_;
     ArenaVector<Type *> typeArguments_;
-    const Substitution *substitution_ = nullptr;
+    const ArenaSubstitution *substitution_ = nullptr;
     mutable bool recursionCount_ = false;
 };
 }  // namespace ark::es2panda::checker

@@ -19,6 +19,7 @@
 #include "varbinder/variableFlags.h"
 #include "mem/pool_manager.h"
 #include "util/ustring.h"
+#include "util/perfMetrics.h"
 #include "ir/module/importSpecifier.h"
 
 #include <cmath>
@@ -56,7 +57,7 @@ class ClassStaticBlock;
 class TSInterfaceDeclaration;
 class TSEnumDeclaration;
 class ETSImportDeclaration;
-enum class AstNodeType;
+enum class AstNodeType : uint8_t;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::util {

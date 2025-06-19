@@ -31,9 +31,9 @@ public:
 
 private:
     struct Substitutions {
-        checker::Substitution *derivedSubstitutions = nullptr;
-        checker::Substitution *baseConstraints = nullptr;
-        checker::Substitution *derivedConstraints = nullptr;
+        checker::Substitution derivedSubstitutions {};
+        checker::Substitution baseConstraints {};
+        checker::Substitution derivedConstraints {};
     };
 
     ir::ClassDefinition *ProcessClassDefinition(ir::ClassDefinition *classDefinition) const;

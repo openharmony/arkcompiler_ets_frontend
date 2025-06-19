@@ -33,7 +33,7 @@ namespace ark::es2panda::ir {
 class AstNode;
 class Expression;
 class BlockStatement;
-enum class AstNodeType;
+enum class AstNodeType : uint8_t;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::varbinder {

@@ -490,7 +490,8 @@ void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
     ES2PANDA_ASSERT(IsPartial());
 
     if ((baseType_->IsGeneric() || baseType_->IsETSTypeParameter()) && effectiveSubstitution_ != nullptr) {
-        if (auto *newBaseType = baseType_->Substitute(relation, effectiveSubstitution_);
+        auto subst = ETSChecker::ArenaSubstitutionToSubstitution(effectiveSubstitution_);
+        if (auto *newBaseType = baseType_->Substitute(relation, &subst);
             newBaseType->IsETSObjectType() && !relation->IsIdenticalTo(newBaseType, baseType_)) {
             baseType_ = newBaseType->AsETSObjectType();
         }
@@ -500,7 +501,8 @@ void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
         auto *otherPartial = other->AsETSObjectType();
         if ((otherPartial->baseType_->IsGeneric() || otherPartial->baseType_->IsETSTypeParameter()) &&
             otherPartial->effectiveSubstitution_ != nullptr) {
-            if (auto *newBaseType = otherPartial->baseType_->Substitute(relation, otherPartial->effectiveSubstitution_);
+            auto subst = ETSChecker::ArenaSubstitutionToSubstitution(otherPartial->effectiveSubstitution_);
+            if (auto *newBaseType = otherPartial->baseType_->Substitute(relation, &subst);
                 newBaseType->IsETSObjectType() && !relation->IsIdenticalTo(newBaseType, otherPartial->baseType_)) {
                 otherPartial->baseType_ = newBaseType->AsETSObjectType();
             }
@@ -1077,13 +1079,13 @@ bool ETSObjectType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVector
     return anyChange;
 }
 
-static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
-                                                  const ArenaVector<Type *> &baseTypeParams,
-                                                  ArenaVector<Type *> &newTypeArgs)
+static ArenaSubstitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
+                                                       const ArenaVector<Type *> &baseTypeParams,
+                                                       ArenaVector<Type *> &newTypeArgs)
 {
     ES2PANDA_ASSERT(baseTypeParams.size() == newTypeArgs.size());
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *effectiveSubstitution = checker->NewSubstitution();
+    auto *effectiveSubstitution = checker->NewArenaSubstitution();
 
     for (size_t ix = 0; ix < baseTypeParams.size(); ix++) {
         checker->EmplaceSubstituted(effectiveSubstitution, baseTypeParams[ix]->AsETSTypeParameter(), newTypeArgs[ix]);
@@ -1276,16 +1278,16 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     }
 
     auto *checker = relation->GetChecker()->AsETSChecker();
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = Substitution {};
 
     ES2PANDA_ASSERT(baseType_ == nullptr);
     ES2PANDA_ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {
-        substitution->emplace(typeArguments_[ix]->AsETSTypeParameter(), checker->MaybeBoxType(arguments[ix]));
+        substitution.emplace(typeArguments_[ix]->AsETSTypeParameter(), checker->MaybeBoxType(arguments[ix]));
     }
 
-    return Substitute(relation, substitution);
+    return Substitute(relation, &substitution);
 }
 
 ETSChecker *ETSObjectType::GetETSChecker()
@@ -1306,44 +1308,48 @@ void ETSObjectType::InstantiateProperties() const
     ES2PANDA_ASSERT(!propertiesInstantiated_);
     declNode_->Check(checker);
 
+    auto subst = effectiveSubstitution_ == nullptr
+                     ? Substitution {}
+                     : ETSChecker::ArenaSubstitutionToSubstitution(effectiveSubstitution_);
+
     for (auto *const it : baseType_->ConstructSignatures()) {
-        auto *newSig = it->Substitute(relation_, effectiveSubstitution_);
+        auto *newSig = it->Substitute(relation_, &subst);
         constructSignatures_.push_back(newSig);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceFields()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticFields()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::STATIC_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceMethods()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticMethods()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::STATIC_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceDecls()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_DECL)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticDecls()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, &subst);
         properties_[static_cast<size_t>(PropertyType::STATIC_DECL)].emplace(prop->Name(), copiedProp);
     }
 }

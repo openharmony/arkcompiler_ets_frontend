@@ -46,3 +46,9 @@ parser/ets/test_jsvalue_get_double.ets
 parser/ets/lambda-type-inference-overloaded.ets
 
 # No-primitives #24986 [end]
+
+#26700
+ark_tests/parser/js/classes/test-class-private-field.js
+parser/ets/constructor_with_optional_parameter.ets
+parser/ets/default_parameter8.ets
+parser/js/test-private-field.js

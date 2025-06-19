@@ -137,7 +137,7 @@ void ConstraintCheckScope::TryCheckConstraints()
     if (Unlock()) {
         auto &records = checker_->PendingConstraintCheckRecords();
         for (auto const &[typeParams, substitution, pos] : records) {
-            CheckInstantiationConstraints(checker_, *typeParams, substitution, pos);
+            CheckInstantiationConstraints(checker_, *typeParams, &substitution, pos);
         }
         records.clear();
     }
@@ -153,20 +153,20 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
         typeArgTypes.push_back(typeParams.at(typeArgTypes.size()));
     }
 
-    auto *substitution = checker_->NewSubstitution();
+    auto substitution = Substitution {};
     for (size_t idx = 0; idx < typeParams.size(); idx++) {
         if (!typeParams[idx]->IsETSTypeParameter()) {
             continue;
         }
-        checker_->EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
+        checker_->EmplaceSubstituted(&substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
     }
 
     ConstraintCheckScope ctScope(checker_);
+    result_ = type->Substitute(checker_->Relation(), &substitution)->AsETSObjectType();
     if (!checker_->Relation()->NoThrowGenericTypeAlias()) {
-        checker_->PendingConstraintCheckRecords().push_back({&typeParams, substitution, pos});
+        checker_->PendingConstraintCheckRecords().emplace_back(&typeParams, std::move(substitution), pos);
     }
 
-    result_ = type->Substitute(checker_->Relation(), substitution)->AsETSObjectType();
     type->InsertInstantiationMap(hash, result_->AsETSObjectType());
     result_->AddTypeFlag(TypeFlag::GENERIC);
 

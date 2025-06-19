@@ -62,7 +62,7 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
                                                                           ImportFlags importFlags,
                                                                           ir::StringLiteral *importPath)
 {
-    srcPos_ = &importPath->Start();
+    srcPos_ = importPath->Start();
     // NOTE(dkofanov): The code below expresses the idea of 'dynamicPaths' defining separated, virtual file system.
     // Probably, paths of common imports should be isolated from the host fs as well, being resolved by 'ModuleInfo'
     // instead of 'AbsoluteName'.
@@ -113,7 +113,7 @@ static bool IsRelativePath(std::string_view path)
 
 util::StringView ImportPathManager::ResolvePathAPI(StringView curModulePath, ir::StringLiteral *importPath) const
 {
-    srcPos_ = &importPath->Start();
+    srcPos_ = importPath->Start();
     // NOTE(dkofanov): #23698 related. In case of 'dynamicPaths', resolved path is "virtual" module-path, may be not
     // what the plugin expecting.
     return ResolvePath(curModulePath.Utf8(), importPath).resolvedPath;
@@ -177,7 +177,7 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolveAbsolutePath(const 
         diagnosticEngine_.LogDiagnostic(
             diagnostic::IMPORT_CANT_FIND_PREFIX,
             util::DiagnosticMessageParams {util::StringView(importPath), util::StringView(arktsConfig_->ConfigPath())},
-            *srcPos_);
+            srcPos_);
         return {""};
     }
     return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
@@ -190,7 +190,7 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const ImportMe
     DIR *dir = opendir(directoryPath.c_str());
     if (dir == nullptr) {
         diagnosticEngine_.LogDiagnostic(diagnostic::OPEN_FOLDER_FAILED, util::DiagnosticMessageParams {directoryPath},
-                                        *srcPos_);
+                                        srcPos_);
         return;
     }
 
@@ -219,7 +219,7 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const ImportMe
 
 void ImportPathManager::AddImplicitPackageImportToParseList(StringView packageDir, const lexer::SourcePosition &srcPos)
 {
-    srcPos_ = &srcPos;
+    srcPos_ = srcPos;
     ES2PANDA_ASSERT(
         IsAbsolute(packageDir.Mutf8()));  // This should be an absolute path for 'AddToParseList' be able to resolve it.
     AddToParseList({util::ImportFlags::IMPLICIT_PACKAGE_IMPORT, Language::Id::ETS, packageDir.Utf8(),
@@ -271,7 +271,7 @@ void ImportPathManager::AddToParseList(const ImportMetadata importMetadata)
 
     if (!isDeclForDynamic && !ark::os::file::File::IsRegularFile(std::string(resolvedPath))) {
         diagnosticEngine_.LogDiagnostic(diagnostic::UNAVAILABLE_SRC_PATH, util::DiagnosticMessageParams {resolvedPath},
-                                        *srcPos_);
+                                        srcPos_);
         return;
     }
 
@@ -366,7 +366,7 @@ ImportPathManager::ResolvedPathRes ImportPathManager::AppendExtensionOrIndexFile
     }
 
     diagnosticEngine_.LogDiagnostic(diagnostic::UNSUPPORTED_PATH,
-                                    util::DiagnosticMessageParams {util::StringView(path.Mutf8())}, *srcPos_);
+                                    util::DiagnosticMessageParams {util::StringView(path.Mutf8())}, srcPos_);
     return {""};
 }
 
@@ -409,7 +409,7 @@ util::StringView ImportPathManager::FormModuleNameSolelyByAbsolutePath(const uti
     std::string filePath(path.GetAbsolutePath());
     if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
         diagnosticEngine_.LogDiagnostic(diagnostic::SOURCE_OUTSIDE_ETS_PATH,
-                                        util::DiagnosticMessageParams {util::StringView(filePath)}, *srcPos_);
+                                        util::DiagnosticMessageParams {util::StringView(filePath)}, srcPos_);
         return "";
     }
     auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
@@ -434,7 +434,7 @@ static std::string TryFormDynamicModuleName(const DynamicPaths &dynPaths, const 
 
 util::StringView ImportPathManager::FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos)
 {
-    srcPos_ = &srcPos;
+    srcPos_ = srcPos;
     return FormModuleName(path);
 }
 
@@ -492,7 +492,7 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
     }
 
     diagnosticEngine_.LogDiagnostic(diagnostic::UNRESOLVED_MODULE,
-                                    util::DiagnosticMessageParams {util::StringView(filePath)}, *srcPos_);
+                                    util::DiagnosticMessageParams {util::StringView(filePath)}, srcPos_);
     return "";
 }
 

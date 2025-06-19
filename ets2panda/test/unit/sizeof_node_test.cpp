@@ -70,8 +70,7 @@ size_t SizeOfNodeTest::SizeOf<AstNode>()
         sizeof(node->astNodeFlags_) +
         sizeof(node->history_) +
         sizeof(node->variable_) +
-        sizeof(node->originalNode_) +
-        sizeof(node->transformedNode_));
+        sizeof(node->originalNode_));
     // clang-format on
 }
 
@@ -441,11 +440,10 @@ size_t SizeOfNodeTest::SizeOf<TSTypeAliasDeclaration>()
 template <>
 size_t SizeOfNodeTest::SizeOf<Expression>()
 {
-    Expression *node = nullptr;
+    [[maybe_unused]] Expression *node = nullptr;
 
     // clang-format off
-    return SizeOf<TypedAstNode>() +
-        Align(sizeof(node->grouped_));
+    return SizeOf<TypedAstNode>();
     // clang-format on
 }
 

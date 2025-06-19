@@ -157,3 +157,6 @@ ast/parser/ets/returntype_override_primitive.ets
 ast/parser/ets/switch_num_compare_char_duplicate.ets
 
 # No-primitives #24986 [end]
+
+#26700
+ast/parser/ets/unexpected_token_62.ets

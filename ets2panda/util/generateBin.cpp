@@ -104,7 +104,7 @@ static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options 
 
 int GenerateProgram(ark::pandasm::Program *prog, const util::Options &options, const ReporterFun &reporter)
 {
-    ES2PANDA_PERF_SCOPE("GenerateProgram");
+    ES2PANDA_PERF_SCOPE("@GenerateProgram");
     std::map<std::string, size_t> stat;
     std::map<std::string, size_t> *statp = options.GetOptLevel() != 0 ? &stat : nullptr;
     ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
@@ -112,7 +112,7 @@ int GenerateProgram(ark::pandasm::Program *prog, const util::Options &options, c
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
     {
-        ES2PANDA_PERF_SCOPE("GenerateProgram/OptimizeBytecode");
+        ES2PANDA_PERF_SCOPE("@GenerateProgram/OptimizeBytecode");
         if (OptimizeBytecode(prog, options, reporter, statp, mapsp) != 0) {
             return 1;
         }

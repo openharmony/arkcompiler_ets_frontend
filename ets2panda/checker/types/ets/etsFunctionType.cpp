@@ -74,19 +74,19 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     if (signature->RestVar() != nullptr) {
         auto nPosParams = signature->Params().size();
         auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true)->AsETSObjectType();
-        auto *substitution = checker->NewSubstitution();
+        auto substitution = Substitution {};
         for (size_t i = 0; i < nPosParams; i++) {
-            substitution->emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
-                                  checker->MaybeBoxType(signature->Params()[i]->TsType()));
+            substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
+                                 checker->MaybeBoxType(signature->Params()[i]->TsType()));
         }
         auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
                                 ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
                                 : checker->GlobalETSAnyType();
-        substitution->emplace(functionN->TypeArguments()[nPosParams]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(elementType));
-        substitution->emplace(functionN->TypeArguments()[nPosParams + 1]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(signature->ReturnType()));
-        auto result = functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+        substitution.emplace(functionN->TypeArguments()[nPosParams]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(elementType));
+        substitution.emplace(functionN->TypeArguments()[nPosParams + 1]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(signature->ReturnType()));
+        auto result = functionN->Substitute(checker->Relation(), &substitution, true, isExtensionHack);
         result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);
         return result;
     }
@@ -99,15 +99,15 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     }
 
     auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = Substitution {};
 
     for (size_t i = 0; i < arity; i++) {
-        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(signature->Params()[i]->TsType()));
+        substitution.emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(signature->Params()[i]->TsType()));
     }
-    substitution->emplace(funcIface->TypeArguments()[arity]->AsETSTypeParameter(),
-                          checker->MaybeBoxType(signature->ReturnType()));
-    auto result = funcIface->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+    substitution.emplace(funcIface->TypeArguments()[arity]->AsETSTypeParameter(),
+                         checker->MaybeBoxType(signature->ReturnType()));
+    auto result = funcIface->Substitute(checker->Relation(), &substitution, true, isExtensionHack);
 
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         HackThisParameterInExtensionFunctionInvoke(result, arity);
@@ -179,10 +179,10 @@ static inline void AssertNoMethodsInFunctionRelation([[maybe_unused]] Type *left
 static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature *super, Signature *sub)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = Substitution {};
 
-    auto const enhance = [checker, sub, substitution](Type *param, Type *arg) {
-        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, substitution);
+    auto const enhance = [checker, sub, &substitution](Type *param, Type *arg) {
+        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, &substitution);
     };
     for (size_t ix = 0; ix < super->MinArgCount(); ix++) {
         if (!enhance(sub->GetSignatureInfo()->params[ix]->TsType(), super->GetSignatureInfo()->params[ix]->TsType())) {
@@ -194,7 +194,7 @@ static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature
             return nullptr;
         }
     }
-    return sub->Substitute(relation, substitution);
+    return sub->Substitute(relation, &substitution);
 }
 
 static uint8_t SignatureThrowKindToOrder(Signature *sig)

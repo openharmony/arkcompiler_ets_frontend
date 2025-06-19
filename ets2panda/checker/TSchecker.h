@@ -101,7 +101,7 @@ class TSMethodSignature;
 class ChainExpression;
 class VariableDeclarator;
 
-enum class AstNodeType;
+enum class AstNodeType : uint8_t;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::checker {

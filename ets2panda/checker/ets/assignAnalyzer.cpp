@@ -1212,7 +1212,7 @@ util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
     }
 }
 
-const lexer::SourcePosition &AssignAnalyzer::GetVariablePosition(const ir::AstNode *node) const
+lexer::SourcePosition AssignAnalyzer::GetVariablePosition(const ir::AstNode *node) const
 {
     switch (node->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY:
@@ -1394,7 +1394,7 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
         // check reassignment of readonly properties
         util::StringView type = GetVariableType(declNode);
         util::StringView name = GetVariableName(declNode);
-        const lexer::SourcePosition &pos = GetVariablePosition(node);
+        const lexer::SourcePosition pos = GetVariablePosition(node);
 
         auto uninit = [this](NodeId a) {
             uninits_.Excl(a);
@@ -1459,7 +1459,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 
             util::StringView type = GetVariableType(declNode);
             util::StringView name = GetVariableName(declNode);
-            const lexer::SourcePosition &pos = GetVariablePosition(node);
+            const lexer::SourcePosition pos = GetVariablePosition(node);
 
             std::stringstream ss;
             if (node->IsClassProperty()) {
