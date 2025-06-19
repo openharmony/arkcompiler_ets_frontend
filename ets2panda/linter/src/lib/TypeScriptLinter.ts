@@ -19,7 +19,7 @@ import { FaultID } from './Problems';
 import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
 import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
-import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
+import { PROMISE_METHODS, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
@@ -640,22 +640,39 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const arrayLitNode = node as ts.ArrayLiteralExpression;
-    let emptyContextTypeForArrayLiteral = false;
-
     const arrayLitType = this.tsTypeChecker.getContextualType(arrayLitNode);
     if (arrayLitType && this.tsUtils.typeContainsSendableClassOrInterface(arrayLitType)) {
       this.incrementCounters(node, FaultID.SendableObjectInitialization);
       return;
     }
 
+    this.checkArrayElementsAndReportErrors(node, arrayLitNode, arrayLitType);
+
+    this.handleObjectLiteralAssignmentToClass(arrayLitNode);
+  }
+
+  private checkArrayElementsAndReportErrors(
+    node: ts.Node,
+    arrayLitNode: ts.ArrayLiteralExpression,
+    arrayLitType: undefined | ts.Type
+  ): void {
+    const parent = arrayLitNode.parent;
+    const arrayLitElements = arrayLitNode.elements;
+    const arrayElementIsEmpty = arrayLitElements.length === 0;
+    let emptyContextTypeForArrayLiteral = false;
+
     /*
      * check that array literal consists of inferrable types
      * e.g. there is no element which is untyped object literals
      */
-    const arrayLitElements = arrayLitNode.elements;
-    if (this.options.arkts2 && !arrayLitType && arrayLitElements.length === 0) {
+    const isPromiseEmptyArray = this.checkPromiseEmptyArray(parent, arrayElementIsEmpty);
+    const isEmptyArray = this.options.arkts2 && !arrayLitType && arrayElementIsEmpty;
+    if (isPromiseEmptyArray) {
+      this.incrementCounters(arrayLitNode, FaultID.NosparseArray);
+    } else if (isEmptyArray) {
       this.incrementCounters(node, FaultID.NosparseArray);
     }
+
     for (const element of arrayLitElements) {
       const elementContextType = this.tsTypeChecker.getContextualType(element);
       if (ts.isObjectLiteralExpression(element)) {
@@ -677,7 +694,25 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (emptyContextTypeForArrayLiteral) {
       this.incrementCounters(node, FaultID.ArrayLiteralNoContextType);
     }
-    this.handleObjectLiteralAssignmentToClass(arrayLitNode);
+  }
+
+  private checkPromiseEmptyArray(parent: ts.Node, arrayElementIsEmpty: boolean): boolean {
+    if (this.options.arkts2 && ts.isCallExpression(parent) && arrayElementIsEmpty) {
+      const callExpr = parent;
+      const methodName = TypeScriptLinter.getPromiseMethodName(callExpr.expression);
+      if (methodName && PROMISE_METHODS.has(methodName)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  private static getPromiseMethodName(node: ts.Expression): string | undefined {
+    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'Promise') {
+      return node.name.text;
+    }
+    return undefined;
   }
 
   private handleStructDeclaration(node: ts.StructDeclaration): void {
