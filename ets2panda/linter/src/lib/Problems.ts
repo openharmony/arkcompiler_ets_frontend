@@ -202,7 +202,6 @@ export enum FaultID {
   InteropJsObjectTraverseJsInstance,
   InteropJsObjectCallStaticFunc,
   InteropJsObjectExport,
-  InteropArkTs1ObjectExport,
   DefaultArgsBehindRequiredArgs,
   LimitedStdLibNoImportConcurrency,
   MissingSuperCall,

@@ -4650,32 +4650,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private isExportedEntityDeclaredInArkTs1(exportDecl: ts.ExportDeclaration): boolean | undefined {
-    if (!this.options.arkts2 || !this.useStatic) {
-      return false;
-    }
-
-    // For named exports with braces { ... }
-    if (exportDecl.exportClause && ts.isNamedExports(exportDecl.exportClause)) {
-      for (const exportSpecifier of exportDecl.exportClause.elements) {
-        const identifier = exportSpecifier.name;
-        if (this.tsUtils.isExportImportedFromArkTs1(identifier, exportDecl)) {
-          return true;
-        }
-      }
-    }
-
-    // For namespace exports (export * as namespace from ...)
-    if (exportDecl.exportClause && ts.isNamespaceExport(exportDecl.exportClause)) {
-      const namespaceIdentifier = exportDecl.exportClause.name;
-      if (this.tsUtils.isExportImportedFromArkTs1(namespaceIdentifier, exportDecl)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   private isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
     const declarationSourceFile = callSignature?.declaration?.getSourceFile();
     if (!declarationSourceFile) {
@@ -6122,11 +6096,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (this.isExportedEntityDeclaredInJs(exportDecl)) {
       this.incrementCounters(node, FaultID.InteropJsObjectExport);
-      return;
-    }
-
-    if (this.isExportedEntityDeclaredInArkTs1(exportDecl)) {
-      this.incrementCounters(node, FaultID.InteropArkTs1ObjectExport);
       return;
     }
 
