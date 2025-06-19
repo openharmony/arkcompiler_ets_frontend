@@ -56,11 +56,13 @@ Run tests (using Jest)
 Jest is almost ready to use out of the box.
 The test file path has been configured through jest.config.js.
 In the build_system/test directory, scan for test files with the suffix .test.ts
-Install Jest and its TypeScript support libraries
+Install Jest and its TypeScript support libraries.
+If execute npm run test:all, must first install npm-run-all, and enabling concurrency is a necessary condition
 ```bash
 npm install --save-dev jest ts-jest @types/jest
 ```
 To run tests:
 ```bash
 npm run ut_test
+npm run plugin_test
 ```
