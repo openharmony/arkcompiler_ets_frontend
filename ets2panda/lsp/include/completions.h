@@ -52,7 +52,8 @@ enum class CompletionEntryKind {
     STRUCT = 22,
     EVENT = 23,
     OPERATOR = 24,
-    TYPE_PARAMETER = 25
+    TYPE_PARAMETER = 25,
+    ALIAS_TYPE = 26
 };
 
 namespace sort_text {
