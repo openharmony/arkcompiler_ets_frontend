@@ -3390,9 +3390,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         continue;
       }
 
-      const baseMethodDecl = baseMethod.declarations?.find((d) => {
-        return ts.isMethodDeclaration(d) || ts.isMethodSignature(d);
-      }) as ts.MethodDeclaration | ts.MethodSignature | undefined;
+      const baseMethodDecl = baseMethod.declarations?.find(
+        (d) => {
+          return (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
+          this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType;
+        }
+      ) as ts.MethodDeclaration | ts.MethodSignature;
 
       if (!baseMethodDecl) {
         continue;
