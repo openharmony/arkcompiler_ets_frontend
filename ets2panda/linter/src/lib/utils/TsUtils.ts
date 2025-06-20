@@ -824,18 +824,22 @@ export class TsUtils {
     isStrict: boolean = false
   ): boolean {
     if (
-      TsUtils.reduceReference(lhsType) === TsUtils.reduceReference(rhsType) &&
-      TsUtils.isTypeReference(lhsType) &&
-      TsUtils.isTypeReference(rhsType)
+      TsUtils.reduceReference(lhsType) !== TsUtils.reduceReference(rhsType) ||
+      !TsUtils.isTypeReference(lhsType) ||
+      !TsUtils.isTypeReference(rhsType)
     ) {
-      const lhsArgs = lhsType.typeArguments;
-      const rhsArgs = rhsType.typeArguments;
-      if (lhsArgs && lhsArgs.length > 0) {
-        if (rhsArgs && rhsArgs.length > 0) {
-          return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
+      return false;
+    }
+    const lhsArgs = lhsType.typeArguments;
+    const rhsArgs = rhsType.typeArguments;
+    if (lhsArgs && lhsArgs.length > 0) {
+      if (rhsArgs && rhsArgs.length > 0) {
+        if (rhsArgs[0] === lhsArgs[0]) {
+          return false;
         }
-        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
+        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
       }
+      return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
     }
     return false;
   }
