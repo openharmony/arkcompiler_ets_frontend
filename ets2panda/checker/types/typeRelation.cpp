@@ -29,10 +29,6 @@ ArenaAllocator *TypeRelation::Allocator()
 RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target, const RelationHolder &holder,
                                          RelationType type) const
 {
-    if (result_ == RelationResult::CACHE_MISS) {
-        return result_;
-    }
-
     ES2PANDA_ASSERT(source != nullptr);
     ES2PANDA_ASSERT(target != nullptr);
 
@@ -129,7 +125,9 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
             result_ = RelationResult::FALSE;
         }
 
+        auto key = RelationHolder::MakeKey(source->Id(), target->Id());
         if (result_ != RelationResult::FALSE && IsIdenticalTo(source, target)) {
+            checker_->AssignableResults().Insert(key, {result_, RelationType::ASSIGNABLE});
             return true;
         }
 
@@ -144,7 +142,6 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
         }
 
         if (flags_ == TypeRelationFlag::NONE) {
-            auto key = RelationHolder::MakeKey(source->Id(), target->Id());
             checker_->AssignableResults().Insert(key, {result_, RelationType::ASSIGNABLE});
         }
     }
@@ -261,19 +258,15 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
     if (result_ == RelationResult::CACHE_MISS) {
-        if (IsIdenticalTo(super, sub)) {
-            return true;
+        if (!IsIdenticalTo(super, sub)) {
+            result_ = RelationResult::FALSE;
+            if (super->IsSupertypeOf(this, sub), !IsTrue()) {
+                sub->IsSubtypeOf(this, super);
+            }
         }
 
-        result_ = RelationResult::FALSE;
-        if (super->IsSupertypeOf(this, sub), !IsTrue()) {
-            sub->IsSubtypeOf(this, super);
-        }
-
-        if (flags_ == TypeRelationFlag::NONE) {
-            auto key = RelationHolder::MakeKey(super->Id(), sub->Id());
-            checker_->SupertypeResults().Insert(key, {result_, RelationType::SUPERTYPE});
-        }
+        auto key = RelationHolder::MakeKey(super->Id(), sub->Id());
+        checker_->SupertypeResults().Insert(key, {result_, RelationType::SUPERTYPE});
     }
 
     return result_ == RelationResult::TRUE;
