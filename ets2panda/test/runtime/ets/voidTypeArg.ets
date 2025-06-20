@@ -17,9 +17,17 @@ function foo<T>(a0: T): T {
     return a0;
 }
 
+type Fn<T> = (e: T) => void;
+
+function test(arg: Fn<void>) {}
+
 function main() : void {
     foo<void>(undefined);
     let bfoo = foo<undefined>(undefined);
 
     assertEQ(bfoo, undefined)
+
+    test((e) => {
+        assertEQ(e, undefined)
+    })
 }
