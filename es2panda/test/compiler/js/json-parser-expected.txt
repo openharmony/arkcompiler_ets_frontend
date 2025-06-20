@@ -1,0 +1,49 @@
+1,2,3 1,2,3
+1 1
+ 
+https://www.a.com https://www.a.com
+https://www.b.com https://www.b.com
+https://www.c.com https://www.c.com
+[object Object] [object Object]
+Infinity Infinity
+-Infinity -Infinity
+123 123
+SyntaxError SyntaxError
+56320 56320
+{"a":"{\"width\": 18}"} {"a":"{\"width\": 18}"}
+{"a":"{\"name\": \"张三\"}"} {"a":"{\"name\": \"张三\"}"}
+{"1\u0000":"name"} {"1\u0000":"name"}
+0 0
+-Infinity -Infinity
+JSON.parse with backslash JSON.parse with backslash
+"" ""
+Uf Uf
+啕晦 啕晦
+"" ""
+Uf Uf
+啕晦 啕晦
+SyntaxError SyntaxError
+SyntaxError SyntaxError
+SyntaxError SyntaxError
+10 10
+hello hello
+true true
+14 14
+24 24
+29 29
+36 36
+46 46
+1.79e+308 1.79e+308
+Infinity Infinity
+Infinity Infinity
+2.225e-308 2.225e-308
+2.225e-309 2.225e-309
+3e-320 3e-320
+5e-324 5e-324
+0 0
+0 0
+2.225e-308
+2.225e-309
+3e-320
+5e-324
+SyntaxError SyntaxError
