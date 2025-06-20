@@ -171,6 +171,9 @@ ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
     auto imports = ParseImportDeclarations();
     statements.insert(statements.end(), imports.begin(), imports.end());
 
+    auto initModules = ParseETSInitModuleStatements();
+    statements.insert(statements.end(), initModules.begin(), initModules.end());
+
     auto topLevelStatements = ParseTopLevelDeclaration();
     statements.insert(statements.end(), topLevelStatements.begin(), topLevelStatements.end());
 
@@ -1231,6 +1234,16 @@ lexer::LexerPosition ETSParser::HandleJsDocLikeComments()
         ParseJsDocInfos();
     }
     return savedPos;
+}
+
+ArenaVector<ir::Statement *> ETSParser::ParseETSInitModuleStatements()
+{
+    std::vector<std::string> userPaths;
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    while (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_INIT_MODULE) {
+        statements.push_back(ParseInitModuleStatement(StatementParsingFlags::INIT_MODULE));
+    }
+    return statements;
 }
 
 ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()

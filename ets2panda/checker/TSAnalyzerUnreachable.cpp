@@ -84,6 +84,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSFunctionType *node) con
     ES2PANDA_UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSIntrinsicNode *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
 {
     ES2PANDA_UNREACHABLE();

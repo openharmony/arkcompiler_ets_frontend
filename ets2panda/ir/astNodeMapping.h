@@ -86,6 +86,7 @@
     _(ETS_UNDEFINED_TYPE, ETSUndefinedType)                                               \
     _(ETS_NEVER_TYPE, ETSNeverType)                                                       \
     _(ETS_STRING_LITERAL_TYPE, ETSStringLiteralType)                                      \
+    _(ETS_INTRINSIC_NODE_TYPE, ETSIntrinsicNode)                                          \
     _(ETS_FUNCTION_TYPE, ETSFunctionType)                                                 \
     _(ETS_WILDCARD_TYPE, ETSWildcardType)                                                 \
     _(ETS_PRIMITIVE_TYPE, ETSPrimitiveType)                                               \

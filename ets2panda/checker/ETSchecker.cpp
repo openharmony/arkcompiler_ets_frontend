@@ -585,6 +585,11 @@ ETSUnionType *ETSChecker::GlobalETSUnionUndefinedNullObject() const
     return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
+ETSObjectType *ETSChecker::GlobalBuiltinClassType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalClassBuiltinType);
+}
+
 ETSObjectType *ETSChecker::GlobalBuiltinETSResizableArrayType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalArrayBuiltinType);

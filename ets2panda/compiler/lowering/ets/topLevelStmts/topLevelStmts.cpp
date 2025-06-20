@@ -95,7 +95,7 @@ static void CheckFileHeaderFlag(parser::Program *program)
 bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     CheckFileHeaderFlag(program);
-    auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
+    auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser(), ctx);
     imports.ParseDefaultSources();
     if (!CheckProgramSourcesConsistency(program)) {
         // NOTE(vpukhov): enforce compilation failure

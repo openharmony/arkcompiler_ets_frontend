@@ -998,6 +998,19 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
     return false;
 }
 
+void ETSCompiler::Compile(const ir::ETSIntrinsicNode *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    // Note (daizihan): #27074, make it more scalable when IntrinsicNodeType is extended.
+    if (expr->Type() == ir::IntrinsicNodeType::TYPE_REFERENCE) {
+        // Note (daizihan): #27086, we should not use stringLiteral as argument in ETSIntrinsicNode, should be TypeNode.
+        etsg->EmitLdaType(expr, expr->Arguments()[0]->AsStringLiteral()->Str());
+        etsg->SetAccumulatorType(expr->TsType());
+        return;
+    }
+    ES2PANDA_UNREACHABLE();
+}
+
 void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();

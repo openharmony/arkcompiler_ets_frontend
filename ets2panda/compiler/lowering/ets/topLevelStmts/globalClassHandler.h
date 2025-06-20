@@ -26,7 +26,8 @@ namespace ark::es2panda::compiler {
 
 class GlobalClassHandler {
 public:
-    using ModuleDependencies = ArenaUnorderedSet<parser::Program *>;
+    // Using ArenaVector to ensure the order of the module dependencies;
+    using ModuleDependencies = std::pair<ArenaVector<parser::Program *>, ArenaUnorderedSet<parser::Program *>>;
 
     struct GlobalStmts {
         parser::Program *program;
@@ -54,6 +55,15 @@ public:
         globalProgram_ = program;
     }
 
+    static void InsertModuleDependencies(ModuleDependencies *moduleDependencies, parser::Program *program)
+    {
+        if (moduleDependencies->second.find(program) != moduleDependencies->second.end()) {
+            return;
+        }
+        moduleDependencies->first.emplace_back(program);
+        moduleDependencies->second.insert(program);
+    }
+
 private:
     /**
      * Move top level statements to _$init$_ and
@@ -75,6 +85,7 @@ private:
                             bool isDeclare);
     void SetupInitializerBlock(ArenaVector<ArenaVector<ir::Statement *>> &&initializerBlock,
                                ir::ClassDefinition *globalClass);
+    void SetupInitializationMethodIfNeeded(ir::ClassDefinition *classDef);
     ArenaVector<ir::Statement *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces);
 
     ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);

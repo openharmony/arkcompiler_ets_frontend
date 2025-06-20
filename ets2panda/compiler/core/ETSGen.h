@@ -461,6 +461,11 @@ public:
         }
     }
 
+    void EmitLdaType(const ir::AstNode *node, util::StringView sv)
+    {
+        Sa().Emit<LdaType>(node, sv);
+    }
+
     ~ETSGen() override = default;
     NO_COPY_SEMANTIC(ETSGen);
     NO_MOVE_SEMANTIC(ETSGen);

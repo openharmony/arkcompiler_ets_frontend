@@ -429,6 +429,7 @@ set(ES2PANDA_LIB_SRC
   ir/as/namedType.cpp
   ir/as/prefixAssertionExpression.cpp
   ir/ets/etsClassLiteral.cpp
+  ir/ets/etsIntrinsicNode.cpp
   ir/ets/etsFunctionType.cpp
   ir/ets/etsKeyofType.cpp
   ir/ets/etsNewArrayInstanceExpression.cpp
