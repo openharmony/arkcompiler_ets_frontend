@@ -39,6 +39,7 @@ export const REFLECT_PROPERTIES = [
   'isExtensible',
   'preventExtensions'
 ];
+
 export const OBJECT_PROPERTIES = [
   'get',
   'set',

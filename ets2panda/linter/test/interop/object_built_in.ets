@@ -25,3 +25,11 @@ export function foo(prx: Object) {
 }
 
 foo(new X()); // Illegal
+
+export function shouldPass() {
+    const bar = JSON.parse('{}');
+    console.log(Object.keys(bar).length);
+}
+
+shouldPass()
+

@@ -614,13 +614,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  static ifValidObjectLiteralProperty(
+    prop: ts.ObjectLiteralElementLike,
+    objLitExpr: ts.ObjectLiteralExpression
+  ): boolean {
+    return (
+      ts.isPropertyAssignment(prop) ||
+      ts.isShorthandPropertyAssignment(prop) &&
+        (ts.isCallExpression(objLitExpr.parent) || ts.isNewExpression(objLitExpr.parent))
+    );
+  }
+
   private handleObjectLiteralProperties(
     objectLiteralType: ts.Type | undefined,
     objectLiteralExpr: ts.ObjectLiteralExpression
   ): void {
     let objLiteralAutofix: Autofix[] | undefined;
     const invalidProps = objectLiteralExpr.properties.filter((prop) => {
-      return !ts.isPropertyAssignment(prop);
+      return !TypeScriptLinter.ifValidObjectLiteralProperty(prop, objectLiteralExpr);
     });
 
     if (
@@ -4680,17 +4691,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
-  private checkRestrictedAPICall(node: ts.Node): void {
-    if (ts.isCallExpression(node)) {
-      if (TypeScriptLinter.isReflectAPICall(node)) {
-        this.incrementCounters(node.parent, FaultID.InteropCallReflect);
-        return;
-      }
-
-      const signature = this.tsTypeChecker.getResolvedSignature(node);
-      if (signature) {
-        this.checkForForbiddenAPIs(signature, node);
-      }
+  private checkRestrictedAPICall(node: ts.CallExpression): void {
+    if (TypeScriptLinter.isReflectAPICall(node)) {
+      this.incrementCounters(node.parent, FaultID.InteropCallReflect);
     }
   }
 
@@ -4711,8 +4714,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return false;
   }
 
+  private shouldCheckForForbiddenAPI(declaration: ts.SignatureDeclaration | ts.JSDocSignature): boolean {
+    for (const parameter of declaration.parameters) {
+      if (ts.isJSDocParameterTag(parameter)) {
+        continue;
+      }
+      const parameterType = this.tsTypeChecker.getTypeAtLocation(parameter);
+      const parameterTypeString = this.tsTypeChecker.typeToString(parameterType);
+
+      if (parameterTypeString === OBJECT_LITERAL) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private checkForForbiddenAPIs(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
     if (!callSignature.declaration) {
+      return;
+    }
+
+    if (!this.shouldCheckForForbiddenAPI(callSignature.declaration)) {
       return;
     }
 
