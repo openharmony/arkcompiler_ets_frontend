@@ -3997,15 +3997,34 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handleIllegalSymbolUsage(tsIdentifier: ts.Identifier, tsIdentSym: ts.Symbol): void {
     if (tsIdentSym.flags & ts.SymbolFlags.ValueModule) {
       this.incrementCounters(tsIdentifier, FaultID.NamespaceAsObject);
-    } else {
-      const typeName = tsIdentifier.getText();
-      const isWrapperObject = typeName === 'Number' || typeName === 'String' || typeName === 'Boolean';
+      return;
+    }
 
-      if (!isWrapperObject) {
-        const faultId = this.options.arkts2 ? FaultID.ClassAsObjectError : FaultID.ClassAsObject;
-        this.incrementCounters(tsIdentifier, faultId);
+    const typeName = tsIdentifier.getText();
+    const isWrapperObject = typeName === 'Number' || typeName === 'String' || typeName === 'Boolean';
+    if (isWrapperObject) {
+      return;
+    }
+
+    // Special-case element-access cast for autofix: (X as object)["prop"]
+    const asExpr = tsIdentifier.parent;
+    let elemAccess: ts.ElementAccessExpression | undefined;
+
+    if (
+      ts.isAsExpression(asExpr) &&
+      ts.isParenthesizedExpression(asExpr.parent) &&
+      ts.isElementAccessExpression(asExpr.parent.parent) &&
+      ts.isStringLiteral(asExpr.parent.parent.argumentExpression)
+    ) {
+      // only care if it’s literally “as object” && static-class casts
+      if (asExpr.type.getText() === 'object' && tsIdentSym.flags & ts.SymbolFlags.Class) {
+        elemAccess = asExpr.parent.parent;
       }
     }
+
+    const autofix = elemAccess ? this.autofixer?.fixPropertyAccessByIndex(elemAccess) : undefined;
+    const faultId = this.options.arkts2 ? FaultID.ClassAsObjectError : FaultID.ClassAsObject;
+    this.incrementCounters(tsIdentifier, faultId, autofix);
   }
 
   private isElementAcessAllowed(type: ts.Type, argType: ts.Type): boolean {
@@ -4041,11 +4060,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleElementAccessExpression(node: ts.Node): void {
     const tsElementAccessExpr = node as ts.ElementAccessExpression;
-    const tsElementAccessExprSymbol = this.tsUtils.trueSymbolAtLocation(tsElementAccessExpr.expression);
     const tsElemAccessBaseExprType = this.tsUtils.getNonNullableType(
       this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression)
     );
     const tsElemAccessArgType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
+
+    if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
+      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
+      this.incrementCounters(node, faultId);
+    }
+    if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
+      this.handleIndexNegative(node);
+    }
+    this.checkPropertyAccessByIndex(tsElementAccessExpr, tsElemAccessBaseExprType, tsElemAccessArgType);
+    this.checkArrayUsageWithoutBound(tsElementAccessExpr);
+    this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
+    this.fixJsImportElementAccessExpression(tsElementAccessExpr);
+    this.checkInterOpImportJsIndex(tsElementAccessExpr);
+    this.checkEnumGetMemberValue(tsElementAccessExpr);
+  }
+
+  private checkPropertyAccessByIndex(
+    tsElementAccessExpr: ts.ElementAccessExpression,
+    tsElemAccessBaseExprType: ts.Type,
+    tsElemAccessArgType: ts.Type
+  ): void {
+    const tsElementAccessExprSymbol = this.tsUtils.trueSymbolAtLocation(tsElementAccessExpr.expression);
 
     const isSet = TsUtils.isSetExpression(tsElementAccessExpr);
     const isSetIndexable =
@@ -4061,28 +4101,37 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (
       // unnamed types do not have symbol, so need to check that explicitly
-      !this.tsUtils.isLibrarySymbol(tsElementAccessExprSymbol) &&
-      !ts.isArrayLiteralExpression(tsElementAccessExpr.expression) &&
-      !this.isElementAcessAllowed(tsElemAccessBaseExprType, tsElemAccessArgType) &&
-      !(this.options.arkts2 && isGetIndexable) &&
-      !(this.options.arkts2 && isSetIndexable)
+      this.tsUtils.isLibrarySymbol(tsElementAccessExprSymbol) ||
+      ts.isArrayLiteralExpression(tsElementAccessExpr.expression) ||
+      this.isElementAcessAllowed(tsElemAccessBaseExprType, tsElemAccessArgType) ||
+      this.options.arkts2 && isGetIndexable ||
+      this.options.arkts2 && isSetIndexable
     ) {
-      const autofix = this.autofixer?.fixPropertyAccessByIndex(tsElementAccessExpr);
-      this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofix);
+      return;
     }
 
-    if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
-      const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
-      this.incrementCounters(node, faultId);
+    if (this.isStaticClassAccess(tsElementAccessExpr)) {
+      return;
     }
-    if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
-      this.handleIndexNegative(node);
+
+    const autofix = this.autofixer?.fixPropertyAccessByIndex(tsElementAccessExpr);
+    this.incrementCounters(tsElementAccessExpr, FaultID.PropertyAccessByIndex, autofix);
+  }
+
+  /**
+   * Returns true if this element-access is a static-class cast (e.g., (A as object)["foo"]).
+   */
+  private isStaticClassAccess(expr: ts.ElementAccessExpression): boolean {
+    const inner = expr.expression;
+    if (
+      ts.isParenthesizedExpression(inner) &&
+      ts.isAsExpression(inner.expression) &&
+      ts.isIdentifier(inner.expression.expression)
+    ) {
+      const sym = this.tsTypeChecker.getSymbolAtLocation(inner.expression.expression);
+      return !!(sym && sym.flags & ts.SymbolFlags.Class);
     }
-    this.checkArrayUsageWithoutBound(tsElementAccessExpr);
-    this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
-    this.fixJsImportElementAccessExpression(tsElementAccessExpr);
-    this.checkInterOpImportJsIndex(tsElementAccessExpr);
-    this.checkEnumGetMemberValue(tsElementAccessExpr);
+    return false;
   }
 
   private checkInterOpImportJsIndex(expr: ts.ElementAccessExpression): void {
