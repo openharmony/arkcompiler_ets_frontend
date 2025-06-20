@@ -359,7 +359,6 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
-            ;
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisExpression();

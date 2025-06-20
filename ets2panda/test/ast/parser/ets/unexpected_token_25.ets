@@ -17,7 +17,7 @@ let x: int[ = [1,2,3]
 let y: int = x [0]
 
 /* @@? 16:13 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 16:13 Error SyntaxError: Variable must be initialized or it's type must be declared. */
+/* @@? 16:13 Error SyntaxError: Invalid Type. */
 /* @@? 16:13 Error SyntaxError: Unexpected token ']'. */
 /* @@? 16:13 Error SyntaxError: Unexpected token ']'. */
 /* @@? 16:13 Error SyntaxError: Unexpected token ']'. */

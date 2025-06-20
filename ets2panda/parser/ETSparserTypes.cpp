@@ -484,11 +484,6 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
 
     typeAnnotation = ParseTsArrayType(typeAnnotation, options);
 
-    if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
-        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
-        ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
-        return ParseUnionType(typeAnnotation);
-    }
     ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos, *options);
     return typeAnnotation;
 }
@@ -507,20 +502,28 @@ bool ETSParser::ParseReadonlyInTypeAnnotation()
     return false;
 }
 
+static bool IsReadonlyApplicableType(ir::TypeNode *typeNode)
+{
+    return typeNode->IsTSArrayType() || typeNode->IsETSTuple() ||
+           (typeNode->IsETSTypeReference() &&
+            typeNode->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY);
+}
+
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
     const auto startPos = Lexer()->GetToken().Start();
-    // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
-    if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
-        const auto beforeTypeAnnotation = Lexer()->GetToken().Loc();
-        auto typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
-        if (typeAnnotation == nullptr) {
+    bool hasReadonly = Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY);
+    const auto beforeTypeAnnotation = Lexer()->GetToken().Loc();
+    auto typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+    if (typeAnnotation == nullptr) {
+        if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogError(diagnostic::INVALID_TYPE);
-            return AllocBrokenType(beforeTypeAnnotation);
         }
-        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
-            !(typeAnnotation->IsETSTypeReference() &&
-              typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
+        return AllocBrokenType(beforeTypeAnnotation);
+    }
+
+    if (hasReadonly) {
+        if (!IsReadonlyApplicableType(typeAnnotation)) {
             if (!ParseReadonlyInTypeAnnotation()) {
                 LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
             } else {
@@ -529,9 +532,14 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
-        return typeAnnotation;
     }
-    return ParseTypeAnnotationNoPreferParam(options);
+
+    if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        return ParseUnionType(typeAnnotation);
+    }
+
+    return typeAnnotation;
 }
 
 ir::TypeNode *ETSParser::ParseMultilineString()

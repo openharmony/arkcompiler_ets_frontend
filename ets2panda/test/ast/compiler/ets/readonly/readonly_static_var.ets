@@ -15,9 +15,8 @@
 
 /* @@ readonly */readonly /* @@ static */static /* @@ S */S = c' ';
 
-/* @@@ readonly Error TypeError: Unresolved reference readonly */
-/* @@@ static   Error SyntaxError: Invalid Type. */
-/* @@@ static   Error SyntaxError: Unexpected token 'static'. */
-/* @@@ static   Error SyntaxError: Unexpected token 'static'. */
-/* @@@ S        Error SyntaxError: Unexpected token 'S'. */
-/* @@@ S        Error TypeError: Unresolved reference S */
+/* @@? 16:18 Error TypeError: Unresolved reference readonly */
+/* @@? 16:42 Error SyntaxError: Unexpected token 'static'. */
+/* @@? 16:42 Error SyntaxError: Unexpected token 'static'. */
+/* @@? 16:59 Error SyntaxError: Unexpected token 'S'. */
+/* @@? 16:59 Error TypeError: Unresolved reference S */

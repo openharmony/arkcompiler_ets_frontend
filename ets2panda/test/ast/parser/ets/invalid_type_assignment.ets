@@ -17,18 +17,17 @@
 flags: [dynamic-ast]
 ---*/
 
-    type Point = { x: number; y: number };
-    type AxeX = Point['x'];
+type Point = { x: number; y: number };
+type AxeX = Point['x'];
 
-/* @@? 20:18 Error SyntaxError: Invalid Type. */
-/* @@? 20:23 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 20:23 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 20:34 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 20:34 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 21:23 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:26 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:26 Error SyntaxError: Unexpected token ']'. */
+/* @@? 20:14 Error SyntaxError: Invalid Type. */
+/* @@? 20:19 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 20:19 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 20:30 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 20:30 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 21:19 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 21:19 Error SyntaxError: Invalid Type. */
+/* @@? 21:19 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:19 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:22 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:22 Error SyntaxError: Unexpected token ']'. */
