@@ -340,6 +340,9 @@ export abstract class BaseMode {
         }
         this.collectDependencyModules(packageName, module, dynamicDepModules, staticDepModules);
       });
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+        dynamicDepModules.set(moduleInfo.packageName, moduleInfo);
+      }
       return [dynamicDepModules, staticDepModules];
     }
 
@@ -377,8 +380,9 @@ export abstract class BaseMode {
   }
 
   protected generateArkTSConfigForModules(): void {
-    this.moduleInfos.forEach((moduleInfo: ModuleInfo, _: string) => {
-      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts);
+    this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
+      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos)
+        .writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts, this.buildConfig);
     });
   }
 
@@ -408,7 +412,10 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
       }
-      const moduleInfo: ModuleInfo = {
+      if (this.moduleInfos.has(module.packageName)) {
+        return;
+      }
+      let moduleInfo: ModuleInfo = {
         isMainModule: false,
         packageName: module.packageName,
         moduleRootPath: module.modulePath,
@@ -434,21 +441,24 @@ export abstract class BaseMode {
   }
 
   protected getMainModuleInfo(): ModuleInfo {
+    const mainModuleInfo = this.dependentModuleList.find((module: DependentModuleConfig) => module.packageName === this.packageName);
     return {
-        isMainModule: this.hasMainModule,
-        packageName: this.packageName,
-        moduleRootPath: this.moduleRootPath,
-        moduleType: this.moduleType,
-        sourceRoots: this.sourceRoots,
-        entryFile: '',
-        arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
-        dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
-        staticDepModuleInfos: new Map<string, ModuleInfo>(),
-        compileFileInfos: [],
-        declgenV1OutPath: this.declgenV1OutPath,
-        declgenV2OutPath: this.declgenV2OutPath,
-        declgenBridgeCodePath: this.declgenBridgeCodePath,
-        byteCodeHar: this.byteCodeHar
+      isMainModule: this.hasMainModule,
+      packageName: this.packageName,
+      moduleRootPath: this.moduleRootPath,
+      moduleType: this.moduleType,
+      sourceRoots: this.sourceRoots,
+      entryFile: '',
+      arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
+      dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
+      staticDepModuleInfos: new Map<string, ModuleInfo>(),
+      compileFileInfos: [],
+      declgenV1OutPath: this.declgenV1OutPath,
+      declgenV2OutPath: this.declgenV2OutPath,
+      declgenBridgeCodePath: this.declgenBridgeCodePath,
+      byteCodeHar: this.byteCodeHar,
+      language: mainModuleInfo?.language ?? LANGUAGE_VERSION.ARKTS_1_2,
+      declFilesPath: mainModuleInfo?.declFilesPath,
     };
   }
 
@@ -623,16 +633,9 @@ export abstract class BaseMode {
       return;
     }
     this.entryFiles.forEach((file: string) => {
-      // Skip the declaration files when compiling abc
-      if (file.endsWith(DECL_ETS_SUFFIX)) {
-        return;
-      }
       for (const [_, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
           continue;
-        }
-        if (moduleInfo.moduleType === OHOS_MODULE_TYPE.HAR && moduleInfo.byteCodeHar) {
-          return;
         }
         const filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
         const filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
@@ -788,7 +791,7 @@ export abstract class BaseMode {
     }
   }
 
-  public async runParallell(): Promise<void> {
+  public async runParallel(): Promise<void> {
     this.generateModuleInfos();
 
     if (!cluster.isPrimary) {

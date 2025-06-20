@@ -29,7 +29,9 @@ import {
   ensurePathExists,
   getInteropFilePathByApi,
   getOhmurlByApi,
-  safeRealpath
+  isSubPathOf,
+  safeRealpath,
+  toUnixPath
 } from '../utils';
 import {
   AliasConfig,
@@ -235,7 +237,11 @@ export class ArkTSConfigGenerator {
     });
   }
 
-  public writeArkTSConfigFile(moduleInfo: ModuleInfo, enableDeclgenEts2Ts: boolean): void {
+  public writeArkTSConfigFile(
+    moduleInfo: ModuleInfo,
+    enableDeclgenEts2Ts: boolean,
+    buildConfig: BuildConfig
+  ): void {
     if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
@@ -246,6 +252,8 @@ export class ArkTSConfigGenerator {
     let pathSection = this.getPathSection(moduleInfo);
     let dependenciesSection: string[] = [];
     this.getDependenciesSection(moduleInfo, dependenciesSection);
+    this.getAllFilesToPathSectionForHybrid(moduleInfo, buildConfig);
+
     let dynamicPathSection: Record<string, DynamicPathItem> = {};
 
     if (!enableDeclgenEts2Ts) {
@@ -392,6 +400,32 @@ export class ArkTSConfigGenerator {
       language: 'js',
       declPath: declPath,
       ohmUrl: getOhmurlByApi(aliasConfig.originalAPIName)
+    }
+  }
+
+  public getAllFilesToPathSectionForHybrid(
+    moduleInfo: ModuleInfo,
+    buildConfig: BuildConfig
+  ): void {
+    if (moduleInfo?.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
+      return;
+    }
+
+    const projectRoot = toUnixPath(buildConfig.projectRootPath) + '/';
+    const moduleRoot = toUnixPath(moduleInfo.moduleRootPath);
+
+    for (const file of buildConfig.compileFiles) {
+      const unixFilePath = toUnixPath(file);
+
+      if (!isSubPathOf(unixFilePath, moduleRoot)) {
+        continue;
+      }
+
+      let relativePath = unixFilePath.startsWith(projectRoot)
+        ? unixFilePath.substring(projectRoot.length)
+        : unixFilePath;
+      const keyWithoutExtension = relativePath.replace(/\.[^/.]+$/, '');
+      this.pathSection[keyWithoutExtension] = [file];
     }
   }
 }

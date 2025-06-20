@@ -142,3 +142,9 @@ export function getOhmurlByApi(api: string): string {
   }
   return '';
 }
+
+export function isSubPathOf(targetPath: string, parentDir: string): boolean {
+  const resolvedParent = toUnixPath(path.resolve(parentDir));
+  const resolvedTarget = toUnixPath(path.resolve(targetPath));
+  return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
+}
