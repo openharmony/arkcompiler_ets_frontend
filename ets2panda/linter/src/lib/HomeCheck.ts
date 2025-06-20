@@ -18,6 +18,7 @@ import type { FileIssues, RuleFix } from 'homecheck';
 import type { CommandLineOptions } from './CommandLineOptions';
 import type { ProblemInfo } from './ProblemInfo';
 import { FaultID } from './Problems';
+import { shouldProcessFile } from './LinterRunner';
 
 interface RuleConfigInfo {
   ruleSet: string[];
@@ -39,8 +40,18 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
   ruleConfigInfo: RuleConfigInfo;
   projectConfigInfo: ProjectConfigInfo;
 } {
+  let inputFiles = cmdOptions.inputFiles;
+  let fliesTocheck: string[] = inputFiles;
+  if (cmdOptions.scanWholeProjectInHomecheck === true) {
+    fliesTocheck = [];
+  }
+  inputFiles = inputFiles.filter((input) => {
+    return shouldProcessFile(cmdOptions, input);
+  });
   const languageTags = new Map<string, number>();
-  const inputFiles = cmdOptions.inputFiles;
+  inputFiles.forEach((file) => {
+    languageTags.set(path.normalize(file), 2);
+  });
   const ruleConfigInfo = {
     ruleSet: ['plugin:@migration/all'],
     files: ['**/*.ets', '**/*.ts', '**/*.js']
@@ -54,7 +65,7 @@ export function getHomeCheckConfigInfo(cmdOptions: CommandLineOptions): {
     hmsSdkPath: cmdOptions.sdkExternalApiPath ? cmdOptions.sdkExternalApiPath[0] : '',
     reportDir: './',
     languageTags: languageTags,
-    fileOrFolderToCheck: inputFiles,
+    fileOrFolderToCheck: fliesTocheck,
     logLevel: cmdOptions.verbose ? 'DEBUG' : 'INFO',
     arkAnalyzerLogLevel: cmdOptions.verbose ? 'DEBUG' : 'ERROR'
   };

@@ -204,3 +204,12 @@ function parse(type: "number" | "boolean", value: string): number | boolean {
 function format(input: string | number): string[] | number[] {
   return typeof input === "string" ? input.split("") : input.toString().split("").map(Number);
 }
+
+let version: string = "1.2"
+let a1 = version.split('.').map(Number);
+
+let version2: string = "1.2"
+let a2 = version2.split('.').map(String);
+
+let version3: string = "1.2"
+let a3 = version3.split('.').map(Boolean);

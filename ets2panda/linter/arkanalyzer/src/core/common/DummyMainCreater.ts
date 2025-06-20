@@ -175,7 +175,7 @@ export class DummyMainCreater {
                 let superCls = method.getDeclaringArkClass().getSuperClass();
                 let methodInSuperCls = superCls?.getMethodWithName(method.getName());
                 if (methodInSuperCls) {
-                    paramType = methodInSuperCls.getParameters().at(paramIdx)?.getType();
+                    paramType = methodInSuperCls.getParameters()[paramIdx]?.getType();
                     method = methodInSuperCls;
                 }
             }

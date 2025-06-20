@@ -225,6 +225,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 133,
+            "column": 10,
+            "endLine": 133,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 139,
             "column": 3,
             "endLine": 139,
@@ -322,6 +332,16 @@
             "problem": "ExplicitFunctionType",
             "suggest": "",
             "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 1,
+            "endLine": 175,
+            "endColumn": 8,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         }
     ]

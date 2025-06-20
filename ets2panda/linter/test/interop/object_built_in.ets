@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
+
 
 import { X } from "./oh_modules/object_built_in"
 

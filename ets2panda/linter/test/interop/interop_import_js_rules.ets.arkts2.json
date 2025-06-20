@@ -195,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 32,
             "column": 5,
-            "endLine": 31,
+            "endLine": 32,
             "endColumn": 15,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -205,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 32,
             "column": 5,
-            "endLine": 31,
+            "endLine": 32,
             "endColumn": 15,
             "problem": "InteropJsObjectConditionJudgment",
             "suggest": "",
@@ -215,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 34,
             "column": 5,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 11,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
@@ -225,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 34,
             "column": 5,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 11,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -235,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 34,
             "column": 5,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 11,
             "problem": "InteropJsObjectConditionJudgment",
             "suggest": "",
@@ -245,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 34,
             "column": 14,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 16,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -255,9 +255,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 38,
             "column": 1,
-            "endLine": 37,
+            "endLine": 38,
             "endColumn": 21,
             "problem": "InteropJsObjectInheritance",
             "suggest": "",
@@ -265,9 +265,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
+            "line": 42,
             "column": 1,
-            "endLine": 41,
+            "endLine": 42,
             "endColumn": 21,
             "problem": "InteropJsObjectInheritance",
             "suggest": "",
@@ -275,19 +275,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 45,
             "column": 3,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 8,
             "problem": "InteropJSFunctionInvoke",
             "suggest": "",
-            "rule": "Trying to catch JS errors is not permitted (arkts-interop-js2s-js-exception)",
+            "rule": "ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)",
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 45,
             "column": 3,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 8,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -295,19 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 45,
-            "column": 3,
-            "endLine": 47,
-            "endColumn": 2,
-            "problem": "TsLikeCatchType",
-            "suggest": "",
-            "rule": "TS catch type are not supported (arkts-no-ts-like-catch-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
+            "line": 50,
             "column": 11,
-            "endLine": 49,
+            "endLine": 50,
             "endColumn": 18,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -315,49 +305,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 51,
             "column": 11,
-            "endLine": 49,
-            "endColumn": 18,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 50,
-            "column": 11,
-            "endLine": 50,
+            "endLine": 51,
             "endColumn": 21,
-            "problem": "InteropJsObjectUsage",
+            "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         },
         {
-            "line": 53,
-            "column": 3,
-            "endLine": 53,
-            "endColumn": 9,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 51,
+            "line": 52,
             "column": 10,
-            "endLine": 51,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 51,
-            "column": 14,
-            "endLine": 51,
+            "endLine": 52,
             "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -366,8 +326,18 @@
         },
         {
             "line": 52,
-            "column": 11,
+            "column": 14,
             "endLine": 52,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 11,
+            "endLine": 53,
             "endColumn": 17,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -375,9 +345,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
+            "line": 53,
             "column": 11,
-            "endLine": 52,
+            "endLine": 53,
             "endColumn": 17,
             "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
@@ -385,9 +355,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
+            "line": 53,
             "column": 11,
-            "endLine": 52,
+            "endLine": 53,
             "endColumn": 17,
             "problem": "InterOpImportJsIndex",
             "suggest": "",
@@ -395,9 +365,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 54,
             "column": 3,
-            "endLine": 53,
+            "endLine": 54,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 3,
+            "endLine": 54,
             "endColumn": 9,
             "problem": "InteropJsObjectTraverseJsInstance",
             "suggest": "",
@@ -405,9 +385,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 54,
             "column": 3,
-            "endLine": 53,
+            "endLine": 54,
             "endColumn": 13,
             "problem": "InterOpImportJsIndex",
             "suggest": "",
@@ -415,9 +395,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 54,
             "column": 12,
-            "endLine": 53,
+            "endLine": 54,
             "endColumn": 13,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -425,19 +405,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 63,
+            "line": 64,
             "column": 8,
-            "endLine": 63,
+            "endLine": 64,
             "endColumn": 12,
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
+            "severity": "WARNING"
         },
         {
-            "line": 63,
+            "line": 64,
             "column": 1,
-            "endLine": 63,
+            "endLine": 64,
             "endColumn": 13,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -445,19 +425,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 64,
+            "line": 65,
             "column": 8,
-            "endLine": 64,
+            "endLine": 65,
             "endColumn": 14,
             "problem": "InteropJsObjectCallStaticFunc",
             "suggest": "",
             "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
+            "severity": "WARNING"
         },
         {
-            "line": 64,
+            "line": 65,
             "column": 1,
-            "endLine": 64,
+            "endLine": 65,
             "endColumn": 15,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -465,9 +445,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 67,
             "column": 9,
-            "endLine": 66,
+            "endLine": 67,
             "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -475,9 +455,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 67,
             "column": 13,
-            "endLine": 66,
+            "endLine": 67,
             "endColumn": 14,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -485,9 +465,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 67,
             "column": 16,
-            "endLine": 66,
+            "endLine": 67,
             "endColumn": 21,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -495,9 +475,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 67,
             "column": 19,
-            "endLine": 66,
+            "endLine": 67,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -505,19 +485,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 67,
             "column": 22,
-            "endLine": 66,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 66,
-            "column": 25,
-            "endLine": 66,
+            "endLine": 67,
             "endColumn": 26,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -526,8 +496,18 @@
         },
         {
             "line": 67,
-            "column": 8,
+            "column": 25,
             "endLine": 67,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 8,
+            "endLine": 68,
             "endColumn": 15,
             "problem": "InteropJsObjectExpandStaticInstance",
             "suggest": "",
@@ -535,9 +515,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 67,
+            "line": 68,
             "column": 1,
-            "endLine": 67,
+            "endLine": 68,
             "endColumn": 16,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -545,9 +525,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 76,
+            "line": 80,
             "column": 8,
-            "endLine": 76,
+            "endLine": 80,
             "endColumn": 13,
             "problem": "InteropJsObjectExpandStaticInstance",
             "suggest": "",
@@ -555,9 +535,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 76,
+            "line": 80,
             "column": 1,
-            "endLine": 76,
+            "endLine": 80,
             "endColumn": 14,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -565,9 +545,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 77,
+            "line": 81,
             "column": 8,
-            "endLine": 77,
+            "endLine": 81,
             "endColumn": 38,
             "problem": "InteropJsObjectExpandStaticInstance",
             "suggest": "",
@@ -575,9 +555,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 77,
+            "line": 81,
             "column": 1,
-            "endLine": 77,
+            "endLine": 81,
             "endColumn": 39,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -585,9 +565,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 84,
             "column": 5,
-            "endLine": 79,
+            "endLine": 84,
             "endColumn": 32,
             "problem": "InteropEqualityJudgment",
             "suggest": "",
@@ -595,9 +575,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
+            "line": 84,
             "column": 5,
-            "endLine": 79,
+            "endLine": 84,
             "endColumn": 24,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -605,20 +585,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
-            "column": 5,
-            "endLine": 79,
-            "endColumn": 24,
-            "problem": "InteropJsObjectUsage",
+            "line": 84,
+            "column": 29,
+            "endLine": 84,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 79,
-            "column": 29,
-            "endLine": 79,
-            "endColumn": 32,
+            "line": 88,
+            "column": 1,
+            "endLine": 92,
+            "endColumn": 2,
+            "problem": "InteropJsObjectTraverseJsInstance",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 18,
+            "endLine": 89,
+            "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",

@@ -21,7 +21,8 @@ import { CheckerStorage } from '../../utils/common/CheckerStorage';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { FileUtils } from '../../utils/common/FileUtils';
 import { DefaultMessage } from '../../model/Message';
-import { FileIssues } from "../../model/Defects";
+import { FileIssues } from '../../model/Defects';
+import { CallGraphHelper, DVFGHelper, GlobalCallGraphHelper } from '../../checker/migration/Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'MigrationTool');
 
@@ -68,7 +69,16 @@ export class MigrationTool {
         await this.checkEntry.runAll();
 
         let result = this.checkEntry.sortIssues();
+        this.dispose();
         logger.info(`MigrationTool run end`);
         return result;
+    }
+
+    private dispose(): void {
+        CallGraphHelper.dispose();
+        GlobalCallGraphHelper.dispose();
+        DVFGHelper.dispose();
+        CheckerStorage.dispose();
+        this.checkEntry.scene.dispose();
     }
 }

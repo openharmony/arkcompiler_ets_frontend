@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use static'
+ 
 
 
 let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');
@@ -43,7 +42,7 @@ const aClass:ClassA = ClassA.instantiate()
 ClassA.instantiate().typeOf() //error
 typeof aClass;
 let person:Person = Person.instantiate();
-let name =person.name
+let name =person.getPropertyByName("name")
 let name2 =person.invokeMethod("getName")
 function getPersonInfo(){
   typeof person;
@@ -79,5 +78,5 @@ class Object {
 
 myAaa.typeOf(); //error
 Person.instantiate().getPropertyByName('name').typeOf()  //error
-Person.instantiate().getPropertyByName('getName').invoke().typeOf() //error
-Person.instantiate().getPropertyByName('setAge').invoke(ESValue.wrap(22.0)).typeOf() //error
+Person.instantiate().invokeMethod("getName").typeOf() //error
+Person.instantiate().invokeMethod("setAge", ESValue.wrap(22.0)).typeOf() //error

@@ -19,7 +19,15 @@ import { Trap } from '../../base/Trap';
 import { ArkCaughtExceptionRef } from '../../base/Ref';
 import { UnknownType } from '../../base/Type';
 import { FullPosition } from '../../base/Position';
-import { ArkAssignStmt, ArkIfStmt, ArkInvokeStmt, ArkReturnStmt, ArkReturnVoidStmt, ArkThrowStmt, Stmt } from '../../base/Stmt';
+import {
+    ArkAssignStmt,
+    ArkIfStmt,
+    ArkInvokeStmt,
+    ArkReturnStmt,
+    ArkReturnVoidStmt,
+    ArkThrowStmt,
+    Stmt,
+} from '../../base/Stmt';
 import { BlockBuilder, TryStatementBuilder } from './CfgBuilder';
 import Logger, { LOG_MODULE_TYPE } from '../../../utils/logger';
 
@@ -217,16 +225,17 @@ export class TrapBuilder {
             bfsBlocks.push(currBlock);
 
             const childList = currBlockBuilder.nexts;
-            if (childList.length === 0 || (childList.length !== 0 && childList[0] === endBlockBuilder)) {
-                if (childList[0] === endBlockBuilder) {
-                    tailBlocks.push(currBlock);
-                    continue;
-                }
-            }
             if (childList.length !== 0) {
                 for (const child of childList) {
-                    queue.push(child);
+                    // A tail block's successor may be within the traversal range
+                    if (child === endBlockBuilder) {
+                        tailBlocks.push(currBlock);
+                    } else {
+                        queue.push(child);
+                    }
                 }
+            } else {
+                tailBlocks.push(currBlock);
             }
         }
         return { bfsBlocks, tailBlocks };
@@ -247,19 +256,16 @@ export class TrapBuilder {
         copyFinallyBfsBlocks[0].getPredecessors().splice(0, finallyPredecessorsCnt);
         const throwStmt = new ArkThrowStmt(exceptionValue);
         let copyFinallyTailBlocks = copyFinallyBfsBlocks.splice(copyFinallyBfsBlocks.length - finallyTailBlocks.length, finallyTailBlocks.length);
-        copyFinallyTailBlocks.forEach((copyFinallyTailBlock: BasicBlock) => {
-            const successorsCnt = copyFinallyTailBlock.getSuccessors().length;
-            copyFinallyTailBlock.getSuccessors().splice(0, successorsCnt);
-        });
         if (copyFinallyTailBlocks.length > 1) {
             const newCopyFinallyTailBlock = new BasicBlock();
             copyFinallyTailBlocks.forEach((copyFinallyTailBlock: BasicBlock) => {
                 copyFinallyTailBlock.addSuccessorBlock(newCopyFinallyTailBlock);
                 newCopyFinallyTailBlock.addPredecessorBlock(copyFinallyTailBlock);
             });
+            copyFinallyBfsBlocks.push(...copyFinallyTailBlocks);
             copyFinallyTailBlocks = [newCopyFinallyTailBlock];
         }
-        copyFinallyTailBlocks[0]?.addStmt(throwStmt);
+        copyFinallyTailBlocks[0].addStmt(throwStmt);
         copyFinallyBfsBlocks.push(...copyFinallyTailBlocks);
         copyFinallyBfsBlocks.forEach((copyFinallyBfsBlock: BasicBlock) => {
             basicBlockSet.add(copyFinallyBfsBlock);
@@ -281,12 +287,19 @@ export class TrapBuilder {
         for (const sourceBlock of sourceBlocks) {
             const targetBlock = sourceToTarget.get(sourceBlock)!;
             for (const predecessor of sourceBlock.getPredecessors()) {
-                const targetPredecessor = sourceToTarget.get(predecessor)!;
-                targetBlock.addPredecessorBlock(targetPredecessor);
+                const targetPredecessor = sourceToTarget.get(predecessor);
+                // Only include blocks within the copy range, so that predecessor and successor relationships to
+                // external blocks can be trimmed
+                if (targetPredecessor) {
+                    targetBlock.addPredecessorBlock(targetPredecessor);
+                }
+
             }
             for (const successor of sourceBlock.getSuccessors()) {
-                const targetSuccessor = sourceToTarget.get(successor)!;
-                targetBlock.addSuccessorBlock(targetSuccessor);
+                const targetSuccessor = sourceToTarget.get(successor);
+                if (targetSuccessor) {
+                    targetBlock.addSuccessorBlock(targetSuccessor);
+                }
             }
         }
         return targetBlocks;

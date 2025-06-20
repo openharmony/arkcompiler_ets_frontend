@@ -203,3 +203,25 @@ for (let i:number = 0; i < 100; i++) {
 let cancelIds:ArrayList<number> = arr.subArrayList(6, 86)
 let a: Array<number> = Array.from(cancelIds)
 let arr1: Array<number> = Array.from(new ArrayList<number>())
+
+let a:number = 0.000;
+
+const b:number = 0.000;
+
+export enum WalletStageValue {
+  DEFAULT = 0,
+  SWIPE_INIT = -1,
+  SELECT_CARD = 1,
+  SWIPE_DOING = 2,
+  SWIPE_SUCCEED = 3,
+  SWIPE_FAILED = 4,
+  SWIPE_FINISHED = 5,
+}
+
+export enum AnimationStage {
+  INIT = 0,
+  ENTER = 1,
+  ROTATING = 2,
+  EXIT_START = 3,
+  EXIT_END = 4,
+}

@@ -1,0 +1,388 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 14,
+            "column": 4,
+            "endLine": 14,
+            "endColumn": 5,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 9,
+            "endLine": 27,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 13,
+            "endLine": 27,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 9,
+            "endLine": 35,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 13,
+            "endLine": 35,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 16,
+            "endLine": 36,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 47,
+            "endLine": 42,
+            "endColumn": 49,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 33,
+            "endLine": 43,
+            "endColumn": 45,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 5,
+            "endLine": 44,
+            "endColumn": 53,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 5,
+            "endLine": 44,
+            "endColumn": 53,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 5,
+            "endLine": 45,
+            "endColumn": 53,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 5,
+            "endLine": 45,
+            "endColumn": 53,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 5,
+            "endLine": 46,
+            "endColumn": 64,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 5,
+            "endLine": 46,
+            "endColumn": 64,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 61,
+            "endLine": 46,
+            "endColumn": 62,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 5,
+            "endLine": 47,
+            "endColumn": 65,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 5,
+            "endLine": 47,
+            "endColumn": 65,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 41,
+            "endLine": 47,
+            "endColumn": 42,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 45,
+            "endLine": 47,
+            "endColumn": 46,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 49,
+            "endLine": 47,
+            "endColumn": 50,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 5,
+            "endLine": 48,
+            "endColumn": 73,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 5,
+            "endLine": 48,
+            "endColumn": 73,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 41,
+            "endLine": 48,
+            "endColumn": 42,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 45,
+            "endLine": 48,
+            "endColumn": 46,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 5,
+            "endLine": 49,
+            "endColumn": 56,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 5,
+            "endLine": 49,
+            "endColumn": 56,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 43,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 43,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 41,
+            "endLine": 50,
+            "endColumn": 42,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 5,
+            "endLine": 51,
+            "endColumn": 48,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 5,
+            "endLine": 51,
+            "endColumn": 48,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 5,
+            "endLine": 52,
+            "endColumn": 46,
+            "problem": "SetAndPropFunctionNotSupported",
+            "suggest": "",
+            "rule": "\"setAndProp\" function is not supported (arkui-no-setandprop-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 5,
+            "endLine": 52,
+            "endColumn": 46,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 14,
+            "endLine": 43,
+            "endColumn": 26,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"LocalStorage\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 33,
+            "endLine": 43,
+            "endColumn": 45,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"LocalStorage\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 2,
+            "endLine": 54,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 2,
+            "endLine": 55,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        }
+    ]
+}

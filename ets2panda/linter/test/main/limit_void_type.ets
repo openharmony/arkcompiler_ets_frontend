@@ -15,48 +15,48 @@
 
 
 // Example 1: Basic function
-function func1(): void {}
+function func1(): void { }
 let a: void = func1();
 // Example 2: Arrow function
-const func2 = (): void => {};
+const func2 = (): void => { };
 let b: void = func2();
 // Example 3: Class method
 class Demo {
-  method(): void {}
+  method(): void { }
 }
 let c: void = new Demo().method();
 // Example 4: Immediately Invoked Function Expression (IIFE)
-let d: void = (function(): void {})();
+let d: void = (function (): void { })();
 // Example 5: Asynchronous function
-async function asyncFunc(): Promise<void> {}
+async function asyncFunc(): Promise<void> { }
 let e: void = await asyncFunc();
 // Example 6: Function parameter
 function wrapper(fn: () => void) {
   let f: void = fn();
 }
 // Example 7: Type assertion
-function func3(): void {}
+function func3(): void { }
 let g: void = func3() as void;
 // Example 8: Callback function
-setTimeout((): void => {}, 1000);
-let h: void = setTimeout(() => {}, 1000);
+setTimeout((): void => { }, 1000);
+let h: void = setTimeout(() => { }, 1000);
 // Example 9: Array operation
-const funcArr: (() => void)[] = [() => {}];
+const funcArr: (() => void)[] = [() => { }];
 let i: void = funcArr[0]();
 // Example 10: Object method
 const obj = {
-  action: (): void => {}
+  action: (): void => { }
 };
 let j: void = obj.action();
 // Example 11: Strict mode
 // @ts-strict
-function func4(): void {}
+function func4(): void { }
 let k: void = func4();
 // Example 12: Module export
-export function exportedFunc(): void {}
+export function exportedFunc(): void { }
 let l: void = exportedFunc();
 // Example 13: Generic function
-function genericFunc<T>(): void {}
+function genericFunc<T>(): void { }
 let m: void = genericFunc();
 // Example 14: Function overloading
 function overloadFunc(): void;
@@ -65,24 +65,24 @@ function overloadFunc(n?: number) { return n; }
 let n: void = overloadFunc();
 // Example 15: Type alias
 type VoidFunc = () => void;
-const aliasFunc: VoidFunc = () => {};
+const aliasFunc: VoidFunc = () => { };
 let o: void = aliasFunc();
 // Example 16: Interface implementation
 interface Task {
   run(): void;
 }
 class Printer implements Task {
-  run(): void {}
+  run(): void { }
 }
 let p: void = new Printer().run();
 // Example 17: Optional parameter
-function withParam(param?: string): void {}
+function withParam(param?: string): void { }
 let q: void = withParam();
 // Example 18: Rest parameter
-function sum(...nums: number[]): void {}
+function sum(...nums: number[]): void { }
 let r: void = sum(1, 2, 3);
 // Example 19: This parameter
-function withThis(this: Window): void {}
+function withThis(this: Window): void { }
 let s: void = withThis.call(window);
 // Example 20: Generator function
 function* genFunc(): Generator<void> {
@@ -90,31 +90,31 @@ function* genFunc(): Generator<void> {
 }
 let u: void = genFunc().next().value;
 // Example 21: Function currying
-const curry = () => (): void => {};
+const curry = () => (): void => { };
 let w: void = curry()();
 // Example 22: Method chaining
 class Chain {
   first(): this { return this; }
-  last(): void {}
+  last(): void { }
 }
 let x: void = new Chain().first().last();
 // Example 23: Destructuring assignment
-const [func] = [(): void => {}];
+const [func] = [(): void => { }];
 let y: void = func();
 // Example 24: Type mapping
 type Wrapper<T> = { value: T };
-const wrapped: Wrapper<() => void> = { value: () => {} };
+const wrapped: Wrapper<() => void> = { value: () => { } };
 let z: void = wrapped.value();
 // Example 25: Conditional type
 type Conditional<T> = T extends boolean ? () => void : never;
-const condFunc: Conditional<boolean> = () => {};
+const condFunc: Conditional<boolean> = () => { };
 let aa: void = condFunc();
 // Example 26: Mixed type
 interface Mixed {
   (): void;
   prop: string;
 }
-const mixed: Mixed = Object.assign(() => {}, { prop: "" });
+const mixed: Mixed = Object.assign(() => { }, { prop: "" });
 let ab: void = mixed();
 // Example 27: Recursive call
 function recursive(): void {
@@ -123,13 +123,13 @@ function recursive(): void {
 let ac: void = recursive();
 // Example 28: Decorator function
 function decorator() {
-  return function(target: any) {};
+  return function (target: any) { };
 }
 @decorator()
-class Decorated {}
+class Decorated { }
 let ad: void = decorator()(Decorated);
 
-function f1(): void {}
+function f1(): void { }
 
 let a1 = f1(); // type `void` is used as value
 
@@ -145,24 +145,24 @@ a3[0] = f1(); // type `void` is used as value
 
 let a4: void = f1(); // type `void` is used as type annotation
 
-function f2(a: void) {} // type `void` is used as type annotation
+function f2(a: void) { } // type `void` is used as type annotation
 
 f2(f1()); // type `void` is used as value
 
 class A {
   f: void; // type `void` is used as type annotation
 
-  m(p: void) {} // type `void` is used as type annotation
+  m(p: void) { } // type `void` is used as type annotation
 
   constructor(a: void) { // type `void` is used as type annotation
     this.f = a;
   }
 }
 
-function f3(): void | Promise<void> {} // type `void` is not allowed in union type
+function f3(): void | Promise<void> { } // type `void` is not allowed in union type
 
 class B {
-  m(): void | number {} // type `void` is not allowed in union type
+  m(): void | number { } // type `void` is not allowed in union type
 }
 
 type ss = void;
@@ -178,20 +178,20 @@ interface BT {
 }
 
 class C {
-  private cc?:BT;
+  private cc?: BT;
 
-  private d():void {
+  private d(): void {
     this.cc = {
-      qaq: (caller?:string):void => this.qaqq(caller)
+      qaq: (caller?: string): void => this.qaqq(caller)
     }
   }
-  private qaqq(caller?:string):void {
+  private qaqq(caller?: string): void {
     return;
   }
 }
 
-function foo(): void {}
-function bar(): void {}
+function foo(): void { }
+function bar(): void { }
 
 let aa = '1';
 let bb = aa === '1' ? foo() : bar(); // Error
@@ -199,7 +199,65 @@ let bb = aa === '1' ? foo() : bar(); // Error
 aa === '1' ? foo() : bar(); // No error
 let dd;
 dd = aa === '1' ? foo() : bar(); // Error
-interface testB{
-  u:void;  // Error
-  fooIf():void;
+interface testB {
+  u: void;  // Error
+  fooIf(): void;
+}
+
+function foo1():void{
+    return foo(); // No Error
+}
+
+function foocfe(a: number): string | void {
+  if (a >= 0) {
+    return "a >= 0";
+  }
+}
+
+function foocfe2(a: number): string | void {
+  if (a < 0) {
+    return;
+  }
+  return "a >= 0";
+}
+function fooefc(): void { }
+let ss: void = foo()
+let t: void | number = foo()
+let t2: void | number = 1;
+
+function greet(hour: number): string | void {
+  if (hour < 12) {
+    return;
+  } else if (hour < 18) {
+    return "Good afternoon";
+  } else {
+    return;
+  }
+}
+
+function logOrReturn(flag: boolean): string | void {
+  if (flag) {
+    return "Flag is true";
+  }
+  console.log("Flag is false");
+  return;
+}
+
+function justLogs(): string | void {
+  console.log("Hello!");
+}
+
+function getStatus(code: number): string | void {
+  switch (code) {
+    case 1: return "OK";
+    case 2: return "Warning";
+  }
+}
+
+function tryThing(): string | void {
+  try {
+    return "Worked!";
+  } catch (e) {
+    console.error(e);
+  }
 }

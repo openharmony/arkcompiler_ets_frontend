@@ -1,933 +1,861 @@
 {
-  "copyright": [
-    "Copyright (c) 2025 Huawei Device Co., Ltd.",
-    "Licensed under the Apache License, Version 2.0 (the 'License');",
-    "you may not use this file except in compliance with the License.",
-    "You may obtain a copy of the License at",
-    "",
-    "http://www.apache.org/licenses/LICENSE-2.0",
-    "",
-    "Unless required by applicable law or agreed to in writing, software",
-    "distributed under the License is distributed on an 'AS IS' BASIS,",
-    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-    "See the License for the specific language governing permissions and",
-    "limitations under the License."
-  ],
-  "result": [
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 69,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 69,
-      "problem": "InterOpImportJs",
-      "autofix": [
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
         {
-          "start": 618,
-          "end": 686,
-          "replacementText": "",
-          "line": 17,
-          "column": 1,
-          "endLine": 17,
-          "endColumn": 69
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 69,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 606,
+                    "end": 674,
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 69
+                },
+                {
+                    "start": 783,
+                    "end": 783,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 69
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
         },
         {
-          "start": 795,
-          "end": 795,
-          "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n",
-          "line": 17,
-          "column": 1,
-          "endLine": 17,
-          "endColumn": 69
-        }
-      ],
-      "suggest": "",
-      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 18,
-      "column": 1,
-      "endLine": 18,
-      "endColumn": 54,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 18,
-      "column": 1,
-      "endLine": 18,
-      "endColumn": 54,
-      "problem": "InterOpImportJs",
-      "autofix": [
-        {
-          "start": 687,
-          "end": 740,
-          "replacementText": "",
-          "line": 18,
-          "column": 1,
-          "endLine": 18,
-          "endColumn": 54
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 54,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 675,
+                    "end": 728,
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 54
+                },
+                {
+                    "start": 783,
+                    "end": 783,
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 54
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
         },
         {
-          "start": 795,
-          "end": 795,
-          "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n",
-          "line": 18,
-          "column": 1,
-          "endLine": 18,
-          "endColumn": 54
-        }
-      ],
-      "suggest": "",
-      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 19,
-      "column": 1,
-      "endLine": 19,
-      "endColumn": 55,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 19,
-      "column": 1,
-      "endLine": 19,
-      "endColumn": 55,
-      "problem": "InterOpImportJs",
-      "autofix": [
-        {
-          "start": 741,
-          "end": 795,
-          "replacementText": "",
-          "line": 19,
-          "column": 1,
-          "endLine": 19,
-          "endColumn": 55
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 55,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 729,
+                    "end": 783,
+                    "replacementText": "",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 55
+                },
+                {
+                    "start": 783,
+                    "end": 783,
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 55
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "severity": "ERROR"
         },
         {
-          "start": 795,
-          "end": 795,
-          "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n",
-          "line": 19,
-          "column": 1,
-          "endLine": 19,
-          "endColumn": 55
-        }
-      ],
-      "suggest": "",
-      "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 21,
-      "column": 1,
-      "endLine": 21,
-      "endColumn": 15,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 15,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 785,
+                    "end": 799,
+                    "replacementText": "myAaa.invoke().typeOf()",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 797,
-          "end": 811,
-          "replacementText": "myAaa.invoke().typeOf()",
-          "line": 21,
-          "column": 1,
-          "endLine": 21,
-          "endColumn": 15
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 22,
-      "column": 11,
-      "endLine": 22,
-      "endColumn": 18,
-      "problem": "CallJSFunction",
-      "autofix": [
+            "line": 21,
+            "column": 11,
+            "endLine": 21,
+            "endColumn": 18,
+            "problem": "CallJSFunction",
+            "autofix": [
+                {
+                    "start": 819,
+                    "end": 826,
+                    "replacementText": "myAaa.invoke()",
+                    "line": 21,
+                    "column": 11,
+                    "endLine": 21,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
+            "severity": "ERROR"
+        },
         {
-          "start": 831,
-          "end": 838,
-          "replacementText": "myAaa.invoke()",
-          "line": 22,
-          "column": 11,
-          "endLine": 22,
-          "endColumn": 18
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 24,
-      "column": 1,
-      "endLine": 24,
-      "endColumn": 11,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 11,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 840,
+                    "end": 850,
+                    "replacementText": "Dog.typeOf()",
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 852,
-          "end": 862,
-          "replacementText": "Dog.typeOf()",
-          "line": 24,
-          "column": 1,
-          "endLine": 24,
-          "endColumn": 11
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 25,
-      "column": 1,
-      "endLine": 25,
-      "endColumn": 19,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 19,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 860,
+                    "end": 878,
+                    "replacementText": "Dog.invoke(ESValue.wrap('doge')).typeOf()",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 872,
-          "end": 890,
-          "replacementText": "Dog.invoke(ESValue.wrap('doge')).typeOf()",
-          "line": 25,
-          "column": 1,
-          "endLine": 25,
-          "endColumn": 19
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 25,
-      "column": 8,
-      "endLine": 25,
-      "endColumn": 19,
-      "problem": "LimitedVoidType",
-      "suggest": "",
-      "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 1,
-      "endLine": 26,
-      "endColumn": 20,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 24,
+            "column": 8,
+            "endLine": 24,
+            "endColumn": 19,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 900,
-          "end": 919,
-          "replacementText": "Doge.invoke(ESValue.wrap('doge')).typeOf()",
-          "line": 26,
-          "column": 1,
-          "endLine": 26,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 8,
-      "endLine": 26,
-      "endColumn": 20,
-      "problem": "LimitedVoidType",
-      "suggest": "",
-      "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 27,
-      "column": 1,
-      "endLine": 27,
-      "endColumn": 12,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 888,
+                    "end": 907,
+                    "replacementText": "Doge.invoke(ESValue.wrap('doge')).typeOf()",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 929,
-          "end": 940,
-          "replacementText": "Wiki.typeOf()",
-          "line": 27,
-          "column": 1,
-          "endLine": 27,
-          "endColumn": 12
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 28,
-      "column": 1,
-      "endLine": 28,
-      "endColumn": 17,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 25,
+            "column": 8,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 949,
-          "end": 965,
-          "replacementText": "Wiki.getPropertyByName('name').typeOf()",
-          "line": 28,
-          "column": 1,
-          "endLine": 28,
-          "endColumn": 17
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 28,
-      "column": 8,
-      "endLine": 28,
-      "endColumn": 17,
-      "problem": "InteropObjectProperty",
-      "autofix": [
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
+            "endColumn": 12,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 917,
+                    "end": 928,
+                    "replacementText": "Wiki.typeOf()",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 956,
-          "end": 965,
-          "replacementText": "Wiki.getPropertyByName(\"name\")",
-          "line": 28,
-          "column": 8,
-          "endLine": 28,
-          "endColumn": 17
-        }
-      ],
-      "suggest": "",
-      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 28,
-      "column": 8,
-      "endLine": 28,
-      "endColumn": 17,
-      "problem": "InteropJsObjectUsage",
-      "autofix": [
+            "line": 27,
+            "column": 1,
+            "endLine": 27,
+            "endColumn": 17,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 937,
+                    "end": 953,
+                    "replacementText": "Wiki.getPropertyByName('name').typeOf()",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "replacementText": "Wiki.getPropertyByName('name').toString()",
-          "start": 956,
-          "end": 965,
-          "line": 28,
-          "column": 8,
-          "endLine": 28,
-          "endColumn": 17
-        }
-      ],
-      "suggest": "",
-      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 29,
-      "column": 1,
-      "endLine": 29,
-      "endColumn": 12,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 27,
+            "column": 8,
+            "endLine": 27,
+            "endColumn": 17,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 944,
+                    "end": 953,
+                    "replacementText": "Wiki.getPropertyByName(\"name\")",
+                    "line": 27,
+                    "column": 8,
+                    "endLine": 27,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
         {
-          "start": 974,
-          "end": 985,
-          "replacementText": "wiki.typeOf()",
-          "line": 29,
-          "column": 1,
-          "endLine": 29,
-          "endColumn": 12
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 30,
-      "column": 11,
-      "endLine": 30,
-      "endColumn": 20,
-      "problem": "InteropObjectProperty",
-      "autofix": [
+            "line": 28,
+            "column": 1,
+            "endLine": 28,
+            "endColumn": 12,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 962,
+                    "end": 973,
+                    "replacementText": "wiki.typeOf()",
+                    "line": 28,
+                    "column": 1,
+                    "endLine": 28,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1004,
-          "end": 1013,
-          "replacementText": "wiki.getPropertyByName(\"name\")",
-          "line": 30,
-          "column": 11,
-          "endLine": 30,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 30,
-      "column": 11,
-      "endLine": 30,
-      "endColumn": 20,
-      "problem": "InteropJsObjectUsage",
-      "autofix": [
+            "line": 29,
+            "column": 11,
+            "endLine": 29,
+            "endColumn": 20,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 992,
+                    "end": 1001,
+                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "line": 29,
+                    "column": 11,
+                    "endLine": 29,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
         {
-          "replacementText": "wiki.getPropertyByName('name').toString()",
-          "start": 1004,
-          "end": 1013,
-          "line": 30,
-          "column": 11,
-          "endLine": 30,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 32,
-      "column": 23,
-      "endLine": 32,
-      "endColumn": 35,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 31,
+            "column": 23,
+            "endLine": 31,
+            "endColumn": 35,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1036,
+                    "end": 1048,
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 31,
+                    "column": 23,
+                    "endLine": 31,
+                    "endColumn": 35
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1048,
-          "end": 1060,
-          "replacementText": "ClassA.instantiate()",
-          "line": 32,
-          "column": 23,
-          "endLine": 32,
-          "endColumn": 35
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 33,
-      "column": 1,
-      "endLine": 33,
-      "endColumn": 20,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 32,
+            "column": 1,
+            "endLine": 32,
+            "endColumn": 20,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1049,
+                    "end": 1068,
+                    "replacementText": "ClassA.instantiate().typeOf()",
+                    "line": 32,
+                    "column": 1,
+                    "endLine": 32,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1061,
-          "end": 1080,
-          "replacementText": "ClassA.instantiate().typeOf()",
-          "line": 33,
-          "column": 1,
-          "endLine": 33,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 33,
-      "column": 8,
-      "endLine": 33,
-      "endColumn": 20,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 32,
+            "column": 8,
+            "endLine": 32,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1056,
+                    "end": 1068,
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 32,
+                    "column": 8,
+                    "endLine": 32,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1068,
-          "end": 1080,
-          "replacementText": "ClassA.instantiate()",
-          "line": 33,
-          "column": 8,
-          "endLine": 33,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 35,
-      "column": 21,
-      "endLine": 35,
-      "endColumn": 33,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 34,
+            "column": 21,
+            "endLine": 34,
+            "endColumn": 33,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1112,
+                    "end": 1124,
+                    "replacementText": "Person.instantiate()",
+                    "line": 34,
+                    "column": 21,
+                    "endLine": 34,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1124,
-          "end": 1136,
-          "replacementText": "Person.instantiate()",
-          "line": 35,
-          "column": 21,
-          "endLine": 35,
-          "endColumn": 33
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 37,
-      "column": 12,
-      "endLine": 37,
-      "endColumn": 28,
-      "problem": "InteropCallObjectMethods",
-      "autofix": [
+            "line": 35,
+            "column": 11,
+            "endLine": 35,
+            "endColumn": 22,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1136,
+                    "end": 1147,
+                    "replacementText": "person.getPropertyByName(\"name\")",
+                    "line": 35,
+                    "column": 11,
+                    "endLine": 35,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1171,
-          "end": 1187,
-          "replacementText": "person.invokeMethod(\"getName\")",
-          "line": 37,
-          "column": 12,
-          "endLine": 37,
-          "endColumn": 28
-        }
-      ],
-      "suggest": "",
-      "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 43,
-      "column": 10,
-      "endLine": 43,
-      "endColumn": 28,
-      "problem": "LimitedVoidType",
-      "suggest": "",
-      "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 43,
-      "column": 24,
-      "endLine": 43,
-      "endColumn": 27,
-      "problem": "NumericSemantics",
-      "autofix": [
+            "line": 36,
+            "column": 12,
+            "endLine": 36,
+            "endColumn": 28,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1159,
+                    "end": 1175,
+                    "replacementText": "person.invokeMethod(\"getName\")",
+                    "line": 36,
+                    "column": 12,
+                    "endLine": 36,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1312,
-          "end": 1315,
-          "replacementText": "111.0",
-          "line": 43,
-          "column": 24,
-          "endLine": 43,
-          "endColumn": 27
-        }
-      ],
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 45,
-      "column": 3,
-      "endLine": 45,
-      "endColumn": 22,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 42,
+            "column": 10,
+            "endLine": 42,
+            "endColumn": 28,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1337,
-          "end": 1356,
-          "replacementText": "Person.instantiate().typeOf()",
-          "line": 45,
-          "column": 3,
-          "endLine": 45,
-          "endColumn": 22
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 45,
-      "column": 10,
-      "endLine": 45,
-      "endColumn": 22,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 42,
+            "column": 24,
+            "endLine": 42,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1300,
+                    "end": 1303,
+                    "replacementText": "111.0",
+                    "line": 42,
+                    "column": 24,
+                    "endLine": 42,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1344,
-          "end": 1356,
-          "replacementText": "Person.instantiate()",
-          "line": 45,
-          "column": 10,
-          "endLine": 45,
-          "endColumn": 22
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 48,
-      "column": 21,
-      "endLine": 48,
-      "endColumn": 39,
-      "problem": "LimitedVoidType",
-      "suggest": "",
-      "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 48,
-      "column": 35,
-      "endLine": 48,
-      "endColumn": 38,
-      "problem": "NumericSemantics",
-      "autofix": [
+            "line": 44,
+            "column": 3,
+            "endLine": 44,
+            "endColumn": 22,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1325,
+                    "end": 1344,
+                    "replacementText": "Person.instantiate().typeOf()",
+                    "line": 44,
+                    "column": 3,
+                    "endLine": 44,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1403,
-          "end": 1406,
-          "replacementText": "111.0",
-          "line": 48,
-          "column": 35,
-          "endLine": 48,
-          "endColumn": 38
-        }
-      ],
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 50,
-      "column": 7,
-      "endLine": 50,
-      "endColumn": 13,
-      "problem": "InvalidIdentifier",
-      "suggest": "",
-      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 62,
-      "column": 5,
-      "endLine": 62,
-      "endColumn": 21,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 44,
+            "column": 10,
+            "endLine": 44,
+            "endColumn": 22,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1332,
+                    "end": 1344,
+                    "replacementText": "Person.instantiate()",
+                    "line": 44,
+                    "column": 10,
+                    "endLine": 44,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1713,
-          "end": 1729,
-          "replacementText": "wiki.getPropertyByName('name').typeOf()",
-          "line": 62,
-          "column": 5,
-          "endLine": 62,
-          "endColumn": 21
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 62,
-      "column": 12,
-      "endLine": 62,
-      "endColumn": 21,
-      "problem": "InteropObjectProperty",
-      "autofix": [
+            "line": 47,
+            "column": 21,
+            "endLine": 47,
+            "endColumn": 39,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1720,
-          "end": 1729,
-          "replacementText": "wiki.getPropertyByName(\"name\")",
-          "line": 62,
-          "column": 12,
-          "endLine": 62,
-          "endColumn": 21
-        }
-      ],
-      "suggest": "",
-      "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 62,
-      "column": 12,
-      "endLine": 62,
-      "endColumn": 21,
-      "problem": "InteropJsObjectUsage",
-      "autofix": [
+            "line": 47,
+            "column": 35,
+            "endLine": 47,
+            "endColumn": 38,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1391,
+                    "end": 1394,
+                    "replacementText": "111.0",
+                    "line": 47,
+                    "column": 35,
+                    "endLine": 47,
+                    "endColumn": 38
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
         {
-          "replacementText": "wiki.getPropertyByName('name').toString()",
-          "start": 1720,
-          "end": 1729,
-          "line": 62,
-          "column": 12,
-          "endLine": 62,
-          "endColumn": 21
-        }
-      ],
-      "suggest": "",
-      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 66,
-      "column": 28,
-      "endLine": 66,
-      "endColumn": 47,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 49,
+            "column": 7,
+            "endLine": 49,
+            "endColumn": 13,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1818,
-          "end": 1837,
-          "replacementText": "ClassA.instantiate().typeOf()",
-          "line": 66,
-          "column": 28,
-          "endLine": 66,
-          "endColumn": 47
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 66,
-      "column": 35,
-      "endLine": 66,
-      "endColumn": 47,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 61,
+            "column": 5,
+            "endLine": 61,
+            "endColumn": 21,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1701,
+                    "end": 1717,
+                    "replacementText": "wiki.getPropertyByName('name').typeOf()",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1825,
-          "end": 1837,
-          "replacementText": "ClassA.instantiate()",
-          "line": 66,
-          "column": 35,
-          "endLine": 66,
-          "endColumn": 47
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 70,
-      "column": 1,
-      "endLine": 70,
-      "endColumn": 13,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 61,
+            "column": 12,
+            "endLine": 61,
+            "endColumn": 21,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1708,
+                    "end": 1717,
+                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "line": 61,
+                    "column": 12,
+                    "endLine": 61,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1858,
-          "end": 1870,
-          "replacementText": "myAaa.typeOf()",
-          "line": 70,
-          "column": 1,
-          "endLine": 70,
-          "endColumn": 13
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 71,
-      "column": 1,
-      "endLine": 71,
-      "endColumn": 25,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 65,
+            "column": 28,
+            "endLine": 65,
+            "endColumn": 47,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1806,
+                    "end": 1825,
+                    "replacementText": "ClassA.instantiate().typeOf()",
+                    "line": 65,
+                    "column": 28,
+                    "endLine": 65,
+                    "endColumn": 47
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1880,
-          "end": 1904,
-          "replacementText": "Person.instantiate().getPropertyByName('name').typeOf()",
-          "line": 71,
-          "column": 1,
-          "endLine": 71,
-          "endColumn": 25
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 71,
-      "column": 8,
-      "endLine": 71,
-      "endColumn": 25,
-      "problem": "InteropJsObjectUsage",
-      "autofix": [
+            "line": 65,
+            "column": 35,
+            "endLine": 65,
+            "endColumn": 47,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1813,
+                    "end": 1825,
+                    "replacementText": "ClassA.instantiate()",
+                    "line": 65,
+                    "column": 35,
+                    "endLine": 65,
+                    "endColumn": 47
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "replacementText": "new Person().getPropertyByName('name').toString()",
-          "start": 1887,
-          "end": 1904,
-          "line": 71,
-          "column": 8,
-          "endLine": 71,
-          "endColumn": 25
-        }
-      ],
-      "suggest": "",
-      "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 71,
-      "column": 8,
-      "endLine": 71,
-      "endColumn": 20,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 69,
+            "column": 1,
+            "endLine": 69,
+            "endColumn": 13,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1846,
+                    "end": 1858,
+                    "replacementText": "myAaa.typeOf()",
+                    "line": 69,
+                    "column": 1,
+                    "endLine": 69,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1887,
-          "end": 1899,
-          "replacementText": "Person.instantiate()",
-          "line": 71,
-          "column": 8,
-          "endLine": 71,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 72,
-      "column": 1,
-      "endLine": 72,
-      "endColumn": 30,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 70,
+            "column": 1,
+            "endLine": 70,
+            "endColumn": 25,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1868,
+                    "end": 1892,
+                    "replacementText": "Person.instantiate().getPropertyByName('name').typeOf()",
+                    "line": 70,
+                    "column": 1,
+                    "endLine": 70,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1914,
-          "end": 1943,
-          "replacementText": "Person.instantiate().getPropertyByName('getName').invoke().typeOf()",
-          "line": 72,
-          "column": 1,
-          "endLine": 72,
-          "endColumn": 30
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 72,
-      "column": 8,
-      "endLine": 72,
-      "endColumn": 20,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 70,
+            "column": 8,
+            "endLine": 70,
+            "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1875,
+                    "end": 1892,
+                    "replacementText": "new Person().getPropertyByName(\"name\")",
+                    "line": 70,
+                    "column": 8,
+                    "endLine": 70,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1921,
-          "end": 1933,
-          "replacementText": "Person.instantiate()",
-          "line": 72,
-          "column": 8,
-          "endLine": 72,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 73,
-      "column": 1,
-      "endLine": 73,
-      "endColumn": 31,
-      "problem": "InterOpImportJsForTypeOf",
-      "autofix": [
+            "line": 70,
+            "column": 8,
+            "endLine": 70,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1875,
+                    "end": 1887,
+                    "replacementText": "Person.instantiate()",
+                    "line": 70,
+                    "column": 8,
+                    "endLine": 70,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1952,
-          "end": 1982,
-          "replacementText": "Person.instantiate().getPropertyByName('setAge').invoke(ESValue.wrap(22)).typeOf()",
-          "line": 73,
-          "column": 1,
-          "endLine": 73,
-          "endColumn": 31
-        }
-      ],
-      "suggest": "",
-      "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 73,
-      "column": 8,
-      "endLine": 73,
-      "endColumn": 31,
-      "problem": "LimitedVoidType",
-      "suggest": "",
-      "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 73,
-      "column": 8,
-      "endLine": 73,
-      "endColumn": 20,
-      "problem": "InstantiatedJsOjbect",
-      "autofix": [
+            "line": 71,
+            "column": 1,
+            "endLine": 71,
+            "endColumn": 30,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1902,
+                    "end": 1931,
+                    "replacementText": "Person.instantiate().invokeMethod(\"getName\").typeOf()",
+                    "line": 71,
+                    "column": 1,
+                    "endLine": 71,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1959,
-          "end": 1971,
-          "replacementText": "Person.instantiate()",
-          "line": 73,
-          "column": 8,
-          "endLine": 73,
-          "endColumn": 20
-        }
-      ],
-      "suggest": "",
-      "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 73,
-      "column": 28,
-      "endLine": 73,
-      "endColumn": 30,
-      "problem": "NumericSemantics",
-      "autofix": [
+            "line": 71,
+            "column": 8,
+            "endLine": 71,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1909,
+                    "end": 1921,
+                    "replacementText": "Person.instantiate()",
+                    "line": 71,
+                    "column": 8,
+                    "endLine": 71,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
         {
-          "start": 1979,
-          "end": 1981,
-          "replacementText": "22.0",
-          "line": 73,
-          "column": 28,
-          "endLine": 73,
-          "endColumn": 30
+            "line": 72,
+            "column": 1,
+            "endLine": 72,
+            "endColumn": 31,
+            "problem": "InterOpImportJsForTypeOf",
+            "autofix": [
+                {
+                    "start": 1940,
+                    "end": 1970,
+                    "replacementText": "Person.instantiate().invokeMethod(\"setAge\", ESValue.wrap(22)).typeOf()",
+                    "line": 72,
+                    "column": 1,
+                    "endLine": 72,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 31,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1947,
+                    "end": 1959,
+                    "replacementText": "Person.instantiate()",
+                    "line": 72,
+                    "column": 8,
+                    "endLine": 72,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 28,
+            "endLine": 72,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1967,
+                    "end": 1969,
+                    "replacementText": "22.0",
+                    "line": 72,
+                    "column": 28,
+                    "endLine": 72,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
         }
-      ],
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    }
-  ]
+    ]
 }

@@ -14,3 +14,60 @@
  */
 export let foo = {name: "123"}
 export let person = {age: 12, male: [1, 2, 3]}
+export class TestHelper {
+    constructor(testName) {
+        this.testName = testName;
+        this.passed = 0;
+        this.failed = 0;
+    }
+
+    test(testFunction, description) {
+        const result = testFunction();
+        if (result) {
+            this.passed++;
+            console.log(`[PASS] ${this.testName}: ${description}`);
+        } else {
+            this.failed++;
+            console.error(`[FAIL] ${this.testName}: ${description}`);
+        }      
+    }
+
+    getStats() {
+        return {
+            passed: this.passed,
+            failed: this.failed,
+            total: this.passed + this.failed
+        };
+    }
+
+    printSummary() {
+        const stats = this.getStats();
+    }
+}
+
+export class Machine {
+    name = "machine";
+}
+
+export class User {
+    id;
+    constructor(a){
+        this.id = a;
+    }
+}
+
+export class Person {
+    name;
+    age;
+    constructor(a, b){
+        this.name = a;
+        this.age = b;
+    }
+}
+
+export class Employee {
+    name;
+    constructor(a = "employee"){
+        this.name = a;
+    }
+}

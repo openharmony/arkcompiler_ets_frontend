@@ -179,7 +179,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"AnimatableExtend\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -200,7 +200,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -221,7 +221,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -242,7 +242,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -263,7 +263,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -284,7 +284,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -305,7 +305,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Curve\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -326,7 +326,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

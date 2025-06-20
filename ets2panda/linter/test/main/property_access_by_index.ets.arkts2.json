@@ -125,6 +125,36 @@
             "severity": "ERROR"
         },
         {
+            "line": 37,
+            "column": 1,
+            "endLine": 37,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 1,
+            "endLine": 38,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 1,
+            "endLine": 39,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 41,
             "column": 7,
             "endLine": 41,
@@ -495,6 +525,196 @@
             "severity": "ERROR"
         },
         {
+            "line": 70,
+            "column": 1,
+            "endLine": 70,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 1,
+            "endLine": 71,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 1,
+            "endLine": 72,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 1,
+            "endLine": 73,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 1,
+            "endLine": 74,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 1,
+            "endLine": 75,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 1,
+            "endLine": 76,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 1,
+            "endLine": 77,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 1,
+            "endLine": 78,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 1,
+            "endLine": 79,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 1,
+            "endLine": 80,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 1,
+            "endLine": 81,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 1,
+            "endLine": 82,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 1,
+            "endLine": 83,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 1,
+            "endLine": 84,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 1,
+            "endLine": 85,
+            "endColumn": 11,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 97,
+            "column": 1,
+            "endLine": 97,
+            "endColumn": 18,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 1,
+            "endLine": 98,
+            "endColumn": 17,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 1,
+            "endLine": 99,
+            "endColumn": 17,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
             "line": 105,
             "column": 31,
             "endLine": 105,
@@ -675,6 +895,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 176,
+            "column": 1,
+            "endLine": 176,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 177,
             "column": 23,
             "endLine": 177,
@@ -722,6 +952,56 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 192,
+            "column": 1,
+            "endLine": 192,
+            "endColumn": 5,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 1,
+            "endLine": 193,
+            "endColumn": 7,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 194,
+            "column": 1,
+            "endLine": 194,
+            "endColumn": 19,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 195,
+            "column": 1,
+            "endLine": 195,
+            "endColumn": 22,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 196,
+            "column": 1,
+            "endLine": 196,
+            "endColumn": 23,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
         }
     ]

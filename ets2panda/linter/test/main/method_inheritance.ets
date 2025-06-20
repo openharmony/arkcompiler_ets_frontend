@@ -18,7 +18,7 @@ abstract class Y {
 }
 
 class X extends Y {
-    async getDataByName(name: string, albumUri: string): Promise<undefined> {
+    async getDataByName(name: string, albumUri: string): Promise<undefined> { // error 2
         return;
     }
 }
@@ -38,7 +38,7 @@ abstract class W {
 }
 
 class Q extends W {
-    async getDataByName(name: string | number, albumUri: string | number): Promise<undefined> {
+    async getDataByName(name: string | number, albumUri: string | number): Promise<undefined> {// error 1
         return;
     };
 }
@@ -48,7 +48,7 @@ abstract class BaseClass3 {
 }
 
 class IncorrectWiderReturn extends BaseClass3 {
-    compute(value: string): string | number {
+    compute(value: string): string | number {// error 1
         return value.length > 5 ? value : 0;
     }
 }
@@ -58,7 +58,7 @@ abstract class BaseClass4 {
 }
 
 class IncorrectMultipleParamMismatch extends BaseClass4 {
-    setValues(x: string, y: boolean): void {
+    setValues(x: string, y: boolean): void {// error 2
         console.log(x, y);
     }
 }
@@ -68,7 +68,7 @@ abstract class BaseClass5 {
 }
 
 class IncorrectBothMismatch extends BaseClass5 {
-    transform(data: number): number | string {
+    transform(data: number): number | string {// error 2
         return data > 10 ? data : "too small";
     }
 }
@@ -97,3 +97,122 @@ class CorrectBothWiderParamNarrowReturn extends BaseClass {
 }
 
 
+class A1 {
+  a: number = 0
+}
+class B1 {
+  a: number = 0
+}
+class C {
+  a: number = 0
+}
+
+class Base {
+  foo(obj: A1 | B1): void {
+    console.log("base")
+  }
+  foo2(obj: A1 | B1): void {
+    console.log("base")
+  }
+  foo3(obj: A1 | B1 | C): void {
+    console.log("base")
+  }
+}
+
+// extends
+class Derived extends Base {
+  foo(obj: A1): void {      // error 1
+    console.log("Derived:" + obj.a)
+  }
+  foo2(): void {   // error 1
+    console.log("Derived:")
+  }
+  foo3(obj: A1 | B1): void {   // error 1
+    console.log("Derived:")
+  }
+}
+
+interface  BaseI {
+  foo(obj: A1 | B1):void;
+  foo2(obj: A1): void;
+  foo3(obj: A1 | B1 | C): void;
+}
+
+// implements
+class Derived2 implements BaseI {
+  foo(obj: A1): void {   // error 1
+    console.log("Drived");
+  }
+  foo2(): void {   // error 1
+    console.log("Drived");
+  }
+  foo3(obj: A1 | B1): void {   // error 1
+    console.log("Drived");  
+  }
+}
+
+class Base2 {
+  foo(): A1|B1 {
+    console.log("base")
+    return new A1();
+  }
+  foo2(){
+    console.log("base")
+    // return new A();
+  }
+  foo3():  A1 {
+    console.log("base")
+    return new A1();
+  }
+  foo4():void{
+    console.log("base")
+    // return new A();
+  }
+}
+
+//extends
+class Derived3 extends Base2 {
+  foo(): A1|B1|C{      // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+
+  foo2(): A1{      // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+
+  foo3(): A1|B1 {   // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+  foo4(): A1{      // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+}
+
+
+interface  Base3 {
+  foo(): A1|B1 ;
+  foo2(): void;
+  foo3(): A1;
+}
+
+// implements
+class Derived4 implements  Base3 {
+  foo(): A1|B1|C{      // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+
+  foo2(): A1{      // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+
+  foo3(): A1|B1 {   // error 1
+    console.log("Derived:")
+    return new A1();
+  }
+}

@@ -128,11 +128,23 @@ class A{
 let a:A = { "age": 30}  
 
 
-class B{
+class B {
   public 'age': number = 1 // error in arkts2
 }
 
 let obj11: Record<string, number> = {
-['value']: 1, // 误扫
-'value2': 1 // ok
+  ['value']: 1, // Error in arkts 2.0
+  'value2': 1 // ok
 }
+
+class CompPropClass {
+  ['CompProp'] = 1; // Error in arkts 2.0
+  [2] = 'CompProp2'; // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One] = 3; // Error in arkts 2.0
+}
+
+let compPropObj = {
+  ['CompProp']: 1, // Error in arkts 2.0
+  [2]: 'CompProp2', // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One]: 3 // Error in arkts 2.0
+};

@@ -15,35 +15,29 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 46,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 46,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 618,
-                    "end": 663,
+                    "start": 605,
+                    "end": 650,
                     "replacementText": "",
-                    "line": 17,
+                    "line": 16,
                     "column": 1,
-                    "endLine": 17,
+                    "endLine": 16,
                     "endColumn": 46
                 },
                 {
-                    "start": 663,
-                    "end": 663,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "start": 650,
+                    "end": 650,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 46
                 }
             ],
             "suggest": "",
@@ -51,6 +45,48 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 653,
+                    "end": 660,
+                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 2,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 653,
+                    "end": 660,
+                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "line": 18,
+                    "column": 2,
+                    "endLine": 18,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -58,8 +94,8 @@
             "problem": "InteropNoHaveNum",
             "autofix": [
                 {
-                    "start": 666,
-                    "end": 673,
+                    "start": 663,
+                    "end": 670,
                     "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
                     "line": 19,
                     "column": 1,
@@ -79,8 +115,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 666,
-                    "end": 673,
+                    "start": 663,
+                    "end": 670,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 19,
                     "column": 2,
@@ -93,27 +129,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 2,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 666,
-                    "end": 673,
-                    "line": 19,
-                    "column": 2,
-                    "endLine": 19,
-                    "endColumn": 9
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 1,
             "endLine": 20,
@@ -121,8 +136,8 @@
             "problem": "InteropNoHaveNum",
             "autofix": [
                 {
-                    "start": 676,
-                    "end": 683,
+                    "start": 673,
+                    "end": 680,
                     "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
                     "line": 20,
                     "column": 1,
@@ -142,8 +157,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 676,
-                    "end": 683,
+                    "start": 673,
+                    "end": 680,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 20,
                     "column": 2,
@@ -156,27 +171,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 2,
-            "endLine": 20,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 676,
-                    "end": 683,
-                    "line": 20,
-                    "column": 2,
-                    "endLine": 20,
-                    "endColumn": 9
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 21,
             "column": 1,
             "endLine": 21,
@@ -184,8 +178,8 @@
             "problem": "InteropNoHaveNum",
             "autofix": [
                 {
-                    "start": 686,
-                    "end": 693,
+                    "start": 683,
+                    "end": 690,
                     "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
                     "line": 21,
                     "column": 1,
@@ -205,8 +199,8 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 686,
-                    "end": 693,
+                    "start": 683,
+                    "end": 690,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 21,
                     "column": 2,
@@ -219,41 +213,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 2,
-            "endLine": 21,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 686,
-                    "end": 693,
-                    "line": 21,
-                    "column": 2,
-                    "endLine": 21,
-                    "endColumn": 9
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 1,
             "endLine": 22,
-            "endColumn": 9,
+            "endColumn": 11,
             "problem": "InteropNoHaveNum",
             "autofix": [
                 {
-                    "start": 696,
-                    "end": 703,
-                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "start": 693,
+                    "end": 702,
+                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,
-                    "endColumn": 9
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -262,44 +235,23 @@
         },
         {
             "line": 22,
-            "column": 2,
+            "column": 3,
             "endLine": 22,
-            "endColumn": 9,
+            "endColumn": 10,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 696,
-                    "end": 703,
+                    "start": 694,
+                    "end": 701,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 22,
-                    "column": 2,
+                    "column": 3,
                     "endLine": 22,
-                    "endColumn": 9
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 2,
-            "endLine": 22,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 696,
-                    "end": 703,
-                    "line": 22,
-                    "column": 2,
-                    "endLine": 22,
-                    "endColumn": 9
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         },
         {
@@ -308,31 +260,31 @@
             "endLine": 23,
             "endColumn": 11,
             "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 705,
+                    "end": 714,
+                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 10,
+            "problem": "InteropObjectProperty",
             "autofix": [
                 {
                     "start": 706,
-                    "end": 715,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
-                    "line": 23,
-                    "column": 1,
-                    "endLine": 23,
-                    "endColumn": 11
-                }
-            ],
-            "suggest": "",
-            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
-            "column": 3,
-            "endLine": 23,
-            "endColumn": 10,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 707,
-                    "end": 714,
+                    "end": 713,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 23,
                     "column": 3,
@@ -345,57 +297,36 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 3,
-            "endLine": 23,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 707,
-                    "end": 714,
-                    "line": 23,
-                    "column": 3,
-                    "endLine": 23,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 24,
             "column": 1,
             "endLine": 24,
             "endColumn": 11,
             "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 717,
+                    "end": 726,
+                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 3,
+            "endLine": 24,
+            "endColumn": 10,
+            "problem": "InteropObjectProperty",
             "autofix": [
                 {
                     "start": 718,
-                    "end": 727,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
-                    "line": 24,
-                    "column": 1,
-                    "endLine": 24,
-                    "endColumn": 11
-                }
-            ],
-            "suggest": "",
-            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 3,
-            "endLine": 24,
-            "endColumn": 10,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 719,
-                    "end": 726,
+                    "end": 725,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 24,
                     "column": 3,
@@ -408,57 +339,36 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 3,
-            "endLine": 24,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 719,
-                    "end": 726,
-                    "line": 24,
-                    "column": 3,
-                    "endLine": 24,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
             "line": 25,
             "column": 1,
             "endLine": 25,
             "endColumn": 11,
             "problem": "InteropNoHaveNum",
+            "autofix": [
+                {
+                    "start": 729,
+                    "end": 738,
+                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 3,
+            "endLine": 25,
+            "endColumn": 10,
+            "problem": "InteropObjectProperty",
             "autofix": [
                 {
                     "start": 730,
-                    "end": 739,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
-                    "line": 25,
-                    "column": 1,
-                    "endLine": 25,
-                    "endColumn": 11
-                }
-            ],
-            "suggest": "",
-            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 3,
-            "endLine": 25,
-            "endColumn": 10,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 731,
-                    "end": 738,
+                    "end": 737,
                     "replacementText": "foo.getPropertyByName(\"num\")",
                     "line": 25,
                     "column": 3,
@@ -468,90 +378,6 @@
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 3,
-            "endLine": 25,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 731,
-                    "end": 738,
-                    "line": 25,
-                    "column": 3,
-                    "endLine": 25,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 1,
-            "endLine": 26,
-            "endColumn": 11,
-            "problem": "InteropNoHaveNum",
-            "autofix": [
-                {
-                    "start": 742,
-                    "end": 751,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
-                    "line": 26,
-                    "column": 1,
-                    "endLine": 26,
-                    "endColumn": 11
-                }
-            ],
-            "suggest": "",
-            "rule": "Interop object does not have property num (arkts-interop-js2s-unary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 3,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "InteropObjectProperty",
-            "autofix": [
-                {
-                    "start": 743,
-                    "end": 750,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
-                    "line": 26,
-                    "column": 3,
-                    "endLine": 26,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 3,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 743,
-                    "end": 750,
-                    "line": 26,
-                    "column": 3,
-                    "endLine": 26,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         }
     ]

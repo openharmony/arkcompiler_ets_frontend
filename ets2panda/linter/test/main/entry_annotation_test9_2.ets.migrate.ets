@@ -15,7 +15,7 @@
 
 import { Entry, Component, Text, LocalStorage } from '@ohos.arkui.components';
 
-const __get_local_storage__ = (): LocalStorage => specialAutofixLib.globalThis.get("localStorage");
+const __get_local_storage__ = (): LocalStorage => globalThis.localStorage;
 @Entry({storage: "__get_local_storage__"})
 @Component
 struct MyPage {

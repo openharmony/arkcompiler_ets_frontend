@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 5,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 69,
             "problem": "AnyType",
             "suggest": "",
@@ -25,13 +25,23 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 5,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 56,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 41,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
             "severity": "ERROR"
         },
         {
@@ -45,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 23,
             "column": 1,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 41,
             "problem": "UnaryArithmNotNumber",
             "suggest": "",
@@ -58,7 +68,7 @@
             "line": 24,
             "column": 1,
             "endLine": 24,
-            "endColumn": 41,
+            "endColumn": 43,
             "problem": "UnaryArithmNotNumber",
             "suggest": "",
             "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
@@ -75,19 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 27,
             "column": 1,
-            "endLine": 26,
-            "endColumn": 43,
-            "problem": "UnaryArithmNotNumber",
-            "suggest": "",
-            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
+            "endLine": 27,
             "endColumn": 43,
             "problem": "UnaryArithmNotNumber",
             "suggest": "",

@@ -208,6 +208,8 @@
     "@migration/interop-dynamic-object-literals": 1,
     "@migration/interop-assign": 1,
     "@migration/interop-boxed-type-check": 1,
-    "@migration/interop-js-modify-property": 1
+    "@migration/interop-js-modify-property": 1,
+    "@migration/arkts-interop-s2d-object-literal": 1,
+    "@migration/arkts-interop-s2d-dynamic-call-builtin-api-not-in-static": 1
   }
 }

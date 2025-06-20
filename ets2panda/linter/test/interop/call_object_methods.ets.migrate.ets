@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 let GeneratedImportVar_1 = ESValue.load('./call_object_methods_js');
 let foo = GeneratedImportVar_1.getPropertyByName('foo');
 

@@ -13,8 +13,30 @@
  * limitations under the License.
  */
 
-import {cloudDatabase} from '@hms.core.deviceCloudGateway.cloudDatabase';
+import cloudDatabase from '@hms.core.deviceCloudGateway.cloudDatabase';
 class Test extends cloudDatabase.DatabaseObject{
-  
+  query = new cloudDatabase.DatabaseQuery(Test); //Error
+  equalTo(){
+    return this.query.equalTo('test','');
+  }
 }
-new cloudDatabase.DatabaseQuery(Test); // NOT OK
+const  localQuery = new cloudDatabase.DatabaseQuery(Test); //Error
+class LocalDatabaseQuery extends cloudDatabase.DatabaseQuery<Test>{ //Error
+  query = new cloudDatabase.DatabaseQuery(Test); //Error
+  set(query:cloudDatabase.DatabaseQuery<Test>){ //Error
+    query.equalTo('test','');
+  }
+  getTypeQuery(): cloudDatabase.DatabaseQuery<Test> { //Error
+    typeof new cloudDatabase.DatabaseQuery(Test); //Error
+    return new cloudDatabase.DatabaseQuery(Test); //Error
+  }
+  getEqual(){
+    this.query = new Test().equalTo(); //Error?
+  }
+
+}
+function useDatabaseQuery1(query:cloudDatabase.DatabaseQuery<Test>){ //Error
+  console.log(' '+new cloudDatabase.DatabaseQuery(Test)); //Error
+}
+class DatabaseQuery{}
+new DatabaseQuery();

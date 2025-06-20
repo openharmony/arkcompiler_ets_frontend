@@ -211,7 +211,7 @@
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -221,7 +221,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -231,7 +231,7 @@
             "endColumn": 62,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -241,7 +241,7 @@
             "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -251,7 +251,7 @@
             "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"List\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -261,7 +261,7 @@
             "endColumn": 14,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"ForEach\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -271,7 +271,7 @@
             "endColumn": 17,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"ListItem\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -281,7 +281,7 @@
             "endColumn": 15,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {

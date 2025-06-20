@@ -13,18 +13,14 @@
  * limitations under the License.
 */
 
-function test() {
-  try {
-    let a: number = 1;
-  } catch (e) {
-    console.log('catch')
-  }
+try {
+  throw new Error();
+} catch(e) {
+  e.message;
+  e.prop;
 }
 
-function test2() {
-  try {
-    let a: number = 1;
-  } catch (e: any) {
-    console.log('catch')
-  }
+try {
+  throw new Error();
+} catch(e) {
 }

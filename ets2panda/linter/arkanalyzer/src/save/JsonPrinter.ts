@@ -22,20 +22,20 @@ import { ArkField } from '../core/model/ArkField';
 import {
     AliasType,
     AnnotationNamespaceType,
-    AnnotationType,
     AnnotationTypeQueryType,
     AnyType,
     ArrayType,
     BigIntType,
     BooleanType,
     ClassType,
+    EnumValueType,
     FunctionType,
     GenericType,
+    IntersectionType,
     LiteralType,
     NeverType,
     NullType,
     NumberType,
-    PrimitiveType,
     StringType,
     TupleType,
     Type,
@@ -46,11 +46,16 @@ import {
     VoidType,
 } from '../core/base/Type';
 import { Value } from '../core/base/Value';
-import { ArkAssignStmt, ArkIfStmt, ArkInvokeStmt, ArkReturnStmt, ArkReturnVoidStmt, ArkThrowStmt, Stmt } from '../core/base/Stmt';
 import {
-    AbstractBinopExpr,
-    AbstractExpr,
-    AbstractInvokeExpr,
+    ArkAssignStmt,
+    ArkIfStmt,
+    ArkInvokeStmt,
+    ArkReturnStmt,
+    ArkReturnVoidStmt,
+    ArkThrowStmt,
+    Stmt,
+} from '../core/base/Stmt';
+import {
     ArkAwaitExpr,
     ArkCastExpr,
     ArkConditionExpr,
@@ -73,13 +78,12 @@ import { ImportInfo } from '../core/model/ArkImport';
 import { ExportInfo } from '../core/model/ArkExport';
 import { AliasTypeSignature, ClassSignature, FieldSignature, FileSignature, MethodSignature, NamespaceSignature } from '../core/model/ArkSignature';
 import { LineColPosition } from '../core/base/Position';
-import { AbstractFieldRef, AbstractRef, ArkArrayRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef, ArkThisRef } from '../core/base/Ref';
+import { ArkArrayRef, ArkCaughtExceptionRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef, ArkThisRef, ClosureFieldRef, GlobalRef } from '../core/base/Ref';
 import { Local } from '../core/base/Local';
 import { Cfg } from '../core/graph/Cfg';
 import { BasicBlock } from '../core/graph/BasicBlock';
 import { ArkBody } from '../core/model/ArkBody';
 import { Decorator } from '../core/base/Decorator';
-import util from 'util';
 
 export class JsonPrinter extends Printer {
     constructor(private arkFile: ArkFile) {
@@ -113,8 +117,9 @@ export class JsonPrinter extends Printer {
         return {
             signature: this.serializeClassSignature(clazz.getSignature()),
             modifiers: clazz.getModifiers(),
-            decorators: clazz.getDecorators().map(decorator => this.serializeDecorator(decorator)),
-            typeParameters: clazz.getGenericsTypes()?.map(type => this.serializeType(type)),
+            decorators: clazz.getDecorators().map((decorator) => this.serializeDecorator(decorator)),
+            typeParameters: clazz.getGenericsTypes()?.map((type) => this.serializeType(type)),
+            category: clazz.getCategory(),
             superClassName: clazz.getSuperClassName(),
             implementedInterfaceNames: clazz.getImplementedInterfaceNames(),
             fields: clazz.getFields().map(field => this.serializeField(field)),
@@ -155,6 +160,7 @@ export class JsonPrinter extends Printer {
             name: parameter.getName(),
             type: this.serializeType(parameter.getType()),
             isOptional: parameter.isOptional(),
+            isRest: parameter.hasDotDotDotToken(),
         };
     }
 
@@ -220,6 +226,11 @@ export class JsonPrinter extends Printer {
                 _: 'UnionType',
                 types: type.getTypes().map(type => this.serializeType(type)),
             };
+        } else if (type instanceof IntersectionType) {
+            return {
+                _: 'IntersectionType',
+                types: type.getTypes().map((type) => this.serializeType(type)),
+            };
         } else if (type instanceof TupleType) {
             return {
                 _: 'TupleType',
@@ -254,8 +265,6 @@ export class JsonPrinter extends Printer {
                 _: 'LiteralType',
                 literal: type.getLiteralName(),
             };
-        } else if (type instanceof PrimitiveType) {
-            throw new Error('Unhandled PrimitiveType: ' + util.inspect(type, { showHidden: true, depth: null }));
         } else if (type instanceof ClassType) {
             return {
                 _: 'ClassType',
@@ -281,13 +290,13 @@ export class JsonPrinter extends Printer {
                 typeParameters: type.getGenericTypes().map(type => this.serializeType(type)),
             };
         } else if (type instanceof GenericType) {
-            let defaultType = type.getDefaultType();
             let constraint = type.getConstraint();
+            let defaultType = type.getDefaultType();
             return {
                 _: 'GenericType',
                 name: type.getName(),
-                defaultType: defaultType && this.serializeType(defaultType),
                 constraint: constraint && this.serializeType(constraint),
+                defaultType: defaultType && this.serializeType(defaultType),
             };
         } else if (type instanceof AliasType) {
             return {
@@ -307,10 +316,19 @@ export class JsonPrinter extends Printer {
                 _: 'AnnotationTypeQueryType',
                 originType: type.getOriginType(),
             };
-        } else if (type instanceof AnnotationType) {
-            throw new Error('Unhandled AnnotationType: ' + util.inspect(type, { showHidden: true, depth: null }));
+        } else if (type instanceof EnumValueType) {
+            const c = type.getConstant();
+            return {
+                _: 'EnumValueType',
+                signature: this.serializeFieldSignature(type.getFieldSignature()),
+                constant: c && this.serializeValue(c),
+            };
         } else {
-            throw new Error('Unhandled Type: ' + util.inspect(type, { showHidden: true, depth: null }));
+            console.warn(`Unhandled Type: ${type.constructor.name} (${type.toString()})`);
+            return {
+                _: type.constructor.name,
+                text: type.toString(),
+            };
         }
     }
 
@@ -415,6 +433,13 @@ export class JsonPrinter extends Printer {
         };
     }
 
+    private serializeConstant(constant: Constant): object {
+        return {
+            value: constant.getValue(),
+            type: this.serializeType(constant.getType()),
+        };
+    }
+
     private serializeValue(value: Value): object {
         if (value === undefined) {
             throw new Error('Value is undefined');
@@ -428,8 +453,7 @@ export class JsonPrinter extends Printer {
         } else if (value instanceof Constant) {
             return {
                 _: 'Constant',
-                value: value.getValue(),
-                type: this.serializeType(value.getType()),
+                ...this.serializeConstant(value),
             };
         } else if (value instanceof ArkNewExpr) {
             return {
@@ -498,8 +522,6 @@ export class JsonPrinter extends Printer {
                 left: this.serializeValue(value.getOp1()),
                 right: this.serializeValue(value.getOp2()),
             };
-        } else if (value instanceof AbstractBinopExpr) {
-            return new Error('Unhandled BinopExpr: ' + util.inspect(value, { showHidden: true, depth: null }));
         } else if (value instanceof ArkUnopExpr) {
             return {
                 _: 'UnopExpr',
@@ -526,8 +548,6 @@ export class JsonPrinter extends Printer {
                 method: this.serializeMethodSignature(value.getMethodSignature()),
                 args: value.getArgs().map(arg => this.serializeValue(arg)),
             };
-        } else if (value instanceof AbstractInvokeExpr) {
-            throw new Error('Unhandled CallExpr: ' + util.inspect(value, { showHidden: true, depth: null }));
         } else if (value instanceof ArkThisRef) {
             return {
                 _: 'ThisRef',
@@ -546,6 +566,25 @@ export class JsonPrinter extends Printer {
                 index: this.serializeValue(value.getIndex()),
                 type: this.serializeType(value.getType()),
             };
+        } else if (value instanceof ArkCaughtExceptionRef) {
+            return {
+                _: 'CaughtExceptionRef',
+                type: this.serializeType(value.getType()),
+            };
+        } else if (value instanceof GlobalRef) {
+            let ref = value.getRef();
+            return {
+                _: 'GlobalRef',
+                name: value.getName(),
+                ref: ref ? this.serializeValue(ref) : null,
+            };
+        } else if (value instanceof ClosureFieldRef) {
+            return {
+                _: 'ClosureFieldRef',
+                base: this.serializeLocal(value.getBase()),
+                fieldName: value.getFieldName(),
+                type: this.serializeType(value.getType()),
+            };
         } else if (value instanceof ArkInstanceFieldRef) {
             return {
                 _: 'InstanceFieldRef',
@@ -557,14 +596,13 @@ export class JsonPrinter extends Printer {
                 _: 'StaticFieldRef',
                 field: this.serializeFieldSignature(value.getFieldSignature()),
             };
-        } else if (value instanceof AbstractFieldRef) {
-            throw new Error('Unhandled FieldRef: ' + util.inspect(value, { showHidden: true, depth: null }));
-        } else if (value instanceof AbstractRef) {
-            throw new Error('Unhandled Ref: ' + util.inspect(value, { showHidden: true, depth: null }));
-        } else if (value instanceof AbstractExpr) {
-            throw new Error('Unhandled Expr: ' + util.inspect(value, { showHidden: true, depth: null }));
         } else {
-            throw new Error('Unhandled Value: ' + util.inspect(value, { showHidden: true, depth: null }));
+            console.warn(`Unhandled Value: ${value.constructor.name} (${value.toString()})`);
+            return {
+                _: value.constructor.name,
+                text: value.toString(),
+                type: this.serializeType(value.getType()),
+            };
         }
     }
 
@@ -600,7 +638,11 @@ export class JsonPrinter extends Printer {
                 arg: this.serializeValue(stmt.getOp()),
             };
         } else {
-            throw new Error('Unhandled Stmt: ' + util.inspect(stmt, { showHidden: true, depth: null }));
+            console.warn(`Unhandled Stmt: ${stmt.constructor.name} (${stmt.toString()})`);
+            return {
+                _: stmt.constructor.name,
+                text: stmt.toString(),
+            };
         }
     }
 }

@@ -68,7 +68,7 @@ export class ObjectLiteralCheck implements BaseChecker {
 
         for (let arkFile of scene.getFiles()) {
             const topLevelVarMap: Map<string, Stmt[]> = new Map();
-            this.collectImportedVar(topLevelVarMap, arkFile);
+            this.collectImportedVar(topLevelVarMap, arkFile, scene);
             this.collectTopLevelVar(topLevelVarMap, arkFile, scene);
 
             const handleClass = (cls: ArkClass): void => {
@@ -106,7 +106,7 @@ export class ObjectLiteralCheck implements BaseChecker {
         }
     }
 
-    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile) {
+    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene) {
         file.getImportInfos().forEach(importInfo => {
             const exportInfo = importInfo.getLazyExportInfo();
             if (exportInfo === null) {
@@ -120,6 +120,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             if (!declaringStmt) {
                 return;
             }
+            DVFGHelper.buildSingleDVFG(declaringStmt.getCfg().getDeclaringMethod(), scene);
             importVarMap.set(arkExport.getName(), [declaringStmt]);
         });
     }
@@ -382,7 +383,7 @@ export class ObjectLiteralCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();
