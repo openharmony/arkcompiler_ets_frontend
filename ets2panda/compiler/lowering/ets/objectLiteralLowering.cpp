@@ -14,7 +14,6 @@
  */
 
 #include "objectLiteralLowering.h"
-
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
@@ -130,6 +129,11 @@ static void PopulateCtorArgumentsFromMap(public_lib::Context *ctx, ir::ObjectExp
             ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
             continue;
         }
+        if (ctorArgument == nullptr && param->TsType()->PossiblyETSUndefined()) {
+            ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
+            continue;
+        }
+        ES2PANDA_ASSERT(ctorArgument != nullptr);
         ctorArguments.push_back(ctorArgument);
     }
 }
