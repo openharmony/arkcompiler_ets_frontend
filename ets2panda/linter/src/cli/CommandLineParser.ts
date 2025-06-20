@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-import { Logger } from '../lib/Logger';
-import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
-import type { CommandLineOptions } from '../lib/CommandLineOptions';
-import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
 import type { OptionValues } from 'commander';
 import { Command, Option } from 'commander';
-import * as ts from 'typescript';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as ts from 'typescript';
+import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { Logger } from '../lib/Logger';
+import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
+import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
 
 const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
@@ -182,6 +182,7 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   }
   if (options.projectFolder) {
     doProjectFolderArg(options.projectFolder, opts);
+    opts.linterOptions.projectFolderList = options.projectFolder;
   }
   if (options.project) {
     doProjectArg(options.project, opts);

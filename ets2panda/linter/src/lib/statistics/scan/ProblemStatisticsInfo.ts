@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-import type { ProblemInfo } from './ProblemInfo';
-import type { ProjectStatistics } from './statistics/ProjectStatistics';
-import type { TimeRecorder } from './statistics/scan/TimeRecorder';
+import type { RuleDetailedErrorInfo } from './RuleDetailedErrorInfo';
+import type { WorkLoadInfo } from './WorkLoadInfo';
 
-export interface LintRunResult {
-  hasErrors: boolean;
-  problemsInfos: Map<string, ProblemInfo[]>;
-  projectStats: ProjectStatistics;
-  timeRecorder?: TimeRecorder;
+export interface ProblemStatisticsInfo {
+  problems: { [k: string]: number };
+  usedTime: { [k: string]: string };
+  eachRuleProblemsDetail: RuleDetailedErrorInfo[];
+  WorkLoadInfo?: WorkLoadInfo;
 }

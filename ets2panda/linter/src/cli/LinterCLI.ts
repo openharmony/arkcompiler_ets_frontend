@@ -13,21 +13,25 @@
  * limitations under the License.
  */
 
+import { MigrationTool } from 'homecheck';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import * as readlineSync from 'readline-sync';
 import * as readline from 'node:readline';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
 import { lint } from '../lib/LinterRunner';
 import { Logger } from '../lib/Logger';
 import type { ProblemInfo } from '../lib/ProblemInfo';
-import { parseCommandLine } from './CommandLineParser';
-import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
+import * as statistic from '../lib/statistics/scan/ProblemStatisticsCommonFunction';
+import type { ScanTaskRelatedInfo } from '../lib/statistics/scan/ScanTaskRelatedInfo';
+import { StatisticsReportInPutInfo } from '../lib/statistics/scan/StatisticsReportInPutInfo';
+import { TimeRecorder } from '../lib/statistics/scan/TimeRecorder';
 import { logStatistics } from '../lib/statistics/StatisticsLogger';
-import { MigrationTool } from 'homecheck';
-import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
+import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
 import { processSyncErr, processSyncOut } from '../lib/utils/functions/ProcessWrite';
+import { parseCommandLine } from './CommandLineParser';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -51,7 +55,7 @@ export function run(): void {
     runIdeInteractiveMode(cmdOptions);
   } else {
     const compileOptions = compileLintOptions(cmdOptions);
-    const result = lint(compileOptions);
+    const result = lint(compileOptions, new TimeRecorder());
     logStatistics(result.projectStats);
     process.exit(result.hasErrors ? 1 : 0);
   }
@@ -60,42 +64,107 @@ export function run(): void {
 async function runIdeInteractiveMode(cmdOptions: CommandLineOptions): Promise<void> {
   cmdOptions.followSdkSettings = true;
   cmdOptions.disableStrictDiagnostics = true;
+  const timeRecorder = new TimeRecorder();
+  const scanTaskRelatedInfo = {} as ScanTaskRelatedInfo;
   const compileOptions = compileLintOptions(cmdOptions);
-  let homeCheckResult = new Map<string, ProblemInfo[]>();
-  const mergedProblems = new Map<string, ProblemInfo[]>();
+  scanTaskRelatedInfo.cmdOptions = cmdOptions;
+  scanTaskRelatedInfo.timeRecorder = timeRecorder;
+  scanTaskRelatedInfo.compileOptions = compileOptions;
+  await executeScanTask(scanTaskRelatedInfo);
 
-  if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
-    const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
-    let migrationTool: MigrationTool | null = new MigrationTool(ruleConfigInfo, projectConfigInfo);
-    await migrationTool.buildCheckEntry();
-    const result = await migrationTool.start();
-    migrationTool = null;
+  const statisticsReportInPutInfo = scanTaskRelatedInfo.statisticsReportInPutInfo;
+  statisticsReportInPutInfo.statisticsReportName = 'scan-problems-statistics.json';
+  statisticsReportInPutInfo.totalProblemNumbers = getTotalProblemNumbers(scanTaskRelatedInfo.mergedProblems);
+  statisticsReportInPutInfo.cmdOptions = cmdOptions;
+  statisticsReportInPutInfo.timeRecorder = timeRecorder;
 
-    homeCheckResult = transferIssues2ProblemInfo(result);
-    for (const [filePath, problems] of homeCheckResult) {
-      if (!mergedProblems.has(filePath)) {
-        mergedProblems.set(filePath, []);
-      }
-      mergedProblems.get(filePath)!.push(...problems);
-    }
+  if (!cmdOptions.linterOptions.migratorMode && statisticsReportInPutInfo.cmdOptions.linterOptions.projectFolderList) {
+    await statistic.generateScanProbelemStatisticsReport(statisticsReportInPutInfo);
   }
 
-  if (!cmdOptions.skipLinter) {
-    const result = lint(compileOptions, getEtsLoaderPath(compileOptions), homeCheckResult);
-    for (const [filePath, problems] of result.problemsInfos) {
-      mergeLintProblems(filePath, problems, mergedProblems, cmdOptions);
-    }
-  }
-
+  const mergedProblems = scanTaskRelatedInfo.mergedProblems;
   const reportData = Object.fromEntries(mergedProblems);
-  await generateReportFile(reportData, cmdOptions.outputFilePath);
-
+  const reportName: string = 'scan-report.json';
+  await statistic.generateReportFile(reportName, reportData, cmdOptions.outputFilePath);
   for (const [filePath, problems] of mergedProblems) {
     const reportLine = JSON.stringify({ filePath, problems }) + '\n';
     await processSyncOut(reportLine);
   }
   await processSyncErr('{"content":"report finish","messageType":1,"indictor":1}\n');
   process.exit(0);
+}
+
+function getTotalProblemNumbers(mergedProblems: Map<string, ProblemInfo[]>): number {
+  let totalProblemNumbers: number = 0;
+  for (const problems of mergedProblems.values()) {
+    totalProblemNumbers += problems.length;
+  }
+  return totalProblemNumbers;
+}
+
+async function executeScanTask(scanTaskRelatedInfo: ScanTaskRelatedInfo): Promise<void> {
+  const cmdOptions = scanTaskRelatedInfo.cmdOptions;
+  scanTaskRelatedInfo.statisticsReportInPutInfo = new StatisticsReportInPutInfo();
+  scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToNumbersMap = new Map();
+  scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToAutoFixedNumbersMap = new Map();
+  scanTaskRelatedInfo.mergedProblems = new Map<string, ProblemInfo[]>();
+  if (cmdOptions.linterOptions.arkts2 && cmdOptions.homecheck) {
+    await executeHomeCheckTask(scanTaskRelatedInfo);
+  }
+
+  if (!cmdOptions.skipLinter) {
+    executeLintTask(scanTaskRelatedInfo);
+  }
+}
+
+async function executeHomeCheckTask(scanTaskRelatedInfo: ScanTaskRelatedInfo): Promise<void> {
+  const cmdOptions = scanTaskRelatedInfo.cmdOptions;
+  const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
+  let migrationTool: MigrationTool | null = new MigrationTool(ruleConfigInfo, projectConfigInfo);
+  await migrationTool.buildCheckEntry();
+  scanTaskRelatedInfo.timeRecorder.startScan();
+  scanTaskRelatedInfo.timeRecorder.setHomeCheckCountStatus(true);
+  const result = await migrationTool.start();
+  migrationTool = null;
+  scanTaskRelatedInfo.homeCheckResult = transferIssues2ProblemInfo(result);
+  for (const [filePath, problems] of scanTaskRelatedInfo.homeCheckResult) {
+    if (!scanTaskRelatedInfo.mergedProblems.has(filePath)) {
+      scanTaskRelatedInfo.mergedProblems.set(filePath, []);
+    }
+    statistic.accumulateRuleNumbers(
+      problems,
+      scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToNumbersMap,
+      scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToAutoFixedNumbersMap
+    );
+    scanTaskRelatedInfo.statisticsReportInPutInfo.arkOnePointOneProblemNumbers +=
+      statistic.getArktsOnePointOneProlemNumbers(problems);
+    scanTaskRelatedInfo.mergedProblems.get(filePath)!.push(...problems);
+  }
+}
+
+function executeLintTask(scanTaskRelatedInfo: ScanTaskRelatedInfo): void {
+  const cmdOptions = scanTaskRelatedInfo.cmdOptions;
+  const compileOptions = scanTaskRelatedInfo.compileOptions;
+  const homeCheckResult = scanTaskRelatedInfo.homeCheckResult;
+  if (!scanTaskRelatedInfo.timeRecorder.getHomeCheckCountStatus()) {
+    scanTaskRelatedInfo.timeRecorder.startScan();
+  }
+  const result = lint(
+    compileOptions,
+    scanTaskRelatedInfo.timeRecorder,
+    getEtsLoaderPath(compileOptions),
+    homeCheckResult
+  );
+  for (const [filePath, problems] of result.problemsInfos) {
+    statistic.accumulateRuleNumbers(
+      problems,
+      scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToNumbersMap,
+      scanTaskRelatedInfo.statisticsReportInPutInfo.ruleToAutoFixedNumbersMap
+    );
+    scanTaskRelatedInfo.statisticsReportInPutInfo.arkOnePointOneProblemNumbers +=
+      statistic.getArktsOnePointOneProlemNumbers(problems);
+    mergeLintProblems(filePath, problems, scanTaskRelatedInfo.mergedProblems, cmdOptions);
+  }
 }
 
 function mergeLintProblems(
@@ -128,19 +197,6 @@ function mergeLintProblems(
         mergedProblems.delete(file);
       }
     }
-  }
-}
-
-async function generateReportFile(reportData, reportPath?: string): Promise<void> {
-  let reportFilePath = path.join('scan-report.json');
-  if (reportPath !== undefined) {
-    reportFilePath = path.join(path.normalize(reportPath), 'scan-report.json');
-  }
-  try {
-    await fs.promises.mkdir(path.dirname(reportFilePath), { recursive: true });
-    await fs.promises.writeFile(reportFilePath, JSON.stringify(reportData, null, 2));
-  } catch (error) {
-    console.error('Error generating report file:', error);
   }
 }
 
@@ -186,7 +242,7 @@ function runIdeModeDeprecated(cmdOptions: CommandLineOptions): void {
       cmdOptions.parsedConfigFile.fileNames.push(tmpFileName);
     }
     const compileOptions = compileLintOptions(cmdOptions);
-    const result = lint(compileOptions);
+    const result = lint(compileOptions, new TimeRecorder());
     const problems = Array.from(result.problemsInfos.values());
     if (problems.length === 1) {
       showJSONMessage(problems);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,8 @@
  * limitations under the License.
  */
 
-import type { ProblemInfo } from './ProblemInfo';
-import type { ProjectStatistics } from './statistics/ProjectStatistics';
-import type { TimeRecorder } from './statistics/scan/TimeRecorder';
+export const AVERAGE_LINE_FOR_REPAIRE_RULE_COEFFICIENT = 3;
 
-export interface LintRunResult {
-  hasErrors: boolean;
-  problemsInfos: Map<string, ProblemInfo[]>;
-  projectStats: ProjectStatistics;
-  timeRecorder?: TimeRecorder;
-}
+export const TEST_DEBUG_WORKLOAD_COEFFICIENT = 1.2;
+
+export const NPAI_REPAIRE_WORKLOADA_COEFFICIEN = 0.2;
