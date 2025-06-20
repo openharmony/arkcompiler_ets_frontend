@@ -37,3 +37,11 @@ function foo(a: A | B | C) {
 
 let data: Uint8Array = new Uint8Array();
 let reqPb = data.buffer.slice(data.byteOffset, data.byteLength + data.byteOffset);
+class D {
+    tt() {}
+}
+class E {
+    tt() {}
+}
+let ab: D|E = new D();
+ab.tt();

@@ -1398,19 +1398,48 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const typeMap = new Map();
     if (commonPropertyType.length === allType.length) {
       allType.forEach((type) => {
-        const propertySymbol = this.tsUtils.findProperty(type, propertyAccessNode.name.getText());
-        if (propertySymbol?.declarations) {
-          const propertyType = this.tsTypeChecker.getTypeOfSymbolAtLocation(
-            propertySymbol,
-            propertySymbol.declarations[0]
-          );
-          typeMap.set(propertyType, propertyAccessNode.name.getText());
-        }
+        this.handleTypeMember(type, propertyAccessNode.name.getText(), typeMap);
       });
       if (typeMap.size > 1) {
         this.incrementCounters(propertyAccessNode, FaultID.AvoidUnionTypes);
       }
     }
+  }
+
+  private handleTypeMember(
+    type: ts.Type,
+    memberName: string,
+    typeMap: Map<string | ts.Type | undefined, string>
+  ): void {
+    const propertySymbol = this.tsUtils.findProperty(type, memberName);
+    if (!propertySymbol?.declarations) {
+      return;
+    }
+    const propertyType = this.tsTypeChecker.getTypeOfSymbolAtLocation(propertySymbol, propertySymbol.declarations[0]);
+    const symbol = propertySymbol.valueDeclaration;
+    if (!symbol) {
+      return;
+    }
+    if (ts.isMethodDeclaration(symbol)) {
+      const returnType = this.getMethodReturnType(propertySymbol);
+      typeMap.set(returnType, memberName);
+    } else {
+      typeMap.set(propertyType, memberName);
+    }
+  }
+
+  private getMethodReturnType(symbol: ts.Symbol): string | undefined {
+    const declaration = symbol.valueDeclaration ?? (symbol.declarations?.[0] as ts.Node | undefined);
+    if (!declaration) {
+      return undefined;
+    }
+    const methodType = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
+    const signatures = methodType.getCallSignatures();
+    if (signatures.length === 0) {
+      return 'void';
+    }
+    const returnType = signatures[0].getReturnType();
+    return this.tsTypeChecker.typeToString(returnType);
   }
 
   private handleLiteralAsPropertyName(node: ts.PropertyDeclaration | ts.PropertySignature): void {
