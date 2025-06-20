@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { applyStyles } from '@kit.ArkUI';
+
 import { CommonMethod, Color, Component, Column, Text, BuilderParam, Require, Button } from '@kit.ArkUI';
 
 const mycolor: string = "#ffff00"
@@ -20,11 +22,11 @@ const mycolor: string = "#ffff00"
 function cardStyle1(instance: CommonMethod): void {
     instance.backgroundColor(mycolor);
     instance.borderColor(Color.Red);
-    instance.borderRadius(8);
-    instance.padding(8);
+    instance.borderRadius(8.0);
+    instance.padding(8.0);
     instance.backgroundImagePosition({
-        x: 0,
-        y: 0
+        x: 0.0,
+        y: 0.0
     });
 }
 

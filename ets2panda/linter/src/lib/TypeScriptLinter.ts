@@ -7244,7 +7244,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const autofix = this.autofixer?.fixStateStyles(object, startNode, this.interfacesNeedToImport);
-    this.incrementCounters(object, FaultID.StylesDecoratorNotSupported, autofix);
+    this.incrementCounters(object, FaultID.StateStylesBlockNeedArrowFunc, autofix);
   }
 
   private static hasAnonBlock(properties: ts.NodeArray<ts.ObjectLiteralElementLike>): boolean {

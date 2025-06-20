@@ -45,7 +45,7 @@
                 {
                     "start": 765,
                     "end": 830,
-                    "replacementText": "PressedStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Green);\n  };",
+                    "replacementText": "PressedStyles: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Green);\n  };",
                     "line": 28,
                     "column": 3,
                     "endLine": 31,
@@ -61,7 +61,7 @@
             "column": 18,
             "endLine": 43,
             "endColumn": 6,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "autofix": [
                 {
                     "start": 912,
@@ -74,7 +74,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -82,7 +82,7 @@
             "column": 18,
             "endLine": 62,
             "endColumn": 6,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "autofix": [
                 {
                     "start": 1214,
@@ -95,7 +95,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -103,7 +103,7 @@
             "column": 20,
             "endLine": 76,
             "endColumn": 8,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "autofix": [
                 {
                     "start": 1407,
@@ -116,7 +116,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -124,7 +124,7 @@
             "column": 20,
             "endLine": 90,
             "endColumn": 8,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "autofix": [
                 {
                     "start": 1609,
@@ -137,7 +137,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {

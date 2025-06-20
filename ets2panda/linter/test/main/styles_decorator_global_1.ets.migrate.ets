@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { applyStyles } from '@kit.ArkUI';
+
 import {
   CommonMethod,
   Color,
