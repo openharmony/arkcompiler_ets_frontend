@@ -18,9 +18,7 @@ let: readonly;
 
 /* @@? 16:5 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 16:5 Error TypeError: Unresolved reference readonly */
-/* @@? 16:14 Error SyntaxError: Invalid Type. */
 /* @@? 16:14 Error SyntaxError: Unexpected token 'true'. */
 /* @@? 17:4 Error SyntaxError: Identifier expected, got ':'. */
 /* @@? 17:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 17:6 Error SyntaxError: Unexpected token 'readonly'. */
-/* @@? 17:14 Error SyntaxError: Invalid Type. */
