@@ -27,9 +27,5 @@ type RecordMap = { n: number };
 
 // Expected compilation errors for unsupported TypeScript features in ETS:
 /* @@? 22:37 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
-/* @@? 22:41 Error SyntaxError: Invalid Type. */
-/* @@? 23:11 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 23:11 Error TypeError: Unresolved reference K */
-/* @@? 26:18 Error SyntaxError: Invalid Type. */
-/* @@? 26:23 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 26:23 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 22:41 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 26:18 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */

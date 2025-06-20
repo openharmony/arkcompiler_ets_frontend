@@ -39,21 +39,17 @@ type BrokenFunc<T extends UndefinedInterface> = (param: T) => void;
 declare const broken1: BrokenType<any>;
 declare const broken2: AnotherBroken<any>;
 
-/* Expected errors - these should NOT cause assertion failures or crashes: */
 /* @@? 21:33 Error TypeError: Cannot find type 'UndefinedMap'. */
 /* @@? 21:45 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
-/* @@? 21:49 Error SyntaxError: Invalid Type. */
-/* @@? 22:11 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 22:11 Error TypeError: Unresolved reference K */
+/* @@? 21:49 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 26:36 Error TypeError: Cannot find type 'NonExistent'. */
 /* @@? 26:47 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
 /* @@? 27:27 Error TypeError: Cannot find type 'InvalidInterface'. */
-/* @@? 30:52 Error SyntaxError: Invalid Type. */
-/* @@? 31:13 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 30:52 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 31:14 Error SyntaxError: Unexpected token ','. */
-/* @@? 32:12 Error SyntaxError: Class cannot be used as object. */
-/* @@? 32:12 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 32:12 Error TypeError: Object type doesn't have proper index access method. */
+/* @@? 32:26 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 32:26 Error SyntaxError: Unexpected token ']'. */
+/* @@? 32:27 Error SyntaxError: Unexpected token ']'. */
 /* @@? 36:27 Error TypeError: Cannot find type 'UndefinedInterface'. */
 /* @@? 39:35 Error TypeError: Cannot find type 'any'. */
 /* @@? 40:38 Error TypeError: Cannot find type 'any'. */

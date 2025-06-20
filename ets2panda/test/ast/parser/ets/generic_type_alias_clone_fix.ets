@@ -21,11 +21,6 @@ type RecordMap = { n: number };
 
 let myMap: MyMap<"n"> = { kind: "n" };
 
-/* Expected errors - these should NOT cause assertion failures or crashes: */
 /* @@? 16:37 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
-/* @@? 16:41 Error SyntaxError: Invalid Type. */
-/* @@? 17:11 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 17:11 Error TypeError: Unresolved reference K */
-/* @@? 20:18 Error SyntaxError: Invalid Type. */
-/* @@? 20:23 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 20:23 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 16:41 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 20:18 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */

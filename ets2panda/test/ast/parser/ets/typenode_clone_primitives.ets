@@ -46,18 +46,10 @@ declare const num: NumAlias<42>;
 declare const str: StrAlias<"test">;
 declare const bool: BoolAlias<true>;
 
-/* @@? 37:73 Error SyntaxError: Invalid Type. */
-/* @@? 38:15 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 38:15 Error TypeError: Unresolved reference N */
+/* @@? 37:73 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 38:16 Error SyntaxError: Unexpected token ','. */
-/* @@? 39:15 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 39:15 Error TypeError: Unresolved reference S */
 /* @@? 39:16 Error SyntaxError: Unexpected token ','. */
-/* @@? 40:16 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 40:16 Error TypeError: Unresolved reference B */
 /* @@? 40:17 Error SyntaxError: Unexpected token ','. */
-/* @@? 41:17 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 41:23 Error SyntaxError: Unexpected token 'void'. */
 /* @@? 45:29 Error SyntaxError: Invalid Type. */
 /* @@? 45:29 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 45:29 Error SyntaxError: Unexpected token '>'. */

@@ -371,6 +371,17 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             return std::make_pair(ParseETSTupleType(options), true);
         case lexer::TokenType::KEYW_THIS:
             return std::make_pair(ParseThisType(options), true);
+        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE:
+            if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+                auto startPos = Lexer()->GetToken().Start();
+                auto modifiers = ir::ClassDefinitionModifiers::ID_REQUIRED | ir::ClassDefinitionModifiers::CLASS_DECL |
+                                 ir::ClassDefinitionModifiers::DECLARATION;
+                auto flags = ir::ModifierFlags::NONE;
+                ParseClassBody(modifiers, flags);
+                LogError(diagnostic::ERROR_ARKTS_NO_OBJ_LITERAL_TO_DECL_TYPE, {}, startPos);
+                return {AllocBrokenType({startPos, Lexer()->GetToken().End()}), false};
+            }
+            [[fallthrough]];
         default: {
             return {nullptr, true};
         }
