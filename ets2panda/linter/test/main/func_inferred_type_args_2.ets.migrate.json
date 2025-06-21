@@ -293,6 +293,16 @@
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 52,
+            "endLine": 106,
+            "endColumn": 63,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
         }
     ]
 }

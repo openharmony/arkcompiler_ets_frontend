@@ -4904,6 +4904,12 @@ export class Autofixer {
     if (!typeNode) {
       return this.fixGenericCallNoTypeArgsWithContextualType(node);
     }
+    if (ts.isUnionTypeNode(typeNode)) {
+      return this.fixGenericCallNoTypeArgsForUnionType(node, typeNode);
+    }
+    if (ts.isArrayTypeNode(typeNode)) {
+      return this.fixGenericCallNoTypeArgsForArrayType(node, typeNode);
+    }
     if (!ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
       return undefined;
     }
@@ -4918,6 +4924,36 @@ export class Autofixer {
     // Insert the type arguments immediately after the constructor name
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+  }
+
+  private fixGenericCallNoTypeArgsForArrayType(node: ts.NewExpression, arrayTypeNode: ts.ArrayTypeNode): Autofix[] | undefined {
+    const elementTypeNode = arrayTypeNode.elementType;
+    const srcFile = node.getSourceFile();
+    const typeArgsText = `<${this.printer.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
+    const insertPos = node.expression.getEnd();
+    return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+  }
+
+  private fixGenericCallNoTypeArgsForUnionType(node: ts.NewExpression, unionType: ts.UnionTypeNode): Autofix[] | undefined {
+    const matchingTypes = unionType.types.filter((type) => {
+      return ts.isTypeReferenceNode(type) && type.typeName.getText() === node.expression.getText();
+    }) as ts.TypeReferenceNode[];
+
+    if (matchingTypes.length === 1) {
+      const matchingType = matchingTypes[0];
+      if (matchingType.typeArguments) {
+        const srcFile = node.getSourceFile();
+        const typeArgsText = `<${matchingType.typeArguments.
+          map((arg) => {
+            return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+          }).
+          join(', ')}>`;
+
+        const insertPos = node.expression.getEnd();
+        return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+      }
+    }
+    return undefined;
   }
 
   private generateGenericTypeArgumentsAutofix(
