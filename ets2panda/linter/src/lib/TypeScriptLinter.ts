@@ -50,7 +50,8 @@ import {
   SENDABLE_DECORATOR,
   SENDABLE_DECORATOR_NODES,
   SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12,
-  SENDBALE_FUNCTION_START_VERSION
+  SENDBALE_FUNCTION_START_VERSION,
+  TASKPOOL
 } from './utils/consts/SendableAPI';
 import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
@@ -141,6 +142,7 @@ import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
 import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
 import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
+import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -1303,26 +1305,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (methodName !== ISCONCURRENT) {
       return;
     }
-    const moduleSpecifier = this.findModuleSpecifierforDepricatedIsConcurrent(node);
-    if (!moduleSpecifier || !ts.isStringLiteral(moduleSpecifier)) {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
+    if (!symbol) {
       return;
     }
-    if (
-      TASKPOOL_MODULES.some((moduleName) => {
-        return TsUtils.removeOrReplaceQuotes(moduleSpecifier.getText(), false) === moduleName;
-      })
-    ) {
-      this.incrementCounters(node.name, FaultID.IsConcurrentDeprecated);
-    }
-  }
+    if (symbol.name === TASKPOOL) {
+      const decl = TsUtils.getDeclaration(symbol);
 
-  findModuleSpecifierforDepricatedIsConcurrent(node: ts.PropertyAccessExpression): ts.Expression | undefined {
-    let symbol = this.tsUtils.trueSymbolAtLocation(node.expression);
-    if (symbol && 'unknown' === symbol.name) {
-      symbol = this.tsTypeChecker.getSymbolAtLocation(node.expression);
+      if (!decl) {
+        return;
+      }
+
+      const sourceFile = decl.getSourceFile();
+      const fileName = path.basename(sourceFile.fileName);
+
+      if (
+        TASKPOOL_MODULES.some((moduleName) => {
+          return fileName.startsWith(moduleName) && (fileName.endsWith(D_TS) || fileName.endsWith(D_ETS));
+        })
+      ) {
+        this.incrementCounters(node.name, FaultID.IsConcurrentDeprecated);
+      }
     }
-    const importDecl = ts.findAncestor(TsUtils.getDeclaration(symbol), ts.isImportDeclaration);
-    return importDecl?.moduleSpecifier;
   }
 
   checkFunctionProperty(
