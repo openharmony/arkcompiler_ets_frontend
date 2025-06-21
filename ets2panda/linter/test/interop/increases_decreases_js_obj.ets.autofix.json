@@ -14,7 +14,7 @@
         "limitations under the License."
     ],
     "result": [
-                {
+        {
             "line": 15,
             "column": 1,
             "endLine": 15,
@@ -33,7 +33,7 @@
                 {
                     "start": 655,
                     "end": 655,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,
@@ -73,7 +73,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, a + 1)\na = a + 1\n",
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, a + 1)\na = a + 1\n",
                     "start": 673,
                     "end": 686,
                     "line": 17,
@@ -96,7 +96,7 @@
                 {
                     "start": 677,
                     "end": 684,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 17,
                     "column": 5,
                     "endLine": 17,
@@ -115,7 +115,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\na = a + 1\nfoo.setPropertyByName(num, a)\n",
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\na = a + 1\nfoo.setProperty(num, a)\n",
                     "start": 687,
                     "end": 700,
                     "line": 18,
@@ -138,7 +138,7 @@
                 {
                     "start": 693,
                     "end": 700,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 18,
                     "column": 7,
                     "endLine": 18,
@@ -157,7 +157,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, a - 1)\na = a - 1\n",
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, a - 1)\na = a - 1\n",
                     "start": 701,
                     "end": 714,
                     "line": 19,
@@ -180,7 +180,7 @@
                 {
                     "start": 705,
                     "end": 712,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 19,
                     "column": 5,
                     "endLine": 19,
@@ -199,7 +199,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "a = foo.getPropertyByName(\"num\").toNumber()\na = a - 1\nfoo.setPropertyByName(num, a)\n",
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\na = a - 1\nfoo.setProperty(num, a)\n",
                     "start": 715,
                     "end": 728,
                     "line": 20,
@@ -222,7 +222,7 @@
                 {
                     "start": 721,
                     "end": 728,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 20,
                     "column": 7,
                     "endLine": 20,
@@ -241,7 +241,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "let tmp_1 = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, tmp_1 + 1)\ntmp_1 = tmp_1 + 1\n",
+                    "replacementText": "let tmp_1 = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, tmp_1 + 1)\ntmp_1 = tmp_1 + 1\n",
                     "start": 730,
                     "end": 739,
                     "line": 22,
@@ -264,7 +264,7 @@
                 {
                     "start": 730,
                     "end": 737,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,
@@ -283,7 +283,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "let tmp_2 = foo.getPropertyByName(\"num\").toNumber()\ntmp_2 = tmp_2 + 1\nfoo.setPropertyByName(num, tmp_2)\n",
+                    "replacementText": "let tmp_2 = foo.getProperty(\"num\").toNumber()\ntmp_2 = tmp_2 + 1\nfoo.setProperty(num, tmp_2)\n",
                     "start": 740,
                     "end": 749,
                     "line": 23,
@@ -306,7 +306,7 @@
                 {
                     "start": 742,
                     "end": 749,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 23,
                     "column": 3,
                     "endLine": 23,
@@ -325,7 +325,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "let tmp_3 = foo.getPropertyByName(\"num\").toNumber()\nfoo.setPropertyByName(num, tmp_3 - 1)\ntmp_3 = tmp_3 - 1\n",
+                    "replacementText": "let tmp_3 = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, tmp_3 - 1)\ntmp_3 = tmp_3 - 1\n",
                     "start": 750,
                     "end": 759,
                     "line": 24,
@@ -348,7 +348,7 @@
                 {
                     "start": 750,
                     "end": 757,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 24,
                     "column": 1,
                     "endLine": 24,
@@ -367,7 +367,7 @@
             "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "let tmp_4 = foo.getPropertyByName(\"num\").toNumber()\ntmp_4 = tmp_4 - 1\nfoo.setPropertyByName(num, tmp_4)\n",
+                    "replacementText": "let tmp_4 = foo.getProperty(\"num\").toNumber()\ntmp_4 = tmp_4 - 1\nfoo.setProperty(num, tmp_4)\n",
                     "start": 760,
                     "end": 769,
                     "line": 25,
@@ -390,7 +390,7 @@
                 {
                     "start": 762,
                     "end": 769,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 25,
                     "column": 3,
                     "endLine": 25,

@@ -14,14 +14,14 @@
  */
 
 let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
+let foo = GeneratedImportVar_1.getProperty('foo');
 
 
-+foo.getPropertyByName("num").toNumber();
--foo.getPropertyByName("num").toNumber();
-!foo.getPropertyByName("num").toNumber();
-~foo.getPropertyByName("num").toNumber();
-+(foo.getPropertyByName("num").toNumber());
--(foo.getPropertyByName("num").toNumber());
-!(foo.getPropertyByName("num").toNumber());
-~(foo.getPropertyByName("num").toNumber());
++foo.getProperty("num").toNumber();
+-foo.getProperty("num").toNumber();
+!foo.getProperty("num").toNumber();
+~foo.getProperty("num").toNumber();
++(foo.getProperty("num").toNumber());
+-(foo.getProperty("num").toNumber());
+!(foo.getProperty("num").toNumber());
+~(foo.getProperty("num").toNumber());

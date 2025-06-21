@@ -33,7 +33,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getProperty('aaa');\nlet ClassA = GeneratedImportVar_1.getProperty('ClassA');\nlet Dog = GeneratedImportVar_1.getProperty('Dog');\nlet Person = GeneratedImportVar_1.getProperty('Person');\nlet Wiki = GeneratedImportVar_1.getProperty('Wiki');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -63,7 +63,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');\n",
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getProperty('Dog');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -93,7 +93,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');\n",
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getProperty('Wiki');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -260,7 +260,7 @@
                 {
                     "start": 937,
                     "end": 953,
-                    "replacementText": "Wiki.getPropertyByName('name').typeOf()",
+                    "replacementText": "Wiki.getProperty('name').typeOf()",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -281,7 +281,7 @@
                 {
                     "start": 944,
                     "end": 953,
-                    "replacementText": "Wiki.getPropertyByName(\"name\")",
+                    "replacementText": "Wiki.getProperty(\"name\")",
                     "line": 27,
                     "column": 8,
                     "endLine": 27,
@@ -323,7 +323,7 @@
                 {
                     "start": 992,
                     "end": 1001,
-                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "replacementText": "wiki.getProperty(\"name\")",
                     "line": 29,
                     "column": 11,
                     "endLine": 29,
@@ -428,7 +428,7 @@
                 {
                     "start": 1136,
                     "end": 1147,
-                    "replacementText": "person.getPropertyByName(\"name\")",
+                    "replacementText": "person.getProperty(\"name\")",
                     "line": 35,
                     "column": 11,
                     "endLine": 35,
@@ -584,7 +584,7 @@
                 {
                     "start": 1701,
                     "end": 1717,
-                    "replacementText": "wiki.getPropertyByName('name').typeOf()",
+                    "replacementText": "wiki.getProperty('name').typeOf()",
                     "line": 61,
                     "column": 5,
                     "endLine": 61,
@@ -605,7 +605,7 @@
                 {
                     "start": 1708,
                     "end": 1717,
-                    "replacementText": "wiki.getPropertyByName(\"name\")",
+                    "replacementText": "wiki.getProperty(\"name\")",
                     "line": 61,
                     "column": 12,
                     "endLine": 61,
@@ -689,7 +689,7 @@
                 {
                     "start": 1868,
                     "end": 1892,
-                    "replacementText": "Person.instantiate().getPropertyByName('name').typeOf()",
+                    "replacementText": "Person.instantiate().getProperty('name').typeOf()",
                     "line": 70,
                     "column": 1,
                     "endLine": 70,
@@ -710,7 +710,7 @@
                 {
                     "start": 1875,
                     "end": 1892,
-                    "replacementText": "new Person().getPropertyByName(\"name\")",
+                    "replacementText": "new Person().getProperty(\"name\")",
                     "line": 70,
                     "column": 8,
                     "endLine": 70,

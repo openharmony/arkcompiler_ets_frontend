@@ -33,7 +33,7 @@
                 {
                     "start": 703,
                     "end": 703,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_1.getPropertyByName('ff3');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_1.getProperty('ff3');\n",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,
@@ -63,7 +63,7 @@
                 {
                     "start": 703,
                     "end": 703,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_2.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');\nlet foo = GeneratedImportVar_2.getProperty('foo');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -84,7 +84,7 @@
                 {
                     "start": 714,
                     "end": 721,
-                    "replacementText": "foo.getPropertyByName(\"arr\")",
+                    "replacementText": "foo.getProperty(\"arr\")",
                     "line": 17,
                     "column": 11,
                     "endLine": 17,
@@ -115,7 +115,7 @@
                 {
                     "start": 722,
                     "end": 728,
-                    "replacementText": "arr.getPropertyByIndex(1)",
+                    "replacementText": "arr.getProperty(1)",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -146,7 +146,7 @@
                 {
                     "start": 729,
                     "end": 739,
-                    "replacementText": "arr.setPropertyByIndex(3, ESValue.wrap(4))",
+                    "replacementText": "arr.setProperty(3, ESValue.wrap(4))",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -188,7 +188,7 @@
                 {
                     "start": 752,
                     "end": 759,
-                    "replacementText": "ff3.getPropertyByName(\"arr\")",
+                    "replacementText": "ff3.getProperty(\"arr\")",
                     "line": 21,
                     "column": 12,
                     "endLine": 21,
@@ -209,7 +209,7 @@
                 {
                     "start": 770,
                     "end": 781,
-                    "replacementText": "arr1.getPropertyByName(\"length\")",
+                    "replacementText": "arr1.getProperty(\"length\")",
                     "line": 22,
                     "column": 11,
                     "endLine": 22,
@@ -272,7 +272,7 @@
                 {
                     "start": 812,
                     "end": 823,
-                    "replacementText": "arr1.getPropertyByName(\"length\")",
+                    "replacementText": "arr1.getProperty(\"length\")",
                     "line": 23,
                     "column": 21,
                     "endLine": 23,
@@ -291,7 +291,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "replacementText": "arr1.getProperty(i).toNumber()",
                     "start": 848,
                     "end": 855,
                     "line": 24,
@@ -314,7 +314,7 @@
                 {
                     "start": 848,
                     "end": 855,
-                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "replacementText": "arr1.getProperty(i)",
                     "line": 24,
                     "column": 17,
                     "endLine": 24,
@@ -333,7 +333,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "replacementText": "arr1.getProperty(i).toNumber()",
                     "start": 882,
                     "end": 889,
                     "line": 25,
@@ -356,7 +356,7 @@
                 {
                     "start": 882,
                     "end": 889,
-                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "replacementText": "arr1.getProperty(i)",
                     "line": 25,
                     "column": 13,
                     "endLine": 25,
@@ -375,7 +375,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr1.setPropertyByIndex(i, ESValue.wrap(0 //error\n))",
+                    "replacementText": "arr1.setProperty(i, ESValue.wrap(0 //error\n))",
                     "start": 903,
                     "end": 914,
                     "line": 26,
@@ -398,7 +398,7 @@
                 {
                     "start": 903,
                     "end": 914,
-                    "replacementText": "arr1.setPropertyByIndex(i, ESValue.wrap(0))",
+                    "replacementText": "arr1.setProperty(i, ESValue.wrap(0))",
                     "line": 26,
                     "column": 5,
                     "endLine": 26,
@@ -438,7 +438,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr1.getPropertyByIndex(i).toNumber()",
+                    "replacementText": "arr1.getProperty(i).toNumber()",
                     "start": 940,
                     "end": 947,
                     "line": 27,
@@ -461,7 +461,7 @@
                 {
                     "start": 940,
                     "end": 947,
-                    "replacementText": "arr1.getPropertyByIndex(i)",
+                    "replacementText": "arr1.getProperty(i)",
                     "line": 27,
                     "column": 17,
                     "endLine": 27,

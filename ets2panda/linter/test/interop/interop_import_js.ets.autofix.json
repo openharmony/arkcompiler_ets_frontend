@@ -33,7 +33,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getPropertyByName('Cjs');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getProperty('Cjs');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -63,7 +63,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getPropertyByName('fjs');\n",
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getProperty('fjs');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -93,7 +93,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getPropertyByName('CPreview');\nlet bar = GeneratedImportVar_3.getPropertyByName('bar');\nlet foo = GeneratedImportVar_3.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getProperty('CPreview');\nlet bar = GeneratedImportVar_3.getProperty('bar');\nlet foo = GeneratedImportVar_3.getProperty('foo');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -123,7 +123,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getPropertyByName('aaa');\n",
+                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getProperty('aaa');\n",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -153,7 +153,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_5.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_5.getPropertyByName('Dog');\n",
+                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getProperty('aaa');\nlet ClassA = GeneratedImportVar_5.getProperty('ClassA');\nlet Dog = GeneratedImportVar_5.getProperty('Dog');\n",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -213,7 +213,7 @@
                 {
                     "start": 958,
                     "end": 958,
-                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getPropertyByName('Wiki');\nlet Doge = GeneratedImportVar_7.getPropertyByName('Dog');\n",
+                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getProperty('Wiki');\nlet Doge = GeneratedImportVar_7.getProperty('Dog');\n",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,

@@ -15,12 +15,12 @@
  
 
 let GeneratedImportVar_1 = ESValue.load('./interop_import_js_compare_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
-let m = GeneratedImportVar_1.getPropertyByName('m');
-let n = GeneratedImportVar_1.getPropertyByName('n');
+let foo = GeneratedImportVar_1.getProperty('foo');
+let m = GeneratedImportVar_1.getProperty('m');
+let n = GeneratedImportVar_1.getProperty('n');
 
-let a = foo.getPropertyByName("a")
-let b = foo.getPropertyByName("b")
+let a = foo.getProperty("a")
+let b = foo.getProperty("b")
 a > b
 a < b
 a >= b
@@ -48,4 +48,4 @@ x2 < y2;
 x2 >= y2;
 x2 <= y2;
 
-foo.getPropertyByName("a").toNumber() > foo.getPropertyByName("b").toNumber();
+foo.getProperty("a").toNumber() > foo.getProperty("b").toNumber();

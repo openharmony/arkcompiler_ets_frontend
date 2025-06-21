@@ -43,7 +43,7 @@
                 {
                     "start": 723,
                     "end": 723,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\nlet TestHelper = GeneratedImportVar_1.getPropertyByName('TestHelper');\nlet Machine = GeneratedImportVar_1.getPropertyByName('Machine');\nlet User = GeneratedImportVar_1.getPropertyByName('User');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Employee = GeneratedImportVar_1.getPropertyByName('Employee');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet person = GeneratedImportVar_1.getProperty('person');\nlet TestHelper = GeneratedImportVar_1.getProperty('TestHelper');\nlet Machine = GeneratedImportVar_1.getProperty('Machine');\nlet User = GeneratedImportVar_1.getProperty('User');\nlet Person = GeneratedImportVar_1.getProperty('Person');\nlet Employee = GeneratedImportVar_1.getProperty('Employee');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -64,7 +64,7 @@
                 {
                     "start": 725,
                     "end": 733,
-                    "replacementText": "foo.getPropertyByName(\"name\")",
+                    "replacementText": "foo.getProperty(\"name\")",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -85,7 +85,7 @@
                 {
                     "start": 734,
                     "end": 750,
-                    "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))",
+                    "replacementText": "foo.setProperty(\"name\", ESValue.wrap(\"456\"))",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -106,7 +106,7 @@
                 {
                     "start": 751,
                     "end": 766,
-                    "replacementText": "person.setPropertyByName(\"age\", ESValue.wrap(23))",
+                    "replacementText": "person.setProperty(\"age\", ESValue.wrap(23))",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -148,7 +148,7 @@
                 {
                     "start": 767,
                     "end": 787,
-                    "replacementText": "person.setPropertyByName(\"male\", ESValue.wrap([2, 3]))",
+                    "replacementText": "person.setProperty(\"male\", ESValue.wrap([2, 3]))",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,
@@ -211,7 +211,7 @@
                 {
                     "start": 788,
                     "end": 800,
-                    "replacementText": "foo.setPropertyByName(\"age\", ESValue.wrap(12))",
+                    "replacementText": "foo.setProperty(\"age\", ESValue.wrap(12))",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -253,7 +253,7 @@
                 {
                     "start": 805,
                     "end": 821,
-                    "replacementText": "foo.setPropertyByName(\"name\", ESValue.wrap(\"456\"))",
+                    "replacementText": "foo.setProperty(\"name\", ESValue.wrap(\"456\"))",
                     "line": 24,
                     "column": 5,
                     "endLine": 24,
@@ -272,7 +272,7 @@
             "problem": "InteropJsObjectConditionJudgment",
             "autofix": [
                 {
-                    "replacementText": "foo.getPropertyByName('name').toString()",
+                    "replacementText": "foo.getProperty('name').toString()",
                     "start": 805,
                     "end": 813,
                     "line": 24,
@@ -326,7 +326,7 @@
                 {
                     "start": 860,
                     "end": 870,
-                    "replacementText": "a.setPropertyByName(\"age\", ESValue.wrap(12))",
+                    "replacementText": "a.setProperty(\"age\", ESValue.wrap(12))",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -452,7 +452,7 @@
                 {
                     "start": 1005,
                     "end": 1017,
-                    "replacementText": "machine.getPropertyByName(\"name\")",
+                    "replacementText": "machine.getProperty(\"name\")",
                     "line": 32,
                     "column": 12,
                     "endLine": 32,
@@ -536,7 +536,7 @@
                 {
                     "start": 1173,
                     "end": 1180,
-                    "replacementText": "user.getPropertyByName(\"id\")",
+                    "replacementText": "user.getProperty(\"id\")",
                     "line": 37,
                     "column": 12,
                     "endLine": 37,
@@ -641,7 +641,7 @@
                 {
                     "start": 1312,
                     "end": 1319,
-                    "replacementText": "user.getPropertyByName(\"id\")",
+                    "replacementText": "user.getProperty(\"id\")",
                     "line": 42,
                     "column": 8,
                     "endLine": 42,
@@ -746,7 +746,7 @@
                 {
                     "start": 1454,
                     "end": 1461,
-                    "replacementText": "user.getPropertyByName(\"id\")",
+                    "replacementText": "user.getProperty(\"id\")",
                     "line": 47,
                     "column": 12,
                     "endLine": 47,
@@ -830,7 +830,7 @@
                 {
                     "start": 1601,
                     "end": 1608,
-                    "replacementText": "user.getPropertyByName(\"id\")",
+                    "replacementText": "user.getProperty(\"id\")",
                     "line": 52,
                     "column": 12,
                     "endLine": 52,
@@ -935,7 +935,7 @@
                 {
                     "start": 1758,
                     "end": 1770,
-                    "replacementText": "machine.getPropertyByName(\"name\")",
+                    "replacementText": "machine.getProperty(\"name\")",
                     "line": 57,
                     "column": 12,
                     "endLine": 57,
@@ -1019,7 +1019,7 @@
                 {
                     "start": 1929,
                     "end": 1942,
-                    "replacementText": "employee.getPropertyByName(\"name\")",
+                    "replacementText": "employee.getProperty(\"name\")",
                     "line": 62,
                     "column": 12,
                     "endLine": 62,
