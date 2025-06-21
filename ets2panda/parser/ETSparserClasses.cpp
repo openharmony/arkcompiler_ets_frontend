@@ -939,12 +939,16 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
             LogError(diagnostic::LOCAL_CLASS_ACCESS_MOD, {}, Lexer()->GetToken().Start());
         }
     }
-    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PRIVATE) {
+
+    const auto keywordType = Lexer()->GetToken().KeywordType();
+    const bool isPrivate = (keywordType == lexer::TokenType::KEYW_PRIVATE);
+    const bool isDefaultInAmbient = (keywordType == lexer::TokenType::KEYW_DEFAULT) && InAmbientContext();
+    if (!isPrivate && !isDefaultInAmbient) {
         LogError(diagnostic::UNEXPECTED_TOKEN_PRIVATE_ID);
     }
 
     Lexer()->NextToken();
-    return ir::ModifierFlags::PRIVATE;
+    return isDefaultInAmbient ? ir::ModifierFlags::DEFAULT : ir::ModifierFlags::PRIVATE;
 }
 
 ir::TypeNode *ETSParser::ParseInterfaceTypeAnnotation(ir::Identifier *name)
