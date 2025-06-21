@@ -76,16 +76,6 @@
         },
         {
             "line": 93,
-            "column": 12,
-            "endLine": 93,
-            "endColumn": 31,
-            "problem": "InteropDirectAccessToTSTypes",
-            "suggest": "",
-            "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 93,
             "column": 36,
             "endLine": 93,
             "endColumn": 37,

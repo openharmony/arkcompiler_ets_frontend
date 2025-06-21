@@ -1246,7 +1246,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
     this.handleTsInterop(propertyAccessNode, () => {
-      this.checkInteropForPropertyAccess(propertyAccessNode);
+      const type = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
+      this.checkUsageOfTsTypes(type, propertyAccessNode.expression);
     });
     this.propertyAccessExpressionForInterop(propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
@@ -1263,7 +1264,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
       this.incrementCounters(propertyAccessNode.expression, FaultID.ClassAsObject);
     }
-
     if (!!baseExprSym && TsUtils.symbolHasEsObjectType(baseExprSym)) {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(propertyAccessNode, faultId);
@@ -1405,44 +1405,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkInteropForPropertyAccess(pan: ts.PropertyAccessExpression): void {
-    if (ts.isBinaryExpression(pan.parent)) {
-      this.checkAssignmentOfPan(pan.parent, pan);
-    } else {
-      const type = this.tsTypeChecker.getTypeAtLocation(pan.expression);
-      this.checkUsageOfTsTypes(type, pan.expression);
-    }
-  }
-
-  private checkAssignmentOfPan(binaryExpr: ts.BinaryExpression, pan: ts.PropertyAccessExpression): void {
-    if (binaryExpr.left !== pan) {
-      return;
-    }
-
-    if (binaryExpr.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
-      this.incrementCounters(pan, FaultID.InteropDirectAccessToTSTypes);
-      return;
-    }
-
-    const rhs = binaryExpr.right;
-    const lhs = binaryExpr.left as ts.PropertyAccessExpression;
-
-    const autofix = this.autofixer?.fixInteropTsType(binaryExpr, lhs, rhs);
-    this.incrementCounters(pan, FaultID.InteropDirectAccessToTSTypes, autofix);
-  }
-
   private checkUsageOfTsTypes(baseType: ts.Type, node: ts.Node): void {
-    if (this.tsUtils.isStringType(baseType)) {
-      return;
+    const typeString = this.tsTypeChecker.typeToString(baseType);
+    if (
+      TsUtils.isAnyType(baseType) ||
+      TsUtils.isUnknownType(baseType) ||
+      this.tsUtils.isStdFunctionType(baseType) ||
+      typeString === 'symbol'
+    ) {
+      this.incrementCounters(node, FaultID.InteropDirectAccessToTSTypes);
     }
-    if (this.tsUtils.isStdNumberType(baseType)) {
-      return;
-    }
-    if (this.tsUtils.isStdBooleanType(baseType)) {
-      return;
-    }
-
-    this.incrementCounters(node, FaultID.InteropDirectAccessToTSTypes);
   }
 
   checkUnionTypes(propertyAccessNode: ts.PropertyAccessExpression): void {
