@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 62,
+            "line": 70,
             "column": 3,
-            "endLine": 62,
+            "endLine": 70,
             "endColumn": 11,
             "problem": "DecoratorsNotSupported",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 80,
+            "line": 88,
             "column": 3,
-            "endLine": 80,
+            "endLine": 88,
             "endColumn": 11,
             "problem": "DecoratorsNotSupported",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 98,
+            "line": 106,
             "column": 3,
-            "endLine": 98,
+            "endLine": 106,
             "endColumn": 11,
             "problem": "DecoratorsNotSupported",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
+            "line": 70,
             "column": 12,
-            "endLine": 62,
+            "endLine": 70,
             "endColumn": 20,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'options1' has no initializer and is not definitely assigned in the constructor.",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 80,
+            "line": 88,
             "column": 12,
-            "endLine": 80,
+            "endLine": 88,
             "endColumn": 20,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'options2' has no initializer and is not definitely assigned in the constructor.",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 98,
+            "line": 106,
             "column": 12,
-            "endLine": 98,
+            "endLine": 106,
             "endColumn": 20,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'options3' has no initializer and is not definitely assigned in the constructor.",

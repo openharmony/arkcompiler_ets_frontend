@@ -744,7 +744,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Observed, Track, CommonAttribute } from '@kit.ArkUI';\n",
+                    "replacementText": "\n\nimport {\n  Observed,\n  Track,\n  CommonAttribute,\n} from '@kit.ArkUI';\n",
                     "line": 86,
                     "column": 94,
                     "endLine": 86,
@@ -765,7 +765,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Observed, Track, CommonAttribute } from '@kit.ArkUI';\n",
+                    "replacementText": "\n\nimport {\n  Observed,\n  Track,\n  CommonAttribute,\n} from '@kit.ArkUI';\n",
                     "line": 86,
                     "column": 94,
                     "endLine": 86,
@@ -786,7 +786,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Observed, Track, CommonAttribute } from '@kit.ArkUI';\n",
+                    "replacementText": "\n\nimport {\n  Observed,\n  Track,\n  CommonAttribute,\n} from '@kit.ArkUI';\n",
                     "line": 86,
                     "column": 94,
                     "endLine": 86,
@@ -807,7 +807,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Observed, Track, CommonAttribute } from '@kit.ArkUI';\n",
+                    "replacementText": "\n\nimport {\n  Observed,\n  Track,\n  CommonAttribute,\n} from '@kit.ArkUI';\n",
                     "line": 86,
                     "column": 94,
                     "endLine": 86,

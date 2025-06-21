@@ -15,40 +15,10 @@
     ],
     "result": [
         {
-            "line": 20,
-            "column": 7,
-            "endLine": 20,
-            "endColumn": 35,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 24,
-            "endLine": 20,
-            "endColumn": 35,
-            "problem": "GenericCallNoTypeArgs",
-            "suggest": "",
-            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
             "line": 24,
             "column": 7,
             "endLine": 24,
-            "endColumn": 33,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 7,
-            "endLine": 24,
-            "endColumn": 33,
+            "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -58,6 +28,36 @@
             "line": 24,
             "column": 24,
             "endLine": 24,
+            "endColumn": 35,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 7,
+            "endLine": 28,
+            "endColumn": 33,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 7,
+            "endLine": 28,
+            "endColumn": 33,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 24,
+            "endLine": 28,
             "endColumn": 33,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
+            "line": 33,
             "column": 3,
-            "endLine": 29,
+            "endLine": 33,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
+            "line": 33,
             "column": 3,
-            "endLine": 29,
+            "endLine": 33,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
+            "line": 33,
             "column": 27,
-            "endLine": 29,
+            "endLine": 33,
             "endColumn": 36,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 34,
             "column": 10,
-            "endLine": 30,
+            "endLine": 34,
             "endColumn": 23,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 34,
             "column": 39,
-            "endLine": 30,
+            "endLine": 34,
             "endColumn": 48,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 40,
             "column": 7,
-            "endLine": 36,
+            "endLine": 40,
             "endColumn": 35,
             "problem": "UnknownType",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 40,
             "column": 22,
-            "endLine": 36,
+            "endLine": 40,
             "endColumn": 35,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -135,23 +135,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 43,
             "column": 30,
-            "endLine": 39,
+            "endLine": 43,
             "endColumn": 39,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 14,
-            "endLine": 47,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -166,32 +156,12 @@
         },
         {
             "line": 55,
-            "column": 10,
-            "endLine": 55,
-            "endColumn": 19,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
             "column": 14,
             "endLine": 55,
             "endColumn": 17,
             "problem": "ConstructorIfaceFromSdk",
             "suggest": "",
             "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
-            "column": 10,
-            "endLine": 55,
-            "endColumn": 19,
-            "problem": "GenericCallNoTypeArgs",
-            "suggest": "",
-            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
         },
         {
@@ -225,13 +195,33 @@
             "severity": "ERROR"
         },
         {
-            "line": 64,
-            "column": 16,
-            "endLine": 64,
+            "line": 63,
+            "column": 10,
+            "endLine": 63,
             "endColumn": 19,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 14,
+            "endLine": 63,
+            "endColumn": 17,
             "problem": "ConstructorIfaceFromSdk",
             "suggest": "",
             "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 10,
+            "endLine": 63,
+            "endColumn": 19,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
         },
         {
@@ -246,32 +236,12 @@
         },
         {
             "line": 72,
-            "column": 12,
-            "endLine": 72,
-            "endColumn": 21,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
             "column": 16,
             "endLine": 72,
             "endColumn": 19,
             "problem": "ConstructorIfaceFromSdk",
             "suggest": "",
             "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 12,
-            "endLine": 72,
-            "endColumn": 21,
-            "problem": "GenericCallNoTypeArgs",
-            "suggest": "",
-            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
         },
         {
@@ -305,9 +275,39 @@
             "severity": "ERROR"
         },
         {
-            "line": 89,
+            "line": 80,
+            "column": 12,
+            "endLine": 80,
+            "endColumn": 21,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 16,
+            "endLine": 80,
+            "endColumn": 19,
+            "problem": "ConstructorIfaceFromSdk",
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 12,
+            "endLine": 80,
+            "endColumn": 21,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
             "column": 77,
-            "endLine": 89,
+            "endLine": 93,
             "endColumn": 93,
             "problem": "DynamicCtorCall",
             "suggest": "",

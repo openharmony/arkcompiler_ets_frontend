@@ -223,7 +223,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -244,7 +244,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -265,7 +265,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -286,7 +286,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -307,7 +307,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -328,7 +328,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -349,7 +349,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -370,7 +370,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -391,7 +391,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -412,7 +412,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -433,7 +433,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -454,7 +454,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,
@@ -475,7 +475,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, ComponentV2, Local, Scroller, Column, List, Repeat, RepeatItem, ListItem, Row, Text, Button } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  ComponentV2,\n  Local,\n  Scroller,\n  Column,\n  List,\n  Repeat,\n  RepeatItem,\n  ListItem,\n  Row,\n  Text,\n  Button,\n} from '@kit.ArkUI';",
                     "line": 40,
                     "column": 7,
                     "endLine": 40,

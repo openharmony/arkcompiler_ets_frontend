@@ -15,7 +15,14 @@
 
 import { Builder } from '@kit.ArkUI';
 
-import { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  State,
+  Row,
+  Text,
+  Column,
+} from '@kit.ArkUI';
 
 @Entry
 @Component

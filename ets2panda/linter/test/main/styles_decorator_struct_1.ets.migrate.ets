@@ -13,7 +13,17 @@
  * limitations under the License.
  */
 
-import { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';
+import {
+  Component,
+  CommonMethod,
+  Column,
+  Text,
+  Color,
+  BuilderParam,
+  Require,
+  Button,
+  CustomBuilder,
+} from '@kit.ArkUI';
 
 @Component
 struct MyCard1 {

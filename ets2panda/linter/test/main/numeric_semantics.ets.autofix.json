@@ -2464,7 +2464,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2485,7 +2485,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2506,7 +2506,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2527,7 +2527,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2548,7 +2548,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2569,7 +2569,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2590,7 +2590,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2611,7 +2611,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
@@ -2632,7 +2632,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\r\n\r\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\r\n",
+                    "replacementText": "\r\n\r\nimport {\n  Entry,\n  Component,\n  State,\n  RelativeContainer,\n  Text,\n  AppStorage,\n} from '@kit.ArkUI';\r\n",
                     "line": 155,
                     "column": 34,
                     "endLine": 155,
