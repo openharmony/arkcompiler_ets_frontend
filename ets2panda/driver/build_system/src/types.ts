@@ -38,6 +38,7 @@ export interface PluginsConfig {
 export interface BuildBaseConfig {
   buildType: BUILD_TYPE;
   buildMode: BUILD_MODE;
+  es2pandaMode: ES2PANDA_MODE;
   hasMainModule: boolean;
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
@@ -283,3 +284,9 @@ export enum Es2pandaImportKinds {
 export enum Es2pandaImportFlags {
   IMPORT_FLAGS_NONE,
 }
+
+export enum ES2PANDA_MODE {
+  RUN_PARALLEL = 0,
+  RUN_CONCURRENT = 1,
+  RUN = 2
+};
