@@ -48,5 +48,6 @@ export interface LinterOptions {
   checkTsAndJs?: boolean;
   inputFiles?: string[];
   onlySyntax?: boolean;
+  ruleConfigTags?: Set<number>;
   autofixCheck?: boolean;
 }

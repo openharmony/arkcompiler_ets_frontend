@@ -76,13 +76,31 @@ export abstract class BaseTypeScriptLinter {
     autofix?: Autofix[],
     errorMsg?: string
   ): void {
+    const badNodeInfo = this.getbadNodeInfo(node, faultId, autofix, errorMsg);
+
+    if (this.shouldSkipRule(badNodeInfo)) {
+      return;
+    }
+
+    this.problemsInfos.push(badNodeInfo);
+    this.updateFileStats(faultId, badNodeInfo.line);
+    // problems with autofixes might be collected separately
+    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
+      this.options.reportAutofixCb(badNodeInfo);
+    }
+  }
+
+  private getbadNodeInfo(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[],
+    errorMsg?: string
+  ): ProblemInfo {
     const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
     const startPos = this.sourceFile.getLineAndCharacterOfPosition(startOffset);
     const endPos = this.sourceFile.getLineAndCharacterOfPosition(endOffset);
-
     const faultDescr = faultDesc[faultId];
     const faultType = TypeScriptLinterConfig.tsSyntaxKindNames[node.kind];
-
     const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
     const cookBookTg = errorMsg ? errorMsg : cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
@@ -107,17 +125,7 @@ export abstract class BaseTypeScriptLinter {
       autofix: autofix,
       autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
     };
-    
-    if (this.options?.ideInteractive && this.isSkipedRecordProblems(badNodeInfo)) {
-      return;
-    }
-
-    this.problemsInfos.push(badNodeInfo);
-    this.updateFileStats(faultId, badNodeInfo.line);
-    // problems with autofixes might be collected separately
-    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
-      this.options.reportAutofixCb(badNodeInfo);
-    }
+    return badNodeInfo;
   }
 
   private static processAutofix(
@@ -128,17 +136,21 @@ export abstract class BaseTypeScriptLinter {
     return autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
   }
 
-  private isSkipedRecordProblems(badNodeInfo: ProblemInfo): boolean {
-    if (this.options.onlySyntax) {  
-       if (onlyArkts2SyntaxRules.has(badNodeInfo.ruleTag)) {
+  private shouldSkipRule(badNodeInfo: ProblemInfo): boolean {
+    const ruleConfigTags = this.options.ruleConfigTags;
+    if (ruleConfigTags && !ruleConfigTags.has(badNodeInfo.ruleTag)) {
+      return true;
+    }
+    if (this.options?.ideInteractive) {
+      if (this.options.onlySyntax) {
+        if (onlyArkts2SyntaxRules.has(badNodeInfo.ruleTag)) {
           return false;
         }
-    } else {
-      if (this.options.arkts2  
-        && arkts2Rules.includes(badNodeInfo.ruleTag)) {
+      } else if (this.options.arkts2 && arkts2Rules.includes(badNodeInfo.ruleTag)) {
         return false;
       }
+      return true;
     }
-    return true;
+    return false;
   }
 }
