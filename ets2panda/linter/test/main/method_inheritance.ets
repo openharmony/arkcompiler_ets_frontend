@@ -216,3 +216,25 @@ class Derived4 implements  Base3 {
     return new A1();
   }
 }
+
+class P {
+}
+
+class PP extends P {
+  public static toString(result: number): string { // Legal
+    return '';
+  }
+}
+
+class RCP<T = undefined> {}
+
+interface aa {
+  aa?: Function;
+}
+interface bb<T = undefined> extends aa {
+    onError(res: RCP<T>): void;
+}
+class CC implements bb {
+  onError(res: RCP): void  {} // Legal
+  aa?: Function = () => {}
+}
