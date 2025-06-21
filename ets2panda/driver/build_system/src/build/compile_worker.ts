@@ -52,7 +52,7 @@ process.on('message', (message: {
   PluginDriver.getInstance().initPlugins(buildConfig);
   const koalaWrapperPath = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
   let { arkts, arktsGlobal } = require(koalaWrapperPath);
-  const { KitImportTransformer } = require("../plugins/KitImportTransformer");
+  const { KitImportTransformer } = require('../plugins/KitImportTransformer');
 
   for (const fileInfo of taskList) {
     let errorStatus = false;
@@ -80,7 +80,8 @@ process.on('message', (message: {
       if (buildConfig.aliasConfig?.size > 0) {
         // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
         let ast = arkts.EtsScript.fromContext();
-        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program, buildConfig.buildSdkPath, buildConfig.aliasConfig).transform(ast);
+        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
+                                                    buildConfig.buildSdkPath, buildConfig.aliasConfig).transform(ast);
         PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
       }
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
