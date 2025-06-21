@@ -67,12 +67,19 @@ export class SdkUtils {
         } catch {
             logger.debug(`use builtin sdk file in ${builtInPath}.`);
         }
-        const filePath = path.resolve(builtInPath, this.esVersionMap.get(this.esVersion) ?? '');
-        this.BUILT_IN_SDK.path = path.resolve(builtInPath);
+        let filePath = path.resolve(builtInPath, this.esVersionMap.get(this.esVersion) ?? '');
         if (!fs.existsSync(filePath)) {
             logger.error(`built in directory ${filePath} is not exist, please check!`);
-            return [];
+            // This is the temporarily solution for linter, will update with using config to set builtin sdk path
+            builtInPath = 'dist';
+            filePath = path.resolve(builtInPath, this.esVersionMap.get(this.esVersion) ?? '');
+            logger.debug(`use new builtin sdk file in ${builtInPath}.`);
+            if (!fs.existsSync(filePath)) {
+                logger.error(`new built in directory ${filePath} is not exist, please check!`);
+                return [];
+            }
         }
+        this.BUILT_IN_SDK.path = path.resolve(builtInPath);
         const result = new Set<string>();
         this.dfsFiles(filePath, result);
         return Array.from(result);
