@@ -1680,6 +1680,9 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 
     auto *identType = TransformTypeForMethodReference(checker, expr, checker->ResolveIdentifier(expr));
 
+    if (expr->TsType() != nullptr && expr->TsType()->IsTypeError()) {
+        return expr->TsType();
+    }
     ES2PANDA_ASSERT(expr->Variable() != nullptr);
     if (expr->Parent() == nullptr || !expr->Parent()->IsAssignmentExpression() ||
         expr != expr->Parent()->AsAssignmentExpression()->Left()) {
