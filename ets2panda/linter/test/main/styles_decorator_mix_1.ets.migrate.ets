@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { CustomStyles } from '@kit.ArkUI';
+
 import {
   CommonMethod,
   Color,
@@ -34,7 +36,7 @@ struct MyButton1 {
   @Require
   content: () => void;
 
-  PressedStyles = (instance: CommonMethod): void => {
+  PressedStyles: CustomStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Green);
   };
 

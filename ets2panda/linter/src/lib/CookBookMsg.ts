@@ -368,6 +368,8 @@ cookBookTag[376] = 'Not supporting comparison between number type and bigint typ
 cookBookTag[377] =
   'Non-decimal BigInt literals (0x/0o/0b) are not supported. Use decimal format instead (arkts-only-support-decimal-bigint-literal)';
 cookBookTag[378] = 'Operator is not support (arkts-unsupport-operator)';
+cookBookTag[381] =
+  'The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

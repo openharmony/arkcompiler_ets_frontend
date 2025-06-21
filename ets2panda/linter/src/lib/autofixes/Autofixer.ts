@@ -3717,6 +3717,10 @@ export class Autofixer {
     const parameters: ts.MemberName[] = [];
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
+    const type = ts.factory.createTypeReferenceNode(
+      ts.factory.createIdentifier(CustomDecoratorName.CustomStyles),
+      undefined
+    );
     Autofixer.getParamsAndValues(statements, parameters, values);
     const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
     const parameDecl = ts.factory.createParameterDeclaration(
@@ -3735,7 +3739,10 @@ export class Autofixer {
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       newBlock
     );
-    const expr = ts.factory.createPropertyDeclaration(undefined, methodDecl.name, undefined, undefined, arrowFunc);
+    const newModifiers = ts.getModifiers(methodDecl)?.filter((modifier) => {
+      return !(ts.isDecorator(modifier) && TsUtils.getDecoratorName(modifier) === CustomDecoratorName.Styles);
+    });
+    const expr = ts.factory.createPropertyDeclaration(newModifiers, methodDecl.name, undefined, type, arrowFunc);
     needImport.add(COMMON_METHOD_IDENTIFIER);
     let text = this.printer.printNode(ts.EmitHint.Unspecified, expr, methodDecl.getSourceFile());
     const startPos = this.sourceFile.getLineAndCharacterOfPosition(methodDecl.getStart()).character;

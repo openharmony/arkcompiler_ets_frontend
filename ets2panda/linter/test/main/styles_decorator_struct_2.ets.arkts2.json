@@ -15,29 +15,9 @@
     ],
     "result": [
         {
-            "line": 22,
-            "column": 27,
-            "endLine": 22,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
-            "column": 12,
-            "endLine": 49,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 101,
+            "line": 103,
             "column": 24,
-            "endLine": 101,
+            "endLine": 103,
             "endColumn": 37,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
@@ -45,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 105,
+            "line": 107,
             "column": 26,
-            "endLine": 113,
+            "endLine": 115,
             "endColumn": 6,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
