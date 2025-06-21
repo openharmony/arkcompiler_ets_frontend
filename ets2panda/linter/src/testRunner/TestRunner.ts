@@ -143,6 +143,21 @@ function runTests(): boolean {
   const { passed, failed } = testStats;
   Logger.info(`\nSUMMARY: ${passed + failed} total, ${passed} passed, ${failed} failed.`);
   Logger.info(failed > 0 ? '\nTEST FAILED' : '\nTEST SUCCESSFUL');
+
+  const saveCoverageData = (): void => {
+    const coverageData = globalThis.__coverage__;
+    if (coverageData) {
+      const projectRoot = path.resolve(__dirname, '../../..');
+      const coverageDir = path.join(projectRoot, 'coverage');
+      fs.mkdirSync(coverageDir, { recursive: true });
+
+      const coverageFile = path.join(coverageDir, 'coverage.json');
+      fs.writeFileSync(coverageFile, JSON.stringify(coverageData, null, 4));
+    } else {
+      console.log('no coverage data found');
+    }
+  };
+  saveCoverageData();
   process.exit(failed > 0 ? -1 : 0);
 }
 
