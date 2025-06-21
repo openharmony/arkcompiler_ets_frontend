@@ -23,6 +23,26 @@
             "suggest": "",
             "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
             "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 32,
+            "endLine": 23,
+            "endColumn": 44,
+            "problem": "IsConcurrentDeprecated",
+            "suggest": "",
+            "rule": "isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 27,
+            "endLine": 25,
+            "endColumn": 39,
+            "problem": "IsConcurrentDeprecated",
+            "suggest": "",
+            "rule": "isConcurrent is not supported (arkts-limited-stdlib-no-support-isConcurrent)",
+            "severity": "ERROR"
         }
     ]
 }
