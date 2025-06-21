@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,14 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@interface MyAnno {
-    testProperty1: string
-    class A{}
-}
 
-/* @@? 17:5 Error SyntaxError: Hard keyword 'class' cannot be used as identifier */
-/* @@? 17:5 Error SyntaxError: Identifier expected, got 'class'. */
-/* @@? 17:12 Error SyntaxError: Missing type annotation for property 'A'. */
-/* @@? 17:12 Error SyntaxError: Identifier expected, got '{'. */
-/* @@? 17:13 Error SyntaxError: Identifier expected, got '}'. */
-/* @@? 18:1 Error SyntaxError: Unexpected token '}'. */
+function f(public x: number){
+}
+class C{
+    constructor(public m:number) {}
+    m(public x:number) {}
+}
+/* @@? 16:12 Error SyntaxError: Declaring fields in parameter list is not supported */
+/* @@? 19:17 Error SyntaxError: Declaring fields in parameter list is not supported */
+/* @@? 20:7 Error SyntaxError: Declaring fields in parameter list is not supported */

@@ -275,10 +275,13 @@ function main(): void {
 /* @@? 157:16 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 158:26 Error TypeError: Property 'getInner' does not exist on type 'A' */
 /* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
+/* @@? 161:9 Error SyntaxError: Hard keyword 'let' cannot be used as identifier */
+/* @@? 162:9 Error SyntaxError: Hard keyword 'const' cannot be used as identifier */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
+/* @@? 163:9 Error SyntaxError: Hard keyword 'new' cannot be used as identifier */
 /* @@? 164:5 Error TypeError: This expression is not callable. */
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 285:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 288:1 Error SyntaxError: Expected '}', got 'end of stream'. */

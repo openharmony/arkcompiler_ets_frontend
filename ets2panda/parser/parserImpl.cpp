@@ -1267,6 +1267,11 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
         if ((options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
+        if (token.IsLiteral()) {
+            LogError(diagnostic::LITERAL_VALUE_IDENT, {token.ToString()}, tokenStart);
+        } else if (token.IsKeyword()) {
+            LogError(diagnostic::HARD_KEYWORD_IDENT, {token.ToString()}, tokenStart);
+        }
         LogError(diagnostic::IDENTIFIER_EXPECTED_HERE, {TokenToString(tokenType)}, tokenStart);
         lexer_->NextToken();
         return AllocBrokenExpression(tokenStart);
