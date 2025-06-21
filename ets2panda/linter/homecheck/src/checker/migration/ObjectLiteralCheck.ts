@@ -46,6 +46,7 @@ const gMetaData: BaseMetaData = {
     ruleDocPath: '',
     description: 'Object literal shall generate instance of a specific class',
 };
+const INSTANCE_OF_DESC = 'The `instanceof` may work on an object literal, which now generates an instance of a specific class';
 
 export class ObjectLiteralCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
@@ -101,7 +102,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             this.checkFromStmt(stmt, scene, result, topLevelVarMap, checkAll, visited);
             result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
             if (!checkAll.value) {
-                this.addIssueReport(stmt, rightOp);
+                this.addIssueReport(stmt, rightOp, false);
             }
         }
     }
@@ -360,11 +361,12 @@ export class ObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value): void {
+    private addIssueReport(stmt: Stmt, operand: Value, isPrecise: boolean = true): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'ObjectLiteral';
-        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        const metaDesc = isPrecise ? this.metaData.description : INSTANCE_OF_DESC;
+        const desc = `${metaDesc} (${this.rule.ruleId.replace('@migration/', '')})`;
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
