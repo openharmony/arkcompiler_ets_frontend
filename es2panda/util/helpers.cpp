@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -677,10 +677,9 @@ static std::string GetTempOutputName(const std::string &inputFile)
 
 void Helpers::AnalysisProgram(panda::pandasm::Program *prog, const std::string &inputFile)
 {
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
     std::map<std::string, size_t> stat;
     std::map<std::string, size_t> *statp = &stat;
-
-#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
     auto tempOutput = GetTempOutputName(inputFile);
     bool exists = false;
     auto mapsp = &panda::bytecodeopt::BytecodeAnalysisResults::GetOrCreateBytecodeMaps(tempOutput, exists);
@@ -701,11 +700,11 @@ void Helpers::AnalysisProgram(panda::pandasm::Program *prog, const std::string &
 
 void Helpers::OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile)
 {
-    std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = &stat;
     auto tempOutput = GetTempOutputName(inputFile);
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = &stat;
     const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
                                     panda::Logger::Component::BYTECODE_OPTIMIZER |
                                     panda::Logger::Component::COMPILER;

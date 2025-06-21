@@ -1,5 +1,5 @@
 {
-    "name": "@arkcompiller/ets_frontend",
+    "name": "@ohos/ets_frontend",
     "description": "支持应用TS/JS语言代码的编译，行为符合ArkUI框架需要的Strict模式的ES2015标准",
     "version": "3.1",
     "license": "Apache License 2.0",
@@ -22,12 +22,11 @@
                 "runtime_core",
                 "zlib",
                 "bounds_checking_function",
-                "protobuf"
+                "protobuf",
+                "icu",
+                "abseil-cpp"
             ],
-            "third_party": [
-                "json",
-                "icu"
-            ]
+            "third_party": []
         },
         "build": {
             "sub_component": [
