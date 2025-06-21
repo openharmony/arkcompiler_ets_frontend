@@ -173,3 +173,8 @@ ab3.fn3.unsafeCall();
 
 const fn29: Function[] = [];
 fn29[1].unsafeCall();
+
+SysApiWrapper.setTimeout = (handler: Function | string, delay?: number): number => {
+  (handler as Function)?.unsafeCall();
+  return Math.random();
+}

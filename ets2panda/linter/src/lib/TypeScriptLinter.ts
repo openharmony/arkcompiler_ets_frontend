@@ -4392,7 +4392,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const type = this.tsTypeChecker.getTypeAtLocation(expression);
     const typeText = this.tsTypeChecker.typeToString(type);
     if (typeText === LIKE_FUNCTION) {
-      const autofix = this.autofixer?.fixNoTsLikeFunctionCall(expression);
+      const autofix = this.autofixer?.fixNoTsLikeFunctionCall(callExpr);
       this.incrementCounters(expression, FaultID.ExplicitFunctionType, autofix);
     }
   }
