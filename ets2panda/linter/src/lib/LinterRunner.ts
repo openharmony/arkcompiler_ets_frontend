@@ -215,16 +215,9 @@ function fix(
 ): boolean {
   const program = linterConfig.tscCompiledProgram.getProgram();
   let appliedFix = false;
-  const mergedProblems = lintResult.problemsInfos;
-  if (hcResults !== undefined) {
-    for (const [filePath, problems] of hcResults) {
-      if (mergedProblems.has(filePath)) {
-        mergedProblems.get(filePath)!.push(...problems);
-      } else {
-        mergedProblems.set(filePath, problems);
-      }
-    }
-  }
+  // Apply homecheck fixes first to avoid them being skipped due to conflict with linter autofixes
+  let mergedProblems: Map<string, ProblemInfo[]> = hcResults ?? new Map();
+  mergedProblems = mergeArrayMaps(mergedProblems, lintResult.problemsInfos);
   mergedProblems.forEach((problemInfos, fileName) => {
     const srcFile = program.getSourceFile(fileName);
     if (!srcFile) {
@@ -237,7 +230,8 @@ function fix(
       linterConfig.cmdOptions.linterOptions.arkts2 &&
       linterConfig.cmdOptions.inputFiles.includes(fileName) &&
       !hasUseStaticDirective(srcFile) &&
-      linterConfig.cmdOptions.linterOptions.ideInteractive;
+      linterConfig.cmdOptions.linterOptions.ideInteractive &&
+      !qEd.QuasiEditor.hasAnyAutofixes(problemInfos);
     // If nothing to fix or don't need to add 'use static', then skip file
     if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos) && !needToAddUseStatic) {
       return;
@@ -250,7 +244,9 @@ function fix(
       linterConfig.cmdOptions.outputFilePath
     );
     updatedSourceTexts.set(fileName, qe.fix(problemInfos, needToAddUseStatic));
-    appliedFix = true;
+    if (!needToAddUseStatic) {
+      appliedFix = true;
+    }
   });
 
   return appliedFix;
