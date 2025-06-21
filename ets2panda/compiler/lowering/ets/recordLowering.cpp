@@ -83,6 +83,11 @@ bool RecordLowering::PerformForModule(public_lib::Context *ctx, parser::Program 
 void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     for (auto *it : expr->Properties()) {
+        if (it->IsSpreadElement()) {
+            // Skip spread elements - they are handled separately
+            continue;
+        }
+
         auto *prop = it->AsProperty();
         switch (prop->Key()->Type()) {
             case ir::AstNodeType::NUMBER_LITERAL: {
@@ -179,10 +184,13 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
         return expr;
     }
 
-    ES2PANDA_ASSERT(expr->TsType() != nullptr);
-    std::stringstream ss;
-    expr->TsType()->ToAssemblerType(ss);
-    if (!(ss.str() == compiler::Signatures::BUILTIN_RECORD || ss.str() == compiler::Signatures::BUILTIN_MAP)) {
+    // Check if this is actually a Record or Map type using proper type identity checking
+    auto *objType = expr->PreferredType()->AsETSObjectType();
+    auto *originalBaseType = objType->GetOriginalBaseType();
+    auto *globalTypes = checker->GetGlobalTypesHolder();
+
+    if (!checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalMapBuiltinType()) &&
+        !checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalRecordBuiltinType())) {
         // Only update object expressions for Map/Record types
         return expr;
     }
@@ -236,37 +244,62 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
      * map.set(k1, v1)
      * map.set(k2, v2)
      * ...
+     * // For spread elements:
+     * let spread_src_ = spread_expr;
+     * spread_src_.forEach((value, key) => { map.set(key, value); });
      * map
      */
 
+    auto *allocator = ctx->Allocator();
+    auto *parser = ctx->parser->AsETSParser();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
+
     // Initialize map with provided type arguments
     auto *ident = Gensym(ctx->Allocator());
-    std::stringstream ss;
-    expr->TsType()->ToAssemblerType(ss);
 
-    ArenaVector<ir::Statement *> statements(ctx->allocator->Adapter());
-    auto &properties = expr->Properties();
-    // currently we only have Map and Record in this if branch
+    // Determine container type using proper type checking
+    auto *objType = expr->PreferredType()->AsETSObjectType();
+    auto *originalBaseType = objType->GetOriginalBaseType();
+    auto *globalTypes = checker->GetGlobalTypesHolder();
+
     std::string containerType;
-    if (ss.str() == compiler::Signatures::BUILTIN_MAP) {
+    if (checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalMapBuiltinType())) {
         containerType = "Map";
     } else {
         containerType = "Record";
     }
+
+    ArenaVector<ir::Statement *> statements(ctx->allocator->Adapter());
+    auto &properties = expr->Properties();
 
     const std::string createSrc =
         "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + "@@T2" + ">()";
     statements.push_back(ctx->parser->AsETSParser()->CreateFormattedStatements(createSrc, ident, valueType).front());
 
     // Build statements from properties
-
     for (const auto &property : properties) {
-        ES2PANDA_ASSERT(property->IsProperty());
-        auto p = property->AsProperty();
-        statements.push_back(
-            CreateStatement("@@I1.set(@@E2, @@E3)", ident->Clone(ctx->allocator, nullptr), p->Key(), p->Value(), ctx));
+        if (property->IsSpreadElement()) {
+            auto *spreadArg = property->AsSpreadElement()->Argument();
+            const auto tempSource = Gensym(allocator);
+
+            statements.push_back(parser->CreateFormattedStatement("let @@I1 = @@E2;", tempSource, spreadArg));
+
+            std::vector<ir::AstNode *> forEachArgs;
+            std::stringstream forEachStream;
+
+            forEachStream << "@@I1.forEach((value, key) => { @@I2.set(key, value); });";
+            forEachArgs.push_back(tempSource->Clone(allocator, nullptr));
+            forEachArgs.push_back(ident->Clone(allocator, nullptr));
+
+            statements.push_back(parser->CreateFormattedStatement(forEachStream.str(), forEachArgs));
+        } else {
+            // Handle regular properties
+            statements.push_back(
+                parser->CreateFormattedStatement("@@I1.set(@@E2, @@E3)", ident->Clone(ctx->allocator, nullptr),
+                                                 property->AsProperty()->Key(), property->AsProperty()->Value()));
+        }
     }
-    statements.push_back(CreateStatement("@@I1", ident->Clone(ctx->allocator, nullptr), nullptr, nullptr, ctx));
+    statements.push_back(parser->CreateFormattedStatement("@@I1", ident->Clone(ctx->allocator, nullptr)));
 
     // Create Block Expression
     auto block = ctx->AllocNode<ir::BlockExpression>(std::move(statements));

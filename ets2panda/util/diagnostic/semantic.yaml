@@ -1500,7 +1500,6 @@ semantic:
 - name: INTERFACE_EXTENDS_CLASS
   id: 378
   message: "Interfaces cannot extend classes, only other interfaces."
-
 - name: CYCLIC_TYPE_OF
   id: 379
   message: "Circular type of reference"
@@ -1556,3 +1555,7 @@ semantic:
 - name: OVERLOAD_MODIFIERS_ABSTRACT 
   id: 392
   message: "overload declaration cannot contain abstract methods."
+  
+- name: INVALID_RECORD_PROPERTY
+  id: 383
+  message: "Invalid record property"
