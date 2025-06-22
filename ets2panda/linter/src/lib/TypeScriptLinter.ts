@@ -69,7 +69,10 @@ import {
   LIMITED_STD_OBJECT_API,
   LIMITED_STD_PROXYHANDLER_API,
   LIMITED_STD_REFLECT_API,
-  MODULE_IMPORTS
+  MODULE_IMPORTS,
+  ARKTSUTILS_TEXT,
+  ARKTSUTILS_MODULES,
+  ARKTSUTILS_LOCKS_MEMBER
 } from './utils/consts/LimitedStdAPI';
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
@@ -3706,6 +3709,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
       this.checkCollectionsSymbol(tsIdentSym, node);
+      this.checkConcurrencySymbol(tsIdentSym, node);
     }
   }
 
@@ -7059,6 +7063,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     };
 
     this.checkSymbolAndExecute(symbol, WORKER_TEXT, WORKER_MODULES, cb);
+  }
+
+  private checkConcurrencySymbol(symbol: ts.Symbol, node: ts.Node): void {
+    const cb = (): void => {
+      const parent = node.parent;
+      if (!ts.isPropertyAccessExpression(parent)) { 
+        return; 
+      }
+      if (parent.name.text === ARKTSUTILS_LOCKS_MEMBER) {
+        this.incrementCounters(node, FaultID.LimitedStdLibNoImportConcurrency);
+      }
+    };
+
+    this.checkSymbolAndExecute(symbol, ARKTSUTILS_TEXT, ARKTSUTILS_MODULES, cb);
   }
 
   private checkSymbolAndExecute(symbol: ts.Symbol, symbolName: string, modules: string[], cb: () => void): void {
