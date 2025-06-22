@@ -673,6 +673,9 @@ static ir::Expression *AdjustType(UnboxContext *uctx, ir::Expression *expr, chec
     expectedType = uctx->checker->GetApparentType(expectedType);
     checker::Type *actualType = expr->Check(uctx->checker);
 
+    if (expectedType->HasTypeFlag(checker::TypeFlag::ETS_NEVER)) {
+        return expr;
+    }
     if (actualType->IsETSPrimitiveType() && checker::ETSChecker::IsReferenceType(expectedType)) {
         expr = InsertPrimitiveConversionIfNeeded(uctx, expr, expectedType);
         ES2PANDA_ASSERT(
