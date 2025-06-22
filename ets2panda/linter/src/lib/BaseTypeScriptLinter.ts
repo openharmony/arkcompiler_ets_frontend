@@ -26,6 +26,7 @@ import { faultsAttrs } from './FaultAttrs';
 import { cookBookTag } from './CookBookMsg';
 import { FaultID } from './Problems';
 import { ProblemSeverity } from './ProblemSeverity';
+import { arkts2Rules, onlyArkts2SyntaxRules } from './utils/consts/ArkTS2Rules';
 
 export abstract class BaseTypeScriptLinter {
   problemsInfos: ProblemInfo[] = [];
@@ -86,7 +87,7 @@ export abstract class BaseTypeScriptLinter {
     const cookBookTg = errorMsg ? errorMsg : cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
-    autofix = autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
+    autofix = BaseTypeScriptLinter.processAutofix(autofix, startPos, endPos);
     const badNodeInfo: ProblemInfo = {
       line: startPos.line + 1,
       column: startPos.character + 1,
@@ -106,12 +107,38 @@ export abstract class BaseTypeScriptLinter {
       autofix: autofix,
       autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
     };
+    
+    if (this.options?.ideInteractive && this.isSkipedRecordProblems(badNodeInfo)) {
+      return;
+    }
+
     this.problemsInfos.push(badNodeInfo);
     this.updateFileStats(faultId, badNodeInfo.line);
-
     // problems with autofixes might be collected separately
     if (this.options.reportAutofixCb && badNodeInfo.autofix) {
       this.options.reportAutofixCb(badNodeInfo);
     }
+  }
+
+  private static processAutofix(
+    autofix: Autofix[] | undefined,
+    startPos: ts.LineAndCharacter,
+    endPos: ts.LineAndCharacter
+  ): Autofix[] | undefined {
+    return autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
+  }
+
+  private isSkipedRecordProblems(badNodeInfo: ProblemInfo): boolean {
+    if (this.options.onlySyntax) {  
+       if (onlyArkts2SyntaxRules.has(badNodeInfo.ruleTag)) {
+          return false;
+        }
+    } else {
+      if (this.options.arkts2  
+        && arkts2Rules.includes(badNodeInfo.ruleTag)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

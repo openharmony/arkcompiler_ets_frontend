@@ -46,4 +46,5 @@ export interface LinterOptions {
   wholeProjectPath?: string;
   checkTsAndJs?: boolean;
   inputFiles?: string[];
+  onlySyntax?: boolean;
 }

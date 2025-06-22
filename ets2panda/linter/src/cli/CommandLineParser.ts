@@ -132,7 +132,7 @@ function formIdeInteractive(cmdOptions: CommandLineOptions, commanderOpts: Optio
     cmdOptions.linterOptions.checkTsAndJs = true;
   }
   if (commanderOpts.onlyArkts2SyntaxRules) {
-    cmdOptions.onlySyntax = true;
+    cmdOptions.linterOptions.onlySyntax = true;
   }
 }
 

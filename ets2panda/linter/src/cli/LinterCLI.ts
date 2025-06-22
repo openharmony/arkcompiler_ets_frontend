@@ -24,7 +24,6 @@ import type { ProblemInfo } from '../lib/ProblemInfo';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions, getEtsLoaderPath } from '../lib/ts-compiler/Compiler';
 import { logStatistics } from '../lib/statistics/StatisticsLogger';
-import { arkts2Rules, onlyArkts2SyntaxRules } from '../lib/utils/consts/ArkTS2Rules';
 import { MigrationTool } from 'homecheck';
 import { getHomeCheckConfigInfo, transferIssues2ProblemInfo } from '../lib/HomeCheck';
 import { processSyncErr, processSyncOut } from '../lib/utils/functions/ProcessWrite';
@@ -101,16 +100,6 @@ function mergeLintProblems(
     mergedProblems.set(filePath, []);
   }
   let filteredProblems = problems;
-  if (cmdOptions.linterOptions.arkts2) {
-    filteredProblems = problems.filter((problem) => {
-      return arkts2Rules.includes(problem.ruleTag);
-    });
-  }
-  if (cmdOptions.onlySyntax) {
-    filteredProblems = problems.filter((problem) => {
-      return onlyArkts2SyntaxRules.has(problem.ruleTag);
-    });
-  }
   mergedProblems.get(filePath)!.push(...filteredProblems);
 
   if (cmdOptions.scanWholeProjectInHomecheck) {

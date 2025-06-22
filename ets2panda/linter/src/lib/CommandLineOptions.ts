@@ -27,7 +27,6 @@ export interface CommandLineOptions {
   arktsWholeProjectPath?: string;
   skipLinter?: boolean;
   homecheck?: boolean;
-  onlySyntax?: boolean;
   followSdkSettings?: boolean;
   devecoPluginModeDeprecated?: boolean;
   disableStrictDiagnostics?: boolean;
