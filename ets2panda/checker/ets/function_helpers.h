@@ -169,14 +169,15 @@ static std::optional<Substitution> BuildExplicitSubstitutionForArguments(ETSChec
         }
     }
     for (size_t ix = instArgs.size(); ix < sigParams.size(); ++ix) {
-        auto *dflt = sigParams[ix]->AsETSTypeParameter()->GetDefaultType();
+        auto typeParam = sigParams[ix]->AsETSTypeParameter();
+        auto *dflt = typeParam->GetDefaultType();
         if (dflt == nullptr) {
             break;
         }
 
         dflt = dflt->Substitute(checker->Relation(), &constraintsSubstitution);
         instArgs.push_back(dflt);
-        checker->EmplaceSubstituted(&constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
+        checker->EmplaceSubstituted(&constraintsSubstitution, typeParam, instArgs[ix]);
     }
     if (sigParams.size() != instArgs.size()) {
         if ((flags & TypeRelationFlag::NO_THROW) == static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {

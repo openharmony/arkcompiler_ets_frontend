@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <utility>
 #include "checker/ETSchecker.h"
 
 #include "checker/types/globalTypesHolder.h"
@@ -1590,7 +1591,7 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
 
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
         auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
-        auto *typeAliasType = typeAliasTypeName->Variable()->TsType();
+        auto *typeAliasType = typeAliasTypeName->Variable()->TsType()->MaybeBaseTypeOfGradualType();
         if (!typeAliasType->IsETSTypeParameter()) {
             continue;
         }
@@ -1688,8 +1689,8 @@ util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringVi
 }
 
 // Helps to prevent searching for the imported file among external sources if it is the entry program
-static parser::Program *SelectEntryOrExternalProgram(varbinder::ETSBinder *etsBinder,
-                                                     const util::StringView &importPath)
+parser::Program *ETSChecker::SelectEntryOrExternalProgram(varbinder::ETSBinder *etsBinder,
+                                                          const util::StringView &importPath)
 {
     if (importPath.Is(etsBinder->GetGlobalRecordTable()->Program()->AbsoluteName().Mutf8())) {
         return etsBinder->GetGlobalRecordTable()->Program();
@@ -1710,21 +1711,37 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
         program->SetASTChecked();
         program->Ast()->Check(this);
     }
+    if (program->IsDeclForDynamicStaticInterop()) {
+        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
 
-    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
+        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_METHOD>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
 
-    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
+        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
 
-    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
+        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
 
-    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
+        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
+    } else {
+        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
 
-    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
+        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
+
+        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
+
+        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
+
+        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+            moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
+    }
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -1746,6 +1763,10 @@ Type *ETSChecker::GetReferencedTypeFromBase([[maybe_unused]] Type *baseType, [[m
 Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
 {
     if (name->IsTSQualifiedName()) {
+        return name->Check(this);
+    }
+
+    if (name->IsMemberExpression()) {
         return name->Check(this);
     }
 
@@ -1794,6 +1815,7 @@ checker::Type *ETSChecker::GetElementTypeOfArray(checker::Type *type)
     if (type->IsTypeError()) {
         return GlobalTypeError();
     }
+
     if (type->IsETSArrayType()) {
         return type->AsETSArrayType()->ElementType();
     }

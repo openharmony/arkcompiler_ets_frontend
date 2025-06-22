@@ -112,7 +112,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     SignatureInfo *copiedInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
 
     for (size_t idx = 0U; idx < signatureInfo_->params.size(); ++idx) {
-        auto *const paramType = signatureInfo_->params[idx]->TsType();
+        auto *const paramType = signatureInfo_->params[idx]->TsType()->MaybeBaseTypeOfGradualType();
         if (paramType->HasTypeFlag(TypeFlag::GENERIC) && paramType->IsETSObjectType()) {
             copiedInfo->params[idx]->SetTsType(paramType->Instantiate(allocator, relation, globalTypes));
             auto originalTypeArgs = paramType->AsETSObjectType()->GetOriginalBaseType()->TypeArguments();

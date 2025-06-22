@@ -298,7 +298,7 @@ void AsmTest::SetCurrentProgram(std::string_view src)
 
 std::unique_ptr<ark::pandasm::Program> AsmTest::GetCurrentProgram(std::string_view src)
 {
-    static constexpr std::string_view FILE_NAME = "annotation.ets";
+    static constexpr std::string_view FILE_NAME = "dummy.ets";
     std::array<char const *, 2> args = {"../../../../../bin/es2panda",
                                         "--ets-unnamed"};  // NOLINT(modernize-avoid-c-arrays)
 

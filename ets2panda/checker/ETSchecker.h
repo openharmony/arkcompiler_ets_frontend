@@ -26,6 +26,7 @@
 #include "checker/types/ets/types.h"
 #include "checker/resolveResult.h"
 #include "ir/visitor/AstVisitor.h"
+#include "types/type.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::varbinder {
@@ -79,6 +80,7 @@ using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Subs
 using MaybeDiagnosticInfo =
     std::optional<std::pair<const diagnostic::DiagnosticKind, const util::DiagnosticMessageParams>>;
 using AstNodePtr = ir::AstNode *;
+using TypePtr = Type *;
 
 class ETSChecker final : public Checker {
 public:
@@ -129,6 +131,7 @@ public:
     Type *GlobalETSNullType() const;
     Type *GlobalETSUndefinedType() const;
     Type *GlobalETSAnyType() const;
+    Type *GlobalETSRelaxedAnyType() const;
     Type *GlobalETSNeverType() const;
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalETSBigIntType() const;
@@ -310,6 +313,7 @@ public:
     ETSResizableArrayType *CreateETSMultiDimResizableArrayType(Type *element, size_t dimSize);
     ETSResizableArrayType *CreateETSResizableArrayType(Type *element);
     ETSArrayType *CreateETSArrayType(Type *elementType, bool isCachePolluting = false);
+    Type *CreateGradualType(Type *baseType, Language lang = Language(Language::Id::JS));
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
     Type *CreateETSUnionType(Type *const (&arr)[N])  // NOLINT(modernize-avoid-c-arrays)
@@ -560,6 +564,7 @@ public:
                                                     const util::StringView &importPath);
     void SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
                                       ir::ETSImportDeclaration *importDecl = nullptr);
+    parser::Program *SelectEntryOrExternalProgram(varbinder::ETSBinder *etsBinder, const util::StringView &importPath);
     void SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType);
     Type *GetReferencedTypeFromBase(Type *baseType, ir::Expression *name);
     Type *GetReferencedTypeBase(ir::Expression *name);
@@ -1008,6 +1013,7 @@ private:
 
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
+    void WrapTypeNode(ir::AstNode *node);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
     void CheckWarnings(parser::Program *program, const util::Options &options);
 

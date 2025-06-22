@@ -239,6 +239,8 @@ public:
         return programAllocator_ == nullptr ? allocator_ : programAllocator_;
     }
 
+    bool IsDeclForDynamicStaticInterop() const;
+
 protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);

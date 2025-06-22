@@ -95,6 +95,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
+    checker::Type *HandlerResultType(checker::ETSChecker *checker, checker::Type *baseType);
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
     ir::Identifier *GetIdent();
 

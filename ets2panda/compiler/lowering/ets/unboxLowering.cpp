@@ -17,6 +17,7 @@
 #include "ir/visitor/IterateAstVisitor.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsTupleType.h"
+#include "checker/types/typeFlag.h"
 #include "checker/types/globalTypesHolder.h"
 #include "compiler/lowering/util.h"
 
@@ -244,7 +245,7 @@ static void NormalizeAllTypes(UnboxContext *uctx, ir::AstNode *ast)
                     return child;
                 }
                 auto typeNodeType = child->AsExpression()->AsTypeNode()->GetType(uctx->checker);
-                if (typeNodeType == nullptr) {
+                if (typeNodeType == nullptr || typeNodeType->IsETSAnyType()) {
                     return child;
                 }
                 auto r = uctx->allocator->New<ir::OpaqueTypeNode>(NormalizeType(uctx, typeNodeType),
@@ -315,11 +316,19 @@ static void HandleScriptFunctionHeader(UnboxContext *uctx, ir::ScriptFunction *f
     uctx->varbinder->BuildFunctionName(func);
 }
 
-static void HandleClassProperty(UnboxContext *uctx, ir::ClassProperty *prop)
+static void HandleClassProperty(UnboxContext *uctx, ir::ClassProperty *prop, bool forceUnbox = false)
 {
     auto *propType = prop->TsType();
     if (propType == nullptr) {
         propType = prop->Key()->Variable()->TsType();
+    }
+    // Primitive Types from JS should be Boxed, but in case of annotation, it should be unboxed.
+    ir::AstNode *node = prop;
+    while (node != nullptr && !node->IsETSModule()) {
+        node = node->Parent();
+    }
+    if (node != nullptr && node->AsETSModule()->Program()->IsDeclForDynamicStaticInterop() && !forceUnbox) {
+        return;
     }
     ES2PANDA_ASSERT(propType != nullptr);
     if (IsUnboxingApplicable(propType) && prop->Key()->IsIdentifier()) {
@@ -819,9 +828,8 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
     // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
     void VisitCallExpression(ir::CallExpression *call) override
     {
-        auto *func = call->Signature()->Function();
-        if (func == nullptr) {
-            // some lambda call, all arguments and return type need to be boxed
+        if (!call->Signature()->HasFunction() || call->Signature()->Function()->Language() == Language::Id::JS) {
+            // some lambda call and dynamic call to js, all arguments and return type need to be boxed
             // NOLINTNEXTLINE(modernize-loop-convert)
             for (size_t i = 0; i < call->Arguments().size(); i++) {
                 auto *arg = call->Arguments()[i];
@@ -829,6 +837,8 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
             }
             return;
         }
+
+        auto *func = call->Signature()->Function();
 
         HandleDeclarationNode(uctx_, func);
         // NOLINTNEXTLINE(modernize-loop-convert)
@@ -890,6 +900,16 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
     void VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *call) override
     {
         auto *func = call->GetSignature()->Function();
+        if (func == nullptr || func->Language() == Language::Id::JS) {
+            // For dynamic call to js, all arguments and return type need to be boxed
+            // NOLINTNEXTLINE(modernize-loop-convert)
+            for (size_t i = 0; i < call->GetArguments().size(); i++) {
+                auto *arg = call->GetArguments()[i];
+                call->GetArguments()[i] = AdjustType(uctx_, arg, uctx_->checker->MaybeBoxType(arg->TsType()));
+            }
+            return;
+        }
+
         HandleDeclarationNode(uctx_, func);
 
         for (size_t i = 0; i < call->GetArguments().size(); i++) {
@@ -1131,7 +1151,7 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
                 if (mexpr->Property()->Variable()->Declaration() != nullptr &&
                     mexpr->Property()->Variable()->Declaration()->Node() != nullptr &&
                     mexpr->Property()->Variable()->Declaration()->Node()->IsTyped() &&
-                    mexpr->Property()->Variable()->Declaration()->Node()->AsTyped()->TsType() != nullptr) {
+                    !mexpr->Object()->TsType()->IsETSAnyType()) {
                     HandleDeclarationNode(uctx_, mexpr->Property()->Variable()->Declaration()->Node());
                     propType = mexpr->Property()->Variable()->Declaration()->Node()->AsTyped()->TsType();
                 } else if (mexpr->Property()->Variable()->TsType() != nullptr) {
@@ -1422,7 +1442,7 @@ static void VisitExternalPrograms(UnboxVisitor *visitor, parser::Program *progra
     auto annotationIterator = [visitor](auto *child) {
         if (child->IsClassProperty()) {
             auto prop = child->AsClassProperty();
-            HandleClassProperty(visitor->uctx_, prop);
+            HandleClassProperty(visitor->uctx_, prop, true);
             if (prop->Value() != nullptr) {
                 ES2PANDA_ASSERT(prop->Value()->IsLiteral() || prop->Value()->IsArrayExpression() ||
                                 (prop->Value()->IsTyped() && prop->Value()->AsTyped()->TsType()->IsETSEnumType()));

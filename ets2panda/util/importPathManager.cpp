@@ -66,7 +66,7 @@ ImportPathManager::ImportMetadata ImportPathManager::GatherImportMetadata(parser
     // NOTE(dkofanov): The code below expresses the idea of 'dynamicPaths' defining separated, virtual file system.
     // Probably, paths of common imports should be isolated from the host fs as well, being resolved by 'ModuleInfo'
     // instead of 'AbsoluteName'.
-    isDynamic_ = program->ModuleInfo().isDeclForDynamicStaticInterop;
+    isDynamic_ = program->IsDeclForDynamicStaticInterop();
     auto curModulePath = isDynamic_ ? program->ModuleInfo().moduleName : program->AbsoluteName();
     auto [resolvedImportPath, resolvedIsDynamic] = ResolvePath(curModulePath.Utf8(), importPath);
     if (resolvedImportPath.empty()) {

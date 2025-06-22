@@ -301,8 +301,7 @@ bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::P
             // Skip processing invalid and dynamic objects
             if (ast->IsObjectExpression()) {
                 auto *exprType = ast->AsObjectExpression()->TsType();
-                if (exprType != nullptr && exprType->IsETSObjectType() &&
-                    !exprType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
+                if (exprType != nullptr && exprType->IsETSObjectType()) {
                     return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
                 }
             }
@@ -318,8 +317,7 @@ bool ObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::
 {
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() && ast->AsObjectExpression()->TsType()->IsETSObjectType() &&
-               !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
+        return ast->IsObjectExpression() && ast->AsObjectExpression()->TsType()->IsETSObjectType();
     });
 }
 

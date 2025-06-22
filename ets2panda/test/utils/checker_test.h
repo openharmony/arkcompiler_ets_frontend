@@ -20,7 +20,9 @@
 #include "compiler/lowering/phase.h"
 #include "panda_executable_path_getter.h"
 #include "compiler/core/regSpiller.h"
+#include "compiler/core/ETSCompiler.h"
 #include "compiler/core/ETSemitter.h"
+#include "compiler/core/ETSGen.h"
 #include "checker/ETSAnalyzer.h"
 #include "ir/astNode.h"
 #include "util/options.h"
@@ -84,6 +86,37 @@ public:
                           compiler_alias::ETSEmitter>(&es2pandaPathPtr, fileName, src, &checker_, &program_);
     }
 
+    template <typename CustomFunc>
+    std::unique_ptr<ark::pandasm::Program> RunCheckerWithCustomFunc(std::string_view fileName, std::string_view src,
+                                                                    CustomFunc customFunc)
+    {
+        auto es2pandaPathPtr = es2pandaPath_.c_str();
+        ASSERT(es2pandaPathPtr);
+
+        return std::unique_ptr<ark::pandasm::Program>(
+            InitializeCheckerWithCustomFunc<parser_alias::ETSParser, varbinder_alias::ETSBinder,
+                                            checker_alias::ETSChecker, checker_alias::ETSAnalyzer,
+                                            compiler_alias::ETSCompiler, compiler_alias::ETSGen,
+                                            compiler_alias::StaticRegSpiller, compiler_alias::ETSFunctionEmitter,
+                                            compiler_alias::ETSEmitter, CustomFunc>(&es2pandaPathPtr, fileName, src,
+                                                                                    &checker_, &program_, customFunc));
+    }
+
+    template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
+    static plib_alias::Context::CodeGenCb MakeCompileJob()
+    {
+        return [](plib_alias::Context *context, varbinder_alias::FunctionScope *scope,
+                  compiler_alias::ProgramElement *programElement) -> void {
+            RegSpiller regSpiller;
+            ark::ArenaAllocator allocator(ark::SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+            AstCompiler astcompiler;
+            compiler_alias::SetPhaseManager(context->phaseManager);
+            CodeGen cg(&allocator, &regSpiller, context, std::make_tuple(scope, programElement, &astcompiler));
+            FunctionEmitter funcEmitter(&cg, programElement);
+            funcEmitter.Generate();
+        };
+    }
+
     template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
               typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
     void InitializeChecker(char const *const *argv, std::string_view fileName, std::string_view src,
@@ -136,6 +169,68 @@ public:
                 return;
             }
         }
+    }
+
+    template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
+              typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename CustomFunc>
+    ark::pandasm::Program *InitializeCheckerWithCustomFunc(char const *const *argv, std::string_view fileName,
+                                                           std::string_view src, checker_alias::ETSChecker *checker,
+                                                           parser_alias::Program *program, CustomFunc customFunc)
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        auto options = std::make_unique<util_alias::Options>(argv[0], diagnosticEngine_);
+        if (!options->Parse(ark::Span(argv, 1))) {
+            return nullptr;
+        }
+
+        ark::Logger::ComponentMask mask {};
+        mask.set(ark::Logger::Component::ES2PANDA);
+        ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
+
+        ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
+        ark::es2panda::SourceFile input(fileName, src, options->IsModule());
+        compiler_alias::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
+        auto parser = Parser(program, unit.options, diagnosticEngine_,
+                             static_cast<parser_alias::ParserStatus>(unit.rawParserStatus));
+        auto analyzer = Analyzer(checker);
+        checker->SetAnalyzer(&analyzer);
+
+        auto *varbinder = program->VarBinder();
+        varbinder->SetProgram(program);
+
+        varbinder->SetContext(publicContext_.get());
+
+        auto emitter = Emitter(publicContext_.get());
+        auto phaseManager = compiler_alias::PhaseManager(publicContext_.get(), unit.ext, allocator_.get());
+
+        auto config = plib_alias::ConfigImpl {};
+        publicContext_->config = &config;
+        publicContext_->config->options = &unit.options;
+        publicContext_->sourceFile = &unit.input;
+        publicContext_->allocator = allocator_.get();
+        publicContext_->parser = &parser;
+        parser.SetContext(publicContext_.get());
+        publicContext_->parserProgram = program;
+        publicContext_->PushChecker(checker);
+        publicContext_->PushAnalyzer(publicContext_->GetChecker()->GetAnalyzer());
+        publicContext_->emitter = &emitter;
+        publicContext_->diagnosticEngine = &diagnosticEngine_;
+        publicContext_->phaseManager = &phaseManager;
+        publicContext_->GetChecker()->Initialize(varbinder);
+        parser.ParseScript(unit.input,
+                           unit.options.GetCompilationMode() == ark::es2panda::CompilationMode::GEN_STD_LIB);
+        while (auto phase = publicContext_->phaseManager->NextPhase()) {
+            if (!phase->Apply(publicContext_.get(), program)) {
+                return nullptr;
+            }
+        }
+
+        // Run custom logic in here to modify ast
+        Program()->Ast()->IterateRecursively(customFunc);
+
+        publicContext_->codeGenCb = MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>();
+        ark::es2panda::compiler::CompilerImpl compilerImpl(options->GetThread(), {});
+        return compilerImpl.Emit(publicContext_.get());
     }
     NO_COPY_SEMANTIC(CheckerTest);
     NO_MOVE_SEMANTIC(CheckerTest);

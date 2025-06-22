@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_UTIL_IMPORT_PATH_MANAGER_H
 #define ES2PANDA_UTIL_IMPORT_PATH_MANAGER_H
 
+#include "language.h"
 #if defined PANDA_TARGET_MOBILE
 #define USE_UNIX_SYSCALL
 #endif
@@ -68,6 +69,7 @@ struct ModuleInfo {
     // 'Program::MaybeTransformToDeclarationModule'.
     bool isDeclForDynamicStaticInterop {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+    Language lang = Language(Language::Id::ETS);
 };
 
 class ImportPathManager {

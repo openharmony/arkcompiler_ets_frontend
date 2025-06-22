@@ -43,13 +43,6 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
         return;
     }
     ES2PANDA_ASSERT(signature->ArgCount() >= signature->MinArgCount());
-    if (arguments.size() < signature->MinArgCount()) {  // #22952: workaround for dynamic types
-        auto callee = callLike->IsCallExpression() ? callLike->AsCallExpression()->Callee()
-                                                   : callLike->AsETSNewClassInstanceExpression()->GetTypeRef();
-        if (callee->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG)) {
-            return;
-        }
-    }
     ES2PANDA_ASSERT((callLike->IsCallExpression() && callLike->AsCallExpression()->IsTrailingCall()) ||
                     arguments.size() >= signature->MinArgCount());
 

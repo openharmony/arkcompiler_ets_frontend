@@ -91,14 +91,20 @@ ir::Identifier *TSTypeReference::BaseName() const
     if (typeName_->IsIdentifier()) {
         return typeName_->AsIdentifier();
     }
+    if (typeName_->IsTSQualifiedName()) {
+        ir::TSQualifiedName *iter = typeName_->AsTSQualifiedName();
 
-    ir::TSQualifiedName *iter = typeName_->AsTSQualifiedName();
-
-    while (iter->Left()->IsTSQualifiedName()) {
-        iter = iter->Left()->AsTSQualifiedName();
+        while (iter->Left()->IsTSQualifiedName()) {
+            iter = iter->Left()->AsTSQualifiedName();
+        }
+        return iter->Left()->AsIdentifier();
     }
+    ir::MemberExpression *iter = typeName_->AsMemberExpression();
 
-    return iter->Left()->AsIdentifier();
+    while (iter->Property()->IsMemberExpression()) {
+        iter = iter->Property()->AsMemberExpression();
+    }
+    return iter->Property()->AsIdentifier();
 }
 
 checker::Type *TSTypeReference::Check([[maybe_unused]] checker::TSChecker *checker)

@@ -1510,3 +1510,7 @@ semantic:
 - name: CYCLIC_CALLEE
   id: 381
   message: "Circular call function"
+
+- name: DYMANIC_INIT_WITH_OBJEXPR
+  id: 382
+  message: "Dymanic Type {} cannot be initialize with an object expression"

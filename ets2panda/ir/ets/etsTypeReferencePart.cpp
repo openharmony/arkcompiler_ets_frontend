@@ -234,6 +234,20 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 
     return nullptr;
 }
+checker::Type *ETSTypeReferencePart::HandlerResultType(checker::ETSChecker *checker, checker::Type *baseType)
+{
+    if (checker->IsDeclForDynamicStaticInterop() && baseType->IsETSTypeParameter()) {
+        return checker->CreateGradualType(baseType);
+    }
+    if (baseType->IsGradualType()) {
+        return checker->CreateGradualType(HandlerResultType(checker, baseType->MaybeBaseTypeOfGradualType()));
+    }
+    if (baseType->IsETSObjectType()) {
+        checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), TypeParams(), Start());
+        return ctx.Result();
+    }
+    return baseType;
+}
 
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
@@ -253,14 +267,8 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 
         if (TsType() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name);
-
             ES2PANDA_ASSERT(baseType != nullptr);
-            if (baseType->IsETSObjectType()) {
-                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), TypeParams(), Start());
-                SetTsType(ctx.Result());
-            } else {
-                SetTsType(baseType);
-            }
+            SetTsType(HandlerResultType(checker, baseType));
         }
     } else {
         checker::Type *baseType = Previous()->GetType(checker);

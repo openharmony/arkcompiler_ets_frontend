@@ -57,6 +57,7 @@
 #include "varbinder/scope.h"
 #include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/gradualType.h"
 #include "ir/base/catchClause.h"
 #include "parser/program/program.h"
 #include "checker/types/ts/objectType.h"
@@ -1350,6 +1351,9 @@ static bool IsDefaultValueType(const Type *type, bool isNonReadonlyField)
 {
     if (type == nullptr) {
         return false;
+    }
+    if (type->IsGradualType()) {
+        return IsDefaultValueType(type->AsGradualType()->GetBaseType(), isNonReadonlyField);
     }
     return (type->IsETSPrimitiveType() || (type->IsETSObjectType() && type->AsETSObjectType()->IsBoxedPrimitive()) ||
             type->IsETSNeverType() || type->IsETSUndefinedType() || type->IsETSNullType() ||

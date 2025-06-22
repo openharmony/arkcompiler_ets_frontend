@@ -25,6 +25,8 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/statements/blockStatement.h"
+#include "types/type.h"
+#include "utils/arena_containers.h"
 #include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "checker/ets/aliveAnalyzer.h"
@@ -34,6 +36,7 @@
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
+#include "checker/types/ets/etsTupleType.h"
 
 namespace ark::es2panda::checker {
 
@@ -418,16 +421,13 @@ bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::S
 
 [[nodiscard]] TypeFlag ETSChecker::TypeKind(const Type *const type) noexcept
 {
-    // These types were not present in the ETS_TYPE list. Some of them are omited intentionally, other are just bugs
+    // These types were not present in the ETS_TYPE list. Some of them are omitted intentionally, other are just bugs
     static constexpr auto TO_CLEAR = TypeFlag::CONSTANT | TypeFlag::GENERIC | TypeFlag::ETS_INT_ENUM |
                                      TypeFlag::ETS_STRING_ENUM | TypeFlag::READONLY | TypeFlag::BIGINT_LITERAL |
                                      TypeFlag::ETS_TYPE_ALIAS | TypeFlag::TYPE_ERROR;
 
-    // Bugs: these types do not appear as a valid TypeKind, as the TypeKind has more then one bit set
-    [[maybe_unused]] static constexpr auto NOT_A_TYPE_KIND = TypeFlag::ETS_DYNAMIC_FLAG;
-
     auto res = static_cast<checker::TypeFlag>(type->TypeFlags() & ~(TO_CLEAR));
-    ES2PANDA_ASSERT_POS(res == TypeFlag::NONE || helpers::math::IsPowerOfTwo(res & ~(NOT_A_TYPE_KIND)),
+    ES2PANDA_ASSERT_POS(res == TypeFlag::NONE || helpers::math::IsPowerOfTwo(res & ~(TypeFlag::NONE)),
                         ark::es2panda::GetPositionForDiagnostic());
     return res;
 }
@@ -536,6 +536,11 @@ Type *ETSChecker::GlobalETSUndefinedType() const
 Type *ETSChecker::GlobalETSAnyType() const
 {
     return GetGlobalTypesHolder()->GlobalETSAnyType();
+}
+
+Type *ETSChecker::GlobalETSRelaxedAnyType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSRelaxedAnyType();
 }
 
 Type *ETSChecker::GlobalETSNeverType() const

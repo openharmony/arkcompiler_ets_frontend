@@ -22,7 +22,7 @@
 namespace ark::es2panda::checker {
 void ETSAnyType::Identical(TypeRelation *relation, Type *other)
 {
-    relation->Result(other->IsAnyType());
+    relation->Result(other->IsETSAnyType());
 }
 
 void ETSAnyType::AssignmentTarget(TypeRelation *relation, Type *source)

@@ -93,11 +93,10 @@ void TSDeclGen::ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *t
     if (!parent->IsExported() && !parent->IsDefaultExported()) {
         return;
     }
-    if (typeFlag == checker::TypeFlag::ETS_OBJECT || typeFlag == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+    if (typeFlag == checker::TypeFlag::ETS_OBJECT) {
         auto objectType = aliasedType->AsETSObjectType();
         if (objectType->IsETSStringType() || objectType->IsETSBigIntType() || objectType->IsETSUnboxableObject() ||
-            objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL) ||
-            objectType->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
+            objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL)) {
             return;
         }
         auto typeName = objectType->Name();
@@ -210,7 +209,7 @@ void TSDeclGen::ProcessClassMethodDependencies(const ir::MethodDefinition *metho
 void TSDeclGen::AddSuperType(const ir::Expression *super)
 {
     const auto superType = checker::ETSChecker::ETSType(super->TsType());
-    if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+    if (superType == checker::TypeFlag::ETS_OBJECT) {
         auto objectType = super->TsType()->AsETSObjectType();
         AddObjectDependencies(objectType->Name());
     }
@@ -219,7 +218,7 @@ void TSDeclGen::AddSuperType(const ir::Expression *super)
 void TSDeclGen::AddSuperType(const checker::Type *tsType)
 {
     const auto superType = checker::ETSChecker::ETSType(tsType);
-    if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+    if (superType == checker::TypeFlag::ETS_OBJECT) {
         auto objectType = tsType->AsETSObjectType();
         AddObjectDependencies(objectType->Name());
     }
@@ -230,8 +229,7 @@ void TSDeclGen::ProcessInterfacesDependencies(const ArenaVector<checker::ETSObje
     GenSeparated(
         interfaces,
         [this](checker::ETSObjectType *interface) {
-            if (checker::ETSChecker::ETSType(interface) == checker::TypeFlag::ETS_OBJECT ||
-                checker::ETSChecker::ETSType(interface) == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+            if (checker::ETSChecker::ETSType(interface) == checker::TypeFlag::ETS_OBJECT) {
                 AddObjectDependencies(interface->Name());
             }
         },
@@ -422,7 +420,6 @@ bool TSDeclGen::HandleETSSpecificTypes(const checker::Type *checkerType)
             return true;
 
         case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE:
             return HandleObjectType(checkerType);
 
         case checker::TypeFlag::ETS_ARRAY:
@@ -782,10 +779,6 @@ bool TSDeclGen::HandleSpecificObjectTypes(const checker::ETSObjectType *objectTy
         const auto *invoke = objectType->GetFunctionalInterfaceInvokeType();
         ES2PANDA_ASSERT(invoke && invoke->IsETSFunctionType());
         GenType(invoke);
-        return true;
-    }
-    if (objectType->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
-        OutDts("any");
         return true;
     }
     return false;

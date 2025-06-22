@@ -164,6 +164,11 @@ bool Checker::IsAnyError()
     return DiagnosticEngine().IsAnyError();
 }
 
+bool Checker::IsDeclForDynamicStaticInterop() const
+{
+    return Program()->IsDeclForDynamicStaticInterop();
+}
+
 ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
     : checker_(checker), prevScope_(checker_->scope_), prevProgram_(checker_->Program())
 {

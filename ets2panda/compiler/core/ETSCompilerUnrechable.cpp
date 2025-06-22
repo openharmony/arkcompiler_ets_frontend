@@ -419,11 +419,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) 
     ES2PANDA_UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSStringKeyword *node) const
 {
     ES2PANDA_UNREACHABLE();

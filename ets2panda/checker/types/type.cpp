@@ -18,6 +18,7 @@
 #include "checker/types/typeFlag.h"
 #include "checker/types/typeRelation.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/gradualType.h"
 #include "checker/checker.h"
 
 namespace ark::es2panda::checker {
@@ -159,6 +160,15 @@ Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]]
 bool IsTypeError(Type const *tp)
 {
     return tp != nullptr && tp->IsTypeError();
+}
+
+Type *Type::MaybeBaseTypeOfGradualType()
+{
+    auto res = this;
+    while (res->IsGradualType()) {
+        res = res->AsGradualType()->GetBaseType();
+    }
+    return res;
 }
 
 }  // namespace ark::es2panda::checker

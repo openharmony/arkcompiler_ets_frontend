@@ -24,6 +24,7 @@
 #include "objectIndexAccess.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/types/typeFlag.h"
 #include "compiler/lowering/util.h"
 #include "parser/ETSparser.h"
 #include "util/options.h"
@@ -110,10 +111,11 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-            if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
-                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
-                    ir::MemberExpressionKind::ELEMENT_ACCESS) {
-                if (ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType() != nullptr) {
+            if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression()) {
+                auto memberExpr = ast->AsAssignmentExpression()->Left()->AsMemberExpression();
+                if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS &&
+                    memberExpr->AsMemberExpression()->ObjType() != nullptr &&
+                    !memberExpr->Object()->TsType()->IsETSAnyType()) {
                     return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
                 }
             }
@@ -124,9 +126,10 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-            if (ast->IsMemberExpression() &&
-                ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-                if (ast->AsMemberExpression()->ObjType() != nullptr) {
+            if (ast->IsMemberExpression()) {
+                auto memberExpr = ast->AsMemberExpression();
+                if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS &&
+                    memberExpr->ObjType() != nullptr && !memberExpr->Object()->TsType()->IsETSAnyType()) {
                     return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
                 }
             }
@@ -141,9 +144,10 @@ bool ObjectIndexLowering::PostconditionForModule([[maybe_unused]] public_lib::Co
                                                  const parser::Program *program)
 {
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
-        if (ast->IsMemberExpression() &&
-            ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const objectType = ast->AsMemberExpression()->ObjType(); objectType != nullptr) {
+        if (ast->IsMemberExpression()) {
+            auto memberExpr = ast->AsMemberExpression();
+            if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS && memberExpr->ObjType() != nullptr &&
+                !memberExpr->Object()->TsType()->IsETSAnyType()) {
                 return true;
             }
         }
