@@ -10,6 +10,7 @@
     "build_debug": "npm run clean && tsc --sourceMap",
     "demo_entry1.2_hsp1.2:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.2_hsp1.2/build_config1.json && node ./dist/entry.js test/e2e/demo_entry1.2_hsp1.2/build_config2.json",
     "demo_entry1.2_hsp1.1:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.2_hsp1.1/build_config.json",
+    "demo_entry1.2_har1.2:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2/build_config1.json && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2/build_config2.json && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2/build_config3.json",
     "demo_entry1.1_hsp1.2:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.1_hsp1.2/build_config1.json && node ./dist/entry.js test/e2e/demo_entry1.1_hsp1.2/build_config2.json",
     "demo_entry1.2_har1.2_hsp1.2:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2_hsp1.2/build_config1.json && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2_hsp1.2/build_config2.json",
     "demo_entry1.2_har1.2_hsp1.1:gen_abc": "npm run build && node ./dist/entry.js test/e2e/demo_entry1.2_har1.2_hsp1.1/build_config.json",
