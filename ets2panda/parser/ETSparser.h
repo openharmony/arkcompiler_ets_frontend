@@ -302,6 +302,7 @@ private:
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Statement *ParseTryStatement() override;
     ir::Statement *ParseDebuggerStatement() override;
+    ir::Statement *ParseDefaultIfSingleExport(ir::ModifierFlags modifiers);
     ir::Statement *ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
