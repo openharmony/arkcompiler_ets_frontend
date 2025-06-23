@@ -302,7 +302,7 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
 ir::Statement *ParserImpl::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
                                                 ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
-    LogError(diagnostic::ILLEGAL_START_STRUCT);
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"STRUCT"});
     return ParseStructDeclaration(modifiers, modFlags);
 }
 
