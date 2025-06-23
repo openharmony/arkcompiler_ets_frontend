@@ -66,6 +66,7 @@ export interface ArkTSGlobal {
 export interface ArkTS {
   Config: {
     create: Function;
+    createContextGenerateAbcForExternalSourceFiles: Function;
   };
   Context: {
     createFromString: Function;

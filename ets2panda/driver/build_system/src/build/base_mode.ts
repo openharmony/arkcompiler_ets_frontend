@@ -257,7 +257,7 @@ export abstract class BaseMode {
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState checked');
-      
+
       if (this.hasMainModule && (this.byteCodeHar || this.moduleType === OHOS_MODULE_TYPE.SHARED)) {
         let filePathFromModuleRoot: string = path.relative(this.moduleRootPath, fileInfo.filePath);
         let declEtsOutputPath: string = changeFileExtension(
@@ -287,6 +287,63 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
       }
+    } finally {
+      if (!errorStatus) {
+        // when error occur,wrapper will destroy context.
+        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      }
+      PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+      arkts.destroyConfig(arktsGlobal.config);
+    }
+  }
+
+  public compileMultiFiles(filePaths: string[], moduleInfo: ModuleInfo): void {
+    let ets2pandaCmd: string[] = [
+      '_',
+      '--extension',
+      'ets',
+      '--arktsconfig',
+      moduleInfo.arktsConfigFile,
+      '--output',
+      path.resolve(this.outputDir, MERGED_ABC_FILE),
+      '--simultaneous'
+    ];
+    ensurePathExists(path.resolve(this.outputDir, MERGED_ABC_FILE));
+    if (this.isDebug) {
+      ets2pandaCmd.push('--debug-info');
+    }
+    ets2pandaCmd.push(this.buildConfig.compileFiles[0]);
+    this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
+
+    let arktsGlobal = this.buildConfig.arktsGlobal;
+    let arkts = this.buildConfig.arkts;
+    let errorStatus = false;
+    try {
+      arktsGlobal.config = arkts.Config.create(ets2pandaCmd).peer;
+      //@ts-ignore
+      arktsGlobal.compilerContext = arkts.Context.createContextGenerateAbcForExternalSourceFiles(this.buildConfig.compileFiles);;
+      PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda proceedToState parsed');
+      let ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      this.logger.printInfo('plugin parsed finished');
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda proceedToState checked');
+
+      ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
+      this.logger.printInfo('plugin checked finished');
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda bin generated');
+    } catch (error) {
+      errorStatus = true;
+      throw error;
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.
@@ -622,19 +679,15 @@ export abstract class BaseMode {
       }
     });
   }
-  
+
   private shouldSkipFile(file: string, moduleInfo: ModuleInfo, filePathFromModuleRoot: string, abcFilePath: string): boolean {
     const targetPath = this.enableDeclgenEts2Ts
-        ? changeFileExtension(path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot), TS_SUFFIX)
-        : abcFilePath;
+      ? changeFileExtension(path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot), TS_SUFFIX)
+      : abcFilePath;
     return !this.isFileChanged(file, targetPath);
   }
 
   protected collectCompileFiles(): void {
-    if (!this.enableDeclgenEts2Ts) {
-      this.collectDependentCompileFiles();
-      return;
-    }
     this.entryFiles.forEach((file: string) => {
       // Skip the declaration files when compiling abc
       if (file.endsWith(DECL_ETS_SUFFIX)) {
@@ -718,15 +771,26 @@ export abstract class BaseMode {
     this.generateModuleInfos();
 
     const compilePromises: Promise<void>[] = [];
-    this.compileFiles.forEach((fileInfo: CompileFileInfo, _: string) => {
-      compilePromises.push(new Promise<void>((resolve) => {
-        this.compile(fileInfo);
-        resolve();
-      }));
+    let moduleToFile = new Map<string, string[]>();
+    this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
+      if (!moduleToFile.has(fileInfo.packageName)) {
+        moduleToFile.set(fileInfo.packageName, []);
+      }
+      moduleToFile.get(fileInfo.packageName)?.push(fileInfo.filePath);
     });
-    await Promise.all(compilePromises);
-
-    this.mergeAbcFiles();
+    try {
+      //@ts-ignore
+      this.compileMultiFiles([], this.moduleInfos.get(this.packageName));
+    } catch (error) {
+      if (error instanceof Error) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
+          'Compile abc files failed.',
+          error.message
+        );
+        this.logger.printErrorAndExit(logData);
+      }
+    }
   }
 
   // -- runParallell code begins --
@@ -750,8 +814,8 @@ export abstract class BaseMode {
     this.dependencyAnalyzerCmd.push('@' + '"' + dependencyInputFile + '"');
     for (const [_, module] of this.moduleInfos) {
       if (module.isMainModule) {
-          this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
-          break;
+        this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
+        break;
       }
     }
     this.dependencyAnalyzerCmd.push('--output=' + '"' + this.dependencyJsonFile + '"');
@@ -764,7 +828,7 @@ export abstract class BaseMode {
 
     ensurePathExists(this.dependencyJsonFile);
     try {
-      const output = child_process.execSync(dependencyAnalyzerCmdStr, { 
+      const output = child_process.execSync(dependencyAnalyzerCmdStr, {
         stdio: 'pipe',
         encoding: 'utf-8'
       });
@@ -784,10 +848,10 @@ export abstract class BaseMode {
         const execError = error as child_process.ExecException;
         let fullErrorMessage = execError.message;
         if (execError.stderr) {
-            fullErrorMessage += `\nError output: ${execError.stderr}`;
+          fullErrorMessage += `\nError output: ${execError.stderr}`;
         }
         if (execError.stdout) {
-            fullErrorMessage += `\nOutput: ${execError.stdout}`;
+          fullErrorMessage += `\nOutput: ${execError.stdout}`;
         }
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_Dependency_Analyze_FAIL,
@@ -840,7 +904,7 @@ export abstract class BaseMode {
       await this.dispatchTasks();
       this.logger.printInfo('All declaration generation tasks complete.');
     } catch (error) {
-        this.logger.printError(LogDataFactory.newInstance(
+      this.logger.printError(LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
         'Generate declaration files failed.'
       ));
@@ -877,7 +941,7 @@ export abstract class BaseMode {
       const worker = cluster.fork();
 
       this.setupWorkerMessageHandler(worker);
-      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray});
+      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray });
 
       const exitPromise = new Promise<void>((resolve, reject) => {
         worker.on('exit', (status) => status === 0 ? resolve() : reject());
@@ -929,11 +993,11 @@ export abstract class BaseMode {
       execPath,
       execArgs = [],
     } = options;
-  
+
     if (clearExitListeners) {
       cluster.removeAllListeners('exit');
     }
-  
+
     cluster.setupPrimary({
       exec: execPath,
       execArgv: execArgs,
@@ -950,63 +1014,63 @@ export abstract class BaseMode {
     const allNodes = new Set<string>();
 
     for (const node in graph.dependencies) {
-        allNodes.add(node);
-        graph.dependencies[node].forEach(dep => allNodes.add(dep));
+      allNodes.add(node);
+      graph.dependencies[node].forEach(dep => allNodes.add(dep));
     }
     for (const node in graph.dependants) {
-        allNodes.add(node);
-        graph.dependants[node].forEach(dep => allNodes.add(dep));
+      allNodes.add(node);
+      graph.dependants[node].forEach(dep => allNodes.add(dep));
     }
 
     Array.from(allNodes).forEach(node => {
-        adjacencyList[node] = graph.dependencies[node] || [];
-        reverseAdjacencyList[node] = graph.dependants[node] || [];
+      adjacencyList[node] = graph.dependencies[node] || [];
+      reverseAdjacencyList[node] = graph.dependants[node] || [];
     });
 
     const visited = new Set<string>();
     const order: string[] = [];
 
     function dfs(node: string): void {
-        visited.add(node);
-        for (const neighbor of adjacencyList[node]) {
-            if (!visited.has(neighbor)) {
-                dfs(neighbor);
-            }
+      visited.add(node);
+      for (const neighbor of adjacencyList[node]) {
+        if (!visited.has(neighbor)) {
+          dfs(neighbor);
         }
-        order.push(node);
+      }
+      order.push(node);
     }
 
     Array.from(allNodes).forEach(node => {
-        if (!visited.has(node)) {
-            dfs(node);
-        }
+      if (!visited.has(node)) {
+        dfs(node);
+      }
     });
 
     visited.clear();
     const components = new Map<string, Set<string>>();
 
     function reverseDfs(node: string, component: Set<string>): void {
-        visited.add(node);
-        component.add(node);
-        for (const neighbor of reverseAdjacencyList[node]) {
-            if (!visited.has(neighbor)) {
-                reverseDfs(neighbor, component);
-            }
+      visited.add(node);
+      component.add(node);
+      for (const neighbor of reverseAdjacencyList[node]) {
+        if (!visited.has(neighbor)) {
+          reverseDfs(neighbor, component);
         }
+      }
     }
 
     for (let i = order.length - 1; i >= 0; i--) {
-        const node = order[i];
-        if (!visited.has(node)) {
-            const component = new Set<string>();
-            reverseDfs(node, component);
-            if (component.size > 1) {
-              const sortedFiles = Array.from(component).sort();
-              const hashKey = createHash(sortedFiles.join('|'));
-              components.set(hashKey, component);
-            }
-
+      const node = order[i];
+      if (!visited.has(node)) {
+        const component = new Set<string>();
+        reverseDfs(node, component);
+        if (component.size > 1) {
+          const sortedFiles = Array.from(component).sort();
+          const hashKey = createHash(sortedFiles.join('|'));
+          components.set(hashKey, component);
         }
+
+      }
     }
 
     return components;
@@ -1031,14 +1095,14 @@ export abstract class BaseMode {
   private getAbcJobId(file: string): string {
     return '1' + file;
   }
-  
+
   private getExternalProgramJobId(file: string): string {
     return '0' + file;
   }
 
   private getJobDependants(fileDeps: string[], cycleFiles: Map<string, string[]>): Set<string> {
     let depJobList: Set<string> = new Set<string>();
-    fileDeps.forEach((file) => {  
+    fileDeps.forEach((file) => {
       if (!file.endsWith(DECL_ETS_SUFFIX)) {
         depJobList.add(this.getAbcJobId(file));
       }
@@ -1256,7 +1320,7 @@ export abstract class BaseMode {
         '--output',
         fileInfo.abcFilePath,
       ];
-  
+
       if (this.isDebug) {
         ets2pandaCmd.push('--debug-info');
       }
@@ -1339,10 +1403,10 @@ export abstract class BaseMode {
   }
 
   private assignTaskToIdleWorker(
-    workerInfo: WorkerInfo, 
-    queues: Queues, 
-    processingJobs: Set<string>, 
-    serializableConfig: Object, 
+    workerInfo: WorkerInfo,
+    queues: Queues,
+    processingJobs: Set<string>,
+    serializableConfig: Object,
     globalContextPtr: KPointer): void {
     let job: Job | undefined;
     let jobInfo: JobInfo | undefined;
@@ -1356,7 +1420,7 @@ export abstract class BaseMode {
         buildConfig: serializableConfig,
         globalContextPtr: globalContextPtr
       };
-    } 
+    }
     else if (queues.abcQueue.length > 0) {
       job = queues.abcQueue.shift()!;
       jobInfo = {
@@ -1421,6 +1485,6 @@ function createHash(str: string): string {
   return hash.digest('hex');
 }
 
-  // -- runConcurrent code ends --
+// -- runConcurrent code ends --
 
 let finishedJob: string[] = [];
