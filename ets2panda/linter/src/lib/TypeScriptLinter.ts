@@ -146,6 +146,7 @@ import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
 import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
+import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -8049,20 +8050,58 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!hasSameApiName) {
       return;
     }
-
     if (ts.isTypeReferenceNode(errorNode)) {
       errorNode = errorNode.typeName;
     }
-
     const matchedApi = apiNamesArr.some((sdkInfo) => {
       const isSameName = sdkInfo.api_info.api_name === apiName;
       const isGlobal = sdkInfo.is_global;
       return isSameName && isGlobal;
     });
+    const checkSymbol = this.isIdentifierFromSDK(errorNode);
+    const type = this.tsTypeChecker.getTypeAtLocation(errorNode);
+    const typeName = this.tsTypeChecker.typeToString(type);
 
-    if (matchedApi) {
-      this.incrementCounters(errorNode, faultId);
+    if (checkSymbol) {
+      if (arkTsBuiltInTypeName.has(typeName)) {
+        return;
+      }
+      if (matchedApi) {
+        this.incrementCounters(errorNode, faultId);
+      }
+    } 
+  }
+
+  private isIdentifierFromSDK(node: ts.Node): boolean {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+    if (!symbol) {
+      return true;
     }
+
+    // Check if the symbol is from an SDK import
+    const declarations = symbol.getDeclarations();
+    if (!declarations || declarations.length === 0) {
+      return true;
+    }
+
+    let isLocal = false;
+    for (const declaration of declarations) {
+      if (ts.isVariableDeclaration(declaration) ||
+          ts.isTypeAliasDeclaration(declaration) ||
+          ts.isClassDeclaration(declaration) ||
+          ts.isInterfaceDeclaration(declaration) ||
+          ts.isFunctionDeclaration(declaration) ||
+          ts.isEnumDeclaration(declaration)) {
+        isLocal = true;
+        break
+      }
+    }
+
+    if(isLocal) {
+      return false;
+    }
+
+    return true;
   }
 
   private handleSdkGlobalApi(
@@ -8141,6 +8180,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private checkCallExpressionForSdkGlobalApi(node: ts.CallExpression): void {
     if (ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
       const expression = node.expression.expression;
+      
       this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
