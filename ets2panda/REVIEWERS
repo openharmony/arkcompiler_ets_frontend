@@ -94,7 +94,6 @@
 /ets2panda/compiler/lowering/ets/const* @ziziziiziziz @lirismankarina ^akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/enum* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/lambdaLowering.cpp @Ekkoruse @gogabr ^vpukhov ^akmaevaleksey ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/localClassLowering.cpp @gogabr ^akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/optionalLowering.cpp @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/spread* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/unionLowering.cpp @Ekkoruse @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
