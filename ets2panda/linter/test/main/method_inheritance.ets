@@ -238,3 +238,17 @@ class CC implements bb {
   onError(res: RCP): void  {} // Legal
   aa?: Function = () => {}
 }
+class Animal {}
+class Dog extends Animal {}
+
+class Base6 {
+  public foo(): Animal {
+    console.log("base")
+  }
+}
+// extends
+class Derived6 extends Base6 {
+  public foo(): Dog {      // no error
+    console.log("Derived:")
+  }
+}

@@ -3519,6 +3519,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const baseReturnType = this.tsTypeChecker.getTypeAtLocation(baseMethod.type);
     const derivedReturnType = this.tsTypeChecker.getTypeAtLocation(derivedMethod.type);
 
+    if (this.isDerivedTypeAssignable(derivedReturnType, baseReturnType)) {
+        return;
+    }
+
     if (!this.isTypeAssignable(derivedReturnType, baseReturnType)) {
       this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
     }
@@ -3557,6 +3561,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   // Checks structural assignability between two types.
   private isTypeAssignable(fromType: ts.Type, toType: ts.Type): boolean {
+    if (this.isDerivedTypeAssignable(fromType, toType)) {
+        return true;
+    }
     const fromTypes = this.flattenUnionTypes(fromType);
     const toTypes = new Set(this.flattenUnionTypes(toType));
 
@@ -3564,6 +3571,35 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return fromTypes.every((typeStr) => {
       return toTypes.has(typeStr);
     });
+  }
+
+   private isDerivedTypeAssignable(derivedType: ts.Type, baseType: ts.Type): boolean {
+    const baseSymbol = baseType.getSymbol();
+    const derivedSymbol = derivedType.getSymbol();
+
+    if (!baseSymbol || !derivedSymbol) {
+       return false;
+    }
+    const baseDeclarations = baseSymbol.getDeclarations();
+    const derivedDeclarations = derivedSymbol.getDeclarations();
+
+    if (!baseDeclarations || !derivedDeclarations) { 
+      return false;
+    }
+    const baseTypeNode = baseDeclarations[0];
+    const derivedTypeNode = derivedDeclarations[0];
+
+    if (ts.isClassDeclaration(baseTypeNode) && ts.isClassDeclaration(derivedTypeNode)) {
+      const baseTypes = this.tsTypeChecker.getTypeAtLocation(derivedTypeNode).getBaseTypes();
+      const baseTypesExtends = baseTypes?.some((t) => { 
+        return t === baseType; 
+      });
+      if (baseTypesExtends) {
+        return true;
+      }
+    }
+      
+    return false;
   }
 
   // Converts union types into an array of type strings for easy comparison.
