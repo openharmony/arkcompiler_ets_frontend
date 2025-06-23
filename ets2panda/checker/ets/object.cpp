@@ -1874,7 +1874,11 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalFunction(const ir::M
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
     auto *globalFunctionVar = Scope()->FindInGlobal(propertyName, VO::STATIC_METHODS).variable;
-    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(globalFunctionVar->TsType())) {
+    if (globalFunctionVar == nullptr) {
+        return nullptr;
+    }
+
+    if (!IsExtensionETSFunctionType(GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 

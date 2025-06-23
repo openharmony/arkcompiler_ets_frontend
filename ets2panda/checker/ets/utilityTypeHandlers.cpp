@@ -156,7 +156,9 @@ Type *ETSChecker::CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::Ast
 
     // Check if we've already generated the partial class, then don't do it again
     const auto classNameToFind =
-        partialProgram == VarBinder()->Program() || VarBinder()->IsGenStdLib() ? partialName : partialQualifiedName;
+        partialProgram == VarBinder()->Program() || VarBinder()->IsGenStdLib() || partialProgram->IsGenAbcForExternal()
+            ? partialName
+            : partialQualifiedName;
     if (auto *var =
             SearchNamesInMultiplePrograms({partialProgram, VarBinder()->Program()}, {classNameToFind, partialName});
         var != nullptr) {

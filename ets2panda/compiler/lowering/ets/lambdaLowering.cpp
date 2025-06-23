@@ -1286,7 +1286,8 @@ bool LambdaConversionPhase::PerformForModule(public_lib::Context *ctx, parser::P
 
     // For reproducibility of results when several compilation sessions are executed during
     // the same process's lifetime.
-    if (program == ctx->parserProgram) {
+    if (program == ctx->parserProgram &&
+        ctx->config->options->GetCompilationMode() != CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
         ResetCalleeCount();
     }
 

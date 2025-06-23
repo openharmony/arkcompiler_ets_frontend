@@ -73,6 +73,13 @@ const checker::Checker *Program::Checker() const
     return checkers_.at(compiler::GetPhaseManager()->GetCurrentMajor());
 }
 
+bool Program::IsGenAbcForExternal() const
+{
+    return VarBinder()->GetContext()->config->options->GetCompilationMode() ==
+               CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE &&
+           genAbcForExternalSource_;
+}
+
 std::string Program::Dump() const
 {
     ir::AstDumper dumper {ast_, SourceCode()};
