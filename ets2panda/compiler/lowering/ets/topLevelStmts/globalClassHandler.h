@@ -82,7 +82,7 @@ private:
 
     ArenaVector<ArenaVector<ir::Statement *>> FormInitStaticBlockMethodStatements(
         const ModuleDependencies *moduleDependencies, ArenaVector<GlobalStmts> &&initStatements);
-    void TransformBrokenNamespace();
+    void TransformBrokenNamespace(ir::AstNode *node);
 
     ArenaVector<ir::Statement *> FormInitMethodStatements(const ModuleDependencies *moduleDependencies,
                                                           ArenaVector<GlobalStmts> &&initStatements);
