@@ -260,6 +260,63 @@ export abstract class BaseMode {
     }
   }
 
+  public compileMultiFiles(filePaths: string[], moduleInfo: ModuleInfo): void {
+    let ets2pandaCmd: string[] = [
+      '_',
+      '--extension',
+      'ets',
+      '--arktsconfig',
+      moduleInfo.arktsConfigFile,
+      '--output',
+      path.resolve(this.outputDir, MERGED_ABC_FILE),
+      '--simultaneous'
+    ];
+    ensurePathExists(path.resolve(this.outputDir, MERGED_ABC_FILE));
+    if (this.isDebug) {
+      ets2pandaCmd.push('--debug-info');
+    }
+    ets2pandaCmd.push(this.buildConfig.compileFiles[0]);
+    this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
+
+    let arktsGlobal = this.buildConfig.arktsGlobal;
+    let arkts = this.buildConfig.arkts;
+    let errorStatus = false;
+    try {
+      arktsGlobal.config = arkts.Config.create(ets2pandaCmd).peer;
+      //@ts-ignore
+      arktsGlobal.compilerContext = arkts.Context.createContextGenerateAbcForExternalSourceFiles(this.buildConfig.compileFiles);;
+      PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda proceedToState parsed');
+      let ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      this.logger.printInfo('plugin parsed finished');
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda proceedToState checked');
+
+      ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
+      this.logger.printInfo('plugin checked finished');
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
+      this.logger.printInfo('es2panda bin generated');
+    } catch (error) {
+      errorStatus = true;
+      throw error;
+    } finally {
+      if (!errorStatus) {
+        // when error occur,wrapper will destroy context.
+        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      }
+      PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+      arkts.destroyConfig(arktsGlobal.config);
+    }
+  }
+
   public mergeAbcFiles(): void {
     let linkerInputFile: string = path.join(this.cacheDir, LINKER_INPUT_FILE);
     let linkerInputContent: string = '';
@@ -542,19 +599,15 @@ export abstract class BaseMode {
       }
     });
   }
-  
+
   private shouldSkipFile(file: string, moduleInfo: ModuleInfo, filePathFromModuleRoot: string, abcFilePath: string): boolean {
     const targetPath = this.enableDeclgenEts2Ts
-        ? changeFileExtension(path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot), TS_SUFFIX)
-        : abcFilePath;
+      ? changeFileExtension(path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot), TS_SUFFIX)
+      : abcFilePath;
     return !this.isFileChanged(file, targetPath);
   }
 
   protected collectCompileFiles(): void {
-    if (!this.isBuildConfigModified && this.isCacheFileExists && !this.enableDeclgenEts2Ts) {
-      this.collectDependentCompileFiles();
-      return;
-    }
     this.entryFiles.forEach((file: string) => {
       for (const [_, moduleInfo] of this.moduleInfos) {
         const relativePath = path.relative(moduleInfo.moduleRootPath, file);
@@ -614,16 +667,26 @@ export abstract class BaseMode {
   public async run(): Promise<void> {
     this.generateModuleInfos();
 
-    const compilePromises: Promise<void>[] = [];
+    let moduleToFile = new Map<string, string[]>();
     this.compileFiles.forEach((fileInfo: CompileFileInfo, _: string) => {
-      compilePromises.push(new Promise<void>((resolve) => {
-        this.compile(fileInfo);
-        resolve();
-      }));
+      if (!moduleToFile.has(fileInfo.packageName)) {
+        moduleToFile.set(fileInfo.packageName, []);
+      }
+      moduleToFile.get(fileInfo.packageName)?.push(fileInfo.filePath);
     });
-    await Promise.all(compilePromises);
-
-    this.mergeAbcFiles();
+    try {
+      //@ts-ignore
+      this.compileMultiFiles([], this.moduleInfos.get(this.packageName));
+    } catch (error) {
+      if (error instanceof Error) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
+          'Compile abc files failed.',
+          error.message
+        );
+        this.logger.printErrorAndExit(logData);
+      }
+    }
   }
 
   private terminateAllWorkers(): void {
@@ -646,8 +709,8 @@ export abstract class BaseMode {
     this.dependencyAnalyzerCmd.push('@' + '"' + dependencyInputFile + '"');
     for (const [_, module] of this.moduleInfos) {
       if (module.isMainModule) {
-          this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
-          break;
+        this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
+        break;
       }
     }
     this.dependencyAnalyzerCmd.push('--output=' + '"' + this.dependencyJsonFile + '"');
@@ -660,7 +723,7 @@ export abstract class BaseMode {
 
     ensurePathExists(this.dependencyJsonFile);
     try {
-      const output = child_process.execSync(dependencyAnalyzerCmdStr, { 
+      const output = child_process.execSync(dependencyAnalyzerCmdStr, {
         stdio: 'pipe',
         encoding: 'utf-8'
       });
@@ -680,10 +743,10 @@ export abstract class BaseMode {
         const execError = error as child_process.ExecException;
         let fullErrorMessage = execError.message;
         if (execError.stderr) {
-            fullErrorMessage += `\nError output: ${execError.stderr}`;
+          fullErrorMessage += `\nError output: ${execError.stderr}`;
         }
         if (execError.stdout) {
-            fullErrorMessage += `\nOutput: ${execError.stdout}`;
+          fullErrorMessage += `\nOutput: ${execError.stdout}`;
         }
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_Dependency_Analyze_FAIL,
@@ -736,7 +799,7 @@ export abstract class BaseMode {
       await this.dispatchTasks();
       this.logger.printInfo('All declaration generation tasks complete.');
     } catch (error) {
-        this.logger.printError(LogDataFactory.newInstance(
+      this.logger.printError(LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
         'Generate declaration files failed.'
       ));
@@ -773,7 +836,7 @@ export abstract class BaseMode {
       const worker = cluster.fork();
 
       this.setupWorkerMessageHandler(worker);
-      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray});
+      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray });
 
       const exitPromise = new Promise<void>((resolve, reject) => {
         worker.on('exit', (status) => status === 0 ? resolve() : reject());
@@ -836,11 +899,11 @@ export abstract class BaseMode {
       execPath,
       execArgs = [],
     } = options;
-  
+
     if (clearExitListeners) {
       cluster.removeAllListeners('exit');
     }
-  
+
     cluster.setupPrimary({
       exec: execPath,
       execArgv: execArgs,
