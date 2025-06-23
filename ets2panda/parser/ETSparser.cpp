@@ -700,7 +700,16 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     }
 
     auto *memberName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::NO_OPTS);  // don't report error
-    if (memberName == nullptr) {                                                               // log error here
+    if (memberName == nullptr) {
+        auto tokenType = Lexer()->GetToken().Type();
+        if (Lexer()->TryEatTokenType(lexer::TokenType::KEYW_NEW) ||
+            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+            LogError(diagnostic::CALL_SIG_IN_OBJECT,
+                     {tokenType == lexer::TokenType::KEYW_NEW ? "Constructor" : "Call"});
+            auto *ident = AllocNode<ir::Identifier>("dummy", Allocator());
+            parseClassMethod(ident);
+            return AllocBrokenStatement(Lexer()->GetToken().Loc());
+        }  // log error here
         LogUnexpectedToken(Lexer()->GetToken());
         const auto &rangeToken = Lexer()->GetToken().Loc();
         Lexer()->NextToken();

@@ -22,7 +22,7 @@ class A<T> {
     goo
         return this./* @@ label */classVal;
     
-(): T {
+    (): T {
         return foo(this, this.data);
     }
 
@@ -33,19 +33,4 @@ class A<T> {
 /* @@? 23:16 Error SyntaxError: Unexpected token 'this'. */
 /* @@? 23:20 Error SyntaxError: Unexpected token '.'. */
 /* @@? 23:43 Error SyntaxError: Field type annotation expected. */
-/* @@? 25:1 Error SyntaxError: Unexpected token '('. */
-/* @@? 25:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? 25:3 Error SyntaxError: Unexpected token ':'. */
-/* @@? 25:6 Error SyntaxError: Field type annotation expected. */
-/* @@? 25:7 Error SyntaxError: Unexpected token '{'. */
-/* @@? 26:9 Error SyntaxError: Unexpected token 'return'. */
-/* @@? 26:19 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 26:24 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
-/* @@? 26:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 26:30 Error SyntaxError: Unexpected token '.'. */
-/* @@? 26:30 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
-/* @@? 26:31 Error TypeError: Variable 'data' has already been declared. */
-/* @@? 26:31 Error TypeError: Property 'data' must be accessed through 'this' */
-/* @@? 26:35 Error SyntaxError: Field type annotation expected. */
-/* @@? 26:35 Error SyntaxError: Unexpected token ')'. */
-/* @@? 29:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 25:5 Error SyntaxError: Call signatures in object types are not supported. Use '$_invoke' method instead. */

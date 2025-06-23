@@ -38,11 +38,12 @@ type NestedKey<T, K extends keyof T> = T[K] extends object ? keyof T[K] : never;
 /* @@? 20:44 Error SyntaxError: Field type annotation expected. */
 /* @@? 20:45 Error SyntaxError: Unexpected token ']'. */
 /* @@? 20:46 Error SyntaxError: Unexpected token ':'. */
-/* @@? 20:48 Error SyntaxError: Unexpected token '('. */
-/* @@? 20:50 Error SyntaxError: Field type annotation expected. */
+/* @@? 20:48 Error SyntaxError: Call signatures in object types are not supported. Use '$_invoke' method instead. */
+/* @@? 20:51 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 20:51 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 20:51 Error SyntaxError: Unexpected token '&'. */
-/* @@? 20:54 Error SyntaxError: Field type annotation expected. */
 /* @@? 20:54 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:54 Error SyntaxError: Field type annotation expected. */
 /* @@? 20:56 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
 /* @@? 20:57 Error SyntaxError: Unexpected token ']'. */
 /* @@? 24:36 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
