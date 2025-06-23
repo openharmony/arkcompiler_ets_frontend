@@ -76,6 +76,7 @@ private:
     ArenaVector<ArenaVector<ir::Statement *>> FormInitStaticBlockMethodStatements(
         parser::Program *program, const ModuleDependencies *moduleDependencies,
         ArenaVector<GlobalStmts> &&initStatements);
+    void TransformBrokenNamespace(ir::AstNode *node, parser::Program *program);
 
     ArenaVector<ir::Statement *> FormInitMethodStatements(parser::Program *program,
                                                           const ModuleDependencies *moduleDependencies,
