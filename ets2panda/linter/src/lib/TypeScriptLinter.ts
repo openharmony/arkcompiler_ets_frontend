@@ -70,7 +70,6 @@ import {
   LIMITED_STD_PROXYHANDLER_API,
   LIMITED_STD_REFLECT_API,
   MODULE_IMPORTS,
-  ARKTSUTILS_TEXT,
   ARKTSUTILS_MODULES,
   ARKTSUTILS_LOCKS_MEMBER
 } from './utils/consts/LimitedStdAPI';
@@ -7290,7 +7289,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     };
 
-    this.checkSymbolAndExecute(symbol, ARKTSUTILS_TEXT, ARKTSUTILS_MODULES, cb);
+    this.checkSymbolAndExecute(symbol, ARKTSUTILS_LOCKS_MEMBER, ARKTSUTILS_MODULES, cb);
   }
 
   private checkSymbolAndExecute(symbol: ts.Symbol, symbolName: string, modules: string[], cb: () => void): void {
