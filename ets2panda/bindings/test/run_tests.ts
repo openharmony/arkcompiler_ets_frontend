@@ -241,6 +241,21 @@ function findTextDefinitionPosition(sourceCode: string): number {
   throw new Error('Could not find Text definition in source code');
 }
 
+// CC-OFFNXT(huge_cyclomatic_complexity, huge_depth, huge_method) false positive
+function findTaskDefinitionPosition(sourceCode: string): number {
+  const taskDefinitionPattern = /export\s+class\s+Task\s+{/;
+  const match = taskDefinitionPattern.exec(sourceCode);
+  if (match) {
+    const classTaskPattern = /class\s+Task\s+{/;
+    const subMatch = classTaskPattern.exec(sourceCode.substring(match.index));
+    if (subMatch) {
+      const positionOfT = match.index + subMatch.index + 'class '.length;
+      return positionOfT;
+    }
+  }
+  throw new Error('Could not find Task definition in source code');
+}
+
 function compareGetDefinitionResult(testName: string, actual: any, expected: Record<string, string | number>): boolean {
   // This is the definition info for the UI component.
   // File in the SDK might changed, so the offset needs to be checked dynamically.
@@ -249,6 +264,19 @@ function compareGetDefinitionResult(testName: string, actual: any, expected: Rec
     const fileName = actualDef.fileName as string;
     const fileContent = fs.readFileSync(fileName, 'utf8');
     const expectedStart = findTextDefinitionPosition(fileContent);
+    const expectedResult = {
+      ...expected,
+      start: expectedStart
+    };
+    return compareResultsHelper(testName, normalizeData(actual), expectedResult);
+  }
+  // This is the definition info for the class in std library.
+  // File in the SDK might changed, so the offset needs to be checked dynamically.
+  if (expected['fileName'] === 'taskpool.ets') {
+    const actualDef = actual as LspDefinitionData;
+    const fileName = actualDef.fileName as string;
+    const fileContent = fs.readFileSync(fileName, 'utf8');
+    const expectedStart = findTaskDefinitionPosition(fileContent);
     const expectedResult = {
       ...expected,
       start: expectedStart

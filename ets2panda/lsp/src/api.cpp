@@ -54,18 +54,23 @@ DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t positio
     auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
     auto node = declInfo.first;
+    auto targetNode = declInfo.first->FindChild([&declInfo](ir::AstNode *childNode) {
+        return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second;
+    });
+    std::string name;
     while (node != nullptr) {
+        if (node->Range().start.Program() != nullptr) {
+            name = std::string(node->Range().start.Program()->SourceFile().GetAbsolutePath().Utf8());
+            break;
+        }
         if (node->IsETSModule()) {
-            auto name = std::string(node->AsETSModule()->Program()->SourceFilePath());
-            auto targetNode = declInfo.first->FindChild([&declInfo](ir::AstNode *childNode) {
-                return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second;
-            });
-            if (targetNode != nullptr) {
-                result = {name, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
-            }
+            name = std::string(node->AsETSModule()->Program()->SourceFilePath());
             break;
         }
         node = node->Parent();
+    }
+    if (targetNode != nullptr) {
+        result = {name, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
     }
     return result;
 }

@@ -25,7 +25,7 @@ class LSPGetDefinitionAndBoundSpanTests : public LSPAPITests {};
 
 TEST_F(LSPGetDefinitionAndBoundSpanTests, GetDefinitionAndBoundSpan_FunctionReference)
 {
-    const auto fileName = "definition1.ets";
+    const auto fileName = "GetDefinitionAndBoundSpan1.ets";
     const auto fileContent = R"(
 function sum(a: number, b: number): number {
     return a + b;
@@ -44,11 +44,12 @@ let total = sum(5, 10);
     auto filePaths = CreateTempFile(files, texts);
 
     ark::es2panda::lsp::Initializer initializer;
-    es2panda_Context *ctx = initializer.CreateContext(files.at(index0).c_str(), ES2PANDA_STATE_CHECKED, fileContent);
+    es2panda_Context *ctx = initializer.CreateContext(filePaths.at(index0).c_str(), ES2PANDA_STATE_CHECKED);
 
     const auto result = ark::es2panda::lsp::GetDefinitionAndBoundSpan(ctx, offset);
 
     EXPECT_FALSE(result.definitionInfo.fileName.empty());
+    EXPECT_EQ(result.definitionInfo.fileName, filePaths.at(index0));
     EXPECT_EQ(result.definitionInfo.length, index3);
     EXPECT_EQ(result.boundSpan.length, index3);
     EXPECT_EQ(result.definitionInfo.start + result.definitionInfo.length, index13);
@@ -60,7 +61,7 @@ let total = sum(5, 10);
 
 TEST_F(LSPGetDefinitionAndBoundSpanTests, GetDefinitionAndBoundSpan_FunctionReferenceTwoFile)
 {
-    std::vector<std::string> fileNames = {"lsp_api_test_export_1.ets", "lsp_api_test_file_1.ets"};
+    std::vector<std::string> fileNames = {"GetDefinitionAndBoundSpan_export.ets", "GetDefinitionAndBoundSpan2.ets"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -68,8 +69,8 @@ TEST_F(LSPGetDefinitionAndBoundSpanTests, GetDefinitionAndBoundSpan_FunctionRefe
 export function B(a:number, b:number): number {
   return a + b;
 })",
-        R"(import {A} from "./lsp_api_test_export_1";
-import {B} from "./lsp_api_test_export_1.ets";
+        R"(import {A} from "./GetDefinitionAndBoundSpan_export";
+import {B} from "./GetDefinitionAndBoundSpan_export.ets";
 A(1, 2);
 B(1, 2);)"};
 
@@ -77,15 +78,13 @@ B(1, 2);)"};
     int const expectedFileCount = 2;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
-    const size_t offset = 94;
+    const size_t offset = 116;
     const size_t index0 = 0;
     const size_t index1 = 1;
     const size_t index13 = 17;
     ark::es2panda::lsp::Initializer initializer;
-    es2panda_Context *ctx =
-        initializer.CreateContext(filePaths.at(index1).c_str(), ES2PANDA_STATE_CHECKED, texts.at(index1).c_str());
+    es2panda_Context *ctx = initializer.CreateContext(filePaths.at(index1).c_str(), ES2PANDA_STATE_CHECKED);
 
-    std::cout << "offset: " << offset << std::endl;
     const auto result = ark::es2panda::lsp::GetDefinitionAndBoundSpan(ctx, offset);
 
     EXPECT_FALSE(result.definitionInfo.fileName.empty());
