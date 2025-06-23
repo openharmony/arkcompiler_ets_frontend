@@ -558,7 +558,8 @@ export abstract class BaseMode {
     }
     this.entryFiles.forEach((file: string) => {
       for (const [packageName, moduleInfo] of this.moduleInfos) {
-        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+        const relativePath = path.relative(moduleInfo.moduleRootPath, file);
+        if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
           continue;
         }
         let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
