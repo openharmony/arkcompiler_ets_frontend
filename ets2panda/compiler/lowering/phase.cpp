@@ -42,7 +42,6 @@
 #include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
-#include "compiler/lowering/ets/localClassLowering.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
@@ -109,7 +108,6 @@ static DefaultParametersLowering g_defaultParametersLowering;
 static DefaultParametersInConstructorLowering g_defaultParametersInConstructorLowering;
 static OptionalArgumentsLowering g_optionalArgumentsLowering;
 static TopLevelStatements g_topLevelStatements;
-static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
 static StringConstantsLowering g_stringConstantsLowering;
 static PartialExportClassGen g_partialExportClassGen;
@@ -187,7 +185,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_lambdaConversionPhase,
         &g_unionLowering,
         &g_expandBracketsPhase,
-        &g_localClassLowering,
         &g_partialExportClassGen,
         &g_interfaceObjectLiteralLowering, // this lowering should be put after all classs generated.
         &g_objectLiteralLowering,

@@ -17,7 +17,9 @@ function foo()
 {
     class LocalClass
     {
-        /* @@ label */protected property : int;
+        protected property : int;
     }
 }
-/* @@@ label Error SyntaxError: Local class or interface declaration members can not have access modifies.  */
+
+/* @@? 18:5 Error SyntaxError: Illegal start of CLASS expression.  */
+/* @@? 20:9 Error SyntaxError: Local class or interface declaration members can not have access modifies. */

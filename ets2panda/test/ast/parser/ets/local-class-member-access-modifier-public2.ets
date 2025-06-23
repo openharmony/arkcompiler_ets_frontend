@@ -17,8 +17,9 @@ function foo()
 {
     class LocalClass
     {
-        /* @@ label */public method() : void;
+        public method() : void;
     }
 }
-/* @@@ label Error SyntaxError: Local class or interface declaration members can not have access modifies.  */
-/* @@? 20:36 Error TypeError: Only abstract or native methods can't have body. */
+
+/* @@? 18:5 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 20:9 Error SyntaxError: Local class or interface declaration members can not have access modifies.  */

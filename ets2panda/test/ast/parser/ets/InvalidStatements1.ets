@@ -65,6 +65,7 @@ throw
 /* @@? 42:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */
 /* @@? 43:5 Error SyntaxError: Expected '{', got 'let'. */
 /* @@? 45:9 Error SyntaxError: Unexpected token '{'. */
+/* @@? 47:1 Error SyntaxError: Illegal start of CLASS expression. */
 /* @@? 48:5 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 52:1 Error SyntaxError: Illegal newline after throw. */
-/* @@? 71:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 72:1 Error SyntaxError: Expected '}', got 'end of stream'. */

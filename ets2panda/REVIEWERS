@@ -68,7 +68,6 @@
 /ets2panda/checker/types/ets/wildcardType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/ @akmaevaleksey ^igelhaus ^Prof1983 ^zelentsovdmitry
 /ets2panda/compiler/lowering/ets/lambdaLowering.cpp ^vpukhov @akmaevaleksey @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/localClassLowering.cpp  @gogabr ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/optionalLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/unionLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/topLevelStmts/.* ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
