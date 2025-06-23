@@ -168,7 +168,7 @@ bool Options::ParseInputOutput()
         return false;
     }
 
-    if (compilationMode_ == CompilationMode::SINGLE_FILE) {
+    if (compilationMode_ == CompilationMode::SINGLE_FILE || GetExtension() != ScriptExtension::ETS) {
         std::ifstream inputStream(SourceFileName());
         if (inputStream.fail()) {
             diagnosticEngine_.LogDiagnostic(diagnostic::OPEN_FAILED,
@@ -222,10 +222,10 @@ bool Options::Parse(Span<const char *const> args)
 #endif
 
     DetermineCompilationMode();
-    if (!ParseInputOutput()) {
+    if (!DetermineExtension()) {
         return false;
     }
-    if (!DetermineExtension()) {
+    if (!ParseInputOutput()) {
         return false;
     }
     if (extension_ != ScriptExtension::JS && IsModule()) {

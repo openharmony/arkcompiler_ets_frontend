@@ -70,6 +70,7 @@ public:
 
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
                                                  parser::Program *newProg) const;
+    bool CheckDupAndReplace(Program *&oldProg, Program *newProg);
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
     lexer::LexerPosition HandleJsDocLikeComments();
 
@@ -142,8 +143,10 @@ public:
 
     void AddExternalSource(const std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);
+    static void AddGenExtenralSourceToParseList(public_lib::Context *ctx);
 
 private:
+    void ParseAndSetStdlib();
     NodeFormatType GetFormatPlaceholderType();
     ir::Statement *ParseStatementFormatPlaceholder() override;
     ir::Expression *ParseExpressionFormatPlaceholder();

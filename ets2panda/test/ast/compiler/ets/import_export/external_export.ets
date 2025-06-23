@@ -13,21 +13,4 @@
  * limitations under the License.
  */
 
-class A {
-  f(b: object) {
-    b instanceof B
-    let c: B = {v: 1}
-    return c
-  }
-}
-
-type B = C<Int>
-
-interface C<T> {
-  v: T
-}
-
-function main() {
-  let a = new A
-  arktest.assertEQ(a.f(a).v, 1)
-}
+import {TT} from "./test1_1"

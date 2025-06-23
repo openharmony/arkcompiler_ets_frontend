@@ -42,7 +42,7 @@ class CFG;
 }  // namespace ark::es2panda::compiler
 
 namespace ark::es2panda::parser {
-enum class ScriptKind { SCRIPT, MODULE, STDLIB };
+enum class ScriptKind { SCRIPT, MODULE, STDLIB, GENEXTERNAL };
 enum EntityType { CLASS_PROPERTY = 0, METHOD_DEFINITION = 1, CLASS_DEFINITION = 2, TS_INTERFACE_DECLARATION = 3 };
 
 #ifndef NDEBUG
@@ -296,6 +296,13 @@ public:
                (FileName().Is("etsstdlib"));
     }
 
+    bool IsGenAbcForExternal() const;
+
+    void SetGenAbcForExternalSources(bool genAbc = true)
+    {
+        genAbcForExternalSource_ = genAbc;
+    }
+
     varbinder::ClassScope *GlobalClassScope();
     const varbinder::ClassScope *GlobalClassScope() const;
 
@@ -379,6 +386,7 @@ private:
     ExternalSource externalSources_;
     DirectExternalSource directExternalSources_;
     ScriptKind kind_ {};
+    bool genAbcForExternalSource_ {false};
     ScriptExtension extension_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
     util::ModuleInfo moduleInfo_;

@@ -98,7 +98,7 @@ static std::pair<parser::Program *, varbinder::RecordTable *> GetPartialClassPro
                                                                                      ir::AstNode *typeNode)
 {
     auto classDefProgram = typeNode->GetTopStatement()->AsETSModule()->Program();
-    if (classDefProgram == checker->VarBinder()->Program()) {
+    if (classDefProgram == checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()->Program()) {
         return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()};
     }
     return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetExternalRecordTable().at(classDefProgram)};
@@ -144,7 +144,9 @@ Type *ETSChecker::CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::Ast
 
     // Check if we've already generated the partial class, then don't do it again
     const auto classNameToFind =
-        partialProgram == VarBinder()->Program() || VarBinder()->IsGenStdLib() ? partialName : partialQualifiedName;
+        partialProgram == VarBinder()->Program() || VarBinder()->IsGenStdLib() || partialProgram->IsGenAbcForExternal()
+            ? partialName
+            : partialQualifiedName;
     if (auto *var =
             SearchNamesInMultiplePrograms({partialProgram, VarBinder()->Program()}, {classNameToFind, partialName});
         var != nullptr) {

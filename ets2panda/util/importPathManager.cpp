@@ -262,7 +262,7 @@ void ImportPathManager::AddToParseList(const ImportMetadata importMetadata)
         // surely re-parse it.
         //
         // If a file was already not implicitly package imported, then it's just a duplicate, return
-        if (!found->importData.IsImplicitPackageImported()) {
+        if (!found->importData.IsImplicitPackageImported() || importMetadata.IsImplicitPackageImported()) {
             return;
         }
 

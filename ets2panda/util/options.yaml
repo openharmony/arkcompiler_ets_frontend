@@ -376,5 +376,10 @@ options:
 
 - name: perm-arena
   type: bool
-  default: true
+  default: false
   description: Place AST trees in permanent arena
+
+- name: simultaneous 
+  type: bool
+  default: false
+  description: compile all the files to abc in once.

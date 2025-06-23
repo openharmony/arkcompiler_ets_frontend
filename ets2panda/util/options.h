@@ -77,6 +77,7 @@ public:
     void DetermineCompilationMode()
     {
         compilationMode_ = IsGenStdlib()         ? CompilationMode::GEN_STD_LIB
+                           : IsSimultaneous()    ? CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE
                            : inputFile_.WasSet() ? CompilationMode::SINGLE_FILE
                                                  : CompilationMode::PROJECT;
     }

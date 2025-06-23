@@ -13,29 +13,8 @@
  * limitations under the License.
  */
 
-class NNBB {
-  static f(a: Object) {
-    return a instanceof B
-  }
-}
+import {A} from "./eitest_export_import_A_2"
 
-interface A<TA> {
-  get(): TA
-}
-interface B<TB> extends A<TB> {
-}
-
-class D<TD> implements B<TD> {
-  constructor(d: TD) {
-    this.d = d
-  }
-  get(): TD {
-    return this.d
-  }
-  d: TD
-}
-
-function main() {
-  let a: A<int> = new D<int>(5)
-  arktest.assertEQ(a.get(), 5)
+function main(){
+    let a :A = new A()
 }

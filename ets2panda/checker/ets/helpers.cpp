@@ -2861,6 +2861,8 @@ void ETSChecker::SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObje
                                         ir::MethodDefinition *getter, ir::MethodDefinition *setter,
                                         const bool inExternal)
 {
+    auto getProgram = [](ir::AstNode *node) { return node->Range().start.Program(); };
+
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     for (auto &method : {getter, setter}) {
         if (method == nullptr) {
@@ -2876,7 +2878,7 @@ void ETSChecker::SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObje
             method->Function()->AddModifier(ir::ModifierFlags::OVERRIDE);
         }
 
-        if (inExternal) {
+        if (inExternal && !getProgram(originalProp)->IsGenAbcForExternal()) {
             method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
         }
 
@@ -3000,6 +3002,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     callExpr->SetCallee(transformedCallee);
 
     if (instantiateMethod != nullptr) {
+        auto lexScope {varbinder::LexicalScope<varbinder::Scope>::Enter(VarBinder(), compiler::NearestScope(callExpr))};
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *argExpr = GenerateImplicitInstantiateArg(std::string(className));
 

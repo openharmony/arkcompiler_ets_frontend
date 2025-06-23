@@ -397,7 +397,17 @@ static bool ExecuteParsingAndCompiling(const CompilationUnit &unit, public_lib::
         AddExternalPrograms(context, unit, program);
     }
 
-    context->parser->ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    if (context->config->options->GetCompilationMode() == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE &&
+        context->config->options->GetExtension() == ScriptExtension::ETS) {
+        std::unordered_set<std::string> sourceFileNamesSet;
+        util::UString absolutePath(os::GetAbsolutePath(context->sourceFile->filePath), context->allocator);
+        sourceFileNamesSet.insert(absolutePath.View().Mutf8());
+        context->sourceFileNames.emplace_back(absolutePath.View().Utf8());
+        parser::ETSParser::AddGenExtenralSourceToParseList(context);
+        context->MarkGenAbcForExternal(sourceFileNamesSet, context->parserProgram->ExternalSources());
+    } else {
+        context->parser->ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    }
 
     //  We have to check the return status of 'RunVerifierAndPhase` and 'RunPhases` separately because there can be
     //  some internal errors (say, in Post-Conditional check) or terminate options (say in 'CheckOptionsAfterPhase')
@@ -434,6 +444,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
                                 : nullptr);
     auto parser =
         Parser(&program, unit.options, unit.diagnosticEngine, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+    parser.SetContext(context);
     context->parser = &parser;
     auto checker = Checker(unit.diagnosticEngine, context->allocator);
     context->checker = &checker;
