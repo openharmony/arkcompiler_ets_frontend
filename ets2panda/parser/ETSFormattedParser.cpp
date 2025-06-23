@@ -71,7 +71,7 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
         LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
         const auto &rangeToken = Lexer()->GetToken().Loc();
         Lexer()->NextToken();
-        return AllocBrokenType(rangeToken);
+        return AllocBrokenExpression(rangeToken);
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();

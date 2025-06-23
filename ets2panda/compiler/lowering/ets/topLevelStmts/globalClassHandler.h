@@ -65,8 +65,8 @@ private:
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
     ir::MethodDefinition *CreateGlobalMethod(const std::string_view name, ArenaVector<ir::Statement *> &&statements,
                                              const parser::Program *program);
-    void AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
 
+    void AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
     ArenaVector<ir::Statement *> FormInitMethodStatements(parser::Program *program,
                                                           const ModuleDependencies *moduleDependencies,
                                                           ArenaVector<GlobalStmts> &&initStatements);
