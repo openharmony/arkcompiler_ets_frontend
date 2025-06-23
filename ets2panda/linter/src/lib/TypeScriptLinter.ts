@@ -9808,7 +9808,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const autofix = this.autofixer?.fixCustomLayout(node);
-    this.incrementCounters(node.name, FaultID.CustomLayoutNeedAddDecorator, autofix);
+    const name = node.name.getText();
+    const errorMsg =
+      `The Custom component "${name}" with custom layout capability needs to add the "@CustomLayout" decorator ` +
+      '(arkui-custom-layout-need-add-decorator)';
+    this.incrementCounters(node.name, FaultID.CustomLayoutNeedAddDecorator, autofix, errorMsg);
   }
 
   private handleArkTSPropertyAccess(expr: ts.BinaryExpression): void {
