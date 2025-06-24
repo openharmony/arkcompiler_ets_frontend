@@ -18,9 +18,9 @@ enum Color2 { Red = Color.Red }
 enum Color3 { Red = Color2.Red }
 enum Color4 { Red = Color3.Red }
 
-assertEQ(Color2.Red.valueOf(), 0)
-assertEQ(Color3.Red.valueOf(), 0)
-assertEQ(Color4.Red.valueOf(), 0)
+arktest.assertEQ(Color2.Red.valueOf(), 0)
+arktest.assertEQ(Color3.Red.valueOf(), 0)
+arktest.assertEQ(Color4.Red.valueOf(), 0)
 
 /* @@? 17:21 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
 /* @@? 18:21 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

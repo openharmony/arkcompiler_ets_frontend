@@ -17,14 +17,14 @@ class A {}
 
 function foo(f: <T>(t: T) => T) {
     let i1: number = 1.0
-    assertEQ(f(i1), i1)
-    assertEQ(f<number>(i1), i1)
+    arktest.assertEQ(f(i1), i1)
+    arktest.assertEQ(f<number>(i1), i1)
     let i2: string = "abc"
-    assertEQ(f(i2), i2)
-    assertEQ(f<string>(i2), i2)
+    arktest.assertEQ(f(i2), i2)
+    arktest.assertEQ(f<string>(i2), i2)
     let i3: A = new A()
-    assertEQ(f(i3), i3)
-    assertEQ(f<A>(i3), i3)
+    arktest.assertEQ(f(i3), i3)
+    arktest.assertEQ(f<A>(i3), i3)
 }
 
 function main() {

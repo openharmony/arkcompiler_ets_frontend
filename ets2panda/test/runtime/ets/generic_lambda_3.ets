@@ -21,21 +21,21 @@ function main() {
 
     // Explicitly deducing generics
     let res1 = foo<int>(1)
-    assertEQ(res1, 1)
+    arktest.assertEQ(res1, 1)
 
     let res2 = foo<double>(1.5)
-    assertEQ(res2, 1.5)
+    arktest.assertEQ(res2, 1.5)
 
     let res3 = foo<string>("abc")
-    assertEQ(res3, "abc")
+    arktest.assertEQ(res3, "abc")
 
     // Implicit derivation of generics
     let res4 = foo(1)
-    assertEQ(res4, 1)
+    arktest.assertEQ(res4, 1)
 
     let res5 = foo(1.5)
-    assertEQ(res5, 1.5)
+    arktest.assertEQ(res5, 1.5)
 
     let res6 = foo("abc")
-    assertEQ(res6, "abc")
+    arktest.assertEQ(res6, "abc")
 }

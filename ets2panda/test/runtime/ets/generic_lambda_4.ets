@@ -28,18 +28,18 @@ function main() {
     }
 
     // Explicitly deducing generics
-    assertEQ(foo<Object, Object>(new Object(), new Object()), 0)
-    assertEQ(foo<undefined, Object>(undefined, new Object()), 1)
-    assertEQ(foo<undefined, undefined>(undefined, undefined), 2)
-    assertEQ(foo<A, A>(new A(), new A()), 0)
-    assertEQ(foo<B, A>(new B(), new A()), 0)
-    assertEQ(foo<B, B>(new B(), new B()), 0)
+    arktest.assertEQ(foo<Object, Object>(new Object(), new Object()), 0)
+    arktest.assertEQ(foo<undefined, Object>(undefined, new Object()), 1)
+    arktest.assertEQ(foo<undefined, undefined>(undefined, undefined), 2)
+    arktest.assertEQ(foo<A, A>(new A(), new A()), 0)
+    arktest.assertEQ(foo<B, A>(new B(), new A()), 0)
+    arktest.assertEQ(foo<B, B>(new B(), new B()), 0)
 
     // Implicit derivation of generics
-    assertEQ(foo(new Object(), new Object()), 0)
-    assertEQ(foo(undefined, new Object()), 1)
-    assertEQ(foo(undefined, undefined), 2)
-    assertEQ(foo(new A(), new A()), 0)
-    assertEQ(foo(new B(), new A()), 0)
-    assertEQ(foo(new B(), new B()), 0)
+    arktest.assertEQ(foo(new Object(), new Object()), 0)
+    arktest.assertEQ(foo(undefined, new Object()), 1)
+    arktest.assertEQ(foo(undefined, undefined), 2)
+    arktest.assertEQ(foo(new A(), new A()), 0)
+    arktest.assertEQ(foo(new B(), new A()), 0)
+    arktest.assertEQ(foo(new B(), new B()), 0)
 }
