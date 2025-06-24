@@ -1564,7 +1564,7 @@ bool ETSChecker::CheckMinimumTypeArgsPresent(const ir::TSTypeAliasDeclaration *t
 ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                                     const ir::TSTypeParameterInstantiation *typeParams, size_t idx)
 {
-    if (typeParams->Params().size() > idx) {
+    if (typeParams != nullptr && typeParams->Params().size() > idx) {
         return typeParams->Params().at(idx);
     }
 
@@ -1574,33 +1574,40 @@ ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclara
 Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams,
                                   ir::TSTypeAliasDeclaration *const typeAliasNode)
 {
-    // NOTE (mmartin): modify for default params
-    if ((typeParams == nullptr) != (typeAliasNode->TypeParams() == nullptr)) {
-        if (typeParams == nullptr) {
+    if (typeParams == nullptr && typeAliasNode->TypeParams() != nullptr) {
+        auto declTypeParams = typeAliasNode->TypeParams()->Params();
+        auto isAllTypeParamsHasDefaultType =
+            std::find_if(declTypeParams.begin(), declTypeParams.end(), [](ir::TSTypeParameter *param) {
+                return param->DefaultType() == nullptr;
+            }) == declTypeParams.end();
+        if (!isAllTypeParamsHasDefaultType) {
             LogError(diagnostic::GENERIC_ALIAS_WITHOUT_PARAMS, {}, name->Start());
             return GlobalTypeError();
         }
+    }
 
+    if (typeParams != nullptr && typeAliasNode->TypeParams() == nullptr) {
         LogError(diagnostic::NON_GENERIC_ALIAS_WITH_PARAMS, {}, typeParams->Start());
         return GlobalTypeError();
     }
 
-    if (typeParams == nullptr) {
+    if (typeParams == nullptr && typeAliasNode->TypeParams() == nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GetReferencedTypeBase(name);
     }
 
-    for (auto *const origTypeParam : typeParams->Params()) {
-        origTypeParam->Check(this);
+    if (typeParams != nullptr) {
+        for (auto *const origTypeParam : typeParams->Params()) {
+            origTypeParam->Check(this);
+        }
+        if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
+            return GlobalTypeError();
+        }
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
     auto *substitution = NewSubstitution();
-
-    if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
-        return GlobalTypeError();
-    }
 
     std::set<Type *> parametersNeedToBeBoxed;
     auto expandedAliasType = aliasType->Substitute(Relation(), substitution);
