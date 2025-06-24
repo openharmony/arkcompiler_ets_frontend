@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,19 @@
  * limitations under the License.
  */
 
-type my_type<T> = T;
-
-
-function main(): void {
-    let a: my_type = new Int();
+class BusinessError extends Error {
+    constructor(message?: String) {
+        super(message)
+    }
 }
 
-/* @@? 20:12 Error TypeError: Type alias declaration is generic, but too few type arguments were provided */
+type ErrorCallBack<T = BusinessError> = (err: T) => void
+function test(call: ErrorCallBack) {  // type of typeAnnotation should be `(err: BusinessError) => void`
+    call(new BusinessError("I am a error"))
+}
+
+function main() {
+    test((err: BusinessError) => {
+        arktest.assertEQ(err.message, "I am a error")
+    }) // ok
+}
