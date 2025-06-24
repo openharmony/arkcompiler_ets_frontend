@@ -6798,13 +6798,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    if (
-      !(
-        this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-        lhsType !== rhsType
-      )
-    ) {
+    const isArray =
+      this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
+      this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray);
+    const isTuple =
+      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple) && this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple);
+    if (!((isArray || isTuple) && lhsType !== rhsType)) {
       return;
     }
 

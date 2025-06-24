@@ -37,7 +37,7 @@ function test(a: number[]): void {
 }
 
 let arrayTypeImmutableA2: [number] = [1];
-let arrayTypeImmutableB2: [number | string] = arrayTypeImmutableA2;
+let arrayTypeImmutableB2: [number | string] = arrayTypeImmutableA2;  // error
 
 class ArrayTypeImmutableA{
   arrayTypeImmutableA: number[] = [1];
@@ -45,8 +45,8 @@ class ArrayTypeImmutableA{
   arrayTypeImmutableB1: (number | string)[] = this.arrayTypeImmutableA;  // error
 
   arrayTypeImmutableA2: [number] = [1];
-  arrayTypeImmutableB2: [number | string] = arrayTypeImmutableA2;
-  arrayTypeImmutableB21: [number | string] = this.arrayTypeImmutableA2;
+  arrayTypeImmutableB2: [number | string] = arrayTypeImmutableA2;   // error
+  arrayTypeImmutableB21: [number | string] = this.arrayTypeImmutableA2;   // error
 }
 
 interface IA {
