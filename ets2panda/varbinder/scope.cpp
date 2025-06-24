@@ -869,6 +869,10 @@ Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOpti
 
 void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic)
 {
+    if (newDecl->IsImportDecl()) {
+        return;
+    }
+
     switch (newDecl->Type()) {
         case DeclType::CONST:
             [[fallthrough]];
