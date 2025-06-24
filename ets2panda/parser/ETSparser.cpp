@@ -1055,7 +1055,8 @@ ir::TypeNode *ETSParser::ParseLiteralIdent(TypeAnnotationParsingOptions *options
     }
 
     if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_KEYOF)) {
-        auto *typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        auto keyofOptions = *options | TypeAnnotationParsingOptions::REPORT_ERROR;
+        auto *typeAnnotation = ParseTypeAnnotationNoPreferParam(&keyofOptions);
         typeAnnotation = AllocNode<ir::ETSKeyofType>(typeAnnotation, Allocator());
         typeAnnotation->SetRange(Lexer()->GetToken().Loc());
         return typeAnnotation;
