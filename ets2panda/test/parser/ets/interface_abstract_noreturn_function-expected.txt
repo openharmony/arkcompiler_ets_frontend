@@ -220,12 +220,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "interface_abstract_noreturn_function.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "interface_abstract_noreturn_function.ets"
                     }
                   }
                 },
@@ -233,12 +233,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "interface_abstract_noreturn_function.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "interface_abstract_noreturn_function.ets"
                   }
                 }
               },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "interface_abstract_noreturn_function.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "interface_abstract_noreturn_function.ets"
                 }
               }
             },
@@ -326,12 +326,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "interface_abstract_noreturn_function.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "interface_abstract_noreturn_function.ets"
                     }
                   }
                 },
@@ -339,12 +339,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "interface_abstract_noreturn_function.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "interface_abstract_noreturn_function.ets"
                   }
                 }
               },
@@ -352,12 +352,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "interface_abstract_noreturn_function.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "interface_abstract_noreturn_function.ets"
                 }
               }
             },

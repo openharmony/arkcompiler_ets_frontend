@@ -235,12 +235,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "Dollar_dollar_3.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "Dollar_dollar_3.ets"
                     }
                   }
                 },
@@ -248,12 +248,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "Dollar_dollar_3.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "Dollar_dollar_3.ets"
                   }
                 }
               },
@@ -261,12 +261,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "Dollar_dollar_3.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "Dollar_dollar_3.ets"
                 }
               }
             },
@@ -516,40 +516,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 17,
+                      "column": 5,
+                      "program": "Dollar_dollar_3.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 18,
+                      "column": 12,
+                      "program": "Dollar_dollar_3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 17,
+                    "column": 5,
+                    "program": "Dollar_dollar_3.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 18,
+                    "column": 12,
+                    "program": "Dollar_dollar_3.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 17,
+                  "column": 5,
+                  "program": "Dollar_dollar_3.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 18,
+                  "column": 12,
+                  "program": "Dollar_dollar_3.ets"
                 }
               }
             },
@@ -557,13 +557,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 17,
+                "column": 5,
                 "program": "Dollar_dollar_3.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 18,
+                "column": 12,
                 "program": "Dollar_dollar_3.ets"
               }
             }

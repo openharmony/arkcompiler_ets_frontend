@@ -162,12 +162,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_typealias_func_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_typealias_func_type.ets"
                     }
                   }
                 },
@@ -175,12 +175,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_typealias_func_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_typealias_func_type.ets"
                   }
                 }
               },
@@ -188,12 +188,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_typealias_func_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_typealias_func_type.ets"
                 }
               }
             },

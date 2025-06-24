@@ -373,12 +373,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
@@ -386,12 +386,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "function_implicit_return_type5.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "function_implicit_return_type5.ets"
                   }
                 }
               },
@@ -399,12 +399,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },
@@ -479,12 +479,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "function_implicit_return_type5.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "function_implicit_return_type5.ets"
                     }
                   }
                 },
@@ -492,12 +492,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "function_implicit_return_type5.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "function_implicit_return_type5.ets"
                   }
                 }
               },
@@ -505,12 +505,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "function_implicit_return_type5.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "function_implicit_return_type5.ets"
                 }
               }
             },

@@ -1108,40 +1108,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 5,
+                      "program": "lambdaFunction1.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 21,
+                      "column": 2,
+                      "program": "lambdaFunction1.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 5,
+                    "program": "lambdaFunction1.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 21,
+                    "column": 2,
+                    "program": "lambdaFunction1.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 5,
+                  "program": "lambdaFunction1.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 21,
+                  "column": 2,
+                  "program": "lambdaFunction1.ets"
                 }
               }
             },
@@ -1149,13 +1149,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 5,
                 "program": "lambdaFunction1.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 21,
+                "column": 2,
                 "program": "lambdaFunction1.ets"
               }
             }

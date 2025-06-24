@@ -436,12 +436,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "callMethodWithNullableParam.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "callMethodWithNullableParam.ets"
                     }
                   }
                 },
@@ -449,12 +449,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "callMethodWithNullableParam.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "callMethodWithNullableParam.ets"
                   }
                 }
               },
@@ -462,12 +462,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "callMethodWithNullableParam.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "callMethodWithNullableParam.ets"
                 }
               }
             },

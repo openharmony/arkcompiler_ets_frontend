@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_overload.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_overload.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_overload.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_overload.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_overload.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_overload.ets"
                 }
               }
             },
@@ -186,12 +186,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_overload.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_overload.ets"
                     }
                   }
                 },
@@ -199,12 +199,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_overload.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_overload.ets"
                   }
                 }
               },
@@ -212,12 +212,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_overload.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_overload.ets"
                 }
               }
             },
@@ -822,8 +822,8 @@
                                 "program": "trailing_lambda_overload.ets"
                               },
                               "end": {
-                                "line": 26,
-                                "column": 19,
+                                "line": 28,
+                                "column": 6,
                                 "program": "trailing_lambda_overload.ets"
                               }
                             }
@@ -835,8 +835,8 @@
                               "program": "trailing_lambda_overload.ets"
                             },
                             "end": {
-                              "line": 26,
-                              "column": 19,
+                              "line": 28,
+                              "column": 6,
                               "program": "trailing_lambda_overload.ets"
                             }
                           }
@@ -850,8 +850,8 @@
                           "program": "trailing_lambda_overload.ets"
                         },
                         "end": {
-                          "line": 26,
-                          "column": 19,
+                          "line": 28,
+                          "column": 6,
                           "program": "trailing_lambda_overload.ets"
                         }
                       }

@@ -207,40 +207,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 5,
+                      "program": "cast_const_union.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 18,
+                      "column": 9,
+                      "program": "cast_const_union.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 5,
+                    "program": "cast_const_union.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 18,
+                    "column": 9,
+                    "program": "cast_const_union.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 5,
+                  "program": "cast_const_union.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 18,
+                  "column": 9,
+                  "program": "cast_const_union.ets"
                 }
               }
             },
@@ -248,13 +248,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 5,
                 "program": "cast_const_union.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 18,
+                "column": 9,
                 "program": "cast_const_union.ets"
               }
             }

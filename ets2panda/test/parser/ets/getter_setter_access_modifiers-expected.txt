@@ -2022,12 +2022,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getter_setter_access_modifiers.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getter_setter_access_modifiers.ets"
                     }
                   }
                 },
@@ -2035,12 +2035,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getter_setter_access_modifiers.ets"
                   }
                 }
               },
@@ -2048,12 +2048,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getter_setter_access_modifiers.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getter_setter_access_modifiers.ets"
                 }
               }
             },
@@ -2128,12 +2128,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getter_setter_access_modifiers.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getter_setter_access_modifiers.ets"
                     }
                   }
                 },
@@ -2141,12 +2141,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getter_setter_access_modifiers.ets"
                   }
                 }
               },
@@ -2154,12 +2154,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getter_setter_access_modifiers.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getter_setter_access_modifiers.ets"
                 }
               }
             },

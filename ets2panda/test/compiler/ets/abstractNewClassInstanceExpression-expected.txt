@@ -921,12 +921,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "abstractNewClassInstanceExpression.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "abstractNewClassInstanceExpression.ets"
                     }
                   }
                 },
@@ -934,12 +934,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "abstractNewClassInstanceExpression.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
               },
@@ -947,12 +947,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "abstractNewClassInstanceExpression.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "abstractNewClassInstanceExpression.ets"
                 }
               }
             },
@@ -1200,40 +1200,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 32,
+                      "column": 11,
+                      "program": "abstractNewClassInstanceExpression.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 35,
+                      "column": 2,
+                      "program": "abstractNewClassInstanceExpression.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 32,
+                    "column": 11,
+                    "program": "abstractNewClassInstanceExpression.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 35,
+                    "column": 2,
+                    "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 32,
+                  "column": 11,
+                  "program": "abstractNewClassInstanceExpression.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 35,
+                  "column": 2,
+                  "program": "abstractNewClassInstanceExpression.ets"
                 }
               }
             },
@@ -1241,13 +1241,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 32,
+                "column": 11,
                 "program": "abstractNewClassInstanceExpression.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 35,
+                "column": 2,
                 "program": "abstractNewClassInstanceExpression.ets"
               }
             }

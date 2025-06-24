@@ -739,12 +739,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_lowering_common_property.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_lowering_common_property.ets"
                     }
                   }
                 },
@@ -752,12 +752,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_lowering_common_property.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_lowering_common_property.ets"
                   }
                 }
               },
@@ -765,12 +765,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_lowering_common_property.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_lowering_common_property.ets"
                 }
               }
             },
@@ -845,12 +845,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_lowering_common_property.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_lowering_common_property.ets"
                     }
                   }
                 },
@@ -858,12 +858,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_lowering_common_property.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_lowering_common_property.ets"
                   }
                 }
               },
@@ -871,12 +871,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_lowering_common_property.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_lowering_common_property.ets"
                 }
               }
             },

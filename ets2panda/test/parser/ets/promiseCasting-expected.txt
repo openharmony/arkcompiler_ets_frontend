@@ -418,40 +418,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 21,
+                      "column": 5,
+                      "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 21,
+                      "column": 18,
+                      "program": "promiseCasting.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 21,
+                    "column": 5,
+                    "program": "promiseCasting.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 21,
+                    "column": 18,
+                    "program": "promiseCasting.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 21,
+                  "column": 5,
+                  "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 21,
+                  "column": 18,
+                  "program": "promiseCasting.ets"
                 }
               }
             },
@@ -459,13 +459,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 21,
+                "column": 5,
                 "program": "promiseCasting.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 21,
+                "column": 18,
                 "program": "promiseCasting.ets"
               }
             }
