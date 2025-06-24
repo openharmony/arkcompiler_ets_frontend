@@ -18,3 +18,4 @@ lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotat
 static-invoke.ets
 top_level_03.ets
 multisource_inheritance.ets
+as_string.ets
