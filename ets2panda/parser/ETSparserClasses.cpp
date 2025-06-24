@@ -834,6 +834,11 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
     method->Function()->SetIdent(method->Id()->Clone(Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
 
+    bool hasReturn = method->Function()->ReturnTypeAnnotation() != nullptr;
+    if (hasReturn && methodKind == ir::MethodDefinitionKind::SET) {
+        LogError(diagnostic::SETTER_NO_RETURN_TYPE, {}, method->Function()->Range().start);
+    }
+
     return method;
 }
 
