@@ -1009,6 +1009,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::C
 {
     GenAnnotationRecord(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
     pandasm::AnnotationData functionalReference(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
+    bool isStatic = classDef->FunctionalReferenceReferencedMethod()->IsStatic();
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(
@@ -1017,7 +1018,8 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::C
                                                                            ->Function()
                                                                            ->Scope()
                                                                            ->InternalName()
-                                                                           .Mutf8())));
+                                                                           .Mutf8(),
+                                                                       isStatic)));
     functionalReference.AddElement(std::move(value));
     return functionalReference;
 }
