@@ -9849,6 +9849,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    const arrayDecl = TypeScriptLinter.findArrayDeclaration(arraySym);
+    if (arrayDecl && TypeScriptLinter.isArrayCreatedWithOtherArrayLength(arrayDecl)) {
+      return;
+    }
+
     const indexExpr = accessExpr.argumentExpression;
     const loopVarName = ts.isIdentifier(indexExpr) ? indexExpr.text : undefined;
 
@@ -10213,5 +10218,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return false;
+  }
+
+  static isArrayCreatedWithOtherArrayLength(decl: ts.VariableDeclaration): boolean {
+    if (!decl.initializer || !ts.isNewExpression(decl.initializer)) {
+      return false;
+    }
+
+    const newExpr = decl.initializer;
+    return (
+      newExpr.arguments?.some((arg) => {
+        return ts.isPropertyAccessExpression(arg) && arg.name.text === 'length';
+      }) ?? false
+    );
+  }
+
+  static findArrayDeclaration(sym: ts.Symbol): ts.VariableDeclaration | undefined {
+    const decls = sym.getDeclarations();
+    if (!decls) {
+      return undefined;
+    }
+
+    for (const decl of decls) {
+      if (ts.isVariableDeclaration(decl)) {
+        return decl;
+      }
+    }
+    return undefined;
   }
 }
