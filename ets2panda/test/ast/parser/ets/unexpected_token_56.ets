@@ -21,8 +21,7 @@ for (let i? /* @@ label11 */: Number = 1;;)  { break; }
 /* @@@ label1 Error SyntaxError: Unexpected token ';'. */
 /* @@@ label2 Error SyntaxError: Unexpected token ';'. */
 /* @@@ label3 Error TypeError: Unresolved reference i */
-/* @@@ label3 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@@ label4 Error TypeError: Function name 'count' used in the wrong context */
+/* @@@ label4 Error TypeError: Unresolved reference count */
 /* @@@ label5 Error SyntaxError: Expected ')', got ';'. */
 /* @@@ label6 Error SyntaxError: Unexpected token ')'. */
 /* @@@ label7 Error SyntaxError: Unexpected token '{'. */

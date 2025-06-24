@@ -168,14 +168,11 @@ function main(): void {
 /* @@? 95:65 Error TypeError: 'For-of' statement source expression is not of iterable type. */
 /* @@? 103:20 Error TypeError: Type 'Double' has no call signatures. */
 /* @@? 112:16 Error TypeError: Static property 'fastaRepeat' must be accessed through it's class 'StringFasta' */
-/* @@? 112:28 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
-/* @@? 112:32 Error TypeError: Function name 'count' used in the wrong context */
+/* @@? 112:32 Error TypeError: Property 'count' must be accessed through 'this' */
 /* @@? 113:16 Error TypeError: Static property 'fastaRandom' must be accessed through it's class 'StringFasta' */
-/* @@? 113:28 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
-/* @@? 113:32 Error TypeError: Function name 'count' used in the wrong context */
+/* @@? 113:32 Error TypeError: Property 'count' must be accessed through 'this' */
 /* @@? 113:46 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
 /* @@? 114:16 Error TypeError: Static property 'fastaRandom' must be accessed through it's class 'StringFasta' */
-/* @@? 114:28 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
-/* @@? 114:32 Error TypeError: Function name 'count' used in the wrong context */
+/* @@? 114:32 Error TypeError: Property 'count' must be accessed through 'this' */
 /* @@? 114:46 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
 /* @@? 116:36 Error TypeError: 'expected' is a static property of 'StringFasta' */
