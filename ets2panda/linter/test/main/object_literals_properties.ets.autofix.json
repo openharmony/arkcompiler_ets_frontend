@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -2326,8 +2326,8 @@
             "problem": "ObjectLiteralProperty",
             "autofix": [
                 {
-                    "start": 4958,
-                    "end": 4958,
+                    "start": 4956,
+                    "end": 4956,
                     "replacementText": "class GeneratedObjectLiteralClass_11 extends X.C {\n    m() {\n        console.log(\"C - 2\");\n    }\n}\n\n",
                     "line": 275,
                     "column": 5,
@@ -2335,8 +2335,8 @@
                     "endColumn": 6
                 },
                 {
-                    "start": 4991,
-                    "end": 5040,
+                    "start": 4989,
+                    "end": 5038,
                     "replacementText": "new GeneratedObjectLiteralClass_11()",
                     "line": 275,
                     "column": 5,
@@ -2366,8 +2366,8 @@
             "problem": "ObjectLiteralProperty",
             "autofix": [
                 {
-                    "start": 4958,
-                    "end": 4958,
+                    "start": 4956,
+                    "end": 4956,
                     "replacementText": "class GeneratedObjectLiteralClass_12 implements X.I {\n    m(): void {\n        console.log(\"I\");\n    }\n}\n\n",
                     "line": 281,
                     "column": 5,
@@ -2375,8 +2375,8 @@
                     "endColumn": 6
                 },
                 {
-                    "start": 5058,
-                    "end": 5109,
+                    "start": 5055,
+                    "end": 5106,
                     "replacementText": "new GeneratedObjectLiteralClass_12()",
                     "line": 281,
                     "column": 5,

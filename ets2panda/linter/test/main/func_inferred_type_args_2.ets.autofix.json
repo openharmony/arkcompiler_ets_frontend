@@ -377,16 +377,6 @@
         },
         {
             "line": 44,
-            "column": 14,
-            "endLine": 44,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
             "column": 10,
             "endLine": 44,
             "endColumn": 19,
@@ -404,16 +394,6 @@
             ],
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 14,
-            "endLine": 48,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -449,16 +429,6 @@
         },
         {
             "line": 52,
-            "column": 14,
-            "endLine": 52,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
             "column": 10,
             "endLine": 52,
             "endColumn": 19,
@@ -479,32 +449,12 @@
         },
         {
             "line": 56,
-            "column": 14,
-            "endLine": 56,
-            "endColumn": 17,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 56,
             "column": 10,
             "endLine": 56,
             "endColumn": 19,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
-            "column": 16,
-            "endLine": 61,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -526,16 +476,6 @@
             ],
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 65,
-            "column": 16,
-            "endLine": 65,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -571,16 +511,6 @@
         },
         {
             "line": 69,
-            "column": 16,
-            "endLine": 69,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
             "column": 12,
             "endLine": 69,
             "endColumn": 21,
@@ -597,16 +527,6 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 16,
-            "endLine": 73,
-            "endColumn": 19,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {
@@ -732,6 +652,79 @@
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 97,
+            "column": 36,
+            "endLine": 97,
+            "endColumn": 47,
+            "problem": "GenericCallNoTypeArgs",
+            "autofix": [
+                {
+                    "start": 2592,
+                    "end": 2592,
+                    "replacementText": "<string>",
+                    "line": 97,
+                    "column": 36,
+                    "endLine": 97,
+                    "endColumn": 47
+                }
+            ],
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 51,
+            "endLine": 98,
+            "endColumn": 62,
+            "problem": "GenericCallNoTypeArgs",
+            "autofix": [
+                {
+                    "start": 2655,
+                    "end": 2655,
+                    "replacementText": "<string>",
+                    "line": 98,
+                    "column": 51,
+                    "endLine": 98,
+                    "endColumn": 62
+                }
+            ],
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 52,
+            "endLine": 99,
+            "endColumn": 63,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 22,
+            "endLine": 100,
+            "endColumn": 33,
+            "problem": "GenericCallNoTypeArgs",
+            "autofix": [
+                {
+                    "start": 2753,
+                    "end": 2753,
+                    "replacementText": "<string>",
+                    "line": 100,
+                    "column": 22,
+                    "endLine": 100,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
         },
         {

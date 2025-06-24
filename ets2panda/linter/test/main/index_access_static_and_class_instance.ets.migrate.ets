@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-import { ff1 } from "./interop_import_js_rules_js"
+class A {
+  static foo1(){}
+  foo2(){}
+}
 
-export {ff1} // imported from js. Error is shown
+let a = new A();
+a.foo2; //arkts-no-ops-by-index autofix is right
 
-export { ff2 } from "./interop_import_js_rules_js" // ff2 is imported from js. Error is shown
-
-export { foo as bar } from "./oh_modules/reflect_export" // foo is imported from arkts1.2. No error.
-
-export * as namespace2 from "./interop_import_js_rules_js"
+A.foo1; // arkts-no-classes-as-obj autofix is right

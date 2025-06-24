@@ -21,9 +21,9 @@ import {
  enumType
 } from "./ignore_files/unique_types";
 
-objectLiteralType.setPropertyByName('name',ESValue.wrap("test"))
+objectLiteralType.setProperty('name',ESValue.wrap("test"))
 
-intersectionType.setPropertyByName('name',ESValue.wrap("test"));
+intersectionType.setProperty('name',ESValue.wrap("test"));
 
 try {
 tsFunction();

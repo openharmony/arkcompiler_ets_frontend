@@ -94,3 +94,7 @@ class A <T,U = B>{
   }
 }
 new A<C>(new C())
+let a: Array<string> | undefined = new Array();
+let aa: Array<string> | Set<string> | undefined = new Array();
+let b: Array<string> | Array<number> | undefined = new Array();
+let test: string[] = new Array();

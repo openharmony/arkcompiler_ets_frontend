@@ -24,7 +24,7 @@
                 {
                     "start": 731,
                     "end": 762,
-                    "replacementText": "objectLiteralType.setPropertyByName('name',ESValue.wrap(\"test\"))",
+                    "replacementText": "objectLiteralType.setProperty('name',ESValue.wrap(\"test\"))",
                     "line": 24,
                     "column": 1,
                     "endLine": 24,
@@ -45,7 +45,7 @@
                 {
                     "start": 764,
                     "end": 794,
-                    "replacementText": "intersectionType.setPropertyByName('name',ESValue.wrap(\"test\"))",
+                    "replacementText": "intersectionType.setProperty('name',ESValue.wrap(\"test\"))",
                     "line": 26,
                     "column": 1,
                     "endLine": 26,

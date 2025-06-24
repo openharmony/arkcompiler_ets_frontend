@@ -15,24 +15,24 @@
 
 'use static'
 let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
-let person = GeneratedImportVar_1.getPropertyByName('person');
-let TestHelper = GeneratedImportVar_1.getPropertyByName('TestHelper');
-let Machine = GeneratedImportVar_1.getPropertyByName('Machine');
-let User = GeneratedImportVar_1.getPropertyByName('User');
-let Person = GeneratedImportVar_1.getPropertyByName('Person');
-let Employee = GeneratedImportVar_1.getPropertyByName('Employee');
+let foo = GeneratedImportVar_1.getProperty('foo');
+let person = GeneratedImportVar_1.getProperty('person');
+let TestHelper = GeneratedImportVar_1.getProperty('TestHelper');
+let Machine = GeneratedImportVar_1.getProperty('Machine');
+let User = GeneratedImportVar_1.getProperty('User');
+let Person = GeneratedImportVar_1.getProperty('Person');
+let Employee = GeneratedImportVar_1.getProperty('Employee');
 
 
-foo.getPropertyByName("name")
-foo.setPropertyByName("name", ESValue.wrap("456"))
-person.setPropertyByName("age", ESValue.wrap(23.0))
-person.setPropertyByName("male", ESValue.wrap([2.0, 3.0]))
-foo.setPropertyByName("age", ESValue.wrap(12.0))
-if (foo.setPropertyByName("name", ESValue.wrap("456"))) { print("true") }
+foo.getProperty("name")
+foo.setProperty("name", ESValue.wrap("456"))
+person.setProperty("age", ESValue.wrap(23.0))
+person.setProperty("male", ESValue.wrap([2.0, 3.0]))
+foo.setProperty("age", ESValue.wrap(12.0))
+if (foo.setProperty("name", ESValue.wrap("456"))) { print("true") }
 
 let a = foo.instantiate()
-a.setPropertyByName("age", ESValue.wrap(12.0))
+a.setProperty("age", ESValue.wrap(12.0))
 
 let test_helper = TestHelper.instantiate(ESValue.wrap("TEST_INSTANTIATE_JS_OBJECT"));
 test_helper.invokeMethod("test", ESValue.wrap(() => {

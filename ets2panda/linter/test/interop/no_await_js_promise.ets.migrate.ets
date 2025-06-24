@@ -14,11 +14,11 @@
  */
 
 let GeneratedImportVar_1 = ESValue.load('./no_await_js_promise_export');
-let p = GeneratedImportVar_1.getPropertyByName('p');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
-let pFuncCall = GeneratedImportVar_1.getPropertyByName('pFuncCall');
-let arrowFunc = GeneratedImportVar_1.getPropertyByName('arrowFunc');
-let pArrowCall = GeneratedImportVar_1.getPropertyByName('pArrowCall');
+let p = GeneratedImportVar_1.getProperty('p');
+let foo = GeneratedImportVar_1.getProperty('foo');
+let pFuncCall = GeneratedImportVar_1.getProperty('pFuncCall');
+let arrowFunc = GeneratedImportVar_1.getProperty('arrowFunc');
+let pArrowCall = GeneratedImportVar_1.getProperty('pArrowCall');
 
 
 async function awaitPromise() {

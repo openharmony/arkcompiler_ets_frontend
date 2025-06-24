@@ -14,12 +14,12 @@
  */
 
 let GeneratedImportVar_1 = ESValue.load('./no_js_instanceof_file.js');
-let Foo = GeneratedImportVar_1.getPropertyByName('Foo');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
-let CreatePerson = GeneratedImportVar_1.getPropertyByName('CreatePerson');
-let a = GeneratedImportVar_1.getPropertyByName('a');
-let b = GeneratedImportVar_1.getPropertyByName('b');
-let MyNamespace = GeneratedImportVar_1.getPropertyByName('MyNamespace');
+let Foo = GeneratedImportVar_1.getProperty('Foo');
+let foo = GeneratedImportVar_1.getProperty('foo');
+let CreatePerson = GeneratedImportVar_1.getProperty('CreatePerson');
+let a = GeneratedImportVar_1.getProperty('a');
+let b = GeneratedImportVar_1.getProperty('b');
+let MyNamespace = GeneratedImportVar_1.getProperty('MyNamespace');
 
 
 class Foo1 {}
@@ -76,7 +76,7 @@ if(b().isInstanceOf(Array)) {
 
 }
 
-const myDog: MyNamespace.Dog = new MyNamespace.getPropertyByName("Dog")('Buddy');
+const myDog: MyNamespace.Dog = new MyNamespace.getProperty("Dog")('Buddy');
 
 if (myDog.isInstanceOf(MyNamespace.Dog)) {
   console.log("This is a Dog!");

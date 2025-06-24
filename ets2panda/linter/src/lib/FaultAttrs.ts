@@ -222,7 +222,6 @@ faultsAttrs[FaultID.MethodInheritRule] = new FaultAttributes(319);
 faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321);
 faultsAttrs[FaultID.IsConcurrentDeprecated] = new FaultAttributes(322);
 faultsAttrs[FaultID.InteropJsObjectExport] = new FaultAttributes(323);
-faultsAttrs[FaultID.InteropArkTs1ObjectExport] = new FaultAttributes(324);
 faultsAttrs[FaultID.DefaultArgsBehindRequiredArgs] = new FaultAttributes(325);
 faultsAttrs[FaultID.InteropStaticObjectLiterals] = new FaultAttributes(326);
 faultsAttrs[FaultID.InteropObjectLiteralAmbiguity] = new FaultAttributes(327);

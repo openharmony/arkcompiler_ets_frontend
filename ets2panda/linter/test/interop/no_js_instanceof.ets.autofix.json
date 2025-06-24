@@ -33,7 +33,7 @@
                 {
                     "start": 692,
                     "end": 692,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./no_js_instanceof_file.js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet CreatePerson = GeneratedImportVar_1.getPropertyByName('CreatePerson');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');\nlet MyNamespace = GeneratedImportVar_1.getPropertyByName('MyNamespace');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./no_js_instanceof_file.js');\nlet Foo = GeneratedImportVar_1.getProperty('Foo');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet CreatePerson = GeneratedImportVar_1.getProperty('CreatePerson');\nlet a = GeneratedImportVar_1.getProperty('a');\nlet b = GeneratedImportVar_1.getProperty('b');\nlet MyNamespace = GeneratedImportVar_1.getProperty('MyNamespace');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -316,7 +316,7 @@
                 {
                     "start": 1296,
                     "end": 1311,
-                    "replacementText": "MyNamespace.getPropertyByName(\"Dog\")",
+                    "replacementText": "MyNamespace.getProperty(\"Dog\")",
                     "line": 72,
                     "column": 36,
                     "endLine": 72,
@@ -358,7 +358,7 @@
                 {
                     "start": 1344,
                     "end": 1359,
-                    "replacementText": "MyNamespace.getPropertyByName(\"Dog\")",
+                    "replacementText": "MyNamespace.getProperty(\"Dog\")",
                     "line": 74,
                     "column": 22,
                     "endLine": 74,
@@ -377,7 +377,7 @@
             "problem": "InteropJsObjectConditionJudgment",
             "autofix": [
                 {
-                    "replacementText": "MyNamespace.getPropertyByName('Dog')",
+                    "replacementText": "MyNamespace.getProperty('Dog')",
                     "start": 1344,
                     "end": 1359,
                     "line": 74,
