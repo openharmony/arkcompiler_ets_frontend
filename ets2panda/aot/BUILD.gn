@@ -36,6 +36,7 @@ ohos_executable("ets2panda") {
     "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
     "$ark_root/compiler:arkcompiler_public_config",
     "$ark_root/runtime:arkruntime_public_config",
+    "$ark_root/abc2program:arkts_abc2program_public_config",
   ]
 
   deps = [
@@ -57,6 +58,7 @@ ohos_executable("ets2panda") {
     "runtime_core:libarktsbytecodeopt_package",
     "runtime_core:libarktscompiler_package",
     "runtime_core:libarktsfile_package",
+    "runtime_core:libarktsabc2program_package",
     sdk_libc_secshared_dep,
   ]
 

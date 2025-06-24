@@ -105,7 +105,6 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_update_function_expression compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_create_ets_new_expression compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_log_diagnostic_with_suggestion compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
-    "use_plugin_to_test_export_table compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_jsdoc compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_global_func_call_dump compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_interface_duplicate_setter compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
@@ -134,19 +133,12 @@ foreach(TEST_DATA IN ITEMS ${PLUGIN_TESTS})
     endif()
     panda_target_include_directories(${TEST_NAME}
         PRIVATE ${ES2PANDA_PATH}
-        PRIVATE ${PANDA_ROOT}/libpandafile
-        PRIVATE ${PANDA_ROOT}/assembler
         PRIVATE ${OUTPUT_DIR}
         PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-        PUBLIC ${CMAKE_SOURCE_DIR}/libpandabase
-        PUBLIC ${CMAKE_SOURCE_DIR}/runtime
-        PUBLIC ${CMAKE_BINARY_DIR}/libpandabase
-        PUBLIC ${CMAKE_BINARY_DIR}/libpandafile/include
-        PUBLIC ${CMAKE_BINARY_DIR}/abc2program
         ${CMAKE_BINARY_DIR}
     )
-    panda_target_link_libraries(${TEST_NAME} es2panda-public arkassembler arkbase arkfile abc2program)
+    panda_target_link_libraries(${TEST_NAME} es2panda-public)
 endforeach()
 
 add_custom_target(es2panda-plugin-test)

@@ -215,6 +215,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/constantExpressionLowering.cpp",
   "compiler/lowering/ets/convertPrimitiveCastMethodCall.cpp",
   "compiler/lowering/ets/declareOverloadLowering.cpp",
+  "compiler/lowering/ets/declGenPhase.cpp",
   "compiler/lowering/ets/defaultParametersInConstructorLowering.cpp",
   "compiler/lowering/ets/defaultParametersLowering.cpp",
   "compiler/lowering/ets/enumLowering.cpp",
@@ -1127,6 +1128,7 @@ libes2panda_configs = [
   ":libes2panda_config",
   "$ark_root/libpandabase:arkbase_public_config",
   "$ark_root/libpandafile:arkfile_public_config",
+  "$ark_root/abc2program:arkts_abc2program_public_config",
 ]
 
 libes2panda_public_configs = [
@@ -1176,6 +1178,7 @@ ohos_source_set("libes2panda_frontend_static") {
     "runtime_core:libarktsbase_package",
     "runtime_core:libarktscompiler_package",
     "runtime_core:libarktsfile_package",
+    "runtime_core:libarktsabc2program_package",
     sdk_libc_secshared_dep,
   ]
   part_name = "ets_frontend"
@@ -1216,7 +1219,14 @@ ohos_source_set("libes2panda_public_frontend_static") {
   deps = [ ":libes2panda_frontend_static" ]
 
   if (ark_standalone_build || ark_static_standalone_build) {
-    deps += [ "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package" ]
+    deps += [
+      "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package",
+      "$ark_root/abc2program:libarktsabc2program_package",
+      "$ark_root/assembler:libarktsassembler",
+      "$ark_root/compiler:libarktscompiler",
+      "$ark_root/libpandabase:libarktsbase",
+      "$ark_root/libpandafile:libarktsfile",
+    ]
   }
 
   if (target_os != "win" && target_os != "mingw" && target_os != "winuwp") {
@@ -1226,6 +1236,7 @@ ohos_source_set("libes2panda_public_frontend_static") {
 
   external_deps = [
     "runtime_core:libarktsbytecodeopt_package",
+    "runtime_core:libarktsabc2program_package",
     sdk_libc_secshared_dep,
   ]
   part_name = "ets_frontend"

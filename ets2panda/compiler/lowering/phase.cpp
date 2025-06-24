@@ -28,6 +28,7 @@
 #include "compiler/lowering/ets/convertPrimitiveCastMethodCall.h"
 #include "compiler/lowering/ets/declareOverloadLowering.h"
 #include "compiler/lowering/ets/cfgBuilderPhase.h"
+#include "compiler/lowering/ets/declGenPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
 #include "compiler/lowering/ets/defaultParametersLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
@@ -123,7 +124,9 @@ std::vector<Phase *> GetETSPhaseList()
         new AnnotationCopyLowering,
         // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         new CheckerPhase,
-        // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        // Dump declaration right after checker
+        new DeclGenPhase,
+        // pluginsAfterCheck has to go right after checkerPhase
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
         // new ConvertPrimitiveCastMethodCall,
         new DynamicImport,

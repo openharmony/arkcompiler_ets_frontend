@@ -48,7 +48,6 @@ class Checker;
 
 namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
-enum EntityType { CLASS_PROPERTY = 0, METHOD_DEFINITION = 1, CLASS_DEFINITION = 2, TS_INTERFACE_DECLARATION = 3 };
 
 #ifndef NDEBUG
 constexpr uint32_t POISON_VALUE {0x12346789};
@@ -316,18 +315,7 @@ public:
     void AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection);
     bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
 
-    std::vector<std::pair<std::string, ir::AstNode *>> &DeclGenExportNodes()
-    {
-        // NOTE: ExportNodes is not supported now.
-        return declGenExportNodes_;
-    }
-
     bool MergeExternalSource(const ExternalSource *externalSource);
-
-    void AddDeclGenExportNode(const std::string &declGenExportStr, ir::AstNode *node)
-    {
-        declGenExportNodes_.emplace_back(declGenExportStr, node);
-    }
 
     // The name "IsDied", because correct value of canary is a necessary condition for the life of "Program", but
     // not sufficient
@@ -393,7 +381,6 @@ private:
     bool isASTlowered_ {};
     lexer::SourcePosition packageStartPosition_ {};
     compiler::CFG *cfg_;
-    std::vector<std::pair<std::string, ir::AstNode *>> declGenExportNodes_;
     ArenaVector<varbinder::FunctionScope *> functionScopes_;
     std::unordered_map<std::string, std::unordered_set<std::string>> fileDependencies_;
 

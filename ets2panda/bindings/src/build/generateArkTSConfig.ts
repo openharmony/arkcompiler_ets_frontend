@@ -20,10 +20,10 @@ import { changeFileExtension, ensurePathExists } from '../utils';
 import { BuildConfig, ModuleInfo } from '../types';
 import { LANGUAGE_VERSION, SYSTEM_SDK_PATH_FROM_SDK } from '../preDefine';
 
-interface DynamicPathItem {
+interface DependencyItem {
   language: string;
-  declPath: string;
-  runtimeName: string;
+  path: string;
+  ohmUrl: string;
 }
 
 interface ArkTSConfigObject {
@@ -31,9 +31,8 @@ interface ArkTSConfigObject {
     package: string;
     baseUrl: string;
     paths: Record<string, string[]>;
-    dependencies: string[] | undefined;
     entry: string;
-    dynamicPaths: Record<string, DynamicPathItem>;
+    dependencies: Record<string, DependencyItem>;
   };
 }
 
@@ -128,20 +127,13 @@ export class ArkTSConfigGenerator {
     return this.pathSection;
   }
 
-  private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
-    let depModules: Map<string, ModuleInfo> = moduleInfo.staticDepModuleInfos;
-    depModules.forEach((depModuleInfo: ModuleInfo) => {
-      dependenciesSection.push(depModuleInfo.arktsConfigFile);
-    });
-  }
-
   private getOhmurl(file: string, moduleInfo: ModuleInfo): string {
     let unixFilePath: string = file.replace(/\\/g, '/');
     let ohmurl: string = moduleInfo.packageName + '/' + unixFilePath;
     return changeFileExtension(ohmurl, '');
   }
 
-  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
+  private getDependenciesSection(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
     let depModules: Map<string, ModuleInfo> = moduleInfo.dynamicDepModuleInfos;
 
     depModules.forEach((depModuleInfo: ModuleInfo) => {
@@ -153,16 +145,16 @@ export class ArkTSConfigGenerator {
       let declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
       Object.keys(declFilesObject.files).forEach((file: string) => {
         let ohmurl: string = this.getOhmurl(file, depModuleInfo);
-        dynamicPathSection[ohmurl] = {
+        dependencySection[ohmurl] = {
           language: 'js',
-          declPath: declFilesObject.files[file].declPath,
-          runtimeName: declFilesObject.files[file].ohmUrl
+          path: declFilesObject.files[file].declPath,
+          ohmUrl: declFilesObject.files[file].ohmUrl
         };
 
         let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
         let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
         if (absFilePath === entryFileWithoutExtension) {
-          dynamicPathSection[depModuleInfo.packageName] = dynamicPathSection[ohmurl];
+          dependencySection[depModuleInfo.packageName] = dependencySection[ohmurl];
         }
       });
     });
@@ -173,9 +165,8 @@ export class ArkTSConfigGenerator {
       console.error('SourceRoots not set from hvigor.');
     }
     let pathSection = this.getPathSection();
-    let dependenciesSection: string[] = [];
-    let dynamicPathSection: Record<string, DynamicPathItem> = {};
-    this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+    let dependencySection: Record<string, DependencyItem> = {};
+    this.getDependenciesSection(moduleInfo, dependencySection);
 
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
     let arktsConfig: ArkTSConfigObject = {
@@ -183,9 +174,8 @@ export class ArkTSConfigGenerator {
         package: moduleInfo.packageName,
         baseUrl: baseUrl,
         paths: pathSection,
-        dependencies: dependenciesSection.length === 0 ? undefined : dependenciesSection,
         entry: moduleInfo.entryFile,
-        dynamicPaths: dynamicPathSection
+        dependencies: dependencySection
       }
     };
 

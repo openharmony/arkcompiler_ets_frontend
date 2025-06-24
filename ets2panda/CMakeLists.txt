@@ -73,10 +73,10 @@ if(PANDA_WITH_ETS)
       "      \"@arkts.collections\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.collections.ets\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
       "    },\n"
-      "    \"dynamicPaths\": {\n"
+      "    \"dependencies\": {\n"
       "      \"dynamic_import_tests\": {\"language\": \"js\", \"ohmUrl\": \"dynamic_import_tests\"},\n"
-      "      \"dynamic_import_tests/modules/instanceof\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\"},\n"
-      "      \"dynamic_import_tests/modules/module\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\"}\n"
+      "      \"dynamic_import_tests/modules/instanceof\": {\"language\": \"js\", \"path\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\"},\n"
+      "      \"dynamic_import_tests/modules/module\": {\"language\": \"js\", \"path\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\"}\n"
       "    }\n"
       "  }\n"
       "}\n"
@@ -284,6 +284,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/constantExpressionLowering.cpp
   compiler/lowering/ets/convertPrimitiveCastMethodCall.cpp
   compiler/lowering/ets/declareOverloadLowering.cpp
+  compiler/lowering/ets/declGenPhase.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/exportAnonymousConst.cpp
@@ -695,7 +696,7 @@ endif()
 
 panda_target_link_libraries(es2panda-lib
   PUBLIC arkbase hmicuuc.z
-  PRIVATE arkassembler arkdisassembler arkfile
+  PRIVATE arkassembler arkdisassembler arkfile abc2program
 )
 
 if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR

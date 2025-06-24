@@ -88,7 +88,7 @@ public:
         specifiers.emplace_back(specifier);
         util::ImportPathManager::ImportMetadata importMetadata {util::ImportFlags::NONE, Language::Id::JS, "", "", ""};
         auto importDecl = util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(
-            Allocator(), Allocator()->New<ir::StringLiteral>("/tmp"), importMetadata, std::move(specifiers));
+            Allocator(), Allocator()->New<ir::StringLiteral>("/tmp"), std::move(importMetadata), std::move(specifiers));
         compiler::InitScopesPhaseETS::RunExternalNode(importDecl, varbinder);
         varbinder->BuildImportDeclaration(importDecl);
         auto var = varbinder->TopScope()->Find(specifierName);
