@@ -575,7 +575,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         let desc = `(${this.rule.ruleId.replace('@migration/', '')})`;
 
         if (relatedStmt === undefined) {
-            desc = `Can not find all assignments of the value in type assertion, please check it manually ` + desc;
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually ` + desc;
         } else {
             const sinkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
             const relatedFile = relatedStmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
