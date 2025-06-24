@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-@interface JSONRename {
+@interface JSONRenameTest {
     name:string = ""
 }
 
 class A {
-    @JSONRename("ID")
+    @JSONRenameTest("ID")
     name2: string = ""
     pwd2: string = ""
 }
