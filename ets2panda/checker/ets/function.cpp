@@ -1377,10 +1377,6 @@ static varbinder::LocalVariable *SetupSignatureParameter(ir::ETSParameterExpress
 // Should be moved to original ComposeSignatureInfo after AST fix
 static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo, ir::ETSParameterExpression *param)
 {
-    if (param->IsRestParameter()) {
-        return true;
-    }
-
     auto variable = SetupSignatureParameter(param, [checker, param]() {
         if (param->TypeAnnotation() != nullptr) {
             auto type = param->TypeAnnotation()->GetType(checker);
@@ -1398,6 +1394,9 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
     }());
     if (variable == nullptr) {  // #23134
         return false;
+    }
+    if (param->IsRestParameter()) {
+        return true;
     }
 
     sigInfo->params.push_back(variable);
