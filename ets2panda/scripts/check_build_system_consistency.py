@@ -125,7 +125,7 @@ def parse_gn(file_path):
     return sources, sources_dict, headers, headers_dict, yamls, yamls_dict
 
 
-def compare_file_lists(cmake_files, cmake_files_dict, gn_files, gn_files_dict, file_type):
+def compare_file_lists(cmake_files, cmake_files_dict, gn_files, gn_files_dict, file_type, location):
     cmake_set = set(cmake_files)
     gn_set = set(gn_files)
 
@@ -136,12 +136,24 @@ def compare_file_lists(cmake_files, cmake_files_dict, gn_files, gn_files_dict, f
         only_in_cmake_path = []
         for file in only_in_cmake:
             only_in_cmake_path.append(cmake_files_dict[file])
-        print(f"{file_type} only exist in CMake file:", sorted(only_in_cmake_path))
+        print(f"{file_type} files only exist in CMake file:", sorted(only_in_cmake_path))
+        if file_type == "source file(.cpp)":
+            print(
+                f"please add the missing {file_type} files to libes2panda_sources in ets2panda/BUILD.gn!"
+            )
+        else:
+            print(f"please add the missing {file_type} files to {location} in ets2panda/BUILD.gn!")
     if only_in_gn:
         only_in_gn_path = []
         for file in only_in_gn:
             only_in_gn_path.append(gn_files_dict[file])
-        print(f"{file_type} only exist in GN file:", sorted(only_in_gn_path))
+        print(f"{file_type} files only exist in GN file:", sorted(only_in_gn_path))
+        if file_type == "source file(.cpp)":
+            print(f"please add the missing {file_type} files to {location} in ets2panda/CMakeList.txt!")
+        else:
+            print(
+                f"please add the missing {file_type} files to {location} in ets2panda/public/CMakeList.txt!"
+            )
 
     return len(only_in_cmake) == 0 and len(only_in_gn) == 0
 
@@ -161,13 +173,18 @@ def main():
     )
 
     src_consistent = compare_file_lists(
-        cmake_src, cmake_src_dict, gn_src, gn_src_dict, "source file(.cpp)"
+        cmake_src, cmake_src_dict, gn_src, gn_src_dict, "*.cpp", "ES2PANDA_LIB_SRC"
     )
     hdr_consistent = compare_file_lists(
-        cmake_hdr, cmake_hdr_dict, gn_hdr, gn_hdr_dict, "header file(.h)"
+        cmake_hdr, cmake_hdr_dict, gn_hdr, gn_hdr_dict, "*.h", "HEADERS_TO-BE-PARSED"
     )
     yaml_consistent = compare_file_lists(
-        cmake_yaml, cmake_yaml_dict, gn_yaml, gn_yaml_dict, "YAML file(.yaml)"
+        cmake_yaml,
+        cmake_yaml_dict,
+        gn_yaml,
+        gn_yaml_dict,
+        "*.yaml",
+        "ES2PANDA_API_GENERATED",
     )
 
     if src_consistent and hdr_consistent and yaml_consistent:

@@ -628,8 +628,6 @@ add_custom_command(
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES} ${GENERATED_STAMP}
 )
 
-
-
 add_custom_target(gen_yamls DEPENDS es2panda_options_gen es2panda_keywords ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
 
