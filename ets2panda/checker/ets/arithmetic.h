@@ -108,6 +108,10 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
     UType rightValue = GetOperand<TargetType>(right);
     auto result = leftValue;
     auto isForbiddenZeroDivision = [&rightValue]() { return std::is_integral<UType>::value && rightValue == 0; };
+    auto isIntegralDivideResOverflow = [&rightValue, &leftValue]() {
+        // Note: Handle corner cases
+        return std::is_integral_v<UType> && leftValue == std::numeric_limits<UType>::min() && rightValue == -1;
+    };
 
     switch (operationType) {
         case lexer::TokenType::PUNCTUATOR_PLUS:
@@ -125,6 +129,11 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
             if (isForbiddenZeroDivision()) {
                 return nullptr;
             }
+
+            if (isIntegralDivideResOverflow()) {
+                return Allocator()->New<TargetType>(std::numeric_limits<UType>::min());
+            }
+
             result = leftValue / rightValue;
             break;
         }
