@@ -264,3 +264,4 @@ faultsAttrs[FaultID.NumericBigintCompare] = new FaultAttributes(376);
 faultsAttrs[FaultID.NondecimalBigint] = new FaultAttributes(377);
 faultsAttrs[FaultID.UnsupportOperator] = new FaultAttributes(378);
 faultsAttrs[FaultID.StateStylesBlockNeedArrowFunc] = new FaultAttributes(381);
+faultsAttrs[FaultID.PromiseVoidNeedResolveArg] = new FaultAttributes(382);

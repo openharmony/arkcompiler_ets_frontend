@@ -369,6 +369,8 @@ cookBookTag[377] =
 cookBookTag[378] = 'Operator is not support (arkts-unsupport-operator)';
 cookBookTag[381] =
   'The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)';
+cookBookTag[382] =
+  'Promise<void>constructor only supports using resolve (undefined) (arkts-promise-with-void-type-need-undefined-as-resolve-arg)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

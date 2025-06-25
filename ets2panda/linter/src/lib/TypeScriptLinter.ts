@@ -5242,6 +5242,50 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.handleSendableGenericTypes(tsNewExpr);
     this.handleInstantiatedJsObject(tsNewExpr, sym);
+    this.handlePromiseNeedVoidResolve(tsNewExpr);
+  }
+
+  handlePromiseNeedVoidResolve(newExpr: ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isIdentifier(newExpr.expression) || newExpr.expression.text !== 'Promise') {
+      return;
+    }
+
+    const typeArg = newExpr.typeArguments?.[0];
+    if (!typeArg) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(typeArg);
+    if (!(type.getFlags() & ts.TypeFlags.Void)) {
+      return;
+    }
+
+    const executor = newExpr.arguments?.[0];
+    if (!executor || !ts.isFunctionLike(executor)) {
+      return;
+    }
+
+    const resolveParam = executor.parameters[0];
+    if (resolveParam?.type) {
+      if (ts.isFunctionTypeNode(resolveParam.type) &&
+        resolveParam.type.parameters.length === 0) {
+        this.incrementCounters(resolveParam.type,FaultID.PromiseVoidNeedResolveArg);
+      }
+    }
+    if (executor.body) {
+      ts.forEachChild(executor.body, node => {
+        if (ts.isCallExpression(node) &&
+          ts.isIdentifier(node.expression) &&
+          node.expression.text === 'resolve' &&
+          node.arguments.length === 0) {
+          this.incrementCounters(node,FaultID.PromiseVoidNeedResolveArg);
+        }
+      });
+    }
   }
 
   private checkCreatingPrimitiveTypes(tsNewExpr: ts.NewExpression): void {

@@ -148,7 +148,8 @@ export const arkts2Rules: number[] = [
   375,
   376,
   377,
-  378
+  378,
+  382
 ];
 
 export const onlyArkts2SyntaxRules: Map<number, string> = new Map([

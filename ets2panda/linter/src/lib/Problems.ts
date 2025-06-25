@@ -253,6 +253,7 @@ export enum FaultID {
   SetAndPropFunctionNotSupported,
   PropNeedCallMethodForDeepCopy,
   StateStylesBlockNeedArrowFunc,
+  PromiseVoidNeedResolveArg,
   // this should always be last enum
   LAST_ID
 }
