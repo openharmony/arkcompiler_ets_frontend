@@ -656,7 +656,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
         annotations.push_back(GenAnnotationModule(classDef));
     }
 
-    if (!annotations.empty()) {
+    if (!annotations.empty() && !classDef->IsLazyImportObjectClass()) {
         classRecord.metadata->AddAnnotations(annotations);
     }
 

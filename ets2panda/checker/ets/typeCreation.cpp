@@ -133,9 +133,6 @@ Type *ETSChecker::CreateGradualType(Type *type, Language const lang)
     if (type->IsGradualType()) {
         return type;
     }
-    if (!type->PossiblyInForeignDomain()) {
-        return type;
-    }
     if (type->IsETSAnyType()) {
         return type;
     }

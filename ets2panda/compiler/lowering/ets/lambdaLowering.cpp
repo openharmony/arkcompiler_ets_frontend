@@ -340,10 +340,10 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
     auto [params, vMap] = CreateLambdaCalleeParameters(ctx, lambda, *info->capturedVars, paramScope, &substitution);
     auto varMap = std::move(vMap);
 
-    auto *returnType =
-        cmInfo->forcedReturnType != nullptr
-            ? cmInfo->forcedReturnType
-            : lambda->Function()->Signature()->ReturnType()->Substitute(checker->Relation(), &substitution);
+    auto arrowReturnType = lambda->TsType()->AsETSFunctionType()->ArrowSignature()->ReturnType();
+    auto *returnType = cmInfo->forcedReturnType != nullptr
+                           ? cmInfo->forcedReturnType
+                           : arrowReturnType->Substitute(checker->Relation(), &substitution);
     auto returnTypeAnnotation = allocator->New<ir::OpaqueTypeNode>(returnType, allocator);
 
     auto funcFlags = ir::ScriptFunctionFlags::METHOD | cmInfo->auxFunctionFlags;

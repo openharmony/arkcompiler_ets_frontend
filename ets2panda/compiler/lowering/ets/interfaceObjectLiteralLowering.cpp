@@ -289,7 +289,10 @@ static void GenerateAnonClassTypeFromAbstractClass(public_lib::Context *ctx, ir:
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     RefineSourceRanges(classDecl);
     auto *classDef = classDecl->Definition();
-    auto *classType = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
+    if (classDef->TsType()->IsGradualType()) {
+        return;
+    }
+    auto *classType = classDef->TsType()->AsETSObjectType();
 
     classDecl->SetRange(abstractClassNode->Range());
     classDef->SetAnonymousModifier();
@@ -378,6 +381,9 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
 
 static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *interfaceDecl)
 {
+    if (interfaceDecl->TsType() != nullptr && interfaceDecl->TsType()->IsGradualType()) {
+        return false;
+    }
     for (auto it : interfaceDecl->Body()->Body()) {
         if (it->IsOverloadDeclaration()) {
             continue;
@@ -394,7 +400,7 @@ static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *in
 
 static bool CheckAbstractClassShouldGenerateAnonClass(ir::ClassDefinition *classDef)
 {
-    auto constructorSigs = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType()->ConstructSignatures();
+    auto constructorSigs = classDef->TsType()->AsETSObjectType()->ConstructSignatures();
     if (auto res = std::find_if(constructorSigs.cbegin(), constructorSigs.cend(),
                                 [](checker::Signature *sig) -> bool { return sig->MinArgCount() == 0; });
         res == constructorSigs.cend()) {
@@ -415,7 +421,7 @@ static void TransfromInterfaceDecl(public_lib::Context *ctx, parser::Program *pr
         if (ast->IsTSInterfaceDeclaration() && CheckInterfaceShouldGenerateAnonClass(ast->AsTSInterfaceDeclaration())) {
             GenerateAnonClassTypeFromInterface(ctx, ast->AsTSInterfaceDeclaration());
         } else if (ast->IsClassDefinition() && ast != program->GlobalClass() &&
-                   ast->AsClassDefinition()->IsAbstract() &&
+                   ast->AsClassDefinition()->IsAbstract() && !ast->AsClassDefinition()->TsType()->IsGradualType() &&
                    CheckAbstractClassShouldGenerateAnonClass(ast->AsClassDefinition())) {
             GenerateAnonClassTypeFromAbstractClass(ctx, ast->AsClassDefinition());
         }
@@ -425,8 +431,12 @@ static void TransfromInterfaceDecl(public_lib::Context *ctx, parser::Program *pr
 static void TransfromInterfaceLiteral(public_lib::Context *ctx, parser::Program *program)
 {
     program->Ast()->IterateRecursivelyPostorder([ctx](ir::AstNode *ast) -> void {
-        if (ast->IsObjectExpression() && (IsInterfaceType(ast->AsObjectExpression()->TsType()) ||
-                                          IsAbstractClassType(ast->AsObjectExpression()->TsType()))) {
+        if (!ast->IsObjectExpression()) {
+            return;
+        }
+        auto objExpr = ast->AsObjectExpression();
+        if ((IsInterfaceType(objExpr->TsType()) || IsAbstractClassType(objExpr->TsType())) &&
+            !objExpr->TsType()->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType()) {
             HandleInterfaceLowering(ctx, ast->AsObjectExpression());
         }
     });
