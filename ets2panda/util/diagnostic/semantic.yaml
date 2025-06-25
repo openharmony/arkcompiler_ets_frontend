@@ -1557,5 +1557,9 @@ semantic:
   message: "overload declaration cannot contain abstract methods."
   
 - name: INVALID_RECORD_PROPERTY
-  id: 383
+  id: 393
   message: "Invalid record property"
+
+- name: METHOD_ASSIGNMENT
+  id: 394
+  message: "Class methods cannot be overwritten."

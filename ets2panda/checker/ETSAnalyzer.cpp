@@ -1150,6 +1150,33 @@ checker::Type *ETSAnalyzer::GetSmartType(ir::AssignmentExpression *expr, checker
     return smartType;
 }
 
+static bool IsMethodDefinition(const ir::Expression *const expression)
+{
+    return expression->IsMemberExpression() && expression->AsMemberExpression()->Property() != nullptr &&
+           expression->AsMemberExpression()->Property()->Variable() != nullptr &&
+           expression->AsMemberExpression()->Property()->Variable()->Declaration() != nullptr &&
+           expression->AsMemberExpression()->Property()->Variable()->Declaration()->Node()->IsMethodDefinition();
+}
+
+static bool IsInvalidMethodAssignment(const ir::AssignmentExpression *const expr, ETSChecker *checker)
+{
+    auto left = expr->Left();
+    if (IsMethodDefinition(left)) {
+        {
+            auto methodDefinition =
+                left->AsMemberExpression()->Property()->Variable()->Declaration()->Node()->AsMethodDefinition();
+            if (!methodDefinition->IsSetter() &&
+                std::none_of(methodDefinition->Overloads().cbegin(), methodDefinition->Overloads().cend(),
+                             [](const auto *overload) { return overload->IsSetter(); })) {
+                checker->LogError(diagnostic::METHOD_ASSIGNMENT, expr->Left()->Start());
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 {
     if (expr->TsType() != nullptr) {
@@ -1164,7 +1191,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
     const auto leftType = expr->Left()->Check(checker);
 
-    if (IsInvalidArrayMemberAssignment(expr, checker)) {
+    if (IsInvalidArrayMemberAssignment(expr, checker) || IsInvalidMethodAssignment(expr, checker)) {
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
