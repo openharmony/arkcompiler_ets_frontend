@@ -34,7 +34,7 @@ checker::Type *ForOfStatement::CreateUnionIteratorTypes(checker::ETSChecker *che
             types.emplace_back(it->AsETSArrayType()->ElementType()->Clone(checker));
             types.back()->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
         } else {
-            return nullptr;
+            return checker->GlobalTypeError();
         }
     }
 
@@ -157,7 +157,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     auto *const method = sourceType->GetProperty(compiler::Signatures::ITERATOR_METHOD, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
         checker->LogError(diagnostic::MISSING_ITERATOR_METHOD, {}, position);
-        return nullptr;
+        return checker->GlobalTypeError();
     }
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
@@ -166,27 +166,27 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
         checker->LogError(diagnostic::MISSING_ITERATOR_METHOD_WITH_SIG, {}, position);
-        return nullptr;
+        return checker->GlobalTypeError();
     }
     checker->ValidateSignatureAccessibility(sourceType, signature, position, {{diagnostic::INVISIBLE_ITERATOR, {}}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
     if (!CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position)) {
-        return nullptr;
+        return checker->GlobalTypeError();
     }
 
     if (checker->IsClassStaticMethod(sourceType, signature)) {
         checker->LogError(diagnostic::PROP_IS_STATIC, {compiler::Signatures::ITERATOR_METHOD, sourceType->Name()},
                           position);
-        return nullptr;
+        return checker->GlobalTypeError();
     }
 
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
         checker->LogError(diagnostic::ITERATOR_MISSING_NEXT, {}, position);
-        return nullptr;
+        return checker->GlobalTypeError();
     }
 
     auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
@@ -199,7 +199,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         }
     }
 
-    return nullptr;
+    return checker->GlobalTypeError();
 }
 
 bool ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
@@ -250,6 +250,6 @@ checker::Type *ForOfStatement::CheckIteratorMethod(checker::ETSChecker *const ch
         }
     }
 
-    return nullptr;
+    return checker->GlobalTypeError();
 }
 }  // namespace ark::es2panda::ir
