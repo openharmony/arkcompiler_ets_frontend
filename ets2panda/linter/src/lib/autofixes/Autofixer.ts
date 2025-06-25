@@ -4918,7 +4918,6 @@ export class Autofixer {
         return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
       }).
       join(', ')}>`;
-
     // Insert the type arguments immediately after the constructor name
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
@@ -4960,7 +4959,6 @@ export class Autofixer {
   ): Autofix[] | undefined {
     const srcFile = node.getSourceFile();
     const identifier = node.expression;
-    const args = node.arguments;
     const hasValidArgs = typeArgs.some((arg) => {
       return arg?.typeName && ts.isIdentifier(arg.typeName);
     });
@@ -4973,9 +4971,12 @@ export class Autofixer {
     if (hasAnyType) {
       return undefined;
     }
-    const newExpression = ts.factory.createNewExpression(identifier, typeArgs, args);
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+    const typeArgsText = `<${typeArgs?.
+      map((arg) => {
+        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+      }).
+      join(', ')}>`;
+    return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];
   }
 
   static getTypeArgumentsFromType(type: ts.Type): ts.Type[] {
