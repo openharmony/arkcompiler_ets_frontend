@@ -114,7 +114,8 @@ ArenaVector<ir::AstNode *> ETSParser::ParseAnnotationProperties(ir::ModifierFlag
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
     ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
 
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
+           Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
         if ((memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0U &&
             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             Lexer()->NextToken();  // eat ';'

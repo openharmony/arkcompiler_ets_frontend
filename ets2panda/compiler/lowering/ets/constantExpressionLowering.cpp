@@ -581,6 +581,10 @@ static TargetType PerformMultiplicativeOperation(TargetType leftNum, TargetType 
 {
     auto isForbiddenZeroDivision = [&rightNum]() { return std::is_integral_v<TargetType> && rightNum == 0; };
     auto isFloatZeroDevision = [&rightNum]() { return std::is_floating_point_v<TargetType> && rightNum == 0; };
+    auto isIntegralDivideResOverflow = [&rightNum, &leftNum]() {
+        // Note: Handle corner cases
+        return std::is_integral_v<TargetType> && leftNum == std::numeric_limits<TargetType>::min() && rightNum == -1;
+    };
     auto opType = expr->OperatorType();
     switch (opType) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY: {
@@ -597,7 +601,9 @@ static TargetType PerformMultiplicativeOperation(TargetType leftNum, TargetType 
             }
 
             ES2PANDA_ASSERT(rightNum != 0);
-            // CC-OFFNXT(G.EXP.22-CPP) false positive
+            if (isIntegralDivideResOverflow()) {
+                return std::numeric_limits<TargetType>::min();
+            }
             return leftNum / rightNum;
         }
         case lexer::TokenType::PUNCTUATOR_MOD: {
