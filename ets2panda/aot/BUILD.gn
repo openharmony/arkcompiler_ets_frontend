@@ -11,7 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+if ((defined(ark_standalone_build) && ark_standalone_build) ||
+    (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+  import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+} else {
+  import(
+      "//build/config/components/runtime_core/static_core/ark_common_config.gni")
+}
 
 if (ark_standalone_build) {
   import("$build_root/ark.gni")
@@ -26,11 +32,14 @@ ohos_executable("ets2panda") {
     "$target_gen_dir",
     "$target_gen_dir/include",
   ]
-
-  configs = [
-    "$ark_root:ark_config",
-    "$ark_es2panda_root:libes2panda_public_config",
-  ]
+  if ((defined(ark_standalone_build) && ark_standalone_build) ||
+      (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+    configs = [ "$ark_root:ark_config" ]
+  } else {
+    configs = [
+      "//build/config/components/runtime_core/static_core:ark_common_config",
+    ]
+  }
 
   if (ark_standalone_build || ark_static_standalone_build) {
     configs += [
@@ -42,6 +51,10 @@ ohos_executable("ets2panda") {
       "$ark_root/compiler:arkcompiler_public_config",
     ]
   }
+
+  configs += [
+    "$ark_es2panda_root:libes2panda_public_config"
+  ]
 
   deps = [
     "$ark_es2panda_root:libes2panda_frontend_static",

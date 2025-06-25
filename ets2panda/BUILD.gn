@@ -11,7 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+if ((defined(ark_standalone_build) && ark_standalone_build) ||
+    (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+  import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+} else {
+  import(
+      "//build/config/components/runtime_core/static_core/ark_common_config.gni")
+}
 
 if (ark_standalone_build) {
   import("$build_root/ark.gni")
@@ -1133,6 +1139,17 @@ config("libes2panda_config") {
   ]
 }
 
+if ((defined(ark_standalone_build) && ark_standalone_build) ||
+    (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+  libes2panda_configs = [ "$ark_root:ark_config" ]
+  libes2panda_public_configs = [ "$ark_root:ark_config" ]
+} else {
+  libes2panda_configs =
+      [ "//build/config/components/runtime_core/static_core:ark_common_config" ]
+  libes2panda_public_configs =
+      [ "//build/config/components/runtime_core/static_core:ark_common_config" ]
+}
+
 if (ark_standalone_build || ark_static_standalone_build) {
   libes2panda_configs += [
     "$ark_root/assembler:arkassembler_public_config",
@@ -1141,8 +1158,7 @@ if (ark_standalone_build || ark_static_standalone_build) {
   ]
 }
 
-libes2panda_configs = [
-  "$ark_root:ark_config",
+libes2panda_configs += [
   ":libes2panda_public_config",
   ":libes2panda_config",
 ]
@@ -1158,8 +1174,7 @@ if (ark_standalone_build || ark_static_standalone_build) {
   ]
 }
 
-libes2panda_public_configs = [
-  "$ark_root:ark_config",
+libes2panda_public_configs += [
   ":libes2panda_public_config",
   ":libes2panda_config",
 ]
