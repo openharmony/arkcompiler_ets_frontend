@@ -17,6 +17,9 @@ ast/parser/ets/import_tests/export_and_import_class.ets
 ast/parser/ets/import_tests/export_and_import_top_level.ets
 ast/parser/ets/re_export/import_11.ets
 ast/parser/ets/re_export/import_12.ets
+ast/parser/ets/re_export/export_5.ets
+ast/parser/ets/re_export/export_6.ets
+ast/parser/ets/re_export/re_export_16.ets
 ast/parser/ets/re_export/re_export_11.ets
 ast/parser/ets/re_export/re_export_12.ets
 ast/parser/ets/re_export/re_export_5.ets

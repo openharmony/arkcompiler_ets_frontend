@@ -996,7 +996,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     // re-export directive
     auto *reExportDeclaration = ParseImportPathBuildImport(std::move(specifiers), true, startLoc, ir::ImportKinds::ALL);
     auto reExport = AllocNode<ir::ETSReExportDeclaration>(reExportDeclaration, std::vector<std::string>(),
-                                                          GetProgram()->SourceFilePath(), Allocator());
+                                                          GetProgram()->AbsoluteName(), Allocator());
     reExport->AddModifier(modifiers);
     return reExport;
 }
