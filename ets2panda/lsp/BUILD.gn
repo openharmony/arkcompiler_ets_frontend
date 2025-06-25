@@ -11,7 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+if ((defined(ark_standalone_build) && ark_standalone_build) ||
+    (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+  import("//arkcompiler/runtime_core/static_core/ark_config.gni")
+} else {
+  import(
+      "//build/config/components/runtime_core/static_core/ark_common_config.gni")
+}
 
 if (ark_standalone_build) {
   import("$build_root/ark.gni")
@@ -58,9 +64,16 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/string_completions.cpp",
     "src/suggestion_diagnostics.cpp",
   ]
-  configs = [
+  if ((defined(ark_standalone_build) && ark_standalone_build) ||
+      (defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+    configs = [ "$ark_root:ark_config" ]
+  } else {
+    configs = [
+      "//build/config/components/runtime_core/static_core:ark_common_config",
+    ]
+  }
+  configs += [
     "$ark_root/assembler:arkassembler_public_config",
-    "$ark_root:ark_config",
     "../:libes2panda_public_config",
     "../:libes2panda_config",
     "$ark_root/libpandabase:arkbase_public_config",
