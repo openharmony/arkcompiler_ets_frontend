@@ -1036,13 +1036,13 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     auto source = importDeclaration->Source()->Str().Mutf8();
     source = RemoveModuleExtensionName(source);
     const auto specifierFirst = specifiers[0];
-    const auto typeStr = importDeclaration->IsTypeKind() ? "type " : "";
+    bool isTypeKind = importDeclaration->IsTypeKind();
     if (specifierFirst->IsImportNamespaceSpecifier()) {
         GenNamespaceImport(specifierFirst, source);
     } else if (specifierFirst->IsImportDefaultSpecifier()) {
-        GenDefaultImport(specifierFirst, source, typeStr);
+        GenDefaultImport(specifierFirst, source, isTypeKind);
     } else if (specifierFirst->IsImportSpecifier()) {
-        GenNamedImports(importDeclaration, specifiers, source, typeStr);
+        GenNamedImports(importDeclaration, specifiers, isTypeKind);
     }
 }
 
@@ -1058,45 +1058,78 @@ void TSDeclGen::GenNamespaceImport(const ir::AstNode *specifier, const std::stri
     OutEndlDts();
 }
 
-void TSDeclGen::GenDefaultImport(const ir::AstNode *specifier, const std::string &source, const std::string &typeStr)
+void TSDeclGen::GenDefaultImport(const ir::AstNode *specifier, const std::string &source, bool isTypeKind)
 {
     const auto local = specifier->AsImportDefaultSpecifier()->Local()->Name();
-    OutTs("import ", typeStr, local, " from \"", source, "\";");
+    if (specifier->AsImportDefaultSpecifier()->Local()->Variable() &&
+        specifier->AsImportDefaultSpecifier()->Local()->Variable()->Declaration() &&
+        specifier->AsImportDefaultSpecifier()->Local()->Variable()->Declaration()->Node() &&
+        specifier->AsImportDefaultSpecifier()->Local()->Variable()->Declaration()->Node()->IsTSInterfaceDeclaration()) {
+        OutTs("import type ", local, " from \"", source, "\";");
+    } else {
+        OutTs(isTypeKind ? "import type " : "import ", local, " from \"", source, "\";");
+    }
     OutEndlTs();
     if (importSet_.find(local.Mutf8()) == importSet_.end()) {
         return;
     }
-    OutDts("import ", typeStr, local, " from \"", source, "\";");
+    OutDts(isTypeKind ? "import type " : "import ", local, " from \"", source, "\";");
     OutEndlDts();
 }
 
 void TSDeclGen::GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
-                                const ArenaVector<ir::AstNode *> &specifiers, const std::string &source,
-                                const std::string &typeStr)
+                                const ArenaVector<ir::AstNode *> &specifiers, bool isTypeKind)
 {
     if (specifiers.empty()) {
         return;
     }
-    OutTs("import ", typeStr, "{ ");
-    GenSeparated(
-        specifiers,
-        [this, &importDeclaration](ir::AstNode *specifier) {
-            GenSingleNamedImport(specifier, importDeclaration, true);
-        },
-        ", ", true, false);
-    OutTs(" } from \"", source, "\";");
-    OutEndlTs();
+    std::vector<ir::AstNode *> interfaceSpecifiers;
+    std::vector<ir::AstNode *> normalSpecifiers;
+    SeparateInterfaceSpecifiers(specifiers, interfaceSpecifiers, normalSpecifiers);
+
+    GenTsImportStatement(interfaceSpecifiers, importDeclaration, true);
+    GenTsImportStatement(normalSpecifiers, importDeclaration);
+
     auto importSpecifiers = FilterValidImportSpecifiers(specifiers);
-    if (importSpecifiers.empty()) {
+    GenDtsImportStatement(importSpecifiers, importDeclaration, isTypeKind);
+}
+
+void TSDeclGen::GenTsImportStatement(std::vector<ir::AstNode *> &specifiers,
+                                     const ir::ETSImportDeclaration *importDeclaration, bool isInterface)
+{
+    if (specifiers.empty()) {
         return;
     }
-    OutDts("import ", typeStr, "{ ");
+
+    auto source = importDeclaration->Source()->Str().Mutf8();
+    source = RemoveModuleExtensionName(source);
+    OutTs(isInterface ? "import type" : "import", " { ");
+
     GenSeparated(
-        importSpecifiers,
-        [this, &importDeclaration](ir::AstNode *specifier) { GenSingleNamedImport(specifier, importDeclaration); },
+        specifiers,
+        [this, importDeclaration](ir::AstNode *specifier) { GenSingleNamedImport(specifier, importDeclaration, true); },
+        ", ", true, false);
+
+    OutTs(" } from \"", source, "\";\n");
+}
+
+void TSDeclGen::GenDtsImportStatement(std::vector<ir::AstNode *> &specifiers,
+                                      const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind)
+{
+    if (specifiers.empty()) {
+        return;
+    }
+
+    auto source = importDeclaration->Source()->Str().Mutf8();
+    source = RemoveModuleExtensionName(source);
+    OutDts(isTypeKind ? "import type" : "import", " { ");
+
+    GenSeparated(
+        specifiers,
+        [this, importDeclaration](ir::AstNode *specifier) { GenSingleNamedImport(specifier, importDeclaration); },
         ", ");
-    OutDts(" } from \"", source, "\";");
-    OutEndlDts();
+
+    OutDts(" } from \"", source, "\";\n");
 }
 
 void TSDeclGen::GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
@@ -1137,48 +1170,115 @@ void TSDeclGen::GenReExportDeclaration(const ir::ETSReExportDeclaration *reExpor
         return;
     }
     const auto &specifiers = importDeclaration->Specifiers();
-    if (specifiers.size() == 1 && specifiers[0]->IsImportNamespaceSpecifier()) {
-        const auto local = specifiers[0]->AsImportNamespaceSpecifier()->Local()->Name();
+
+    if (specifiers.size() == 1 && GenNamespaceReExportDeclaration(specifiers[0], importDeclaration)) {
+        return;
+    }
+
+    bool isTypeKind = reExportDeclaration->IsExportedType();
+    std::vector<ir::AstNode *> interfaceSpecifiers;
+    std::vector<ir::AstNode *> normalSpecifiers;
+    SeparateInterfaceSpecifiers(specifiers, interfaceSpecifiers, normalSpecifiers);
+
+    GenDtsReExportStatement(specifiers, importDeclaration, isTypeKind);
+
+    GenTsReExportStatement(interfaceSpecifiers, importDeclaration, true);
+    GenTsReExportStatement(normalSpecifiers, importDeclaration);
+}
+
+bool TSDeclGen::GenNamespaceReExportDeclaration(const ir::AstNode *specifier,
+                                                const ir::ETSImportDeclaration *importDeclaration)
+{
+    if (specifier->IsImportNamespaceSpecifier()) {
+        const auto local = specifier->AsImportNamespaceSpecifier()->Local()->Name();
         if (local.Empty()) {
-            OutDts("export * from \"", importDeclaration->Source()->Str().Mutf8(), "\";");
-            OutEndlDts();
-            OutTs("export * from \"", importDeclaration->Source()->Str().Mutf8(), "\";");
-            OutEndlTs();
-            return;
+            auto source = importDeclaration->Source()->Str().Mutf8();
+            source = RemoveModuleExtensionName(source);
+            OutDts("export * from \"", source, "\";\n");
+            OutTs("export * from \"", source, "\";\n");
+            return true;
         }
     }
-    OutDts("export { ");
-    OutTs("export { ");
-    GenSeparated(
-        specifiers,
-        [this, &importDeclaration](ir::AstNode *specifier) {
-            if (specifier->IsImportSpecifier()) {
-                const auto local = specifier->AsImportSpecifier()->Local()->Name().Mutf8();
-                const auto imported = specifier->AsImportSpecifier()->Imported()->Name().Mutf8();
-                importSet_.insert(local);
-                if (local != imported) {
-                    OutDts(imported, " as ", local);
-                    OutTs(imported, " as ", local);
-                } else {
-                    OutDts(local);
-                    OutTs(local);
-                }
-            } else if (specifier->IsImportNamespaceSpecifier()) {
-                const auto local = specifier->AsImportNamespaceSpecifier()->Local()->Name();
-                importSet_.insert(local.Mutf8());
-                OutDts(local);
-                OutTs(local);
-            } else {
-                LogError(diagnostic::IMPORT_SPECIFIERS_SUPPORT, {}, importDeclaration->Start());
-            }
-        },
-        ", ", true);
+    return false;
+}
+
+void TSDeclGen::SeparateInterfaceSpecifiers(const ArenaVector<ir::AstNode *> &specifiers,
+                                            std::vector<ir::AstNode *> &interfaceSpecifiers,
+                                            std::vector<ir::AstNode *> &normalSpecifiers)
+{
+    for (auto *specifier : specifiers) {
+        if (!specifier->IsImportSpecifier()) {
+            continue;
+        }
+        if (specifier->AsImportSpecifier()->Imported()->Variable() &&
+            specifier->AsImportSpecifier()->Imported()->Variable()->Declaration() &&
+            specifier->AsImportSpecifier()->Imported()->Variable()->Declaration()->Node() &&
+            specifier->AsImportSpecifier()->Imported()->Variable()->Declaration()->Node()->IsTSInterfaceDeclaration()) {
+            interfaceSpecifiers.push_back(specifier);
+        } else {
+            normalSpecifiers.push_back(specifier);
+        }
+    }
+}
+
+void TSDeclGen::GenSingleNamedReExport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
+                                       bool isGlueCode)
+{
+    if (specifier->IsImportSpecifier()) {
+        const auto local = specifier->AsImportSpecifier()->Local()->Name().Mutf8();
+        const auto imported = specifier->AsImportSpecifier()->Imported()->Name().Mutf8();
+        importSet_.insert(local);
+        if (local != imported) {
+            isGlueCode ? OutTs(imported, " as ", local) : OutDts(imported, " as ", local);
+        } else {
+            isGlueCode ? OutTs(local) : OutDts(local);
+        }
+    } else if (specifier->IsImportNamespaceSpecifier()) {
+        const auto local = specifier->AsImportNamespaceSpecifier()->Local()->Name().Mutf8();
+        importSet_.insert(local);
+        isGlueCode ? OutTs(local) : OutDts(local);
+    } else {
+        LogError(diagnostic::IMPORT_SPECIFIERS_SUPPORT, {}, importDeclaration->Start());
+    }
+}
+
+void TSDeclGen::GenDtsReExportStatement(const ArenaVector<ir::AstNode *> &specifiers,
+                                        const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind)
+{
+    if (specifiers.empty()) {
+        return;
+    }
 
     auto source = importDeclaration->Source()->Str().Mutf8();
-    OutDts(" } from \"", source, "\";");
-    OutEndlDts();
-    OutTs(" } from \"", source, "\";");
-    OutEndlTs();
+    source = RemoveModuleExtensionName(source);
+    OutDts(isTypeKind ? "export type" : "export", " { ");
+
+    GenSeparated(
+        specifiers,
+        [this, importDeclaration](ir::AstNode *specifier) { GenSingleNamedReExport(specifier, importDeclaration); },
+        ", ");
+
+    OutDts(" } from \"", source, "\";\n");
+}
+
+void TSDeclGen::GenTsReExportStatement(const std::vector<ir::AstNode *> &specifiers,
+                                       const ir::ETSImportDeclaration *importDeclaration, bool isInterface)
+{
+    if (specifiers.empty()) {
+        return;
+    }
+    auto source = importDeclaration->Source()->Str().Mutf8();
+    source = RemoveModuleExtensionName(source);
+    OutTs(isInterface ? "export type" : "export", " { ");
+
+    GenSeparated(
+        specifiers,
+        [this, importDeclaration](ir::AstNode *specifier) {
+            GenSingleNamedReExport(specifier, importDeclaration, true);
+        },
+        ", ", true, false);
+
+    OutTs(" } from \"", source, "\";\n");
 }
 
 std::string TSDeclGen::ReplaceETSGLOBAL(const std::string &typeName)
@@ -1365,10 +1465,12 @@ void TSDeclGen::ProcessETSFunctionType(const ir::ETSFunctionType *etsFunction)
     bool inUnionBody = !state_.inUnionBodyStack.empty() && state_.inUnionBodyStack.top();
     OutDts(inUnionBody ? "((" : "(");
     GenSeparated(etsFunction->Params(), [this](ir::Expression *param) {
-        const auto paramName = param->AsETSParameterExpression()->Name();
-        OutDts(paramName.Is("=t") ? "this" : paramName, ": ");
-        ProcessTypeAnnotationType(param->AsETSParameterExpression()->TypeAnnotation(),
-                                  param->AsETSParameterExpression()->TypeAnnotation()->TsType());
+        const auto paramExpr = param->AsETSParameterExpression();
+        const auto paramName = paramExpr->Name();
+        const bool isRestParam = paramExpr->IsRestParameter();
+        const bool isOptional = paramExpr->IsOptional();
+        OutDts(isRestParam ? "..." : "", paramName.Is("=t") ? "this" : paramName, isOptional ? "?: " : ": ");
+        ProcessTypeAnnotationType(paramExpr->TypeAnnotation(), paramExpr->TypeAnnotation()->TsType());
     });
     OutDts(") => ");
     ProcessTypeAnnotationType(etsFunction->ReturnType(), etsFunction->ReturnType()->TsType());
