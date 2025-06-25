@@ -197,6 +197,8 @@ struct Context {
         }
     }
 
+    void MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList, public_lib::ExternalSource &extSources);
+
     ConfigImpl *config = nullptr;
     GlobalContext *globalContext = nullptr;
     std::string sourceFileName;
@@ -224,6 +226,8 @@ struct Context {
     TransitionMemory *transitionMemory {nullptr};
     bool isExternal = false;
     bool compiledByCapi = false;
+    std::vector<std::string> sourceFileNames;
+    std::map<util::StringView, parser::Program *> dupPrograms {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:

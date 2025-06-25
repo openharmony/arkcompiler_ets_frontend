@@ -222,10 +222,35 @@ static std::string GenerateMangledName(const std::string &baseName, const std::s
     return baseName + "$" + propName;
 }
 
+void FilterForSimultaneous(varbinder::ETSBinder *varbinder)
+{
+    ArenaSet<ir::ClassDefinition *> &classDefinitions = varbinder->GetGlobalRecordTable()->ClassDefinitions();
+    for (auto it = classDefinitions.begin(); it != classDefinitions.end(); ++it) {
+        if ((*it)->InternalName().Is(Signatures::ETS_GLOBAL)) {
+            classDefinitions.erase(it);
+            break;
+        }
+    }
+    std::vector<std::string_view> filterFunctions = {
+        Signatures::UNUSED_ETSGLOBAL_CTOR, Signatures::UNUSED_ETSGLOBAL_INIT, Signatures::UNUSED_ETSGLOBAL_MAIN};
+    auto &functions = varbinder->Functions();
+    functions.erase(std::remove_if(functions.begin(), functions.end(),
+                                   [&filterFunctions](varbinder::FunctionScope *scope) -> bool {
+                                       return std::any_of(
+                                           filterFunctions.begin(), filterFunctions.end(),
+                                           [&scope](std::string_view &s) { return scope->InternalName().Is(s); });
+                                   }),  // CC-OFF(G.FMT.02)
+                    functions.end());
+}
+
 void ETSEmitter::GenAnnotation()
 {
     Program()->lang = EXTENSION;
-    const auto *varbinder = static_cast<varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
+    auto *varbinder = static_cast<varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
+
+    if (Context()->config->options->GetCompilationMode() == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        FilterForSimultaneous(varbinder);
+    }
 
     auto *globalRecordTable = varbinder->GetGlobalRecordTable();
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
@@ -280,27 +305,35 @@ static bool IsFromSelfHeadFile(const std::string &name, const parser::Program *c
 
 void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const parser::Program *extProg)
 {
-    bool isGenStdLib = recordTable->Program()->VarBinder()->IsGenStdLib();
+    bool isExternalFromCompile =
+        !recordTable->Program()->VarBinder()->IsGenStdLib() && !recordTable->Program()->IsGenAbcForExternal();
     const auto *varbinder = static_cast<const varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
     for (auto *annoDecl : recordTable->AnnotationDeclarations()) {
         auto newBaseName = GenerateMangledName(baseName, annoDecl->GetBaseName()->Name().Mutf8());
-        GenCustomAnnotationRecord(annoDecl, newBaseName, !isGenStdLib);
+        GenCustomAnnotationRecord(annoDecl, newBaseName, isExternalFromCompile || annoDecl->IsDeclare());
     }
 
     for (auto *classDecl : recordTable->ClassDefinitions()) {
-        GenClassRecord(classDecl, !isGenStdLib);
+        GenClassRecord(classDecl, isExternalFromCompile || classDecl->IsDeclare());
     }
 
     for (auto *interfaceDecl : recordTable->InterfaceDeclarations()) {
-        GenInterfaceRecord(interfaceDecl, !isGenStdLib);
+        GenInterfaceRecord(interfaceDecl, isExternalFromCompile || interfaceDecl->IsDeclare());
     }
 
-    for (auto const *signature : recordTable->Signatures()) {
-        auto func = GenScriptFunction(signature->Node()->AsScriptFunction(), this);
+    for (auto *signature : recordTable->Signatures()) {
+        auto scriptFunc = signature->Node()->AsScriptFunction();
+        auto func = GenScriptFunction(scriptFunc, this);
 
-        if (!isGenStdLib) {
+        if (isExternalFromCompile || scriptFunc->IsDeclare()) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
+        }
+
+        if (extProg->IsGenAbcForExternal() && scriptFunc->IsAsyncFunc()) {
+            std::vector<pandasm::AnnotationData> annotations;
+            annotations.push_back(GenAnnotationAsync(scriptFunc));
+            func.metadata->AddAnnotations(annotations);
         }
 
         if (func.metadata->IsForeign() && IsFromSelfHeadFile(func.name, Context()->parserProgram, extProg)) {

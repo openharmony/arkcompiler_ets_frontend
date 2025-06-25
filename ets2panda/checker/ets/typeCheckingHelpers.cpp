@@ -806,8 +806,14 @@ Type *ETSChecker::GetTypeFromInterfaceReference(varbinder::Variable *var)
         return var->TsType();
     }
 
+    CheckerStatus status = CheckerStatus::IN_STATIC_CONTEXT;
+    status &= this->Context().Status();
+    this->Context().Status() &= ~CheckerStatus::IN_STATIC_CONTEXT;
+
     auto *interfaceType = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     var->SetTsType(interfaceType);
+
+    this->Context().Status() |= status;
     return interfaceType;
 }
 
@@ -819,8 +825,13 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
 
     auto classDef = var->Declaration()->Node()->AsClassDefinition();
 
+    CheckerStatus status = CheckerStatus::IN_STATIC_CONTEXT;
+    status &= this->Context().Status();
+    this->Context().Status() &= ~CheckerStatus::IN_STATIC_CONTEXT;
+
     auto *classType = BuildBasicClassProperties(classDef);
     var->SetTsType(classType);
+    this->Context().Status() |= status;
     return classType;
 }
 

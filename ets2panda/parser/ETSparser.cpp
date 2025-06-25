@@ -204,6 +204,22 @@ ir::ETSModule *ETSParser::ParseImportsAndReExportOnly(lexer::SourcePosition star
     return etsModule;
 }
 
+bool ETSParser::CheckDupAndReplace(Program *&oldProg, Program *newProg)
+{
+    if (!importPathManager_->ArkTSConfig()->UseUrl() && oldProg->FileName() == newProg->FileName() &&
+        oldProg->FileNameWithExtension() != newProg->FileNameWithExtension()) {
+        bool oldIsDeclare = oldProg->FileNameWithExtension().Length() > newProg->FileNameWithExtension().Length();
+        if (oldIsDeclare) {
+            Context()->dupPrograms.emplace(oldProg->AbsoluteName(), newProg);
+            oldProg = newProg;
+        } else {
+            Context()->dupPrograms.emplace(newProg->AbsoluteName(), oldProg);
+        }
+        return true;
+    }
+    return false;
+}
+
 void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
 {
     auto &extSources = globalProgram_->ExternalSources();
@@ -214,8 +230,13 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
             extSources.try_emplace(name, Allocator()->Adapter());
         }
         bool found = false;
-        for (auto *prog : extSources.at(name)) {
+        auto &extProgs = extSources.at(name);
+        for (auto prog : extProgs) {
             if (prog->SourceFilePath() == newProg->SourceFilePath()) {
+                found = true;
+                break;
+            }
+            if (CheckDupAndReplace(prog, newProg)) {
                 found = true;
                 break;
             }
@@ -267,7 +288,7 @@ void ETSParser::AddDirectImportsToDirectExternalSources(
         return;
     }
 
-    const util::StringView name = newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->ModuleName();
+    auto name = newProg->ModuleName();
     if (GetProgram()->DirectExternalSources().count(name) == 0) {
         GetProgram()->DirectExternalSources().try_emplace(name, Allocator()->Adapter());
     }
@@ -287,6 +308,25 @@ void ETSParser::ParseParseListElement(const util::ImportPathManager::ParseInfo &
         // don't insert the separate modules into the programs, when we collect implicit package imports
         programs->emplace_back(newProg);
     }
+}
+
+void ETSParser::AddGenExtenralSourceToParseList(public_lib::Context *ctx)
+{
+    auto allocator = ctx->allocator;
+    auto ident = allocator->New<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, allocator);
+    ArenaVector<ir::Statement *> stmts(allocator->Adapter());
+    auto etsModule = allocator->New<ir::ETSModule>(allocator, std::move(stmts), ident, ir::ModuleFlag::ETSSCRIPT,
+                                                   ctx->parserProgram);
+    ctx->parserProgram->SetAst(etsModule);
+    for (auto &sourceName : ctx->sourceFileNames) {
+        util::ImportPathManager::ImportMetadata importData {util::ImportFlags::NONE};
+        importData.resolvedSource = sourceName;
+        importData.lang = Language::Id::ETS;
+        importData.declPath = util::ImportPathManager::DUMMY_PATH;
+        importData.ohmUrl = util::ImportPathManager::DUMMY_PATH;
+        ctx->parser->AsETSParser()->GetImportPathManager()->AddToParseList(importData);
+    }
+    ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources(true));
 }
 
 static bool SearchImportedExternalSources(ETSParser *parser, const std::string_view &path)
@@ -427,7 +467,13 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
     ir::ETSModule *script = nullptr;
     if (decl != nullptr) {
         statements.emplace_back(decl);
+        if (Context()->config->options->GetCompilationMode() == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+            importPathManager_->AddImplicitPackageImportToParseList(program->SourceFile().GetAbsoluteParentFolder(),
+                                                                    Lexer()->GetToken().Start());
+            importPathManager_->MarkAsParsed(program->AbsoluteName());
+        }
         SavedParserContext contextAfterParseDecl(this, GetContext().Status() |= ParserStatus::IN_PACKAGE);
+
         script = ParseETSGlobalScript(startLoc, statements);
     } else {
         script = ParseETSGlobalScript(startLoc, statements);

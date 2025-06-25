@@ -3662,6 +3662,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+    auto checkerContext = SavedCheckerContext(checker, CheckerStatus::NO_OPTS, checker->Context().ContainingClass());
 
     checker->CheckAnnotations(st->Annotations());
 

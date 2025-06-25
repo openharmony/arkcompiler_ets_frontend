@@ -28,4 +28,34 @@ checker::SemanticAnalyzer *Context::GetAnalyzer() const
     return analyzers_[compiler::GetPhaseManager()->GetCurrentMajor()];
 }
 
+void Context::MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList, public_lib::ExternalSource &extSources)
+{
+    size_t genCount = 0;
+    std::unordered_set<std::string> genAbcListAbsolute;
+
+    for (auto &path : genAbcList) {
+        genAbcListAbsolute.insert(os::GetAbsolutePath(path));
+    }
+    for (auto &[_, extPrograms] : extSources) {
+        (void)_;
+        bool setFlag = false;
+        for (auto *prog : extPrograms) {
+            if (auto it = genAbcListAbsolute.find(prog->AbsoluteName().Mutf8()); it != genAbcListAbsolute.end()) {
+                ++genCount;
+                setFlag = true;
+            }
+        }
+        if (!setFlag) {
+            continue;
+        }
+        for (auto *prog : extPrograms) {
+            prog->SetGenAbcForExternalSources();
+        }
+    }
+
+    if (genCount != genAbcListAbsolute.size()) {
+        diagnosticEngine->LogFatalError(diagnostic::SIMULTANEOUSLY_MARK_FAILED.Message());
+    }
+};
+
 }  // namespace ark::es2panda::public_lib

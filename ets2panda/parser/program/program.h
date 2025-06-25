@@ -47,7 +47,7 @@ class Checker;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::parser {
-enum class ScriptKind { SCRIPT, MODULE, STDLIB };
+enum class ScriptKind { SCRIPT, MODULE, STDLIB, GENEXTERNAL };
 
 #ifndef NDEBUG
 constexpr uint32_t POISON_VALUE {0x12346789};
@@ -302,6 +302,13 @@ public:
                (FileName().Is("etsstdlib"));
     }
 
+    bool IsGenAbcForExternal() const;
+
+    void SetGenAbcForExternalSources(bool genAbc = true)
+    {
+        genAbcForExternalSource_ = genAbc;
+    }
+
     varbinder::ClassScope *GlobalClassScope();
     const varbinder::ClassScope *GlobalClassScope() const;
 
@@ -375,10 +382,12 @@ private:
     ExternalSource externalSources_;
     DirectExternalSource directExternalSources_;
     ScriptKind kind_ {};
+    bool isASTlowered_ {};
+    bool genAbcForExternalSource_ {false};
     ScriptExtension extension_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
     util::ModuleInfo moduleInfo_;
-    bool isASTlowered_ {};
+
     lexer::SourcePosition packageStartPosition_ {};
     compiler::CFG *cfg_;
     ArenaVector<varbinder::FunctionScope *> functionScopes_;

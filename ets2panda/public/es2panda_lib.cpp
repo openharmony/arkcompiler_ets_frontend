@@ -371,10 +371,7 @@ static void InitializeContext(Context *res)
     res->state = ES2PANDA_STATE_NEW;
 }
 
-__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string &&source,
-                                                               const char *fileName,
-                                                               es2panda_GlobalContext *globalContext, bool isExternal,
-                                                               bool genStdLib)
+static Context *InitContext(es2panda_Config *config)
 {
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
     auto *res = new Context;
@@ -382,20 +379,34 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
     if (cfg == nullptr) {
         res->errorMessage = "Config is nullptr.";
         res->state = ES2PANDA_STATE_ERROR;
-        return reinterpret_cast<es2panda_Context *>(res);
+        return res;
     }
 
     if (cfg->options->GetExtension() != ScriptExtension::ETS) {
         res->errorMessage = "Invalid extension. Plugin API supports only ETS.";
         res->state = ES2PANDA_STATE_ERROR;
         res->diagnosticEngine = cfg->diagnosticEngine;
-        return reinterpret_cast<es2panda_Context *>(res);
+        return res;
     }
 
     res->config = cfg;
+    res->diagnosticEngine = cfg->diagnosticEngine;
+    return res;
+}
+
+__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string &&source,
+                                                               const char *fileName,
+                                                               es2panda_GlobalContext *globalContext, bool isExternal,
+                                                               bool genStdLib)
+{
+    auto res = InitContext(config);
+    if (res->state == ES2PANDA_STATE_ERROR) {
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+    auto *cfg = reinterpret_cast<ConfigImpl *>(config);
+
     res->isExternal = isExternal;
     res->globalContext = reinterpret_cast<GlobalContext *>(globalContext);
-    res->diagnosticEngine = cfg->diagnosticEngine;
 
     res->input = std::move(source);
     res->sourceFileName = fileName;
@@ -474,11 +485,43 @@ extern "C" __attribute__((unused)) es2panda_Context *CreateCacheContextFromStrin
     return CreateContext(config, std::string(source), fileName, globalContext, isExternal, false);
 }
 
+extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromMultiFile(es2panda_Config *config,
+                                                                                char const *sourceFileNames)
+{
+    return CreateContext(config, "", sourceFileNames, nullptr, false, false);
+}
+
 extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromString(es2panda_Config *config,
                                                                              const char *source, char const *fileName)
 {
     // NOTE: gogabr. avoid copying source.
     return CreateContext(config, std::string(source), fileName, nullptr, false, false);
+}
+
+extern __attribute__((unused)) es2panda_Context *CreateContextGenerateAbcForExternalSourceFiles(
+    es2panda_Config *config, int fileNamesCount, char const *const *fileNames)
+{
+    auto res = InitContext(config);
+    if (res->state == ES2PANDA_STATE_ERROR) {
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+    auto *cfg = reinterpret_cast<ConfigImpl *>(config);
+
+    ES2PANDA_ASSERT(cfg->options->IsSimultaneous());
+    for (size_t i = 0; i < static_cast<size_t>(fileNamesCount); ++i) {
+        const char *cName = *(fileNames + i);
+        std::string fileName(cName);
+        res->sourceFileNames.emplace_back(std::move(fileName));
+    }
+
+    res->input = "";
+    res->sourceFileName = "";
+    res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
+    ir::DisableContextHistory();
+    res->allocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+
+    InitializeContext(res);
+    return reinterpret_cast<es2panda_Context *>(res);
 }
 
 __attribute__((unused)) static Context *Parse(Context *ctx)
@@ -490,20 +533,14 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     }
 
     ctx->phaseManager->Reset();
+
     if (ctx->isExternal && ctx->allocator != ctx->globalContext->stdLibAllocator) {
-        auto allocator = ctx->allocator;
-        auto ident = allocator->New<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, allocator);
-        ArenaVector<ir::Statement *> stmts(allocator->Adapter());
-        auto etsModule = allocator->New<ir::ETSModule>(allocator, std::move(stmts), ident, ir::ModuleFlag::ETSSCRIPT,
-                                                       ctx->parserProgram);
-        ctx->parserProgram->SetAst(etsModule);
-        util::ImportPathManager::ImportMetadata importData {util::ImportFlags::NONE};
-        importData.resolvedSource = ctx->sourceFileName;
-        importData.lang = Language::Id::ETS;
-        importData.declPath = util::ImportPathManager::DUMMY_PATH;
-        importData.ohmUrl = util::ImportPathManager::DUMMY_PATH;
-        ctx->parser->AsETSParser()->GetImportPathManager()->AddToParseList(importData);
-        ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources(true));
+        ctx->sourceFileNames.emplace_back(ctx->sourceFileName);
+        parser::ETSParser::AddGenExtenralSourceToParseList(ctx);
+    } else if (ctx->config->options->IsSimultaneous()) {
+        parser::ETSParser::AddGenExtenralSourceToParseList(ctx);
+        std::unordered_set<std::string> sourceFileNamesSet(ctx->sourceFileNames.begin(), ctx->sourceFileNames.end());
+        ctx->MarkGenAbcForExternal(sourceFileNamesSet, ctx->parserProgram->ExternalSources());
     } else {
         ctx->parser->ParseScript(*ctx->sourceFile,
                                  ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
@@ -511,6 +548,22 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     ctx->state = ES2PANDA_STATE_PARSED;
     ctx->phaseManager->SetCurrentPhaseIdToAfterParse();
     return ctx;
+}
+
+__attribute__((unused)) static bool SetProgramGenAbc(Context *ctx, const char *path)
+{
+    util::StringView pathView(path);
+    public_lib::Context *context = reinterpret_cast<public_lib::Context *>(ctx);
+    for (auto &[_, extPrograms] : context->externalSources) {
+        (void)_;
+        for (auto *prog : extPrograms) {
+            if (prog->AbsoluteName() == pathView) {
+                prog->SetGenAbcForExternalSources();
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 __attribute__((unused)) static Context *Bind(Context *ctx)
@@ -1250,6 +1303,7 @@ es2panda_Impl g_impl = {
     CreateCacheContextFromFile,
     CreateContextFromString,
     CreateCacheContextFromString,
+    CreateContextGenerateAbcForExternalSourceFiles,
     ProceedToState,
     DestroyContext,
     CreateGlobalContext,

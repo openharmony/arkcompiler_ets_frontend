@@ -160,6 +160,10 @@ public:
 
     void MarkAsParsed(StringView path);
     util::StringView FormRelativePath(const util::Path &path);
+    std::shared_ptr<const ArkTsConfig> ArkTSConfig() const
+    {
+        return arktsConfig_;
+    }
 
 private:
     util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path);

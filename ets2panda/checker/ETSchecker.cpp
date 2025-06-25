@@ -374,10 +374,15 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
         for (auto *extProg : extPrograms) {
             if (!extProg->IsASTLowered()) {
                 extProg->PushChecker(this);
+                auto *savedProgram2 = VarBinder()->AsETSBinder()->Program();
                 varbinder::RecordTableContext recordTableCtx(VarBinder()->AsETSBinder(), extProg);
+                VarBinder()->AsETSBinder()->SetProgram(extProg);
+                VarBinder()->AsETSBinder()->ResetTopScope(extProg->GlobalScope());
                 checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
                 AddStatus(checker::CheckerStatus::IN_EXTERNAL);
-                CheckProgram(extProg, VarBinder()->IsGenStdLib());
+                CheckProgram(extProg, VarBinder()->IsGenStdLib() || extProg->IsGenAbcForExternal());
+                VarBinder()->AsETSBinder()->SetProgram(savedProgram2);
+                VarBinder()->AsETSBinder()->ResetTopScope(savedProgram2->GlobalScope());
             }
         }
     }
