@@ -4535,6 +4535,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       } else if (this.options.arkts2) {
         this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
       }
+      this.handleNotsLikeSmartTypeOnCallExpression(tsCallExpr, callSignature);
     }
     this.handleInteropForCallExpression(tsCallExpr);
     this.handleLibraryTypeCall(tsCallExpr);
@@ -5322,6 +5323,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNoTuplesArrays(node, targetType, exprType);
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
     this.handleArrayTypeImmutable(tsAsExpr, exprType, targetType);
+    this.handleNotsLikeSmartTypeOnAsExpression(tsAsExpr);
   }
 
   private isExemptedAsExpression(node: ts.AsExpression): boolean {
@@ -9546,6 +9548,54 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const autofix = this.autofixer?.fixAwaitJsPromise(ident);
     this.incrementCounters(awaitExpr, FaultID.NoAwaitJsPromise, autofix);
+  }
+
+  private handleNotsLikeSmartTypeOnCallExpression(tsCallExpr: ts.CallExpression, callSignature: ts.Signature): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const isContinue =
+      ts.isCallExpression(tsCallExpr) &&
+      ts.isIdentifier(tsCallExpr.expression) &&
+      !ts.isReturnStatement(tsCallExpr.parent);
+    if (!isContinue || !tsCallExpr.arguments) {
+      return;
+    }
+    const declaration = callSignature.getDeclaration();
+    if (!declaration || !ts.isFunctionDeclaration(declaration)) {
+      return;
+    }
+    const parameterTypes = declaration.parameters?.map((param) => {
+      const paramType = this.tsTypeChecker.getTypeAtLocation(param);
+      return this.tsTypeChecker.typeToString(paramType);
+    });
+    tsCallExpr.arguments.forEach((arg, index) => {
+      if (index >= parameterTypes.length) {
+        return;
+      }
+      const expectedType = parameterTypes[index];
+      const actualSym = this.tsTypeChecker.getSymbolAtLocation(arg);
+      const decl = TsUtils.getDeclaration(actualSym);
+      if (decl && ts.isParameter(decl) && decl.type) {
+        const actualType = this.tsTypeChecker.getTypeFromTypeNode(decl.type);
+        const actualTypeName = this.tsTypeChecker.typeToString(actualType);
+        if (actualTypeName !== expectedType) {
+          this.incrementCounters(arg, FaultID.NoTsLikeSmartType);
+        }
+      }
+    });
+  }
+
+  private handleNotsLikeSmartTypeOnAsExpression(tsAsExpr: ts.AsExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const asType = this.tsTypeChecker.getTypeAtLocation(tsAsExpr.type);
+    const originType = this.tsTypeChecker.getTypeAtLocation(tsAsExpr.expression);
+    const originTypeStr = this.tsTypeChecker.typeToString(originType);
+    if (originTypeStr === 'never' && this.tsTypeChecker.typeToString(asType) !== originTypeStr) {
+      this.incrementCounters(tsAsExpr, FaultID.NoTsLikeSmartType);
+    }
   }
 
   private handleNotsLikeSmartType(classDecl: ts.ClassDeclaration): void {
