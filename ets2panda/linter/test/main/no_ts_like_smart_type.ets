@@ -86,3 +86,36 @@ if (typeof input === 'boolean') {
 } else {
   let result = input as string | number | null;  // Error
 }
+
+async function taskInfo():Promise<void> {//nopass
+  for (let i:int = 0; i < 1000; i++) {
+    let taskpoolInfo: taskpool.TaskPoolInfo = taskpool.getTaskPoolInfo();
+    hilog.info(0x0000, 'testTag-----',`getTaskPoolInfo: , ${JSON.stringify(taskpoolInfo)}`)
+    let tid: number = 0;
+    let taskIds: number[] = [];
+    let priority: int = 0;
+    let taskId: number = 0;
+    let state: number = 0;
+    let duration: number = 0;
+    let name: string = "";
+    let threadIS: Array<taskpool.ThreadInfo> = Array.from<taskpool.ThreadInfo>(taskpoolInfo.threadInfos)
+    for (let threadInfo of threadIS) {
+      tid = threadInfo.tid;
+      if (threadInfo.taskIds != undefined && threadInfo.priority != undefined) {
+       priority = threadInfo.priority; // Error
+      }
+      hilog.info(0x0000, 'testTag-----',"getTaskPoolInfo: --tid is:" + tid + ", taskIds is:" + taskIds + ", priority is:" + priority);
+    }
+    let taskIS: Array<taskpool.TaskInfo> = Array.from<taskpool.TaskInfo>(taskpoolInfo.taskInfos)
+    for (let taskInfo of taskIS) {
+      taskId = taskInfo.taskId;
+      state = taskInfo.state;
+      if (taskInfo.duration != undefined) {
+        duration = taskInfo.duration as number;  // Error
+        name = taskInfo.name;
+      }
+      hilog.info(0x0000, 'testTag-----',"getTaskPoolInfo: --taskId is:" + taskId + ", state is:" + state + ", duration is:" + duration +
+        ", name is:" + name);
+    }
+  }
+}
