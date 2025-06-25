@@ -33,4 +33,5 @@ export interface CommandLineOptions {
   outputFilePath?: string;
   verbose?: boolean;
   scanWholeProjectInHomecheck?: boolean;
+  autofixCheck?: boolean;
 }

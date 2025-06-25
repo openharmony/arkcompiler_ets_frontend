@@ -16,6 +16,7 @@
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import * as readlineSync from 'readline-sync';
 import * as readline from 'node:readline';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import { lint } from '../lib/LinterRunner';
@@ -36,6 +37,13 @@ export function run(): void {
   }
 
   const cmdOptions = parseCommandLine(commandLineArgs);
+  if (cmdOptions.linterOptions.migratorMode && cmdOptions.linterOptions.autofixCheck) {
+    const shouldRun = readlineSync.question('Do you want to run the linter and apply migration? (y/n): ').toLowerCase();
+    if (shouldRun !== 'y') {
+      console.log('Linting canceled by user.');
+      process.exit(0);
+    }
+  }
 
   if (cmdOptions.devecoPluginModeDeprecated) {
     runIdeModeDeprecated(cmdOptions);

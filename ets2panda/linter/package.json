@@ -50,11 +50,12 @@
   },
   "dependencies": {
     "commander": "^9.4.0",
-    "homecheck": "file:./homecheck",
-    "log4js": "^6.4.0",
-    "yup": "^1.4.0",
     "fs-extra": "11.2.0",
-    "json5": "2.2.3"
+    "homecheck": "file:./homecheck",
+    "json5": "2.2.3",
+    "log4js": "^6.4.0",
+    "readline-sync": "^1.4.10",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/compat": "latest",
@@ -67,15 +68,15 @@
     "eslint-plugin-n": "^17.9.0",
     "eslint-plugin-no-null": "^1.0.2",
     "glob": "^11.0.0",
+    "nyc": "^15.1.0",
     "path-scurry": "^2.0.0",
     "prettier": "latest",
     "rimraf": "^5.0.10",
     "shelljs": "^0.8.5",
+    "source-map": "^0.7.4",
     "typescript-eslint": "latest",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "nyc": "^15.1.0",
-    "source-map": "^0.7.4"
+    "webpack-cli": "^5.0.1"
   },
   "bundleDependencies": [
     "log4js",

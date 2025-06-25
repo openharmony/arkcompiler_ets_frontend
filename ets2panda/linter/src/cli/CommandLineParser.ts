@@ -134,6 +134,9 @@ function formIdeInteractive(cmdOptions: CommandLineOptions, commanderOpts: Optio
   if (commanderOpts.onlyArkts2SyntaxRules) {
     cmdOptions.linterOptions.onlySyntax = true;
   }
+  if (commanderOpts.autofixCheck) {
+    cmdOptions.linterOptions.autofixCheck = true;
+  }
 }
 
 function formArkts2Options(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
@@ -235,6 +238,7 @@ function createCommand(): Command {
     option('-o, --output-file-path <path>', 'path to store all log and result files').
     option('--verbose', 'set log level to see debug messages').
     option('--enable-interop', 'scan whole project to report 1.1 import 1.2').
+    option('--autofix-check', 'confirm whether the user needs automatic repair').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).
