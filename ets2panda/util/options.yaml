@@ -379,3 +379,9 @@ options:
   type: bool
   default: false
   description: compile all the files to abc in once.
+
+#26986
+- name: ets-strings-concat
+  type: bool
+  default: false
+  description: "(experimental) Use StringBuilder.concat instead of StringBuilder.append"

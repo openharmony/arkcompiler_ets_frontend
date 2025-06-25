@@ -613,7 +613,7 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
     compiler::VReg lhs = etsg->AllocReg();
 
     if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS && expr->OperationType()->IsETSStringType()) {
-        etsg->BuildString(expr);
+        etsg->BuildString(expr, lhs);
         return;
     }
 

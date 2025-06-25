@@ -287,7 +287,9 @@ public:
     // Call, Construct
     void NewArray(const ir::AstNode *node, VReg arr, VReg dim, const checker::Type *arrType);
     void NewObject(const ir::AstNode *node, util::StringView name, VReg athis);
-    void BuildString(const ir::Expression *node);
+    void BuildString(const ir::BinaryExpression *node, VReg lhs);
+    void ConcatStrings(const ir::BinaryExpression *node, VReg lhs);
+    void ToString(const ir::Expression *node, VReg arg);
     void CallBigIntUnaryOperator(const ir::Expression *node, VReg arg, util::StringView signature);
     void CallBigIntBinaryOperator(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
     void CallBigIntBinaryComparison(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
@@ -477,9 +479,12 @@ private:
     const VReg dummyReg_ = VReg::RegStart();
 
     void LoadConstantObject(const ir::Expression *node, const checker::Type *type);
+    void CreateStringBuilder(const ir::Expression *node);
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *binExpr, VReg builder);
     void StringBuilder(const ir::Expression *left, const ir::Expression *right, VReg builder);
+    void AppendTemplateString(const ir::TemplateLiteral *node);
+    void ConcatTemplateString(const ir::TemplateLiteral *node);
     util::StringView FormClassPropReference(varbinder::Variable const *var);
     void UnaryMinus(const ir::AstNode *node);
     void UnaryTilde(const ir::AstNode *node);

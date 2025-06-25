@@ -15,11 +15,13 @@
 
 #include "ETSGen-inl.h"
 
+#include "compiler/core/codeGen.h"
 #include "compiler/core/regScope.h"
 #include "generated/isa.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
+#include "ir/expression.h"
 #include "ir/statement.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
@@ -34,6 +36,8 @@
 #include "compiler/base/lreference.h"
 #include "compiler/base/catchTable.h"
 #include "compiler/core/dynamicContext.h"
+#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 #include "checker/types/type.h"
@@ -2311,6 +2315,77 @@ void ETSGen::UpdateBigInt(const ir::Expression *node, VReg arg, lexer::TokenType
     }
 }
 
+void ETSGen::ConcatStrings(const ir::BinaryExpression *node, VReg lhs)
+{
+    ES2PANDA_ASSERT(node->OperationType()->IsETSStringType());
+    node->CompileOperands(this, lhs);
+    RegScope rs(this);
+    auto rhs = AllocReg();
+    StoreAccumulator(node->Right(), rhs);
+
+    ToString(node->Left(), lhs);
+    StoreAccumulator(node->Left(), lhs);
+
+    ToString(node->Right(), rhs);
+    StoreAccumulator(node->Right(), rhs);
+
+    ES2PANDA_ASSERT(GetVRegType(lhs)->IsETSStringType());
+    ES2PANDA_ASSERT(GetVRegType(rhs)->IsETSStringType());
+    CallExact(node, Signatures::BUILTIN_STRING_BUILDER_CONCAT_STRING, lhs, rhs);
+    SetAccumulatorType(node->TsType());
+}
+
+void ETSGen::ToString(const ir::Expression *node, VReg arg)
+{
+    const auto regType = GetVRegType(arg);
+    if (regType->IsETSReferenceType()) {
+        if (regType->PossiblyETSUndefined()) {
+            const auto ifUndefined = AllocLabel();
+            const auto end = AllocLabel();
+            LoadAccumulator(node, arg);
+            BranchIfUndefined(node, ifUndefined);
+            CallVirtual(node, Signatures::BUILTIN_OBJECT_TO_STRING, arg);
+            SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
+            JumpTo(node, end);
+
+            SetLabel(node, ifUndefined);
+            LoadAccumulatorString(node, "undefined");
+
+            SetLabel(node, end);
+            return;
+        }
+        if (regType->IsETSStringType()) {
+            LoadAccumulator(node, arg);
+        } else {
+            CallVirtual(node, Signatures::BUILTIN_OBJECT_TO_STRING, arg);
+            SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
+        }
+        return;
+    }
+
+    using TSign = std::pair<checker::TypeFlag, std::string_view>;
+    constexpr std::array TO_STRING_METHODS {
+        TSign {checker::TypeFlag::ETS_BOOLEAN, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_BOOLEAN},
+        TSign {checker::TypeFlag::CHAR, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_CHAR},
+        TSign {checker::TypeFlag::SHORT, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_INT},
+        TSign {checker::TypeFlag::BYTE, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_INT},
+        TSign {checker::TypeFlag::INT, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_INT},
+        TSign {checker::TypeFlag::LONG, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_LONG},
+        TSign {checker::TypeFlag::FLOAT, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_FLOAT},
+        TSign {checker::TypeFlag::DOUBLE, Signatures::BUILTIN_STRING_BUILDER_TO_STRING_DOUBLE},
+    };
+
+    const auto typeFlag = checker::ETSChecker::ETSType(regType);
+    const auto iter = std::find_if(TO_STRING_METHODS.begin(), TO_STRING_METHODS.end(),
+                                   [typeFlag](TSign p) { return p.first == typeFlag; });
+    if (iter != TO_STRING_METHODS.end()) {
+        CallExact(node, iter->second, arg);
+        SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
+        return;
+    }
+    ES2PANDA_UNREACHABLE();
+}
+
 void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
 {
     RegScope rs(this);
@@ -2386,7 +2461,17 @@ void ETSGen::StringBuilder(const ir::Expression *const left, const ir::Expressio
     StringBuilderAppend(right, builder);
 }
 
-void ETSGen::BuildString(const ir::Expression *node)
+void ETSGen::BuildString(const ir::BinaryExpression *node, VReg lhs)
+{
+    // #26986 use concat instead of append
+    if (Context()->config->options->IsEtsStringsConcat()) {
+        ConcatStrings(node, lhs);
+        return;
+    }
+    CreateStringBuilder(node);
+}
+
+void ETSGen::CreateStringBuilder(const ir::Expression *node)
 {
     RegScope rs(this);
 
@@ -2426,6 +2511,16 @@ void ETSGen::CallBigIntBinaryComparison(const ir::Expression *node, VReg lhs, VR
 
 void ETSGen::BuildTemplateString(const ir::TemplateLiteral *node)
 {
+    // #26986 use concat instead of append
+    if (Context()->config->options->IsEtsStringsConcat()) {
+        ConcatTemplateString(node);
+    } else {
+        AppendTemplateString(node);
+    }
+}
+
+void ETSGen::AppendTemplateString(const ir::TemplateLiteral *node)
+{
     RegScope rs(this);
 
     Ra().Emit<InitobjShort, 0>(node, Signatures::BUILTIN_STRING_BUILDER_CTOR, dummyReg_, dummyReg_);
@@ -2433,21 +2528,17 @@ void ETSGen::BuildTemplateString(const ir::TemplateLiteral *node)
 
     auto builder = AllocReg();
     StoreAccumulator(node, builder);
-
     // Just to reduce extra nested level(s):
     auto const appendExpressions = [this, &builder](ArenaVector<ir::Expression *> const &expressions,
                                                     ArenaVector<ir::TemplateElement *> const &quasis) -> void {
-        auto const num = expressions.size();
-        std::size_t i = 0U;
-
-        while (i < num) {
+        ES2PANDA_ASSERT(quasis.size() == expressions.size() + 1);
+        for (size_t i = 0; i < expressions.size();) {
             StringBuilderAppend(expressions[i], builder);
             if (!quasis[++i]->Raw().Empty()) {
                 StringBuilderAppend(quasis[i], builder);
             }
         }
     };
-
     if (auto const &quasis = node->Quasis(); !quasis.empty()) {
         if (!quasis[0]->Raw().Empty()) {
             StringBuilderAppend(quasis[0], builder);
@@ -2457,9 +2548,56 @@ void ETSGen::BuildTemplateString(const ir::TemplateLiteral *node)
             appendExpressions(expressions, quasis);
         }
     }
-
     CallExact(node, Signatures::BUILTIN_STRING_BUILDER_TO_STRING, builder);
+    SetAccumulatorType(node->TsType());
+}
 
+void ETSGen::ConcatTemplateString(const ir::TemplateLiteral *node)
+{
+    const auto &quasis = node->Quasis();
+    const auto &expressions = node->Expressions();
+    if (quasis.empty()) {
+        LoadAccumulatorString(node, "");
+        return;
+    }
+    ES2PANDA_ASSERT(quasis.size() == expressions.size() + 1);
+    const RegScope rs {this};
+    const auto result = AllocReg();
+    const auto reg = AllocReg();
+    // collect expressions
+    std::vector<const ir::Expression *> buffer {};
+    buffer.reserve(quasis.size() + expressions.size());
+    if (!quasis[0]->Raw().Empty()) {
+        buffer.push_back(quasis[0]);
+    }
+    for (size_t i = 0; i < expressions.size(); ++i) {
+        buffer.push_back(expressions[i]);
+        if (!quasis[i + 1]->Raw().Empty()) {
+            buffer.push_back(quasis[i + 1]);
+        }
+    }
+    // concat buffered expressions
+    if (buffer.empty()) {
+        LoadAccumulatorString(node, "");
+        return;
+    }
+    const auto node2str = [this, reg](const ir::Expression *expr) {
+        expr->Compile(this);
+        StoreAccumulator(expr, reg);
+        ToString(expr, reg);
+        ES2PANDA_ASSERT(GetAccumulatorType()->IsETSStringType());
+    };
+    auto iter = buffer.begin();
+    node2str(*iter);
+    StoreAccumulator(node, result);
+    for (++iter; iter != buffer.end(); ++iter) {
+        node2str(*iter);
+        StoreAccumulator(*iter, reg);
+        CallExact(node, Signatures::BUILTIN_STRING_BUILDER_CONCAT_STRING, result, reg);
+        SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
+        StoreAccumulator(node, result);
+    }
+    LoadAccumulator(node, result);
     SetAccumulatorType(node->TsType());
 }
 
