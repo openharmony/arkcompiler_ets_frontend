@@ -1307,6 +1307,7 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
                 Lexer()->Rewind(savedPos);
             }
             memberModifiers |= ir::ModifierFlags::EXPORT;
+            memberModifiers |= ir::ModifierFlags::EXPORT_TYPE;
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
             LogError(diagnostic::ERROR_ARKTS_NO_EXPORT_ASSIGNMENT);
         } else {
