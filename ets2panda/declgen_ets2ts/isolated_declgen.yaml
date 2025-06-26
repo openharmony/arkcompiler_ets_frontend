@@ -11,25 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 isolated_declgen:
-- name: VARABLE_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
-  id: 1
-  message: Variable must have an explicit type annotation when using isolated declaration.
-
-- name: PARAMETER_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
-  id: 2
-  message: Parameter must have an explicit type annotation when using isolated declaration.
-
-- name: PROPERTY_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
-  id: 3
-  message: Property must have an explicit type annotation when using isolated declaration.
-
-- name: ONLY_CONST_ARRAYS_CAN_BE_INFERRED_WITH_ISOLATED_DECL
-  id: 4
-  message: Only const arrays can be inferred with isolated declaration.
 
 - name: DECLARATION_EMIT_FOR_THIS_PARAMETER_REQUIRES_IMPLICITLY_ADD_UNDEFINED_TO_ITS_TYPE_NOT_ALLOWED_IN_ISOLATED_DECL
   id: 5
-  message: Declaration emit for this parameter requires implicitly adding undefined to its type, which is not allowed in isolated declaration.
+  message: Declaration emit for this parameter requires implicitly adding undefined to its type, which is not allowed in
+    isolated declaration.
 
 - name: DEFAULT_EXPORTS_CANNOT_BE_INFERRED_WITH_ISOLATED_DECL
   id: 6
@@ -42,3 +28,22 @@ isolated_declgen:
 - name: METHOD_MUST_HAVE_AN_EXPLICIT_RETURN_TYPE_ANNOTATION_WITH_ISOLATED_DECL
   id: 8
   message: Method must have an explicit return type annotation when using isolated declaration.
+
+- name: ONLY_CONST_ARRAYS_CAN_BE_INFERRED_WITH_ISOLATED_DECL
+  id: 4
+  message: Only const arrays can be inferred with isolated declaration.
+
+- name: PARAMETER_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
+  id: 2
+  message: Parameter must have an explicit type annotation when using isolated declaration.
+
+- name: PROPERTY_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
+  id: 3
+  message: Property must have an explicit type annotation when using isolated declaration.
+
+- name: VARABLE_MUST_HAVE_EXPLICIT_TYPE_ANNOTATION_WITH_ISOLATED_DECL
+  id: 1
+  message: Variable must have an explicit type annotation when using isolated declaration.
+
+graveyard: []
+# See ets_frontend/ets2panda/util/diagnostic/README.md before contributing.
