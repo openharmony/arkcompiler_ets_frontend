@@ -252,3 +252,38 @@ class Derived6 extends Base6 {
     console.log("Derived:")
   }
 }
+
+abstract class Parent{
+  abstract foo();
+
+}
+abstract class Parent1{
+  abstract foo(): Promise<void>;
+
+}
+
+abstract class Child extends Parent{
+  async foo(){  //error
+
+  }
+}
+class Child1 extends Parent{
+  async foo(){  //error
+
+  }
+}
+abstract class Child2 extends Parent{
+  foo(): void {
+
+  }
+}
+abstract class Child3 extends Parent{
+  foo(): boolean {   //error
+    return false;
+  }
+}
+abstract class Child4 extends Parent1{
+  async foo() {
+
+  }
+}
