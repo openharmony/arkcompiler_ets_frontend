@@ -68,13 +68,13 @@ TEST_F(LspUISuggestionTests, UIPluginsErrorTest1)
     const size_t line2 = 0;
     const int code = 4000;
     auto suggestionkind = initializer.CreateDiagnosticKind(ctx, dmessage1, ES2PANDA_PLUGIN_SUGGESTION);
-    auto suggestionInfo = initializer.CreateSuggestionInfo(ctx, suggestionkind, params, argc1, substitutionCode);
     auto diagnostikind = initializer.CreateDiagnosticKind(ctx, dmessage2, ES2PANDA_PLUGIN_ERROR);
-    auto diagnosticInfo = initializer.CreateDiagnosticInfo(ctx, diagnostikind, nullptr, argc0);
     es2panda_SourcePosition *left = initializer.CreateSourcePosition(ctx, index1, line1);
     es2panda_SourcePosition *right = initializer.CreateSourcePosition(ctx, index2, line2);
     es2panda_SourceRange *range = initializer.CreateSourceRange(ctx, left, right);
-    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo, suggestionInfo, range);
+    auto suggestionInfo = initializer.CreateSuggestionInfo(ctx, suggestionkind, params, argc1, substitutionCode, range);
+    auto diagnosticInfo = initializer.CreateDiagnosticInfo(ctx, diagnostikind, nullptr, argc0, left);
+    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo, suggestionInfo);
     auto suggest = lspApi->getSyntacticDiagnostics(ctx);
     AssertDiagnosticContainsCodeAndMessage(suggest, code, dmessage2);
     auto result = ark::es2panda::lsp::UIPluginSuggest::GetUIPluginCodeFixes(ctx, offset, false);
@@ -131,8 +131,7 @@ TEST_F(LspUISuggestionTests, UIPluginsErrorTest3)
     Initializer initializer = Initializer();
     std::vector<std::string> files = {"ui_error3.ets"};
     std::vector<std::string> texts = {R"delimiter(function main() {})delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto ctx = initializer.CreateContext(CreateTempFile(files, texts)[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     const char *dmessage1 = "origin a";
     const char *substitutionCode = "replace b";
@@ -144,23 +143,25 @@ TEST_F(LspUISuggestionTests, UIPluginsErrorTest3)
     const size_t line2 = 0;
     const int code = 4000;
     auto suggestionkind = initializer.CreateDiagnosticKind(ctx, dmessage1, ES2PANDA_PLUGIN_SUGGESTION);
-    auto suggestionInfo = initializer.CreateSuggestionInfo(ctx, suggestionkind, nullptr, argc0, substitutionCode);
     auto diagnostikind = initializer.CreateDiagnosticKind(ctx, dmessage2, ES2PANDA_PLUGIN_ERROR);
-    auto diagnosticInfo = initializer.CreateDiagnosticInfo(ctx, diagnostikind, nullptr, argc0);
     es2panda_SourcePosition *left = initializer.CreateSourcePosition(ctx, index1, line1);
     es2panda_SourcePosition *right = initializer.CreateSourcePosition(ctx, index2, line2);
     es2panda_SourceRange *range = initializer.CreateSourceRange(ctx, left, right);
-    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo, suggestionInfo, range);
+    auto suggestionInfo =
+        initializer.CreateSuggestionInfo(ctx, suggestionkind, nullptr, argc0, substitutionCode, range);
+    auto diagnosticInfo = initializer.CreateDiagnosticInfo(ctx, diagnostikind, nullptr, argc0, left);
+    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo, suggestionInfo);
 
     const char *substitutionCode2 = "replace c";
     auto suggestionkind2 = initializer.CreateDiagnosticKind(ctx, dmessage1, ES2PANDA_PLUGIN_SUGGESTION);
-    auto suggestionInfo2 = initializer.CreateSuggestionInfo(ctx, suggestionkind2, nullptr, argc0, substitutionCode2);
     auto diagnostikind2 = initializer.CreateDiagnosticKind(ctx, dmessage2, ES2PANDA_PLUGIN_ERROR);
-    auto diagnosticInfo2 = initializer.CreateDiagnosticInfo(ctx, diagnostikind2, nullptr, argc0);
     es2panda_SourcePosition *left2 = initializer.CreateSourcePosition(ctx, index1, line1);
     es2panda_SourcePosition *right2 = initializer.CreateSourcePosition(ctx, index2, line2);
     es2panda_SourceRange *range2 = initializer.CreateSourceRange(ctx, left2, right2);
-    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo2, suggestionInfo2, range2);
+    auto suggestionInfo2 =
+        initializer.CreateSuggestionInfo(ctx, suggestionkind2, nullptr, argc0, substitutionCode2, range2);
+    auto diagnosticInfo2 = initializer.CreateDiagnosticInfo(ctx, diagnostikind2, nullptr, argc0, left2);
+    initializer.LogDiagnosticWithSuggestion(ctx, diagnosticInfo2, suggestionInfo2);
 
     auto suggest = lspApi->getSyntacticDiagnostics(ctx);
     AssertDiagnosticContainsCodeAndMessage(suggest, code, dmessage2);

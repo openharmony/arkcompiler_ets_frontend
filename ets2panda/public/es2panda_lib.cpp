@@ -903,18 +903,20 @@ extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context 
 }
 
 extern "C" es2panda_DiagnosticInfo *CreateDiagnosticInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
-                                                         const char **args, size_t argc)
+                                                         const char **args, size_t argc, es2panda_SourcePosition *pos)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
     auto diagnosticInfo = allocator->New<es2panda_DiagnosticInfo>();
     diagnosticInfo->kind = kind;
     diagnosticInfo->args = args;
     diagnosticInfo->argc = argc;
+    diagnosticInfo->pos = pos;
     return diagnosticInfo;
 }
 
 extern "C" es2panda_SuggestionInfo *CreateSuggestionInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
-                                                         const char **args, size_t argc, const char *substitutionCode)
+                                                         const char **args, size_t argc, const char *substitutionCode,
+                                                         es2panda_SourceRange *range)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
     auto suggestionInfo = allocator->New<es2panda_SuggestionInfo>();
@@ -922,11 +924,12 @@ extern "C" es2panda_SuggestionInfo *CreateSuggestionInfo(es2panda_Context *conte
     suggestionInfo->args = args;
     suggestionInfo->argc = argc;
     suggestionInfo->substitutionCode = substitutionCode;
+    suggestionInfo->range = range;
     return suggestionInfo;
 }
 
 extern "C" void LogDiagnosticWithSuggestion(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
-                                            const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range)
+                                            const es2panda_SuggestionInfo *suggestionInfo)
 {
     auto ctx = reinterpret_cast<Context *>(context);
     auto diagnostickind = reinterpret_cast<const diagnostic::DiagnosticKind *>(diagnosticInfo->kind);
@@ -942,9 +945,8 @@ extern "C" void LogDiagnosticWithSuggestion(es2panda_Context *context, const es2
         suggestionParams.push_back(suggestionInfo->args[i]);
     }
 
-    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
-    auto E2pRange = reinterpret_cast<lexer::SourceRange *>(range);
-    auto posE2p = allocator->New<lexer::SourcePosition>(E2pRange->start);
+    auto E2pRange = reinterpret_cast<lexer::SourceRange *>(suggestionInfo->range);
+    auto posE2p = reinterpret_cast<lexer::SourcePosition *>(diagnosticInfo->pos);
     auto suggestion = ctx->diagnosticEngine->CreateSuggestion(suggestionkind, suggestionParams,
                                                               suggestionInfo->substitutionCode, E2pRange);
     ctx->diagnosticEngine->LogDiagnostic(*diagnostickind, diagnosticParams, *posE2p, suggestion);

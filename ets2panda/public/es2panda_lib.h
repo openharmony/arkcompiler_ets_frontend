@@ -146,12 +146,14 @@ typedef struct es2panda_SuggestionInfo {
     const char **args;
     size_t argc;
     const char *substitutionCode;
+    es2panda_SourceRange *range;
 } es2panda_SuggestionInfo;
 
 typedef struct es2panda_DiagnosticInfo {
     const es2panda_DiagnosticKind *kind;
     const char **args;
     size_t argc;
+    es2panda_SourcePosition *pos;
 } es2panda_DiagnosticInfo;
 
 enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR, ES2PANDA_PLUGIN_SUGGESTION };
@@ -236,11 +238,12 @@ struct CAPI_EXPORT es2panda_Impl {
     const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage,
                                                            es2panda_PluginDiagnosticType etype);
     es2panda_DiagnosticInfo *(*CreateDiagnosticInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
-                                                     const char **args, size_t argc);
+                                                     const char **args, size_t argc, es2panda_SourcePosition *position);
     es2panda_SuggestionInfo *(*CreateSuggestionInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
-                                                     const char **args, size_t argc, const char *substitutionCode);
+                                                     const char **args, size_t argc, const char *substitutionCode,
+                                                     es2panda_SourceRange *range);
     void (*LogDiagnosticWithSuggestion)(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
-                                        const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range);
+                                        const es2panda_SuggestionInfo *suggestionInfo);
     void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
                           size_t argc, es2panda_SourcePosition *pos);
     const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);

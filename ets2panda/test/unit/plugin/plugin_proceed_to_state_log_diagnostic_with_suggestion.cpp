@@ -53,15 +53,15 @@ int main(int argc, char **argv)
     const char *params[] = {
         "a",
     };
-    auto suggestionInfo = g_impl->CreateSuggestionInfo(g_ctx, suggestionkind, params, 1, "replace b");
     auto diagnostikind = g_impl->CreateDiagnosticKind(g_ctx, "error", ES2PANDA_PLUGIN_ERROR);
-    auto diagnosticInfo = g_impl->CreateDiagnosticInfo(g_ctx, diagnostikind, nullptr, 0);
 
     es2panda_SourcePosition *left = g_impl->CreateSourcePosition(g_ctx, 0, 0);
     es2panda_SourcePosition *right = g_impl->CreateSourcePosition(g_ctx, 7, 0);
     es2panda_SourceRange *range = g_impl->CreateSourceRange(g_ctx, left, right);
 
-    g_impl->LogDiagnosticWithSuggestion(g_ctx, diagnosticInfo, suggestionInfo, range);
+    auto suggestionInfo = g_impl->CreateSuggestionInfo(g_ctx, suggestionkind, params, 1, "replace b", range);
+    auto diagnosticInfo = g_impl->CreateDiagnosticInfo(g_ctx, diagnostikind, nullptr, 0, left);
+    g_impl->LogDiagnosticWithSuggestion(g_ctx, diagnosticInfo, suggestionInfo);
 
     auto errors = g_impl->GetPluginErrors(g_ctx);
     auto diagnosticStorage = reinterpret_cast<const ark::es2panda::util::DiagnosticStorage *>(errors);
