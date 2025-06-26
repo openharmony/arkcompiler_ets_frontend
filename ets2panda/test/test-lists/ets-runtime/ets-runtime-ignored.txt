@@ -117,3 +117,6 @@ Recursive_Parameter_2.ets
 Recursive_Parameter_3.ets
 
 # No-primitives #24986 [end]
+
+# 27159 Recursive type alias with generics
+RecursiveTypeAlias10.ets
