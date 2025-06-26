@@ -17,6 +17,7 @@
 #define PANDA_GLOBALCLASSHANDLER_H
 
 #include "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.h"
+#include "ir/ets/etsReExportDeclaration.h"
 #include "parser/program/program.h"
 #include "public/public.h"
 #include "ir/astNode.h"
@@ -65,8 +66,11 @@ private:
     ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns);
     ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
     template <class Node>
-    void CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements);
-    void CollectNamespaceExportedClasses(ir::ClassDefinition *classDef);
+    void CollectExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                const ArenaVector<Node *> &statements);
+    void CollectReExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                  const ir::ETSReExportDeclaration *reExport);
+    void CollectNamespaceExportedClasses(parser::Program *program, ir::ClassDefinition *classDef);
     void SetupGlobalMethods(ArenaVector<ir::Statement *> &&initStatements, ir::ClassDefinition *globalClass,
                             bool isDeclare);
     void SetupInitializerBlock(ArenaVector<ArenaVector<ir::Statement *>> &&initializerBlock,
