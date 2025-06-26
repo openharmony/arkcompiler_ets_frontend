@@ -248,7 +248,7 @@
       },
       {
         "message": "Unexpected token '{'.",
-        "source": "return ((a) + (b));",
+        "source": "{\n  return ((a) + (b));\n}",
         "range": {
           "start": {
             "line": 16,
