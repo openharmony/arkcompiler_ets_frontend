@@ -1307,3 +1307,7 @@ syntax:
 - name: FUNCTION_OVERLOADED_NAME_MUST_QUALIFIED_NAME
   id: 325
   message: "The overloaded method name in function overload declaration must be qualified name."
+
+- name: MORE_INDEXER
+  id: 326
+  message: "Only one index signature can exist in a class"
