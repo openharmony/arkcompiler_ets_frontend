@@ -270,7 +270,7 @@ TEST_F(AnyInsTest, any_ins_test_05)
     ASSERT_NE(program, nullptr);
 
     const std::vector<pandasm::Opcode> expectedOps = {pandasm::Opcode::ANY_ISINSTANCE, pandasm::Opcode::ISINSTANCE};
-    AssertFunctionInstructions(program.get(), "dummy.ETSGLOBAL.foo:std.core.Object;void;", expectedOps);
+    AssertFunctionInstructions(program.get(), "dummy.ETSGLOBAL.foo:{Udummy.X,dummy.Y};void;", expectedOps);
 }
 
 // CC-OFFNXT(huge_depth) solid logic

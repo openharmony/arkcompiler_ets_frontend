@@ -60,6 +60,16 @@ public:
         return assemblerLub_;
     }
 
+    const util::StringView &GetAssemblerType() const
+    {
+        return assemblerTypeCache_;
+    }
+
+    const ArenaVector<Type *> &GetAssemblerTypes() const
+    {
+        return assemblerConstituentTypes_;
+    }
+
     template <class UnaryPredicate>
     [[nodiscard]] bool AllOfConstituentTypes(UnaryPredicate p) const noexcept
     {
@@ -106,8 +116,12 @@ private:
         std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const noexcept;
 
     static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
+    void CanonicalizedAssemblerType(ETSChecker *checker);
+    void InitAssemblerTypeCache(ETSChecker *checker);
 
     ArenaVector<Type *> const constituentTypes_;
+    ArenaVector<Type *> assemblerConstituentTypes_;
+    util::StringView assemblerTypeCache_;
     Type *assemblerLub_ {nullptr};
 };
 }  // namespace ark::es2panda::checker

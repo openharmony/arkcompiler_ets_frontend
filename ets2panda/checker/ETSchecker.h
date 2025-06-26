@@ -93,6 +93,7 @@ public:
           invokeToArrowSignatures_(Allocator()->Adapter()),
           arrowToFuncInterfaces_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
+          unionAssemblerTypes_(Allocator()->Adapter()),
           dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
                               DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
           dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
@@ -172,6 +173,8 @@ public:
 
     GlobalArraySignatureMap &GlobalArrayTypes();
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
+
+    const ArenaSet<ETSUnionType *> &UnionAssemblerTypes() const;
 
     Type *GlobalTypeError() const;
     [[nodiscard]] Type *InvalidateType(ir::Typed<ir::AstNode> *node);
@@ -904,6 +907,7 @@ public:
         pendingConstraintCheckRecords_.clear();
         constraintCheckScopesCount_ = 0;
         globalArraySignatures_.clear();
+        unionAssemblerTypes_.clear();
         GetCachedComputedAbstracts()->clear();
         for (auto &dynamicCallIntrinsicsMap : dynamicIntrinsics_) {
             dynamicCallIntrinsicsMap.clear();
@@ -1063,6 +1067,7 @@ private:
     FunctionInterfaceMap arrowToFuncInterfaces_;
     size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
+    ArenaSet<ETSUnionType *> unionAssemblerTypes_;
     ComputedAbstracts *cachedComputedAbstracts_ {nullptr};
     // NOTE(aleksisch): Extract dynamic from checker to separate class
     std::array<DynamicCallIntrinsicsMap, 2U> dynamicIntrinsics_;

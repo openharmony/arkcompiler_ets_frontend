@@ -34,19 +34,108 @@ void ETSUnionType::ToString(std::stringstream &ss, bool precise) const
 
 void ETSUnionType::ToAssemblerType(std::stringstream &ss) const
 {
-    assemblerLub_->ToAssemblerTypeWithRank(ss);
+    ss << GetAssemblerType();
 }
 
 void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
 {
-    assemblerLub_->ToDebugInfoType(ss);
+    if (assemblerConstituentTypes_.size() == 1) {
+        assemblerConstituentTypes_[0]->ToDebugInfoType(ss);
+        return;
+    }
+    ss << "{U";
+    for (size_t idx = 0; idx < assemblerConstituentTypes_.size(); idx++) {
+        assemblerConstituentTypes_[idx]->ToDebugInfoType(ss);
+        if (idx != assemblerConstituentTypes_.size() - 1) {
+            ss << ",";
+        }
+    }
+    ss << "}";
+}
+
+static std::string GetAssemblerTypeString(Type *type)
+{
+    std::stringstream ss;
+    type->ToAssemblerTypeWithRank(ss);
+    return ss.str();
+}
+
+void ETSUnionType::InitAssemblerTypeCache(ETSChecker *checker)
+{
+    ES2PANDA_ASSERT(!assemblerConstituentTypes_.empty());
+    std::stringstream ss;
+    if (assemblerConstituentTypes_.size() == 1) {
+        assemblerConstituentTypes_[0]->ToAssemblerTypeWithRank(ss);
+    } else {
+        ss << "{U";
+        for (size_t idx = 0; idx < assemblerConstituentTypes_.size(); idx++) {
+            assemblerConstituentTypes_[idx]->ToAssemblerTypeWithRank(ss);
+            if (idx != assemblerConstituentTypes_.size() - 1) {
+                ss << ",";
+            }
+        }
+        ss << "}";
+    }
+    assemblerTypeCache_ = util::UString(ss.str(), checker->ProgramAllocator()).View();
+}
+
+void ETSUnionType::CanonicalizedAssemblerType(ETSChecker *checker)
+{
+    auto *const apparent = checker->GetApparentType(this);
+    if (!apparent->IsETSUnionType()) {
+        assemblerConstituentTypes_.push_back(apparent);
+        return;
+    }
+    if (apparent != this) {
+        const auto &types = apparent->AsETSUnionType()->GetAssemblerTypes();
+        assemblerConstituentTypes_.insert(assemblerConstituentTypes_.begin(), types.begin(), types.end());
+        return;
+    }
+
+    ES2PANDA_ASSERT(constituentTypes_.size() > 1);
+    for (auto *type : constituentTypes_) {
+        ES2PANDA_ASSERT(!type->IsETSUnionType());
+        if (type->IsETSUndefinedType() || type->IsETSVoidType()) {
+            continue;
+        }
+        if (type->IsETSNullType()) {
+            assemblerConstituentTypes_.clear();
+            assemblerConstituentTypes_.push_back(checker->GlobalETSObjectType());
+            return;
+        }
+        if (type->IsTypeError()) {
+            assemblerConstituentTypes_.clear();
+            assemblerConstituentTypes_.push_back(checker->GlobalTypeError());
+            return;
+        }
+        auto found =
+            std::find_if(assemblerConstituentTypes_.begin(), assemblerConstituentTypes_.end(),
+                         [&type](Type *t) { return GetAssemblerTypeString(type) == GetAssemblerTypeString(t); });
+        if (found == assemblerConstituentTypes_.end()) {
+            assemblerConstituentTypes_.push_back(type);
+        }
+    }
+    if (assemblerConstituentTypes_.empty()) {
+        assemblerConstituentTypes_.push_back(checker->GlobalETSObjectType());
+        return;
+    }
+    if (assemblerConstituentTypes_.size() == 1) {
+        return;
+    }
+
+    std::sort(assemblerConstituentTypes_.begin(), assemblerConstituentTypes_.end(),
+              [](Type *a, Type *b) { return GetAssemblerTypeString(a) < GetAssemblerTypeString(b); });
 }
 
 ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes)
-    : Type(TypeFlag::ETS_UNION), constituentTypes_(std::move(constituentTypes))
+    : Type(TypeFlag::ETS_UNION),
+      constituentTypes_(std::move(constituentTypes)),
+      assemblerConstituentTypes_(checker->ProgramAllocator()->Adapter())
 {
     ES2PANDA_ASSERT(constituentTypes_.size() > 1);
     assemblerLub_ = ComputeAssemblerLUB(checker, this);
+    CanonicalizedAssemblerType(checker);
+    InitAssemblerTypeCache(checker);
 }
 
 bool ETSUnionType::EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target)
