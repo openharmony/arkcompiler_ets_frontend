@@ -1253,6 +1253,51 @@ util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
     return util::StringView {compiler::Signatures::ITERATOR_METHOD};
 }
 
+void ParserImpl::EatTypeAnnotation()
+{
+    lexer_->NextToken();  // eat ':' or '|'
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        LogUnexpectedToken(lexer_->GetToken());
+        auto pos = lexer_->Save();
+        lexer_->NextToken();
+        while (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+            // just skip usls tokens, we have an identifier after
+            lexer_->Rewind(pos);
+            lexer_->NextToken();
+            pos = lexer_->Save();
+        }
+        if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+            // if next token is not an ident, so current token should be an identifier
+            // and we set it as literal ident
+            lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+            lexer_->GetToken().SetTokenStr(ERROR_LITERAL);
+        }
+    }
+    lexer_->NextToken();  // eat type
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        EatTypeAnnotation();
+    }
+}
+
+void ParserImpl::ParseIndexSignature()
+{
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        return;
+    }
+    lexer_->NextToken();  // eat param
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        return;
+    }
+
+    EatTypeAnnotation();
+
+    if (!lexer_->TryEatTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET)) {
+        return;
+    }
+    EatTypeAnnotation();
+}
+
 ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, bool isUserDefinedType,
                                              TypeAnnotationParsingOptions options)
 {
@@ -1283,6 +1328,11 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     } else if (tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
         // Special case for processing of special '[Symbol.iterator]` identifier using in stdlib.
         tokenName = ParseSymbolIteratorIdentifier();
+        if (tokenName.Empty()) {
+            LogError(diagnostic::ERROR_ARKTS_NO_PROPERTIES_BY_INDEX, {});
+            ParseIndexSignature();
+            return AllocBrokenExpression(Lexer()->GetToken().Start());
+        }
     }
 
     if (tokenName.Empty()) {

@@ -13,11 +13,15 @@
  * limitations under the License.
  */
 
-class A{
-    /* @@ label */(a:number/* @@ label1 */)/* @@ label2 */:number
+class StringArray {
+  [/* @@ label1 */index: number]: string
 }
+function getStringArray(): StringArray {
+  return /* @@ label2 */["a", "b", "c"]
+}
+let myArray: StringArray = getStringArray()
+let secondItem = /* @@ label3 */myArray[1]
 
-/* @@@ label Error SyntaxError: Unexpected token '('. */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'. */
-/* @@@ label2 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:60 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
+/* @@@ label1 Error TypeError: Indexed signatures are not allowed. Use arrays instead!  */
+/* @@@ label2 Error TypeError: Type 'Array<String>' is not compatible with the enclosing method's return type 'StringArray'  */
+/* @@@ label3 Error TypeError: Object type doesn't have proper index access method.  */

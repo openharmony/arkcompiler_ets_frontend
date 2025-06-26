@@ -1059,11 +1059,30 @@ void ETSParser::ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool 
     }
 }
 
+void ETSParser::ParseIndexedSignature()
+{
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+    Lexer()->NextToken();
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        return;
+    }
+    auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    Lexer()->NextToken();
+    ParseInterfaceTypeAnnotation(name);
+
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET)) {
+        return;
+    }
+    Lexer()->NextToken();
+    ParseInterfaceTypeAnnotation(name);
+}
+
 ir::AstNode *ETSParser::ParseInterfaceField()
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
                     Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET ||
                     Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+
     ir::ModifierFlags fieldModifiers = ir::ModifierFlags::PUBLIC;
     auto startLoc = Lexer()->GetToken().Start();
 
@@ -1081,6 +1100,11 @@ ir::AstNode *ETSParser::ParseInterfaceField()
         if (property != nullptr) {
             return property;
         }
+    }
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+        ParseIndexedSignature();
+        LogError(diagnostic::ERROR_ARKTS_NO_PROPERTIES_BY_INDEX, {}, startLoc);
+        return AllocBrokenExpression(Lexer()->GetToken().Start());
     }
 
     name->SetRange(Lexer()->GetToken().Loc());

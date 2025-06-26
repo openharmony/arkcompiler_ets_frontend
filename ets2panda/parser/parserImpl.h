@@ -241,6 +241,8 @@ protected:
         return false;
     }
 
+    void ParseIndexSignature();
+    void EatTypeAnnotation();
     util::StringView ParseSymbolIteratorIdentifier() const noexcept;
     ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false,
                                      TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR);

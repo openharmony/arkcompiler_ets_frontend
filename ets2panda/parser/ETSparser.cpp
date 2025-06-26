@@ -709,6 +709,9 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         Lexer()->NextToken();
         return AllocBrokenStatement(rangeToken);
     }
+    if (memberName->IsErrorPlaceHolder()) {
+        return AllocBrokenStatement(startLoc);
+    }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
