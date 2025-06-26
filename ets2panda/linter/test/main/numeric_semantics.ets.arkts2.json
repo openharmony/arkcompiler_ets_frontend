@@ -1225,6 +1225,66 @@
             "severity": "ERROR"
         },
         {
+            "line": 230,
+            "column": 3,
+            "endLine": 230,
+            "endColumn": 63,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 38,
+            "endLine": 230,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 44,
+            "endLine": 230,
+            "endColumn": 46,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 49,
+            "endLine": 230,
+            "endColumn": 51,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 54,
+            "endLine": 230,
+            "endColumn": 56,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 59,
+            "endLine": 230,
+            "endColumn": 63,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 117,
             "column": 2,
             "endLine": 117,

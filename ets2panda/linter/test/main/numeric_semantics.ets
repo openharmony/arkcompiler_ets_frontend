@@ -225,3 +225,7 @@ export enum AnimationStage {
   EXIT_START = 3,
   EXIT_END = 4,
 }
+
+class C {
+  public static readonly SIX_MONTH = 180 * 24 * 60 * 60 * 1000
+}

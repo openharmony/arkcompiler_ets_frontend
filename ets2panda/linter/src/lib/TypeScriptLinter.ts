@@ -1548,6 +1548,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handlePropertyDeclarationForProp(node);
     this.handleSdkGlobalApi(node);
     this.handleObjectLiteralAssignmentToClass(node);
+    this.handleNumericPublicStatic(node)
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -2088,6 +2089,40 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNumericBigintCompare(tsBinaryExpr);
     this.handleArkTSPropertyAccess(tsBinaryExpr);
     this.handleObjectLiteralAssignmentToClass(tsBinaryExpr);
+  }
+  
+  private handleNumericPublicStatic(node: ts.PropertyDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (node.type) {
+      return;
+    }
+    const modifiers = ts.getModifiers(node);
+    const isTargetProperty = !!modifiers?.length;
+    if (!isTargetProperty) {
+      return;
+    }
+    if (node.initializer) {
+      if (ts.isBinaryExpression(node.initializer) &&
+        this.isNumericExpression(node.initializer)) {
+        const autofix = this.autofixer?.fixNumericPublicStatic(node);
+        this.incrementCounters(node, FaultID.NumericSemantics, autofix);
+      }
+    }
+  }
+
+  private isNumericExpression(node: ts.Node): boolean {
+    if (ts.isNumericLiteral(node)) {
+      return true;
+    }
+    if (!ts.isBinaryExpression(node)) {
+      return false;
+    }
+    return (
+      this.isNumericExpression(node.left) &&
+      this.isNumericExpression(node.right)
+    );
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
