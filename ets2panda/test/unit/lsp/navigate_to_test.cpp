@@ -14,6 +14,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <cstddef>
 #include "lsp_api_test.h"
 #include "lsp/include/navigate_to.h"
 
@@ -25,40 +26,67 @@ using ark::es2panda::lsp::Initializer;
 using std::string;
 using std::vector;
 
-class NavigateToTest : public LSPAPITests {};
-
-TEST_F(NavigateToTest, EmptySourceFiles)
-{
-    std::vector<SourceFile> srcFiles;
-    Initializer initializer;
-    std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
-    const int maxResultCount = 10;
-    std::string searchTerm = "foo";
-
-    for (const auto &file : srcFiles) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
-        allResults.insert(allResults.end(), results.begin(), results.end());
+class NavigateToTest : public LSPAPITests {
+protected:
+    static void SetUpTestSuite()
+    {
+        initializer_ = new Initializer();
+        GenerateContexts(*initializer_);
     }
-    ASSERT_TRUE(allResults.empty());
-}
+
+    static void TearDownTestSuite()
+    {
+        for (auto ctx : contexts_) {
+            initializer_->DestroyContext(ctx);
+        }
+        delete initializer_;
+        initializer_ = nullptr;
+    }
+    static void GenerateContexts(Initializer &initializer)
+    {
+        for (const auto &file : files_) {
+            std::string sourceStr(file.source);
+            es2panda_Context *ctx =
+                initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
+            contexts_.push_back(ctx);
+        }
+    };
+    // NOLINTBEGIN(fuchsia-statically-constructed-objects)
+    static inline std::vector<es2panda_Context *> contexts_ = {};
+    static inline Initializer *initializer_ = nullptr;
+    static inline std::vector<SourceFile> files_ = {{"ExactPrefixAndSubstringMatch1.sts", R"(
+        function foo() {
+            let a = 1;
+            return a;
+        }
+        )"},
+                                                    {"ExactPrefixAndSubstringMatch2.sts", R"(
+        function foobar() {
+            let b = 2;
+            return b;
+        }
+        )"},
+                                                    {"ExactPrefixAndSubstringMatch3.sts", R"(
+        function my_foo() {
+            let c = 3;
+            return c;
+        }
+        )"},
+                                                    {"exatchMatch.sts", R"(
+            class Test {
+                yeke: number = 2;
+                method() {
+                    let b = 3;
+                    return b;
+                }
+            }
+            )"}};
+    // NOLINTEND(fuchsia-statically-constructed-objects)
+};
 
 TEST_F(NavigateToTest, ExactMatchFromSingleFile)
 {
-    std::vector<SourceFile> files = {{"exatchMatch.sts", R"(
-         class Test {
-             yeke: number = 2;
-             method() {
-                 let b = 3;
-                 return b;
-             }
-         }
-         )"}};
+    std::vector<SourceFile> files = {};
     Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
     const int maxResultCount = 10;
@@ -66,16 +94,9 @@ TEST_F(NavigateToTest, ExactMatchFromSingleFile)
     std::string searchTerm = "yeke";
     std::string containerName = "Test";
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
-        allResults.insert(allResults.end(), results.begin(), results.end());
-    }
+    std::vector<SourceFile> singleFile = {{files_[3].filePath, files_[3].source}};
+    auto results = GetNavigateToItems(contexts_[3], singleFile, maxResultCount, searchTerm, false);
+    allResults.insert(allResults.end(), results.begin(), results.end());
 
     ASSERT_EQ(allResults.size(), expectedResultSize);
     ASSERT_EQ(allResults[0].name, searchTerm);
@@ -85,25 +106,6 @@ TEST_F(NavigateToTest, ExactMatchFromSingleFile)
 
 TEST_F(NavigateToTest, ExactPrefixAndSubstringMatch)
 {
-    std::vector<SourceFile> files = {{"ExactPrefixAndSubstringMatch1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"ExactPrefixAndSubstringMatch2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"ExactPrefixAndSubstringMatch3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
     const int maxResultCount = 10;
     const int expectedResultSize = 3;
@@ -112,18 +114,12 @@ TEST_F(NavigateToTest, ExactPrefixAndSubstringMatch)
     std::string searchTermFoobar = "foobar";
     std::string searchTermMyFoo = "my_foo";
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
         allResults.insert(allResults.end(), results.begin(), results.end());
-
-        initializer.DestroyContext(ctx);
     }
+
     ASSERT_EQ(allResults.size(), expectedResultSize);  // "foo", "foobar", "my_foo"
     ASSERT_EQ(allResults[0].name, searchTerm);
     ASSERT_EQ(allResults[0].matchKind, ark::es2panda::lsp::MatchKind::EXACT);
@@ -135,163 +131,58 @@ TEST_F(NavigateToTest, ExactPrefixAndSubstringMatch)
 
 TEST_F(NavigateToTest, CaseInsensitiveMatch)
 {
-    std::vector<SourceFile> files = {{"caseInsensitiveMatch1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"caseInsensitiveMatch2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"caseInsensitiveMatch3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
     const int maxResultCount = 10;
     const int expectedResultSize = 3;
     std::string searchTerm = "FOO";
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);  // case-insensitive
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
         allResults.insert(allResults.end(), results.begin(), results.end());
-
-        initializer.DestroyContext(ctx);
     }
     ASSERT_EQ(allResults.size(), expectedResultSize);
 }
 
 TEST_F(NavigateToTest, CaseSensitiveMismatch)
 {
-    std::vector<SourceFile> files = {{"caseSensitiveMismatch1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"caseSensitiveMismatch2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"caseSensitiveMismatch3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
     const int maxResultCount = 10;
     std::string searchTerm = "FOO";
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, true);  // case-sensitive
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, true);
         allResults.insert(allResults.end(), results.begin(), results.end());
-
-        initializer.DestroyContext(ctx);
     }
     ASSERT_TRUE(allResults.empty());
 }
 
 TEST_F(NavigateToTest, NoMatchFound)
 {
-    std::vector<SourceFile> files = {{"noMatchFound1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"noMatchFound2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"noMatchFound3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
     const int maxResultCount = 10;
     std::string searchTerm = "nonexistent";
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
         allResults.insert(allResults.end(), results.begin(), results.end());
-
-        initializer.DestroyContext(ctx);
     }
     ASSERT_TRUE(allResults.empty());
 }
 
 TEST_F(NavigateToTest, MatchLimitRespected)
 {
-    std::vector<SourceFile> files = {{"matchLimitRespected1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"matchLimitRespected2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"matchLimitRespected3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
     const int maxResultCountTwo = 2;
     const int expectedResultSize = 2;
     std::string searchTerm = "foo";
-
-    Initializer initializer;
     std::vector<ark::es2panda::lsp::NavigateToItem> allResults;
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto matches = GetNavigateToItems(ctx, singleFile, maxResultCountTwo, searchTerm, false);
-        allResults.insert(allResults.end(), matches.begin(), matches.end());
-
-        initializer.DestroyContext(ctx);
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCountTwo, searchTerm, false);
+        allResults.insert(allResults.end(), results.begin(), results.end());
     }
 
     ASSERT_LE(allResults.size(), expectedResultSize);
@@ -299,87 +190,32 @@ TEST_F(NavigateToTest, MatchLimitRespected)
 
 TEST_F(NavigateToTest, MultiFileSubstringMatch)
 {
-    std::vector<SourceFile> files = {{"multiFileSubstringMatch1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"multiFileSubstringMatch2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"multiFileSubstringMatch3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     const int maxResultCount = 10;
     size_t totalMatches = 0;
     std::string searchTerm = "_foo";
     const int expectedResultSize = 1;
-
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto matches = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
-        totalMatches += matches.size();
-
-        initializer.DestroyContext(ctx);
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
+        totalMatches += results.size();
     }
-
     ASSERT_EQ(totalMatches, expectedResultSize);
 }
 
 TEST_F(NavigateToTest, PrefixMatchOnly)
 {
-    std::vector<SourceFile> files = {{"prefixMatchOnly1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"prefixMatchOnly2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"prefixMatchOnly3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     const int maxResultCount = 10;
     size_t prefixCount = 0;
     const int expectedResultSize = 1;
     std::string searchTerm = "foo";
-
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto matches = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
-        for (const auto &match : matches) {
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
+        for (const auto &match : results) {
             if (match.matchKind == ark::es2panda::lsp::MatchKind::PREFIX) {
                 ++prefixCount;
             }
         }
-
-        initializer.DestroyContext(ctx);
     }
 
     ASSERT_EQ(prefixCount, expectedResultSize);  // Only "foobar" is a PREFIX of "foo"
@@ -387,41 +223,15 @@ TEST_F(NavigateToTest, PrefixMatchOnly)
 
 TEST_F(NavigateToTest, MatchFromSecondFile)
 {
-    std::vector<SourceFile> files = {{"matchFromSecondFile1.sts", R"(
-         function foo() {
-             let a = 1;
-             return a;
-         }
-         )"},
-                                     {"matchFromSecondFile2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"matchFromSecondFile3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     const int maxResultCount = 10;
     const int expectedResultSize = 1;
     std::string searchTerm = "foobar";
     std::vector<ark::es2panda::lsp::NavigateToItem> matches;
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto results = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
+    for (size_t i = 0; i < files_.size() - 1; i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto results = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
         matches.insert(matches.end(), results.begin(), results.end());
-
-        initializer.DestroyContext(ctx);
     }
     ASSERT_EQ(matches.size(), expectedResultSize);
     ASSERT_EQ(matches[0].name, searchTerm);
@@ -429,45 +239,16 @@ TEST_F(NavigateToTest, MatchFromSecondFile)
 
 TEST_F(NavigateToTest, MatchOnClassMember)
 {
-    std::vector<SourceFile> files = {{"matchOnClassMember1.sts", R"(
-         class Test {
-             yeke: number = 2;
-             method() {
-                 let b = 3;
-                 return b;
-             }
-         }
-         )"},
-                                     {"matchOnClassMember2.sts", R"(
-         function foobar() {
-             let b = 2;
-             return b;
-         }
-         )"},
-                                     {"matchOnClassMember3.sts", R"(
-         function my_foo() {
-             let c = 3;
-             return c;
-         }
-         )"}};
-    Initializer initializer;
     const int maxResultCount = 10;
     const int expectedResultSize = 1;
     std::string searchTerm = "yeke";
     std::string containerName = "Test";
     std::vector<ark::es2panda::lsp::NavigateToItem> results;
 
-    for (const auto &file : files) {
-        std::string sourceStr(file.source);
-        es2panda_Context *ctx =
-            initializer.CreateContext(file.filePath.data(), ES2PANDA_STATE_CHECKED, sourceStr.c_str());
-        ASSERT_NE(ctx, nullptr);
-
-        std::vector<SourceFile> singleFile = {{file.filePath, sourceStr}};
-        auto items = GetNavigateToItems(ctx, singleFile, maxResultCount, searchTerm, false);
+    for (size_t i = 1; i < files_.size(); i++) {
+        std::vector<SourceFile> singleFile = {{files_[i].filePath, files_[i].source}};
+        auto items = GetNavigateToItems(contexts_[i], singleFile, maxResultCount, searchTerm, false);
         results.insert(results.end(), items.begin(), items.end());
-
-        initializer.DestroyContext(ctx);
     }
 
     ASSERT_EQ(results.size(), expectedResultSize);
