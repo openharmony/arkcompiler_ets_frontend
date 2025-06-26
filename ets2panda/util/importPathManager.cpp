@@ -460,6 +460,22 @@ util::StringView ImportPathManager::FormModuleNameSolelyByAbsolutePath(const uti
     return util::UString(name, allocator_).View();
 }
 
+template <typename DynamicPaths, typename ModuleNameFormer>
+static std::string TryFormDynamicModuleName(const DynamicPaths &dynPaths, const ModuleNameFormer &tryFormModuleName)
+{
+    for (auto const &[unitName, did] : dynPaths) {
+        if (did.Path().empty()) {
+            // NOTE(dkofanov): related to #23698. Current assumption: if 'declPath' is absent, it is a pure-dynamic
+            // source, and, as soon it won't be parsed, no module should be created.
+            continue;
+        }
+        if (auto res = tryFormModuleName(unitName, did.Path()); res) {
+            return res.value();
+        }
+    }
+    return "";
+}
+
 util::StringView ImportPathManager::FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos)
 {
     srcPos_ = srcPos;
@@ -507,6 +523,9 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
         if (auto res = tryFormModuleName(unitName, unitPath[0]); res) {
             return util::UString(res.value(), allocator_).View();
         }
+    }
+    if (auto dmn = TryFormDynamicModuleName(arktsConfig_->Dependencies(), tryFormModuleName); !dmn.empty()) {
+        return util::UString(dmn, allocator_).View();
     }
     // NOTE (hurton): as a last step, try resolving using the BaseUrl again without a path delimiter at the end
     if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
