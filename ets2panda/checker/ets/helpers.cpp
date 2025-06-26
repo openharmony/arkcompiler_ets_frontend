@@ -784,6 +784,10 @@ static void CheckRecordType(ir::Expression *init, checker::Type *annotationType,
     auto properties = objectExpr->Properties();
 
     for (const auto &property : properties) {
+        if (!property->IsProperty()) {
+            checker->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, property->Start());
+            continue;
+        }
         ES2PANDA_ASSERT(property->IsProperty());
         auto p = property->AsProperty();
 

@@ -1491,6 +1491,10 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
         return returnType;
     }
 
+    if (!signature->HasFunction()) {
+        return checker->GlobalTypeError();
+    }
+
     auto owner = const_cast<ETSObjectType *>(util::Helpers::GetContainingObjectType(signature->Function()));
     SavedCheckerContext savedCtx(ReconstructOwnerClassContext(checker, owner));
 
@@ -1910,7 +1914,15 @@ static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker
     auto *const valueType = typeArguments[1];  //  Record<K, V>  type arguments
 
     for (auto *const recordProperty : recordProperties) {
-        auto *const recordPropertyExpr = recordProperty->AsProperty()->Value();
+        ir::Expression *recordPropertyExpr = nullptr;
+        if (recordProperty->IsProperty()) {
+            recordPropertyExpr = recordProperty->AsProperty()->Value();
+        } else if (recordProperty->IsSpreadElement()) {
+            recordPropertyExpr = recordProperty->AsSpreadElement()->Argument();
+        } else {
+            ES2PANDA_UNREACHABLE();
+        }
+
         recordPropertyExpr->SetPreferredType(valueType);
         recordPropertyExpr->Check(checker);
     }
@@ -2417,6 +2429,11 @@ checker::Type *ETSAnalyzer::Check(ir::SuperExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::TemplateLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    for (auto *it : expr->Expressions()) {
+        it->Check(checker);
+    }
+
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
@@ -2425,10 +2442,6 @@ checker::Type *ETSAnalyzer::Check(ir::TemplateLiteral *expr) const
         checker->LogError(diagnostic::TEMPLATE_COUNT_MISMATCH, {}, expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
-    }
-
-    for (auto *it : expr->Expressions()) {
-        it->Check(checker);
     }
 
     for (auto *it : expr->Quasis()) {

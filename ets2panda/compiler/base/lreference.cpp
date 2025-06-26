@@ -69,6 +69,10 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
             return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
+        case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
+            ES2PANDA_ASSERT(node->AsETSNewClassInstanceExpression()->GetArguments().size() == 1);
+            return CreateBase(cg, node->AsETSNewClassInstanceExpression()->GetArguments()[0], isDeclaration);
+        }
         default: {
             ES2PANDA_UNREACHABLE();
         }

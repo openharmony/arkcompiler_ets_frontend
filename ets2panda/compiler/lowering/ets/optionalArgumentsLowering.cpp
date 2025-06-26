@@ -65,6 +65,11 @@ bool OptionalArgumentsLowering::PerformForModule(public_lib::Context *ctx, parse
         [ctx](ir::AstNode *const node) -> ir::AstNode * {
             if (node->IsCallExpression()) {
                 auto callExpr = node->AsCallExpression();
+                if (callExpr->Signature() == nullptr) {
+                    ctx->parser->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, node->Start());
+                    return node;
+                }
+
                 callExpr->IsTrailingCall()
                     ? TransformArgumentsForTrailingLambda(ctx, callExpr->AsCallExpression(), callExpr->Signature())
                     : TransformArguments(ctx, callExpr, callExpr->Signature(), callExpr->Arguments());
