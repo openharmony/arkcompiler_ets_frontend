@@ -1177,8 +1177,8 @@ static varbinder::Variable *ResolveMemberExpressionProperty(ir::MemberExpression
 
         // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         scope = classDef->Scope();
-    } else if (decl->IsEnumDecl()) {
-        scope = decl->AsEnumDecl()->Node()->AsTSEnumDeclaration()->Scope();
+    } else if (decl->IsEnumLiteralDecl()) {
+        scope = decl->AsEnumLiteralDecl()->Node()->AsTSEnumDeclaration()->Scope();
     } else {
         return nullptr;
     }
@@ -1248,7 +1248,7 @@ ir::AstNode *ConstantExpressionLowering::UnfoldResolvedReference(ir::AstNode *re
         }
     } else if (resolved->Parent()->IsVariableDeclarator()) {
         auto init = resolved->Parent()->AsVariableDeclarator()->Init();
-        if (init != nullptr && IsConstantExpression(init)) {
+        if (init != nullptr && IsConstantExpression(init) && !init->IsMemberExpression()) {
             resNode = init->Clone(context_->allocator, node->Parent());
             resNode->SetRange(node->Range());
         }
