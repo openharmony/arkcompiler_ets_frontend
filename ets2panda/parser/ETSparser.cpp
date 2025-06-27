@@ -1870,8 +1870,9 @@ ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type
                                                            [[maybe_unused]] ExpressionParseFlags flags)
 {
     if (type == lexer::TokenType::KEYW_INSTANCEOF) {
-        TypeAnnotationParsingOptions options =
-            TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR |
+                                               TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW |
+                                               TypeAnnotationParsingOptions::INSTANCEOF;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
             auto *typeAnnotation = AllocNode<ir::NullLiteral>();
