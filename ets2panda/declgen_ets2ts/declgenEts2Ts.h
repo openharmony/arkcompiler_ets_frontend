@@ -122,13 +122,27 @@ private:
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenNamespaceImport(const ir::AstNode *specifier, const std::string &source);
-    void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, const std::string &typeStr);
+    void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, bool isTypeKind = false);
     void GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
-                         const ArenaVector<ir::AstNode *> &specifiers, const std::string &source,
-                         const std::string &typeStr);
+                         const ArenaVector<ir::AstNode *> &specifiers, bool isTypeKind = false);
+    void GenDtsImportStatement(std::vector<ir::AstNode *> &specifiers,
+                               const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind = false);
+    void GenTsImportStatement(std::vector<ir::AstNode *> &specifiers, const ir::ETSImportDeclaration *importDeclaration,
+                              bool isInterface = false);
     void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
                               bool isGlueCode = false);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
+    bool GenNamespaceReExportDeclaration(const ir::AstNode *specifier,
+                                         const ir::ETSImportDeclaration *importDeclaration);
+    void SeparateInterfaceSpecifiers(const ArenaVector<ir::AstNode *> &specifiers,
+                                     std::vector<ir::AstNode *> &interfaceSpecifiers,
+                                     std::vector<ir::AstNode *> &normalSpecifiers);
+    void GenDtsReExportStatement(const ArenaVector<ir::AstNode *> &specifiers,
+                                 const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind = false);
+    void GenTsReExportStatement(const std::vector<ir::AstNode *> &specifiers,
+                                const ir::ETSImportDeclaration *importDeclaration, bool isInterface = false);
+    void GenSingleNamedReExport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
+                                bool isGlueCode = false);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
