@@ -146,6 +146,7 @@ import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
 import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
+import { ERROR_TASKPOOL_PROP_LIST } from './utils/consts/ErrorProp';
 
 interface InterfaceSymbolTypeResult {
   propNames: string[];
@@ -2060,6 +2061,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNumericBigintCompare(tsBinaryExpr);
     this.handleArkTSPropertyAccess(tsBinaryExpr);
     this.handleObjectLiteralAssignmentToClass(tsBinaryExpr);
+    this.handleAssignmentNotsLikeSmartType(tsBinaryExpr);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -3547,7 +3549,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const derivedReturnType = this.tsTypeChecker.getTypeAtLocation(derivedMethod.type);
 
     if (this.isDerivedTypeAssignable(derivedReturnType, baseReturnType)) {
-        return;
+      return;
     }
 
     if (!this.isTypeAssignable(derivedReturnType, baseReturnType)) {
@@ -3589,7 +3591,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   // Checks structural assignability between two types.
   private isTypeAssignable(fromType: ts.Type, toType: ts.Type): boolean {
     if (this.isDerivedTypeAssignable(fromType, toType)) {
-        return true;
+      return true;
     }
     const fromTypes = this.flattenUnionTypes(fromType);
     const toTypes = new Set(this.flattenUnionTypes(toType));
@@ -3600,17 +3602,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
   }
 
-   private isDerivedTypeAssignable(derivedType: ts.Type, baseType: ts.Type): boolean {
+  private isDerivedTypeAssignable(derivedType: ts.Type, baseType: ts.Type): boolean {
     const baseSymbol = baseType.getSymbol();
     const derivedSymbol = derivedType.getSymbol();
 
     if (!baseSymbol || !derivedSymbol) {
-       return false;
+      return false;
     }
     const baseDeclarations = baseSymbol.getDeclarations();
     const derivedDeclarations = derivedSymbol.getDeclarations();
 
-    if (!baseDeclarations || !derivedDeclarations) { 
+    if (!baseDeclarations || !derivedDeclarations) {
       return false;
     }
     const baseTypeNode = baseDeclarations[0];
@@ -3618,14 +3620,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (ts.isClassDeclaration(baseTypeNode) && ts.isClassDeclaration(derivedTypeNode)) {
       const baseTypes = this.tsTypeChecker.getTypeAtLocation(derivedTypeNode).getBaseTypes();
-      const baseTypesExtends = baseTypes?.some((t) => { 
-        return t === baseType; 
+      const baseTypesExtends = baseTypes?.some((t) => {
+        return t === baseType;
       });
       if (baseTypesExtends) {
         return true;
       }
     }
-      
+
     return false;
   }
 
@@ -7254,8 +7256,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private checkConcurrencySymbol(symbol: ts.Symbol, node: ts.Node): void {
     const cb = (): void => {
       const parent = node.parent;
-      if (!ts.isPropertyAccessExpression(parent)) { 
-        return; 
+      if (!ts.isPropertyAccessExpression(parent)) {
+        return;
       }
       if (parent.name.text === ARKTSUTILS_LOCKS_MEMBER) {
         this.incrementCounters(node, FaultID.LimitedStdLibNoImportConcurrency);
@@ -9650,6 +9652,54 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (originTypeStr === 'never' && this.tsTypeChecker.typeToString(asType) !== originTypeStr) {
       this.incrementCounters(tsAsExpr, FaultID.NoTsLikeSmartType);
     }
+  }
+  
+  private handleAssignmentNotsLikeSmartType(tsBinaryExpr: ts.BinaryExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (this.isPriorityInThreadInfo(tsBinaryExpr)) {
+      this.incrementCounters(tsBinaryExpr, FaultID.NoTsLikeSmartType);
+    }
+  }
+
+  private isPriorityInThreadInfo(node: ts.BinaryExpression): boolean {
+    if (!ts.isBinaryExpression(node)) {
+      return false;
+    }
+
+    // Handle both regular assignment and 'as' type assertion
+    let right: ts.Expression = ts.isAsExpression(node.right) ? node.right.expression : node.right;
+    if (!ts.isPropertyAccessExpression(right)) {
+        return false;
+    }
+
+    const propertyName = right.name;
+    if (!ts.isIdentifier(propertyName)) {
+      return false;
+    }
+
+    const object = right.expression;
+    if (!ts.isIdentifier(object)) {
+      return false;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(object);
+    if (!symbol) {
+      return false;
+    }
+
+    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, object);
+    const typeString = this.tsTypeChecker.typeToString(type);
+
+    for (const [typeName, properties] of Object.entries(ERROR_TASKPOOL_PROP_LIST)) {
+      if (typeString === typeName && properties.has(propertyName.text)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private handleNotsLikeSmartType(classDecl: ts.ClassDeclaration): void {

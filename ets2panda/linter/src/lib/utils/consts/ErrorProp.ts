@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,3 +15,9 @@
  */
 
 export const ERROR_PROP_LIST: Set<string> = new Set(['name', 'message', 'stack', 'code']);
+
+export const ERROR_TASKPOOL_PROP_LIST: { [key: string]: Set<string> } = {
+  'taskpool.TaskInfo': new Set(['duration']),
+  'taskpool.ThreadInfo': new Set(['taskIds', 'priority']),
+  'StdProcess.ConditionType': new Set(['timeout', 'killSignal', 'maxBuffer'])
+};
