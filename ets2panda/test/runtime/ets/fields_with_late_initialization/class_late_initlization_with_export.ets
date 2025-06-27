@@ -13,15 +13,22 @@
  * limitations under the License.
  */
 
-class Generic<T extends Object> {
-  genericField!: T;
+/*---
+  files: ['./interfaceToExport/interfaceToExport.ets']
+---*/
+
+import { A } from './interfaceToExport/interfaceToExport.ets';
+
+class Aimpl implements A {
+    a: number = 0;
+    b!: string;
 }
 
-function main(): void {
-  try {
-    const gen = new Generic<string>();
-    console.log(gen.genericField);
-  } catch (e) {
-    arktest.assertTrue(e instanceof NullPointerError)
-  }
+function main() {
+    try {
+        let a: Aimpl = new Aimpl();
+        console.log('a.b = ' + a.b);
+    } catch (e) {
+        arktest.assertTrue(e instanceof NullPointerError);
+    }
 }

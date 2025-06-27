@@ -12,16 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*---
+tags: [not-a-test, compile-only]
+---*/
 
-class Generic<T extends Object> {
-  genericField!: T;
-}
 
-function main(): void {
-  try {
-    const gen = new Generic<string>();
-    console.log(gen.genericField);
-  } catch (e) {
-    arktest.assertTrue(e instanceof NullPointerError)
-  }
+export interface A {
+    a: number;
+    b: string;
 }

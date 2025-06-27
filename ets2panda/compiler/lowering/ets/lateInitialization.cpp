@@ -41,6 +41,7 @@ ir::ClassProperty *TransformerClassProperty(public_lib::Context *ctx, ir::ClassP
     property->SetTypeAnnotation(typeAnnotation);
     property->SetTsType(annotationType);
     property->Key()->Variable()->SetTsType(annotationType);
+    property->ClearModifier(ir::ModifierFlags::DEFINITE);
     return property;
 }
 
@@ -85,15 +86,6 @@ bool LateInitializationConvert::PerformForModule(public_lib::Context *ctx, parse
 {
     program->Ast()->TransformChildrenRecursively(
         [ctx](ir::AstNode *node) -> AstNodePtr {
-            if (node->IsClassProperty() && node->IsDefinite()) {
-                return TransformerClassProperty(ctx, node->AsClassProperty());
-            }
-            return node;
-        },
-        Name());
-
-    program->Ast()->TransformChildrenRecursively(
-        [ctx](ir::AstNode *node) -> AstNodePtr {
             if (node->IsMemberExpression()) {
                 auto property = node->AsMemberExpression()->Property();
                 if (!(property->IsIdentifier() && property->AsIdentifier()->Variable() != nullptr)) {
@@ -109,6 +101,14 @@ bool LateInitializationConvert::PerformForModule(public_lib::Context *ctx, parse
         },
         Name());
 
+    program->Ast()->TransformChildrenRecursively(
+        [ctx](ir::AstNode *node) -> AstNodePtr {
+            if (node->IsClassProperty() && node->IsDefinite()) {
+                return TransformerClassProperty(ctx, node->AsClassProperty());
+            }
+            return node;
+        },
+        Name());
     return true;
 }
 }  // namespace ark::es2panda::compiler
